@@ -121,7 +121,7 @@ class Access extends Profile {
 
 			foreach ($allowed as $perm)
 			{
-				if ( ! array_key_exists($perm->permission, $permissions))
+				if (! $this->member->isSuperAdmin() && ! array_key_exists($perm->permission, $permissions))
 				{
 					$permissions[$perm->permission] = [];
 				}
@@ -173,7 +173,8 @@ class Access extends Profile {
 
 				foreach ($role->AssignedModules as $module)
 				{
-					$key = 'access_to_add_on_id_' . $module->getId() . ':' . $module->module_name;
+					$addon = ee('Addon')->get(strtolower($module->module_name));
+					$key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName();
 
 					if ( ! array_key_exists($key, $permissions))
 					{
@@ -209,8 +210,21 @@ class Access extends Profile {
 
 		$permissions = $this->getPermissions();
 
-		if (array_key_exists($permission, $permissions))
+		if ($this->member->isSuperAdmin() && !array_key_exists($permission, $permissions))
 		{
+			$display = ee('Format')->make('Text', 'Super Admin')->convertToEntities();
+
+			if (1 == $this->member->role_id)
+			{
+				$display .= ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
+			}
+			$permissions[$permission][] = $display;
+		}
+
+		if ($this->member->isSuperAdmin() || array_key_exists($permission, $permissions))
+		{
+			
+
 			$data['access'] = TRUE;
 			$data['granted'] = $permissions[$permission];
 		}
