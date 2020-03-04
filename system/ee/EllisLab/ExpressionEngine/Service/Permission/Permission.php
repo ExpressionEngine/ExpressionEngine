@@ -43,6 +43,12 @@ class Permission {
 		$this->permissions = $permissions;
 		$this->roles = $roles;
 		$this->site_id = $site_id;
+
+		//set role for members that don't have record in members_roles
+		if (isset($userdata['primary_role_id']))
+		{
+			$this->roles[$userdata['primary_role_id']] = $userdata['primary_role_name'];
+		}
 	}
 
 	public function rolesThatHave($permission, $site_id = NULL)
