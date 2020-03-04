@@ -46,7 +46,7 @@
 			removeClassFromAll(sheets, 'tab-open');
 
 			var tab = this;
-			var sheet = wrap.querySelector('.tab.' + this.rel);
+			var sheet = wrap.querySelector('.tab.' + this.getAttribute('rel'));
 
 			tab.classList.add('active');
 			sheet.classList.add('tab-open');
