@@ -190,12 +190,15 @@ class Cp {
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
 
-		ee()->javascript->set_global(array(
-			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
-			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
-		));
+		if (ee()->session->userdata('member_id')!=0)
+		{
+			ee()->javascript->set_global(array(
+				'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
+				'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+			));
 
-		$js_scripts['file'][] = 'cp/jump_menu';
+			$js_scripts['file'][] = 'cp/jump_menu';
+		}
 
 		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
 			'name'		=> 'modal-default-confirm-remove',
