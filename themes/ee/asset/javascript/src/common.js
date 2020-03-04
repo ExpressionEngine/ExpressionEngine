@@ -426,25 +426,25 @@ $(document).ready(function(){
 		$('.app-about').on('display', function() {
 			// Is the checking for updates bar visible?
 			// If it's not, then we already checked for updates so there's nothing to do.
-			if ($('.app-about__status--checking:visible').size() > 0) {
+			if (!$('.app-about__status--checking').hasClass('hidden')) {
 				// Hide all statuses except for the checking one
-				$('.app-about__status:not(.app-about__status--checking)').hide()
-
+				$('.app-about__status:not(.app-about__status--checking)').addClass('hidden')
+				console.log(EE.cp.updateCheckURL);
 				$.get(EE.cp.updateCheckURL, function(data) {
 					if (data.newVersionMarkup) {
 						if (data.isVitalUpdate) {
-							$('.app-about__status--update-vital').show()
+							$('.app-about__status--update-vital').removeClass('hidden')
 							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup)
 						} else {
-							$('.app-about__status--update').show()
+							$('.app-about__status--update').removeClass('hidden')
 							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup)
 						}
 					} else {
-						$('.app-about__status--update-to-date').show()
+						$('.app-about__status--update-to-date').removeClass('hidden')
 					}
 
 					// Hide the checking for updates bar
-					$('.app-about__status--checking').hide()
+					$('.app-about__status--checking').addClass('hidden')
 				})
 			}
 		})

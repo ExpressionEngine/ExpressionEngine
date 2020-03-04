@@ -1091,6 +1091,7 @@ class Cp {
 		// Version in anchor is sans dots
 		$version = implode('', explode('.', $version));
 		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
+		return $changelog_url;
 	}
 }
 

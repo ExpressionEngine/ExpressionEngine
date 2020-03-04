@@ -5,7 +5,7 @@
 		<div class="dropdown app-about" data-dropdown="app-about-dropdown">
 			<div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>
 			<div class="app-about__subtitle">
-				&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a> Corp.
+				&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">Packet Tide</a>, LLC.
 				<span class="float-right"><?=$ee_build_date?></span>
 			</div>
 
