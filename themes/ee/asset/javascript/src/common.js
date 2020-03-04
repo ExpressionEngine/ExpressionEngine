@@ -428,23 +428,22 @@ $(document).ready(function(){
 			// If it's not, then we already checked for updates so there's nothing to do.
 			if (!$('.app-about__status--checking').hasClass('hidden')) {
 				// Hide all statuses except for the checking one
-				$('.app-about__status:not(.app-about__status--checking)').addClass('hidden')
-				console.log(EE.cp.updateCheckURL);
+				$('.app-about__status:not(.app-about__status--checking)').addClass('hidden');
 				$.get(EE.cp.updateCheckURL, function(data) {
 					if (data.newVersionMarkup) {
 						if (data.isVitalUpdate) {
-							$('.app-about__status--update-vital').removeClass('hidden')
-							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup)
+							$('.app-about__status--update-vital').removeClass('hidden');
+							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup);
 						} else {
-							$('.app-about__status--update').removeClass('hidden')
-							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup)
+							$('.app-about__status--update').removeClass('hidden');
+							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup);
 						}
 					} else {
-						$('.app-about__status--update-to-date').removeClass('hidden')
+						$('.app-about__status--update-to-date').removeClass('hidden');
 					}
 
 					// Hide the checking for updates bar
-					$('.app-about__status--checking').addClass('hidden')
+					$('.app-about__status--checking').addClass('hidden');
 				})
 			}
 		})
