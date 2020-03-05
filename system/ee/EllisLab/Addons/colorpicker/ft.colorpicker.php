@@ -12,7 +12,9 @@ use Mexitek\PHPColors\Color;
 
 class Colorpicker_ft extends EE_Fieldtype {
 
-    var $info = [];
+		var $info = [];
+		
+		public $disable_frontedit = TRUE;
 
     var $default_settings = [
 		'allowed_colors' 			=> 'any',

@@ -772,7 +772,6 @@ class Member_auth extends Member {
 		// Instantiate the email class
 		ee()->load->library('email');
 		ee()->email->wordwrap = true;
-		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
 		ee()->email->to($address);
 		ee()->email->subject($email_tit);
