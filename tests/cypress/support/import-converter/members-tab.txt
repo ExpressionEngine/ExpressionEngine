@@ -1,0 +1,4 @@
+member1	Member1	password	member1@fake.com
+member2	Member2	password	member2@fake.com
+member3	Member3	password	member3@fake.com
+member4	Member4	password	member4@fake.com
