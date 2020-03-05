@@ -71,15 +71,13 @@ class Viewtype extends Filter {
 	}
 
 	/**
-	 * Validation:
-	 *   - if value is a number, then it is valid
-	 *   - otherwise it is invalid
+	 * Validation
 	 */
 	public function isValid()
 	{
 		$value = $this->value();
 
-		if (is_int($value) && $value > 0)
+		if (in_array($value, ['table', 'thumb']))
 		{
 			return TRUE;
 		}
