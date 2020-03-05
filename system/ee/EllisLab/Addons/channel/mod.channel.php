@@ -2426,7 +2426,6 @@ class Channel {
 
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
-		ee()->session->cache['channel']['channel_ids'] = $channel_ids;
 
 		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
 
@@ -5665,123 +5664,6 @@ class Channel {
 		exit;
 	}
 
-	/**
-	 * popcorn creats the auto magical editing interface for a given field.
-	 *
-	 * @method popcorn
-	 * @return Template string parsed already?
-	 */
-
-	 // Yuri: this is being replaced with single_field_editor()
-	 // will likely remove from release unless we use it somewhere else
-	public function popcorn()
-	{
-
-		// needs entry id and fieldshort name or field id
-		$channel_id = ee()->TMPL->fetch_param('channel_id');
-		$entry_id = ee()->TMPL->fetch_param('entry_id');
-		$field_short_name = ee()->TMPL->fetch_param('short_name');
-
-// var_dump($channel_id);
-// var_dump($entry_id);
-// var_dump($field_short_name);
-// exit;
-
-		/**
-		 * Tom testing tempalte parsing as a whole.
-		 */
-		//----------------------------------------
-        // Allows template parsing!
-        //----------------------------------------
-        // I would like this code abstracted a little further... Maybe even a file
-        //  per field type or something along those lines... not 100% sure
-        ee()->load->library('template', null, 'TMPL');
-
-        $template  = '{exp:channel:form channel_id="'.$channel_id.'" return="site/test/'.$channel_id.'/'.$field_short_name.'/ENTRY_ID" entry_id="'.$entry_id.'" show_fields="'.$field_short_name.'"}
-
-
-    <input type="hidden" name="title" id="title" value="{title}" size="50" maxlength="100" onkeyup="liveUrlTitle(event);">
-
-
-    <input type="hidden" name="url_title" id="url_title" value="{url_title}" maxlength="75" size="50">
-
-    {custom_fields}
-     <br><br><br>
-        <label for="{field_name}">{if required}* {/if}{field_label}</label>
-
-        {field_instructions}
-        {formatting_buttons}
-
-        {if error}
-          <p class="error">{error}</p>
-        {/if}
-
-
-        {if text}
-          <input type="text" dir="{text_direction}" id="{field_name}" name="{field_name}" value="{field_data}" maxlength="{maxlength}" size="50">
-        {/if}
-
-        {if grid}
-          {display_field}
-          <br>
-          <br>
-        {/if}
-
-	    {if textarea}
-          {display_field}
-          <br>
-          <br>
-        {/if}
-
-        {if multiselect}
-          <select id="{field_name}" name="{field_name}[]" multiple="multiple">
-            {options}
-              <option value="{option_value}"{selected}>{option_name}</option>
-            {/options}
-          </select>
-      {/if}
-
-		{if relationships}
-		    {if allow_multiple}
-		      <ul style="list-style: none">
-		        {options}
-		        <li>
-		          <input type="text" name="{field_name}[sort][]" value="{option_order}" style="width: 25px">
-		          <label class="checkbox">
-		          <input type="checkbox" name="{field_name}[data][]" value="{option_value}"{checked}> {option_name}
-		          </label>
-		        </li>
-		        {/options}
-		      </ul>
-		    {if:else}
-		        <select id="{field_name}" name="{field_name}[data][]">
-		        {options}
-		          <option value="{option_value}"{selected}>{option_name}</option>
-		        {/options}
-		        </select>
-		    {/if}
-		{/if}
-
-    {/custom_fields}
-
-
-    <input type="submit" name="submit" value="Submit">
-{/exp:channel:form}';
-
-
-
-        ee()->TMPL->parse($template, false, ee()->config->item('site_id'));
-        $out = ee()->TMPL->final_template;
-
-         if (method_exists(ee()->TMPL, 'remove_ee_comments')) {
-            $out = ee()->TMPL->remove_ee_comments($out);
-        }
-
-		return $out;
-
-	}
-
-
 	public function form()
 	{
 		ee()->load->library('channel_form/channel_form_lib');
@@ -5913,15 +5795,6 @@ class Channel {
 		}
 
 		return array($field_sqla, $field_sqlb);
-	}
-
-	public function live_preview()
-	{
-		$entry_id = ee()->input->get_post('entry_id');
-		$channel_id = ee()->input->get_post('channel_id');
-		$return = urldecode(ee()->input->get('return'));
-
-		return ee('LivePreview')->preview($channel_id, $entry_id, $return);
 	}
 }
 // END CLASS

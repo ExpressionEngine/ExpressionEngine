@@ -79,7 +79,7 @@
 								</div>
 							</div>
 						<?php else: ?>
-							<a class="button button--<?=isset($button['type']) ? $button['type'] : 'action'?>" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
+							<a class="button button--action" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
 						<?php endif ?>
 				<?php endforeach ?>
 			<?php endif ?>

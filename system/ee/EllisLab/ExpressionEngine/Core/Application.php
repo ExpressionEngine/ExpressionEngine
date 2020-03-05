@@ -212,16 +212,6 @@ class Application {
 			throw new \Exception("Cannot read setup file: {$path}");
 		}
 
-		// We found another addon with the same name. This could be a problem.
-		if($this->registry->has($prefix)) {
-			// If it is due to the pro version, it is not a problem.
-			// We are intentionally loading that first and skipping this one
-			$provider = $this->registry->get($prefix);
-			if (strpos($provider->getPath(), 'Addons/pro/levelups') !== false) {
-			    return $provider;
-			}
-		}
-
 		$provider = new Provider(
 			$this->dependencies,
 			$path,

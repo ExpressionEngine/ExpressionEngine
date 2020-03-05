@@ -23,33 +23,114 @@ class Homepage extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		$member = ee()->session->getMember();
-		$role_ids = $member->getAllRoles()->pluck('role_id');
+		// First login, this is 0 on the first page load
+		$vars['last_visit'] = (empty(ee()->session->userdata['last_visit'])) ? ee()->localize->human_time() : ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
-		$dashboard_layout = ee('Model')->get('DashboardLayout')
-			->filter('member_id', $member->member_id)
-			->orFilter('role_id', 'IN', $role_ids)
-			->first();
-		if (empty($dashboard_layout))
+		if (ee()->config->item('enable_comments') == 'y')
 		{
-			$dashboard_layout = ee('Model')->make('DashboardLayout');
+			$vars['number_of_new_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('comment_date', '>', ee()->session->userdata['last_visit'])
+				->count();
+
+			$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 'p')
+				->count();
+
+			$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
 		}
 
-		$vars = [
-			'header' => [
-				'title' => ee()->config->item('site_name'),
-			],
-			'dashboard' => $dashboard_layout->generateDashboardHtml()
-		];
+		$vars['number_of_channels'] = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count();
 
-		if (IS_PRO)
+		if ($vars['number_of_channels'] == 1)
 		{
-			$vars['header']['toolbar_items'] = array(
-				'settings' => array(
-					'href' => ee('CP/URL')->make('pro/dashboard/layout/'.$member->member_id),
-					'title' => lang('edit_dashboard_layout'),
-				)
-			);
+			$vars['channel_id'] = ee('Model')->get('Channel')
+				->filter('site_id', ee()->config->item('site_id'))
+				->first()
+				->channel_id;
+		}
+
+		$vars['spam_module_installed'] = (bool) ee('Model')->get('Module')->filter('module_name', 'Spam')->count();
+
+		if ($vars['spam_module_installed'])
+		{
+			$vars['number_of_new_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('trap_date', '>', ee()->session->userdata['last_visit'])
+				->count();
+
+			$vars['number_of_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count();
+
+			// db query to aggregate
+			$vars['trapped_spam'] = ee()->db->select('content_type, COUNT(trap_id) as total_trapped')
+				->group_by('content_type')
+				->get('spam_trap')
+				->result();
+
+			foreach ($vars['trapped_spam'] as $trapped)
+			{
+				ee()->lang->load($trapped->content_type);
+			}
+
+			$vars['can_moderate_spam'] = ee('Permission')->can('moderate_spam');
+		}
+
+		$vars['can_view_homepage_news'] = bool_config_item('show_ee_news')
+			&& ee('Permission')->can('view_homepage_news');
+
+		if ($vars['can_view_homepage_news'])
+		{
+			// Gather the news
+			ee()->load->library(array('rss_parser', 'typography'));
+			$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
+			$vars['url_rss'] = ee()->cp->masked_url($url_rss);
+			$news = array();
+
+			try
+			{
+				$feed = ee()->rss_parser->create(
+					$url_rss,
+					60 * 6, // 6 hour cache
+					'cpnews_feed'
+				);
+
+				foreach ($feed->get_items(0, 10) as $item)
+				{
+					$news[] = array(
+						'title'   => strip_tags($item->get_title()),
+						'date'    => ee()->localize->format_date(
+							"%j%S %M, %Y",
+							$item->get_date('U')
+						),
+						'content' => ee('Security/XSS')->clean(
+							ee()->typography->parse_type(
+								$item->get_content(),
+								array(
+									'text_format'   => 'xhtml',
+									'html_format'   => 'all',
+									'auto_links'    => 'y',
+									'allow_img_url' => 'n'
+								)
+							)
+						),
+						'link'    => ee()->cp->masked_url($item->get_permalink())
+					);
+				}
+
+				$vars['news'] = $news;
+			}
+			catch (\Exception $e)
+			{
+				// Nothing to see here, the view will take care of it
+			}
 		}
 
 		if (bool_config_item('share_analytics'))
@@ -59,8 +140,21 @@ class Homepage extends CP_Controller {
 			$pings->shareAnalytics();
 		}
 
-		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
+		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
+		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
+		$vars['can_access_members'] = ee('Permission')->can('access_members');
+		$vars['can_create_members'] = ee('Permission')->can('create_members');
+		$vars['can_access_channels'] = ee('Permission')->can('admin_channels');
+		$vars['can_create_channels'] = ee('Permission')->can('create_channels');
+		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
+		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
+		$vars['can_create_entries'] = ee('Permission')->can('can_create_entries');
 
+		$vars['header'] = array(
+			'title' => ee()->config->item('site_name'),
+		);
+
+		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
 	}
 

@@ -360,7 +360,7 @@ class Relationship_ft extends EE_Fieldtype {
 			});
 		}
 
-		if (REQ != 'CP' && REQ != 'ACTION')
+		if (REQ != 'CP')
 		{
 			$options[''] = '--';
 
@@ -390,13 +390,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script([
 			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
-			'file' => [
-				'vendor/react/react.min',
-				'vendor/react/react-dom.min',
-				'components/relationship',
-				'components/dropdown_button',
-				'components/select_list'
-			],
+			'file' => ['components/relationship'],
 			'ui' => 'sortable'
 		]);
 
@@ -522,7 +516,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$channels = $channels->filter(function($channel) {
 			return ! $channel->maxEntriesLimitReached()
-				&& (ee('Permission')->isSuperAdmin() || in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels'))));
+				&& in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels')));
 		});
 
 		$channel_choices = [];

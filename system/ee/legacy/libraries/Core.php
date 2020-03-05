@@ -55,7 +55,6 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
-		define('PATH_PRO_ADDONS', SYSPATH . 'ee/EllisLab/Addons/pro/levelups/');
 		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_PI',     SYSPATH . 'ee/EllisLab/Addons/');
@@ -99,24 +98,9 @@ class EE_Core {
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
-		// Load the Pro addons first if they exist
-		if(is_dir(PATH_PRO_ADDONS)) {
-			ee('App')->setupAddons(PATH_PRO_ADDONS);
-		}
-
 		// boot the addons
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
-
-		//is this pro version?
-		if (is_dir(PATH_PRO_ADDONS) && ee('Addon')->get('pro')->isInstalled())
-		{
-			define('IS_PRO',		TRUE);
-		}
-		else
-		{
-			define('IS_PRO',		FALSE);
-		}
 
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
@@ -228,9 +212,6 @@ class EE_Core {
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 		define('PATH_CP_THEME', PATH_THEMES.'cp/');
-
-		define('PATH_PRO_THEMES', PATH_THEMES.'pro/');
-		define('URL_PRO_THEMES', URL_THEMES.'pro/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');

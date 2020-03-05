@@ -43,7 +43,7 @@ $current_page = ee()->uri->segment(2);
 
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
-			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) : ?>
+
 			<div class="ee-sidebar">
 				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
 				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center"><?=ee()->config->item('site_name')?><span class="ee-sidebar__title-down-arrow"><i class="fas fa-chevron-down"></i></span></a>
@@ -189,6 +189,6 @@ $current_page = ee()->uri->segment(2);
 
 				</div>
 			</div>
-			<?php endif; ?>
+
 			<div class="ee-main">
 <?php

@@ -582,8 +582,7 @@ class Cp {
 					'plugin'			=> array(),
 					'file'				=> array(),
 					'package'			=> array(),
-					'fp_module'			=> array(),
-					'pro_file'				=> array()
+					'fp_module'			=> array()
 			);
 
 			$this->requests[] = $str.AMP.'v='.max($mtimes);
@@ -621,8 +620,6 @@ class Cp {
 			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
 			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
-				break;
-			case 'pro_file':		$file = PATH_PRO_THEMES.'js/'.$name.'.js';
 				break;
 			case 'package':
 				if (strpos($name, ':') !== FALSE)
