@@ -1026,9 +1026,7 @@ EE.grid_cache = [];
 
 window.Grid = {
 	bind: function() {
-		if (typeof(EE.grid_cache) !== 'undefined') {
-			EE.grid_cache.push(arguments);
-		}
+		EE.grid_cache.push(arguments);
 	}
 };
 
@@ -1046,7 +1044,6 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
-		$this->head .= ee()->javascript->get_global();
 		$js_file_strings = array();
 
 		$js_defaults = array(
@@ -1172,11 +1169,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
-
-		if ($this->bool_string(ee()->TMPL->fetch_param('include_css'), TRUE))
-		{
-			$this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="'.URL_THEMES.'cform/css/eecms-cform.min.css" />';
-		}
+		$this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="'.URL_THEMES.'cform/css/eecms-cform.min.css" />';
 
 		//add fieldtype styles
 		foreach (ee()->cp->get_head() as $item)
@@ -1972,11 +1965,7 @@ GRID_FALLBACK;
 			);
 		}
 
-		$return = ($this->_meta['return']) 
-			? (
-				(strpos($this->_meta['return'], 'http://')===0 || strpos($this->_meta['return'], 'https://')===0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
-				) 
-			: ee()->functions->fetch_site_index();
+		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
 
 		if (strpos($return, 'ENTRY_ID') !== FALSE)
 		{

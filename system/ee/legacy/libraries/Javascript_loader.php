@@ -41,8 +41,7 @@ class Javascript_loader {
 			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
 			'file'		=> PATH_JAVASCRIPT,
 			'package'	=> PATH_THIRD,
-			'fp_module'	=> PATH_ADDONS,
-			'pro_file'	=> PATH_PRO_THEMES.'js/'
+			'fp_module'	=> PATH_ADDONS
 		);
 
 		$mock_name = '';
@@ -67,7 +66,7 @@ class Javascript_loader {
 
 					$file = $package.'/javascript/'.$file;
 				}
-				elseif ($type == 'file' OR $type == 'pro_file')
+				elseif ($type == 'file')
 				{
 					$parts = explode('/', $file);
 					$file = array();

@@ -12,7 +12,7 @@ $component = [
 	'no_results' => lang($no_results['text']),
 	'no_related' => lang($no_related['text']),
 	'select_filters' => $select_filters,
-	'can_add_items' => (REQ != 'CP')?false:!$in_modal,
+	'can_add_items' => !$in_modal,
 	'channels' => $channels
 ];
 ?>

@@ -488,7 +488,7 @@ class Group extends AbstractDesignController {
 							'choices' => $choices,
 							'value' => $values,
 							'no_results' => [
-								'text' => sprintf(lang('no_roles_with_design_access_found'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)

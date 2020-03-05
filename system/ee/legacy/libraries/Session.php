@@ -608,7 +608,7 @@ class EE_Session {
 		// Add in the Permissions for backwards compatibility
 		foreach ($this->member_model->getPermissions() as $perm => $perm_id)
 		{
-			$this->userdata[$perm] = 'y';
+			$this->userdata[$key] = 'y';
 		}
 
 		// Remember me may have validated the user agent for us, if so create a fingerprint now that we

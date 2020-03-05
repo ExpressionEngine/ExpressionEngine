@@ -536,8 +536,6 @@ $lang = array(
 
 'no_found' => 'No <b>%s</b> found.',
 
-'no_roles_with_design_access_found' => 'No <b>Roles</b> with <b>template manager access</b> found.',
-
 'no_rows_returned' => 'No rows returned',
 
 'none' => 'None',
@@ -726,18 +724,6 @@ $lang = array(
 'can_delete_all_entries' => 'Delete entries, by others',
 
 'can_assign_post_authors' => 'Change entry author',
-
-/* Dashboard Widgets */
-
-'save_dashboard_layout'	=> 'Save layout',
-
-'edit_dashboard_layout'	=> 'Edit layout',
-
-'dashboard_layout_saved'	=> 'Layout saved',
-
-'dashboard_layout_save_error' => 'Could not save layout',
-
-'dashboard_needs_some_widgets' => 'Please enable at least one widget',
 
 
 );

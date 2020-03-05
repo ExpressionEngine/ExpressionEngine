@@ -120,10 +120,4 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	}
 }
 
-
-
-
-
-
-
 // EOF

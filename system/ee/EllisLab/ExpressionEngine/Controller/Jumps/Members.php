@@ -34,7 +34,7 @@ class Members extends Jumps {
 
 	public function view()
 	{
-		$roles = $this->loadMemberRoles(ee()->input->post('searchString'));
+		$groups = $this->loadMemberGroups(ee()->input->post('searchString'));
 
 		$response = array();
 
@@ -52,20 +52,20 @@ class Members extends Jumps {
 		$this->sendResponse($response);
 	}
 
-	public function role()
+	public function group()
 	{
-		$roles = $this->loadMemberRoles(ee()->input->post('searchString'));
+		$groups = $this->loadMemberGroups(ee()->input->post('searchString'));
 
 		$response = array();
 
-		foreach ($roles as $role) {
-			$response['editMemberRole' . $role->name] = array(
+		foreach ($groups as $group) {
+			$response['editMemberGroup' . $group->group_title] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $role->name,
-				'command_title' => $role->name,
+				'command' => $group->group_title,
+				'command_title' => $group->group_title,
 				'dynamic' => false,
 				'addon' => false,
-				'target' => ee('CP/URL')->make('members/roles/edit/' . $role->getId())->compile()
+				'target' => ee('CP/URL')->make('members/groups/edit/' . $group->getId())->compile()
 			);
 		}
 
@@ -83,9 +83,9 @@ class Members extends Jumps {
 
 			$response['editMember' . $member->getId()] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $member->username . ' ' . $member->email,
-				'command_title' => $member->username . ' <em>(' . $member->email . ')</em>',
-				'command_context' => $member->PrimaryRole->name,
+				'command' => $member->username,
+				'command_title' => $member->username,
+				'command_context' => $member->getMemberGroup()->group_title,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('members/profile/settings', array('id' => $member->getId()))->compile()
@@ -95,7 +95,7 @@ class Members extends Jumps {
 		$this->sendResponse($response);
 	}
 
-	private function loadMemberRoles($searchString = false)
+	private function loadMemberGroups($searchString = false)
 	{
 		$groups = ee('Model')->get('Role');
 
@@ -121,7 +121,6 @@ class Members extends Jumps {
 
 			foreach ($keywords as $keyword) {
 				$members->filter('username', 'LIKE', '%' . $keyword . '%');
-				$members->orFilter('email', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
