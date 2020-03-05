@@ -76,6 +76,10 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
+            - name: Install Cypress dependencies
+              working-directory: tests/cypress
+              run: npm install
+
             - name: Run Cypress Tests
               working-directory: tests/cypress
               run:  npm run cypress:run
