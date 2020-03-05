@@ -41,7 +41,8 @@ $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'ee-test',
-		'username' => 'root'
+        'username' => 'root',
+        'password' => 'root',
 	),
 );
 
