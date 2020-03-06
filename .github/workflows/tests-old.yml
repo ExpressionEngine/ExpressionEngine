@@ -2,8 +2,8 @@ name: Run Tests (Old)
 
 on:
   push:
-  pull_request:
-
+    branches-ignore:
+      - '**'
 jobs:
     php-tests:
         runs-on: ${{ matrix.os }}

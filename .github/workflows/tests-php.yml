@@ -9,6 +9,7 @@ jobs:
         runs-on: ${{ matrix.os }}
 
         strategy:
+            fail-fast: false,
             matrix:
                 php: [7.3, 7.1, 5.6]
                 os: [ubuntu-latest]

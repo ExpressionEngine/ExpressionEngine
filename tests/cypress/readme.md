@@ -8,6 +8,12 @@ An overview and documentation are [available here](https://docs.cypress.io/guide
 
 `cd tests/cypress && npm install`
 
+## Configure Environment
+
+You can change the environment constants to match your local setup by copying the example file as shown below and modifying its values.  This new file will be excluded from version control.
+
+`cp tests/cypress/cypress.env.example.json tests/cypress/cypress.env.json`
+
 ## Start PHP Server
 
 Copy the configuration file into place and then start the standalone PHP server
