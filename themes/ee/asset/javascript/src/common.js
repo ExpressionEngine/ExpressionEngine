@@ -301,7 +301,9 @@ $(document).ready(function(){
 	updateMenuText(currentTheme)
 
 	function updateMenuText(newTheme) {
-		$('.js-dark-theme-toggle').text(newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme)
+		if ($('.js-dark-theme-toggle').length) {
+			$('.js-dark-theme-toggle').text(newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme);
+		}
 	}
 
 	function toggleDarkTheme(event = null) {

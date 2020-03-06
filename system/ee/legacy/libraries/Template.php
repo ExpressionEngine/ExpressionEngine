@@ -432,6 +432,37 @@ class EE_Template {
 			$layout = $this->_find_layout();
 		}
 
+		// Parse error conditinal tags
+		$errors = ee()->session->flashdata('errors');
+
+		// Make sure to age the flashdata so it doesn't appear on the next request accidentally.
+		// ee()->session->_age_flashdata();
+
+		// If we have any errors from the submit, display those inline.
+		if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match))
+		{
+			// If we have field errors, remove the template conditional and leave the error tags,
+			// otherwise, remove the conditional and error tags completely.
+			if (! empty($errors))
+			{
+				$this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+			}
+			else
+			{
+				$this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
+			}
+		}
+
+		if (!empty($errors))
+		{
+			// Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
+			$errors = array_map(function($error) {
+				return array('error' => $error);
+			}, $errors);
+
+			$this->template = $this->parse_variables($this->template, array(array('errors' => $errors)));
+		}
+
 		// Parse date format string "constants"
 		foreach (ee()->localize->format as $date_key => $date_val)
 		{
@@ -2844,6 +2875,32 @@ class EE_Template {
 		$this->template_id       = $row['template_id'];
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
+	}
+
+	/**
+	 * Take a template path string and fetch the corresponding template.
+	 * @param  string  $template_path  A template path string like 'site/about'
+	 * @return string                  The raw template code
+	 */
+	public function fetch_template_from_path($template_path)
+	{
+		list($template_group, $template_name, $site_id) = $this->_get_fetch_data($template_path);
+
+		return $this->fetch_template($template_group, $template_name, FALSE, $site_id);
+	}
+
+	/**
+	 * Take a template path string, fetch the corresponding template, and run it through the parser.
+	 * @param  string  $template_path A template path string like 'site/about'
+	 * @return string                 The parsed template code
+	 */
+	public function fetch_template_and_parse_from_path($template_path)
+	{
+		list($template_group, $template_name, $site_id) = $this->_get_fetch_data($template_path);
+
+		$this->run_template_engine($template_group, $template_name);
+
+		return ee()->output->get_output();
 	}
 
 	/**
