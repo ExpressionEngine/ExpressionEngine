@@ -122,7 +122,7 @@ class Member {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
@@ -907,6 +907,39 @@ class Member {
 	}
 
 	/**
+	 * Manual Logout Form
+	 *
+	 * This lets users create a stand-alone logout form in any template
+	 */
+	public function logout_form()
+	{
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'member_logout'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2'
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
+	}
+
+	/**
 	 * Member Logout
 	 */
 	public function member_logout()
@@ -924,6 +957,98 @@ class Member {
 		}
 
 		$MA->member_logout();
+	}
+
+	/**
+	 * Manual Forgot Password Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
+	public function forgot_username_form()
+	{
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'send_username'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'email_subject' => ee()->TMPL->fetch_param('email_subject'),
+											'email_template' => ee()->TMPL->fetch_param('email_template')
+										))
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
+	}
+
+	public function send_username()
+	{
+		if ( ! class_exists('Member_auth'))
+		{
+			require PATH_ADDONS.'member/mod.member_auth.php';
+		}
+
+		$MA = new Member_auth();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MA->{$key} = $value;
+		}
+
+		return $MA->send_username();
+	}
+
+	/**
+	 * Manual Forgot Password Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
+	public function forgot_password_form()
+	{
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'send_reset_token'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'password_reset_url' => ee()->TMPL->fetch_param('password_reset_url'),
+											'email_subject' => ee()->TMPL->fetch_param('email_subject'),
+											'email_template' => ee()->TMPL->fetch_param('email_template')
+										))
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
 	}
 
 	/**
@@ -966,6 +1091,75 @@ class Member {
 		}
 
 		$MA->send_reset_token();
+	}
+
+	public function reset_password_form()
+	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
+		// If the user is banned, send them away.
+		if (ee()->session->userdata('is_banned') === TRUE)
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+		}
+
+		// They didn't include their token.  Give em an error.
+		if ( ! ($resetcode = ee()->input->get_post('id')))
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')), '', $return_error_link);
+		}
+
+		// Make sure the token is valid and belongs to a member.
+		$member_id_query = ee()->db->select('member_id')
+			->where('resetcode', $resetcode)
+			->where('date >', (ee()->localize->now - (60*60)))
+			->get('reset_password');
+
+		if ($member_id_query->num_rows() === 0)
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
+		}
+
+		// Check to see whether we're in the forum or not.
+		$in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
+
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'process_reset_password'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '',
+										'FROM'	=> ($in_forum == TRUE) ? 'forum' : '',
+										'P' => ee()->functions->get_protected_form_params(),
+										'resetcode' => $resetcode
+									  );
+
+		if ($in_forum === TRUE)
+		{
+			$data['hidden_fields']['board_id'] = (int)$_GET['board_id'];
+		}
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
 	}
 
 	/**
@@ -1671,7 +1865,7 @@ class Member {
 	/**
 	 * Convet special characters
 	 */
-	function _convert_special_chars($str)
+	public function _convert_special_chars($str)
 	{
 		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&apos;', '&quot;', '&#63;'), $str);
 	}
@@ -1679,7 +1873,7 @@ class Member {
 	/**
 	 * Parse the index template
 	 */
-	function _parse_index_template($str)
+	public function _parse_index_template($str)
 	{
 		$req = ($this->request == '') ? 'profile' : $this->request;
 
@@ -1702,7 +1896,7 @@ class Member {
 	/**
 	 * Member Home Page
 	 */
-	function _member_page($str)
+	public function _member_page($str)
 	{
 		$template = $this->_load_element('member_page');
 
@@ -1743,7 +1937,7 @@ class Member {
 	/**
 	 * Load theme element
 	 */
-	function _load_element($which)
+	public function _load_element($which)
 	{
 		if ($this->theme_path == '')
 		{
@@ -1770,7 +1964,7 @@ class Member {
 	/**
 	 * Trigger Error Template
 	 */
-	function _trigger_error($heading, $message = '', $use_lang = TRUE)
+	public function _trigger_error($heading, $message = '', $use_lang = TRUE)
 	{
 		return $this->_var_swap($this->_load_element('error'),
 								array(
@@ -1783,7 +1977,7 @@ class Member {
 	/**
 	 * Sets the title of the page
 	 */
-	function _set_page_title($title)
+	public function _set_page_title($title)
 	{
 		if ($this->page_title == '')
 		{
@@ -1869,7 +2063,7 @@ class Member {
 	/**
 	 * Breadcrumb trail links
 	 */
-	function _crumb_trail($data)
+	public function _crumb_trail($data)
 	{
 		$trail	= $this->_load_element('breadcrumb_trail');
 
@@ -1887,7 +2081,7 @@ class Member {
 	/**
 	 * Finalize the Crumbs
 	 */
-	function _build_crumbs($title, $crumbs, $str)
+	public function _build_crumbs($title, $crumbs, $str)
 	{
 		$this->_set_page_title(($title == '') ? 'Powered By ExpressionEngine' : $title);
 
@@ -1903,7 +2097,7 @@ class Member {
 	/**
 	 * Fetch member profile crumb item
 	 */
-	function _fetch_member_crumb($item = '')
+	public function _fetch_member_crumb($item = '')
 	{
 		if ($item == '')
 			return FALSE;
@@ -1916,7 +2110,7 @@ class Member {
 	 *
 	 * Right now we only use this to parse the logged-in/logged-out vars
 	 */
-	function _prep_element($str)
+	public function _prep_element($str)
 	{
 		if ($str == '')
 		{
@@ -1961,7 +2155,7 @@ class Member {
 	/**
 	 * Finalize a few things
 	 */
-	function _final_prep($str)
+	public function _final_prep($str)
 	{
 		// Which mode are we in?
 		// This class can either be run in "stand-alone" mode or through the template engine.
@@ -2119,7 +2313,7 @@ class Member {
 	/**
 	 * Set base values of class vars
 	 */
-	function _set_properties($props = array())
+	public function _set_properties($props = array())
 	{
 		if (count($props) > 0)
 		{
@@ -2133,7 +2327,7 @@ class Member {
 	/**
 	 * Sets the member basepath
 	 */
-	function _member_set_basepath()
+	public function _member_set_basepath()
 	{
 		$this->basepath = ee()->functions->create_url($this->trigger);
 	}
@@ -2141,7 +2335,7 @@ class Member {
 	/**
 	 * Compiles a path string
 	 */
-	function _member_path($uri = '')
+	public function _member_path($uri = '')
 	{
 		if ($this->basepath == '')
 		{
@@ -2154,12 +2348,12 @@ class Member {
 	/**
 	 * Helpers for "if" conditions
 	 */
-	function _deny_if($cond, $str, $replace = '')
+	public function _deny_if($cond, $str, $replace = '')
 	{
 		return preg_replace("/\{if\s+".$cond."\}.+?\{\/if\}/si", $replace, $str);
 	}
 
-	function _allow_if($cond, $str)
+	public function _allow_if($cond, $str)
 	{
 		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
 	}
@@ -2167,7 +2361,7 @@ class Member {
 	/**
 	 * Replace variables
 	 */
-	function _var_swap($str, $data)
+	public function _var_swap($str, $data)
 	{
 		if ( ! is_array($data))
 		{
@@ -2185,7 +2379,7 @@ class Member {
 	/**
 	 * Swap single variables with final value
 	 */
-	function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
+	public function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
 	{
 		if ($encode_ee_tags)
 		{
@@ -2213,7 +2407,7 @@ class Member {
 	/**
 	 * Custom Member Profile Data
 	 */
-	function custom_profile_data()
+	public function custom_profile_data()
 	{
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
@@ -2527,7 +2721,7 @@ class Member {
 	/**
 	 * Ignore List
 	 */
-	function ignore_list()
+	public function ignore_list()
 	{
 		$pre = 'ignore_';
 		$prelen = strlen($pre);

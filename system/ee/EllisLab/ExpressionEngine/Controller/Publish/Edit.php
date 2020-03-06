@@ -495,6 +495,12 @@ class Edit extends AbstractPublishController {
 			'in_modal_context' => $sequence_editing
 		);
 
+		if (ee()->input->get('hide_closer')==='y' && ee()->input->get('return')!='')
+		{
+			$vars['form_hidden'] = ['return'	=> urldecode(ee()->input->get('return'))];
+			$vars['hide_sidebar'] = true;
+		}
+
 		if ($sequence_editing)
 		{
 			$vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
@@ -509,9 +515,20 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->isLivePreviewable())
 		{
-			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
-			]);
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'Channel')
+				->where('method', 'live_preview')
+				->get('actions');
+			$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
+			if (ee()->input->get('return')!='')
+			{
+				$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+			}
+			$modal_vars = [
+				'preview_url' => $preview_url,
+				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+			];
+			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
 			ee('CP/Modal')->addModal('live-preview', $modal);
 		}
 

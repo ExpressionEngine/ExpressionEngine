@@ -190,8 +190,12 @@ class Cp {
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
 
-		if (ee()->session->userdata('member_id')!=0)
-		{
+		// If the user is a super-admin, give them jump menu access.
+		if (ee()->session->userdata('group_id') == 1) {
+			// Prime the jump cache commands. This will load the native commands as well as any commands from
+			// add-ons. If an add-on's commands have been updated, the cache should expire in 60 seconds or so.
+			ee('CP/JumpMenu')->primeCache(true); // pass true to empty and refill the cache
+
 			ee()->javascript->set_global(array(
 				'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
 				'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
@@ -582,7 +586,8 @@ class Cp {
 					'plugin'			=> array(),
 					'file'				=> array(),
 					'package'			=> array(),
-					'fp_module'			=> array()
+					'fp_module'			=> array(),
+					'pro_file'			=> array()
 			);
 
 			$this->requests[] = $str.AMP.'v='.max($mtimes);
@@ -620,6 +625,8 @@ class Cp {
 			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
 			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
+				break;
+			case 'pro_file':		$file = PATH_PRO_THEMES.'js/'.$name.'.js';
 				break;
 			case 'package':
 				if (strpos($name, ':') !== FALSE)
@@ -1091,7 +1098,6 @@ class Cp {
 		// Version in anchor is sans dots
 		$version = implode('', explode('.', $version));
 		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
-		return $changelog_url;
 	}
 }
 

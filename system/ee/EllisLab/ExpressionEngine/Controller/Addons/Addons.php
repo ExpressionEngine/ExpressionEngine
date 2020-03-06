@@ -426,6 +426,9 @@ class Addons extends CP_Controller {
 					$updated[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			$addon_info->updateDashboardWidgets();
+
 		}
 
 		ee('CP/JumpMenu')->clearAllCaches();
@@ -588,6 +591,8 @@ class Addons extends CP_Controller {
 					}
 				}
 
+				$info->updateDashboardWidgets();
+
 				ee()->load->remove_package_path($info->getPath());
 			}
 
@@ -699,6 +704,9 @@ class Addons extends CP_Controller {
 					$uninstalled[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			$info->updateDashboardWidgets(true);
+
 		}
 
 		foreach (array('first', 'third') as $party)
