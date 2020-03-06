@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav');  ?>
 
 <script>
 document.querySelector('.ee-main').classList.add('ee-main--dashboard')

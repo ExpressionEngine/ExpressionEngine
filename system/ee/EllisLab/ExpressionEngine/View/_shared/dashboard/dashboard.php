@@ -1,4 +1,4 @@
-<?php
+<?php 
 $menu = ee()->menu->generate_menu();
 if ($can_create_channels || count($menu['channels']['create'])): ?>
 	<div class="dashboard__item widget">

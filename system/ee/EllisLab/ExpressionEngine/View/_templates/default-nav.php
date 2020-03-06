@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/wrapper'); ?>
+<?php $this->extend('_templates/wrapper');  ?>
 
 <?php if (isset($header)): ?>
 <div class="main-nav">

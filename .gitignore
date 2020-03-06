@@ -111,6 +111,6 @@ system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/Fil
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php
 
-# Pro files
+# Pro files 
 system/ee/EllisLab/Addons/pro
 themes/ee/pro
