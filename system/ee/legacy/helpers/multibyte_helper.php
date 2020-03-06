@@ -24,14 +24,14 @@ if( ! function_exists( 'ee_get_encoding' ) )
 	function ee_get_encoding($encoding)
 	{
 
-		if(null === $encoding)
+		if($encoding === null)
 		{
 
 			return ee()->config->item('charset') ?: 'utf8';
 
 		}
 
-		if('UTF-8' === $encoding)
+		if($encoding === 'UTF-8')
 		{
 
 			return 'UTF-8';
@@ -40,14 +40,14 @@ if( ! function_exists( 'ee_get_encoding' ) )
 
 		$encoding = strtoupper($encoding);
 
-		if( '8BIT' === $encoding || 'BINARY' === $encoding )
+		if($encoding ===  '8BIT' || $encoding === 'BINARY' )
 		{
 
 			return 'CP850';
 
 		}
 
-		if( 'UTF8' === $encoding )
+		if($encoding ===  'UTF8')
 		{
 
 			return 'UTF-8';
@@ -74,7 +74,7 @@ if( ! function_exists('ee_mb_strlen'))
 
 		$encoding = ee_get_encoding($encoding);
 
-		if('CP850' === $encoding || 'ASCII' === $encoding)
+		if($encoding === 'CP850' || $encoding === 'ASCII')
 		{
 
 			return strlen($str);
@@ -102,7 +102,7 @@ if( ! function_exists('ee_mb_strpos'))
 	{
 		$encoding = ee_get_encoding($encoding);
 
-		if('CP850' === $encoding || 'ASCII' === $encoding)
+		if($encoding === 'CP850' || $encoding === 'ASCII')
 		{
 
 			return strpos($haystack, $needle, $offset);
