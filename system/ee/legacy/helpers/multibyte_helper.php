@@ -135,14 +135,14 @@ if( ! function_exists('ee_mb_strpos'))
 if( ! function_exists( 'ee_mb_substr ') )
 {
 
-	function ee_mb_substr($s, $start, $length = null, $encoding = null)
+	function ee_mb_substr($str, $start, $length = null, $encoding = null)
 	{
 		$encoding = ee_get_encoding($encoding);
 
 		if('CP850' === $encoding || 'ASCII' === $encoding)
 		{
 
-			return (string) substr($s, $start, null === $length ? 2147483647 : $length);
+			return (string) substr($str, $start, null === $length ? 2147483647 : $length);
 
 
 		}
@@ -150,7 +150,7 @@ if( ! function_exists( 'ee_mb_substr ') )
 		if($start < 0)
 		{
 
-			$start = iconv_strlen($s, $encoding) + $start;
+			$start = iconv_strlen($str, $encoding) + $start;
 
 			if($start < 0)
 			{
@@ -170,7 +170,7 @@ if( ! function_exists( 'ee_mb_substr ') )
 		elseif($length < 0)
 		{
 
-			$length = iconv_strlen($s, $encoding) + $length - $start;
+			$length = iconv_strlen($str, $encoding) + $length - $start;
 
 			if($length < 0)
 			{
@@ -181,7 +181,7 @@ if( ! function_exists( 'ee_mb_substr ') )
 
 		}
 
-		return (string) iconv_substr($s, $start, $length, $encoding);
+		return (string) iconv_substr($str, $start, $length, $encoding);
 
 	}
 

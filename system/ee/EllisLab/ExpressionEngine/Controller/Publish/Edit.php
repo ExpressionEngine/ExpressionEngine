@@ -593,24 +593,19 @@ class Edit extends AbstractPublishController {
 		$site_id = ee()->config->item('site_id');
 		$site_pages = ee()->config->item('site_pages');
 
-		if ($site_pages !== FALSE && $entries)
+		if ($site_pages !== FALSE && $entries && count($site_pages[$site_id]) > 0)
 		{
 
-			if (count($site_pages[$site_id]) > 0)
+			foreach ($entries->all() as $entry)
 			{
 
-				foreach ($entries->all() as $entry)
-				{
+				unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+				unset($site_pages[$site_id]['templates'][$entry->entry_id]);
 
-					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
-					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
+				ee()->config->set_item('site_pages', $site_pages);
 
-					ee()->config->set_item('site_pages', $site_pages);
-
-					$entry->Site->site_pages = $site_pages;
-					$entry->Site->save();
-
-				}
+				$entry->Site->site_pages = $site_pages;
+				$entry->Site->save();
 
 			}
 

@@ -306,16 +306,16 @@ class Filemanager {
 	{
 		if (function_exists('getimagesize'))
 		{
-			$D = @getimagesize($file_path);
+			$imageSize = @getimagesize($file_path);
 
-			if($D && is_array($D)) {
+			if($imageSize && is_array($imageSize)) {
 
-				$image_size = array(
-					'height'	=> $D['1'],
-					'width'	=> $D['0']
-				);
+				$imageSizeParsed = [
+					'height'	=> $imageSize['1'],
+					'width'	=> $imageSize['0']
+				];
 
-				return $image_size;
+				return $imageSizeParsed;
 
 			}
 
