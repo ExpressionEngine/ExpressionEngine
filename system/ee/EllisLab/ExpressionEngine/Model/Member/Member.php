@@ -229,10 +229,12 @@ class Member extends ContentModel {
 		'beforeDelete',
 		'afterBulkDelete',
 		'beforeInsert',
+		'beforeValidate'
 	);
 
 	// Properties
 	protected $member_id;
+	protected $group_id;
 	protected $role_id;
 	protected $username;
 	protected $screen_name;
@@ -298,6 +300,17 @@ class Member extends ContentModel {
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
+
+	/**
+	 * Support for legacy `group_id` property
+	 */
+	public function onBeforeValidate()
+	{
+		if (empty($this->getProperty('role_id')) && !empty($this->getProperty('group_id')))
+		{
+			$this->setProperty('role_id', $this->getProperty('group_id'));
+		}
+	}
 
 	/**
 	 * Generate unique ID and crypt key for new members
