@@ -7,8 +7,8 @@ class MemberGroups < ControlPanelPage
   section :list, MemberGroupsList, 'body'
   section :edit, MemberGroupsEdit, 'body'
 
-  def load
+  load
     main_menu.members_btn.click
     click_link 'Member Groups'
-  end
-end
+  }
+}

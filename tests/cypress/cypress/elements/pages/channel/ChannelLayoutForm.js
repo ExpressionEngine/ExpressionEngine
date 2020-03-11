@@ -26,7 +26,7 @@ class ChannelLayoutForm extends ControlPanel {
             //     element : hide, '.field-option-hide input'
             //     element : collapse, '.field-option-collapse input'
             //     element : required, '.field-option-required'
-            // end
+            // }
 
             // Layout Options
             "layout_name": 'form input[name=layout_name]',

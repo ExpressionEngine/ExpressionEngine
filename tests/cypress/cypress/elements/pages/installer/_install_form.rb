@@ -14,5 +14,5 @@ module Installer
 
     element :license_agreement, 'input[name=license_agreement]'
     element :install_submit, 'form input[type=submit]'
-  end
-end
+  }
+}

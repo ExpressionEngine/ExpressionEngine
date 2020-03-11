@@ -13,8 +13,8 @@ class ContentDesign < ControlPanelPage
   element :enable_emoticons, 'input[name=enable_emoticons]', :visible => false
   element :emoticon_url, 'input[name=emoticon_url]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Content & Design'
-  end
-end
+  }
+}

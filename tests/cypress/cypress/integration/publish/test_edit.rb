@@ -1,14 +1,14 @@
 require './bootstrap.rb'
 
-feature 'Publish Page - Edit' do
+feature 'Publish Page - Edit', () => {
   before :each do
-    cp_session
-    @page = Publish.new
-    no_php_js_errors
-  end
+    cy.auth();
+    page = Publish.new
+    cy.hasNoErrors()
+  }
 
-  it 'shows a 404 with no given entry_id' do
-    @page.load
-    @page.is_404?.should == true
-  end
-end
+  it('shows a 404 with no given entry_id', () => {
+    page.load()
+    page.is_404?.should == true
+  }
+}

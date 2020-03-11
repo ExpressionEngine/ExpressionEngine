@@ -19,7 +19,7 @@ class CommunicateSent < ControlPanelPage
   element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
 
-  def generate_data(
+  generate_data(
     count: 250,
     timestamp: nil,
     timestamp_min: nil,
@@ -37,60 +37,60 @@ class CommunicateSent < ControlPanelPage
 
     if count
       command += " --count " + count.to_s
-    end
+    }
 
     if timestamp
       command += " --timestamp " + timestamp.to_s
-    end
+    }
 
     if timestamp_min
       command += " --timestamp-min " + timestamp_min.to_s
-    end
+    }
 
     if timestamp_max
       command += " --timestamp-max " + timestamp_max.to_s
-    end
+    }
 
     if from_name
       command += " --from-name '" + from_name.to_s + "'"
-    end
+    }
 
     if from_email
       command += " --from-email '" + from_email.to_s + "'"
-    end
+    }
 
     if recipient
       command += " --recipient '" + recipient.to_s + "'"
-    end
+    }
 
     if cc
       command += " --cc '" + cc.to_s + "'"
-    end
+    }
 
     if bcc
       command += " --bcc '" + bcc.to_s + "'"
-    end
+    }
 
     if subject
       command += " --subject '" + subject.to_s + "'"
-    end
+    }
 
     if message
       command += " --message '" + message.to_s + "'"
-    end
+    }
 
     if total_sent
       command += " --total-sent '" + total_sent.to_s + "'"
-    end
+    }
 
     command += " > /dev/null 2>&1"
 
     system(command)
-  end
+  }
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     click_link 'Sent'
-  end
-end
+  }
+}

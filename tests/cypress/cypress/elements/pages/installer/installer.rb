@@ -6,5 +6,5 @@ module Installer
 
     section :install_form, Installer::Form, 'body'
     section :install_success, Installer::Success, 'body'
-  end
-end
+  }
+}

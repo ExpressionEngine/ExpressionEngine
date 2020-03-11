@@ -11,6 +11,7 @@ class ControlPanel {
 
             // Main Section
             "page_title": '.wrap .box h1',
+            "wrap": 'section.wrap',
 
             // Tables
             "select_all": 'th.check-ctrl input',
@@ -138,6 +139,49 @@ class ControlPanel {
     hasNoErrors() {
         this.get('submit_buttons').filter(':visible').first().should('not.be.disabled')
         this.get('fieldset_errors').should('not.exist')
+    }
+
+    submit_enabled() {
+        const button_value = this.get('submit_buttons').first().invoke('val').then((text) => { return text })
+        if (this.get('submit_buttons').first().tagName == 'button') {
+            this.get('submit_buttons').first().invoke('text').then((text) => { return text })
+        }
+
+        return Cypress._.toUpper(button_value) != 'errors found' && this.get('submit_buttons').first().its('disabled') != true
+    }
+
+    // Waits until the error message is gone before proceeding;
+    // if we just check for invisible but it's already gone,
+    // Capybara will complain, so we must do this
+    wait_for_error_message_count(count, seconds = 5) {
+  
+      // Wait for any AJAX requests or other scripts that have backed up
+      var ajax = false
+      while (ajax == false) {
+        ajax = (Cypress.$.active == 0)
+      }
+  
+      var i = 0;
+      var element_count = 0;
+      // This is essentially our own version of wait_until_x_invisible/visible,
+      // except we're not going to throw an exception if the element
+      // is already gone thus breaking our test; if the element is already
+      // gone, AJAX and the DOM have already done their job
+      while (element_count != count && i < (seconds * 100)){
+        try {
+            element_count = this.get('error_messages').length
+        }
+        catch(err) {
+            if (count==0) element_count = 0;
+        }
+        cy.wait(10)
+        i += 1 // Prevent infinite loop
+      }
+  
+      // Element is still there after our timeout? No good.
+      if (element_count != count && i == (seconds * 100)) {
+        throw new Error("Wrong number of validation errors. Got #"+element_count+", expected #"+count)
+      }
     }
 
 

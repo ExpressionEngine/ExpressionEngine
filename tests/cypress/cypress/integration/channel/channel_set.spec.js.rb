@@ -25,11 +25,11 @@ context('Channel Sets', () => {
             //
             // @param Integer id The ID of the channel to download
             def download_channel_set(id)
-            @page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//admin.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
-            @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
-            data = @page.evaluate_script('downloadCSVXHR()')
+            page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//admin.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
+            page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
+            data = page.evaluate_script('downloadCSVXHR()')
             data.should start_with('PK')
-            end
+            }
 
             // Import a given channel set
             //
@@ -37,58 +37,58 @@ context('Channel Sets', () => {
             // @param [Boolean] failure = false Set to true to check for failure
             // @return [void]
             def import_channel_set(name, method: 'success')
-                // @page.import.click
+                // page.import.click()
                 // Capybara-webkit isn't happy about the file field being hidden
-            @page.execute_script('$("input[name=set_file]").parent().show()')
-            @page.attach_file(
+            page.execute_script('$("input[name=set_file]").parent().show()')
+            page.attach_file(
                 'set_file',
                 File.expand_path("./channel_sets/#{name}.zip"),
                 visible: false
             )
 
             if block_given ?
-                no_php_js_errors
-            @page.should have_alert_error
+                cy.hasNoErrors()
+            page.should have_alert_error
             yield
             else
                 send('check_' + method)
-            end
-            end
+            }
+            }
 
             // Check to make sure the import was successful
             //
             // @return [void]
             def check_success
-            no_php_js_errors
-            @page.should have_alert_success
-            @page.alert.text.should include 'Channel Imported'
-            @page.alert.text.should include 'The channel was successfully imported.'
-            @page.all_there ? .should == true
-            end
+            cy.hasNoErrors()
+            page.should have_alert_success
+            page.alert.text.should include 'Channel Imported'
+            page.alert.text.should include 'The channel was successfully imported.'
+            page.all_there ? .should == true
+            }
 
             // Check to make sure the import was **not** successful
             //
             // @return [void]
             def check_issue_duplicate
-            no_php_js_errors
-            @page.should have_alert_error
-            @page.alert.text.should include 'Import Creates Duplicates'
-            @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
-            end
+            cy.hasNoErrors()
+            page.should have_alert_error
+            page.alert.text.should include 'Import Creates Duplicates'
+            page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
+            }
 
             def field_groups_created(field_groups)
             $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('" + field_groups.join("','") + "')").each do |row |
                     field_group_count = row['count']
                 field_group_count.should == field_groups.count
-            end
-            end
+            }
+            }
 
             def fields_created(fields)
             $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('" + fields.join("','") + "')").each do |row |
                     fields_count = row['count']
                 fields_count.should == fields.count
-            end
-            end
+            }
+            }
 
             def fields_assinged_to_group(group, fields)
             group_id = ''
@@ -96,47 +96,47 @@ context('Channel Sets', () => {
 
             $db.query("SELECT group_id FROM exp_field_groups WHERE group_name = '" + group + "'").each do |row |
                     group_id = row['group_id']
-                end
+                }
 
             $db.query("SELECT field_id FROM exp_channel_fields WHERE field_name IN ('" + fields.join("','") + "')").each do |row |
                     field_ids.push row['field_id']
-                end
+                }
 
             $db.query("SELECT count(*) AS count FROM exp_channel_field_groups_fields WHERE group_id = '" + group_id.to_s + "' AND field_id IN ('" + field_ids.join("','") + "')").each do |row |
                     fields_count = row['count']
                 fields_count.should == fields.count
-            end
-            end
+            }
+            }
 
             def field_groups_assigned_to_channel(channel_id, count)
             $db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = " + channel_id.to_s).each do |row |
                     field_groups = row['count']
                 field_groups.should == count
-            end
-            end
+            }
+            }
 
             def fields_assigned_to_channel(channel_id, count)
             $db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = " + channel_id.to_s).each do |row |
                     fields = row['count']
                 fields.should == count
-            end
-            end
+            }
+            }
 
             context 'when exporting'
             do
                 before: each do
                 // Set debug to false to create fieldtypes from scratch
-                    @importer = ChannelSets::Importer.new(@page, debug: false)
-                end
+                    @importer = ChannelSets::Importer.new(page, debug: false)
+                }
 
-            it 'downloads the zip file when exporting channel sets'
+            it('downloads the zip file when exporting channel sets'
             do
                 download_channel_set(1)
 
             // Check to see if the file exists
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             expected_files = % w(
                 /custom_fields/news_body.textarea /
@@ -147,8 +147,8 @@ context('Channel Sets', () => {
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             news_body = JSON.parse(found_files[0].get_input_stream.read)
             news_body['label'].should == 'Body'
@@ -184,41 +184,41 @@ context('Channel Sets', () => {
             channel_set['upload_destinations'].size.should == 0
 
             expected_files.sort.should == found_files.sort.map( &: name)
-            end
+            }
 
-            it 'exports all category groups for the channel'
+            it('exports all category groups for the channel'
             do
             // First add a second category to the News channel
                 @channel = Channel.new
             @channel.load_edit_for_channel(2)
             @channel.click_link 'Categories'
-            @channel.cat_group[0].click
+            @channel.cat_group[0].click()
             @channel.submit
 
-            @page.load
+            page.load()
             download_channel_set(1)
 
             // Check to see if the file exists
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             found_files = []
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             channel_set = JSON.parse(found_files[3].get_input_stream.read)
             channel_set['category_groups'].size.should == 2
             channel_set['category_groups'][1]['name'].should == 'About'
             channel_set['category_groups'][0]['name'].should == 'News Categories'
-            end
+            }
 
             context 'with relationships'
             do
-                it 'exports relationship fields with selected channels'
+                it('exports relationship fields with selected channels'
             do
                 @importer.relationships_specified_channels
             download_channel_set(1)
@@ -226,14 +226,14 @@ context('Channel Sets', () => {
             // Check to see if the file exists
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             found_files = []
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             relationship = JSON.parse(found_files[7].get_input_stream.read)
             relationship['label'].should == 'Relationships'
@@ -246,9 +246,9 @@ context('Channel Sets', () => {
 
             channel_set = JSON.parse(found_files[8].get_input_stream.read)
             channel_set['channels'].size.should == 2
-            end
+            }
 
-            it 'exports relationship fields with all channels'
+            it('exports relationship fields with all channels'
             do
                 @importer.relationships_all_channels
             download_channel_set(1)
@@ -256,14 +256,14 @@ context('Channel Sets', () => {
             // Check to see if the file exists
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             found_files = []
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             relationship = JSON.parse(found_files[3].get_input_stream.read)
             relationship['label'].should == 'Relationships'
@@ -276,10 +276,10 @@ context('Channel Sets', () => {
 
             channel_set = JSON.parse(found_files[4].get_input_stream.read)
             channel_set['channels'].size.should == 1
-            end
-            end
+            }
+            }
 
-            it 'exports fieldtypes with custom settings'
+            it('exports fieldtypes with custom settings'
             do
                 @importer.custom_fields
             download_channel_set(1)
@@ -287,14 +287,14 @@ context('Channel Sets', () => {
             // Check to see if the file exists
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             found_files = []
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             checkboxes = JSON.parse(found_files[3].get_input_stream.read)
             checkboxes['label'].should == 'Checkboxes'
@@ -349,18 +349,18 @@ context('Channel Sets', () => {
             url['label'].should == 'URL Field'
             url['settings']['url_scheme_placeholder'].should == '//'
             url['settings']['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
-            end
+            }
 
-            it 'exports a channel with a fluid field'
+            it('exports a channel with a fluid field'
             do
                 @importer.fluid_field
             download_channel_set(3)
 
             // Check to see if the file exists
-            @page.load
+            page.load()
             path = File.expand_path("../../system/user/cache/cset/news.zip")
             File.exist ? (path).should == true
-            no_php_js_errors
+            cy.hasNoErrors()
 
             expected_files = % w(
                 /custom_fields/a_date.date /
@@ -383,20 +383,20 @@ context('Channel Sets', () => {
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             found_files.sort.map( &: name) == expected_files.sort.should
-            end
+            }
 
             context 'with grid fields'
             do
-                it 'exports without a relationship column'
+                it('exports without a relationship column'
             do
                 import_channel_set 'grid-no-relationships'
 
             name = "board_games"
-            channel_id = @page.get_channel_id_from_name(name)
+            channel_id = page.get_channel_id_from_name(name)
             download_channel_set(channel_id)
 
             // Check to see if the file exists
@@ -413,18 +413,18 @@ context('Channel Sets', () => {
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             found_files.sort.map( &: name) == expected_files.sort.should
-            end
+            }
 
-            it 'exports with a relationship column'
+            it('exports with a relationship column'
             do
                 import_channel_set 'grid-with-relationship'
 
             name = "game_sessions"
-            channel_id = @page.get_channel_id_from_name(name)
+            channel_id = page.get_channel_id_from_name(name)
             download_channel_set(channel_id)
 
             // Check to see if the file exists
@@ -443,13 +443,13 @@ context('Channel Sets', () => {
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             found_files.sort.map( &: name) == expected_files.sort.should
-            end
+            }
 
-            it 'exports grid colums with settings'
+            it('exports grid colums with settings'
             do
                 channel_fields = ChannelFieldForm.new
             channel_fields.load
@@ -464,26 +464,26 @@ context('Channel Sets', () => {
             field_group_form.name.set 'Gridlocked'
             field_group_form.all('.field-inputs label').each do |field |
                 if field.text.include ? 'Zen'
-            field.find('input[type=checkbox]').click
+            field.find('input[type=checkbox]').click()
             break
-            end
-            end
-            field_group_form.submit[0].click
+            }
+            }
+            field_group_form.submit[0].click()
 
             // Create the "Big Grid" channel
             page = Channel.new
-            page.load
+            page.load()
             page.channel_title.set 'Big Grid'
             page.click_link 'Fields'
-            page.field_groups[0].click
-            page.field_groups[1].click
-            page.field_groups[2].click
+            page.field_groups[0].click()
+            page.field_groups[1].click()
+            page.field_groups[2].click()
             page.title_field_label.set '¯\_(ツ)_/¯'
             page.submit
 
-            @page.load
+            page.load()
             name = "big_grid"
-            channel_id = @page.get_channel_id_from_name(name)
+            channel_id = page.get_channel_id_from_name(name)
             download_channel_set(channel_id)
 
             // Check to see if the file exists
@@ -505,8 +505,8 @@ context('Channel Sets', () => {
             Zip::File.open(path) do |zipfile |
                     zipfile.each do |file |
                         found_files << file
-                    end
-                end
+                    }
+                }
 
             found_files.sort.map( &: name) == expected_files.sort.should
 
@@ -537,71 +537,71 @@ context('Channel Sets', () => {
             elsif compare[key.to_sym].is_a ? (FalseClass) then['n', '0', 0, false].should include value
             else
                 value.should == compare[key.to_sym]
-            end
-            end
-            end
-            end
-            end
-            end
-            end
+            }
+            }
+            }
+            }
+            }
+            }
+            }
 
             context 'when importing channel sets'
             do
-                it 'imports a channel set'
+                it('imports a channel set'
             do
                 import_channel_set 'simple'
 
             $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row |
                     channel_title_field_label = row['count']
                 channel_title_field_label.should == 1
-            end
-            end
+            }
+            }
 
-            it 'imports a 3.3.x channel set'
+            it('imports a 3.3.x channel set'
             do
                 import_channel_set 'simple-3.3'
 
             $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_title = 'Blog' AND title_field_label = 'Blog title'").each do |row |
                     channel_title_field_label = row['count']
                 channel_title_field_label.should == 1
-            end
-            end
+            }
+            }
 
-            it 'imports a channel set with 2 category groups'
+            it('imports a channel set with 2 category groups'
             do
                 import_channel_set 'two-cat-groups'
 
             $db.query("SELECT cat_group FROM exp_channels WHERE channel_title = 'Test'").each do |row |
                     channel_title_field_label = row['cat_group']
                 channel_title_field_label.should == '3|4'
-            end
-            end
+            }
+            }
 
-            it 'imports a channel set with duplicate names'
+            it('imports a channel set with duplicate names'
             do
                 import_channel_set 'simple-duplicate', method: 'issue_duplicate'
 
-            @page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
-            @page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
-            @page.find('input[name="ee:ChannelField[news_body][field_name]"]').set 'event_body'
-            @page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
-            @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
-            @page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
-            @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
-            @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
-            @page.submit
+            page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
+            page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
+            page.find('input[name="ee:ChannelField[news_body][field_name]"]').set 'event_body'
+            page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
+            page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
+            page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
+            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
+            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
+            page.submit
 
             check_success
-            end
+            }
 
             context 'v4 channel sets'
             do
-                it 'imports a channel with 2 field groups'
+                it('imports a channel with 2 field groups'
             do
                 import_channel_set 'channel-with-two-field-groups'
 
             check_success
-            channel_id = @page.get_channel_id_from_name('channel_with_two_field_groups')
+            channel_id = page.get_channel_id_from_name('channel_with_two_field_groups')
 
             fields_assigned_to_channel(channel_id, 0)
             field_groups_assigned_to_channel(channel_id, 2)
@@ -610,26 +610,26 @@ context('Channel Sets', () => {
 
             fields_assinged_to_group('FG One', ['checkboxes'])
             fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-            end
+            }
 
-            it 'imports a channel with fields but no field group'
+            it('imports a channel with fields but no field group'
             do
                 import_channel_set 'channel-with-fields'
 
             check_success
-            channel_id = @page.get_channel_id_from_name('channel_with_fields')
+            channel_id = page.get_channel_id_from_name('channel_with_fields')
 
             fields_assigned_to_channel(channel_id, 2)
             field_groups_assigned_to_channel(channel_id, 0)
             fields_created['checkboxes', 'electronic_mail_address']
-            end
+            }
 
-            it 'imports a channel with fields and field groups'
+            it('imports a channel with fields and field groups'
             do
                 import_channel_set 'channel-with-field-groups-and-fields'
 
             check_success
-            channel_id = @page.get_channel_id_from_name('channel_with_field_groups_and_fields')
+            channel_id = page.get_channel_id_from_name('channel_with_field_groups_and_fields')
 
             fields_assigned_to_channel(channel_id, 2)
             field_groups_assigned_to_channel(channel_id, 2)
@@ -638,14 +638,14 @@ context('Channel Sets', () => {
 
             fields_assinged_to_group('FG One', ['checkboxes'])
             fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-            end
+            }
 
-            it 'imports a channel with a field in two field groups'
+            it('imports a channel with a field in two field groups'
             do
                 import_channel_set 'channel-with-field-in-two-groups'
 
             check_success
-            channel_id = @page.get_channel_id_from_name('channel_with_field_in_two_groups')
+            channel_id = page.get_channel_id_from_name('channel_with_field_in_two_groups')
 
             fields_assigned_to_channel(channel_id, 0)
             field_groups_assigned_to_channel(channel_id, 3)
@@ -655,14 +655,14 @@ context('Channel Sets', () => {
             fields_assinged_to_group('FG One', ['checkboxes'])
             fields_assinged_to_group('FG Two', ['electronic_mail_address'])
             fields_assinged_to_group('FG Three', ['checkboxes', 'a_date'])
-            end
+            }
 
-            it 'imports a channel with a field already in an assigned field group'
+            it('imports a channel with a field already in an assigned field group'
             do
                 import_channel_set 'channel-with-field-in-a-group'
 
             check_success
-            channel_id = @page.get_channel_id_from_name('channel_with_field_in_a_group')
+            channel_id = page.get_channel_id_from_name('channel_with_field_in_a_group')
 
             fields_assigned_to_channel(channel_id, 1)
             field_groups_assigned_to_channel(channel_id, 2)
@@ -671,19 +671,19 @@ context('Channel Sets', () => {
 
             fields_assinged_to_group('FG One', ['checkboxes'])
             fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-            end
+            }
 
-            it 'imports a channel with a fluid field'
+            it('imports a channel with a fluid field'
             do
                 import_channel_set 'channel-with-fluid-field', method: 'issue_duplicate'
 
-            @page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '{base_path}/images/uploads'
-            @page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'
-            @page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
-            @page.submit
+            page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '{base_path}/images/uploads'
+            page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'
+            page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
+            page.submit
 
             check_success
-            channel_id = @page.get_channel_id_from_name('fluid_fields')
+            channel_id = page.get_channel_id_from_name('fluid_fields')
 
             fields_assigned_to_channel(channel_id, 2)
             field_groups_assigned_to_channel(channel_id, 0)
@@ -704,16 +704,16 @@ context('Channel Sets', () => {
                 'truth_or_dare',
                 'youtube_url',
             ]
-            end
-            end
+            }
+            }
 
-            it 'shows errors when the channel set cannot be imported'
+            it('shows errors when the channel set cannot be imported'
             do
                 import_channel_set('no-json') do
-                    @page.alert.text.should include 'Cannot Import Channel'
-            @page.alert.text.should include 'Missing channel_set.json file.'
-            end
-            end
+                    page.alert.text.should include 'Cannot Import Channel'
+            page.alert.text.should include 'Missing channel_set.json file.'
+            }
+            }
 
             context 'when importing Default statuses'
             do
@@ -731,27 +731,27 @@ context('Channel Sets', () => {
             $db.query('SELECT count(*) AS count FROM exp_statuses').each do |row |
                     number_of_default_statuses = row['count']
                 number_of_default_statuses.should == status_count
-            end
+            }
             $db.query("SELECT count(*) AS count FROM exp_statuses WHERE status = '#{status_name}'").each do |row |
                     number_of_new_statuses = row['count']
                 number_of_new_statuses.should == 1
-            end
-            end
+            }
+            }
 
-            it 'imports additional Default statuses'
+            it('imports additional Default statuses'
             do
                 import_default_statuses('default-statuses', 'Draft', 4)
-            end
+            }
 
-            it 'does not import duplicate statuses'
+            it('does not import duplicate statuses'
             do
                 import_default_statuses('default-statuses-duplicate', 'Featured', 3)
-            end
-            end
+            }
+            }
 
             context 'with custom fields'
             do
-                it 'imports a relationship field with all channels'
+                it('imports a relationship field with all channels'
             do
                 import_channel_set 'relationships-all-channels'
 
@@ -765,10 +765,10 @@ context('Channel Sets', () => {
             field_settings['order_field'].should == 'entry_date'
             field_settings['order_dir'].should == 'desc'
             field_settings['channels'].should == []
-            end
-            end
+            }
+            }
 
-            it 'imports a relationship field with a specified channel'
+            it('imports a relationship field with a specified channel'
             do
                 import_channel_set 'relationships-specified-channels'
 
@@ -782,10 +782,10 @@ context('Channel Sets', () => {
             field_settings['order_field'].should == 'entry_date'
             field_settings['order_dir'].should == 'desc'
             field_settings['channels'].should == { 'Event' => "4" }
-            end
-            end
+            }
+            }
 
-            it 'imports all other first-party custom fields'
+            it('imports all other first-party custom fields'
             do
                 import_channel_set 'custom-fields'
 
@@ -860,27 +860,27 @@ context('Channel Sets', () => {
             field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
             fields[row['field_name']]['field_settings'].each do |key, value |
                     field_settings[key].should == value
-                end
+                }
             else
                 row[key].should == assumed_value
-            end
-            end
-            end
-            end
-            end
-            end
+            }
+            }
+            }
+            }
+            }
+            }
 
             context 'with file fields'
             do
-                it 'imports with a specified directory'
+                it('imports with a specified directory'
             do
                 import_channel_set 'file-specified-directory', method: 'issue_duplicate'
 
-            @page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
-            @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '{base_path}/images/uploads'
-            @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
-            @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
-            @page.submit
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '{base_path}/images/uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
+            page.submit
 
             check_success
 
@@ -889,24 +889,24 @@ context('Channel Sets', () => {
                     upload_dir_id = row['id']
                 new_upload_directory_count = row['count']
             new_upload_directory_count.should == 1
-            end
+            }
 
             $db.query('SELECT field_settings FROM exp_channel_fields WHERE field_name = "blog_image"').each do |row |
                     settings = PHP.unserialize(Base64.decode64(row['field_settings']))
                 settings['allowed_directories'].to_i.should == upload_dir_id.to_i
-            end
-            end
+            }
+            }
 
-            it 'imports with no existing upload directories'
+            it('imports with no existing upload directories'
             do
                 $db.query('TRUNCATE TABLE exp_upload_prefs')
             import_channel_set 'simple'
-            end
-            end
+            }
+            }
 
             context 'with grid fields'
             do
-                it 'imports without a relationship column'
+                it('imports without a relationship column'
             do
                 import_channel_set 'grid-no-relationships'
 
@@ -914,25 +914,25 @@ context('Channel Sets', () => {
             $db.query("SELECT count(*) AS count FROM exp_channels WHERE channel_name = 'board_games' AND channel_title = 'Board Games'").each do |row |
                     number_of_channels = row['count']
                 number_of_channels.should == 1
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Board Games'").each do |row |
                     number_of_field_groups = row['count']
                 number_of_field_groups.should == 1
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'duration' AND field_label = 'Duration') OR (field_name = 'editions' AND field_label = 'Editions') OR (field_name = 'number_of_players' AND field_label = 'Number of Players')").each do |row |
                     number_of_fields = row['count']
                 number_of_fields.should == 3
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'edition_name' AND col_label = 'Edition Name') OR (col_name = 'edition_number' AND col_label = 'Edition Number')").each do |row |
                     number_of_columns = row['count']
                 number_of_columns.should == 2
-            end
-            end
+            }
+            }
 
-            it 'imports with a relationship column'
+            it('imports with a relationship column'
             do
                 import_channel_set 'grid-with-relationship'
 
@@ -940,25 +940,25 @@ context('Channel Sets', () => {
             $db.query("SELECT count(*) AS count FROM exp_channels WHERE (channel_name = 'board_games' AND channel_title = 'Board Games') OR (channel_name = 'game_sessions' AND channel_title = 'Game Sessions')").each do |row |
                     number_of_channels = row['count']
                 number_of_channels.should == 2
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Board Games' OR group_name = 'Game Sessions'").each do |row |
                     number_of_field_groups = row['count']
                 number_of_field_groups.should == 2
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'game_day' AND field_label = 'Game Day') OR (field_name = 'games_played' AND field_label = 'Games Played') OR (field_name = 'duration' AND field_label = 'Duration') OR (field_name = 'editions' AND field_label = 'Editions') OR (field_name = 'number_of_players' AND field_label = 'Number of Players')").each do |row |
                     number_of_fields = row['count']
                 number_of_fields.should == 5
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'edition_name' AND col_label = 'Edition Name') OR (col_name = 'edition_number' AND col_label = 'Edition Number') OR (col_name = 'game' AND col_label = 'Game') OR (col_name = 'number_of_plays' AND col_label = 'Number of Plays')").each do |row |
                     number_of_columns = row['count']
                 number_of_columns.should == 4
-            end
-            end
+            }
+            }
 
-            it 'imports a grid with all native fields'
+            it('imports a grid with all native fields'
             do
                 import_channel_set 'grid-with-everything'
 
@@ -966,23 +966,23 @@ context('Channel Sets', () => {
             $db.query("SELECT count(*) AS count FROM exp_channels WHERE (channel_name = 'big_grid' AND channel_title = 'Big Grid')").each do |row |
                     number_of_channels = row['count']
                 number_of_channels.should == 1
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name = 'Gridlocked'").each do |row |
                     number_of_field_groups = row['count']
                 number_of_field_groups.should == 1
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE (field_name = 'zen' AND field_label = 'Zen')").each do |row |
                     number_of_fields = row['count']
                 number_of_fields.should == 1
-            end
+            }
 
             $db.query("SELECT count(*) AS count FROM exp_grid_columns WHERE (col_name = 'checkboxes' AND col_label = 'Checkboxes') OR (col_name = 'date' AND col_label = 'Date') OR (col_name = 'email_address' AND col_label = 'Email Address') OR (col_name = 'file' AND col_label = 'File') OR (col_name = 'multi_select' AND col_label = 'Multi Select') OR (col_name = 'radio_buttons' AND col_label = 'Radio Buttons') OR (col_name = 'relationships' AND col_label = 'Relationships') OR (col_name = 'rich_text_editor' AND col_label = 'Rich Text Editor') OR (col_name = 'select_dropdown' AND col_label = 'Select Dropdown') OR (col_name = 'text_input' AND col_label = 'Text Input') OR (col_name = 'textarea' AND col_label = 'Textarea') OR (col_name = 'toggle' AND col_label = 'Toggle') OR (col_name = 'url' AND col_label = 'URL')").each do |row |
                     number_of_columns = row['count']
                 number_of_columns.should == 13
-            end
-            end
-            end
-            end
-            end
+            }
+            }
+            }
+            }
+            }

@@ -4,4 +4,4 @@ class MemberGroupsList < SitePrism::Section
   element :groups_table, 'table'
   elements :groups, 'form table tbody tr'
   element :no_results, 'tr.no-results'
-end
+}

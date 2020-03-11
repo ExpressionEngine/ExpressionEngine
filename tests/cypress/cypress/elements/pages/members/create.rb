@@ -12,5 +12,5 @@ module Member
     element :email, 'input[name=email]'
     element :password, 'input[name=password]'
     element :confirm_password, 'input[name=confirm_password]'
-  end
-end
+  }
+}

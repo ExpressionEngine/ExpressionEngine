@@ -8,8 +8,8 @@ class CommentSettings < ControlPanelPage
   element :comment_moderation_override, 'input[name=comment_moderation_override]', :visible => false
   element :comment_edit_time_limit, 'input[name=comment_edit_time_limit]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Comment Settings'
-  end
-end
+  }
+}

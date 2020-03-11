@@ -11,10 +11,10 @@ class CaptchaSettings < ControlPanelPage
   element :captcha_url, 'input[name=captcha_url]'
   element :captcha_path, 'input[name=captcha_path]'
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'CAPTCHA'
-    end
-  end
-end
+    }
+  }
+}

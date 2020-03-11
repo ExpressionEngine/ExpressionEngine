@@ -8,9 +8,9 @@ class SqlManager < ControlPanelPage
   element :op_select, 'select[name=table_action]'
   element :op_submit, '.tbl-bulk-act input[type=submit]'
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     click_link 'SQL Manager'
-  end
-end
+  }
+}

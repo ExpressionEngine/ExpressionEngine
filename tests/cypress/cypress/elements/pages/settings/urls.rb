@@ -12,8 +12,8 @@ class UrlsSettings < ControlPanelPage
   elements :use_category_name, 'input[name=use_category_name]'
   elements :url_title_separator, 'input[name=word_separator]'
 
-  def load
+  load
     settings_btn.click
     click_link 'URL and Path Settings'
-  end
-end
+  }
+}

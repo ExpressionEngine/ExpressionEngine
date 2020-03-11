@@ -58,7 +58,7 @@ context('Template Partials', () => {
     })
 
     it.skip('can create a new partial', function() {
-        // skip 'Cannot figure out how to populate a codemirror form element' do
+        // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
         page.get('create_new_button').click()
 

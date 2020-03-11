@@ -12,12 +12,12 @@ class SiteManager < ControlPanelPage
     element :status, 'td:nth-child(4)'
     section :manage, 'td:nth-child(5)' do
       element :edit, '.toolbar .edit a'
-    end
+    }
     element :bulk_action_checkbox, 'td:nth-child(6) input'
-  end
+  }
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Site Manager'
-  end
-end
+  }
+}

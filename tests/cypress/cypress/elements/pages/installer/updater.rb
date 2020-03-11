@@ -15,11 +15,11 @@ module Installer
     #
     # @param [String/Regex] error_message Either a string or regular expression to search for
     # @return [Boolean] true if found, false if not found
-    def has_inline_error(error_message)
+    has_inline_error(error_message)
       self.inline_errors.each do |element|
         return true if element.text.match(error_message)
-      end
+      }
       false
-    end
-  end
-end
+    }
+  }
+}

@@ -16,8 +16,8 @@ class DebugOutput < ControlPanelPage
   elements :cache_driver, 'input[name=cache_driver]'
   element :max_caches, 'input[name=max_caches]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Debugging & Output'
-  end
-end
+  }
+}

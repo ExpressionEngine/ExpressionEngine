@@ -13,5 +13,5 @@ module Profile
     element :password, 'input[name=password]'
     element :confirm_password, 'input[name=confirm_password]'
     element :current_password, 'input[name=verify_password]'
-  end
-end
+  }
+}

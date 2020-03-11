@@ -35,6 +35,11 @@ Cypress.Commands.add("login", (user) => {
     cy.get('input.btn').click()
 })
 
+Cypress.Commands.add("auth", (user) => {
+    cy.visit('admin.php');
+    cy.login(user);
+})
+
 Cypress.Commands.add("authVisit", (url, user) => {
     cy.visit('admin.php');
     cy.login(user);
@@ -123,7 +128,6 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
 
     cy.exec(command)
 })
-
 
 
 // -- This is a child command --

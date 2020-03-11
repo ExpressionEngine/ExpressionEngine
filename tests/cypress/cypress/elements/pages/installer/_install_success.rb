@@ -3,5 +3,5 @@ module Installer
     element :success_message, 'div.success h1'
     element :updater_msg, 'div.updater-msg'
     element :login_button, 'p.msg-choices a'
-  end
-end
+  }
+}

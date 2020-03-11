@@ -11,4 +11,4 @@ class BulkEdit < ControlPanelPage
   elements :field_options, '.app-modal--center .fluid-actions .sub-menu li a'
   element :field_options_filter, '.app-modal--center .fluid-actions .filter-search input'
   elements :fluid_fields, '.app-modal--center .fluid-item'
-end
+}

@@ -14,7 +14,7 @@ class GeneralSettings < ControlPanelPage
   element :include_seconds, 'input[name=include_seconds]', :visible => false
   element :include_seconds_toggle, 'a[data-toggle-for=include_seconds]'
 
-  def load
+  load
     settings_btn.click
-  end
-end
+  }
+}

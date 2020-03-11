@@ -5,8 +5,8 @@ class WordCensorship < ControlPanelPage
   element :censor_replacement, 'input[name=censor_replacement]'
   element :censored_words, 'textarea[name=censored_words]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Word Censoring'
-  end
-end
+  }
+}

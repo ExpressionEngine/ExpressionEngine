@@ -6,5 +6,5 @@ module Profile
     section :profile_form,
       Profile::ProfileForm,
       'form[action*="cp/members/profile"]'
-  end
-end
+  }
+}

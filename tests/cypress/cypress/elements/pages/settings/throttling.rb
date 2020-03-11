@@ -11,10 +11,10 @@ class ThrottlingSettings < ControlPanelPage
   element :banishment_url, 'input[name=banishment_url]'
   element :banishment_message, 'textarea[name=banishment_message]'
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'Access Throttling'
-    end
-  end
-end
+    }
+  }
+}

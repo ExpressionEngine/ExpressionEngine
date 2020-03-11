@@ -16,10 +16,10 @@ class MemberSettings < ControlPanelPage
   element :new_member_notification, 'input[name=new_member_notification]', :visible => false
   element :mbr_notification_emails, 'input[name=mbr_notification_emails]'
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'Members'
-    end
-  end
-end
+    }
+  }
+}

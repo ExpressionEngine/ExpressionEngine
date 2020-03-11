@@ -9,8 +9,8 @@ class BansMembers < MemberManagerPage
   element :ban_message, 'textarea[name=ban_message]'
   element :ban_destination, 'input[name=ban_destination]'
 
-  def load
+  load
     main_menu.members_btn.click
     click_link 'Ban Settings'
-  end
-end
+  }
+}

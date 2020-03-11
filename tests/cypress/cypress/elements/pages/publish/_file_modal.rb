@@ -4,4 +4,4 @@ class FileModal < SitePrism::Section
   elements :filters, '.filters > ul > li > a.has-sub'
   elements :view_filters, '.filters > ul > li:last-child ul a'
   elements :files, 'table tbody td'
-end
+}

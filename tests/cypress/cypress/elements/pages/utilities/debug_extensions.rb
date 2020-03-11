@@ -17,9 +17,9 @@ class DebugExtensions < ControlPanelPage
   element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     click_link 'Debug Extensions'
-  end
-end
+  }
+}

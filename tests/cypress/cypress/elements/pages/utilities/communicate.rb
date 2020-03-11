@@ -16,9 +16,9 @@ class Communicate < ControlPanelPage
   elements :member_groups, 'div[data-input-value="member_groups"] input'
   element :submit_button, 'div.form-btns.form-btns-top input[type="submit"]'
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     # click_link 'Communicate'
-  end
-end
+  }
+}

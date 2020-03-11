@@ -14,8 +14,8 @@ class EmailSettings < ControlPanelPage
   element :word_wrap, 'input[name=word_wrap]', :visible => false
   element :word_wrap_toggle, 'a[data-toggle-for=word_wrap]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Outgoing Email'
-  end
-end
+  }
+}

@@ -14,9 +14,9 @@ class ImportConverter < ControlPanelPage
   # XML Code page
   element :xml_code, 'textarea.template-edit'
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     click_link 'File Converter'
-  end
-end
+  }
+}

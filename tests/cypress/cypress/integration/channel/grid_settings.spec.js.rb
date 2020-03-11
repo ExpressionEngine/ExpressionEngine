@@ -15,45 +15,45 @@ context('Grid Field Settings', () => {
     })
 
 #
-# This tests the various form interactions with Grid to make
-# sure settings are saved and loaded properly, as well as form
-# validations fail and preserve existing data
+// This tests the various form interactions with Grid to make
+// sure settings are saved and loaded properly, as well as form
+// validations fail and preserve existing data
 #
-feature 'Grid Field Settings' do
+feature 'Grid Field Settings', () => {
 
-  # Before each test, take us to the Field Group settings page
-  # and start creating a new Grid field
-  before(:each) do
-    cp_session
-    @page = ChannelFieldForm.new
-    @page.load
-    no_php_js_errors
+  // Before each test, take us to the Field Group settings page
+  // and start creating a new Grid field
+  beforeEach(function() {
+    cy.auth();
+    page = ChannelFieldForm.new
+    page.load()
+    cy.hasNoErrors()
 
-    @page.field_label.set 'Test Grid'
+    page.field_label.set 'Test Grid'
 
-    @page.select_field_type 'Grid'
-  end
+    page.select_field_type 'Grid'
+  }
 
-  it 'shows the Grid field settings' do
-    @page.field_name.value.should eq 'test_grid'
-    @page.should have_text('Grid Fields')
-  end
+  it('shows the Grid field settings', () => {
+    page.field_name.value.should eq 'test_grid'
+    page.should have_text('Grid Fields')
+  }
 
-  it 'should autopopulate the column name' do
+  it('should autopopulate the column name', () => {
     column = GridSettings::column(1)
     column.label.set 'Test Column'
     column.name.value.should eq 'test_column'
 
-    @page.submit
-    no_php_js_errors
-    @page.load_edit_for_custom_field('Test Grid')
+    page.submit
+    cy.hasNoErrors()
+    page.load_edit_for_custom_field('Test Grid')
 
-    # Column label shouldn't update automatically on existing columns
+    // Column label shouldn't update automatically on existing columns
     column = GridSettings::column(1)
     column.label.set 'News column label'
     column.name.value.should eq 'test_column'
 
-    # Ensure column name generation works in new and cloned columns
+    // Ensure column name generation works in new and cloned columns
     GridSettings::add_column
     column2 = GridSettings::column(2)
     column2.label.set 'New column'
@@ -62,114 +62,114 @@ feature 'Grid Field Settings' do
     column2 = GridSettings::clone_column(1)
     column2.label.set 'New column 2'
     column2.name.value.should eq 'new_column_2'
-  end
+  }
 
-  it 'should validate column names and labels' do
-    # No column label
+  it('should validate column names and labels', () => {
+    // No column label
     column = GridSettings::column(1)
     column.name.set 'test_column'
-    no_php_js_errors
-    @page.submit
+    cy.hasNoErrors()
+    page.submit
     column = GridSettings::column(1)
     should_have_error_text(column.label, $required_error)
-    no_php_js_errors
+    cy.hasNoErrors()
 
-    # No column label and duplicate column label
+    // No column label and duplicate column label
     column = GridSettings::add_column
     column.label.set 'Test column'
     column.name.value.should eq 'test_column'
-    column.name.click
-    column.label.click # Blur, .trigger('blur') isn't working
-    @page.wait_for_error_message_count(2)
+    column.name.click()
+    column.label.click() // Blur, .trigger('blur') isn't working
+    page.wait_for_error_message_count(2)
     should_have_error_text(column.name, 'Column field names must be unique.')
 
-    # No column name, duplicate column label, and no column name
+    // No column name, duplicate column label, and no column name
     column = GridSettings::add_column
     column.label.set 'Test column no name'
     column.name.set ''
-    column.name.click
-    column.label.click
-    @page.wait_for_error_message_count(3)
+    column.name.click()
+    column.label.click()
+    page.wait_for_error_message_count(3)
     should_have_error_text(column.name, $required_error)
-  end
+  }
 
-  it 'should only duplicate columns once' do
+  it('should only duplicate columns once', () => {
     column1 = GridSettings::column(1)
     column1.name.set 'test_column'
     column2 = GridSettings::clone_column(1)
     column3 = GridSettings::clone_column(2)
     lambda { GridSettings::column(4) }.should raise_error(Capybara::ElementNotFound)
-  end
+  }
 
-  it 'should save column settings' do
+  it('should save column settings', () => {
     GridSettings::populate_grid_settings
-    no_php_js_errors
+    cy.hasNoErrors()
 
-    # Save!
-    @page.submit
-    no_php_js_errors
-    @page.load_edit_for_custom_field('Test Grid')
-    no_php_js_errors
+    // Save!
+    page.submit
+    cy.hasNoErrors()
+    page.load_edit_for_custom_field('Test Grid')
+    cy.hasNoErrors()
 
     grid_test_data = GridSettings::test_data
 
-    # Validate each column to make sure they retained data
+    // Validate each column to make sure they retained data
     grid_test_data.each_with_index do |column_data, index|
       column = GridSettings::column(index + 1)
       column.validate(column_data[1])
-    end
-  end
+    }
+  }
 
-  it 'should fail validation and retain data' do
+  it('should fail validation and retain data', () => {
     GridSettings::populate_grid_settings
 
-    # Sabbotage a column to make sure data is retained on validation error
+    // Sabbotage a column to make sure data is retained on validation error
     column = GridSettings::column(1)
     column.name.set ''
-    @page.submit
+    page.submit
     column = GridSettings::column(1)
     should_have_error_text(column.name, $required_error)
-    no_php_js_errors
+    cy.hasNoErrors()
 
-    # Put back the column name for validation
+    // Put back the column name for validation
     column = GridSettings::column(1)
     column.name.set 'date'
 
     grid_test_data = GridSettings::test_data
 
-    # Validate each column to make sure they retained data
+    // Validate each column to make sure they retained data
     grid_test_data.each_with_index do |column_data, index|
       column = GridSettings::column(index + 1)
       column.validate(column_data[1])
-    end
-  end
+    }
+  }
 
-  it 'should delete a column' do
+  it('should delete a column', () => {
     GridSettings::populate_grid_settings
 
-    @page.submit
-    no_php_js_errors
-    @page.load_edit_for_custom_field('Test Grid')
-    no_php_js_errors
+    page.submit
+    cy.hasNoErrors()
+    page.load_edit_for_custom_field('Test Grid')
+    cy.hasNoErrors()
 
-    # Delete a column, make sure it's gone
+    // Delete a column, make sure it's gone
     column = GridSettings::column(1)
     column.delete
-    no_php_js_errors
-    @page.submit
-    no_php_js_errors
-    @page.load_edit_for_custom_field('Test Grid')
-    no_php_js_errors
+    cy.hasNoErrors()
+    page.submit
+    cy.hasNoErrors()
+    page.load_edit_for_custom_field('Test Grid')
+    cy.hasNoErrors()
 
     grid_test_data = GridSettings::test_data
 
-    # Validate each column to make sure they retained data
+    // Validate each column to make sure they retained data
     grid_test_data.each_with_index do |column_data, index|
       if index == 0 then
         next
-      end
+      }
       column = GridSettings::column(index)
       column.validate(column_data[1])
-    end
-  end
-end
+    }
+  }
+}

@@ -28,7 +28,7 @@ context.skip('Statuses', () => {
         // Also, this table should not be sortable; since you can reorder
         // the statuses, having an option to sort them is confusing, you
         // don't know if sorting them changes the order in the DB or not
-        // @page.should have_no_sort_col
+        // page.should have_no_sort_col
     })
 
     // This test for some reason doesn't work in versions of jQuery UI that set
@@ -36,16 +36,16 @@ context.skip('Statuses', () => {
     // browser drivers don't work with Sortable very well
     //  it('should drag and drop statuses to reorder', function() {
     //    // Drag the drag handle to the third row
-    //    @page.statuses[0].find('td:first-child').drag_to @page.statuses[2]
+    //    page.statuses[0].find('td:first-child').drag_to page.statuses[2]
     //
     //    // Make our statuses array match what the table SHOULD be, and
     //    // check the table for it
     //    moved_status = @statuses.delete_at(0)
-    //    @page.status_names.map {|source| source.text}.should == @statuses.insert(2, moved_status)
+    //    page.status_names.map {|source| source.text}.should == @statuses.insert(2, moved_status)
     //
     //    // Reload the page and make sure it stuck
-    //    @page.load_view_for_status_group(1)
-    //    @page.status_names.map {|source| source.text}.should == @statuses
+    //    page.load_view_for_status_group(1)
+    //    page.status_names.map {|source| source.text}.should == @statuses
     //  })
 
     it('should delete a status', function() {

@@ -8,8 +8,8 @@ class TemplateSettings < ControlPanelPage
   element :save_tmpl_revisions_toggle, 'a[data-toggle-for=save_tmpl_revisions]'
   element :max_tmpl_revisions, 'input[name=max_tmpl_revisions]'
 
-  def load
+  load
     settings_btn.click
     click_link 'Template Settings'
-  end
-end
+  }
+}

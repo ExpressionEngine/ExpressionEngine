@@ -7,10 +7,10 @@ class HitTracking < ControlPanelPage
   element :enable_entry_view_tracking, 'input[name=enable_entry_view_tracking]', :visible => false
   element :dynamic_tracking_disabling, 'input[name=dynamic_tracking_disabling]'
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'Hit Tracking'
-    end
-  end
-end
+    }
+  }
+}

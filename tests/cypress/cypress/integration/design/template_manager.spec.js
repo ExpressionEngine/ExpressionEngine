@@ -226,11 +226,11 @@ context('Template Manager', () => {
     it('can export all templates', function() {
         cy.hasNoErrors()
             /*
-                url = @page.export_icon[:href]
+                url = page.export_icon[:href]
 
-                @page.execute_script("window.downloadCSVXHR = function(){ var url = '#{url}'; return getFile(url); }")
-                @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.s})(null); return xhr.responseText; }')
-                data = @page.evaluate_script('downloadCSVXHR()')
+                page.execute_script("window.downloadCSVXHR = function(){ var url = '#{url}'; return getFile(url); }")
+                page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.s})(null); return xhr.responseText; }')
+                data = page.evaluate_script('downloadCSVXHR()')
                 data.should start_with('PK')
                 */
     })

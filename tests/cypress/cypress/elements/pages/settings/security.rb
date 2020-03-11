@@ -36,10 +36,10 @@ class SecuritySettings < ControlPanelPage
   element :force_interstitial, 'input[name=force_redirect]', :visible => false
   element :force_interstitial_toggle, 'a[data-toggle-for=force_redirect]', :visible => false
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'Security & Privacy'
-    end
-  end
-end
+    }
+  }
+}

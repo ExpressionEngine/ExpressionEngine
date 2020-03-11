@@ -6,4 +6,4 @@ class QueryResults < ControlPanelPage
   elements :rows, 'div.box form table tbody tr'
   elements :first_column, 'table tr td:first-child'
 
-end
+}

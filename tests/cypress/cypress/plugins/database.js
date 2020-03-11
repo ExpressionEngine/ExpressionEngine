@@ -7,7 +7,7 @@ class Database {
         // create the connection to database
         this.path = __dirname + './../../support/sql/';
         config = Object.assign(config, { multipleStatements: true });
-        this.connection = mysql.createConnection(config);
+        this.connection = mysql.createPool(config);
     }
 
     readSQL(file) {
@@ -33,7 +33,7 @@ class Database {
             return self.load(file);
         }).then(function(result) {
             // console.log("DB loaded file " + file);
-            // self.connection.end();
+            //self.connection.end();
             return true;
         });
     }

@@ -23,9 +23,9 @@ class MemberImport < ControlPanelPage
   element :custom_field_1_name, 'input[name="m_field_name[0]"]'
   element :custom_field_2_name, 'input[name="m_field_name[1]"]'
 
-  def load
+  load
     self.open_dev_menu
     click_link 'Utilities'
     click_link 'Member Import'
-  end
-end
+  }
+}

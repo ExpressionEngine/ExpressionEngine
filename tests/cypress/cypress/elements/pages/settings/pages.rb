@@ -5,4 +5,4 @@ class PagesSettings < ControlPanelPage
   elements :default_channel, 'input[name="default_channel"]'
   elements :channel_default_template, '.field-inputs select'
 
-end
+}

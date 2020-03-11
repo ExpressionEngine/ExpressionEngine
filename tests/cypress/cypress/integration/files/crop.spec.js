@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
 import CategoryGroup from '../../elements/pages/channel/CategoryGroup';
-// @page = CropFile.new
+// page = CropFile.new
 // @return = FileManager.new
 const page = new CategoryGroup;
 const { _, $ } = Cypress
@@ -26,9 +26,9 @@ context('File Manager / Crop File', () => {
 
         cy.authVisit(page.url);
 
-        // @page = CropFile.new
+        // page = CropFile.new
         // @return = FileManager.new
-        // @file_name = @page.load
+        // @file_name = page.load
         cy.hasNoErrors()
 
         // Check that the heder data is intact
@@ -365,7 +365,7 @@ context('File Manager / Crop File', () => {
 
     it('shows an error if the file has no write permissions', function() {
         cy.exec(`chmod 444 ${uploadDirectory}*.{gif,jpg,png}`)
-            // @page.load
+            // page.load
         cy.hasNoErrors()
 
         page.hasAlert('error')
@@ -376,7 +376,7 @@ context('File Manager / Crop File', () => {
 
     it('shows an error if the file does not exist', function() {
         cy.exec(`rm ${uploadDirectory}/*.{gif,jpg,png}`)
-            // @page.load
+            // page.load
         cy.hasNoErrors()
 
         cy.contains("404")
@@ -387,7 +387,7 @@ context('File Manager / Crop File', () => {
 
     it('shows an error if the directory does not exist', function() {
         cy.task('filesystem:delete', uploadDirectory)
-            // @page.load
+            // page.load
         cy.hasNoErrors()
 
         cy.contains("404")

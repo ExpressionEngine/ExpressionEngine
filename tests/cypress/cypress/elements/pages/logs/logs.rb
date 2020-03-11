@@ -27,19 +27,19 @@ class Logs < ControlPanelPage
 
   attr_accessor :menu_item
 
-  def hide_filters
+  hide_filters
     find('div.filters a.open').click
-  end
+  }
 
-  def load
+  load
     # Close the deprecation notice alert if it is there.
     begin
       find('div.alert.standard a.close')
       click_link 'Developer Log'
     rescue
-    end
+    }
     open_dev_menu
     click_link 'Logs'
     click_link @menu_item, :href => /cp\/log/
-  end
-end
+  }
+}

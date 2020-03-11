@@ -128,4 +128,4 @@ class MemberGroupsEdit < SitePrism::Section
   element :can_access_sys_prefs_toggle, 'a[data-toggle-for=can_access_sys_prefs]', :visible => false
   element :can_access_security_settings, 'input[name="can_access_security_settings"]', :visible => false
   element :can_access_security_settings_toggle, 'a[data-toggle-for=can_access_security_settings]', :visible => false
-end
+}

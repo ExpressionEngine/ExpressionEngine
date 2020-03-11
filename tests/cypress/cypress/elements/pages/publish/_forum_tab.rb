@@ -6,7 +6,7 @@ class ForumTab < SitePrism::Section
   element :forum_topic_id, 'input[name="forum__forum_topic_id"]'
 
   # Install forum, create a board, category, and forum
-  def install_forum
+  install_forum
     visit '/admin.php?/cp/addons'
     find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
     find('ul.toolbar a[href*="cp/addons/settings/forum"]').click
@@ -25,5 +25,5 @@ class ForumTab < SitePrism::Section
     find('.tbl-action a[href*="cp/addons/settings/forum/create/forum/1"]').click
     find('input[name="forum_name"]').set 'Forum'
     all('.w-12 button[value="save_and_close"]')[0].click
-  end
-end
+  }
+}

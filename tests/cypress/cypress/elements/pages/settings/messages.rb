@@ -10,10 +10,10 @@ class MessagingSettings < ControlPanelPage
   element :prv_msg_attach_maxsize, 'input[name=prv_msg_attach_maxsize]'
   element :prv_msg_attach_total, 'input[name=prv_msg_attach_total]'
 
-  def load
+  load
     settings_btn.click
     within 'div.sidebar' do
       click_link 'Messages'
-    end
-  end
-end
+    }
+  }
+}

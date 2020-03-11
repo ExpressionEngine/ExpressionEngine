@@ -2,7 +2,7 @@ class FluidActionMenu < SitePrism::Section
   element :name, 'a.has-sub'
   element :filter, '.filter-search'
   elements :fields, '.sub-menu li'
-end
+}
 
 class FluidField < SitePrism::Section
   section :actions_menu, FluidActionMenu, '.fluid-actions .filters'
@@ -15,5 +15,5 @@ class FluidField < SitePrism::Section
     element :remove, '.fluid-remove'
     element :instructions, '.fluid-field .field-instruct'
     element :field, '.fluid-field .field-control'
-  end
-end
+  }
+}

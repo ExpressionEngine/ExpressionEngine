@@ -4,8 +4,8 @@ class MemberFields < ControlPanelPage
   element :member_fields_table, 'table'
   element :member_fields_create, 'fieldset.tbl-search a'
 
-  def load
+  load
     main_menu.members_btn.click
     click_link 'Member Fields'
-  end
-end
+  }
+}

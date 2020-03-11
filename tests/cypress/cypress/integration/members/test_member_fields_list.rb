@@ -1,15 +1,15 @@
 require './bootstrap.rb'
 
-feature 'Member Field List' do
+feature 'Member Field List', () => {
 
-  before(:each) do
-    cp_session
-    @page = MemberFields.new
-    @page.load
-    no_php_js_errors
-  end
+  beforeEach(function() {
+    cy.auth();
+    page = MemberFields.new
+    page.load()
+    cy.hasNoErrors()
+  }
 
-  it 'shows the Member Field List page' do
-    @page.all_there?.should == true
-  end
-end
+  it('shows the Member Field List page', () => {
+    page.all_there?.should == true
+  }
+}

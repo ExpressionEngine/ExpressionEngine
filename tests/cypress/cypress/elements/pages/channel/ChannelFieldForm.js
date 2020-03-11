@@ -74,7 +74,7 @@ class ChannelFieldForm extends ControlPanel {
         }
 
 
-        // end
+        // }
 
         // yield self
         // if block_given ?
