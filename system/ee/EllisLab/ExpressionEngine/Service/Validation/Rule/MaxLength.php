@@ -31,7 +31,7 @@ class MaxLength extends ValidationRule {
 			return FALSE;
 		}
 
-		return (ee_mb_strlen($value) < $length) ? true : false;
+		return (ee_mb_strlen($value) <= $length);
 
 	}
 
