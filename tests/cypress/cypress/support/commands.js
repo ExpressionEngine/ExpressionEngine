@@ -54,7 +54,7 @@ Cypress.Commands.add("hasNoErrors", () => {
 
     cy.contains('Line Number:').should('not.exist')
 
-    cy.get('section').contains('Errors Found').should('not.exist')
+    //cy.get('section').contains('Errors Found').should('not.exist')
 
     // Our custom PHP error handler
     cy.contains(', line').should('not.exist')

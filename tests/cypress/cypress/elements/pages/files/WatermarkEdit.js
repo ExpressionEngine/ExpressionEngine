@@ -1,6 +1,6 @@
 import FileManagerSection from '../_sections/FileManagerSection'
 
-class EditFile extends FileManagerSection {
+class WatermarkEdit extends FileManagerSection {
   constructor() {
       super()
       this.urlMatch = /files\/file\/edit/;
@@ -13,7 +13,7 @@ class EditFile extends FileManagerSection {
         'wm_padding': 'input[name=wm_padding]',
         'wm_hor_offset': 'input[name=wm_hor_offset]',
         'wm_vrt_offset': 'input[name=wm_vrt_offset]',
-      
+
         // Text options
         'wm_use_font': 'a.toggle-btn[data-toggle-for="wm_use_font"]',
         'wm_text': 'input[name=wm_text]',
@@ -23,7 +23,7 @@ class EditFile extends FileManagerSection {
         'wm_use_drop_shadow': 'a.toggle-btn[data-toggle-for="wm_use_drop_shadow"]',
         'wm_shadow_distance': 'input[name=wm_shadow_distance]',
         'wm_shadow_color': 'input[name=wm_shadow_color]',
-      
+
         // Image options
         'wm_image_path': 'input[name=wm_image_path]',
         'wm_opacity': 'input[name=wm_opacity]',
@@ -33,13 +33,13 @@ class EditFile extends FileManagerSection {
     }
     load() {
       cy.contains('Files').click()
-      cy.find('div.sidebar h2:nth-of-type(2)').contains('New').click()
+      cy.get('div.sidebar h2:nth-of-type(2)').contains('New').click()
     }
 
     load_edit_for_watermark(number) {
       cy.contains('Watermarks').click()
 
-      cy.find('tbody tr:nth-child('+number.to_s+') li.edit a').click()
+      cy.get('.wrap tbody tr:nth-child('+number.toString()+') li.edit a').click()
     }
 }
-export default EditFile;
+export default WatermarkEdit;
