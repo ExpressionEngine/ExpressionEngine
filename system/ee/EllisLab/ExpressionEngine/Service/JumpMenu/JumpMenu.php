@@ -585,6 +585,11 @@ class JumpMenu extends AbstractJumpMenu
 	 */
 	public function getItems()
 	{
+		if (empty(ee()->session) || ee()->session->getMember()===null)
+		{
+			return [];
+		}
+
 		$items = ee()->cache->file->get('jumpmenu/'.ee()->session->getMember()->getId());
 		if (empty($items))
 		{
