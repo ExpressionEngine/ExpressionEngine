@@ -797,7 +797,7 @@ class Markdown implements MarkdownInterface {
 		if ($matches[2] == '-' && preg_match('{^-(?: |$)}', $matches[1]))
 			return $matches[0];
 		
-		$level = $matches[2][0] == '=' ? 1 : 2;
+		$level = $matches[2]{0} == '=' ? 1 : 2;
 
 		# id attribute generation
 		$idAtt = $this->_generateIdFromHeaderValue($matches[1]);

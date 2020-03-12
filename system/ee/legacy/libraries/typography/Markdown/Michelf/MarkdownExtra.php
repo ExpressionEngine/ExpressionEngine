@@ -160,9 +160,9 @@ class MarkdownExtra extends \Michelf\Markdown {
 		$attributes = array();
 		$id = false;
 		foreach ($elements as $element) {
-			if ($element[0] == '.') {
+			if ($element{0} == '.') {
 				$classes[] = substr($element, 1);
-			} else if ($element[0] == '#') {
+			} else if ($element{0} == '#') {
 				if ($id === false) $id = substr($element, 1);
 			} else if (strpos($element, '=') > 0) {
 				$parts = explode('=', $element, 2);
