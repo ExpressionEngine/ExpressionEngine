@@ -190,19 +190,12 @@ class Cp {
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
 
-		// If the user is a super-admin, give them jump menu access.
-		if (ee()->session->userdata('group_id') == 1) {
-			// Prime the jump cache commands. This will load the native commands as well as any commands from
-			// add-ons. If an add-on's commands have been updated, the cache should expire in 60 seconds or so.
-			ee('CP/JumpMenu')->primeCache(true); // pass true to empty and refill the cache
+		ee()->javascript->set_global(array(
+			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
+			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+		));
 
-			ee()->javascript->set_global(array(
-				'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
-				'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
-			));
-
-			$js_scripts['file'][] = 'cp/jump_menu';
-		}
+		$js_scripts['file'][] = 'cp/jump_menu';
 
 		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
 			'name'		=> 'modal-default-confirm-remove',
