@@ -2000,7 +2000,7 @@ class Wizard extends CI_Controller {
 	 */
 	private function rename_installer()
 	{
-		if (TRUE || ! $this->canRenameAutomatically())
+		if (! $this->canRenameAutomatically())
 		{
 			return FALSE;
 		}
