@@ -1067,7 +1067,7 @@ class Uploads extends AbstractFilesController {
 			// This may not be an image, in which case
 			$imageDimensionsToWrite = is_array($image_dimensions)
 						? $image_dimensions['height'] . ' ' . $image_dimensions['width']
-						: '';
+						: ' ';
 
 			$file_data = array(
 				'upload_location_id'	=> $id,
