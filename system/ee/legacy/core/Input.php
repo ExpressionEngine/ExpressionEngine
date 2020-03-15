@@ -829,9 +829,8 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					$variableToUse = ${$global};
 					
-					global $variableToUse;
+					global ${$global};
 
 					$$global = NULL;
 
@@ -843,9 +842,8 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						$variableToUse = ${$key};
 						
-						global $variableToUse;
+						global ${$key};
 
 						$$key = NULL;
 
