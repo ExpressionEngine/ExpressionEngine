@@ -215,6 +215,7 @@ class Filemanager {
 	 */
 	function security_check($file_path, $prefs)
 	{
+
 		ee()->load->helper(array('file', 'xss'));
 		ee()->load->library('mime_type');
 
@@ -304,9 +305,18 @@ class Filemanager {
 	 */
 	function get_image_dimensions($file_path)
 	{
+
+		if( ! file_exists($file_path)) {
+
+			return FALSE;
+
+		}
+
+		// PHP7.4 does not come with GD JPEG processing by default
+		// So, we need to run this check.
 		if (function_exists('getimagesize'))
 		{
-			$imageSize = @getimagesize($file_path);
+			$imageSize = getimagesize($file_path);
 
 			if($imageSize && is_array($imageSize)) {
 
