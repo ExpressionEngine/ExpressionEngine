@@ -28,6 +28,8 @@ while [[ $# > 0 ]]
 	key="$1"
 
 	# Default PHP version
+	# PHP_VERSION="5.6.0"
+	#PHP_VERSION="7.2.11"
 	PHP_VERSION="7.4.1"
 
 	case $key in
