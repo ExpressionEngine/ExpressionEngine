@@ -1,5 +1,6 @@
+import ElementCollection from '../ElementCollection';
+
 const { _, $ } = Cypress
-const ElementCollection = require('../ElementCollection')
 
 class ControlPanel {
     constructor() {

@@ -30,6 +30,29 @@ class UploadEdit extends FileManagerSection {
       cy.get('div.sidebar .folder-list > li:nth-child('+number.toString()+')  li.edit a').click()
     }
 
+    create_manipulation() {
+
+      this.load_edit_for_dir(2)
+
+      this.get('grid_add_no_results').click()
+      this.name_for_row(1).type('some_name')
+      this.width_for_row(1).type('20')
+      this.height_for_row(1).type('30')
+
+      this.get('grid_add').click()
+      this.name_for_row(2).type('some_other_name')
+      this.resize_type_for_row(2).select('Crop (part of image)')
+      this.width_for_row(2).type('50')
+      this.height_for_row(2).type('40')
+
+      cy.hasNoErrors()
+
+      this.submit()
+      this.get('wrap').contains('Upload directory saved')
+
+      cy.hasNoErrors()
+    }
+
     // Dynamic getter for a specific Grid row
     grid_row(row) {
       // Plus three to skip over header, blank row and no results row

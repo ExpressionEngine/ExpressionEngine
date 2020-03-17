@@ -1,6 +1,6 @@
 const fs = require('fs');
 const fse = require('fs-extra');
-var glob = require("glob")
+const glob = require("glob")
 const del = require('del');
 const path = require('path');
 
@@ -35,6 +35,24 @@ class Filesystem {
         target = path.resolve(target);
         // console.log('FS Delete: ' + target);
         return del(target, { force: true });
+    }
+
+    count(target) {
+        target = path.resolve(target);
+        return glob.sync(target+'/*').length;
+    }
+
+    path(target) {
+        return path.resolve(target);
+    }
+
+    list({target, mask='/*'}) {
+        target = path.resolve(target);
+        return glob.sync(target+mask);
+    }
+
+    info(file) {
+        return fs.statSync(file);
     }
 }
 

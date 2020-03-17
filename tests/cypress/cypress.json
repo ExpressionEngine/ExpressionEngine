@@ -1,5 +1,5 @@
 {
-    "baseUrl": "http://private60.ee",
+    "baseUrl": "http://private60.ee/",
     "video": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,

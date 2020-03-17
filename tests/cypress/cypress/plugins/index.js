@@ -62,6 +62,30 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'filesystem:count': (target) => {
+            return fs.count(target);
+        }
+    })
+
+    on('task', {
+        'filesystem:path': (target) => {
+            return fs.path(target);
+        }
+    })
+
+    on('task', {
+        'filesystem:list': ({target, mask='/*'}) => {
+            return fs.list({target, mask});
+        }
+    })
+
+    on('task', {
+        'filesystem:info': (file) => {
+            return fs.info(file);
+        }
+    })
+
+    on('task', {
         'ee:config': ({ item, value, site_id }) => {
             if (!item) {
                 return;
