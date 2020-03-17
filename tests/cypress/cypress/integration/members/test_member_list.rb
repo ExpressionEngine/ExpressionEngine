@@ -21,7 +21,7 @@ feature 'Member List', () => {
 
     page.heading.text.should eq 'Search Results we found 1 results for "banned1"'
     page.keyword_search.value.should eq 'banned1'
-    page.should have_text 'banned1'
+    page.get('wrap').contains('banned1'
     page.should have(1).members
   }
 
@@ -31,7 +31,7 @@ feature 'Member List', () => {
 
     page.heading.text.should eq 'Search Results we found 0 results for "Bigfoot"'
     page.keyword_search.value.should eq 'Bigfoot'
-    page.should have_no_results
+    page.get('no_results').should('exist')
     page.should_not have_pagination
   }
 

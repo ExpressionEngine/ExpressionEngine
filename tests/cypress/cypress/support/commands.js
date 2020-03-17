@@ -120,7 +120,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
 
     let command = [
         `cd support/fixtures && php config.php ${item}`,
-        (value) ? ` '${value}'` : '',
+        (value) ? ` ${value}` : '',
         (site_id) ? ` --site-id ${site_id}` : ''
     ].join('');
 

@@ -48,14 +48,14 @@ feature 'Developer Log', () => {
     confirm page
 
     // Be sane and make sure it's there before we search for it
-    page.should have_text our_desc
+    page.get('wrap').contains(our_desc
 
     page.keyword_search.set "Rspec"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
     page.keyword_search.value.should eq "Rspec"
-    page.should have_text our_desc
+    page.get('wrap').contains(our_desc
     page.should have(1).items
   }
 
@@ -69,12 +69,12 @@ feature 'Developer Log', () => {
     confirm page
 
     // Be sane and make sure it's there before we search for it
-    page.should have_text our_phrase
+    page.get('wrap').contains(our_phrase
 
     page.keyword_search.set our_phrase
     page.keyword_search.send_keys(:enter)
 
-    page.should have_text our_phrase
+    page.get('wrap').contains(our_phrase
     page.should_not have_no_results
   }
 
@@ -92,11 +92,11 @@ feature 'Developer Log', () => {
 
     page.heading.text.should eq 'Search Results we found 0 results for "' + our_desc + '"'
     page.keyword_search.value.should eq our_desc
-    page.should have_text our_desc
+    page.get('wrap').contains(our_desc
     page.should have_date_filter
     page.should have_perpage_filter
 
-    page.should have_no_results
+    page.get('no_results').should('exist')
 
     page.should_not have_pagination
     page.should_not have_remove_all
@@ -208,7 +208,7 @@ feature 'Developer Log', () => {
     page.date_filter.text.should eq "date (Last 24 Hours)"
     page.heading.text.should eq 'Search Results we found 5 results for "Rspec"'
     page.keyword_search.value.should eq "Rspec"
-    page.should have_text our_desc
+    page.get('wrap').contains(our_desc
     page.should have(5).items
     page.should_not have_pagination
   }
@@ -234,7 +234,7 @@ feature 'Developer Log', () => {
     page.modal_submit_button.click() // Submits a form
 
     page.should have_alert
-    page.alert.text.should eq "Logs Deleted 1 log(s) deleted from Developer logs"
+    page.get('alert').text.should eq "Logs Deleted 1 log(s) deleted from Developer logs"
 
     page.should have_no_content our_desc
   }
@@ -255,9 +255,9 @@ feature 'Developer Log', () => {
     page.modal_submit_button.click() // Submits a form
 
     page.should have_alert
-    page.alert.text.should eq "Logs Deleted 250 log(s) deleted from Developer logs"
+    page.get('alert').text.should eq "Logs Deleted 250 log(s) deleted from Developer logs"
 
-    page.should have_no_results
+    page.get('no_results').should('exist')
     page.should_not have_pagination
   }
 

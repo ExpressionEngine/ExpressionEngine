@@ -4,9 +4,9 @@ require 'mail'
 feature 'Communicate', () => {
 
   def get_mail
-    page.alert.text.should include "The email was output to:"
-    page.alert.text.should include "protocol: dummy"
-    match = page.alert.text.match(/The email was output to: (?<file>\S*)\s/)
+    page.get('alert').text.should include "The email was output to:"
+    page.get('alert').text.should include "protocol: dummy"
+    match = page.get('alert').text.match(/The email was output to: (?<file>\S*)\s/)
     mail = Mail.read(match[:file])
     return mail
   }
@@ -20,8 +20,8 @@ feature 'Communicate', () => {
   }
 
   beforeEach(function() {
-    ee_config(item: 'mail_protocol', value: 'dummy')
-    ee_config(item: 'dummy_mail_path', value: @tmp_path)
+    eeConfig({item: 'mail_protocol', value: 'dummy')
+    eeConfig({item: 'dummy_mail_path', value: @tmp_path)
 
     cy.auth();
     page = Communicate.new
@@ -47,17 +47,17 @@ feature 'Communicate', () => {
   }
 
   after(function() {
-    ee_config(item: 'dummy_mail_path', value: '')
+    eeConfig({item: 'dummy_mail_path', value: '')
   }
 
   it "shows the Communicate page" do
     page.mailtype.value.should eq 'text'
-    page.wordwrap.checked?.should eq true
+    page.get('wordwrap').should('be.checked')
   }
 
   it "disables groups with no members" do
     page.member_groups.each do |group|
-      group.first(:xpath, ".//..").should have_text 'Guests' if group[:disabled]
+      group.first(:xpath, ".//..").contains('Guests' if group[:disabled]
     }
   }
 
@@ -67,19 +67,19 @@ feature 'Communicate', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.should have_text "Attention: Email not sent"
+    page.get('alert').contains("Attention: Email not sent"
 
     page.subject.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.subject.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.subject.first(:xpath, ".//..").should have_text 'field is required.'
+    page.subject.first(:xpath, ".//..").contains('field is required.'
 
     page.body.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.body.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.body.first(:xpath, ".//..").should have_text 'field is required.'
+    page.body.first(:xpath, ".//..").contains('field is required.'
 
     page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.from_email.first(:xpath, ".//..").should have_text 'field is required.'
+    page.from_email.first(:xpath, ".//..").contains('field is required.'
 
     page.submit_button[:value].should eq 'Errors Found'
   }
@@ -95,27 +95,27 @@ feature 'Communicate', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.should have_text "Attention: Email not sent"
+    page.get('alert').contains("Attention: Email not sent"
 
     page.from_email.value.should eq my_email
     page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.from_email.first(:xpath, ".//..").should have_text 'field must contain a valid email address.'
+    page.from_email.first(:xpath, ".//..").contains('field must contain a valid email address.'
 
     page.recipient.value.should eq my_email
     page.recipient.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.recipient.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.recipient.first(:xpath, ".//..").should have_text 'field must contain all valid email addresses.'
+    page.recipient.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
 
     page.cc.value.should eq my_email
     page.cc.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.cc.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.cc.first(:xpath, ".//..").should have_text 'field must contain all valid email addresses.'
+    page.cc.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
 
     page.bcc.value.should eq my_email
     page.bcc.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.bcc.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.bcc.first(:xpath, ".//..").should have_text 'field must contain all valid email addresses.'
+    page.bcc.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
   }
 
   it "denies multiple email addresses in from field" do
@@ -126,12 +126,12 @@ feature 'Communicate', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.should have_text 'Attention: Email not sent'
+    page.get('alert').contains('Attention: Email not sent'
 
     page.from_email.value.should eq my_email
     page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    page.from_email.first(:xpath, ".//..").should have_text 'field must contain a valid email address.'
+    page.from_email.first(:xpath, ".//..").contains('field must contain a valid email address.'
   }
 
   it "accepts multiple email addresses" do
@@ -180,7 +180,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -202,7 +202,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -226,7 +226,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -254,7 +254,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -279,7 +279,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -304,7 +304,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -328,7 +328,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Your email has been sent'
+//    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
 #
@@ -344,7 +344,7 @@ feature 'Communicate', () => {
 //    add_member(username: 'membertwo', email: 'ellislab.developers.membertwo@mailinator.com')
 //    page.load()
 #
-//    page.should have_text "Members (2)"
+//    page.get('wrap').contains("Members (2)"
 #
 //    my_subject = @test_subject + ' member group email'
 //    my_body = "This a test email sent from the communicate tool."
@@ -357,7 +357,7 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_success
-//    page.alert.should have_text 'Total number of emails sent: 2'
+//    page.get('alert').contains('Total number of emails sent: 2'
 #
 //    // This isn't ideal as there could be name conflicts but for now
 //    // it will have to do since email debug array is being reset with
@@ -376,13 +376,13 @@ feature 'Communicate', () => {
 #
 //  it "can send in batches" do
 //    (1..5).each do |n|
-//      add_member(username: 'member' + n.to_s, email: 'ellislab.developers.member' + n.to_s + '@mailinator.com')
+//      add_member(username: 'member' + n.toString(), email: 'ellislab.developers.member' + n.toString() + '@mailinator.com')
 //    }
-//    ee_config(item: 'email_batchmode', value: 'y')
-//    ee_config(item: 'email_batch_size', value: '4') // Must be less than the number of emails
+//    eeConfig({item: 'email_batchmode', value: 'y')
+//    eeConfig({item: 'email_batch_size', value: '4') // Must be less than the number of emails
 //    page.load()
 #
-//    page.should have_text "Members (5)"
+//    page.get('wrap').contains("Members (5)"
 #
 //    my_subject = @test_subject + ' batch member group email'
 //    my_body = "This a test email sent from the communicate tool."
@@ -395,11 +395,11 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_important
-//    page.alert.should have_text 'The email sending routine will begin in'
+//    page.get('alert').contains('The email sending routine will begin in'
 #
 //    // Manually "follow" the meta-refresh URL
 //    meta = page.first(:xpath, "//meta[@http-equiv='refresh']", visible: false)
-//    refresh_url = meta[:content].to_s.gsub('6; url=', '')
+//    refresh_url = meta[:content].toString().gsub('6; url=', '')
 //    visit(page.current_url.gsub(/index.*/, refresh_url))
 #
 //    // This isn't ideal as there could be name conflicts but for now
@@ -419,13 +419,13 @@ feature 'Communicate', () => {
 #
 //  it "can send attachments in batches" do
 //    (1..5).each do |n|
-//      add_member(username: 'member' + n.to_s, email: 'ellislab.developers.member' + n.to_s + '@mailinator.com')
+//      add_member(username: 'member' + n.toString(), email: 'ellislab.developers.member' + n.toString() + '@mailinator.com')
 //    }
-//    ee_config(item: 'email_batchmode', value: 'y')
-//    ee_config(item: 'email_batch_size', value: '4') // Must be less than the number of emails
+//    eeConfig({item: 'email_batchmode', value: 'y')
+//    eeConfig({item: 'email_batch_size', value: '4') // Must be less than the number of emails
 //    page.load()
 #
-//    page.should have_text "Members (5)"
+//    page.get('wrap').contains("Members (5)"
 #
 //    my_subject = @test_subject + ' batch member group email'
 //    my_body = "This a test email sent from the communicate tool."
@@ -439,11 +439,11 @@ feature 'Communicate', () => {
 #
 //    page.should have_alert
 //    page.should have_alert_important
-//    page.alert.should have_text 'The email sending routine will begin in'
+//    page.get('alert').contains('The email sending routine will begin in'
 #
 //    // Manually "follow" the meta-refresh URL
 //    meta = page.first(:xpath, "//meta[@http-equiv='refresh']", visible: false)
-//    refresh_url = meta[:content].to_s.gsub('6; url=', '')
+//    refresh_url = meta[:content].toString().gsub('6; url=', '')
 //    visit(page.current_url.gsub(/index.*/, refresh_url))
 #
 //    // This isn't ideal as there could be name conflicts but for now

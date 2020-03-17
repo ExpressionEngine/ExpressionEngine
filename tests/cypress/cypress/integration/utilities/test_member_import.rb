@@ -18,8 +18,8 @@ feature 'Member Import', () => {
   }
 
   it('shows the Member Import page', () => {
-    page.should have_text 'Member Import'
-    page.should have_text 'Member XML file'
+    page.get('wrap').contains('Member Import'
+    page.get('wrap').contains('Member XML file'
     page.should have_member_group
     page.should have_language
     page.should have_tz_country
@@ -68,8 +68,8 @@ feature 'Member Import', () => {
     // Confirm the import
     page.submit
 
-    page.should have_text 'Members Imported Successfully'
-    page.should have_text 'Total of 3 members imported.'
+    page.get('wrap').contains('Members Imported Successfully'
+    page.get('wrap').contains('Total of 3 members imported.'
   }
 
   it('should fail to import duplicate data', () => {
@@ -80,10 +80,10 @@ feature 'Member Import', () => {
     // Confirm the import
     page.submit
 
-    page.should have_text 'Confirm Import'
-    page.should have_text "The username you chose is not available (Username: 'admin' - within user record 'admin')"
-    page.should have_text "The email you submitted is not valid (Email: 'robertexample.com' - within user record 'robr')"
-    page.should have_text "Duplicate username: robr"
+    page.get('wrap').contains('Confirm Import'
+    page.get('wrap').contains("The username you chose is not available (Username: 'admin' - within user record 'admin')"
+    page.get('wrap').contains("The email you submitted is not valid (Email: 'robertexample.com' - within user record 'robr')"
+    page.get('wrap').contains("Duplicate username: robr"
   }
 
   it('should fail to import invalid XML', () => {
@@ -94,9 +94,9 @@ feature 'Member Import', () => {
     // Confirm the import
     page.submit
 
-    page.should have_text 'Confirm Import'
-    page.should have_text 'Unable to parse XML'
-    page.should have_text 'Check the XML file for any incorrect syntax.'
+    page.get('wrap').contains('Confirm Import'
+    page.get('wrap').contains('Unable to parse XML'
+    page.get('wrap').contains('Check the XML file for any incorrect syntax.'
   }
 
   it('should bypass custom field creation in some cases', () => {
@@ -106,7 +106,7 @@ feature 'Member Import', () => {
     page.member_group.choose_radio_option '5'
     page.submit
 
-    page.should have_text 'Confirm Import'
+    page.get('wrap').contains('Confirm Import'
     cy.hasNoErrors()
 
     // If our XML contains extra field but we elect not to bother:
@@ -116,7 +116,7 @@ feature 'Member Import', () => {
     page.auto_custom_field_toggle.click()
     page.submit
 
-    page.should have_text 'Confirm Import'
+    page.get('wrap').contains('Confirm Import'
   }
 
   it('should create custom fields', () => {
@@ -130,7 +130,7 @@ feature 'Member Import', () => {
     page.submit
 
     cy.hasNoErrors()
-    page.should have_text 'Map Custom Fields'
+    page.get('wrap').contains('Map Custom Fields'
     page.custom_field_1_name.value.should eq 'phone'
     page.custom_field_2_name.value.should eq 'address'
 
@@ -138,11 +138,11 @@ feature 'Member Import', () => {
     page.submit
 
     cy.hasNoErrors()
-    page.should have_text 'The following custom member fields were successfully added:'
-    page.should have_text 'phone address'
+    page.get('wrap').contains('The following custom member fields were successfully added:'
+    page.get('wrap').contains('phone address'
     page.submit
 
-    page.should have_text 'Members Imported Successfully'
-    page.should have_text 'Total of 3 members imported.'
+    page.get('wrap').contains('Members Imported Successfully'
+    page.get('wrap').contains('Total of 3 members imported.'
   }
 }

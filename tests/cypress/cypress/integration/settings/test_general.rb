@@ -11,11 +11,11 @@ feature 'General Settings', () => {
 
   afterEach(function() {
     // Reset is_system_on value in config
-    ee_config(item: 'is_system_on', value: 'y')
+    eeConfig({item: 'is_system_on', value: 'y')
   }
 
   it('shows the General Settings page', () => {
-    page.should have_text 'General Settings'
+    page.get('wrap').contains('General Settings'
     page.all_there?.should == true
   }
 
@@ -40,7 +40,7 @@ feature 'General Settings', () => {
 
       cy.hasNoErrors()
       should_have_form_errors(page)
-      page.should have_text 'Attention: Settings not saved'
+      page.get('wrap').contains('Attention: Settings not saved'
       should_have_error_text(page.site_name, @error_text)
       page.is_system_on.value.should == 'n'
       page.new_version_check.has_checked_radio('n').should == true
@@ -85,7 +85,7 @@ feature 'General Settings', () => {
 
       page.submit
       should_have_no_form_errors(page)
-      page.should have_text 'Preferences updated'
+      page.get('wrap').contains('Preferences updated'
     }
   }
 
@@ -127,7 +127,7 @@ feature 'General Settings', () => {
     // Make sure they stuck, also test Check Now button visibility
     cy.hasNoErrors()
     should_have_no_form_errors(page)
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.site_name.value.should == 'My sweet site'
     page.site_short_name.value.should == 'my_sweet_site'
     page.is_system_on.value.should == 'n'
@@ -148,8 +148,10 @@ feature 'General Settings', () => {
     // best handle actual version comparison because we need to edit
     // Core.php dynamically based on the actual latest version
     page.should have_no_alert_error
-    page.should have_no_text 'An error occurred'
-    page.should have_no_text 'Unable to determine if a newer version is available at this time.'
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( 'An error occurred'
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( 'Unable to determine if a newer version is available at this time.'
   }
 
 }

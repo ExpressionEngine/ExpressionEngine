@@ -46,14 +46,14 @@ feature 'Email Log', () => {
     cy.hasNoErrors()
 
     // Be sane and make sure it's there before we search for it
-    page.should have_text our_subject
+    page.get('wrap').contains(our_subject
 
     page.keyword_search.set "Rspec"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
     page.keyword_search.value.should eq "Rspec"
-    page.should have_text our_subject
+    page.get('wrap').contains(our_subject
     page.should have(1).items
   }
 
@@ -65,12 +65,12 @@ feature 'Email Log', () => {
 
     page.heading.text.should eq 'Search Results we found 0 results for "' + our_subject + '"'
     page.keyword_search.value.should eq our_subject
-    page.should have_text our_subject
+    page.get('wrap').contains(our_subject
     page.should have_username_filter
     page.should have_date_filter
     page.should have_perpage_filter
 
-    page.should have_no_results
+    page.get('no_results').should('exist')
 
     page.should_not have_pagination
     page.should_not have_remove_all
@@ -147,8 +147,8 @@ feature 'Email Log', () => {
     page.perpage_filter.has_select?('perpage', :selected => "150 results")
     page.should have(150).items
     page.should have_pagination
-    page.should have_text "johndoe"
-    page.should have_text "admin"
+    page.get('wrap').contains("johndoe"
+    page.get('wrap').contains("admin"
 
     // Now, combine the filters
     page.username_filter.click()
@@ -172,8 +172,8 @@ feature 'Email Log', () => {
     page.perpage_filter.text.should eq "show (150)"
     page.should have(150).items
     page.should have_pagination
-    page.should have_text "johndoe"
-    page.should have_text "admin"
+    page.get('wrap').contains("johndoe"
+    page.get('wrap').contains("admin"
 
     // Now, combine the filters
     page.keyword_search.set "johndoe"
@@ -204,7 +204,7 @@ feature 'Email Log', () => {
     page.modal_submit_button.click() // Submits a form
 
     page.should have_alert
-    page.alert.text.should eq "Logs Deleted 1 log(s) deleted from Email logs"
+    page.get('alert').text.should eq "Logs Deleted 1 log(s) deleted from Email logs"
 
     page.should have_no_content our_subject
   }
@@ -219,9 +219,9 @@ feature 'Email Log', () => {
     page.modal_submit_button.click() // Submits a form
 
     page.should have_alert
-    page.alert.text.should eq "Logs Deleted 165 log(s) deleted from Email logs"
+    page.get('alert').text.should eq "Logs Deleted 165 log(s) deleted from Email logs"
 
-    page.should have_no_results
+    page.get('no_results').should('exist')
     page.should_not have_pagination
   }
 

@@ -14,7 +14,7 @@ feature 'Throttling Log', () => {
   }
 
   before(:each, :enabled => false) do
-    ee_config(item: 'enable_throttling', value: 'n')
+    eeConfig({item: 'enable_throttling', value: 'n')
     page.load()
     cy.hasNoErrors()
 
@@ -28,7 +28,7 @@ feature 'Throttling Log', () => {
   }
 
   before(:each, :enabled => true) do
-    ee_config(item: 'enable_throttling', value: 'y')
+    eeConfig({item: 'enable_throttling', value: 'y')
     page.load()
     cy.hasNoErrors()
 
@@ -42,7 +42,7 @@ feature 'Throttling Log', () => {
 
   context 'when throttling is disabled', () => {
     it('shows the Turn Throttling On button', :enabled => false, :pregen => true do
-      page.should have_no_results
+      page.get('no_results').should('exist')
       page.should have_selector('a', :text => 'Turn Throttling On')
     }
   }
@@ -68,14 +68,14 @@ feature 'Throttling Log', () => {
       page.load()
 
       // Be sane and make sure it's there before we search for it
-      page.should have_text our_ip
+      page.get('wrap').contains(our_ip
 
       page.keyword_search.set "172.16.11"
       page.keyword_search.send_keys(:enter)
 
       page.heading.text.should eq 'Search Results we found 1 results for "172.16.11"'
       page.keyword_search.value.should eq "172.16.11"
-      page.should have_text our_ip
+      page.get('wrap').contains(our_ip
       page.should have(1).items
     }
 
@@ -87,10 +87,10 @@ feature 'Throttling Log', () => {
 
       page.heading.text.should eq 'Search Results we found 0 results for "' + our_ip + '"'
       page.keyword_search.value.should eq our_ip
-      page.should have_text our_ip
+      page.get('wrap').contains(our_ip
       page.should have_perpage_filter
 
-      page.should have_no_results
+      page.get('no_results').should('exist')
 
       page.should_not have_pagination
       page.should_not have_remove_all
@@ -139,7 +139,7 @@ feature 'Throttling Log', () => {
       page.perpage_filter.text.should eq "show (25)"
       page.heading.text.should eq 'Search Results we found 27 results for "172.16.11"'
       page.keyword_search.value.should eq "172.16.11"
-      page.should have_text our_ip
+      page.get('wrap').contains(our_ip
       page.should have(25).items
       page.should have_pagination
       page.should have(5).pages
@@ -170,9 +170,9 @@ feature 'Throttling Log', () => {
       page.modal_submit_button.click() // Submits a form
 
       page.should have_alert
-      page.alert.text.should eq "Logs Deleted 250 log(s) deleted from Throttling logs"
+      page.get('alert').text.should eq "Logs Deleted 250 log(s) deleted from Throttling logs"
 
-      page.should have_no_results
+      page.get('no_results').should('exist')
       page.should_not have_pagination
     }
 

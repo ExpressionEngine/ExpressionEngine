@@ -14,14 +14,14 @@ feature 'Access Throttling Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    page.enable_throttling.value.should == ee_config(item: 'enable_throttling')
-    page.banish_masked_ips.value.should == ee_config(item: 'banish_masked_ips')
-    page.lockout_time.value.should == ee_config(item: 'lockout_time')
-    page.max_page_loads.value.should == ee_config(item: 'max_page_loads')
-    page.time_interval.value.should == ee_config(item: 'time_interval')
-    page.banishment_type.has_checked_radio(ee_config(item: 'banishment_type')).should == true
-    page.banishment_url.value.should == ee_config(item: 'banishment_url')
-    page.banishment_message.value.should == ee_config(item: 'banishment_message')
+    page.enable_throttling.value.should == eeConfig({item: 'enable_throttling')
+    page.banish_masked_ips.value.should == eeConfig({item: 'banish_masked_ips')
+    page.lockout_time.value.should == eeConfig({item: 'lockout_time')
+    page.max_page_loads.value.should == eeConfig({item: 'max_page_loads')
+    page.time_interval.value.should == eeConfig({item: 'time_interval')
+    page.banishment_type.has_checked_radio(eeConfig({item: 'banishment_type')).should == true
+    page.banishment_url.value.should == eeConfig({item: 'banishment_url')
+    page.banishment_message.value.should == eeConfig({item: 'banishment_message')
   }
 
   it('should validate the form', () => {
@@ -32,7 +32,7 @@ feature 'Access Throttling Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
+    page.get('wrap').contains('Attention: Settings not saved'
     should_have_error_text(page.lockout_time, integer_error)
 
     // AJAX validation

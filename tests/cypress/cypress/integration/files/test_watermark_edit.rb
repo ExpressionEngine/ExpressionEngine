@@ -10,7 +10,7 @@ feature 'Watermark Create/Edit', () => {
   }
 
   it('shows the Watermark Create/Edit page', () => {
-    page.should have_text 'Create Watermark'
+    page.get('wrap').contains('Create Watermark'
   }
 
   it('should validate fields', () => {

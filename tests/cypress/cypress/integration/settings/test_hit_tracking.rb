@@ -33,14 +33,14 @@ feature 'Hit Tracking', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
+    page.get('wrap').contains('Attention: Settings not saved'
     should_have_error_text(page.dynamic_tracking_disabling, is_numeric_error)
   }
 
   it('saves settings on page load', () => {
-    enable_online_user_tracking = ee_config(item: 'enable_online_user_tracking')
-    enable_hit_tracking = ee_config(item: 'enable_hit_tracking')
-    enable_entry_view_tracking = ee_config(item: 'enable_entry_view_tracking')
+    enable_online_user_tracking = eeConfig({item: 'enable_online_user_tracking')
+    enable_hit_tracking = eeConfig({item: 'enable_hit_tracking')
+    enable_entry_view_tracking = eeConfig({item: 'enable_entry_view_tracking')
 
     page.enable_online_user_tracking_toggle.click()
     page.enable_hit_tracking_toggle.click()

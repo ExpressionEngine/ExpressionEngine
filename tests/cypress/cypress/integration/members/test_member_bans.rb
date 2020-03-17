@@ -13,13 +13,13 @@ feature 'Ban Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    page.banned_ips.value.should == ee_config(item: 'banned_ips')
-    page.banned_emails.value.should == ee_config(item: 'banned_emails')
-    page.banned_usernames.value.should == ee_config(item: 'banned_usernames')
-    page.banned_screen_names.value.should == ee_config(item: 'banned_screen_names')
-    page.ban_action_options.has_checked_radio(ee_config(item: 'ban_action')).should == true
-    page.ban_message.value.should == ee_config(item: 'ban_message')
-    page.ban_destination.value.should == ee_config(item: 'ban_destination')
+    page.banned_ips.value.should == eeConfig({item: 'banned_ips')
+    page.banned_emails.value.should == eeConfig({item: 'banned_emails')
+    page.banned_usernames.value.should == eeConfig({item: 'banned_usernames')
+    page.banned_screen_names.value.should == eeConfig({item: 'banned_screen_names')
+    page.ban_action_options.has_checked_radio(eeConfig({item: 'ban_action')).should == true
+    page.ban_message.value.should == eeConfig({item: 'ban_message')
+    page.ban_destination.value.should == eeConfig({item: 'ban_destination')
   }
 
   it('should reject XSS', () => {
@@ -64,7 +64,7 @@ feature 'Ban Settings', () => {
     page.ban_destination.set 'Dummy Destination'
     page.submit
 
-    page.should have_text 'Ban Settings updated'
+    page.get('wrap').contains('Ban Settings updated'
     // Ban settings adds a newline to queue admins for correct legible input
     page.banned_ips.value.should == "Dummy IPs\n"
     page.banned_emails.value.should == "Dummy Emails\n"

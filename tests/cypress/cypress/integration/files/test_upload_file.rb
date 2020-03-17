@@ -64,8 +64,8 @@ feature 'File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.text.should include "Cannot Upload File"
-    page.alert.text.should include "You did not select a file to upload."
+    page.get('alert').text.should include "Cannot Upload File"
+    page.get('alert').text.should include "You did not select a file to upload."
   }
 
   it('can upload a Markdown file', () => {
@@ -168,8 +168,8 @@ feature 'File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.text.should include "Cannot Upload File"
-    page.alert.text.should include "File not allowed."
+    page.get('alert').text.should include "Cannot Upload File"
+    page.get('alert').text.should include "File not allowed."
   }
 
   it('can upload a image when the directory is restricted to images', () => {
@@ -207,8 +207,8 @@ feature 'File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.text.should include "Cannot Upload File"
-    page.alert.text.should include "File not allowed."
+    page.get('alert').text.should include "Cannot Upload File"
+    page.get('alert').text.should include "File not allowed."
   }
 
   it('cannot upload a PHP script masquerading as an image', () => {
@@ -223,8 +223,8 @@ feature 'File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.text.should include "Cannot Upload File"
-    page.alert.text.should include "File not allowed."
+    page.get('alert').text.should include "Cannot Upload File"
+    page.get('alert').text.should include "File not allowed."
   }
 
   it('shows an error if the directory upload path has no write permissions', () => {
@@ -234,9 +234,9 @@ feature 'File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.alert.text.should include "Directory Not Writable"
-    page.alert.text.should include "Cannot write to the directory"
-    page.alert.text.should include "Check your file permissions on the server"
+    page.get('alert').text.should include "Directory Not Writable"
+    page.get('alert').text.should include "Cannot write to the directory"
+    page.get('alert').text.should include "Check your file permissions on the server"
     File.chmod(0777, @upload_dir)
   }
 
@@ -249,7 +249,7 @@ feature 'File Manager / Upload File', () => {
 
     // page.should have_alert
     // page.should have_alert_error
-    // page.alert.text.should include "Cannot find the directory"
+    // page.get('alert').text.should include "Cannot find the directory"
     File.rename(@upload_dir + '.rspec', @upload_dir)
   }
 

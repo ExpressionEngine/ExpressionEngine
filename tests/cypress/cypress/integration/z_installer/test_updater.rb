@@ -182,7 +182,7 @@ feature 'Updater', () => {
     File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
 
     // Attempt to work around potential asynchronicity
-    sleep 1
+    cy.wait(1000)
     page.load()
 
     // Wait a second and try loading the page again in case we're not seeing the
@@ -190,7 +190,7 @@ feature 'Updater', () => {
     attempts = 0
     header_step_1 = /ExpressionEngine to \d+\.\d+\.\d+/
     while page.header.text.match(header_step_1) == false && attempts < 5
-      sleep 1
+      cy.wait(1000)
       page.load()
       attempts += 1
     }
@@ -206,7 +206,7 @@ feature 'Updater', () => {
     // Sleep until ready
     while (page.has_updater_steps? && (page.updater_steps.text.include? 'Running'))
       cy.hasNoErrors()
-      sleep 1
+      cy.wait(1000)
     }
 
     page.header.text.should == 'Update Complete!'

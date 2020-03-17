@@ -14,7 +14,7 @@ feature 'Publish Page - Create', () => {
   }
 
   it('shows comment fields when comments are enabled by system and channel allows comments', () => {
-    ee_config(item: 'enable_comments', value: 'y')
+    eeConfig({item: 'enable_comments', value: 'y')
     page.load()(channel_id:1)
     page.tab_links[1].click()
     page.should have_css('input[name="comment_expiration_date"]')
@@ -23,7 +23,7 @@ feature 'Publish Page - Create', () => {
   }
 
   it('does not show comment fields when comments are disabled by system', () => {
-    ee_config(item: 'enable_comments', value: 'n')
+    eeConfig({item: 'enable_comments', value: 'n')
     page.load()(channel_id:1)
     page.tab_links[1].click()
     page.should_not have_css('input[name="comment_expiration_date"]')
@@ -32,7 +32,7 @@ feature 'Publish Page - Create', () => {
   }
 
   it('does not shows comment fields when comments are disabled by system and channel allows comments', () => {
-    ee_config(item: 'enable_comments', value: 'n')
+    eeConfig({item: 'enable_comments', value: 'n')
     page.load()(channel_id:2)
     page.tab_links[1].click()
     page.should_not have_css('input[name="comment_expiration_date"]')
@@ -175,14 +175,14 @@ feature 'Publish Page - Create', () => {
 
       case field_type
         when 'date'
-          field.find('input[type=text][rel=date-picker]').set (9 + skew).to_s + '/14/2017 2:56 PM'
+          field.find('input[type=text][rel=date-picker]').set (9 + skew).toString() + '/14/2017 2:56 PM'
           page.title.click() // Dismiss the date picker
         when 'checkboxes'
           field.all('input[type=checkbox]')[0 + skew].set true
         when 'email_address'
-          field.find('input').set 'rspec-' + skew.to_s + '@example.com'
+          field.find('input').set 'rspec-' + skew.toString() + '@example.com'
         when 'url'
-          field.find('input').set 'http://www.example.com/page/' + skew.to_s
+          field.find('input').set 'http://www.example.com/page/' + skew.toString()
         when 'file'
           field.find('a', text: 'Choose Existing').click()
           field.find('a', text: 'About').click()
@@ -209,12 +209,12 @@ feature 'Publish Page - Create', () => {
           field.find('div[data-dropdown-react]').click()
           if skew == 0 then choice = 'Corndog' }
           if skew == 1 then choice = 'Burrito' }
-          sleep 0.1
+          cy.wait(100)
           find('div[data-dropdown-react] .field-drop-choices label', text: choice).click()
         when 'grid'
           field.find('a[rel="add_row"]').click()
-          field.all('input')[0].set 'Lorem' + skew.to_s
-          field.all('input')[1].set 'ipsum' + skew.to_s
+          field.all('input')[0].set 'Lorem' + skew.toString()
+          field.all('input')[1].set 'ipsum' + skew.toString()
         when 'textarea'
           field.find('textarea').set Forgery(:lorem_ipsum).paragraphs(
             rand(1..(3 + skew)),
@@ -225,7 +225,7 @@ feature 'Publish Page - Create', () => {
         when 'toggle'
           field.find('.toggle-btn').click()
         when 'text'
-          field.find('input').set 'Lorem ipsum dolor sit amet' + skew.to_s
+          field.find('input').set 'Lorem ipsum dolor sit amet' + skew.toString()
       }
     }
 
@@ -235,13 +235,13 @@ feature 'Publish Page - Create', () => {
 
       case field_type
         when 'date'
-          field.find('input[type=text][rel=date-picker]').value.should eq (9 + skew).to_s + '/14/2017 2:56 PM'
+          field.find('input[type=text][rel=date-picker]').value.should eq (9 + skew).toString() + '/14/2017 2:56 PM'
         when 'checkboxes'
           field.all('input[type=checkbox]')[0 + skew].checked?.should == true
         when 'email_address'
-          field.find('input').value.should eq 'rspec-' + skew.to_s + '@example.com'
+          field.find('input').value.should eq 'rspec-' + skew.toString() + '@example.com'
         when 'url'
-          field.find('input').value.should eq 'http://www.example.com/page/' + skew.to_s
+          field.find('input').value.should eq 'http://www.example.com/page/' + skew.toString()
         when 'file'
           field.should have_content('staff_jane')
         when 'relationship'
@@ -258,14 +258,14 @@ feature 'Publish Page - Create', () => {
 
           field.find('div[data-dropdown-react]').should have_content(choice)
         when 'grid'
-          field.all('input')[0].value.should eq 'Lorem' + skew.to_s
-          field.all('input')[1].value.should eq 'ipsum' + skew.to_s
+          field.all('input')[0].value.should eq 'Lorem' + skew.toString()
+          field.all('input')[1].value.should eq 'ipsum' + skew.toString()
         when 'textarea'
           field.find('textarea').value.should have_content('Lorem ipsum')
         when 'toggle'
           field.find('.toggle-btn').click()
         when 'text'
-          field.find('input').value.should eq 'Lorem ipsum dolor sit amet' + skew.to_s
+          field.find('input').value.should eq 'Lorem ipsum dolor sit amet' + skew.toString()
       }
     }
 
@@ -278,7 +278,7 @@ feature 'Publish Page - Create', () => {
       }
 
       page.save.click()
-      page.alert.has_content?('Entry Created').should == true
+      page.get('alert').has_content?('Entry Created').should == true
 
       // Make sure the fields stuck around after save
       @available_fields.each_with_index do |field, index|
@@ -287,7 +287,7 @@ feature 'Publish Page - Create', () => {
       }
 
       page.save.click()
-      page.alert.has_content?('Entry Updated').should == true
+      page.get('alert').has_content?('Entry Updated').should == true
 
       @available_fields.each_with_index do |field, index|
         check_content(page.fluid_field.items[index])
@@ -314,7 +314,7 @@ feature 'Publish Page - Create', () => {
       }
 
       page.save.click()
-      page.alert.has_content?('Entry Created').should == true
+      page.get('alert').has_content?('Entry Created').should == true
 
       // Make sure the fields stuck around after save
       @available_fields.each_with_index do |field, index|
@@ -358,7 +358,7 @@ feature 'Publish Page - Create', () => {
       }
 
       page.save.click()
-      page.alert.has_content?('Entry Created').should == true
+      page.get('alert').has_content?('Entry Created').should == true
 
       page.fluid_field.items.length.should == @available_fields.length
 
@@ -367,7 +367,7 @@ feature 'Publish Page - Create', () => {
       }
 
       page.save.click()
-      page.alert.has_content?('Entry Updated').should == true
+      page.get('alert').has_content?('Entry Updated').should == true
 
       page.fluid_field.items.length.should == 0
     }

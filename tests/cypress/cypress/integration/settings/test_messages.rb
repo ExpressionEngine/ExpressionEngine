@@ -14,15 +14,15 @@ feature 'Messaging Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    prv_msg_auto_links = ee_config(item: 'prv_msg_auto_links')
+    prv_msg_auto_links = eeConfig({item: 'prv_msg_auto_links')
 
-    page.prv_msg_max_chars.value.should == ee_config(item: 'prv_msg_max_chars')
-    page.prv_msg_html_format.has_checked_radio(ee_config(item: 'prv_msg_html_format')).should == true
+    page.prv_msg_max_chars.value.should == eeConfig({item: 'prv_msg_max_chars')
+    page.prv_msg_html_format.has_checked_radio(eeConfig({item: 'prv_msg_html_format')).should == true
     page.prv_msg_auto_links.value.should == prv_msg_auto_links
-    page.prv_msg_upload_path.value.should == ee_config(item: 'prv_msg_upload_path')
-    page.prv_msg_max_attachments.value.should == ee_config(item: 'prv_msg_max_attachments')
-    page.prv_msg_attach_maxsize.value.should == ee_config(item: 'prv_msg_attach_maxsize')
-    page.prv_msg_attach_total.value.should == ee_config(item: 'prv_msg_attach_total')
+    page.prv_msg_upload_path.value.should == eeConfig({item: 'prv_msg_upload_path')
+    page.prv_msg_max_attachments.value.should == eeConfig({item: 'prv_msg_max_attachments')
+    page.prv_msg_attach_maxsize.value.should == eeConfig({item: 'prv_msg_attach_maxsize')
+    page.prv_msg_attach_total.value.should == eeConfig({item: 'prv_msg_attach_total')
   }
 
   it('should validate the form', () => {
@@ -31,8 +31,8 @@ feature 'Messaging Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
-    page.should have_text $integer_error
+    page.get('wrap').contains('Attention: Settings not saved'
+    page.get('wrap').contains($integer_error
 
     // AJAX validation
     page.load()
@@ -126,7 +126,7 @@ feature 'Messaging Settings', () => {
     page.prv_msg_attach_total.set '103'
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.prv_msg_max_chars.value.should == '100'
     page.prv_msg_html_format.has_checked_radio('none').should == true
     page.prv_msg_auto_links.value.should == 'n'

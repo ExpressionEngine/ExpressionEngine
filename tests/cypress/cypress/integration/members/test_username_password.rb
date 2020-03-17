@@ -39,6 +39,6 @@ feature 'Profile - Username and Password', () => {
     page.profile_form.submit
 
     cy.hasNoErrors()
-    page.should have_text 'Your password cannot be over 72 characters in length'
+    page.get('wrap').contains('Your password cannot be over 72 characters in length'
   }
 }

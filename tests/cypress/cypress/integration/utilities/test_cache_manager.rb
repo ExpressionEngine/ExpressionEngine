@@ -8,16 +8,17 @@ feature 'Cache Manager', () => {
   }
 
   it('shows the Cache Manager page', () => {
-    page.should have_text 'Cache Manager'
-    page.should have_text 'Caches to clear'
+    page.get('wrap').contains('Cache Manager'
+    page.get('wrap').contains('Caches to clear'
     page.should have_checked_field 'All Caches'
-    page.should have_no_text 'An error occurred'
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( 'An error occurred'
   }
 
   it('should successfully submit with one cache type selected', () => {
     CacheManager::button.click()
     cy.hasNoErrors()
 
-    page.should have_text 'Caches cleared'
+    page.get('wrap').contains('Caches cleared'
   }
 }

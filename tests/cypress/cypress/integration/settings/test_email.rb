@@ -16,18 +16,18 @@ feature 'Outgoing Email Settings', () => {
   context 'when validating with page loads', () => {
 
     it('should load current email settings into form fields', () => {
-      email_newline = ee_config(item: 'email_newline')
+      email_newline = eeConfig({item: 'email_newline')
 
-      page.webmaster_email.value.should == ee_config(item: 'webmaster_email')
-      page.webmaster_name.value.should == ee_config(item: 'webmaster_name')
-      page.email_charset.value.should == ee_config(item: 'email_charset')
-      page.mail_protocol.has_checked_radio(ee_config(item: 'mail_protocol')).should == true
+      page.webmaster_email.value.should == eeConfig({item: 'webmaster_email')
+      page.webmaster_name.value.should == eeConfig({item: 'webmaster_name')
+      page.email_charset.value.should == eeConfig({item: 'email_charset')
+      page.mail_protocol.has_checked_radio(eeConfig({item: 'mail_protocol')).should == true
       page.email_newline.has_checked_radio(email_newline.sub(/\n/, "\\n")).should == true
-      page.mail_format.has_checked_radio(ee_config(item: 'mail_format')).should == true
+      page.mail_format.has_checked_radio(eeConfig({item: 'mail_format')).should == true
 
       // SMTP fields are hidden unless SMTP is selected
 
-      word_wrap = ee_config(item: 'word_wrap')
+      word_wrap = eeConfig({item: 'word_wrap')
       page.word_wrap.value.should == word_wrap
     }
 
@@ -37,7 +37,7 @@ feature 'Outgoing Email Settings', () => {
 
       cy.hasNoErrors()
       should_have_form_errors(page)
-      page.should have_text 'Attention: Settings not saved'
+      page.get('wrap').contains('Attention: Settings not saved'
       should_have_error_text(page.smtp_server, server_required)
     }
 
@@ -54,7 +54,7 @@ feature 'Outgoing Email Settings', () => {
       page.word_wrap_toggle.click()
       page.submit
 
-      page.should have_text 'Preferences updated'
+      page.get('wrap').contains('Preferences updated'
       page.webmaster_email.value.should == 'test@test.com'
       page.webmaster_name.value.should == 'Trey Anastasio'
       page.email_charset.value.should == 'somecharset'

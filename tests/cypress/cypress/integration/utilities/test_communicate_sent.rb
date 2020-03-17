@@ -30,9 +30,9 @@ feature 'Communicate > Sent', () => {
     page.should have_phrase_search
     page.should have_search_submit_button
     page.should have_email_table
-    page.should have_no_results
-    page.should have_text 'No Sent emails found'
-    page.should have_text 'Create new Email'
+    page.get('no_results').should('exist')
+    page.get('wrap').contains('No Sent emails found'
+    page.get('wrap').contains('Create new Email'
     page.should_not have_pagination
   }
 
@@ -115,7 +115,7 @@ feature 'Communicate > Sent', () => {
     sent = []
 
     (1..25).each do |n|
-      sent.push(n.to_s)
+      sent.push(n.toString())
       page.generate_data(total_sent: n, count: 1)
     }
     load_page
@@ -132,7 +132,7 @@ feature 'Communicate > Sent', () => {
     sent = []
 
     (1..25).each do |n|
-      sent.push(n.to_s)
+      sent.push(n.toString())
       page.generate_data(total_sent: n, count: 1)
     }
     sent.reverse!
@@ -164,7 +164,7 @@ feature 'Communicate > Sent', () => {
     page.should_not have_no_results
     page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
-    page.should have_text data
+    page.get('wrap').contains(data
     page.should have(6).rows #+1 for the header
   }
 
@@ -289,7 +289,7 @@ feature 'Communicate > Sent', () => {
     page.heading.text.should eq 'Search Results we found 0 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
 
-    page.should have_no_results
+    page.get('no_results').should('exist')
   }
 
   it('maintains sort when searching', () => {
@@ -319,8 +319,8 @@ feature 'Communicate > Sent', () => {
     page.should_not have_no_results
     page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
-    page.should have_text data
-    page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.to_s}
+    page.get('wrap').contains(data
+    page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.toString()}
     page.should have(21).rows // +1 for the header
   }
 
@@ -395,7 +395,7 @@ feature 'Communicate > Sent', () => {
     page.should_not have_no_results
     page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
-    page.should have_text data
+    page.get('wrap').contains(data
     page.should_not have_text "Albatross"
   }
 
@@ -419,7 +419,7 @@ feature 'Communicate > Sent', () => {
     page.should_not have_no_results
     page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
-    page.should have_text data
+    page.get('wrap').contains(data
     page.should_not have_text "Albatross"
     page.find('th.highlight').text.should eq 'Total Sent'
     page.find('th.highlight').should have_css 'a.sort.asc'

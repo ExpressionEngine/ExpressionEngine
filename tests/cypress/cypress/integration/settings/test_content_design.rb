@@ -14,19 +14,19 @@ feature 'Content & Design Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    new_posts_clear_caches = ee_config(item: 'new_posts_clear_caches')
-    enable_sql_caching = ee_config(item: 'enable_sql_caching')
-    auto_assign_cat_parents = ee_config(item: 'auto_assign_cat_parents')
-    enable_emoticons = ee_config(item: 'enable_emoticons')
+    new_posts_clear_caches = eeConfig({item: 'new_posts_clear_caches')
+    enable_sql_caching = eeConfig({item: 'enable_sql_caching')
+    auto_assign_cat_parents = eeConfig({item: 'auto_assign_cat_parents')
+    enable_emoticons = eeConfig({item: 'enable_emoticons')
 
     page.new_posts_clear_caches.value.should == new_posts_clear_caches
     page.enable_sql_caching.value.should == enable_sql_caching
     page.auto_assign_cat_parents.value.should == auto_assign_cat_parents
-    page.image_resize_protocol.has_checked_radio(ee_config(item: 'image_resize_protocol')).should == true
-    page.image_library_path.value.should == ee_config(item: 'image_library_path')
-    page.thumbnail_suffix.value.should == ee_config(item: 'thumbnail_prefix')
+    page.image_resize_protocol.has_checked_radio(eeConfig({item: 'image_resize_protocol')).should == true
+    page.image_library_path.value.should == eeConfig({item: 'image_library_path')
+    page.thumbnail_suffix.value.should == eeConfig({item: 'thumbnail_prefix')
     page.enable_emoticons.value.should == enable_emoticons
-    page.emoticon_url.value.should == ee_config(item: 'emoticon_url')
+    page.emoticon_url.value.should == eeConfig({item: 'emoticon_url')
   }
 
   context 'when validating the form', () => {
@@ -91,10 +91,10 @@ feature 'Content & Design Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    new_posts_clear_caches = ee_config(item: 'new_posts_clear_caches')
-    enable_sql_caching = ee_config(item: 'enable_sql_caching')
-    auto_assign_cat_parents = ee_config(item: 'auto_assign_cat_parents')
-    enable_emoticons = ee_config(item: 'enable_emoticons')
+    new_posts_clear_caches = eeConfig({item: 'new_posts_clear_caches')
+    enable_sql_caching = eeConfig({item: 'enable_sql_caching')
+    auto_assign_cat_parents = eeConfig({item: 'auto_assign_cat_parents')
+    enable_emoticons = eeConfig({item: 'enable_emoticons')
 
     page.new_posts_clear_caches_toggle.click()
     page.enable_sql_caching_toggle.click()
@@ -107,7 +107,7 @@ feature 'Content & Design Settings', () => {
     #page.emoticon_url.set 'http://myemoticons/'
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.new_posts_clear_caches.value.should_not == new_posts_clear_caches
     page.enable_sql_caching.value.should_not == enable_sql_caching
     page.auto_assign_cat_parents.value.should_not == auto_assign_cat_parents

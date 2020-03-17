@@ -14,9 +14,9 @@ feature 'Comment Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    enable_comments = ee_config(item: 'enable_comments')
-    comment_word_censoring = ee_config(item: 'comment_word_censoring')
-    comment_moderation_override = ee_config(item: 'comment_moderation_override')
+    enable_comments = eeConfig({item: 'enable_comments')
+    comment_word_censoring = eeConfig({item: 'comment_word_censoring')
+    comment_moderation_override = eeConfig({item: 'comment_moderation_override')
 
     page.enable_comments.value.should == enable_comments
     page.comment_word_censoring.value.should == comment_word_censoring
@@ -33,8 +33,8 @@ feature 'Comment Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
-    page.should have_text comment_edit_time_error
+    page.get('wrap').contains('Attention: Settings not saved'
+    page.get('wrap').contains(comment_edit_time_error
 
     // AJAX validation
     page.load()
@@ -42,7 +42,7 @@ feature 'Comment Settings', () => {
     page.comment_edit_time_limit.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
-    page.should have_text comment_edit_time_error
+    page.get('wrap').contains(comment_edit_time_error
 
     page.comment_edit_time_limit.set '100'
     page.comment_edit_time_limit.trigger 'blur'
@@ -51,9 +51,9 @@ feature 'Comment Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    enable_comments = ee_config(item: 'enable_comments')
-    comment_word_censoring = ee_config(item: 'comment_word_censoring')
-    comment_moderation_override = ee_config(item: 'comment_moderation_override')
+    enable_comments = eeConfig({item: 'enable_comments')
+    comment_word_censoring = eeConfig({item: 'comment_word_censoring')
+    comment_moderation_override = eeConfig({item: 'comment_moderation_override')
 
     page.enable_comments_toggle.click()
     page.comment_word_censoring_toggle.click()
@@ -61,7 +61,7 @@ feature 'Comment Settings', () => {
     page.comment_edit_time_limit.set '300'
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.enable_comments.value.should_not == enable_comments
     page.comment_word_censoring.value.should_not == comment_word_censoring
     page.comment_moderation_override.value.should_not == comment_moderation_override

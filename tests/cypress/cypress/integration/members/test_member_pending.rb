@@ -22,7 +22,7 @@ feature 'Pending Member List', () => {
 
     page.heading.text.should eq 'Search Results we found 1 results for "pending1"'
     page.keyword_search.value.should eq 'pending1'
-    page.should have_text 'pending1'
+    page.get('wrap').contains('pending1'
     page.should have(1).members
   }
 
@@ -32,7 +32,7 @@ feature 'Pending Member List', () => {
 
     page.heading.text.should eq 'Search Results we found 0 results for "admin"'
     page.keyword_search.value.should eq 'admin'
-    page.should have_no_results
+    page.get('no_results').should('exist')
     page.should_not have_pagination
   }
 
@@ -63,7 +63,7 @@ feature 'Pending Member List', () => {
     cy.hasNoErrors()
 
     page.should have_alert
-    page.alert.text.should include "Member Declined"
-    page.alert.text.should include "The member "+member_name+" has been declined."
+    page.get('alert').text.should include "Member Declined"
+    page.get('alert').text.should include "The member "+member_name+" has been declined."
   }
 }

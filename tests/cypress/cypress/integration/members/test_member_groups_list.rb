@@ -17,14 +17,14 @@ feature 'Member Group List', () => {
   // Confirming phrase search
   it('searches by phrases', () => {
     // Be sane and make sure it's there before we search for it
-    page.should have_text 'Super Admin'
+    page.get('wrap').contains('Super Admin'
 
     page.keyword_search.set "Super Admin"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Super Admin"'
     page.keyword_search.value.should eq "Super Admin"
-    page.should have_text 'Super Admin'
+    page.get('wrap').contains('Super Admin'
     page.list.should have(1).groups
   }
 
@@ -35,9 +35,9 @@ feature 'Member Group List', () => {
 
     page.heading.text.should eq 'Search Results we found 0 results for "' + our_action + '"'
     page.keyword_search.value.should eq our_action
-    page.should have_text our_action
+    page.get('wrap').contains(our_action
 
-    page.list.should have_no_results
+    page.list.get('no_results').should('exist')
     page.should have_keyword_search
     page.should have_perpage_filter
 
@@ -258,14 +258,14 @@ feature 'Member Group List', () => {
       page.list.batch_actions.set 'remove'
       page.list.batch_submit.click()
 
-      sleep 1
+      cy.wait(1000)
 
       find('form[action$="cp/members/groups/delete"] input[type="submit"]').click()
 
       page.list.should have_groups_table
       page.list.should have_groups
       page.list.groups.size.should == 5
-      page.alert.text.should_not match(/[a-z]_[a-z]/)
+      page.get('alert').text.should_not match(/[a-z]_[a-z]/)
 
       $db.query('SELECT count(group_id) AS count FROM exp_member_groups WHERE group_id=6').each do |row|
         row['count'].should == 0

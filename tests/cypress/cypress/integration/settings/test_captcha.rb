@@ -16,17 +16,17 @@ feature 'CAPTCHA Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    require_captcha = ee_config(item: 'require_captcha')
-    captcha_font = ee_config(item: 'captcha_font')
-    captcha_rand = ee_config(item: 'captcha_rand')
-    captcha_require_members = ee_config(item: 'captcha_require_members')
+    require_captcha = eeConfig({item: 'require_captcha')
+    captcha_font = eeConfig({item: 'captcha_font')
+    captcha_rand = eeConfig({item: 'captcha_rand')
+    captcha_require_members = eeConfig({item: 'captcha_require_members')
 
     page.require_captcha.value.should == require_captcha
     page.captcha_font.value.should == captcha_font
     page.captcha_rand.value.should == captcha_rand
     page.captcha_require_members.value.should == captcha_require_members
-    page.captcha_url.value.should == ee_config(item: 'captcha_url')
-    page.captcha_path.value.should == ee_config(item: 'captcha_path')
+    page.captcha_url.value.should == eeConfig({item: 'captcha_url')
+    page.captcha_path.value.should == eeConfig({item: 'captcha_path')
   }
 
   it('should validate the form', () => {
@@ -35,7 +35,7 @@ feature 'CAPTCHA Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
+    page.get('wrap').contains('Attention: Settings not saved'
     should_have_error_text(page.captcha_path, $invalid_path)
 
     // AJAX validation
@@ -73,10 +73,10 @@ feature 'CAPTCHA Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    require_captcha = ee_config(item: 'require_captcha')
-    captcha_font = ee_config(item: 'captcha_font')
-    captcha_rand = ee_config(item: 'captcha_rand')
-    captcha_require_members = ee_config(item: 'captcha_require_members')
+    require_captcha = eeConfig({item: 'require_captcha')
+    captcha_font = eeConfig({item: 'captcha_font')
+    captcha_rand = eeConfig({item: 'captcha_rand')
+    captcha_require_members = eeConfig({item: 'captcha_require_members')
 
     page.require_captcha_toggle.click()
     page.captcha_font_toggle.click()
@@ -86,7 +86,7 @@ feature 'CAPTCHA Settings', () => {
     page.captcha_path.set @upload_path
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.require_captcha.value.should_not == require_captcha
     page.captcha_font.value.should_not == captcha_font
     page.captcha_rand.value.should_not == captcha_rand

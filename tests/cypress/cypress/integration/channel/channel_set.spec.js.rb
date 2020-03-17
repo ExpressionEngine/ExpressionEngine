@@ -61,8 +61,8 @@ context('Channel Sets', () => {
             def check_success
             cy.hasNoErrors()
             page.should have_alert_success
-            page.alert.text.should include 'Channel Imported'
-            page.alert.text.should include 'The channel was successfully imported.'
+            page.get('alert').text.should include 'Channel Imported'
+            page.get('alert').text.should include 'The channel was successfully imported.'
             page.all_there ? .should == true
             }
 
@@ -72,8 +72,8 @@ context('Channel Sets', () => {
             def check_issue_duplicate
             cy.hasNoErrors()
             page.should have_alert_error
-            page.alert.text.should include 'Import Creates Duplicates'
-            page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
+            page.get('alert').text.should include 'Import Creates Duplicates'
+            page.get('alert').text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
             }
 
             def field_groups_created(field_groups)
@@ -102,21 +102,21 @@ context('Channel Sets', () => {
                     field_ids.push row['field_id']
                 }
 
-            $db.query("SELECT count(*) AS count FROM exp_channel_field_groups_fields WHERE group_id = '" + group_id.to_s + "' AND field_id IN ('" + field_ids.join("','") + "')").each do |row |
+            $db.query("SELECT count(*) AS count FROM exp_channel_field_groups_fields WHERE group_id = '" + group_id.toString() + "' AND field_id IN ('" + field_ids.join("','") + "')").each do |row |
                     fields_count = row['count']
                 fields_count.should == fields.count
             }
             }
 
             def field_groups_assigned_to_channel(channel_id, count)
-            $db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = " + channel_id.to_s).each do |row |
+            $db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = " + channel_id.toString()).each do |row |
                     field_groups = row['count']
                 field_groups.should == count
             }
             }
 
             def fields_assigned_to_channel(channel_id, count)
-            $db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = " + channel_id.to_s).each do |row |
+            $db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = " + channel_id.toString()).each do |row |
                     fields = row['count']
                 fields.should == count
             }
@@ -521,7 +521,7 @@ context('Channel Sets', () => {
 
             grid['columns'].each do |column |
                     key = column['type'] + '_col'
-            compare = @importer.prepare_test_data(data[key.to_sym])
+            compare = @importer.prepare_test_data(data[key.toString()ym])
 
             column['type'].should == compare[: type][1]
             column['label'].should == compare[: label]
@@ -532,11 +532,11 @@ context('Channel Sets', () => {
             column['width'].should == compare[: width].to_i
 
             column['settings'].each do |key, value |
-                if compare.has_key ? key.to_sym then
-            if compare[key.to_sym].is_a ? (TrueClass) then['y', '1', 1, true].should include value
-            elsif compare[key.to_sym].is_a ? (FalseClass) then['n', '0', 0, false].should include value
+                if compare.has_key ? key.toString()ym then
+            if compare[key.toString()ym].is_a ? (TrueClass) then['y', '1', 1, true].should include value
+            elsif compare[key.toString()ym].is_a ? (FalseClass) then['n', '0', 0, false].should include value
             else
-                value.should == compare[key.to_sym]
+                value.should == compare[key.toString()ym]
             }
             }
             }
@@ -710,8 +710,8 @@ context('Channel Sets', () => {
             it('shows errors when the channel set cannot be imported'
             do
                 import_channel_set('no-json') do
-                    page.alert.text.should include 'Cannot Import Channel'
-            page.alert.text.should include 'Missing channel_set.json file.'
+                    page.get('alert').text.should include 'Cannot Import Channel'
+            page.get('alert').text.should include 'Missing channel_set.json file.'
             }
             }
 

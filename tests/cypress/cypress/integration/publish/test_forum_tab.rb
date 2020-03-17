@@ -138,7 +138,7 @@ feature 'Forum Tab', () => {
     page.submit_buttons[2].click()
 
     page.all_there?.should == false
-    page.alert.has_content?("The entry #{title} Edited has been updated.").should == true
+    page.get('alert').has_content?("The entry #{title} Edited has been updated.").should == true
   }
 
   def create_entry
@@ -153,6 +153,6 @@ feature 'Forum Tab', () => {
     page.submit_buttons[2].click()
 
     page.all_there?.should == false
-    page.alert.has_content?("The entry #{title} has been created.").should == true
+    page.get('alert').has_content?("The entry #{title} has been created.").should == true
   }
 }

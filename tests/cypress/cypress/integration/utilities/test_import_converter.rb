@@ -21,8 +21,8 @@ feature 'Import File Converter', () => {
   }
 
   it('shows the Import File Converter page', () => {
-    page.should have_text 'Import File Converter'
-    page.should have_text 'Member file'
+    page.get('wrap').contains('Import File Converter'
+    page.get('wrap').contains('Member file'
     page.should have_delimiter
     page.should_not have_delimiter_special
     page.should have_enclosing_char
@@ -45,7 +45,7 @@ feature 'Import File Converter', () => {
 
     // Avoid triggering another request so quickly in succession,
     // seems to be causing some intermittent errors
-    sleep 1
+    cy.wait(1000)
     page.delimiter_special.trigger 'blur'
 
     page.wait_for_error_message_count(1)
@@ -75,7 +75,7 @@ feature 'Import File Converter', () => {
     // Should submit successfully now
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @assign_fields_title
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
 
     #########################
@@ -85,28 +85,28 @@ feature 'Import File Converter', () => {
     // Don't upload a file
     page.load()
     page.submit
-    page.should have_text @field_required
+    page.get('wrap').contains(@field_required
     cy.hasNoErrors()
 
     // Selected wrong delimiter for file
     page.load()
     page.attach_file('member_file', @tab_file)
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.load()
     page.attach_file('member_file', @tab_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @assign_fields_title
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
 
     // "Other" selected and no custom delimiter entered
     page.load()
     page.find('input[value=other]').click()
     page.submit
-    page.should have_text custom_delimit_required
+    page.get('wrap').contains(custom_delimit_required
     cy.hasNoErrors()
 
     // Test required file and custom delimiter standard validation
@@ -116,8 +116,8 @@ feature 'Import File Converter', () => {
     page.submit
     cy.hasNoErrors()
 
-    page.should have_text 'Attention: File not converted'
-    page.should have_text custom_delimit_validation
+    page.get('wrap').contains('Attention: File not converted'
+    page.get('wrap').contains(custom_delimit_validation
     should_have_form_errors(page)
     cy.hasNoErrors()
   }
@@ -126,27 +126,28 @@ feature 'Import File Converter', () => {
     // Tab file should only work with Tab selected
     page.attach_file('member_file', @tab_file)
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @tab_file)
     page.find('input[value=pipe]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @tab_file)
     page.find('input[value=other]').click()
     page.delimiter_special.set '*'
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @tab_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_no_text @min_field_error
-    page.should have_text @assign_fields_title
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( @min_field_error
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
 
     // Comma file should only work with Comma selected
@@ -154,27 +155,28 @@ feature 'Import File Converter', () => {
     page.attach_file('member_file', @comma_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @comma_file)
     page.find('input[value=pipe]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @comma_file)
     page.find('input[value=other]').click()
     page.delimiter_special.set '*'
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @comma_file)
     page.find('input[value=comma]').click()
     page.submit
-    page.should have_no_text @min_field_error
-    page.should have_text @assign_fields_title
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( @min_field_error
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
 
     // Pipe file should only work with Pipe selected
@@ -182,27 +184,28 @@ feature 'Import File Converter', () => {
     page.attach_file('member_file', @pipe_file)
     page.find('input[value=comma]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @pipe_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @pipe_file)
     page.find('input[value=other]').click()
     page.delimiter_special.set '*'
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @pipe_file)
     page.find('input[value=pipe]').click()
     page.submit
-    page.should have_no_text @min_field_error
-    page.should have_text @assign_fields_title
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( @min_field_error
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
 
     // Special delimiter file should only work with Other selected
@@ -210,27 +213,28 @@ feature 'Import File Converter', () => {
     page.attach_file('member_file', @other_file)
     page.find('input[value=comma]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @other_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @other_file)
     page.find('input[value=pipe]').click()
     page.submit
-    page.should have_text @min_field_error
+    page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
 
     page.attach_file('member_file', @other_file)
     page.find('input[value=other]').click()
     page.delimiter_special.set '*'
     page.submit
-    page.should have_no_text @min_field_error
-    page.should have_text @assign_fields_title
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( @min_field_error
+    page.get('wrap').contains(@assign_fields_title
     cy.hasNoErrors()
   }
 
@@ -245,49 +249,54 @@ feature 'Import File Converter', () => {
     page.attach_file('member_file', @tab_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.should have_text @assign_fields_title
-    page.should have_text 'member1'
-    page.should have_text 'Member1'
-    page.should have_text 'member1@fake.com'
+    page.get('wrap').contains(@assign_fields_title
+    page.get('wrap').contains('member1'
+    page.get('wrap').contains('Member1'
+    page.get('wrap').contains('member1@fake.com'
     cy.hasNoErrors()
 
     page.submit
-    page.should have_text form_error
-    page.should have_text username_error
-    page.should have_text screenname_error
-    page.should have_text email_error
+    page.get('wrap').contains(form_error
+    page.get('wrap').contains(username_error
+    page.get('wrap').contains(screenname_error
+    page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
     page.field1.select 'username'
     page.submit
-    page.should have_text form_error
-    page.should have_no_text username_error
-    page.should have_text screenname_error
-    page.should have_text email_error
+    page.get('wrap').contains(form_error
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( username_error
+    page.get('wrap').contains(screenname_error
+    page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
     page.field2.select 'username'
     page.submit
-    page.should have_text form_error
-    page.should have_no_text username_error
-    page.should have_text duplicate_error
-    page.should have_text screenname_error
-    page.should have_text email_error
+    page.get('wrap').contains(form_error
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( username_error
+    page.get('wrap').contains(duplicate_error
+    page.get('wrap').contains(screenname_error
+    page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
     page.field2.select 'screen_name'
     page.field3.select 'password'
     page.submit
-    page.should have_text form_error
-    page.should have_no_text username_error
-    page.should have_no_text duplicate_error
-    page.should have_no_text screenname_error
-    page.should have_text email_error
+    page.get('wrap').contains(form_error
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( username_error
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( duplicate_error
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( screenname_error
+    page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
     page.field4.select 'email'
     page.submit
-    page.should have_text 'Confirm Assignments'
+    page.get('wrap').contains('Confirm Assignments'
     cy.hasNoErrors()
   }
 
@@ -300,12 +309,12 @@ feature 'Import File Converter', () => {
     page.field3.select 'password'
     page.field4.select 'email'
     page.submit
-    page.should have_text 'Confirm Assignments'
+    page.get('wrap').contains('Confirm Assignments'
     page.submit
     cy.hasNoErrors()
 
-    page.should have_text 'XML Code'
-    page.xml_code.should have_text capybaraify_string('<members>
+    page.get('wrap').contains('XML Code'
+    page.xml_code.contains(capybaraify_string('<members>
     <member>
         <username>member1</username>
         <screen_name>Member1</screen_name>
@@ -342,12 +351,12 @@ feature 'Import File Converter', () => {
     page.field4.select 'email'
     page.find('input[value=n]').click()
     page.submit
-    page.should have_text 'Confirm Assignments'
+    page.get('wrap').contains('Confirm Assignments'
     page.submit
     cy.hasNoErrors()
 
-    page.should have_text 'XML Code'
-    page.xml_code.should have_text capybaraify_string('<members>
+    page.get('wrap').contains('XML Code'
+    page.xml_code.contains(capybaraify_string('<members>
     <member>
         <username>member1</username>
         <screen_name>Member1</screen_name>

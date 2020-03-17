@@ -7,7 +7,8 @@ feature 'Pages Settings', () => {
 
     page = PagesSettings.new
     page.settings_btn.click()
-    page.should have_no_text 'Pages Settings'
+    page.get('wrap').invoke('text').then((text) => {
+			expect(text).not.contains( 'Pages Settings'
 
     // Install Pages
     addon_manager = AddonManager.new
@@ -47,7 +48,7 @@ feature 'Pages Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.homepage_display.has_checked_radio('nested').should == true
     page.default_channel.has_checked_radio('1').should == true
     page.channel_default_template[0].value.should == '2'

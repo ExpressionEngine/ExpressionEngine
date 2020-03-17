@@ -12,8 +12,8 @@ feature 'Search and Replace', () => {
   }
 
   it('shows the Search and Replace page', () => {
-    page.should have_text 'Data Search and Replace'
-    page.should have_text 'Advanced users only.'
+    page.get('wrap').contains('Data Search and Replace'
+    page.get('wrap').contains('Advanced users only.'
     page.all_there?.should == true
   }
 
@@ -74,14 +74,14 @@ feature 'Search and Replace', () => {
 
     cy.hasNoErrors()
 
-    page.should have_text 'Action was a success'
-    page.should have_text 'Number of database records in which a replacement occurred: 0'
+    page.get('wrap').contains('Action was a success'
+    page.get('wrap').contains('Number of database records in which a replacement occurred: 0'
   }
 
   it('should fail validation without AJAX too', () => {
     page.submit
 
-    page.should have_text 'Attention: Search and replace not run'
+    page.get('wrap').contains('Attention: Search and replace not run'
     should_have_error_text(page.search_term, @field_required)
     should_have_error_text(page.replace_where, @field_required)
     should_have_error_text(page.password_auth, @field_required)
@@ -110,8 +110,8 @@ feature 'Search and Replace', () => {
 
     cy.hasNoErrors()
 
-    page.should have_text 'Action was a success'
-    page.should have_text 'Number of database records in which a replacement occurred: 0'
+    page.get('wrap').contains('Action was a success'
+    page.get('wrap').contains('Number of database records in which a replacement occurred: 0'
   }
 
   it('should search and replace data', () => {
@@ -125,8 +125,8 @@ feature 'Search and Replace', () => {
 
     cy.hasNoErrors()
 
-    page.should have_text 'Action was a success'
-    page.should have_text 'Number of database records in which a replacement occurred: 1'
+    page.get('wrap').contains('Action was a success'
+    page.get('wrap').contains('Number of database records in which a replacement occurred: 1'
   }
 
 }

@@ -14,40 +14,40 @@ feature 'Security & Privacy Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    cookie_httponly = ee_config(item: 'cookie_httponly')
-    cookie_secure = ee_config(item: 'cookie_secure')
-    allow_username_change = ee_config(item: 'allow_username_change')
-    allow_multi_logins = ee_config(item: 'allow_multi_logins')
-    require_ip_for_login = ee_config(item: 'require_ip_for_login')
-    password_lockout = ee_config(item: 'password_lockout')
-    require_secure_passwords = ee_config(item: 'require_secure_passwords')
-    allow_dictionary_pw = ee_config(item: 'allow_dictionary_pw')
-    deny_duplicate_data = ee_config(item: 'deny_duplicate_data')
-    require_ip_for_posting = ee_config(item: 'require_ip_for_posting')
-    xss_clean_uploads = ee_config(item: 'xss_clean_uploads')
-    redirect_submitted_links = ee_config(item: 'redirect_submitted_links')
-    force_redirect = ee_config(item: 'force_redirect')
+    cookie_httponly = eeConfig({item: 'cookie_httponly')
+    cookie_secure = eeConfig({item: 'cookie_secure')
+    allow_username_change = eeConfig({item: 'allow_username_change')
+    allow_multi_logins = eeConfig({item: 'allow_multi_logins')
+    require_ip_for_login = eeConfig({item: 'require_ip_for_login')
+    password_lockout = eeConfig({item: 'password_lockout')
+    require_secure_passwords = eeConfig({item: 'require_secure_passwords')
+    allow_dictionary_pw = eeConfig({item: 'allow_dictionary_pw')
+    deny_duplicate_data = eeConfig({item: 'deny_duplicate_data')
+    require_ip_for_posting = eeConfig({item: 'require_ip_for_posting')
+    xss_clean_uploads = eeConfig({item: 'xss_clean_uploads')
+    redirect_submitted_links = eeConfig({item: 'redirect_submitted_links')
+    force_redirect = eeConfig({item: 'force_redirect')
     if force_redirect == ''
       force_redirect = 'n'
     }
 
-    page.cp_session_type.has_checked_radio(ee_config(item: 'cp_session_type')).should == true
-    page.website_session_type.has_checked_radio(ee_config(item: 'website_session_type')).should == true
-    page.cookie_domain.value.should == ee_config(item: 'cookie_domain')
-    page.cookie_path.value.should == ee_config(item: 'cookie_path')
-    page.cookie_prefix.value.should == ee_config(item: 'cookie_prefix')
+    page.cp_session_type.has_checked_radio(eeConfig({item: 'cp_session_type')).should == true
+    page.website_session_type.has_checked_radio(eeConfig({item: 'website_session_type')).should == true
+    page.cookie_domain.value.should == eeConfig({item: 'cookie_domain')
+    page.cookie_path.value.should == eeConfig({item: 'cookie_path')
+    page.cookie_prefix.value.should == eeConfig({item: 'cookie_prefix')
     page.cookie_httponly.value.should == cookie_httponly
     page.cookie_secure.value.should == cookie_secure
     page.allow_username_change.value.should == allow_username_change
-    page.un_min_len.value.should == ee_config(item: 'un_min_len')
+    page.un_min_len.value.should == eeConfig({item: 'un_min_len')
     page.allow_multi_logins.value.should == allow_multi_logins
     page.require_ip_for_login.value.should == require_ip_for_login
     page.password_lockout.value.should == password_lockout
-    page.password_lockout_interval.value.should == ee_config(item: 'password_lockout_interval')
+    page.password_lockout_interval.value.should == eeConfig({item: 'password_lockout_interval')
     page.require_secure_passwords.value.should == require_secure_passwords
-    page.pw_min_len.value.should == ee_config(item: 'pw_min_len')
+    page.pw_min_len.value.should == eeConfig({item: 'pw_min_len')
     page.allow_dictionary_pw.value.should == allow_dictionary_pw
-    page.name_of_dictionary_file.value.should == ee_config(item: 'name_of_dictionary_file')
+    page.name_of_dictionary_file.value.should == eeConfig({item: 'name_of_dictionary_file')
     page.deny_duplicate_data.value.should == deny_duplicate_data
     page.require_ip_for_posting.value.should == require_ip_for_posting
     page.xss_clean_uploads.value.should == xss_clean_uploads
@@ -63,7 +63,7 @@ feature 'Security & Privacy Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
+    page.get('wrap').contains('Attention: Settings not saved'
     should_have_error_text(page.un_min_len, integer_error)
 
     // AJAX validation
@@ -142,7 +142,7 @@ feature 'Security & Privacy Settings', () => {
     cy.auth();
     page.load()
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.cp_session_type.has_checked_radio('s').should == true
     page.website_session_type.has_checked_radio('s').should == true
     page.cookie_domain.value.should == '.yourdomain.com'

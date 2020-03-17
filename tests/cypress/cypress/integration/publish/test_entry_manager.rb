@@ -16,7 +16,7 @@ feature 'Entry Manager', () => {
     page.load()(filter_by_channel: channel[:channel_id])
 
     page.should have_no_link('New in')
-    page.alert.text.should include "Channel limit reached"
+    page.get('alert').text.should include "Channel limit reached"
   }
 
   it('offers a create option for channels with max_entries not yet reached', () => {
@@ -39,7 +39,7 @@ feature 'Entry Manager', () => {
 
     page.find('.nav-create .nav-has-sub').click()
     page.all('.nav-create .nav-sub-menu a').each do |i|
-      i['href'].should_not include 'admin.php.php?/cp/publish/create/' + channel[:channel_id].to_s
+      i['href'].should_not include 'admin.php.php?/cp/publish/create/' + channel[:channel_id].toString()
     }
   }
 
@@ -90,7 +90,7 @@ feature 'Entry Manager', () => {
     page.modal_submit_button.click()
 
     page.should have(9).entry_rows
-    page.alert.text.should include 'The following entries were removed'
+    page.get('alert').text.should include 'The following entries were removed'
   }
 
   it('deletes all entries', () => {
@@ -104,7 +104,7 @@ feature 'Entry Manager', () => {
 
     page.should have(1).entry_rows
     page.entry_rows[0].text.should include 'No Entries found.'
-    page.alert.text.should include 'The following entries were removed'
+    page.get('alert').text.should include 'The following entries were removed'
   }
 
   it('deletes 100 entries', () => {
@@ -119,8 +119,8 @@ feature 'Entry Manager', () => {
     page.modal_submit_button.click()
 
     page.should have(10).entry_rows
-    page.alert.text.should include 'The following entries were removed'
-    page.alert.text.should include 'and 96 others...'
+    page.get('alert').text.should include 'The following entries were removed'
+    page.get('alert').text.should include 'and 96 others...'
   }
 
 }

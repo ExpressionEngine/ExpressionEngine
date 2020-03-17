@@ -20,9 +20,9 @@ feature 'SQL Manager', () => {
   }
 
   it('shows the SQL Manager', () => {
-    page.should have_text 'SQL Manager'
-    page.should have_text 'Total Records'
-    page.should have_text 'Database Tables'
+    page.get('wrap').contains('SQL Manager'
+    page.get('wrap').contains('Total Records'
+    page.get('wrap').contains('Database Tables'
     page.should have_search_field
     page.should have_search_btn
     #page.should have_op_select
@@ -53,7 +53,7 @@ feature 'SQL Manager', () => {
     page.search_field.set 'access'
     page.search_btn.click()
 
-    page.should have_text 'Search Results we found 3 results for "access"'
+    page.get('wrap').contains('Search Results we found 3 results for "access"'
 
     page.tables.map {|source| source.text}.should == tables.grep(/access/)
   }
@@ -66,7 +66,7 @@ feature 'SQL Manager', () => {
 
     page.sort_links[0].click()
 
-    page.should have_text 'Search Results we found 3 results for "access"'
+    page.get('wrap').contains('Search Results we found 3 results for "access"'
 
     page.tables.map {|source| source.text}.should == tables.grep(/access/).reverse
   }
@@ -76,7 +76,7 @@ feature 'SQL Manager', () => {
     page.wait_until_op_submit_visible
     page.op_submit.click()
 
-    page.alert.should have_text 'You must select an action to perform on the selected tables.'
+    page.get('alert').contains('You must select an action to perform on the selected tables.'
   }
 
   it('should repair the tables and sort and search the results', () => {
@@ -86,7 +86,7 @@ feature 'SQL Manager', () => {
     page.op_submit.click()
 
     cy.hasNoErrors()
-    page.should have_text 'Repair Table Results'
+    page.get('wrap').contains('Repair Table Results'
 
     tables = get_tables
 
@@ -111,7 +111,7 @@ feature 'SQL Manager', () => {
     page.op_submit.click()
 
     cy.hasNoErrors()
-    page.should have_text 'Optimized Table Results'
+    page.get('wrap').contains('Optimized Table Results'
 
     tables = get_tables
 
@@ -139,12 +139,12 @@ feature 'SQL Manager', () => {
 
     results = QueryResults.new
     cy.hasNoErrors()
-    results.should have_text 'SQL Managerexp_actions Table' // How Capybara sees the breadcrumb
-    results.should have_text 'exp_actions Table'
+    results.contains('SQL Managerexp_actions Table' // How Capybara sees the breadcrumb
+    results.contains('exp_actions Table'
     results.should have(21).rows
 
     // Make sure breadcrumb info persists in base URL
     results.sort_links[0].click()
-    results.should have_text 'SQL Managerexp_actions Table'
+    results.contains('SQL Managerexp_actions Table'
   }
 }

@@ -28,7 +28,7 @@ feature 'Spam Module', () => {
       page.load()
 
       page.displayed?
-      page.heading.text.should have_text 'All SPAM'
+      page.heading.text.contains('All SPAM'
       page.should have_keyword_search
     }
 
@@ -39,7 +39,7 @@ feature 'Spam Module', () => {
 
       page.heading.text.should eq 'Search Results we found 5 results for "about"'
       page.keyword_search.value.should eq 'about'
-      page.should have_text 'about'
+      page.get('wrap').contains('about'
     }
 
     it('can mark as ham', () => {

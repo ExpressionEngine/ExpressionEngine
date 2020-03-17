@@ -16,16 +16,16 @@ feature 'Avatar Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    enable_avatars = ee_config(item: 'enable_avatars')
-    allow_avatar_uploads = ee_config(item: 'allow_avatar_uploads')
+    enable_avatars = eeConfig({item: 'enable_avatars')
+    allow_avatar_uploads = eeConfig({item: 'allow_avatar_uploads')
 
     page.enable_avatars.value.should == enable_avatars
     page.allow_avatar_uploads.value.should == allow_avatar_uploads
-    page.avatar_url.value.should == ee_config(item: 'avatar_url')
-    page.avatar_path.value.should == ee_config(item: 'avatar_path')
-    page.avatar_max_width.value.should == ee_config(item: 'avatar_max_width')
-    page.avatar_max_height.value.should == ee_config(item: 'avatar_max_height')
-    page.avatar_max_kb.value.should == ee_config(item: 'avatar_max_kb')
+    page.avatar_url.value.should == eeConfig({item: 'avatar_url')
+    page.avatar_path.value.should == eeConfig({item: 'avatar_path')
+    page.avatar_max_width.value.should == eeConfig({item: 'avatar_max_width')
+    page.avatar_max_height.value.should == eeConfig({item: 'avatar_max_height')
+    page.avatar_max_kb.value.should == eeConfig({item: 'avatar_max_kb')
   }
 
   it('should validate the form', () => {
@@ -34,8 +34,8 @@ feature 'Avatar Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
-    page.should have_text $invalid_path
+    page.get('wrap').contains('Attention: Settings not saved'
+    page.get('wrap').contains($invalid_path
 
     // AJAX validation
     page.load()
@@ -115,8 +115,8 @@ feature 'Avatar Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    enable_avatars = ee_config(item: 'enable_avatars')
-    allow_avatar_uploads = ee_config(item: 'allow_avatar_uploads')
+    enable_avatars = eeConfig({item: 'enable_avatars')
+    allow_avatar_uploads = eeConfig({item: 'allow_avatar_uploads')
 
     page.enable_avatars_toggle.click()
     page.allow_avatar_uploads_toggle.click()
@@ -127,7 +127,7 @@ feature 'Avatar Settings', () => {
     page.avatar_max_kb.set '102'
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.enable_avatars.value.should_not == enable_avatars
     page.allow_avatar_uploads.value.should_not == allow_avatar_uploads
     page.avatar_url.value.should == 'http://hello'

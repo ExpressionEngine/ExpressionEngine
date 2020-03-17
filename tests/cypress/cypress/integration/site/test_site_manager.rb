@@ -2,7 +2,7 @@ require './bootstrap.rb'
 
 feature 'Site Manager', () => {
   beforeEach(function() {
-    ee_config(item: 'multiple_sites_enabled', value: 'y')
+    eeConfig({item: 'multiple_sites_enabled', value: 'y')
     cy.auth();
     page = SiteManager.new
     page.load()
@@ -27,8 +27,8 @@ feature 'Site Manager', () => {
       cy.hasNoErrors()
 
       page.should have_alert
-      page.alert.text.should include 'Site Created'
-      page.alert.text.should include 'Rspec Site'
+      page.get('alert').text.should include 'Site Created'
+      page.get('alert').text.should include 'Rspec Site'
     }
 
     it('can add a site', () => {

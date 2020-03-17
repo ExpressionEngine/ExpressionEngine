@@ -8,20 +8,20 @@ feature 'URL and Path Settings', () => {
     page.load()
     cy.hasNoErrors()
 
-    @site_index = ee_config(item: 'site_index')
-    @site_url = ee_config(item: 'site_url')
-    @cp_url = ee_config(item: 'cp_url')
-    @theme_folder_url = ee_config(item: 'theme_folder_url')
-    @theme_folder_path = ee_config(item: 'theme_folder_path')
-    @profile_trigger = ee_config(item: 'profile_trigger')
-    @reserved_category_word = ee_config(item: 'reserved_category_word')
-    @use_category_name = ee_config(item: 'use_category_name')
-    @word_separator = ee_config(item: 'word_separator')
+    @site_index = eeConfig({item: 'site_index')
+    @site_url = eeConfig({item: 'site_url')
+    @cp_url = eeConfig({item: 'cp_url')
+    @theme_folder_url = eeConfig({item: 'theme_folder_url')
+    @theme_folder_path = eeConfig({item: 'theme_folder_path')
+    @profile_trigger = eeConfig({item: 'profile_trigger')
+    @reserved_category_word = eeConfig({item: 'reserved_category_word')
+    @use_category_name = eeConfig({item: 'use_category_name')
+    @word_separator = eeConfig({item: 'word_separator')
   }
 
   it('shows the URL and Path Settings page', () => {
-    page.should have_text 'URL and Path Settings'
-    page.should have_text 'Website index page'
+    page.get('wrap').contains('URL and Path Settings'
+    page.get('wrap').contains('Website index page'
     page.all_there?.should == true
   }
 
@@ -45,7 +45,7 @@ feature 'URL and Path Settings', () => {
 
     cy.hasNoErrors()
     should_have_form_errors(page)
-    page.should have_text 'Attention: Settings not saved'
+    page.get('wrap').contains('Attention: Settings not saved'
     should_have_error_text(page.site_url, field_required)
 
     // AJAX validation
@@ -149,10 +149,10 @@ feature 'URL and Path Settings', () => {
     page.site_index.set 'hello.php'
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.site_index.value.should eq 'hello.php'
 
     // Since this is in config.php, reset the value
-    ee_config(item: 'index_page', value: 'index.php')
+    eeConfig({item: 'index_page', value: 'index.php')
   }
 }

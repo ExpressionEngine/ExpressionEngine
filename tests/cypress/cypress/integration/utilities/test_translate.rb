@@ -53,10 +53,10 @@ feature 'Translate Tool', () => {
   }
 
   it('displays the default language first in the sidebar', :edit => false do
-    ee_config(item: 'deft_lang', value: 'rspeclingo')
+    eeConfig({item: 'deft_lang', value: 'rspeclingo')
     @list_page.load
     @list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (Default)", 'English']
-    ee_config(item: 'deft_lang', value: 'english')
+    eeConfig({item: 'deft_lang', value: 'english')
   }
 
   it('shows the English Language files', :edit => false do
@@ -69,14 +69,14 @@ feature 'Translate Tool', () => {
 
   it('can search by phrases', :edit => false do
     my_phrase = 'admin'
-    @list_page.should have_text my_phrase
+    @list_page.get('wrap').contains(my_phrase
     @list_page.phrase_search.set my_phrase
     @list_page.search_submit_button.click()
     cy.hasNoErrors()
 
     @list_page.heading.text.should eq 'Search Results we found 2 results for "' + my_phrase + '"'
     @list_page.phrase_search.value.should eq my_phrase
-    @list_page.should have_text my_phrase
+    @list_page.get('wrap').contains(my_phrase
     @list_page.should have(3).rows // 2 rows + header row
     @list_page.should_not have_pagination
   }
@@ -91,7 +91,7 @@ feature 'Translate Tool', () => {
     @list_page.heading.text.should eq 'Search Results we found 0 results for "' + my_phrase + '"'
     @list_page.phrase_search.value.should eq my_phrase
     @list_page.should_not have_pagination
-    @list_page.should have_no_results
+    @list_page.get('no_results').should('exist')
   }
 
   it('paginates', :edit => false do
@@ -183,7 +183,7 @@ feature 'Translate Tool', () => {
 
     visit(new_url)
 
-    @list_page.should have_text "404: Item does not exist"
+    @list_page.get('wrap').contains("404: Item does not exist"
   }
 
   it('shows a breadcrumb link on the edit page', :edit => true do

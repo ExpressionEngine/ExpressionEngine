@@ -14,13 +14,13 @@ feature 'Word Censorship Settings', () => {
   }
 
   it('should load current settings into form fields', () => {
-    enable_censoring = ee_config(item: 'enable_censoring')
-    censor_replacement = ee_config(item: 'censor_replacement')
-    censored_words = ee_config(item: 'censored_words')
+    enable_censoring = eeConfig({item: 'enable_censoring')
+    censor_replacement = eeConfig({item: 'censor_replacement')
+    censored_words = eeConfig({item: 'censored_words')
 
     page.enable_censoring.value.should == enable_censoring
-    page.censor_replacement.value.should == ee_config(item: 'censor_replacement')
-    page.censored_words.value.should == ee_config(item: 'censored_words').gsub('|', "\n")
+    page.censor_replacement.value.should == eeConfig({item: 'censor_replacement')
+    page.censored_words.value.should == eeConfig({item: 'censored_words').gsub('|', "\n")
   }
 
   it('should reject XSS', () => {
@@ -37,7 +37,7 @@ feature 'Word Censorship Settings', () => {
     page.censored_words.set "Poop\nPerl"
     page.submit
 
-    page.should have_text 'Preferences updated'
+    page.get('wrap').contains('Preferences updated'
     page.enable_censoring.value.should == 'y'
     page.censor_replacement.value.should == '####'
     page.censored_words.value.should == "Poop\nPerl"
