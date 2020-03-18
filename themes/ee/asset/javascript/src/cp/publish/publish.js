@@ -136,6 +136,14 @@ $(document).ready(function () {
 		}
 	});
 
+	$('body').on('click', 'button[rel="live-preview-setup"]', function(e) {
+		e.preventDefault()
+
+		$('body').prepend(EE.alert.lp_setup);
+
+		return false;
+	});
+
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
 		e.preventDefault()
 

@@ -618,6 +618,10 @@ $lang = array(
 
 'preview_layout' => 'Preview Layout',
 
+'preview_url_not_set' => 'Preview URL is not set',
+
+'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
+
 'publish' => 'Publish',
 
 'publish_another_entry' => 'Publish Another Entry',
