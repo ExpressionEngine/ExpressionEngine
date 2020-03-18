@@ -92,6 +92,7 @@
 
 	// The name of this file
 	define('SELF', basename(__FILE__));
+	define('EESELF', basename(__FILE__));
 
 	// Path to this file
 	define('FCPATH', __DIR__.'/');
