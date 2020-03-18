@@ -80,6 +80,7 @@ $lang = array(
 'database_invalid_host'              => 'The database host you submitted is invalid.',
 'database_invalid_database'          => 'The database name you submitted is invalid.',
 'database_invalid_user'              => 'The database user and password combination you submitted is invalid.',
+'database_authentication_unknown'    => 'Your instance of PHP does not support the current database authentication method.',
 'database_no_config'                 => 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.',
 'database_no_data'                   => 'Unable to locate any database connection information.',
 'database_no_connect'                => 'Unable to connect to your database using the configuration settings you submitted.',

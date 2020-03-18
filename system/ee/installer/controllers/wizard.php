@@ -768,6 +768,10 @@ class Wizard extends CI_Controller {
 		{
 			$errors[] = lang('database_invalid_user');
 		}
+		elseif ($this->db_connect_attempt === 2054)
+		{
+			$errors[] = lang('database_authentication_unknown');
+		}
 		elseif ($this->db_connect_attempt === FALSE)
 		{
 			$errors[] = lang('database_no_connect');
