@@ -139,7 +139,7 @@ $setup = [
 			$site_index = ee()->functions->fetch_site_index(0,0);
 			$uri_string = ee()->uri->uri_string();
 			$session_id = ee()->session->session_id();
-			$default_cp_url = SELF;
+			$default_cp_url = EESELF;
 
 			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url, $ee->make('Encrypt'));
 

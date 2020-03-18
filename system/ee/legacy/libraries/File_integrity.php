@@ -186,9 +186,9 @@ class File_integrity {
 
 			$this->_update_config($checksums, $site_id);
 		}
-		elseif (REQ != 'CP' && ! array_key_exists(FCPATH.SELF, $checksums))
+		elseif (REQ != 'CP' && ! array_key_exists(FCPATH.EESELF, $checksums))
 		{
-			$checksums[FCPATH.SELF] = md5_file(FCPATH.SELF);
+			$checksums[FCPATH.EESELF] = md5_file(FCPATH.EESELF);
 
 			$this->_update_config($checksums, $site_id);
 		}

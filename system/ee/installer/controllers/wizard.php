@@ -193,7 +193,7 @@ class Wizard extends CI_Controller
         $this->load->add_theme_cascade(APPPATH . 'views/');
 
         // First try the current directory, if they are running the system with an admin.php file
-        $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
+        $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
 
         if (is_dir($this->base_path . 'themes')) {
             $this->theme_path = $this->base_path . 'themes/';
@@ -399,7 +399,7 @@ class Wizard extends CI_Controller
 
             // Since the CP access file can be inside or outside of the "system"
             // folder we will do a little test to help us set the site_url item
-            $_selfloc = (is_dir('./installer/')) ? SELF . '/' . SYSDIR : SELF;
+            $_selfloc = (is_dir('./installer/')) ? EESELF . '/' . SYSDIR : EESELF;
 
             $this->userdata['site_url'] = $host . substr($self, 0, - strlen($_selfloc));
 
@@ -1022,11 +1022,11 @@ class Wizard extends CI_Controller
         $self = ( ! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
         $self = htmlspecialchars($self, ENT_QUOTES);
 
-        $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . SELF;
+        $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . EESELF;
 
         // Since the CP access file can be inside or outside of the "system" folder
         // we will do a little test to help us set the site_url item
-        $_selfloc = (is_dir('./ee/installer/')) ? SELF . '/' . SYSDIR : SELF;
+        $_selfloc = (is_dir('./ee/installer/')) ? EESELF . '/' . SYSDIR : EESELF;
 
         // Set the site URL
         $this->userdata['site_url'] = $host . substr($self, 0, - strlen($_selfloc));
@@ -1425,8 +1425,8 @@ class Wizard extends CI_Controller
 
         // We set the index page to the SELF value.
         // but it might have been renamed by the user
-        $this->config->set_item('index_page', SELF);
-        $this->config->set_item('site_index', SELF); // Same with the CI site_index
+        $this->config->set_item('index_page', EESELF);
+        $this->config->set_item('site_index', EESELF); // Same with the CI site_index
     }
 
     /**

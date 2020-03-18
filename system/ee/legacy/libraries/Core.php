@@ -50,7 +50,7 @@ class EE_Core {
 		// means the installer is still active; redirect to clean path
 		if (ee()->config->item('subclass_prefix') != 'EE_' && ee()->uri->segment(1) == 'cp')
 		{
-			header('Location: '.SELF);
+			header('Location: '.EESELF);
 			exit;
 		}
 
@@ -515,7 +515,7 @@ class EE_Core {
 	 */
 	private function somebody_set_us_up_the_base()
 	{
-		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
+		define('BASE', EESELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
 
 	/**

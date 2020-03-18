@@ -65,7 +65,7 @@ class URLFactory {
 		$this->site_index = $site_index;
 		$this->uri_string = $uri_string;
 		$this->session_id = $session_id;
-		$this->default_cp_url = ($default_cp_url) ?: SELF;
+		$this->default_cp_url = ($default_cp_url) ?: EESELF;
 		$this->encrypt_delegate = $encrypt;
 	}
 

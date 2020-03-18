@@ -21,9 +21,10 @@ $args = parseArguments();
 
 // Path constants
 define('SELF', basename(__FILE__));
+define('EESELF', basename(__FILE__));
 define('SYSPATH', $project_base);
 define('SYSDIR', basename($project_base));
-define('FCPATH', dirname(SELF));
+define('FCPATH', dirname(EESELF));
 define('DEBUG', 1);
 define('REQ', 'CLI');
 define('CLI_VERBOSE', isset($args['v']) OR isset($args['verbose']));

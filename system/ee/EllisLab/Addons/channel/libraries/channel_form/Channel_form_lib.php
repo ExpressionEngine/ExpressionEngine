@@ -1414,7 +1414,7 @@ GRID_FALLBACK;
 		if ( ! defined('BASE'))
 		{
 			$s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
-			define('BASE', SELF.'?S='.$s.'&amp;D=cp');
+			define('BASE', EESELF.'?S='.$s.'&amp;D=cp');
 		}
 
 		$this->json = $this->_meta['json'];

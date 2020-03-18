@@ -66,7 +66,7 @@ class URL implements \Serializable {
 
 		$this->path = (string) $path;
 		$this->session_id = (string) $session_id;
-		$this->base = (empty($cp_url)) ? SELF : (string) $cp_url;
+		$this->base = (empty($cp_url)) ? EESELF : (string) $cp_url;
 		$this->requested_uri = $requested_uri;
 
 		if (is_array($qs))
