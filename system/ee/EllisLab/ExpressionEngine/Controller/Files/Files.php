@@ -17,6 +17,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use EllisLab\ExpressionEngine\Service\File\ViewType;
 
 /**
  * Files Controller
@@ -25,11 +26,8 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
-		$view_type = 'table';
-
-		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
-			$view_type = $_GET['viewtype'];
-		}
+		$viewTypeService = new ViewType();
+		$viewTypeService = $this->determineViewType('all', 'table');
 
 		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
@@ -96,13 +94,9 @@ class Files extends AbstractFilesController {
 
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
-		//Since the setting is for modal view, we're not applying it here
-		//$view_type = ($dir->default_modal_view == 'list' ? 'table' : 'thumb');
-		$view_type = 'table';
-
-		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
-			$view_type = $_GET['viewtype'];
-		}
+		$viewTypeService = new ViewType();
+		$view_type = $viewTypeService->determineViewType('dir_'.$id, 'table');
+		//$dir->default_modal_view is not used here as it's not modal view
 
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);
 

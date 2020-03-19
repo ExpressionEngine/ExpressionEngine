@@ -683,6 +683,7 @@ return [
 		'notify_me',
 		'save_info',
 		'tracker',
+		'viewtype'
 	],
 ];
 

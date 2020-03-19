@@ -371,7 +371,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 			->add('Keyword')
-			->add('ViewType')
+			->add('ViewType', ['table', 'thumb'], $view_type)
 			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();

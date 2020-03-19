@@ -10,6 +10,7 @@
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
+use EllisLab\ExpressionEngine\Service\File\ViewType;
 
 /**
  * File Picker Module control panel
@@ -120,7 +121,9 @@ class Filepicker_mcp {
 
 			$total_files = $files->count();
 
-			$type = ee()->input->get('viewtype') ?: 'list';
+			$viewTypeService = new ViewType();
+			$type = $viewTypeService->determineViewType('all', 'table');
+
 		}
 		else
 		{
@@ -154,7 +157,9 @@ class Filepicker_mcp {
 				$total_files = $files->count();
 			}
 
-			$type = ee()->input->get('viewtype') ?: $dir->default_modal_view;
+			$viewTypeService = new ViewType();
+			$type = $viewTypeService->determineViewType('dir_'.$requested, $dir->default_modal_view);
+
 		}
 
 		$has_filters = ee()->input->get('hasFilters');
