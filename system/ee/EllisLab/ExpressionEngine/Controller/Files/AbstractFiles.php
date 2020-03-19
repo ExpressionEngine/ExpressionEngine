@@ -356,6 +356,7 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function listingsPage($files, $base_url, $view_type = 'table')
 	{
 		$vars = array();
+		$reset_url = clone $base_url;
 		$search_terms = ee()->input->get_post('filter_by_keyword');
 
 		if ($search_terms)
@@ -387,14 +388,14 @@ abstract class AbstractFiles extends CP_Controller {
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-			ee()->view->filters = $filters->render($base_url);
+			ee()->view->filters = $filters->render($reset_url);
 
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
 		} elseif ($view_type === 'thumb') {
 			$vars['form_url'] = $base_url;
 
-			ee()->view->filters = $filters->render($base_url);
+			ee()->view->filters = $filters->render($reset_url);
 
 			$files = $files->limit($perpage)
 						->offset($offset)

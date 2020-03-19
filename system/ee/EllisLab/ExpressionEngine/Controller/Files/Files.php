@@ -96,7 +96,9 @@ class Files extends AbstractFilesController {
 
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
-		$view_type = ($dir->default_modal_view == 'list' ? 'table' : 'thumb');
+		//Since the setting is for modal view, we're not applying it here
+		//$view_type = ($dir->default_modal_view == 'list' ? 'table' : 'thumb');
+		$view_type = 'table';
 
 		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
 			$view_type = $_GET['viewtype'];

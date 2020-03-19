@@ -320,9 +320,9 @@ class FilterFactory {
 	 *
 	 * @return Filter\ViewType a ViewType Filter object
 	 */
-	protected function createDefaultViewType()
+	protected function createDefaultViewType($options = [], $default = 'table')
 	{
-		return new Filter\ViewType();
+		return new Filter\ViewType($options, $default);
 	}
 }
 

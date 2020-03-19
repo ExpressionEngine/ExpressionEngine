@@ -120,7 +120,7 @@ class Filepicker_mcp {
 
 			$total_files = $files->count();
 
-			$type = ee()->input->get('type') ?: 'list';
+			$type = ee()->input->get('viewtype') ?: 'list';
 		}
 		else
 		{
@@ -154,18 +154,16 @@ class Filepicker_mcp {
 				$total_files = $files->count();
 			}
 
-			$type = ee()->input->get('type') ?: $dir->default_modal_view;
+			$type = ee()->input->get('viewtype') ?: $dir->default_modal_view;
 		}
 
 		$has_filters = ee()->input->get('hasFilters');
 
 		$base_url = ee('CP/URL', $this->base_url);
+		$reset_url = clone $base_url;
 		$base_url->setQueryStringVariable('directories', $show);
 		$base_url->setQueryStringVariable('directory', $requested);
-		$base_url->setQueryStringVariable('type', $type);
-
-		$vars['search'] = ee()->input->get('search');
-		$base_url->setQueryStringVariable('search', $vars['search']);
+		$base_url->setQueryStringVariable('viewtype', $type);
 
 		if ($has_filters !== '0')
 		{
@@ -189,13 +187,17 @@ class Filepicker_mcp {
 				'list' => 'list'
 			);
 
-			$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
-				->disableCustomValue()
-				->setDefaultValue($type);
+			if ($vars['search_allowed']) {
+				$filters->add('Keyword');
+				if (ee()->input->get('filter_by_keyword')!='')
+				{
+					$base_url->setQueryStringVariable('filter_by_keyword', ee()->input->get('filter_by_keyword'));
+				}
+			}
 
-			$filters = $filters->add('Perpage', $total_files, 'show_all_files', $imgFilter->value() == 'list');
+			$filters->add('ViewType', ['table', 'thumb'], $type);
 
-			$filters = $filters->add($imgFilter);
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files');
 
 			$perpage = $filters->values();
 			$perpage = $perpage['perpage'];
@@ -204,7 +206,7 @@ class Filepicker_mcp {
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 
-			$vars['filters'] = $filters->render($base_url);
+			$vars['filters'] = $filters->render($reset_url);
 		}
 		else
 		{
@@ -293,7 +295,7 @@ class Filepicker_mcp {
 	 */
 	private function search($files)
 	{
-		if ($search = ee()->input->get('search'))
+		if ($search = ee()->input->get('filter_by_keyword'))
 		{
 			$files
 				->filterGroup()

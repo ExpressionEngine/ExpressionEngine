@@ -26,17 +26,11 @@ class Viewtype extends Filter {
 	protected $confirm_show_all = FALSE;
 
 	/**
-	 * Initializes our Perpage filter
-	 *
-	 * @todo inject ee()->cp (for ee()->cp->add_js_script)
-	 *
-	 * @param  int $total The total number of items available
-	 * @param  string $lang_key The optional lang key to use for the "All
-	 *                          <<$total>> items" option
-	 * @param  bool $is_modal Is this Perpage filter in/for a modal?
+	 * @param  array $options options
+	 * @param  string $default_value ['table', 'thumb']
 	 * @return void
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = array(), string $default_value = 'table')
 	{
 		$this->name = 'viewtype';
 		$this->label = 'viewtype_filter';
@@ -48,7 +42,7 @@ class Viewtype extends Filter {
 			'thumb'  => lang('viewtype_thumb'),
 		);
 
-		$this->default_value = 'table';
+		$this->default_value = $default_value;
 	}
 
 	/**
