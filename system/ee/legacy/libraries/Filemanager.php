@@ -316,7 +316,7 @@ class Filemanager {
 		// So, we need to run this check.
 		if (function_exists('getimagesize'))
 		{
-			$imageSize = getimagesize($file_path);
+			$imageSize = @getimagesize($file_path);
 
 			if($imageSize && is_array($imageSize)) {
 
@@ -331,6 +331,7 @@ class Filemanager {
 
 		}
 
+		// The file is either not an image, or there was an error.
 		return FALSE;
 	}
 
