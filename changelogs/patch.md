@@ -5,9 +5,11 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Adds PHP7.4 support
    - Adds validation for pages URIs without a selected template
    - Adding `is_system_on` setting caching, so updating does not alter whether the system is on after updating or bailing
    - Fixes variable type notices
+   - Added default to same page for consent return
 
 
 
