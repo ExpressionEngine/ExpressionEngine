@@ -176,7 +176,7 @@ function (_React$Component) {
       directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
         return thisDirectory.value == directory;
       });
-      return directory.label;
+      return directory ? directory.label : directory;
     }
   }, {
     key: "bindDragAndDropEvents",
