@@ -10,6 +10,7 @@ Bullet list below, e.g.
    - Adding `is_system_on` setting caching, so updating does not alter whether the system is on after updating or bailing
    - Fixes variable type notices
    - Added default to same page for consent return
+   - Fixes bug where `after_channel_entry_save` hook would run twice.
 
 
 
