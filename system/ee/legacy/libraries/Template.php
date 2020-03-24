@@ -3538,7 +3538,7 @@ class EE_Template {
 		$time = number_format($time, 6);
 		$last_time = isset($last['time']) ? $last['time'] : 0;
 		$time_gain = $time - $last_time;
-		$last_memory = isset($last['memory']) ? $last['memory'] : 0
+		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
 
 		$this->log[] = array(
 			'time' => $time,
