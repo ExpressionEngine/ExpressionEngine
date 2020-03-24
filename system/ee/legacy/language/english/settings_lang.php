@@ -19,6 +19,8 @@ $lang = array(
 
 'general_settings' => 'General Settings',
 
+'settings' => 'Settings',
+
 'hit_tracking' => 'Hit Tracking',
 
 'html_buttons' => 'HTML Buttons',
