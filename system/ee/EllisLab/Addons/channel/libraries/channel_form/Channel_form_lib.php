@@ -3023,7 +3023,7 @@ GRID_FALLBACK;
      *
      * @return string
      */
-    private function _url_title_js()
+    public function _url_title_js()
     {
         // js for URL Title
         $convert_ascii = (ee()->config->item('auto_convert_high_ascii') == 'y') ? true : false;
