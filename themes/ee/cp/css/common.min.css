@@ -6210,6 +6210,9 @@ input[type='url'] {
     opacity: 1;
     color: var(--ee-input-placeholder); }
 
+.textarea-medium {
+  min-height: 300px; }
+
 .grid-instruct {
   display: block;
   color: var(--ee-text-secondary);
