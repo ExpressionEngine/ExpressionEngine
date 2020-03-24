@@ -8879,6 +8879,12 @@ fieldset {
   box-shadow: var(--ee-shadow-dropdown);
   background: var(--ee-accent-light); }
 
+#routes .grid-field__table tr {
+  background: inherit; }
+
+#routes .table-responsive {
+  overflow-x: inherit; }
+
 .grid-field__column-label {
   display: none; }
 
