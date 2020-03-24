@@ -1695,21 +1695,46 @@ class Roles extends AbstractRolesController {
 			$role_ids = array($role_ids);
 		}
 
-		$roles = ee('Model')->get('Role', $role_ids)->all();
+		//not all roles can be removed
+		$need_to_stay = [];
+		$restricted = [1, 2, 3, 4, ee()->config->item('default_primary_role')];
+		foreach ($role_ids as $i=>$role_id) {
+			if (in_array($role_id, $restricted)) {
+				$need_to_stay[] = $role_id;
+				unset($role_ids[$i]);
+			}
+		}
 
-		$role_names = $roles->pluck('name');
+		if (!empty($need_to_stay)) {
 
-		$roles->delete();
-		ee('CP/Alert')->makeInline('roles')
-			->asSuccess()
-			->withTitle(lang('success'))
-			->addToBody(lang('roles_deleted_desc'))
-			->addToBody($role_names)
-			->defer();
+			$role_names = ee('Model')->get('Role', $need_to_stay)->all()->pluck('name');
 
-		foreach ($role_names as $role_name)
-		{
-			ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
+			ee('CP/Alert')->makeInline('roles-error')
+				->asWarning()
+				->withTitle(lang('roles_delete_error'))
+				->addToBody(lang('roles_not_deleted_desc'))
+				->addToBody($role_names)
+				->defer();
+
+		}
+
+		if (!empty($role_ids)) {
+			$roles = ee('Model')->get('Role', $role_ids)->all();
+
+			$role_names = $roles->pluck('name');
+
+			$roles->delete();
+			ee('CP/Alert')->makeInline('roles')
+				->asSuccess()
+				->withTitle(lang('success'))
+				->addToBody(lang('roles_deleted_desc'))
+				->addToBody($role_names)
+				->defer();
+
+			foreach ($role_names as $role_name)
+			{
+				ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
+			}
 		}
 	}
 }
