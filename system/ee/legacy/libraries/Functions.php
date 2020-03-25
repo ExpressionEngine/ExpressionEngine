@@ -987,6 +987,7 @@ class EE_Functions {
 			{
 				ee()->cache->delete('/'.$option.'_cache/');
 			}
+			ee('CP/JumpMenu')->clearAllCaches();
 		}
 	}
 

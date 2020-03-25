@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -15,10 +16,10 @@ namespace EllisLab\ExpressionEngine\Service\JumpMenu;
  */
 class AbstractJumpMenu
 {
-	protected static $items = array();
+    protected static $items = array();
 
-	public function getItems()
-	{
-		return static::$items;
-	}
+    public function getItems()
+    {
+        return static::$items;
+    }
 }
