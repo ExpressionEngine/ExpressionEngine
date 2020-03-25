@@ -142,9 +142,9 @@ class Edit extends AbstractPublishController {
 			sprintf(lang('no_found'), lang('channels'))
 			.' <a href="'.ee('CP/URL', 'channels/create').'">'.lang('add_new').'</a>');
 		}
-		
 
-		$show_new_button = TRUE;
+
+		$show_new_button = $vars['channels_exist'];
 		if ($channel_id)
 		{
 			$channel = $entry_listing->getChannelModelFromFilter();

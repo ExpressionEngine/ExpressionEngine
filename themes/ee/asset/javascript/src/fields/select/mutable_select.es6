@@ -45,7 +45,7 @@ class MutableSelectField {
   }
 
   bindEdit () {
-    this.field.parent().on('click', 'label > a', (e) => {
+    this.field.parent().on('click', 'label a', (e) => {
       e.preventDefault()
       let itemId = $(e.target).closest('[data-id]').data('id')
       this.openForm(this.options.editUrl.replace('###', itemId))

@@ -58,6 +58,7 @@ class Routes extends AbstractDesignController {
 		$grid = ee('CP/GridInput', array(
 			'wrap' => FALSE,
 			'field_name' => 'routes',
+			'show_add_button' => false
 		));
 		$grid->loadAssets();
 

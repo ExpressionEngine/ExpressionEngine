@@ -10,8 +10,8 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php $this->embed('_shared/pagination'); ?>
 		<?php if ( ! empty($table['data'])): ?>
-			<fieldset class="bulk-action-bar">
+			<div class="form-btns">
 				<input class="button button--primary" type="submit" value="<?=lang('update')?>">
-			</fieldset>
+			</div>
 		<?php endif ?>
 	<?=form_close()?>
