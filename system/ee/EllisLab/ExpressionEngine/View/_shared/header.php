@@ -112,7 +112,7 @@ $current_page = ee()->uri->segment(2);
 						<nav class="nav-custom">
 							<?php foreach ($custom->getItems() as $item) : ?>
 							<?php if ($item->isSubmenu()) : ?>
-								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href=""><?= lang($item->title) ?></a>
+								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#"><?= lang($item->title) ?></a>
 								<div class="dropdown">
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
