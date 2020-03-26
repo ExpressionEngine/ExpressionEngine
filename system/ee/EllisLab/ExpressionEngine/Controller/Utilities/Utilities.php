@@ -103,7 +103,11 @@ class Utilities extends CP_Controller {
 			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
 			$db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
 			$db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
-			$db_list->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
+			$url = ee('CP/URL')->make('utilities/query');
+			$item = $db_list->addItem(lang('query_form'), $url);
+			if ($url->matchesTheRequestedURI()) {
+				$item->isActive();
+			}
 		}
 
 		if (ee('Permission')->can('access_data'))
