@@ -1,7 +1,7 @@
 <div class="js-list-group-wrap">
 	<div class="list-group-controls">
 		<?php if (isset($filters)) echo $filters; ?>
-		<?php if ( ! empty($data)): ?>
+		<?php if ((!isset($disable_action) || empty($disable_action)) && !empty($data)): ?>
 			<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
 		<?php endif ?>
 	</div>
@@ -26,7 +26,7 @@
 					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 				</div>
 
-				<?php if (isset($row['selection'])): ?>
+				<?php if ((!isset($disable_action) || empty($disable_action)) && isset($row['selection'])): ?>
 					<div class="list-item__checkbox">
 						<input
 							name="<?=form_prep($row['selection']['name'])?>"

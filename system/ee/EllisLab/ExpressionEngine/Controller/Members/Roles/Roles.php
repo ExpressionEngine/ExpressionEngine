@@ -167,7 +167,12 @@ class Roles extends AbstractRolesController {
 			? $group->name . '&mdash;' . lang('roles' )
 			: lang('all_roles');
 		$vars['roles'] = $data;
-		$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];
+		$vars['disable_action'] = (bool) $group_id;
+		if ($group_id) {
+			$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')) . ' &mdash; ' . $group->name];
+		} else {
+			$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];
+		}
 
 		ee()->cp->render('members/roles/index', $vars);
 	}
