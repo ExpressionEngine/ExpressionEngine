@@ -568,7 +568,7 @@ class File {
 		ee()->output->out_type = 'cp_asset';
 		ee()->output->enable_profiler(FALSE);
 		if (file_exists($path) && is_file($path)) {
-			//ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
+			ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
 		} else {
 			$path = PATH_THEMES . 'asset/img/default-addon-on-icon.png';
 		}
