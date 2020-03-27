@@ -759,6 +759,39 @@ class Addon {
 		 return $this->provider;
 	 }
 
+	 /**
+	 * Get icon URL
+	 *
+	 * @param string default icon file name
+	 * @return string URL for add-on's icon, or generic one
+	 */
+	 public function getIconUrl($default = null)
+	 {
+		$masks = [
+			'icon.svg',
+			'icon.png'
+		];
+		foreach ($masks as $mask) {
+			$icon = $this->getFilesMatching($mask);
+			if (!empty($icon)) {
+				break;
+			}
+		}
+
+		if (!empty($icon)) {
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'File')
+				->where('method', 'addonIcon')
+				->get('actions');
+			$url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'addon='.$this->shortname . AMP . 'file=' . $mask;
+		} else {
+			if (empty($default)) $default = 'default-addon-on-icon.png';
+			$url = URL_THEMES . 'asset/img/'.$default;
+		}
+
+		return $url;
+	 }
+
 	/**
 	 * Get the fully qualified class name
 	 *

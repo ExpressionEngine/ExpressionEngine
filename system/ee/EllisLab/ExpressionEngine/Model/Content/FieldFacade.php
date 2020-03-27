@@ -26,6 +26,7 @@ class FieldFacade {
 	private $content_type;
 	private $value;
 	private $api;
+	private $icon;
 
 	/**
 	 * @var Flag to ensure defaults are only loaded once
@@ -163,6 +164,15 @@ class FieldFacade {
 		$fts = $this->api->fetch_all_fieldtypes();
 		$type = $this->getType();
 		return $fts[$type]['name'];
+	}
+
+	public function getIcon()
+	{
+		if (empty($this->icon)) {
+			$addon = ee('Addon')->get($this->getItem('field_type'));
+			$this->icon = $addon->getIconUrl('field.svg');
+		}
+		return $this->icon;
 	}
 
 	public function validate($value)
