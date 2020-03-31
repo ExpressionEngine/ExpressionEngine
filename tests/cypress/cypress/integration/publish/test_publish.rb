@@ -2,7 +2,7 @@ require './bootstrap.rb'
 require 'forgery'
 
 feature 'Publish Page - Create', () => {
-  before :each do
+  beforeEach(function(){
     cy.auth();
     page = Publish.new
     cy.hasNoErrors()
@@ -48,8 +48,8 @@ feature 'Publish Page - Create', () => {
     }
   }
 
-  context 'when using file fields', () => {
-    before :each do
+  context('when using file fields', () => {
+    beforeEach(function(){
       channel_field_form = ChannelFieldForm.new
       channel_field_form.create_field(
         group_id: 1,
@@ -119,7 +119,7 @@ feature 'Publish Page - Create', () => {
         page.wait_until_modal_invisible(1)
       }
 
-      page.title.set 'File Field Test'
+      page.get('title').clear().type('File Field Test'
       page.chosen_files.should have(2).items
       page.submit_buttons[1].click()
 
@@ -138,14 +138,14 @@ feature 'Publish Page - Create', () => {
     }
   }
 
-  context 'when using fluid fields', () => {
-    before :each do
+  context('when using fluid fields', () => {
+    beforeEach(function(){
       @importer = ChannelSets::Importer.new(page, debug: false)
       @importer.fluid_field
       page.load()(channel_id: 3)
 
-      page.title.set "Fluid Field Test the First"
-      page.url_title.set "fluid-field-test-first"
+      page.get('title').clear().type("Fluid Field Test the First"
+      page.get('url_title').clear().type("fluid-field-test-first"
 
       @available_fields = [
         "A Date",
@@ -164,9 +164,9 @@ feature 'Publish Page - Create', () => {
         "YouTube URL"
       ]
 
-      page.fluid_field.actions_menu.name.click()
-      page.fluid_field.actions_menu.fields.map {|field| field.text}.should == @available_fields
-      page.fluid_field.actions_menu.name.click()
+      fluid_field.get('actions_menu.name').click()
+      fluid_field.get('actions_menu.fields').map {|field| field.text}.should == @available_fields
+      fluid_field.get('actions_menu.name').click()
     }
 
     def add_content(item, skew = 0)
@@ -176,13 +176,13 @@ feature 'Publish Page - Create', () => {
       case field_type
         when 'date'
           field.find('input[type=text][rel=date-picker]').set (9 + skew).toString() + '/14/2017 2:56 PM'
-          page.title.click() // Dismiss the date picker
+          page.get('title').click() // Dismiss the date picker
         when 'checkboxes'
           field.all('input[type=checkbox]')[0 + skew].set true
         when 'email_address'
-          field.find('input').set 'rspec-' + skew.toString() + '@example.com'
+          field.find('input').clear().type('rspec-' + skew.toString() + '@example.com'
         when 'url'
-          field.find('input').set 'http://www.example.com/page/' + skew.toString()
+          field.find('input').clear().type('http://www.example.com/page/' + skew.toString()
         when 'file'
           field.find('a', text: 'Choose Existing').click()
           field.find('a', text: 'About').click()
@@ -213,8 +213,8 @@ feature 'Publish Page - Create', () => {
           find('div[data-dropdown-react] .field-drop-choices label', text: choice).click()
         when 'grid'
           field.find('a[rel="add_row"]').click()
-          field.all('input')[0].set 'Lorem' + skew.toString()
-          field.all('input')[1].set 'ipsum' + skew.toString()
+          field.all('input')[0].clear().type('Lorem' + skew.toString()
+          field.all('input')[1].clear().type('ipsum' + skew.toString()
         when 'textarea'
           field.find('textarea').set Forgery(:lorem_ipsum).paragraphs(
             rand(1..(3 + skew)),
@@ -225,7 +225,7 @@ feature 'Publish Page - Create', () => {
         when 'toggle'
           field.find('.toggle-btn').click()
         when 'text'
-          field.find('input').set 'Lorem ipsum dolor sit amet' + skew.toString()
+          field.find('input').clear().type('Lorem ipsum dolor sit amet' + skew.toString()
       }
     }
 
@@ -271,8 +271,8 @@ feature 'Publish Page - Create', () => {
 
     it('adds a field', () => {
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
 
         page.fluid_field.items[index].title.should have_content(field)
       }
@@ -298,16 +298,16 @@ feature 'Publish Page - Create', () => {
       number_of_fields = @available_fields.length
 
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
         add_content(page.fluid_field.items[index])
 
         page.fluid_field.items[index].title.should have_content(field)
       }
 
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
         add_content(page.fluid_field.items[index + number_of_fields], 1)
 
         page.fluid_field.items[index + number_of_fields].title.should have_content(field)
@@ -333,8 +333,8 @@ feature 'Publish Page - Create', () => {
     it('removes fields', () => {
       // First: without saving
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
         add_content(page.fluid_field.items[index])
 
         page.fluid_field.items[index].title.should have_content(field)
@@ -350,8 +350,8 @@ feature 'Publish Page - Create', () => {
 
       // Second: after saving
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
         add_content(page.fluid_field.items[index])
 
         page.fluid_field.items[index].title.should have_content(field)
@@ -374,14 +374,14 @@ feature 'Publish Page - Create', () => {
 
     it('keeps data when the entry is invalid', () => {
       @available_fields.each_with_index do |field, index|
-        page.fluid_field.actions_menu.name.click()
-        page.fluid_field.actions_menu.fields[index].click()
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu.fields')[index].click()
         add_content(page.fluid_field.items[index])
 
         page.fluid_field.items[index].title.should have_content(field)
       }
 
-      page.title.set ""
+      page.get('title').clear().type(""
 
       page.save.click()
 

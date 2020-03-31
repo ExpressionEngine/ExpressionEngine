@@ -12,7 +12,7 @@ class Publish extends ControlPanel {
         'save_and_close': '.form-btns-top button[name=submit][value=save_and_close]',
 
         'file_fields': 'div[data-file-field-react]',
-        'chosen_files': '.fields-upload-chosen img',
+        'chosen_files': '.fields-upload-chosen:visible img',
 
         'tab_links': 'ul.tabs li',
         'tabs': '.tab-wrap div.tabs'

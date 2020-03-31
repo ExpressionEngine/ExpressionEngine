@@ -35,7 +35,7 @@ feature 'Member Settings', () => {
   it('should validate the form', () => {
     emails_error = 'This field must contain all valid email addresses.'
 
-    page.mbr_notification_emails.set 'sdfsdfsd'
+    page.mbr_notification_emails.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -45,13 +45,13 @@ feature 'Member Settings', () => {
 
     // AJAX validation
     page.load()
-    page.mbr_notification_emails.set 'sdfsdfsd'
+    page.mbr_notification_emails.clear().type('sdfsdfsd'
     page.mbr_notification_emails.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.mbr_notification_emails, emails_error)
     should_have_form_errors(page)
 
-    page.mbr_notification_emails.set 'trey@trey.com, test@test.com'
+    page.mbr_notification_emails.clear().type('trey@trey.com, test@test.com'
     page.mbr_notification_emails.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.mbr_notification_emails)
@@ -74,7 +74,7 @@ feature 'Member Settings', () => {
     page.memberlist_sort_order.choose_radio_option('asc')
     page.memberlist_row_limit.choose_radio_option('50')
     page.new_member_notification_toggle.click()
-    page.mbr_notification_emails.set 'test@test.com'
+    page.mbr_notification_emails.clear().type('test@test.com'
     page.submit
 
     page.get('wrap').contains('Preferences Updated'

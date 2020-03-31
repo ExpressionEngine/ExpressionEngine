@@ -19,7 +19,7 @@ feature 'Member Group List', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains('Super Admin'
 
-    page.keyword_search.set "Super Admin"
+    page.keyword_search.clear().type("Super Admin"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Super Admin"'
@@ -44,8 +44,8 @@ feature 'Member Group List', () => {
     page.should_not have_pagination
   }
 
-  context 'when creating a member group', () => {
-    before :each do
+  context('when creating a member group', () => {
+    beforeEach(function(){
       create_member_group
     }
 
@@ -82,12 +82,12 @@ feature 'Member Group List', () => {
     }
   }
 
-  context 'when editing a member group', () => {
-    before :each do
+  context('when editing a member group', () => {
+    beforeEach(function(){
       create_member_group
 
-      page.edit.name.set 'Editors'
-      page.edit.description.set 'Editors description.'
+      page.edit.name.clear().type('Editors'
+      page.edit.description.clear().type('Editors description.'
       page.edit.is_locked_toggle.click()
 
       submit_form
@@ -214,8 +214,8 @@ feature 'Member Group List', () => {
     }
   }
 
-  context 'when using MSM', () => {
-    before :each do
+  context('when using MSM', () => {
+    beforeEach(function(){
       create_msm_site
       create_member_group
     }
@@ -255,7 +255,7 @@ feature 'Member Group List', () => {
     it('deletes all member group records when deleting a member group', () => {
       page.load()
       page.list.groups.last.find('input[type="checkbox"]').click()
-      page.list.batch_actions.set 'remove'
+      page.list.batch_actions.clear().type('remove'
       page.list.batch_submit.click()
 
       cy.wait(1000)
@@ -281,22 +281,22 @@ feature 'Member Group List', () => {
     page.edit.should have_description
     page.edit.should have_is_locked
 
-    page.edit.name.set 'Moderators'
-    page.edit.description.set 'Moderators description.'
+    page.edit.name.clear().type('Moderators'
+    page.edit.description.clear().type('Moderators description.'
     page.edit.is_locked_toggle.click()
     page.edit.website_access[1].click()
     page.edit.can_view_profiles_toggle.click()
     page.edit.can_delete_self_toggle.click()
-    page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'
+    page.edit.mbr_delete_notify_emails.clear().type('team@ellislab.com'
     page.edit.include_members_in.each(&:click)
     page.edit.can_post_comments_toggle.click()
     page.edit.exclude_from_moderation_toggle.click()
     page.edit.comment_actions_options.each(&:click)
     page.edit.can_search_toggle.click()
-    page.edit.search_flood_control.set '60'
+    page.edit.search_flood_control.clear().type('60'
     page.edit.can_send_private_messages_toggle.click()
-    page.edit.prv_msg_send_limit.set '50'
-    page.edit.prv_msg_storage_limit.set '100'
+    page.edit.prv_msg_send_limit.clear().type('50'
+    page.edit.prv_msg_storage_limit.clear().type('100'
     page.edit.can_attach_in_private_messages_toggle.click()
     page.edit.can_send_bulletins_toggle.click()
     page.edit.can_access_cp_toggle.click()
@@ -331,8 +331,8 @@ feature 'Member Group List', () => {
   }
 
   def edit_member_group
-    page.edit.name.set 'Editors'
-    page.edit.description.set 'Editors description.'
+    page.edit.name.clear().type('Editors'
+    page.edit.description.clear().type('Editors description.'
     page.edit.is_locked_toggle.click()
     page.edit.template_groups_options.each(&:click)
     page.edit.allowed_template_groups_options[1].click()
@@ -375,7 +375,7 @@ feature 'Member Group List', () => {
     // Enable MSM if it's not enabled
     unless page.has_content?('Site Manager')
       page.settings_btn.click()
-      find('input[name="multiple_sites_enabled"]', :visible => false).set 'y'
+      find('input[name="multiple_sites_enabled"]', :visible => false).clear().type('y'
       find('form[action$="cp/settings/general"] div.form-btns.form-btns-top input[type="submit"]').click()
       page.main_menu.dev_menu.click()
     }
@@ -383,8 +383,8 @@ feature 'Member Group List', () => {
     click_link 'Site Manager'
     find('a[href$="cp/msm/create"]').click()
 
-    find('input[name="site_label"]').set 'Second Site'
-    find('input[name="site_name"]').set 'second_site'
+    find('input[name="site_label"]').clear().type('Second Site'
+    find('input[name="site_name"]').clear().type('second_site'
     find('form[action$="cp/msm/create"] div.form-btns.form-btns-top button[value="save_and_close"]').click()
 
     page.load()

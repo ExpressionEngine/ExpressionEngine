@@ -32,7 +32,7 @@ feature 'Query Form', () => {
     page.wait_for_error_message_count(1)
     should_have_error_text(page.query_form, field_required)
 
-    page.query_form.set 'SELECT'
+    page.query_form.clear().type('SELECT'
     page.query_form.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.query_form)
@@ -41,43 +41,43 @@ feature 'Query Form', () => {
   it('should not allow certain query types', () => {
     not_allowed = 'Query type not allowed'
 
-    page.query_form.set "FLUSH TABLES"
+    page.query_form.clear().type("FLUSH TABLES"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "REPLACE INTO offices(officecode,city) VALUES(8,'San Jose')"
+    page.query_form.clear().type("REPLACE INTO offices(officecode,city) VALUES(8,'San Jose')"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "GRANT ALL ON db1.* TO 'jeffrey'@'localhost'"
+    page.query_form.clear().type("GRANT ALL ON db1.* TO 'jeffrey'@'localhost'"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "REVOKE INSERT ON *.* FROM 'jeffrey'@'localhost'"
+    page.query_form.clear().type("REVOKE INSERT ON *.* FROM 'jeffrey'@'localhost'"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "LOCK TABLES t1 READ"
+    page.query_form.clear().type("LOCK TABLES t1 READ"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "UNLOCK TABLES t1 READ"
+    page.query_form.clear().type("UNLOCK TABLES t1 READ"
     page.submit
 
     cy.hasNoErrors()
     page.get('wrap').contains(not_allowed
 
-    page.query_form.set "SELECT * FROM exp_channels"
+    page.query_form.clear().type("SELECT * FROM exp_channels"
     page.submit
 
     cy.hasNoErrors()
@@ -89,7 +89,7 @@ feature 'Query Form', () => {
     error_text = 'You have an error in your SQL syntax'
 
     // Invalid query with errors on
-    page.query_form.set "SELECT FROM exp_channels"
+    page.query_form.clear().type("SELECT FROM exp_channels"
     page.submit
 
     cy.hasNoErrors()
@@ -98,7 +98,7 @@ feature 'Query Form', () => {
   }
 
   it('should show query results', () => {
-    page.query_form.set 'SELECT * FROM exp_channels'
+    page.query_form.clear().type('SELECT * FROM exp_channels'
     page.submit
 
     cy.hasNoErrors()
@@ -119,7 +119,7 @@ feature 'Query Form', () => {
   }
 
   it('should sort query results by columns', () => {
-    page.query_form.set 'SELECT * FROM exp_channels'
+    page.query_form.clear().type('SELECT * FROM exp_channels'
     page.submit
 
     cy.hasNoErrors()
@@ -130,7 +130,7 @@ feature 'Query Form', () => {
   }
 
   it('should search query results', () => {
-    page.query_form.set 'select * from exp_channel_titles'
+    page.query_form.clear().type('select * from exp_channel_titles'
     page.submit
 
     cy.hasNoErrors()
@@ -138,7 +138,7 @@ feature 'Query Form', () => {
     results.should have(0).pages
     results.should have(10).rows
 
-    results.search_field.set 'the'
+    results.search_field.clear().type('the'
     results.search_btn.click()
 
     cy.hasNoErrors()
@@ -164,7 +164,7 @@ feature 'Query Form', () => {
     cp_log = CpLog.new
     cp_log.generate_data(count: 30)
 
-    page.query_form.set 'select * from exp_cp_log'
+    page.query_form.clear().type('select * from exp_cp_log'
     page.submit
 
     cy.hasNoErrors()
@@ -182,7 +182,7 @@ feature 'Query Form', () => {
     cp_log = CpLog.new
     cp_log.generate_data(count: 30)
 
-    page.query_form.set 'select * from exp_cp_log'
+    page.query_form.clear().type('select * from exp_cp_log'
     page.submit
 
     cy.hasNoErrors()
@@ -215,7 +215,7 @@ feature 'Query Form', () => {
     results.should have(6).pages
     results.should have(25).rows
 
-    results.search_field.set 'alter'
+    results.search_field.clear().type('alter'
     results.search_btn.click()
 
     status = show_status
@@ -277,7 +277,7 @@ feature 'Query Form', () => {
   }
 
   it('should show no results when there are no results', () => {
-    page.query_form.set 'select * from exp_channels where channel_id = 1000'
+    page.query_form.clear().type('select * from exp_channels where channel_id = 1000'
     page.submit
 
     page.get('wrap').contains('Total Results: 0'
@@ -285,7 +285,7 @@ feature 'Query Form', () => {
   }
 
   it('should show the number of affected rows on write queries', () => {
-    page.query_form.set 'UPDATE exp_channel_titles SET title = "Kevin" WHERE title = "Josh"'
+    page.query_form.clear().type('UPDATE exp_channel_titles SET title = "Kevin" WHERE title = "Josh"'
     page.submit
 
     page.get('wrap').contains('Affected Rows: 1'

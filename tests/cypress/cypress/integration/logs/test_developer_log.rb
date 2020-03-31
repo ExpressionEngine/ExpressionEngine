@@ -50,7 +50,7 @@ feature 'Developer Log', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains(our_desc
 
-    page.keyword_search.set "Rspec"
+    page.keyword_search.clear().type("Rspec"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
@@ -148,7 +148,7 @@ feature 'Developer Log', () => {
 
     page.perpage_filter.click()
     page.wait_until_perpage_manual_filter_visible
-    page.perpage_manual_filter.set "42"
+    page.perpage_manual_filter.clear().type("42"
     page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
     page.perpage_filter.text.should eq "show (42)"
@@ -202,7 +202,7 @@ feature 'Developer Log', () => {
     page.date_filter_menu.click_link "Last 24 Hours"
     cy.hasNoErrors()
 
-    page.keyword_search.set "Rspec"
+    page.keyword_search.clear().type("Rspec"
     page.keyword_search.send_keys(:enter)
 
     page.date_filter.text.should eq "date (Last 24 Hours)"
@@ -327,7 +327,7 @@ feature 'Developer Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.keyword_search.set "Visible"
+    page.keyword_search.clear().type("Visible"
     page.keyword_search.send_keys(:enter)
     cy.hasNoErrors()
 

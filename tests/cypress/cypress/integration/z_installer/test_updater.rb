@@ -13,7 +13,7 @@ feature 'Updater', () => {
     @config = File.expand_path('../circleci/config-2.10.1.php')
   }
 
-  before :each do
+  beforeEach(function(){
     @installer.replace_config(@config)
     @installer.replace_database_config(@database)
 
@@ -49,7 +49,7 @@ feature 'Updater', () => {
     page.error.text.should include 'Unable to locate any database connection information.'
   }
 
-  context 'when updating from 2.x to 3.x', () => {
+  context('when updating from 2.x to 3.x', () => {
     it('updates using mysql as the dbdriver', () => {
       @installer.replace_database_config(@database, dbdriver: 'mysql')
       test_update

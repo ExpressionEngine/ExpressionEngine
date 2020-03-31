@@ -109,4 +109,10 @@ module.exports = (on, config) => {
             Cypress.exec(command)
         }
     })
+
+    on('task', {
+        'db:relationships_specified_channels': () => {
+            return db.seed('channel_sets/relationships-specified-channels.sql')
+        }
+    })
 }

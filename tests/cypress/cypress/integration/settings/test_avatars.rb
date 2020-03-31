@@ -29,7 +29,7 @@ feature 'Avatar Settings', () => {
   }
 
   it('should validate the form', () => {
-    page.avatar_path.set 'sdfsdfsd'
+    page.avatar_path.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -39,7 +39,7 @@ feature 'Avatar Settings', () => {
 
     // AJAX validation
     page.load()
-    page.avatar_path.set 'sdfsdfsd'
+    page.avatar_path.clear().type('sdfsdfsd'
     page.avatar_path.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.avatar_path, $invalid_path)
@@ -49,25 +49,25 @@ feature 'Avatar Settings', () => {
     page.avatar_path.trigger 'blur'
     page.wait_for_error_message_count(0)
 
-    page.avatar_path.set '/'
+    page.avatar_path.clear().type('/'
     page.avatar_path.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.avatar_path, $not_writable)
     should_have_form_errors(page)
 
-    page.avatar_max_width.set 'dfsd'
+    page.avatar_max_width.clear().type('dfsd'
     page.avatar_max_width.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_error_text(page.avatar_max_width, $integer_error)
     should_have_form_errors(page)
 
-    page.avatar_max_height.set 'dsfsd'
+    page.avatar_max_height.clear().type('dsfsd'
     page.avatar_max_height.trigger 'blur'
     page.wait_for_error_message_count(3)
     should_have_error_text(page.avatar_max_height, $integer_error)
     should_have_form_errors(page)
 
-    page.avatar_max_kb.set 'sdfsdfsd'
+    page.avatar_max_kb.clear().type('sdfsdfsd'
     page.avatar_max_kb.trigger 'blur'
     page.wait_for_error_message_count(4)
     should_have_error_text(page.avatar_max_kb, $integer_error)
@@ -80,19 +80,19 @@ feature 'Avatar Settings', () => {
     should_have_no_error_text(page.avatar_path)
     should_have_form_errors(page)
 
-    page.avatar_max_width.set '100'
+    page.avatar_max_width.clear().type('100'
     page.avatar_max_width.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.avatar_max_width)
     should_have_form_errors(page)
 
-    page.avatar_max_height.set '100'
+    page.avatar_max_height.clear().type('100'
     page.avatar_max_height.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.avatar_max_height)
     should_have_form_errors(page)
 
-    page.avatar_max_kb.set '100'
+    page.avatar_max_kb.clear().type('100'
     page.avatar_max_kb.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.avatar_max_kb)
@@ -120,11 +120,11 @@ feature 'Avatar Settings', () => {
 
     page.enable_avatars_toggle.click()
     page.allow_avatar_uploads_toggle.click()
-    page.avatar_url.set 'http://hello'
+    page.avatar_url.clear().type('http://hello'
     page.avatar_path.set @upload_path
-    page.avatar_max_width.set '100'
-    page.avatar_max_height.set '101'
-    page.avatar_max_kb.set '102'
+    page.avatar_max_width.clear().type('100'
+    page.avatar_max_height.clear().type('101'
+    page.avatar_max_kb.clear().type('102'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

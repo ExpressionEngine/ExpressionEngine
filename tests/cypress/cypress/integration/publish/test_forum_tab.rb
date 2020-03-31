@@ -4,7 +4,7 @@ feature 'Forum Tab', () => {
   let(:title) { 'Forum Tab Test' }
   let(:body) { 'Lorem ipsum dolor sit amet...' }
 
-  before :each do
+  beforeEach(function(){
     cy.auth();
     page = Publish.new
     page.forum_tab.install_forum
@@ -50,7 +50,7 @@ feature 'Forum Tab', () => {
     }
 
     page.load()(channel_id: 1)
-    page.title.set 'Second Forum Tab Test'
+    page.get('title').clear().type('Second Forum Tab Test'
     page.tab_links[4].click()
     page.forum_tab.forum_topic_id.set 1
     page.submit_buttons[1].click()
@@ -66,9 +66,9 @@ feature 'Forum Tab', () => {
 
     page.load()(channel_id: 1)
     page.tab_links[4].click()
-    page.forum_tab.forum_title.set 'Something'
-    page.forum_tab.forum_body.set 'Lorem ipsum dolor sit amet...'
-    page.forum_tab.forum_topic_id.set '1'
+    page.forum_tab.forum_title.clear().type('Something'
+    page.forum_tab.forum_body.clear().type('Lorem ipsum dolor sit amet...'
+    page.forum_tab.forum_topic_id.clear().type('1'
     page.forum_tab.forum_topic_id.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
@@ -80,7 +80,7 @@ feature 'Forum Tab', () => {
 
   it('invalidates an entry with an invalid forum topic ID', () => {
     page.tab_links[4].click()
-    page.forum_tab.forum_topic_id.set '999'
+    page.forum_tab.forum_topic_id.clear().type('999'
     page.forum_tab.forum_topic_id.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
@@ -89,7 +89,7 @@ feature 'Forum Tab', () => {
       'There is no forum topic with that ID.'
     )
 
-    page.forum_tab.forum_topic_id.set ''
+    page.forum_tab.forum_topic_id.clear().type(''
     page.forum_tab.forum_topic_id.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
@@ -108,7 +108,7 @@ feature 'Forum Tab', () => {
       'You cannot create a forum topic without content.'
     )
 
-    page.forum_tab.forum_title.set ''
+    page.forum_tab.forum_title.clear().type(''
     page.forum_tab.forum_title.trigger 'blur'
     page.forum_tab.forum_body.trigger 'blur'
     page.wait_for_error_message_count(0)
@@ -134,7 +134,7 @@ feature 'Forum Tab', () => {
     edit.load
     edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click()
 
-    page.title.set title + " Edited"
+    page.get('title').set title + " Edited"
     page.submit_buttons[2].click()
 
     page.all_there?.should == false
@@ -142,7 +142,7 @@ feature 'Forum Tab', () => {
   }
 
   def create_entry
-    page.title.set title
+    page.get('title').set title
     page.tab_links[4].click()
     page.forum_tab.forum_title.set title
     page.forum_tab.forum_body.set body

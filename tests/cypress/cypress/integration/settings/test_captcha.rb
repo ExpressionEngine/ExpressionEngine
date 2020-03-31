@@ -30,7 +30,7 @@ feature 'CAPTCHA Settings', () => {
   }
 
   it('should validate the form', () => {
-    page.captcha_path.set 'sdfsdfsd'
+    page.captcha_path.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -40,7 +40,7 @@ feature 'CAPTCHA Settings', () => {
 
     // AJAX validation
     page.load()
-    page.captcha_path.set 'sdfsdfsd'
+    page.captcha_path.clear().type('sdfsdfsd'
     page.captcha_path.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.captcha_path, $invalid_path)
@@ -50,7 +50,7 @@ feature 'CAPTCHA Settings', () => {
     page.captcha_path.trigger 'blur'
     page.wait_for_error_message_count(0)
 
-    page.captcha_path.set '/'
+    page.captcha_path.clear().type('/'
     page.captcha_path.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.captcha_path, $not_writable)
@@ -82,7 +82,7 @@ feature 'CAPTCHA Settings', () => {
     page.captcha_font_toggle.click()
     page.captcha_rand_toggle.click()
     page.captcha_require_members_toggle.click()
-    page.captcha_url.set 'http://hello'
+    page.captcha_url.clear().type('http://hello'
     page.captcha_path.set @upload_path
     page.submit
 

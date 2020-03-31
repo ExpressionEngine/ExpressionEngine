@@ -50,7 +50,7 @@ feature 'SQL Manager', () => {
   it('should search the table names', () => {
     tables = get_tables
 
-    page.search_field.set 'access'
+    page.search_field.clear().type('access'
     page.search_btn.click()
 
     page.get('wrap').contains('Search Results we found 3 results for "access"'
@@ -61,7 +61,7 @@ feature 'SQL Manager', () => {
   it('should sort search results', () => {
     tables = get_tables
 
-    page.search_field.set 'access'
+    page.search_field.clear().type('access'
     page.search_btn.click()
 
     page.sort_links[0].click()
@@ -98,7 +98,7 @@ feature 'SQL Manager', () => {
     page.tables.map {|source| source.text}.should == tables.reverse
 
     // And search
-    page.search_field.set 'category'
+    page.search_field.clear().type('category'
     page.search_btn.click()
 
     page.tables.map {|source| source.text}.should == ['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse
@@ -128,7 +128,7 @@ feature 'SQL Manager', () => {
     page.tables.map(&:text).should include(*tables.reverse)
 
     // And search
-    page.search_field.set 'category'
+    page.search_field.clear().type('category'
     page.search_btn.click()
 
     page.tables.map(&:text).should include(*['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse)

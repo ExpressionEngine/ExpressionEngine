@@ -129,6 +129,37 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
     cy.exec(command)
 })
 
+// Create a number of entries
+//
+// @param [Number] n = 10 Set a specific number of entries to create, defaults
+//   to 10
+// @return [void]
+Cypress.Commands.add("createEntries", ({ n, channel }) => {
+
+    if (!n) n = 10
+    if (!channel) channel = 1
+
+    let command = [
+        `cd support/fixtures && php entries.php`,
+        `--number ${n}`,
+        `--channel ${channel}`
+    ].join(' ')
+
+    cy.exec(command)
+})
+
+Cypress.Commands.add("createChannel", ({ opts }) => {
+    let command = `cd support/fixtures && php channels.php`
+
+    // include opts, change _ in hash symbols to - to standardize CLI behavior
+    for (let [key, value] of Object.entries(opts)) {
+        key = key.toString().replace('_', '-')
+        command += " --${key} ${val}"
+    }
+
+    let harvest = cy.exec(command)
+    return harvest.stdout;
+})
 
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })

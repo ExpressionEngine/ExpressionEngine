@@ -1,7 +1,7 @@
 require './bootstrap.rb'
 
 feature 'Publish Page - Edit', () => {
-  before :each do
+  beforeEach(function(){
     cy.auth();
     page = Publish.new
     cy.hasNoErrors()

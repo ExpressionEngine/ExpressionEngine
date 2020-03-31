@@ -84,7 +84,7 @@ feature 'File Manager / Upload File', () => {
 
   it('can upload a Markdown file and set the title', () => {
     page.attach_file('file', @md_file)
-    page.title_input.set "RSpec README"
+    page.title_input.clear().type("RSpec README"
     page.form_submit_button.click()
     cy.hasNoErrors()
 
@@ -100,7 +100,7 @@ feature 'File Manager / Upload File', () => {
 
   it('can upload a Markdown file and set the description', () => {
     page.attach_file('file', @md_file)
-    page.description_input.set "RSpec README"
+    page.description_input.clear().type("RSpec README"
     page.form_submit_button.click()
     cy.hasNoErrors()
 
@@ -121,7 +121,7 @@ feature 'File Manager / Upload File', () => {
 
   it('can upload a Markdown file and set the credit', () => {
     page.attach_file('file', @md_file)
-    page.credit_input.set "RSpec README"
+    page.credit_input.clear().type("RSpec README"
     page.form_submit_button.click()
     cy.hasNoErrors()
 
@@ -142,7 +142,7 @@ feature 'File Manager / Upload File', () => {
 
   it('can upload a Markdown file and set the location', () => {
     page.attach_file('file', @md_file)
-    page.location_input.set "RSpec README"
+    page.location_input.clear().type("RSpec README"
     page.form_submit_button.click()
     cy.hasNoErrors()
 

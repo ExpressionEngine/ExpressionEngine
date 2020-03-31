@@ -1,7 +1,7 @@
 require './bootstrap.rb'
 
 feature 'Entry Manager', () => {
-  before :each do
+  beforeEach(function(){
     cy.auth();
     page = EntryManager.new
     page.load()

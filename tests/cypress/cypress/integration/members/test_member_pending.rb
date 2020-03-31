@@ -16,7 +16,7 @@ feature 'Pending Member List', () => {
 
   // Confirming phrase search
   it('searches by phrases', () => {
-    page.keyword_search.set 'pending1'
+    page.keyword_search.clear().type('pending1'
     page.keyword_search.send_keys(:enter)
     cy.hasNoErrors()
 
@@ -27,7 +27,7 @@ feature 'Pending Member List', () => {
   }
 
   it('shows no results on a failed search'  do
-    page.keyword_search.set 'admin'
+    page.keyword_search.clear().type('admin'
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 0 results for "admin"'

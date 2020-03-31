@@ -1,7 +1,7 @@
 require './bootstrap.rb'
 
 feature 'Hit Tracking', () => {
-  before :each do
+  beforeEach(function(){
     cy.auth();
     page = HitTracking.new
     page.load()
@@ -16,19 +16,19 @@ feature 'Hit Tracking', () => {
     is_numeric_error = 'This field must contain only numeric characters.'
 
     // Ajax testing
-    page.dynamic_tracking_disabling.set 'three'
+    page.dynamic_tracking_disabling.clear().type('three'
     page.dynamic_tracking_disabling.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.dynamic_tracking_disabling, is_numeric_error)
     should_have_form_errors(page)
 
     // Clean up after Ajax testing
-    page.dynamic_tracking_disabling.set '3'
+    page.dynamic_tracking_disabling.clear().type('3'
     page.dynamic_tracking_disabling.trigger 'blur'
     page.wait_for_error_message_count(0)
 
     // Form Validation
-    page.dynamic_tracking_disabling.set 'three'
+    page.dynamic_tracking_disabling.clear().type('three'
     page.submit
 
     cy.hasNoErrors()
@@ -45,7 +45,7 @@ feature 'Hit Tracking', () => {
     page.enable_online_user_tracking_toggle.click()
     page.enable_hit_tracking_toggle.click()
     page.enable_entry_view_tracking_toggle.click()
-    page.dynamic_tracking_disabling.set '360'
+    page.dynamic_tracking_disabling.clear().type('360'
     page.submit
 
     cy.hasNoErrors()

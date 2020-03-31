@@ -33,7 +33,7 @@ feature 'Spam Module', () => {
     }
 
     it('can search by phrases', () => {
-      page.keyword_search.set 'about'
+      page.keyword_search.clear().type('about'
       page.keyword_search.send_keys(:enter)
       cy.hasNoErrors()
 

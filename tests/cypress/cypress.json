@@ -4,5 +4,6 @@
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
+    "defaultCommandTimeout": 6000,
     "watchForFileChanges": false
 }

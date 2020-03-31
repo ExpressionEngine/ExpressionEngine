@@ -33,8 +33,8 @@ feature 'Word Censorship Settings', () => {
 
   it('should save and load the settings', () => {
     page.enable_censoring_toggle.click()
-    page.censor_replacement.set '####'
-    page.censored_words.set "Poop\nPerl"
+    page.censor_replacement.clear().type('####'
+    page.censored_words.clear().type("Poop\nPerl"
     page.submit
 
     page.get('wrap').contains('Preferences updated'

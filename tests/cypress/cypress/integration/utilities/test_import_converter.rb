@@ -52,18 +52,18 @@ feature 'Import File Converter', () => {
     should_have_error_text(page.delimiter_special, custom_delimit_required)
     should_have_form_errors(page)
 
-    page.delimiter_special.set '"'
+    page.delimiter_special.clear().type('"'
     page.delimiter_special.trigger 'blur'
     page.wait_for_error_message_count(0)
 
     // Invalid custom delimiter
-    page.delimiter_special.set 'd'
+    page.delimiter_special.clear().type('d'
     page.delimiter_special.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.delimiter_special, custom_delimit_validation)
     should_have_form_errors(page)
 
-    page.delimiter_special.set '"'
+    page.delimiter_special.clear().type('"'
     page.delimiter_special.trigger 'blur'
 
     page.wait_for_error_message_count(0)
@@ -112,7 +112,7 @@ feature 'Import File Converter', () => {
     // Test required file and custom delimiter standard validation
     page.load()
     page.find('input[value=other]').click()
-    page.delimiter_special.set 'd'
+    page.delimiter_special.clear().type('d'
     page.submit
     cy.hasNoErrors()
 
@@ -137,7 +137,7 @@ feature 'Import File Converter', () => {
 
     page.attach_file('member_file', @tab_file)
     page.find('input[value=other]').click()
-    page.delimiter_special.set '*'
+    page.delimiter_special.clear().type('*'
     page.submit
     page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
@@ -166,7 +166,7 @@ feature 'Import File Converter', () => {
 
     page.attach_file('member_file', @comma_file)
     page.find('input[value=other]').click()
-    page.delimiter_special.set '*'
+    page.delimiter_special.clear().type('*'
     page.submit
     page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
@@ -195,7 +195,7 @@ feature 'Import File Converter', () => {
 
     page.attach_file('member_file', @pipe_file)
     page.find('input[value=other]').click()
-    page.delimiter_special.set '*'
+    page.delimiter_special.clear().type('*'
     page.submit
     page.get('wrap').contains(@min_field_error
     cy.hasNoErrors()
@@ -230,7 +230,7 @@ feature 'Import File Converter', () => {
 
     page.attach_file('member_file', @other_file)
     page.find('input[value=other]').click()
-    page.delimiter_special.set '*'
+    page.delimiter_special.clear().type('*'
     page.submit
     page.get('wrap').invoke('text').then((text) => {
 			expect(text).not.contains( @min_field_error

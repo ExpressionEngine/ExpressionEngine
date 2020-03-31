@@ -29,13 +29,13 @@ feature 'Content & Design Settings', () => {
     page.emoticon_url.value.should == eeConfig({item: 'emoticon_url')
   }
 
-  context 'when validating the form', () => {
+  context('when validating the form', () => {
     let(:image_library_path_error) { 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.' }
 
     it('validates image resize protocol when using ImageMagick', () => {
       // Should only show an error for image library path if ImageMagick or NetPBM are selected
       page.image_resize_protocol.choose_radio_option('imagemagick')
-      page.image_library_path.set ''
+      page.image_library_path.clear().type(''
       page.image_library_path.trigger 'blur'
       page.wait_for_error_message_count(1)
       should_have_form_errors(page)
@@ -44,7 +44,7 @@ feature 'Content & Design Settings', () => {
 
     it('validates image resize protocol when using NetPBM', () => {
       page.image_resize_protocol.choose_radio_option('netpbm')
-      page.image_library_path.set ''
+      page.image_library_path.clear().type(''
       page.image_library_path.trigger 'blur'
       page.wait_for_error_message_count(1, 10)
       should_have_form_errors(page)
@@ -53,7 +53,7 @@ feature 'Content & Design Settings', () => {
 
     it('validates a nonsense image library path', () => {
       page.image_resize_protocol.choose_radio_option('netpbm')
-      page.image_library_path.set 'dfsdf'
+      page.image_library_path.clear().type('dfsdf'
       page.image_library_path.trigger 'blur'
       page.wait_for_error_message_count(1)
       should_have_form_errors(page)
@@ -62,7 +62,7 @@ feature 'Content & Design Settings', () => {
 
     it('validates a valid set of library and path', () => {
       page.image_resize_protocol.choose_radio_option('gd')
-      page.image_library_path.set ''
+      page.image_library_path.clear().type(''
       page.image_library_path.trigger 'blur'
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
@@ -100,11 +100,11 @@ feature 'Content & Design Settings', () => {
     page.enable_sql_caching_toggle.click()
     page.auto_assign_cat_parents_toggle.click()
     page.image_resize_protocol.choose_radio_option('imagemagick')
-    page.image_library_path.set '/'
-    page.thumbnail_suffix.set 'mysuffix'
+    page.image_library_path.clear().type('/'
+    page.thumbnail_suffix.clear().type('mysuffix'
     page.enable_emoticons_toggle.click()
     // Don't test this, we manually override this path in config.php for the tests
-    #page.emoticon_url.set 'http://myemoticons/'
+    #page.emoticon_url.clear().type('http://myemoticons/'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

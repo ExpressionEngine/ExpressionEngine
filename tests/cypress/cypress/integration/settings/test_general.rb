@@ -34,7 +34,7 @@ feature 'General Settings', () => {
       page.include_seconds_toggle.click()
 
       // Only field that's required, will be our test case
-      page.site_name.set ''
+      page.site_name.clear().type(''
 
       page.submit
 
@@ -114,8 +114,8 @@ feature 'General Settings', () => {
 
   it('should load and save the settings', () => {
     // Save new settings
-    page.site_name.set 'My sweet site'
-    page.site_short_name.set 'my_sweet_site'
+    page.site_name.clear().type('My sweet site'
+    page.site_short_name.clear().type('my_sweet_site'
     page.is_system_on_toggle.click()
     page.new_version_check.choose_radio_option('n')
     page.should have_check_version_btn

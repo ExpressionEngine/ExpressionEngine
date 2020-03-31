@@ -62,7 +62,7 @@ feature 'Communicate', () => {
   }
 
   it "shows errors when required fields are not populated" do
-    page.from_email.set ''
+    page.from_email.clear().type(''
     page.submit_button.click()
 
     page.should have_alert
@@ -298,7 +298,7 @@ feature 'Communicate', () => {
 //    page.subject.set my_subject
 //    page.from_email.set @test_from
 //    page.recipient.set @test_recipient
-//    page.cc.set 'ellislab.developers.cc@mailinator.com'
+//    page.cc.clear().type('ellislab.developers.cc@mailinator.com'
 //    page.body.set my_body
 //    page.submit_button.click()
 #
@@ -322,7 +322,7 @@ feature 'Communicate', () => {
 //    page.subject.set my_subject
 //    page.from_email.set @test_from
 //    page.recipient.set @test_recipient
-//    page.bcc.set 'ellislab.developers.bcc@mailinator.com'
+//    page.bcc.clear().type('ellislab.developers.bcc@mailinator.com'
 //    page.body.set my_body
 //    page.submit_button.click()
 #

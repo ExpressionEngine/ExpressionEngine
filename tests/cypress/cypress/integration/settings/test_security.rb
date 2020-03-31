@@ -58,7 +58,7 @@ feature 'Security & Privacy Settings', () => {
   it('should validate the form', () => {
     integer_error = 'This field must contain an integer.'
 
-    page.un_min_len.set 'sdfsdfsd'
+    page.un_min_len.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -68,38 +68,38 @@ feature 'Security & Privacy Settings', () => {
 
     // AJAX validation
     page.load()
-    page.un_min_len.set 'sdfsdfsd'
+    page.un_min_len.clear().type('sdfsdfsd'
     page.un_min_len.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.un_min_len, integer_error)
     should_have_form_errors(page)
 
-    page.password_lockout_interval.set 'sdfsdfsd'
+    page.password_lockout_interval.clear().type('sdfsdfsd'
     page.password_lockout_interval.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_error_text(page.password_lockout_interval, integer_error)
     should_have_form_errors(page)
 
-    page.pw_min_len.set 'sdfsdfsd'
+    page.pw_min_len.clear().type('sdfsdfsd'
     page.pw_min_len.trigger 'blur'
     page.wait_for_error_message_count(3)
     should_have_error_text(page.pw_min_len, integer_error)
     should_have_form_errors(page)
 
     // Fix everything
-    page.un_min_len.set '5'
+    page.un_min_len.clear().type('5'
     page.un_min_len.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.un_min_len)
     should_have_form_errors(page)
 
-    page.password_lockout_interval.set '15'
+    page.password_lockout_interval.clear().type('15'
     page.password_lockout_interval.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.password_lockout_interval)
     should_have_form_errors(page)
 
-    page.pw_min_len.set '8'
+    page.pw_min_len.clear().type('8'
     page.pw_min_len.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.pw_min_len)
@@ -115,20 +115,20 @@ feature 'Security & Privacy Settings', () => {
 
     page.cp_session_type.choose_radio_option('s')
     page.website_session_type.choose_radio_option('s')
-    page.cookie_domain.set '.yourdomain.com'
-    page.cookie_path.set 'blog'
+    page.cookie_domain.clear().type('.yourdomain.com'
+    page.cookie_path.clear().type('blog'
     page.cookie_httponly_toggle.click()
     // Changing cookie_secure will boot us out of the CP
     page.allow_username_change_toggle.click()
-    page.un_min_len.set '5'
+    page.un_min_len.clear().type('5'
     page.allow_multi_logins_toggle.click()
     page.require_ip_for_login_toggle.click()
     page.password_lockout_toggle.click()
-    page.password_lockout_interval.set '15'
+    page.password_lockout_interval.clear().type('15'
     page.require_secure_passwords_toggle.click()
-    page.pw_min_len.set '8'
+    page.pw_min_len.clear().type('8'
     page.allow_dictionary_pw_toggle.click()
-    page.name_of_dictionary_file.set 'http://dictionary'
+    page.name_of_dictionary_file.clear().type('http://dictionary'
     page.deny_duplicate_data_toggle.click()
     page.require_ip_for_posting_toggle.click()
     page.xss_clean_uploads_toggle.click()

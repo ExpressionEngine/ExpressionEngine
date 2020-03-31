@@ -29,7 +29,7 @@ feature 'Grid Field Settings', () => {
     page.load()
     cy.hasNoErrors()
 
-    page.field_label.set 'Test Grid'
+    page.field_label.clear().type('Test Grid'
 
     page.select_field_type 'Grid'
   }
@@ -41,7 +41,7 @@ feature 'Grid Field Settings', () => {
 
   it('should autopopulate the column name', () => {
     column = GridSettings::column(1)
-    column.label.set 'Test Column'
+    column.label.clear().type('Test Column'
     column.name.value.should eq 'test_column'
 
     page.submit
@@ -50,24 +50,24 @@ feature 'Grid Field Settings', () => {
 
     // Column label shouldn't update automatically on existing columns
     column = GridSettings::column(1)
-    column.label.set 'News column label'
+    column.label.clear().type('News column label'
     column.name.value.should eq 'test_column'
 
     // Ensure column name generation works in new and cloned columns
     GridSettings::add_column
     column2 = GridSettings::column(2)
-    column2.label.set 'New column'
+    column2.label.clear().type('New column'
     column2.name.value.should eq 'new_column'
 
     column2 = GridSettings::clone_column(1)
-    column2.label.set 'New column 2'
+    column2.label.clear().type('New column 2'
     column2.name.value.should eq 'new_column_2'
   }
 
   it('should validate column names and labels', () => {
     // No column label
     column = GridSettings::column(1)
-    column.name.set 'test_column'
+    column.name.clear().type('test_column'
     cy.hasNoErrors()
     page.submit
     column = GridSettings::column(1)
@@ -76,7 +76,7 @@ feature 'Grid Field Settings', () => {
 
     // No column label and duplicate column label
     column = GridSettings::add_column
-    column.label.set 'Test column'
+    column.label.clear().type('Test column'
     column.name.value.should eq 'test_column'
     column.name.click()
     column.label.click() // Blur, .trigger('blur') isn't working
@@ -85,8 +85,8 @@ feature 'Grid Field Settings', () => {
 
     // No column name, duplicate column label, and no column name
     column = GridSettings::add_column
-    column.label.set 'Test column no name'
-    column.name.set ''
+    column.label.clear().type('Test column no name'
+    column.name.clear().type(''
     column.name.click()
     column.label.click()
     page.wait_for_error_message_count(3)
@@ -95,7 +95,7 @@ feature 'Grid Field Settings', () => {
 
   it('should only duplicate columns once', () => {
     column1 = GridSettings::column(1)
-    column1.name.set 'test_column'
+    column1.name.clear().type('test_column'
     column2 = GridSettings::clone_column(1)
     column3 = GridSettings::clone_column(2)
     lambda { GridSettings::column(4) }.should raise_error(Capybara::ElementNotFound)
@@ -125,7 +125,7 @@ feature 'Grid Field Settings', () => {
 
     // Sabbotage a column to make sure data is retained on validation error
     column = GridSettings::column(1)
-    column.name.set ''
+    column.name.clear().type(''
     page.submit
     column = GridSettings::column(1)
     should_have_error_text(column.name, $required_error)
@@ -133,7 +133,7 @@ feature 'Grid Field Settings', () => {
 
     // Put back the column name for validation
     column = GridSettings::column(1)
-    column.name.set 'date'
+    column.name.clear().type('date'
 
     grid_test_data = GridSettings::test_data
 

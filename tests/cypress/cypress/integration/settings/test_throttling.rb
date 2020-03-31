@@ -27,7 +27,7 @@ feature 'Access Throttling Settings', () => {
   it('should validate the form', () => {
     integer_error = 'This field must contain an integer.'
 
-    page.lockout_time.set 'sdfsdfsd'
+    page.lockout_time.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -37,38 +37,38 @@ feature 'Access Throttling Settings', () => {
 
     // AJAX validation
     page.load()
-    page.lockout_time.set 'sdfsdfsd'
+    page.lockout_time.clear().type('sdfsdfsd'
     page.lockout_time.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.lockout_time, integer_error)
     should_have_form_errors(page)
 
-    page.max_page_loads.set 'sdfsdfsd'
+    page.max_page_loads.clear().type('sdfsdfsd'
     page.max_page_loads.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_error_text(page.max_page_loads, integer_error)
     should_have_form_errors(page)
 
-    page.time_interval.set 'sdfsdfsd'
+    page.time_interval.clear().type('sdfsdfsd'
     page.time_interval.trigger 'blur'
     page.wait_for_error_message_count(3)
     should_have_error_text(page.time_interval, integer_error)
     should_have_form_errors(page)
 
     // Fix everything
-    page.lockout_time.set '5'
+    page.lockout_time.clear().type('5'
     page.lockout_time.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.lockout_time)
     should_have_form_errors(page)
 
-    page.max_page_loads.set '15'
+    page.max_page_loads.clear().type('15'
     page.max_page_loads.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.max_page_loads)
     should_have_form_errors(page)
 
-    page.time_interval.set '8'
+    page.time_interval.clear().type('8'
     page.time_interval.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.time_interval)
@@ -93,12 +93,12 @@ feature 'Access Throttling Settings', () => {
   it('should save and load the settings', () => {
     page.enable_throttling_toggle.click()
     page.banish_masked_ips_toggle.click()
-    page.lockout_time.set '60'
-    page.max_page_loads.set '40'
-    page.time_interval.set '30'
+    page.lockout_time.clear().type('60'
+    page.max_page_loads.clear().type('40'
+    page.time_interval.clear().type('30'
     page.banishment_type.choose_radio_option('404')
-    page.banishment_url.set 'http://yahoo.com'
-    page.banishment_message.set 'You are banned'
+    page.banishment_url.clear().type('http://yahoo.com'
+    page.banishment_message.clear().type('You are banned'
     page.submit
 
     page.enable_throttling.value.should == 'y'

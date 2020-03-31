@@ -40,14 +40,14 @@ feature 'Throttling Log', () => {
     page.should have_perpage_filter
   }
 
-  context 'when throttling is disabled', () => {
+  context('when throttling is disabled', () => {
     it('shows the Turn Throttling On button', :enabled => false, :pregen => true do
       page.get('no_results').should('exist')
       page.should have_selector('a', :text => 'Turn Throttling On')
     }
   }
 
-  context 'when throttling is enabled', () => {
+  context('when throttling is enabled', () => {
     it('shows the Access Throttling Logs page', :enabled => true, :pregen => true do
       page.should have_remove_all
       page.should have_pagination
@@ -70,7 +70,7 @@ feature 'Throttling Log', () => {
       // Be sane and make sure it's there before we search for it
       page.get('wrap').contains(our_ip
 
-      page.keyword_search.set "172.16.11"
+      page.keyword_search.clear().type("172.16.11"
       page.keyword_search.send_keys(:enter)
 
       page.heading.text.should eq 'Search Results we found 1 results for "172.16.11"'
@@ -111,7 +111,7 @@ feature 'Throttling Log', () => {
     it('can set a custom limit', :enabled => true, :pregen => true do
       page.perpage_filter.click()
       page.wait_until_perpage_manual_filter_visible
-      page.perpage_manual_filter.set "42"
+      page.perpage_manual_filter.clear().type("42"
       page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 
       page.perpage_filter.text.should eq "show (42)"
@@ -133,7 +133,7 @@ feature 'Throttling Log', () => {
       page.perpage_filter_menu.click_link "25"
       cy.hasNoErrors()
 
-      page.keyword_search.set "172.16.11"
+      page.keyword_search.clear().type("172.16.11"
       page.keyword_search.send_keys(:enter)
 
       page.perpage_filter.text.should eq "show (25)"
@@ -221,7 +221,7 @@ feature 'Throttling Log', () => {
       page.perpage_filter_menu.click_link "25"
       cy.hasNoErrors()
 
-      page.keyword_search.set "172.16.11"
+      page.keyword_search.clear().type("172.16.11"
       page.keyword_search.send_keys(:enter)
       cy.hasNoErrors()
 

@@ -28,7 +28,7 @@ feature 'Comment Settings', () => {
   it('should validate the form', () => {
     comment_edit_time_error = 'This field must contain an integer.'
 
-    page.comment_edit_time_limit.set 'sdfsdfsd'
+    page.comment_edit_time_limit.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -38,13 +38,13 @@ feature 'Comment Settings', () => {
 
     // AJAX validation
     page.load()
-    page.comment_edit_time_limit.set 'sdfsdfsd'
+    page.comment_edit_time_limit.clear().type('sdfsdfsd'
     page.comment_edit_time_limit.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains(comment_edit_time_error
 
-    page.comment_edit_time_limit.set '100'
+    page.comment_edit_time_limit.clear().type('100'
     page.comment_edit_time_limit.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
@@ -58,7 +58,7 @@ feature 'Comment Settings', () => {
     page.enable_comments_toggle.click()
     page.comment_word_censoring_toggle.click()
     page.comment_moderation_override_toggle.click()
-    page.comment_edit_time_limit.set '300'
+    page.comment_edit_time_limit.clear().type('300'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

@@ -26,7 +26,7 @@ feature 'Messaging Settings', () => {
   }
 
   it('should validate the form', () => {
-    page.prv_msg_max_chars.set 'sdfsdfsd'
+    page.prv_msg_max_chars.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -36,13 +36,13 @@ feature 'Messaging Settings', () => {
 
     // AJAX validation
     page.load()
-    page.prv_msg_max_chars.set 'sdfsdfsd'
+    page.prv_msg_max_chars.clear().type('sdfsdfsd'
     page.prv_msg_max_chars.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.prv_msg_max_chars, $integer_error)
     should_have_form_errors(page)
 
-    page.prv_msg_upload_path.set '/dfffds/'
+    page.prv_msg_upload_path.clear().type('/dfffds/'
     page.prv_msg_upload_path.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_error_text(page.prv_msg_upload_path, $invalid_path)
@@ -52,32 +52,32 @@ feature 'Messaging Settings', () => {
     page.prv_msg_upload_path.trigger 'blur'
     page.wait_for_error_message_count(1)
 
-    page.prv_msg_upload_path.set '/'
+    page.prv_msg_upload_path.clear().type('/'
     page.prv_msg_upload_path.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_error_text(page.prv_msg_upload_path, $not_writable)
     should_have_form_errors(page)
 
-    page.prv_msg_max_attachments.set 'sdfsdfsd'
+    page.prv_msg_max_attachments.clear().type('sdfsdfsd'
     page.prv_msg_max_attachments.trigger 'blur'
     page.wait_for_error_message_count(3)
     should_have_error_text(page.prv_msg_max_attachments, $integer_error)
     should_have_form_errors(page)
 
-    page.prv_msg_attach_maxsize.set 'sdfsdfsd'
+    page.prv_msg_attach_maxsize.clear().type('sdfsdfsd'
     page.prv_msg_attach_maxsize.trigger 'blur'
     page.wait_for_error_message_count(4)
     should_have_error_text(page.prv_msg_attach_maxsize, $integer_error)
     should_have_form_errors(page)
 
-    page.prv_msg_attach_total.set 'sdfsdfsd'
+    page.prv_msg_attach_total.clear().type('sdfsdfsd'
     page.prv_msg_attach_total.trigger 'blur'
     page.wait_for_error_message_count(5)
     should_have_error_text(page.prv_msg_attach_total, $integer_error)
     should_have_form_errors(page)
 
     // Fix everything
-    page.prv_msg_max_chars.set '100'
+    page.prv_msg_max_chars.clear().type('100'
     page.prv_msg_max_chars.trigger 'blur'
     page.wait_for_error_message_count(4)
     should_have_no_error_text(page.prv_msg_max_chars)
@@ -89,19 +89,19 @@ feature 'Messaging Settings', () => {
     should_have_no_error_text(page.prv_msg_upload_path)
     should_have_form_errors(page)
 
-    page.prv_msg_max_attachments.set '100'
+    page.prv_msg_max_attachments.clear().type('100'
     page.prv_msg_max_attachments.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.prv_msg_max_attachments)
     should_have_form_errors(page)
 
-    page.prv_msg_attach_maxsize.set '100'
+    page.prv_msg_attach_maxsize.clear().type('100'
     page.prv_msg_attach_maxsize.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.prv_msg_attach_maxsize)
     should_have_form_errors(page)
 
-    page.prv_msg_attach_total.set '100'
+    page.prv_msg_attach_total.clear().type('100'
     page.prv_msg_attach_total.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.prv_msg_attach_total)
@@ -117,13 +117,13 @@ feature 'Messaging Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    page.prv_msg_max_chars.set '100'
+    page.prv_msg_max_chars.clear().type('100'
     page.prv_msg_html_format.choose_radio_option('none')
     page.prv_msg_auto_links_toggle.click()
     page.prv_msg_upload_path.set File.expand_path('support/tmp')
-    page.prv_msg_max_attachments.set '101'
-    page.prv_msg_attach_maxsize.set '102'
-    page.prv_msg_attach_total.set '103'
+    page.prv_msg_max_attachments.clear().type('101'
+    page.prv_msg_attach_maxsize.clear().type('102'
+    page.prv_msg_attach_total.clear().type('103'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

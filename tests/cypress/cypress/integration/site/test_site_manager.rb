@@ -13,7 +13,7 @@ feature 'Site Manager', () => {
     page.all_there?.should == true
   }
 
-  context 'with multiple sites', () => {
+  context('with multiple sites', () => {
     beforeEach(function() {
       page.add_site_button.click()
       cy.hasNoErrors()

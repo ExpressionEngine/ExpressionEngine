@@ -55,13 +55,13 @@ feature 'Ban Settings', () => {
   }
 
   it('should save and load the settings', () => {
-    page.banned_ips.set 'Dummy IPs'
-    page.banned_emails.set 'Dummy Emails'
-    page.banned_usernames.set 'Dummy Usernames'
-    page.banned_screen_names.set 'Dummy Screen Names'
+    page.banned_ips.clear().type('Dummy IPs'
+    page.banned_emails.clear().type('Dummy Emails'
+    page.banned_usernames.clear().type('Dummy Usernames'
+    page.banned_screen_names.clear().type('Dummy Screen Names'
     page.ban_action_options.choose_radio_option('message')
-    page.ban_message.set 'Dummy Message'
-    page.ban_destination.set 'Dummy Destination'
+    page.ban_message.clear().type('Dummy Message'
+    page.ban_destination.clear().type('Dummy Destination'
     page.submit
 
     page.get('wrap').contains('Ban Settings updated'

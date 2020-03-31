@@ -36,7 +36,7 @@ feature 'Debugging & Output Settings', () => {
   it('should validate the form', () => {
     max_caches_error = 'This field must contain an integer.'
 
-    page.max_caches.set 'sdfsdfsd'
+    page.max_caches.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -46,13 +46,13 @@ feature 'Debugging & Output Settings', () => {
 
     // AJAX validation
     page.load()
-    page.max_caches.set 'sdfsdfsd'
+    page.max_caches.clear().type('sdfsdfsd'
     page.max_caches.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains(max_caches_error
 
-    page.max_caches.set '100'
+    page.max_caches.clear().type('100'
     page.max_caches.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
@@ -72,7 +72,7 @@ feature 'Debugging & Output Settings', () => {
     page.force_query_string_toggle.click()
     page.send_headers_toggle.click()
     page.cache_driver.choose_radio_option('memcached')
-    page.max_caches.set '300'
+    page.max_caches.clear().type('300'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

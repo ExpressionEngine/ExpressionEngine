@@ -61,7 +61,7 @@ feature 'Search Log', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains(our_terms
 
-    page.keyword_search.set "Rspec"
+    page.keyword_search.clear().type("Rspec"
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
@@ -111,7 +111,7 @@ feature 'Search Log', () => {
   it('filters by custom username', :pregen => true do
     page.username_filter.click()
     page.wait_until_username_manual_filter_visible
-    page.username_manual_filter.set "johndoe"
+    page.username_manual_filter.clear().type("johndoe"
     page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 
     page.username_filter.text.should eq "username (johndoe)"
@@ -156,7 +156,7 @@ feature 'Search Log', () => {
   it('can set a custom limit', :pregen => true do
     page.perpage_filter.click()
     page.wait_until_perpage_manual_filter_visible
-    page.perpage_manual_filter.set "42"
+    page.perpage_manual_filter.clear().type("42"
     page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
     page.perpage_filter.text.should eq "show (42)"
@@ -206,7 +206,7 @@ feature 'Search Log', () => {
     page.get('wrap').contains("admin"
 
     // Now, combine the filters
-    page.keyword_search.set "johndoe"
+    page.keyword_search.clear().type("johndoe"
     page.keyword_search.send_keys(:enter)
 
     page.perpage_filter.text.should eq "show (150)"
@@ -299,7 +299,7 @@ feature 'Search Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.keyword_search.set "johndoe"
+    page.keyword_search.clear().type("johndoe"
     page.keyword_search.send_keys(:enter)
     cy.hasNoErrors()
 

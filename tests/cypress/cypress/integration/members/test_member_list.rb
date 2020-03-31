@@ -15,7 +15,7 @@ feature 'Member List', () => {
 
   // Confirming phrase search
   it('searches by phrases', () => {
-    page.keyword_search.set 'banned1'
+    page.keyword_search.clear().type('banned1'
     page.keyword_search.send_keys(:enter)
     cy.hasNoErrors()
 
@@ -26,7 +26,7 @@ feature 'Member List', () => {
   }
 
   it('shows no results on a failed search'  do
-    page.keyword_search.set 'Bigfoot'
+    page.keyword_search.clear().type('Bigfoot'
     page.keyword_search.send_keys(:enter)
 
     page.heading.text.should eq 'Search Results we found 0 results for "Bigfoot"'

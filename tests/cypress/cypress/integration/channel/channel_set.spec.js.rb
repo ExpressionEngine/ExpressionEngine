@@ -122,7 +122,7 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'when exporting'
+            context('when exporting'
             do
                 before: each do
                 // Set debug to false to create fieldtypes from scratch
@@ -216,7 +216,7 @@ context('Channel Sets', () => {
             channel_set['category_groups'][0]['name'].should == 'News Categories'
             }
 
-            context 'with relationships'
+            context('with relationships'
             do
                 it('exports relationship fields with selected channels'
             do
@@ -389,7 +389,7 @@ context('Channel Sets', () => {
             found_files.sort.map( &: name) == expected_files.sort.should
             }
 
-            context 'with grid fields'
+            context('with grid fields'
             do
                 it('exports without a relationship column'
             do
@@ -453,7 +453,7 @@ context('Channel Sets', () => {
             do
                 channel_fields = ChannelFieldForm.new
             channel_fields.load
-            channel_fields.field_label.set 'Zen'
+            channel_fields.field_label.clear().type('Zen'
             channel_fields.select_field_type 'Grid'
             GridSettings::populate_grid_settings
             channel_fields.submit
@@ -461,7 +461,7 @@ context('Channel Sets', () => {
             // Create a "Gridlocked" group
             field_group_form = FieldGroupForm.new
             field_group_form.load
-            field_group_form.name.set 'Gridlocked'
+            field_group_form.name.clear().type('Gridlocked'
             field_group_form.all('.field-inputs label').each do |field |
                 if field.text.include ? 'Zen'
             field.find('input[type=checkbox]').click()
@@ -473,12 +473,12 @@ context('Channel Sets', () => {
             // Create the "Big Grid" channel
             page = Channel.new
             page.load()
-            page.channel_title.set 'Big Grid'
+            page.channel_title.clear().type('Big Grid'
             page.click_link 'Fields'
             page.field_groups[0].click()
             page.field_groups[1].click()
             page.field_groups[2].click()
-            page.title_field_label.set '¯\_(ツ)_/¯'
+            page.title_field_label.clear().type('¯\_(ツ)_/¯'
             page.submit
 
             page.load()
@@ -545,7 +545,7 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'when importing channel sets'
+            context('when importing channel sets'
             do
                 it('imports a channel set'
             do
@@ -581,20 +581,20 @@ context('Channel Sets', () => {
             do
                 import_channel_set 'simple-duplicate', method: 'issue_duplicate'
 
-            page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
-            page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
-            page.find('input[name="ee:ChannelField[news_body][field_name]"]').set 'event_body'
-            page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
-            page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
+            page.find('input[name="ee:Channel[news][channel_title]"]').clear().type('Event'
+            page.find('input[name="ee:Channel[news][channel_name]"]').clear().type('event'
+            page.find('input[name="ee:ChannelField[news_body][field_name]"]').clear().type('event_body'
+            page.find('input[name="ee:ChannelField[news_extended][field_name]"]').clear().type('event_extended'
+            page.find('input[name="ee:ChannelField[news_image][field_name]"]').clear().type('event_image'
             page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
-            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
+            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').clear().type('Event'
             page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
             page.submit
 
             check_success
             }
 
-            context 'v4 channel sets'
+            context('v4 channel sets'
             do
                 it('imports a channel with 2 field groups'
             do
@@ -677,8 +677,8 @@ context('Channel Sets', () => {
             do
                 import_channel_set 'channel-with-fluid-field', method: 'issue_duplicate'
 
-            page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '{base_path}/images/uploads'
-            page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'
+            page.find('input[name="ee:UploadDestination[Images][server_path]"]').clear().type('{base_path}/images/uploads'
+            page.find('input[name="ee:UploadDestination[Images][url]"]').clear().type('/images/uploads'
             page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
             page.submit
 
@@ -715,7 +715,7 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'when importing Default statuses'
+            context('when importing Default statuses'
             do
             // Import a channel set with default statuses and check that the new status
             // exist and that the correct number of statuses exists
@@ -749,7 +749,7 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'with custom fields'
+            context('with custom fields'
             do
                 it('imports a relationship field with all channels'
             do
@@ -870,15 +870,15 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'with file fields'
+            context('with file fields'
             do
                 it('imports with a specified directory'
             do
                 import_channel_set 'file-specified-directory', method: 'issue_duplicate'
 
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '{base_path}/images/uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').clear().type('Uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').clear().type('{base_path}/images/uploads'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').clear().type('/images/uploads'
             page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
             page.submit
 
@@ -904,7 +904,7 @@ context('Channel Sets', () => {
             }
             }
 
-            context 'with grid fields'
+            context('with grid fields'
             do
                 it('imports without a relationship column'
             do

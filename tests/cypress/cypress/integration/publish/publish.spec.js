@@ -1,16 +1,27 @@
 /// <reference types="Cypress" />
 
+import { LoremIpsum } from "lorem-ipsum";
+const lorem = new LoremIpsum();
+
 import Publish from '../../elements/pages/publish/Publish';
 import ForumTab from '../../elements/pages/publish/ForumTab';
 import FileModal from '../../elements/pages/publish/FileModal';
 import FluidField from '../../elements/pages/publish/FluidField';
+import EntryManager from '../../elements/pages/publish/EntryManager';
 
 import ChannelFieldForm from '../../elements/pages/channel/ChannelFieldForm';
 
 const page = new Publish;
-const file_modal = new FileModal;
+const edit = new EntryManager;
+const fluid_field = new FluidField;
+let file_modal = new FileModal;
 
 context('Publish Page - Create', () => {
+
+    before(function(){
+      //cy.task('db:seed')
+      //cy.createEntries({})
+    })
 
     beforeEach(function(){
         cy.auth();
@@ -57,7 +68,14 @@ context('Publish Page - Create', () => {
     })
 
     context('when using file fields', () => {
-        beforeEach(function(){
+
+      beforeEach(function(){
+        cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+        page.get('title').should('exist')
+        page.get('url_title').should('exist')
+      })
+
+      function createSecondFileField(){
             const channel_field_form = new ChannelFieldForm
             channel_field_form.createField({
                 group_id: 1,
@@ -69,347 +87,405 @@ context('Publish Page - Create', () => {
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
             page.get('title').should('exist')
             page.get('url_title').should('exist')
-        })
+        }
 
         it('the file field properly assigns image data when using the filepicker modal in a channel with two file fields', () => {
 
-            page.get('file_fields').each(function(field, i) {
-                return new Cypress.Promise((resolve, reject) => {
-                    let link = field.find("a:contains('Choose Existing')")
-                    cy.get(link).click()
+          createSecondFileField()
 
-                    if (link.hasClass('js-filter-link')) {
-                        let dir_link = link.parent().find("a:contains('About')")
-                        cy.get(dir_link).click()
+          page.get('file_fields').each(function(field, i) {
 
-                        //page.wait_until_modal_visible
-                        //page.file_modal.wait_for_filters
+              let link = field.find("a:contains('Choose Existing')")
+              cy.get(link).click()
 
-                        file_modal.get('files').eq(i).click()
+              if (link.hasClass('js-filter-link')) {
+                  let dir_link = link.parent().find("a:contains('About')")
+                  cy.get(dir_link).click()
+              }
 
-                        file_modal.get('title').should('not.be.visible')
-                    }
+              cy.wait(1000)
 
-                    page.get('chosen_files').should('have.length.gte', 2)
+              //page.wait_until_modal_visible
+              file_modal.get('files').should('be.visible')
+              //page.file_modal.wait_for_filters
 
-                    cy.wait(1000)
+              file_modal.get('files').first().scrollIntoView().click()
 
-                    resolve()
-                })
+              file_modal.get('files').should('not.be.visible')
+
+
+
+
             })
+          page.get('chosen_files').should('have.length.gte', 2)
         })
-/*
+
         it('the file field restricts you to the chosen directory', () => {
-          page.file_fields[0].find('a.btn.action', text: 'Choose Existing').click()
+          let link = page.get('file_fields').first().find("a:contains('Choose Existing')");
+          link.click()
 
-          page.wait_until_modal_visible
-          page.file_modal.wait_for_filters
+          link.parent().find("a:contains('About')").click()
 
-          page.file_modal.filters.should have(2).items
-          page.file_modal.title.should_not == 'All Files'
-          page.file_modal.has_upload_button?
+          //page.wait_until_modal_visible
+          file_modal.get('files').should('be.visible')
+          //page.file_modal.wait_for_filters
 
-          page.file_modal.filters[-1].click()
-          page.file_modal.view_filters[0].click()
+          file_modal.get('filters').should('have.length', 2)
+          file_modal.get('title').invoke('text').then((text) => {
+            expect(text.trim()).not.equal('All Files')
+          })
+          file_modal.get('upload_button').should('exist')
 
-          page.file_modal.wait_for_filters
-          page.file_modal.filters.should have(2).items
-          page.file_modal.title.should_not == 'All Files'
-          page.file_modal.has_upload_button?
-        }
+          file_modal.get('filters').last().click()
+          file_modal.get('view_filters').first().click()
+
+          //file_modal.wait_for_filters
+          file_modal.get('filters').should('have.length', 2)
+          file_modal.get('title').invoke('text').then((text) => {
+            expect(text.trim()).not.equal('All Files')
+          })
+          file_modal.get('upload_button').should('exist')
+        })
 
         it('the file field retains data after being created and edited', () => {
-          page.file_fields.each do |field|
-            link = field.find('a', text: 'Choose Existing')
-            link.click()
+          page.get('file_fields').each(function(field, i) {
+            let link = field.find("a:contains('Choose Existing')")
+            cy.get(link).click()
 
-            if link[:class].include? 'js-filter-link'
-              field.find('a', text: 'About').click()
+            if (link.hasClass('js-filter-link')) {
+              let dir_link = link.parent().find("a:contains('About')")
+              cy.get(dir_link).click()
+
+              cy.wait(500)
+
+              //page.wait_until_modal_visible
+              file_modal.get('files').should('be.visible')
+              //page.file_modal.wait_for_filters
+
+              file_modal.get('files').first().click()
+
+              file_modal.get('title').should('not.be.visible')
+
+              cy.wait(500)
             }
+          })
 
-            page.wait_until_modal_visible
-            page.file_modal.wait_for_filters
+          page.get('title').clear().type('File Field Test')
+          page.get('chosen_files').should('have.length', 2)
+          page.get('submit_buttons').eq(0).click()
 
-            page.file_modal.files[0].click()
+          page.get('chosen_files').should('have.length', 2);
+          page.submit()
 
-            page.wait_until_modal_invisible(1)
-          }
+          page.get('chosen_files').should('have.length', 2);
+        })
+    })
 
-          page.title.set 'File Field Test'
-          page.chosen_files.should have(2).items
-          page.submit_buttons[1].click()
+    context('when using fluid fields', () => {
 
-          edit = EntryManager.new
-          edit.load
-          edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click()
+      const available_fields = [
+        "A Date",
+        "Checkboxes",
+        "Electronic-Mail Address",
+        "Home Page",
+        "Image",
+        "Item",
+        "Middle Class Text",
+        "Multi Select",
+        "Radio",
+        "Selection",
+        "Stupid Grid",
+        "Text",
+        "Truth or Dare?",
+        "YouTube URL"
+      ];
 
-          page.chosen_files.should have(2).items
-          page.submit
+      beforeEach(function(){
+        cy.task('db:load', '../../channel_sets/channel-with-fluid-field.sql')
+        cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
 
-          edit = EntryManager.new
-          edit.load
-          edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click()
+        page.get('title').type("Fluid Field Test the First")
+        page.get('url_title').clear().type("fluid-field-test-first")
 
-          page.chosen_files.should have(2).items
-        }*/
+        fluid_field.get('actions_menu.name').click()
+        fluid_field.get('actions_menu').find('.sub-menu li').then(function($li) {
+          let existing_fields = Cypress._.map($li, function(el) {
+              return Cypress.$(el).text();
+          })
+
+          expect(existing_fields).to.deep.equal(available_fields)
+        })
+
+        fluid_field.get('actions_menu.name').click()
       })
-/*
-      context 'when using fluid fields', () => {
-        before :each do
-          @importer = ChannelSets::Importer.new(page, debug: false)
-          @importer.fluid_field
-          cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
 
-          page.title.set "Fluid Field Test the First"
-          page.url_title.set "fluid-field-test-first"
+      function add_content(index, skew = 0) {
 
-          @available_fields = [
-            "A Date",
-            "Checkboxes",
-            "Electronic-Mail Address",
-            "Home Page",
-            "Image",
-            "Item",
-            "Middle Class Text",
-            "Multi Select",
-            "Radio",
-            "Selection",
-            "Stupid Grid",
-            "Text",
-            "Truth or Dare?",
-            "YouTube URL"
-          ]
+        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
+          const field_type = data;
+          const field = fluid_field.get('items').eq(index).find('.field-control')
 
-          page.fluid_field.actions_menu.name.click()
-          page.fluid_field.actions_menu.fields.map {|field| field.text}.should == @available_fields
-          page.fluid_field.actions_menu.name.click()
-        }
-
-        def add_content(item, skew = 0)
-          field_type = item.root_element['data-field-type']
-          field = item.field
-
-          case field_type
-            when 'date'
-              field.find('input[type=text][rel=date-picker]').set (9 + skew).toString() + '/14/2017 2:56 PM'
-              page.title.click() // Dismiss the date picker
-            when 'checkboxes'
-              field.all('input[type=checkbox]')[0 + skew].set true
-            when 'email_address'
-              field.find('input').set 'rspec-' + skew.toString() + '@example.com'
-            when 'url'
-              field.find('input').set 'http://www.example.com/page/' + skew.toString()
-            when 'file'
-              field.find('a', text: 'Choose Existing').click()
-              field.find('a', text: 'About').click()
-              page.wait_until_modal_visible
-              page.file_modal.wait_for_files
-
-              page.file_modal.files[0 + skew].click()
-
-              page.wait_until_modal_invisible
-            when 'relationship'
-              field.all('input[type=radio]')[0 + skew].set true
-            when 'rte'
-              field.find('.WysiHat-editor').send_keys Forgery(:lorem_ipsum).paragraphs(
-                rand(1..(3 + skew)),
-                :html => false,
-                :sentences => rand(3..5),
-                :separator => "\n\n"
-              )
-            when 'multi_select'
-              field.all('input[type=checkbox]')[0 + skew].set true
-            when 'radio'
-              field.all('input[type=radio]')[1 + skew].set true
-            when 'select'
+          switch (field_type) {
+            case 'date':
+              field.find('input[type=text][rel=date-picker]').type((9 + skew).toString() + '/14/2017 2:56 PM')
+              page.get('title').click() // Dismiss the date picker
+              break;
+            case 'checkboxes':
+              field.find('input[type=checkbox]').eq(0 + skew).check();
+              break;
+            case 'email_address':
+              field.find('input').clear().type('rspec-' + skew.toString() + '@example.com')
+              break;
+            case 'url':
+              field.find('input').clear().type('http://www.example.com/page/' + skew.toString())
+              break;
+            case 'file':
+              field.find('a:contains("Choose Existing")').click()
+              cy.wait(500)
+              fluid_field.get('items').eq(index).find('a:contains("Choose Existing")').parent().find('a:contains("About")').click()
+              //page.wait_until_modal_visible
+              file_modal.get('files').should('be.visible')
+              //page.file_modal.wait_for_files
+              cy.wait(500)
+              file_modal.get('files').eq(0 + skew).click()
+              cy.wait(500)
+              //page.wait_until_modal_invisible
+              break;
+            case 'relationship':
+              field.find('input[type=radio]').eq(0 + skew).check()
+              break;
+            case 'rte':
+              field.find('.WysiHat-editor').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
+              break;
+            case 'multi_select':
+              field.find('input[type=checkbox]').eq(0 + skew).check()
+              break;
+            case 'radio':
+              field.find('input[type=radio]').eq(1 + skew).check()
+              break;
+            case 'select':
               field.find('div[data-dropdown-react]').click()
-              if skew == 0 then choice = 'Corndog' }
-              if skew == 1 then choice = 'Burrito' }
+              let choice = 'Corndog'
+              if (skew == 1) { choice = 'Burrito' }
               cy.wait(100)
-              find('div[data-dropdown-react] .field-drop-choices label', text: choice).click()
-            when 'grid'
-              field.find('a[rel="add_row"]').click()
-              field.all('input')[0].set 'Lorem' + skew.toString()
-              field.all('input')[1].set 'ipsum' + skew.toString()
-            when 'textarea'
-              field.find('textarea').set Forgery(:lorem_ipsum).paragraphs(
-                rand(1..(3 + skew)),
-                :html => false,
-                :sentences => rand(3..5),
-                :separator => "\n\n"
-              )
-            when 'toggle'
+              fluid_field.get('items').eq(index).find('.field-control div[data-dropdown-react] .field-drop-choices label:contains("'+choice+'")').click()
+              break;
+            case 'grid':
+              field.find('a[rel="add_row"]').first().click()
+              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(0).clear().type('Lorem' + skew.toString())
+              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(1).clear().type('ipsum' + skew.toString())
+              break;
+            case 'textarea':
+              field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
+              break;
+            case 'toggle':
               field.find('.toggle-btn').click()
-            when 'text'
-              field.find('input').set 'Lorem ipsum dolor sit amet' + skew.toString()
+              break;
+            case 'text':
+              field.find('input').clear().type('Lorem ipsum dolor sit amet' + skew.toString())
+              break;
           }
-        }
-
-        def check_content(item, skew = 0)
-          field_type = item.root_element['data-field-type']
-          field = item.field
-
-          case field_type
-            when 'date'
-              field.find('input[type=text][rel=date-picker]').value.should eq (9 + skew).toString() + '/14/2017 2:56 PM'
-            when 'checkboxes'
-              field.all('input[type=checkbox]')[0 + skew].checked?.should == true
-            when 'email_address'
-              field.find('input').value.should eq 'rspec-' + skew.toString() + '@example.com'
-            when 'url'
-              field.find('input').value.should eq 'http://www.example.com/page/' + skew.toString()
-            when 'file'
-              field.should have_content('staff_jane')
-            when 'relationship'
-              field.all('input[type=radio]')[0 + skew].checked?.should == true
-            when 'rte'
-              field.find('textarea', {:visible => false}).value.should have_content('Lorem ipsum')
-            when 'multi_select'
-              field.all('input[type=checkbox]')[0 + skew].checked?.should == true
-            when 'radio'
-              field.all('input[type=radio]')[1 + skew].checked?.should == true
-            when 'select'
-              if skew == 0 then choice = 'Corndog' }
-              if skew == 1 then choice = 'Burrito' }
-
-              field.find('div[data-dropdown-react]').should have_content(choice)
-            when 'grid'
-              field.all('input')[0].value.should eq 'Lorem' + skew.toString()
-              field.all('input')[1].value.should eq 'ipsum' + skew.toString()
-            when 'textarea'
-              field.find('textarea').value.should have_content('Lorem ipsum')
-            when 'toggle'
-              field.find('.toggle-btn').click()
-            when 'text'
-              field.find('input').value.should eq 'Lorem ipsum dolor sit amet' + skew.toString()
-          }
-        }
-
-        it('adds a field', () => {
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-
-            page.fluid_field.items[index].title.should have_content(field)
-          }
-
-          page.save.click()
-          page.get('alert').has_content?('Entry Created').should == true
-
-          // Make sure the fields stuck around after save
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.items[index].title.should have_content(field)
-            add_content(page.fluid_field.items[index])
-          }
-
-          page.save.click()
-          page.get('alert').has_content?('Entry Updated').should == true
-
-          @available_fields.each_with_index do |field, index|
-            check_content(page.fluid_field.items[index])
-          }
-        }
-
-        it('adds repeat fields', () => {
-          number_of_fields = @available_fields.length
-
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-            add_content(page.fluid_field.items[index])
-
-            page.fluid_field.items[index].title.should have_content(field)
-          }
-
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-            add_content(page.fluid_field.items[index + number_of_fields], 1)
-
-            page.fluid_field.items[index + number_of_fields].title.should have_content(field)
-          }
-
-          page.save.click()
-          page.get('alert').has_content?('Entry Created').should == true
-
-          // Make sure the fields stuck around after save
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.items[index].title.should have_content(field)
-            check_content(page.fluid_field.items[index])
-
-            page.fluid_field.items[index + number_of_fields].title.should have_content(field)
-            check_content(page.fluid_field.items[index + number_of_fields], 1)
-          }
-        }
-
-        // This cannot be tested headlessly yet. See test_statuses.rb:37
-        // it('s fields', () => {
-        // }
-
-        it('removes fields', () => {
-          // First: without saving
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-            add_content(page.fluid_field.items[index])
-
-            page.fluid_field.items[index].title.should have_content(field)
-          }
-
-          page.fluid_field.items.length.should == @available_fields.length
-
-          page.fluid_field.items.each do |field|
-              field.remove.click()
-          }
-
-          page.fluid_field.items.length.should == 0
-
-          // Second: after saving
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-            add_content(page.fluid_field.items[index])
-
-            page.fluid_field.items[index].title.should have_content(field)
-          }
-
-          page.save.click()
-          page.get('alert').has_content?('Entry Created').should == true
-
-          page.fluid_field.items.length.should == @available_fields.length
-
-          page.fluid_field.items.each do |field|
-            field.remove.click()
-          }
-
-          page.save.click()
-          page.get('alert').has_content?('Entry Updated').should == true
-
-          page.fluid_field.items.length.should == 0
-        }
-
-        it('keeps data when the entry is invalid', () => {
-          @available_fields.each_with_index do |field, index|
-            page.fluid_field.actions_menu.name.click()
-            page.fluid_field.actions_menu.fields[index].click()
-            add_content(page.fluid_field.items[index])
-
-            page.fluid_field.items[index].title.should have_content(field)
-          }
-
-          page.title.set ""
-
-          page.save.click()
-
-          @available_fields.each_with_index do |field, index|
-            check_content(page.fluid_field.items[index])
-          }
-        }
-
-
+        })
       }
 
-    }*/
+      function check_content(index, skew = 0)
+      {
+
+        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
+          const field_type = data;
+          let field = fluid_field.get('items').eq(index).find('.field-control')
+
+          switch (field_type) {
+            case 'date':
+              field.find('input[type=text][rel=date-picker]').invoke('val').then((text) => {
+                expect(text).equal((9 + skew).toString() + '/14/2017 2:56 PM')
+              })
+              break;
+            case 'checkboxes':
+              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
+              break;
+            case 'email_address':
+              field.find('input').invoke('val').then((text) => {
+                expect(text).equal('rspec-' + skew.toString() + '@example.com')
+              })
+              break;
+            case 'url':
+              field.find('input').invoke('val').then((text) => {
+                expect(text).equal('http://www.example.com/page/' + skew.toString())
+              })
+              break;
+            case 'file':
+              field.contains('staff_jane')
+              break;
+            case 'relationship':
+              field.find('input[type=radio]').eq(0 + skew).should('be.checked')
+              break;
+            case 'rte':
+              field.find('textarea').contains('Lorem ipsum')// {:visible => false}
+              break;
+            case 'multi_select':
+              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
+              break;
+            case 'radio':
+              field.find('input[type=radio]').eq(1 + skew).should('be.checked')
+              break;
+            case 'select':
+              let choice = 'Corndog'
+              if (skew == 1) { choice = 'Burrito' }
+              field.find('div[data-dropdown-react]').contains(choice)
+              break;
+            case 'grid':
+              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(0).invoke('val').then((text) => {
+                expect(text).equal('Lorem' + skew.toString())
+              })
+              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(1).invoke('val').then((text) => {
+                expect(text).equal('ipsum' + skew.toString())
+              })
+              break;
+            case 'textarea':
+              field.find('textarea').contains('Lorem ipsum')
+              break;
+            case 'toggle':
+              field.find('.toggle-btn').click()
+              break;
+            case 'text':
+              field.find('input').invoke('val').then((text) => {
+                expect(text).equal('Lorem ipsum dolor sit amet' + skew.toString())
+              })
+              break;
+          }
+        })
+      }
+
+      it('adds a field', () => {
+
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+        })
+
+        page.get('save').click()
+        page.get('alert').contains('Entry Created')
+
+        // Make sure the fields stuck around after save
+        cy.log('Make sure the fields stuck around after save')
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+          add_content(index)
+        })
+
+        page.get('save').click()
+        page.get('alert').contains('Entry Updated')
+
+        available_fields.forEach(function(field, index) {
+          check_content(index)
+        })
+      })
+
+      it('adds repeat fields', () => {
+        const number_of_fields = available_fields.length
+
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          add_content(index)
+
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+        })
+
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          add_content((index + number_of_fields), 1)
+
+          fluid_field.get('items').eq(index + number_of_fields).find('h3').contains(field)
+        })
+
+        page.get('save').click()
+        page.get('alert').contains('Entry Created')
+
+        // Make sure the fields stuck around after save
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+          check_content(index)
+
+          fluid_field.get('items').eq(index + number_of_fields).find('h3').contains(field)
+          check_content((index + number_of_fields), 1)
+        })
+      })
+
+      // This cannot be tested headlessly yet. See test_statuses.rb:37
+      // it('s fields', () => {
+      // }
+
+      it('removes fields', () => {
+        // First: without saving
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          add_content(index)
+
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+        })
+
+        fluid_field.get('items').should('have.length', available_fields.length)
+
+        fluid_field.get('items').each(function(el){
+            let link = el.find('.fluid-remove');
+            cy.get(link).click()
+        })
+
+        fluid_field.get('items').should('have.length', 0)
+
+        // Second: after saving
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          add_content(index)
+
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+        })
+
+        page.get('save').click()
+        page.get('alert').contains('Entry Created')
+
+        fluid_field.get('items').should('have.length', available_fields.length)
+
+        fluid_field.get('items').each(function(el){
+          let link = el.find('.fluid-remove');
+          cy.get(link).click()
+        })
+
+        page.get('save').click()
+        page.get('alert').contains('Entry Updated')
+
+        fluid_field.get('items').should('have.length', 0)
+      })
+
+      it('keeps data when the entry is invalid', () => {
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.name').click()
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          add_content(index)
+
+          fluid_field.get('items').eq(index).find('h3').contains(field)
+        })
+
+        page.get('title').clear()
+
+        page.get('save').click()
+
+        available_fields.forEach(function(field, index) {
+          check_content(index)
+        })
+      })
+
+
+    })
+
+
 
 
 })

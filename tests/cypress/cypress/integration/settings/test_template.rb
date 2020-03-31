@@ -23,7 +23,7 @@ feature 'Template Settings', () => {
   }
 
   it('should validate the form', () => {
-    page.max_tmpl_revisions.set 'sdfsdfsd'
+    page.max_tmpl_revisions.clear().type('sdfsdfsd'
     page.submit
 
     cy.hasNoErrors()
@@ -35,13 +35,13 @@ feature 'Template Settings', () => {
 
     // AJAX validation
     page.load()
-    page.max_tmpl_revisions.set 'sdfsdfsd'
+    page.max_tmpl_revisions.clear().type('sdfsdfsd'
     page.max_tmpl_revisions.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains($integer_error
 
-    page.max_tmpl_revisions.set '100'
+    page.max_tmpl_revisions.clear().type('100'
     page.max_tmpl_revisions.trigger 'blur'
     page.wait_for_error_message_count(0)
   }
@@ -50,7 +50,7 @@ feature 'Template Settings', () => {
     page.strict_urls_toggle.click()
     page.site_404_options.choose_radio_option('search/index')
     page.save_tmpl_revisions_toggle.click()
-    page.max_tmpl_revisions.set '300'
+    page.max_tmpl_revisions.clear().type('300'
     page.submit
 
     page.get('wrap').contains('Preferences Updated'

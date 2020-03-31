@@ -315,7 +315,7 @@ context('Add-On Manager Third-Party Table', function() {
             // The settings buttons "work" (200 response)
             // it('can navigate to a settings page', function() {
             // page.installThirdPartyAddons()
-            //   page.get('phrase_search.set 'Rich Text Editor'
+            //   page.get('phrase_search.clear().type('Rich Text Editor'
             //   page.get('search_submit_button.click
             //   cy.hasNoErrors()
             //

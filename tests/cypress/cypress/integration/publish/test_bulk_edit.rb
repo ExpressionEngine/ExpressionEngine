@@ -1,7 +1,7 @@
 require './bootstrap.rb'
 
 feature 'Bulk Edit', () => {
-  before :each do
+  beforeEach(function(){
     cy.auth();
     @entry_manager = EntryManager.new
     @entry_manager.load
@@ -73,7 +73,7 @@ feature 'Bulk Edit', () => {
     @bulk_edit.selected_entries_note.text.should include 'Showing 4 of 4'
     @bulk_edit.should have(4).selected_entries
 
-    @bulk_edit.filter_input.set 'about'
+    @bulk_edit.filter_input.clear().type('about'
     @bulk_edit.filter_heading.text.should == '4 Selected Entries'
     @bulk_edit.selected_entries_note.text.should include 'Showing 1 of 4'
     @bulk_edit.should have(1).selected_entries
@@ -85,7 +85,7 @@ feature 'Bulk Edit', () => {
     @bulk_edit.should have(1).selected_entries
     @bulk_edit.selected_entries[0].text.should include 'No entries found.'
 
-    @bulk_edit.filter_input.set ''
+    @bulk_edit.filter_input.clear().type(''
     @bulk_edit.selected_entries_note.text.should include 'Showing 3 of 3'
     @bulk_edit.selected_entries.map {|option| option.find('h2').text}.should == ['Band Title', 'Howard', 'Jason']
 
@@ -112,11 +112,11 @@ feature 'Bulk Edit', () => {
     @bulk_edit.wait_for_field_options
     @bulk_edit.field_options.map {|option| option.text}.should == expected_fields
 
-    @bulk_edit.field_options_filter.set 'Status'
+    @bulk_edit.field_options_filter.clear().type('Status'
     @bulk_edit.should have(0).field_options
 
     // Status should not be added back when filter is cleared
-    @bulk_edit.field_options_filter.set ''
+    @bulk_edit.field_options_filter.clear().type(''
     @bulk_edit.field_options.map {|option| option.text}.should == expected_fields
   }
 
@@ -168,13 +168,13 @@ feature 'Bulk Edit', () => {
     @bulk_edit.add_field.click()
     @bulk_edit.wait_for_field_options
     @bulk_edit.click_link 'Expiration date'
-    @bulk_edit.fluid_fields[1].find('input[name=expiration_date]').set '2/14/2018 4:00 PM'
+    @bulk_edit.fluid_fields[1].find('input[name=expiration_date]').clear().type('2/14/2018 4:00 PM'
     @bulk_edit.fluid_fields[1].click() // Close date picker
 
     @bulk_edit.add_field.click()
     @bulk_edit.wait_for_field_options
     @bulk_edit.click_link 'Comment expiration date'
-    @bulk_edit.fluid_fields[2].find('input[name=comment_expiration_date]').set '2/14/2018 5:00 PM'
+    @bulk_edit.fluid_fields[2].find('input[name=comment_expiration_date]').clear().type('2/14/2018 5:00 PM'
     @bulk_edit.fluid_fields[2].click()
 
     @bulk_edit.add_field.click()

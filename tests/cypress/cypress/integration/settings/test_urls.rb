@@ -40,7 +40,7 @@ feature 'URL and Path Settings', () => {
   it('should validate the form', () => {
     field_required = "This field is required."
 
-    page.site_url.set ''
+    page.site_url.clear().type(''
     page.submit
 
     cy.hasNoErrors()
@@ -51,28 +51,28 @@ feature 'URL and Path Settings', () => {
     // AJAX validation
     // Field not required, shouldn't do anything
     page.load()
-    page.site_index.set ''
+    page.site_index.clear().type(''
     page.site_index.trigger 'blur'
     should_have_no_form_errors(page)
 
-    page.site_url.set ''
+    page.site_url.clear().type(''
     page.site_url.trigger 'blur'
     page.wait_for_error_message_count(1)
     should_have_error_text(page.site_url, field_required)
     should_have_form_errors(page)
 
-    page.cp_url.set ''
+    page.cp_url.clear().type(''
     page.cp_url.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_form_errors(page)
     should_have_error_text(page.site_url, field_required)
     should_have_error_text(page.cp_url, field_required)
 
-    page.theme_folder_url.set ''
+    page.theme_folder_url.clear().type(''
     page.theme_folder_url.trigger 'blur'
     page.wait_for_error_message_count(3)
 
-    page.theme_folder_path.set ''
+    page.theme_folder_path.clear().type(''
     page.theme_folder_path.trigger 'blur'
     page.wait_for_error_message_count(4)
 
@@ -82,20 +82,20 @@ feature 'URL and Path Settings', () => {
     should_have_error_text(page.theme_folder_url, field_required)
     should_have_error_text(page.theme_folder_path, field_required)
 
-    page.theme_folder_path.set '/'
+    page.theme_folder_path.clear().type('/'
     // When a text field is invalid, shouldn't need to blur
     // page.theme_folder_path.trigger 'blur'
     page.wait_for_error_message_count(3)
     // Make sure validation timer is still bound to field
-    page.theme_folder_path.set ''
+    page.theme_folder_path.clear().type(''
     page.wait_for_error_message_count(4)
-    page.theme_folder_path.set '/'
+    page.theme_folder_path.clear().type('/'
     page.wait_for_error_message_count(3)
     // Timer should be unbound on blur
     page.theme_folder_path.trigger 'blur'
 
     // Invalid theme path
-    page.theme_folder_path.set '/dfsdfsdfd'
+    page.theme_folder_path.clear().type('/dfsdfsdfd'
     page.theme_folder_path.trigger 'blur'
     page.wait_for_error_message_count(4)
 
@@ -146,7 +146,7 @@ feature 'URL and Path Settings', () => {
     // We'll test one value for now to make sure the form is saving,
     // don't want to be changing values that could break the site
     // after submission
-    page.site_index.set 'hello.php'
+    page.site_index.clear().type('hello.php'
     page.submit
 
     page.get('wrap').contains('Preferences updated'

@@ -25,7 +25,7 @@ feature 'Search and Replace', () => {
     should_have_error_text(page.search_term, @field_required)
     should_have_form_errors(page)
 
-    page.search_term.set 'Text'
+    page.search_term.clear().type('Text'
     page.search_term.trigger 'blur'
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.search_term)
@@ -44,11 +44,11 @@ feature 'Search and Replace', () => {
     should_have_error_text(page.password_auth, @field_required)
     should_have_form_errors(page)
 
-    page.password_auth.set 'password'
+    page.password_auth.clear().type('password'
     page.password_auth.trigger 'blur'
     page.wait_for_error_message_count(1)
 
-    page.password_auth.set 'test'
+    page.password_auth.clear().type('test'
     page.password_auth.trigger 'blur'
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.search_term)
@@ -56,7 +56,7 @@ feature 'Search and Replace', () => {
     should_have_error_text(page.password_auth, 'The password entered is incorrect.')
     should_have_form_errors(page)
 
-    page.password_auth.set 'password'
+    page.password_auth.clear().type('password'
     page.password_auth.trigger 'blur'
     page.wait_for_error_message_count(1)
     page.replace_where.select 'Channel Entry Titles'
@@ -89,12 +89,12 @@ feature 'Search and Replace', () => {
 
     cy.hasNoErrors()
 
-    page.search_term.set 'Text'
+    page.search_term.clear().type('Text'
     page.search_term.trigger 'blur'
     page.wait_for_error_message_count(2)
     page.replace_where.select 'Channel Entry Titles'
     page.wait_for_error_message_count(1)
-    page.password_auth.set 'password'
+    page.password_auth.clear().type('password'
     page.password_auth.trigger 'blur'
     page.wait_for_error_message_count(0)
 
@@ -116,10 +116,10 @@ feature 'Search and Replace', () => {
 
   it('should search and replace data', () => {
 
-    page.search_term.set 'Welcome'
-    page.replace_term.set 'test'
+    page.search_term.clear().type('Welcome'
+    page.replace_term.clear().type('test'
     page.replace_where.select 'Channel Entry Titles'
-    page.password_auth.set 'password'
+    page.password_auth.clear().type('password'
 
     page.submit
 
