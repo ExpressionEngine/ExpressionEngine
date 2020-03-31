@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'CP Log', () => {
+context('CP Log', () => {
 
   beforeEach(function() {
     cy.auth();

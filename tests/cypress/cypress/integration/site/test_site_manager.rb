@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Site Manager', () => {
+context('Site Manager', () => {
   beforeEach(function() {
     eeConfig({item: 'multiple_sites_enabled', value: 'y')
     cy.auth();

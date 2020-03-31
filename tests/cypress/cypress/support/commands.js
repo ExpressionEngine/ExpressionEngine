@@ -148,17 +148,19 @@ Cypress.Commands.add("createEntries", ({ n, channel }) => {
     cy.exec(command)
 })
 
-Cypress.Commands.add("createChannel", ({ opts }) => {
-    let command = `cd support/fixtures && php channels.php`
+Cypress.Commands.add("createChannel", ({ max_entries }) => {
+    let command = `cd support/fixtures && php channels.php`;
 
     // include opts, change _ in hash symbols to - to standardize CLI behavior
-    for (let [key, value] of Object.entries(opts)) {
-        key = key.toString().replace('_', '-')
-        command += " --${key} ${val}"
+    if (max_entries) {
+        command += ` --max-entries ${max_entries}`
     }
 
-    let harvest = cy.exec(command)
-    return harvest.stdout;
+    cy.exec(command).then((harvest) => {
+
+        return harvest.stdout;
+    })
+
 })
 
 // -- This is a child command --

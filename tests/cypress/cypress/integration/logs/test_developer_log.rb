@@ -9,7 +9,7 @@ def confirm (page)
   page.should have_perpage_filter
 }
 
-feature 'Developer Log', () => {
+context('Developer Log', () => {
 
   beforeEach(function() {
     cy.auth();

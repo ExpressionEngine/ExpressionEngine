@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Ban Settings', () => {
+context('Ban Settings', () => {
   beforeEach(function() {
     cy.auth();
     page = BansMembers.new

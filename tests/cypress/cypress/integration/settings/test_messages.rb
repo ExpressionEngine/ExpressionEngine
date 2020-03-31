@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Messaging Settings', () => {
+context('Messaging Settings', () => {
 
   beforeEach(function() {
     cy.auth();

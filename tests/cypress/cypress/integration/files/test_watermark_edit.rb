@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Watermark Create/Edit', () => {
+context('Watermark Create/Edit', () => {
 
   beforeEach(function() {
     cy.auth();

@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'SQL Manager', () => {
+context('SQL Manager', () => {
 
   def get_tables
     tables = []

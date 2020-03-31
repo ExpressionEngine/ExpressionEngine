@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Member Field List', () => {
+context('Member Field List', () => {
 
   beforeEach(function() {
     cy.auth();

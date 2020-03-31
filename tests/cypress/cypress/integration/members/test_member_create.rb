@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Member Registration', () => {
+context('Member Registration', () => {
 
   beforeEach(function() {
     cy.auth();

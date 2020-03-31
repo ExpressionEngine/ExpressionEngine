@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'URL and Path Settings', () => {
+context('URL and Path Settings', () => {
 
   beforeEach(function() {
     cy.auth();

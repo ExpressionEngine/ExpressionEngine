@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Word Censorship Settings', () => {
+context('Word Censorship Settings', () => {
 
   beforeEach(function() {
     cy.auth();

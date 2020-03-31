@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Import File Converter', () => {
+context('Import File Converter', () => {
 
   beforeEach(function() {
     // Paths to files to test

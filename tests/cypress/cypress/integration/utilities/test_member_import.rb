@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Member Import', () => {
+context('Member Import', () => {
 
   beforeEach(function() {
     // Paths to files to test

@@ -19,8 +19,8 @@ let file_modal = new FileModal;
 context('Publish Page - Create', () => {
 
     before(function(){
-      //cy.task('db:seed')
-      //cy.createEntries({})
+      cy.task('db:seed')
+      cy.createEntries({})
     })
 
     beforeEach(function(){

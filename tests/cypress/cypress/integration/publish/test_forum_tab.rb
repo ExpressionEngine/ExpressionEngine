@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Forum Tab', () => {
+context('Forum Tab', () => {
   let(:title) { 'Forum Tab Test' }
   let(:body) { 'Lorem ipsum dolor sit amet...' }
 

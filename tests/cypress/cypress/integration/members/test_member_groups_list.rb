@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Member Group List', () => {
+context('Member Group List', () => {
   beforeEach(function() {
     cy.auth();
     page = MemberGroups.new

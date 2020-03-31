@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Pages Settings', () => {
+context('Pages Settings', () => {
 
   beforeEach(function() {
     cy.auth();

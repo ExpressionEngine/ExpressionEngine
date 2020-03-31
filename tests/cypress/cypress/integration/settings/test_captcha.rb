@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'CAPTCHA Settings', () => {
+context('CAPTCHA Settings', () => {
 
   beforeEach(function() {
     cy.auth();

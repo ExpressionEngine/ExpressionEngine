@@ -4,7 +4,7 @@ require './bootstrap.rb'
 // files before testing the upgrade. Please do not add `page.load()` to any of the
 // `before` calls.
 
-feature 'Updater', () => {
+context('Updater', () => {
   before :all do
     @installer = Installer::Prepare.new
     @installer.enable_installer

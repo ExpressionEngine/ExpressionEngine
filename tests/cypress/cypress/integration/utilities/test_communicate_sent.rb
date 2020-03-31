@@ -3,7 +3,7 @@ require 'date'
 
 ENV['TZ'] = 'US/Eastern' // For date/time calculations
 
-feature 'Communicate > Sent', () => {
+context('Communicate > Sent', () => {
 
   beforeEach(function() {
     cy.auth();

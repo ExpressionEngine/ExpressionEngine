@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Template Settings', () => {
+context('Template Settings', () => {
 
   beforeEach(function() {
     cy.auth();

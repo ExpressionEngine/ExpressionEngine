@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Throttling Log', () => {
+context('Throttling Log', () => {
 
   beforeEach(function() {
     cy.auth();

@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Cache Manager', () => {
+context('Cache Manager', () => {
 
   beforeEach(function() {
     cy.auth();

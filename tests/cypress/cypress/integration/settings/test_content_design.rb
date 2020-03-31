@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Content & Design Settings', () => {
+context('Content & Design Settings', () => {
 
   beforeEach(function() {
     cy.auth();

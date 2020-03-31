@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Access Throttling Settings', () => {
+context('Access Throttling Settings', () => {
 
   beforeEach(function() {
     cy.auth();

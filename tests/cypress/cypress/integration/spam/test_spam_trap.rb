@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Spam Module', () => {
+context('Spam Module', () => {
 
   describe "Installation" do
 

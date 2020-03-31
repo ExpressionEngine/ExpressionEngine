@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Hit Tracking', () => {
+context('Hit Tracking', () => {
   beforeEach(function(){
     cy.auth();
     page = HitTracking.new

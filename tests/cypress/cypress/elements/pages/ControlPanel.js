@@ -13,6 +13,7 @@ class ControlPanel {
             // Main Section
             "page_title": '.wrap .box h1',
             "wrap": 'section.wrap',
+            "nav": '.nav-main',
 
             // Tables
             "select_all": 'th.check-ctrl input',
@@ -71,6 +72,10 @@ class ControlPanel {
             },
             "xss_vector": '"><script>alert(\'stored xss\')<%2fscript>'
         }
+    }
+
+    load() {
+        cy.visit(this.url.replace(/\{(.+?)\}/g, ''), {failOnStatusCode: false})
     }
 
     get(selector) {

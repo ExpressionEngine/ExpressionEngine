@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Statistics', () => {
+context('Statistics', () => {
 
   beforeEach(function() {
     cy.auth();

@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Security & Privacy Settings', () => {
+context('Security & Privacy Settings', () => {
 
   beforeEach(function() {
     cy.auth();

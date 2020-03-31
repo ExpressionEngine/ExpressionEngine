@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Profile - Username and Password', () => {
+context('Profile - Username and Password', () => {
   beforeEach(function() {
     cy.auth();
     page = Profile::UsernamePassword.new

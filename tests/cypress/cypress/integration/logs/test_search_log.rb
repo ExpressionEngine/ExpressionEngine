@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Search Log', () => {
+context('Search Log', () => {
 
   beforeEach(function() {
     cy.auth();

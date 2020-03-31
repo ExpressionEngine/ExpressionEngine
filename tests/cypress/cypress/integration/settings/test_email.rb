@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Outgoing Email Settings', () => {
+context('Outgoing Email Settings', () => {
   let(:field_required)  { 'This field is required.' }
   let(:email_invalid)   { 'This field must contain a valid email address.' }
   let(:server_required) { 'This field is required for SMTP.' }

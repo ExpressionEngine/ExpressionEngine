@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Comment Settings', () => {
+context('Comment Settings', () => {
 
   beforeEach(function() {
     cy.auth();

@@ -19,7 +19,7 @@ context('Grid Field Settings', () => {
 // sure settings are saved and loaded properly, as well as form
 // validations fail and preserve existing data
 #
-feature 'Grid Field Settings', () => {
+context('Grid Field Settings', () => {
 
   // Before each test, take us to the Field Group settings page
   // and start creating a new Grid field

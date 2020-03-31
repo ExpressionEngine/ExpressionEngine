@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Debug Extensions', () => {
+context('Debug Extensions', () => {
 
   beforeEach(function() {
     cy.auth();

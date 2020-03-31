@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Member Settings', () => {
+context('Member Settings', () => {
 
   beforeEach(function() {
     cy.auth();

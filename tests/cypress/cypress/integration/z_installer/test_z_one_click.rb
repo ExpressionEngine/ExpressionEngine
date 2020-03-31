@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'One-Click Updater', () => {
+context('One-Click Updater', () => {
 
   beforeEach(function() {
     skip 'Need to figure out how to automate build creation again under open source', () => {

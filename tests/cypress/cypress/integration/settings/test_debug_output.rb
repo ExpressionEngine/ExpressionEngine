@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Debugging & Output Settings', () => {
+context('Debugging & Output Settings', () => {
 
   beforeEach(function() {
     cy.auth();

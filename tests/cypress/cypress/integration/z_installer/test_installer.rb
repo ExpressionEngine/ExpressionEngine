@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Installer', () => {
+context('Installer', () => {
   before :all do
     @installer = Installer::Prepare.new
     @installer.enable_installer

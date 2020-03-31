@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Query Form', () => {
+context('Query Form', () => {
 
   beforeEach(function() {
     cy.auth();

@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Email Log', () => {
+context('Email Log', () => {
 
   beforeEach(function() {
     cy.auth();

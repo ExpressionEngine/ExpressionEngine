@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Avatar Settings', () => {
+context('Avatar Settings', () => {
 
   beforeEach(function() {
     cy.auth();

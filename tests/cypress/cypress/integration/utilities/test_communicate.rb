@@ -1,7 +1,7 @@
 require './bootstrap.rb'
 require 'mail'
 
-feature 'Communicate', () => {
+context('Communicate', () => {
 
   def get_mail
     page.get('alert').text.should include "The email was output to:"

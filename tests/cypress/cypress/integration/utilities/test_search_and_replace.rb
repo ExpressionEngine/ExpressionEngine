@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Search and Replace', () => {
+context('Search and Replace', () => {
 
   beforeEach(function() {
     cy.auth();

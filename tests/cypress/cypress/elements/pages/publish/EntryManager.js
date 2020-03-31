@@ -3,7 +3,7 @@ import ControlPanel from '../ControlPanel'
 class EntryManager extends ControlPanel {
   constructor() {
     super()
-    this.url = '/admin.php?/cp/publish/edit{&perpage}{&filter_by_channel}';
+    this.url = '/admin.php?/cp/publish/edit&{perpage}&{filter_by_channel}';
 
     this.elements({
       'entry_rows': '.w-16 .tbl-ctrls form table tbody tr',
@@ -18,16 +18,13 @@ class EntryManager extends ControlPanel {
   }
 
   get_row_for_title(title) {
-    for (const row of this.get('entry_rows')) {
-      if (row.find('td:nth-child(2) a').innerText == title) {
-        return row;
-      }
-    }
+
+    return this.get('entry_rows').find('td:nth-child(2) a').filter(function(index) { return Cypress.$(this).text() === title; }).parent().parent()
+
   }
 
   click_edit_for_entry(title) {
-    row = this.get_row_for_title(title);
-    row.find('td:nth-child(2) a').click();
+    this.get('entry_rows').find('td:nth-child(2) a').filter(function(index) { return Cypress.$(this).text() === title; }).click();
   }
 }
 export default EntryManager;

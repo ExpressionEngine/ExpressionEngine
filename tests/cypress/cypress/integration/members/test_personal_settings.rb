@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Profile - Personal Settings', () => {
+context('Profile - Personal Settings', () => {
   beforeEach(function() {
     cy.auth();
     page = Profile::PersonalSettings.new

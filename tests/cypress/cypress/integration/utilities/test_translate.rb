@@ -1,6 +1,6 @@
 require './bootstrap.rb'
 
-feature 'Translate Tool', () => {
+context('Translate Tool', () => {
   english_path = '../../system/ee/legacy/language/english/'
   language_path = '../../system/user/language/'
   translations_path = '../../system/ee/legacy/translations/'
