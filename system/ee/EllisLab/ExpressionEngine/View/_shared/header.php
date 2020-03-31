@@ -73,13 +73,15 @@ $current_page = ee()->uri->segment(2);
 							<?php endif; ?> -->
 						<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
-						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
+						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries')) : ?>
 						<a data-dropdown-use-root="true" data-dropdown-pos="right-start" href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item js-dropdown-hover <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('menu_entries') ?></a>
 						<div class="dropdown js-filterable">
 							<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
-							<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
+							<?php foreach ($cp_main_menu['channels']['all'] as $channel_name => $link): ?>
 								<div class="dropdown__item">
-									<a href="<?=$link?>"><?=$channel_name?></a>
+									<a href="<?=(isset($cp_main_menu['channels']['edit'][$channel_name]) ? $link : '#')?>">
+									<?=$channel_name?>
+									</a>
 									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
 									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--action button--small"><i class="fas fa-plus"></i></a>
 									<?php endif; ?>

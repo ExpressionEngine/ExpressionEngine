@@ -1,6 +1,6 @@
-<?php 
+<?php
 $menu = ee()->menu->generate_menu();
-if ($can_create_channels || count($menu['channels']['create'])): ?>
+if ($can_create_channels || count($menu['channels']['edit'])): ?>
 	<div class="dashboard__item widget">
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('recent_entries'); ?></h2>
