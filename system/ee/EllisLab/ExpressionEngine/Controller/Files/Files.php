@@ -27,7 +27,7 @@ class Files extends AbstractFilesController {
 	public function index()
 	{
 		$viewTypeService = new ViewType();
-		$viewTypeService = $this->determineViewType('all', 'table');
+		$view_type = $viewTypeService->determineViewType('all', 'table');
 
 		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
