@@ -792,30 +792,6 @@ class EE_Input {
 			}
 		}
 
-		if (isset($_GET) && $filter_keys == TRUE)
-		{
-			foreach($_GET as $key => $val)
-			{
-				$clean = $this->_clean_get_input_data($val);
-
-				if ( ! $clean)
-				{
-					// Only notify super admins of the offending data
-					if (ee('Permission')->isSuperAdmin())
-					{
-						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
-
-						set_status_header(503);
-						exit(sprintf("Invalid GET Data %s", $data));
-					}
-					// Otherwise, handle it more gracefully and just unset the variable
-					else
-					{
-						unset($_GET[$key]);
-					}
-				}
-			}
-		}
 	}
 
 	/**
