@@ -29,7 +29,7 @@ context('Debug Extensions', () => {
     page.checkbox_header.find('input[type="checkbox"]').set true
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Disable"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
     cy.hasNoErrors()
 
     page.statuses[0].text.should eq 'DISABLED'
@@ -38,7 +38,7 @@ context('Debug Extensions', () => {
     page.checkbox_header.find('input[type="checkbox"]').set true
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Enable"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
     cy.hasNoErrors()
 
     page.statuses[0].text.should eq 'ENABLED'

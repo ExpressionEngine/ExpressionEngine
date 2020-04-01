@@ -262,7 +262,7 @@ context('Import File Converter', () => {
     page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
-    page.field1.select 'username'
+    page.field1.select('username'
     page.submit
     page.get('wrap').contains(form_error
     page.get('wrap').invoke('text').then((text) => {
@@ -271,7 +271,7 @@ context('Import File Converter', () => {
     page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
-    page.field2.select 'username'
+    page.field2.select('username'
     page.submit
     page.get('wrap').contains(form_error
     page.get('wrap').invoke('text').then((text) => {
@@ -281,8 +281,8 @@ context('Import File Converter', () => {
     page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
-    page.field2.select 'screen_name'
-    page.field3.select 'password'
+    page.field2.select('screen_name'
+    page.field3.select('password'
     page.submit
     page.get('wrap').contains(form_error
     page.get('wrap').invoke('text').then((text) => {
@@ -294,7 +294,7 @@ context('Import File Converter', () => {
     page.get('wrap').contains(email_error
     cy.hasNoErrors()
 
-    page.field4.select 'email'
+    page.field4.select('email'
     page.submit
     page.get('wrap').contains('Confirm Assignments'
     cy.hasNoErrors()
@@ -304,10 +304,10 @@ context('Import File Converter', () => {
     page.attach_file('member_file', @tab_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.field1.select 'username'
-    page.field2.select 'screen_name'
-    page.field3.select 'password'
-    page.field4.select 'email'
+    page.field1.select('username'
+    page.field2.select('screen_name'
+    page.field3.select('password'
+    page.field4.select('email'
     page.submit
     page.get('wrap').contains('Confirm Assignments'
     page.submit
@@ -345,10 +345,10 @@ context('Import File Converter', () => {
     page.attach_file('member_file', @tab_file)
     page.find('input[value=tab]').click()
     page.submit
-    page.field1.select 'username'
-    page.field2.select 'screen_name'
-    page.field3.select 'password'
-    page.field4.select 'email'
+    page.field1.select('username'
+    page.field2.select('screen_name'
+    page.field3.select('password'
+    page.field4.select('email'
     page.find('input[value=n]').click()
     page.submit
     page.get('wrap').contains('Confirm Assignments'

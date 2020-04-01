@@ -51,17 +51,17 @@ context('Statistics', () => {
     page.content_table.find('tr:nth-child(2) li.sync a').click()
 
     page.should have_alert
-    page.should have_alert_success
+    page.get('alert_success').should('be.visible')
   }
 
   it "can sync multiple sources" do
     page.find('input[type="checkbox"][title="select all"]').set(true)
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Sync"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
 
     page.should have_alert
-    page.should have_alert_success
+    page.get('alert_success').should('be.visible')
   }
 
 }

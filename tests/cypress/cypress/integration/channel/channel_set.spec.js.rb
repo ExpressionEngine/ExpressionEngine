@@ -60,7 +60,7 @@ context('Channel Sets', () => {
             // @return [void]
             def check_success
             cy.hasNoErrors()
-            page.should have_alert_success
+            page.get('alert_success').should('be.visible')
             page.get('alert').text.should include 'Channel Imported'
             page.get('alert').text.should include 'The channel was successfully imported.'
             page.all_there ? .should == true

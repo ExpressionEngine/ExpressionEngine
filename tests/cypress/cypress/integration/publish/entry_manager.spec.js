@@ -126,7 +126,7 @@ context('Entry Manager', () => {
     page.get('entry_checkboxes').first().check()
     page.get('bulk_action').select('Remove')
     page.get('action_submit_button').click()
-    //page.wait_for_modal_submit_button
+    //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 9);
@@ -148,7 +148,7 @@ context('Entry Manager', () => {
 
     page.get('bulk_action').select('Remove')
     page.get('action_submit_button').click()
-    //page.wait_for_modal_submit_button
+    //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 1)
@@ -171,7 +171,7 @@ context('Entry Manager', () => {
     })
     page.get('bulk_action').select('Remove')
     page.get('action_submit_button').click()
-    //page.wait_for_modal_submit_button
+    //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 10);

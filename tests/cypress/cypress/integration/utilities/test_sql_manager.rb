@@ -82,7 +82,7 @@ context('SQL Manager', () => {
   it('should repair the tables and sort and search the results', () => {
     page.select_all.click()
     page.wait_until_op_select_visible
-    page.op_select.select 'Repair'
+    page.op_select.select('Repair'
     page.op_submit.click()
 
     cy.hasNoErrors()
@@ -107,7 +107,7 @@ context('SQL Manager', () => {
   it('should optimize the tables and sort and search the results', () => {
     page.select_all.click()
     page.wait_until_op_select_visible
-    page.op_select.select 'Optimize'
+    page.op_select.select('Optimize'
     page.op_submit.click()
 
     cy.hasNoErrors()

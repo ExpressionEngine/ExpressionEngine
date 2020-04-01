@@ -109,7 +109,7 @@ context('Watermark Create/Edit', () => {
     page.wm_shadow_color.clear().type('000'
     page.submit
 
-    page.should have_alert_success
+    page.get('alert_success').should('be.visible')
     cy.hasNoErrors()
 
     click_link 'Test'
@@ -155,7 +155,7 @@ context('Watermark Create/Edit', () => {
     page.wm_y_transp.set 60
     page.submit
 
-    page.should have_alert_success
+    page.get('alert_success').should('be.visible')
     cy.hasNoErrors()
 
     click_link 'Test'

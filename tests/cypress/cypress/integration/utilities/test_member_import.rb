@@ -37,8 +37,8 @@ context('Member Import', () => {
     page.attach_file('member_xml_file', @members_xml)
     page.member_group.choose_radio_option('5')
     page.language.choose_radio_option('english')
-    page.tz_country.select 'United States'
-    page.timezone.select 'New York'
+    page.tz_country.select('United States'
+    page.timezone.select('New York'
     page.date_format.choose_radio_option('%Y-%m-%d')
     page.time_format.choose_radio_option('24')
     page.include_seconds_toggle.click()
@@ -57,8 +57,8 @@ context('Member Import', () => {
     page.attach_file('member_xml_file', @members_xml)
     page.member_group.choose_radio_option('5')
     page.language.choose_radio_option('english')
-    page.tz_country.select 'United States'
-    page.timezone.select 'New York'
+    page.tz_country.select('United States'
+    page.timezone.select('New York'
     page.date_format.choose_radio_option('%Y-%m-%d')
     page.time_format.choose_radio_option('24')
     page.auto_custom_field_toggle.click()
@@ -123,8 +123,8 @@ context('Member Import', () => {
     page.attach_file('member_xml_file', @members_xml_custom)
     page.member_group.choose_radio_option('5')
     page.language.choose_radio_option('english')
-    page.tz_country.select 'United States'
-    page.timezone.select 'New York'
+    page.tz_country.select('United States'
+    page.timezone.select('New York'
     page.date_format.choose_radio_option('%Y-%m-%d')
     page.time_format.choose_radio_option('24')
     page.submit

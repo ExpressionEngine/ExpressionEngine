@@ -43,8 +43,8 @@ context('Pages Settings', () => {
   it('should save new Pages settings', () => {
     page.homepage_display.choose_radio_option('nested')
     page.default_channel.choose_radio_option('1')
-    page.channel_default_template[0].select 'about/404'
-    page.channel_default_template[1].select 'news/index'
+    page.channel_default_template[0].select('about/404'
+    page.channel_default_template[1].select('news/index'
     page.submit
 
     cy.hasNoErrors()

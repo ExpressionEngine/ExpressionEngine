@@ -76,7 +76,7 @@ context('Throttling Log', () => {
       page.heading.text.should eq 'Search Results we found 1 results for "172.16.11"'
       page.keyword_search.value.should eq "172.16.11"
       page.get('wrap').contains(our_ip
-      page.should have(1).items
+      page.should('have.length', 1)
     }
 
     it('shows no results on a failed search', :enabled => true, :pregen => true do
@@ -167,7 +167,7 @@ context('Throttling Log', () => {
       page.modal_title.text.should eq "Confirm Removal"
       page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
       page.modal.text.should include "Access Throttling Logs: All"
-      page.modal_submit_button.click() // Submits a form
+      page.get('modal_submit_button').click() // Submits a form
 
       page.should have_alert
       page.get('alert').text.should eq "Logs Deleted 250 log(s) deleted from Throttling logs"

@@ -54,7 +54,7 @@ context('Email Log', () => {
     page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
     page.keyword_search.value.should eq "Rspec"
     page.get('wrap').contains(our_subject
-    page.should have(1).items
+    page.should('have.length', 1)
   }
 
   it('shows no results on a failed search', :pregen => true do
@@ -201,7 +201,7 @@ context('Email Log', () => {
     page.modal_title.text.should eq "Confirm Removal"
     page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
     page.modal.text.should include our_subject
-    page.modal_submit_button.click() // Submits a form
+    page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
     page.get('alert').text.should eq "Logs Deleted 1 log(s) deleted from Email logs"
@@ -216,7 +216,7 @@ context('Email Log', () => {
     page.modal_title.text.should eq "Confirm Removal"
     page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
     page.modal.text.should include "Email Logs: All"
-    page.modal_submit_button.click() // Submits a form
+    page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
     page.get('alert').text.should eq "Logs Deleted 165 log(s) deleted from Email logs"

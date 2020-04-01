@@ -130,7 +130,7 @@ context('Translate Tool', () => {
   // it('can export language files', :edit => false do
   //   @list_page.find('input[type="checkbox"][title="select all"]').set(true)
   //   @list_page.bulk_action.select "Export (Download)"
-  //   @list_page.action_submit_button.click()
+  //   @list_page.get('action_submit_button').click()
   //   @list_page.response_headers['Content-Disposition'].should include 'attachment; filename='
   // }
 
@@ -143,7 +143,7 @@ context('Translate Tool', () => {
     @list_page.find('input[type="checkbox"][title="select all"]').set(true)
     @list_page.wait_until_bulk_action_visible
     @list_page.bulk_action.select "Export (Download)"
-    @list_page.action_submit_button.click()
+    @list_page.get('action_submit_button').click()
     cy.hasNoErrors()
 
     @list_page.should have_alert
@@ -155,7 +155,7 @@ context('Translate Tool', () => {
   // it('shows an error if a ZipArchive cannot be created', :edit => false do
   //   @list_page.find('input[type="checkbox"][title="select all"]').set(true)
   //   @list_page.bulk_action.select "Export (Download)"
-  //   @list_page.action_submit_button.click()
+  //   @list_page.get('action_submit_button').click()
   // }
 
   it('uses the default language when language is not specified in the URL', :edit => false do
@@ -220,7 +220,7 @@ context('Translate Tool', () => {
     cy.hasNoErrors()
 
     @edit_page.should have_alert
-    @edit_page.should have_alert_success
+    @edit_page.get('alert_success').should('be.visible')
     File.exists?(language_path + 'english/addons_lang.php')
   }
 

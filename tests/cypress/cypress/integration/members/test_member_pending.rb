@@ -42,7 +42,7 @@ context('Pending Member List', () => {
     page.members[0].find('input[type="checkbox"]').set true
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Decline"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
 
     page.wait_until_modal_visible
     page.modal_title.text.should eq "Confirm Decline"
@@ -57,9 +57,9 @@ context('Pending Member List', () => {
     page.members[0].find('input[type="checkbox"]').set true
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Decline"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
     page.wait_until_modal_visible
-    page.modal_submit_button.click() // Submits a form
+    page.get('modal_submit_button').click() // Submits a form
     cy.hasNoErrors()
 
     page.should have_alert

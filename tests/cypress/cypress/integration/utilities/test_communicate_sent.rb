@@ -531,7 +531,7 @@ context('Communicate > Sent', () => {
 
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Remove"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
 
     page.wait_until_modal_visible
     page.modal_title.text.should eq "Confirm Removal"
@@ -556,7 +556,7 @@ context('Communicate > Sent', () => {
 
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Remove"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
 
     page.wait_until_modal_visible
     page.modal_title.text.should eq "Confirm Removal"
@@ -580,9 +580,9 @@ context('Communicate > Sent', () => {
 
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Remove"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
     page.wait_until_modal_visible
-    page.modal_submit_button.click() // Submits a form
+    page.get('modal_submit_button').click() // Submits a form
     cy.hasNoErrors()
 
     page.should have(13).rows // +1 for the header

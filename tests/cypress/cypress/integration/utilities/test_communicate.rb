@@ -179,7 +179,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -201,7 +201,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -225,7 +225,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -253,7 +253,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -278,7 +278,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -303,7 +303,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -327,7 +327,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
 //    mail = get_mail
@@ -356,7 +356,7 @@ context('Communicate', () => {
 //    page.submit_button.click()
 #
 //    page.should have_alert
-//    page.should have_alert_success
+//    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Total number of emails sent: 2'
 #
 //    // This isn't ideal as there could be name conflicts but for now

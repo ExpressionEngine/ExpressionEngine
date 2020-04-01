@@ -41,7 +41,7 @@ context('Member List', () => {
     page.members[0].find('input[type="checkbox"]').set true
     page.wait_until_bulk_action_visible
     page.bulk_action.select "Remove"
-    page.action_submit_button.click()
+    page.get('action_submit_button').click()
 
     page.wait_until_modal_visible
     page.modal_title.text.should eq "Confirm Removal"

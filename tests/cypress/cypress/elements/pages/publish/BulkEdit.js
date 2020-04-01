@@ -15,9 +15,9 @@ class BulkEdit extends ControlPanel {
         'clear_all_link': '.app-modal--center .entry-list__note a',
 
         'add_field': '.app-modal--center .fluid-actions a.has-sub',
-        'field_options': '.app-modal--center .fluid-actions .sub-menu li a',
+        'field_options': '.app-modal--center .fluid-actions .sub-menu li:visible a',
         'field_options_filter': '.app-modal--center .fluid-actions .filter-search input',
-        'fluid_fields': '.app-modal--center .fluid-item'
+        'fluid_fields': '.app-modal--center .fluid-item:visible'
       })
   }
 }

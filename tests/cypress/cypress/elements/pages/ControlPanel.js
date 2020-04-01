@@ -5,6 +5,12 @@ const { _, $ } = Cypress
 class ControlPanel {
     constructor() {
         this.selectors = {
+            "main_menu": "div.nav-main-wrap",
+            "global_menu": "div.nav-global-wrap",
+
+            'dev_menu': '.nav-main-develop .nav-tools .nav-has-sub',
+            'members_btn': '.nav-main-author .nav-members',
+
             "submit_buttons": '.form-btns .btn',
             "fieldset_errors": '.fieldset-invalid',
             "settings_btn": '.nav-main-develop a.nav-settings',
@@ -116,6 +122,10 @@ class ControlPanel {
 
     submit() {
         this.get('submit_buttons').first().click()
+    }
+
+    open_dev_menu() {
+        this.get('dev_menu').click()
     }
 
     hasAlert(type = null) {

@@ -46,7 +46,7 @@ context('Spam Module', () => {
       page.find('.check-ctrl input[type="checkbox"]').set true
       page.wait_until_bulk_action_visible
       page.bulk_action.select "approve"
-      page.action_submit_button.click()
+      page.get('action_submit_button').click()
       cy.hasNoErrors()
     }
 
@@ -54,7 +54,7 @@ context('Spam Module', () => {
       page.find('.check-ctrl input[type="checkbox"]').set true
       page.wait_until_bulk_action_visible
       page.bulk_action.select "approve"
-      page.action_submit_button.click()
+      page.get('action_submit_button').click()
       cy.hasNoErrors()
     }
 
