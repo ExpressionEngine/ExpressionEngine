@@ -155,7 +155,9 @@ class Consent {
 		else
 		{
 			$this->setAlertFlashdata('success', $message);
-			$return = ee('Encrypt')->decode(ee()->input->post('RET'));
+			$return = ee()->input->post('RET')
+						? ee('Encrypt')->decode(ee()->input->post('RET'))
+						: ee()->functions->form_backtrack(1);
 			ee()->functions->redirect(ee()->functions->create_url($return));
 		}
 	}

@@ -208,7 +208,7 @@ class Runner {
 	public function selfDestruct($rollback = NULL)
 	{
 		$config = ee('Config')->getFile();
-		$config->set('is_system_on', 'y', TRUE);
+		$config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), TRUE);
 		$config->set('app_version', APP_VER, TRUE);
 
 		// Legacy logger lib to log to update_log table
