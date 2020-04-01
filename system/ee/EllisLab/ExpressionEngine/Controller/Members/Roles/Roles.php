@@ -291,6 +291,12 @@ class Roles extends AbstractRolesController {
 			unset($vars['buttons'][2]);
 		}
 
+		ee()->javascript->output('
+			$("input[name=name]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=short_name]");
+			});
+		');
+
 		ee()->view->cp_page_title = lang('create_new_role');
 
 		ee()->view->extra_alerts = array('search-reindex'); // for Save & New
