@@ -79,7 +79,7 @@ context('Outgoing Email Settings', () => {
       page.wait_until_email_smtp_crypto_visible
 
       page.smtp_server.clear().type(''
-      page.smtp_server.trigger 'blur'
+      page.smtp_server.blur()
       page.wait_for_error_message_count(1)
       should_have_form_errors(page)
       should_have_error_text(page.smtp_server, server_required)
@@ -87,45 +87,45 @@ context('Outgoing Email Settings', () => {
 
     it('validates webmaster email when using an empty string', () => {
       page.webmaster_email.clear().type(''
-      page.webmaster_email.trigger 'blur'
+      page.webmaster_email.blur()
       page.wait_for_error_message_count(1)
       should_have_form_errors(page)
       should_have_error_text(page.webmaster_email, field_required)
 
       page.webmaster_email.clear().type('test@test.com'
-      page.webmaster_email.trigger 'blur'
+      page.webmaster_email.blur()
       page.wait_for_error_message_count(0)
       should_have_no_error_text(page.webmaster_email)
     }
 
     it('validates webmaster name using a xss vector', () => {
       page.webmaster_name.set $xss_vector
-      page.webmaster_name.trigger 'blur'
+      page.webmaster_name.blur()
       page.wait_for_error_message_count(1)
       should_have_form_errors(page)
       should_have_error_text(page.webmaster_name, $xss_error)
 
       page.webmaster_name.clear().type('Trey Anastasio'
-      page.webmaster_name.trigger 'blur'
+      page.webmaster_name.blur()
       page.wait_for_error_message_count(0)
       should_have_no_error_text(page.webmaster_name)
     }
 
     it('validates webmaster email when using nonsense', () => {
       page.webmaster_email.clear().type('dfsfdsf'
-      page.webmaster_email.trigger 'blur'
+      page.webmaster_email.blur()
       page.wait_for_error_message_count(1)
       should_have_error_text(page.webmaster_email, email_invalid)
 
       page.webmaster_email.clear().type('test@test.com'
-      page.webmaster_email.trigger 'blur'
+      page.webmaster_email.blur()
       page.wait_for_error_message_count(0)
       should_have_no_error_text(page.webmaster_email)
     }
 
     it('validates mail protocol when using PHP mail', () => {
       page.mail_protocol.choose_radio_option('mail')
-      page.mail_protocol[0].trigger 'blur'
+      page.mail_protocol[0].blur()
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
     }
@@ -140,12 +140,12 @@ context('Outgoing Email Settings', () => {
       page.wait_until_email_smtp_crypto_visible
 
       page.smtp_port.clear().type('abc'
-      page.smtp_port.trigger 'blur'
+      page.smtp_port.blur()
       page.wait_for_error_message_count(1)
       should_have_error_text(page.smtp_port, natural_number)
 
       page.smtp_port.clear().type('587'
-      page.smtp_port.trigger 'blur'
+      page.smtp_port.blur()
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
       should_have_no_error_text(page.smtp_port)

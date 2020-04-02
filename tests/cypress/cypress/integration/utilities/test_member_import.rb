@@ -131,8 +131,8 @@ context('Member Import', () => {
 
     cy.hasNoErrors()
     page.get('wrap').contains('Map Custom Fields'
-    page.custom_field_1_name.value.should eq 'phone'
-    page.custom_field_2_name.value.should eq 'address'
+    page.custom_field_1_name.invoke('val').then((val) => { expect(val).to.be.equal('phone'
+    page.custom_field_2_name.invoke('val').then((val) => { expect(val).to.be.equal('address'
 
     page.select_all.click()
     page.submit

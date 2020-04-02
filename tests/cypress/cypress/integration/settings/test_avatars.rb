@@ -40,60 +40,60 @@ context('Avatar Settings', () => {
     // AJAX validation
     page.load()
     page.avatar_path.clear().type('sdfsdfsd'
-    page.avatar_path.trigger 'blur'
+    page.avatar_path.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.avatar_path, $invalid_path)
     should_have_form_errors(page)
 
     page.avatar_path.set @upload_path
-    page.avatar_path.trigger 'blur'
+    page.avatar_path.blur()
     page.wait_for_error_message_count(0)
 
     page.avatar_path.clear().type('/'
-    page.avatar_path.trigger 'blur'
+    page.avatar_path.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.avatar_path, $not_writable)
     should_have_form_errors(page)
 
     page.avatar_max_width.clear().type('dfsd'
-    page.avatar_max_width.trigger 'blur'
+    page.avatar_max_width.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.avatar_max_width, $integer_error)
     should_have_form_errors(page)
 
     page.avatar_max_height.clear().type('dsfsd'
-    page.avatar_max_height.trigger 'blur'
+    page.avatar_max_height.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.avatar_max_height, $integer_error)
     should_have_form_errors(page)
 
     page.avatar_max_kb.clear().type('sdfsdfsd'
-    page.avatar_max_kb.trigger 'blur'
+    page.avatar_max_kb.blur()
     page.wait_for_error_message_count(4)
     should_have_error_text(page.avatar_max_kb, $integer_error)
     should_have_form_errors(page)
 
     // Fix everything
     page.avatar_path.set @upload_path
-    page.avatar_path.trigger 'blur'
+    page.avatar_path.blur()
     page.wait_for_error_message_count(3)
     should_have_no_error_text(page.avatar_path)
     should_have_form_errors(page)
 
     page.avatar_max_width.clear().type('100'
-    page.avatar_max_width.trigger 'blur'
+    page.avatar_max_width.blur()
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.avatar_max_width)
     should_have_form_errors(page)
 
     page.avatar_max_height.clear().type('100'
-    page.avatar_max_height.trigger 'blur'
+    page.avatar_max_height.blur()
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.avatar_max_height)
     should_have_form_errors(page)
 
     page.avatar_max_kb.clear().type('100'
-    page.avatar_max_kb.trigger 'blur'
+    page.avatar_max_kb.blur()
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.avatar_max_kb)
     should_have_no_form_errors(page)
@@ -101,13 +101,13 @@ context('Avatar Settings', () => {
 
   it('should reject XSS', () => {
     page.avatar_url.set $xss_vector
-    page.avatar_url.trigger 'blur'
+    page.avatar_url.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.avatar_url, $xss_error)
     should_have_form_errors(page)
 
     page.avatar_path.set $xss_vector
-    page.avatar_path.trigger 'blur'
+    page.avatar_path.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.avatar_url, $xss_error)
     should_have_error_text(page.avatar_path, $xss_error)

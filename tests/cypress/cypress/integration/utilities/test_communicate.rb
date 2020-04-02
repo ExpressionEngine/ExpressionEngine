@@ -4,8 +4,8 @@ require 'mail'
 context('Communicate', () => {
 
   def get_mail
-    page.get('alert').text.should include "The email was output to:"
-    page.get('alert').text.should include "protocol: dummy"
+    page.get('alert').contains("The email was output to:"
+    page.get('alert').contains("protocol: dummy"
     match = page.get('alert').text.match(/The email was output to: (?<file>\S*)\s/)
     mail = Mail.read(match[:file])
     return mail
@@ -28,7 +28,7 @@ context('Communicate', () => {
     page.load()
 
     page.should be_displayed
-    page.heading.text.should eq 'Communicate'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Communicate'
     page.should have_subject
     page.should have_body
     page.should have_mailtype
@@ -51,7 +51,7 @@ context('Communicate', () => {
   }
 
   it "shows the Communicate page" do
-    page.mailtype.value.should eq 'text'
+    page.mailtype.invoke('val').then((val) => { expect(val).to.be.equal('text'
     page.get('wordwrap').should('be.checked')
   }
 

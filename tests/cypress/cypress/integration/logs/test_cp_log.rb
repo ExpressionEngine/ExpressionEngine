@@ -17,7 +17,7 @@ context('CP Log', () => {
 
     // These should always be true at all times if not something has gone wrong
     page.displayed?
-    page.heading.text.should eq 'Control Panel Access Logs'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Control Panel Access Logs'
 
     page.should have_keyword_search
     page.should have_submit_button
@@ -30,7 +30,7 @@ context('CP Log', () => {
     page.should have_remove_all
     page.should have_pagination
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
 
     page.should have(6).pages
     page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
@@ -49,11 +49,11 @@ context('CP Log', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains(our_action
 
-    page.keyword_search.clear().type("Rspec"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("Rspec"
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
-    page.keyword_search.value.should eq "Rspec"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Rspec"'
+    page.get('keyword_search').value.should eq "Rspec"
     page.get('wrap').contains(our_action
     page.should('have.length', 1)
   }
@@ -61,11 +61,11 @@ context('CP Log', () => {
   it('shows no results on a failed search', :pregen => true  do
     our_action = "NotFoundHere"
 
-    page.keyword_search.set our_action
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').set our_action
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 0 results for "' + our_action + '"'
-    page.keyword_search.value.should eq our_action
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_action + '"'
+    page.get('keyword_search').value.should eq our_action
     page.get('wrap').contains(our_action
 
     page.get('no_results').should('exist')
@@ -84,7 +84,7 @@ context('CP Log', () => {
     page.wait_until_username_filter_menu_visible
     page.username_filter_menu.click_link "johndoe"
 
-    page.username_filter.text.should eq "username (johndoe)"
+    page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
     page.should_not have_pagination
   }
@@ -95,7 +95,7 @@ context('CP Log', () => {
     page.username_manual_filter.clear().type("johndoe"
     page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 
-    page.username_filter.text.should eq "username (johndoe)"
+    page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
     page.should_not have_pagination
   }
@@ -114,7 +114,7 @@ context('CP Log', () => {
     page.wait_until_date_filter_menu_visible
     page.date_filter_menu.click_link "Last 24 Hours"
 
-    page.date_filter.text.should eq "date (Last 24 Hours)"
+    page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.should('have.length', 2)
   }
 
@@ -123,7 +123,7 @@ context('CP Log', () => {
     page.wait_until_perpage_filter_menu_visible
     page.perpage_filter_menu.click_link "25"
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(6).pages
@@ -136,7 +136,7 @@ context('CP Log', () => {
     page.perpage_manual_filter.clear().type("42"
     page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
-    page.perpage_filter.text.should eq "show (42)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (42)"
     page.should have(42).items
     page.should have_pagination
     page.should have(6).pages
@@ -162,8 +162,8 @@ context('CP Log', () => {
     page.wait_until_username_filter_menu_visible
     page.username_filter_menu.click_link "johndoe"
 
-    page.perpage_filter.text.should eq "show (150)"
-    page.username_filter.text.should eq "username (johndoe)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
+    page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
     page.should_not have_pagination
     page.items.should_not have_text "admin"
@@ -176,19 +176,19 @@ context('CP Log', () => {
     cy.hasNoErrors()
 
     // First, confirm we have both 'admin' and 'johndoe' on same page
-    page.perpage_filter.text.should eq "show (150)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
     page.should have(150).items
     page.should have_pagination
     page.get('wrap').contains("johndoe"
     page.get('wrap').contains("admin"
 
     // Now, combine the filters
-    page.keyword_search.clear().type("johndoe"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("johndoe"
+    page.get('keyword_search').send_keys(:enter)
 
-    page.perpage_filter.text.should eq "show (150)"
-    page.heading.text.should eq 'Search Results we found 15 results for "johndoe"'
-    page.keyword_search.value.should eq "johndoe"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 15 results for "johndoe"'
+    page.get('keyword_search').value.should eq "johndoe"
     page.should have(15).items
     page.should_not have_pagination
     page.items.should_not have_text "admin"
@@ -205,14 +205,14 @@ context('CP Log', () => {
     log = page.find('section.item-wrap div.item', :text => our_action)
     log.find('li.remove a').click() // Activates a modal
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include our_action
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains(our_action
     page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
-    page.get('alert').text.should eq "Logs Deleted 1 log(s) deleted from Control Panel logs"
+    page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 1 log(s) deleted from Control Panel logs"
 
     page.should have_no_content our_action
   }
@@ -220,14 +220,14 @@ context('CP Log', () => {
   it('can remove all entries', :pregen => true do
     page.remove_all.click() // Activates a modal
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include "Control Panel Access Logs: All"
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains("Control Panel Access Logs: All"
     page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
-    page.get('alert').text.should eq "Logs Deleted 167 log(s) deleted from Control Panel logs"
+    page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 167 log(s) deleted from Control Panel logs"
 
     page.get('no_results').should('exist')
     page.should_not have_pagination
@@ -256,12 +256,12 @@ context('CP Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
 
     click_link "Next"
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(7).pages
@@ -276,15 +276,15 @@ context('CP Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.keyword_search.clear().type("johndoe"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("johndoe"
+    page.get('keyword_search').send_keys(:enter)
     cy.hasNoErrors()
 
     // Page 1
-    page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-    page.keyword_search.value.should eq "johndoe"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
+    page.get('keyword_search').value.should eq "johndoe"
     page.items.should_not have_text "admin"
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(5).pages
@@ -293,10 +293,10 @@ context('CP Log', () => {
     click_link "Next"
 
     // Page 2
-    page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-    page.keyword_search.value.should eq "johndoe"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
+    page.get('keyword_search').value.should eq "johndoe"
     page.items.should_not have_text "admin"
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(10).items
     page.should have_pagination
     page.should have(5).pages

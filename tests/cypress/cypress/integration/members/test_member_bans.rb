@@ -24,20 +24,20 @@ context('Ban Settings', () => {
 
   it('should reject XSS', () => {
     page.banned_ips.set $xss_vector
-    page.banned_ips.trigger 'blur'
+    page.banned_ips.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.banned_ips, $xss_error)
     should_have_form_errors(page)
 
     page.banned_emails.set $xss_vector
-    page.banned_emails.trigger 'blur'
+    page.banned_emails.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.banned_emails, $xss_error)
     should_have_error_text(page.banned_ips, $xss_error)
     should_have_form_errors(page)
 
     page.banned_usernames.set $xss_vector
-    page.banned_usernames.trigger 'blur'
+    page.banned_usernames.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.banned_usernames, $xss_error)
     should_have_error_text(page.banned_emails, $xss_error)
@@ -45,7 +45,7 @@ context('Ban Settings', () => {
     should_have_form_errors(page)
 
     page.banned_screen_names.set $xss_vector
-    page.banned_screen_names.trigger 'blur'
+    page.banned_screen_names.blur()
     page.wait_for_error_message_count(4)
     should_have_error_text(page.banned_screen_names, $xss_error)
     should_have_error_text(page.banned_usernames, $xss_error)

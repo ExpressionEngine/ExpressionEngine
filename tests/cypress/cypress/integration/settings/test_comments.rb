@@ -39,13 +39,13 @@ context('Comment Settings', () => {
     // AJAX validation
     page.load()
     page.comment_edit_time_limit.clear().type('sdfsdfsd'
-    page.comment_edit_time_limit.trigger 'blur'
+    page.comment_edit_time_limit.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains(comment_edit_time_error
 
     page.comment_edit_time_limit.clear().type('100'
-    page.comment_edit_time_limit.trigger 'blur'
+    page.comment_edit_time_limit.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
   }

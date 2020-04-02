@@ -13,7 +13,7 @@ context('Forum Tab', () => {
   }
 
   it('has a forum tab', () => {
-    page.tab_links[4].text.should include 'Forum'
+    page.tab_links[4].contains('Forum'
     page.tab_links[4].click()
     page.forum_tab.should have_forum_title
     page.forum_tab.should have_forum_body
@@ -69,7 +69,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_title.clear().type('Something'
     page.forum_tab.forum_body.clear().type('Lorem ipsum dolor sit amet...'
     page.forum_tab.forum_topic_id.clear().type('1'
-    page.forum_tab.forum_topic_id.trigger 'blur'
+    page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     should_have_error_text(
@@ -81,7 +81,7 @@ context('Forum Tab', () => {
   it('invalidates an entry with an invalid forum topic ID', () => {
     page.tab_links[4].click()
     page.forum_tab.forum_topic_id.clear().type('999'
-    page.forum_tab.forum_topic_id.trigger 'blur'
+    page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     should_have_error_text(
@@ -90,7 +90,7 @@ context('Forum Tab', () => {
     )
 
     page.forum_tab.forum_topic_id.clear().type(''
-    page.forum_tab.forum_topic_id.trigger 'blur'
+    page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
     should_have_no_error_text(page.forum_tab.forum_topic_id)
@@ -99,8 +99,8 @@ context('Forum Tab', () => {
   it('requires both the forum title and body when creating new forum topics', () => {
     page.tab_links[4].click()
     page.forum_tab.forum_title.set title
-    page.forum_tab.forum_title.trigger 'blur'
-    page.forum_tab.forum_body.trigger 'blur'
+    page.forum_tab.forum_title.blur()
+    page.forum_tab.forum_body.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     should_have_error_text(
@@ -109,15 +109,15 @@ context('Forum Tab', () => {
     )
 
     page.forum_tab.forum_title.clear().type(''
-    page.forum_tab.forum_title.trigger 'blur'
-    page.forum_tab.forum_body.trigger 'blur'
+    page.forum_tab.forum_title.blur()
+    page.forum_tab.forum_body.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
     should_have_no_error_text(page.forum_tab.forum_body)
 
     page.forum_tab.forum_body.set body
-    page.forum_tab.forum_body.trigger 'blur'
-    page.forum_tab.forum_title.trigger 'blur'
+    page.forum_tab.forum_body.blur()
+    page.forum_tab.forum_title.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     should_have_error_text(

@@ -283,15 +283,15 @@ context('Add-On Manager First-Party Table Only', function() {
         //   page.get('first_party_status_filter_menu').click_link "installed"
         //   cy.hasNoErrors()
         //
-        //   page.get('first_party_checkbox_header').find('input[type="checkbox"]').set true
+        //   page.get('first_party_checkbox_header').find('input[type="checkbox"]').check()
         //   page.get('wait_until_first_party_bulk_action_visible')
         //   page.get('first_party_bulk_action').select "Uninstall"
         //   page.get('first_party_action_submit_button').click
         //
         //   page.get('wait_until_modal_visible')
-        //   page.get('modal_title').text.should eq "Confirm Uninstall"
-        //   page.get('modal').text.should include "You are attempting to uninstall the following items, please confirm this action."
-        //   page.get('modal').text.should include 'Add-On: 17 Add-Ons'
+        //   page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Uninstall"
+        //   page.get('modal').contains("You are attempting to uninstall the following items, please confirm this action."
+        //   page.get('modal').contains('Add-On: 17 Add-Ons'
     })
 
     it('can uninstall add-ons', function() {

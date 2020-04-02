@@ -2,7 +2,7 @@ require './bootstrap.rb'
 
 def confirm (page)
   page.displayed?
-  page.heading.text.should eq 'Developer Logs'
+  page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Developer Logs'
   page.should have_keyword_search
   page.should have_submit_button
   page.should have_date_filter
@@ -28,7 +28,7 @@ context('Developer Log', () => {
     page.should have_remove_all
     page.should have_pagination
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
 
     page.should have(6).pages
     page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
@@ -50,11 +50,11 @@ context('Developer Log', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains(our_desc
 
-    page.keyword_search.clear().type("Rspec"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("Rspec"
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
-    page.keyword_search.value.should eq "Rspec"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Rspec"'
+    page.get('keyword_search').value.should eq "Rspec"
     page.get('wrap').contains(our_desc
     page.should('have.length', 1)
   }
@@ -71,8 +71,8 @@ context('Developer Log', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains(our_phrase
 
-    page.keyword_search.set our_phrase
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').set our_phrase
+    page.get('keyword_search').send_keys(:enter)
 
     page.get('wrap').contains(our_phrase
     page.should_not have_no_results
@@ -87,11 +87,11 @@ context('Developer Log', () => {
 
     confirm page
 
-    page.keyword_search.set our_desc
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').set our_desc
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 0 results for "' + our_desc + '"'
-    page.keyword_search.value.should eq our_desc
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_desc + '"'
+    page.get('keyword_search').value.should eq our_desc
     page.get('wrap').contains(our_desc
     page.should have_date_filter
     page.should have_perpage_filter
@@ -116,7 +116,7 @@ context('Developer Log', () => {
     page.wait_until_date_filter_menu_visible
     page.date_filter_menu.click_link "Last 24 Hours"
 
-    page.date_filter.text.should eq "date (Last 24 Hours)"
+    page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.should have(19).items
     page.should_not have_pagination
   }
@@ -132,7 +132,7 @@ context('Developer Log', () => {
     page.wait_until_perpage_filter_menu_visible
     page.perpage_filter_menu.click_link "25 results"
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(6).pages
@@ -151,7 +151,7 @@ context('Developer Log', () => {
     page.perpage_manual_filter.clear().type("42"
     page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
-    page.perpage_filter.text.should eq "show (42)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (42)"
     page.should have(42).items
     page.should have_pagination
     page.should have(6).pages
@@ -172,7 +172,7 @@ context('Developer Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
 
@@ -180,8 +180,8 @@ context('Developer Log', () => {
     page.wait_until_date_filter_menu_visible
     page.date_filter_menu.click_link "Last 24 Hours"
 
-    page.perpage_filter.text.should eq "show (25)"
-    page.date_filter.text.should eq "date (Last 24 Hours)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
+    page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.should have(23).items
     page.should_not have_pagination
   }
@@ -202,12 +202,12 @@ context('Developer Log', () => {
     page.date_filter_menu.click_link "Last 24 Hours"
     cy.hasNoErrors()
 
-    page.keyword_search.clear().type("Rspec"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("Rspec"
+    page.get('keyword_search').send_keys(:enter)
 
-    page.date_filter.text.should eq "date (Last 24 Hours)"
-    page.heading.text.should eq 'Search Results we found 5 results for "Rspec"'
-    page.keyword_search.value.should eq "Rspec"
+    page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "Rspec"'
+    page.get('keyword_search').value.should eq "Rspec"
     page.get('wrap').contains(our_desc
     page.should have(5).items
     page.should_not have_pagination
@@ -227,14 +227,14 @@ context('Developer Log', () => {
     log = page.find('section.item-wrap div.item', :text => our_desc)
     log.find('li.remove a').click() // Activates a modal
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include our_desc
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains(our_desc
     page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
-    page.get('alert').text.should eq "Logs Deleted 1 log(s) deleted from Developer logs"
+    page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 1 log(s) deleted from Developer logs"
 
     page.should have_no_content our_desc
   }
@@ -248,14 +248,14 @@ context('Developer Log', () => {
 
     page.remove_all.click() // Activates a modal
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include "Developer Logs: All"
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains("Developer Logs: All"
     page.get('modal_submit_button').click() // Submits a form
 
     page.should have_alert
-    page.get('alert').text.should eq "Logs Deleted 250 log(s) deleted from Developer logs"
+    page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 250 log(s) deleted from Developer logs"
 
     page.get('no_results').should('exist')
     page.should_not have_pagination
@@ -302,12 +302,12 @@ context('Developer Log', () => {
     page.perpage_filter_menu.click_link "25 results"
     cy.hasNoErrors()
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
 
     click_link "Next"
 
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(7).pages
@@ -327,15 +327,15 @@ context('Developer Log', () => {
     page.perpage_filter_menu.click_link "25"
     cy.hasNoErrors()
 
-    page.keyword_search.clear().type("Visible"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("Visible"
+    page.get('keyword_search').send_keys(:enter)
     cy.hasNoErrors()
 
     // Page 1
-    page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
-    page.keyword_search.value.should eq "Visible"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "Visible"'
+    page.get('keyword_search').value.should eq "Visible"
     page.items.should_not have_text "Hidden"
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
     page.should have_pagination
     page.should have(5).pages
@@ -344,10 +344,10 @@ context('Developer Log', () => {
     click_link "Next"
 
     // Page 2
-    page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
-    page.keyword_search.value.should eq "Visible"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "Visible"'
+    page.get('keyword_search').value.should eq "Visible"
     page.items.should_not have_text "Hidden"
-    page.perpage_filter.text.should eq "show (25)"
+    page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(10).items
     page.should have_pagination
     page.should have(5).pages

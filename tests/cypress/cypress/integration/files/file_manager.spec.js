@@ -33,7 +33,7 @@ context('File Manager', () => {
 			// Check that the heder data is intact
 			page.get('manager_title').invoke('text').then((text) => {
 				expect(text.trim()).equal('File Manager')
-			})			
+			})
 			page.get('title_toolbar').should('exist')
 			page.get('download_all').should('exist')
 
@@ -95,7 +95,7 @@ context('File Manager', () => {
 	// General Tests
 
 	it('can change the page size using the menu', () => {
-		beforeEach_all_files();	
+		beforeEach_all_files();
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
 		page.get('perpage_filter_menu').contains("50 results", {timeout: 2000}).click()
@@ -104,12 +104,12 @@ context('File Manager', () => {
 		page.get('perpage_filter').find('a.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(50\)/)
-		page.get('have_pagination').should('not.exist'); 
+		page.get('have_pagination').should('not.exist');
 		page.get('files').should('have.length', 11)
 	});
 
 	it('can change the page size manually', () => {
-		beforeEach_all_files();	
+		beforeEach_all_files();
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
 		page.get('perpage_manual_filter').type('5')
@@ -119,7 +119,7 @@ context('File Manager', () => {
 		page.get('perpage_filter').find('a.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(5\)/)
-		
+
 		page.get('pagination').should('exist')
 		page.get('pages').should('have.length', 5)
 		const pages = ["First", "1", "2", "Next", "Last"]
@@ -130,7 +130,7 @@ context('File Manager', () => {
 	});
 
 	it('can change pages', () => {
-		beforeEach_all_files();	
+		beforeEach_all_files();
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
 		page.get('perpage_manual_filter').type('5')
@@ -154,7 +154,7 @@ context('File Manager', () => {
 
 	it('can reverse sort by title/name', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();			
+		beforeEach_perpage_50();
 
 		page.get('title_name_header').find('a.sort').click()
 		cy.hasNoErrors()
@@ -176,12 +176,12 @@ context('File Manager', () => {
 			})
 			expect(files_reversed).to.deep.equal(sorted_files.reverse())
 		})
-		
+
 	});
 
 	it('can sort by file type', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();	
+		beforeEach_perpage_50();
 
 		page.get('file_type_header').find('a.sort').click()
 		cy.hasNoErrors()
@@ -218,19 +218,19 @@ context('File Manager', () => {
 
 	it('can sort by date added', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();			
+		beforeEach_perpage_50();
 		page.get('date_added_header').find('a.sort').click()
 		cy.hasNoErrors()
 
 		page.get('date_added_header').should('have.class', 'highlight')
-		
+
 		let sorted_files = [];
 		page.get('dates_added').then(function($td) {
 			sorted_files = _.map($td, function(el) {
 					return $(el).text();
 			})
 		})
-		
+
 		page.get('date_added_header').find('a.sort').click()
 		cy.hasNoErrors()
 
@@ -260,13 +260,13 @@ context('File Manager', () => {
 		//page.wait_until_view_modal_visible
 		//page.wait_for_view_modal_header(5)
 		let filename = '';
-		page.get('title_names').eq(0).find('em').invoke('text').then((text) => { 
-			filename = text.trim() 
+		page.get('title_names').eq(0).find('em').invoke('text').then((text) => {
+			filename = text.trim()
 			page.get('view_modal_header').invoke('text').then((text) => {
 				expect(text).contains(filename)
-			})			
+			})
 		})
-		
+
 	});
 
 	it('can edit file', () => {
@@ -279,7 +279,7 @@ context('File Manager', () => {
 		cy.url().should('match', edit_page.urlMatch)
 
 		edit_page.get('title_input').should('exist')
-		
+
 		//edit_page.displayed?
 	});
 
@@ -296,72 +296,72 @@ context('File Manager', () => {
 	});
 
 	it('displays an itemzied modal when attempting to remove 5 or less files', () => {
-		
+
 		let filename = '';
-		page.get('title_names').eq(0).find('a').invoke('text').then((text) => { 
-			filename = text.trim() 	
+		page.get('title_names').eq(0).find('a').invoke('text').then((text) => {
+			filename = text.trim()
 		})
 
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
-		//page.wait_until_bulk_action_visible
+		//page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Remove")
 		page.get('action_submit_button').click()
 
-		//page.wait_until_modal_visible
+		//page.get('modal').should('be.visible')
 		page.get('modal_title').invoke('text').then((text) => {
 			expect(text.trim()).equal('Confirm Removal')
-		})		
+		})
 		page.get('modal').invoke('text').then((text) => {
 			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
 			expect(text).contains(filename)
-		})	
+		})
 		page.get('modal').find('.checklist li').should('have.length', 1)
 	});
 
 	it('displays a bulk confirmation modal when attempting to remove more than 5 files', () => {
 		page.get('checkbox_header').click()
-		//page.wait_until_bulk_action_visible
+		//page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Remove")
 		page.get('action_submit_button').click()
 
-		//page.wait_until_modal_visible
+		//page.get('modal').should('be.visible')
 		page.get('modal_title').invoke('text').then((text) => {
 			expect(text.trim()).equal('Confirm Removal')
-		})		
+		})
 		page.get('modal').invoke('text').then((text) => {
 			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
 			expect(text).contains('File: 10 Files')
-		})	
+		})
 	});
 
 	it('can remove a single file', () => {
 		beforeEach_all_files();
 		let filename = '';
-		page.get('title_names').eq(0).invoke('text').then((text) => { 
-			filename = text	
+		page.get('title_names').eq(0).invoke('text').then((text) => {
+			filename = text
 		})
 
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
-		//page.wait_until_bulk_action_visible
+		//page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Remove")
 		page.get('action_submit_button').click()
-		//page.wait_until_modal_visible
+		//page.get('modal').should('be.visible')
 		page.get('modal_submit_button').click() // Submits a form
 		cy.hasNoErrors()
 
 		page.get('wrap').invoke('text').then((text) => {
 			expect(text).not.contains(filename)
-		})		
+		})
 	});
 
 	it('can remove multiple files', () => {
-		beforeEach_all_files();	
+		beforeEach_all_files();
 		beforeEach_perpage_50();
 		page.get('checkbox_header').click()
-		//page.wait_until_bulk_action_visible
+		//page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Remove")
 		page.get('action_submit_button').click()
-		//page.wait_until_modal_visible
+		//page.get('modal').should('be.visible')
 		page.get('modal_submit_button').click() // Submits a form
 		cy.hasNoErrors()
 
@@ -385,7 +385,7 @@ context('File Manager', () => {
 		cy.url().should('match', /files\/directory\//)
 		page.get('heading').invoke('text').then((text) => {
 			expect(text.trim()).equal('Files in Main Upload Directory')
-		})			
+		})
 		page.get('sync_button').should('exist')
 		page.get('no_results').should('exist')
 	});
@@ -399,11 +399,11 @@ context('File Manager', () => {
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_title').invoke('text').then((text) => {
 			expect(text.trim()).equal('Confirm Removal')
-		})		
+		})
 		page.get('modal').invoke('text').then((text) => {
 			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
 			expect(text).contains('Directory: About')
-		})	
+		})
 		page.get('modal').find('.checklist li').should('have.length', 1)
 	});
 
@@ -418,12 +418,12 @@ context('File Manager', () => {
 
 		page.get('sidebar').invoke('text').then((text) => {
 			expect(text).not.contains('About')
-		})	
+		})
 		page.get('alert').should('exist')
 		page.get('alert').invoke('text').then((text) => {
 			expect(text).contains('Upload directory removed')
 			expect(text).contains('The upload directory About has been removed.')
-		})	
+		})
 
 		cy.task('db:seed')
 
@@ -437,7 +437,7 @@ context('File Manager', () => {
 
 		page.get('sidebar').find('li.act').invoke('text').then((text) => {
 			expect(text.trim()).equal('About')
-		})		
+		})
 
 		page.get('sidebar').find('.folder-list > li:first-child').trigger('mouseover')
 		page.get('sidebar').find('.folder-list > li:first-child li.remove a').click()
@@ -448,12 +448,12 @@ context('File Manager', () => {
 
 		page.get('sidebar').invoke('text').then((text) => {
 			expect(text).not.contains('About')
-		})	
+		})
 		page.get('alert').should('exist')
 		page.get('alert').invoke('text').then((text) => {
 			expect(text).contains('Upload directory removed')
 			expect(text).contains('The upload directory About has been removed.')
-		})	
+		})
 
 		cy.task('db:seed')
 
@@ -499,7 +499,7 @@ context('File Manager', () => {
 		page.get('alert').invoke('text').then((text) => {
 			expect(text).contains('Files Not Found')
 			expect(text).contains('Highlighted files cannot be found on the server.')
-		})	
+		})
 
 		page.get('wrap').find('tr.missing').should('exist')
 
@@ -509,9 +509,9 @@ context('File Manager', () => {
 	});
 
 	it('marks all missing files in directory view', () => {
-		
+
 		beforeEach_not_all_files();
-		
+
 		cy.task('filesystem:delete', '../../images/about/*.jpg')
 		page.load();
 		cy.hasNoErrors()
@@ -521,7 +521,7 @@ context('File Manager', () => {
 		page.get('alert').invoke('text').then((text) => {
 			expect(text).contains('Files Not Found')
 			expect(text).contains('Highlighted files cannot be found on the server.')
-		})	
+		})
 
 		page.get('wrap').find('tr.missing').should('exist')
   });

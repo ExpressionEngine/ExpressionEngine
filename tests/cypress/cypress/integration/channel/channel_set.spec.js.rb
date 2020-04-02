@@ -61,8 +61,8 @@ context('Channel Sets', () => {
             def check_success
             cy.hasNoErrors()
             page.get('alert_success').should('be.visible')
-            page.get('alert').text.should include 'Channel Imported'
-            page.get('alert').text.should include 'The channel was successfully imported.'
+            page.get('alert').contains('Channel Imported'
+            page.get('alert').contains('The channel was successfully imported.'
             page.all_there ? .should == true
             }
 
@@ -72,8 +72,8 @@ context('Channel Sets', () => {
             def check_issue_duplicate
             cy.hasNoErrors()
             page.should have_alert_error
-            page.get('alert').text.should include 'Import Creates Duplicates'
-            page.get('alert').text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
+            page.get('alert').contains('Import Creates Duplicates'
+            page.get('alert').contains('This channel set uses names that already exist on your site. Please rename the following items.'
             }
 
             def field_groups_created(field_groups)
@@ -462,7 +462,7 @@ context('Channel Sets', () => {
             field_group_form = FieldGroupForm.new
             field_group_form.load
             field_group_form.name.clear().type('Gridlocked'
-            field_group_form.all('.field-inputs label').each do |field |
+            field_group_form.find('.field-inputs label').each do |field |
                 if field.text.include ? 'Zen'
             field.find('input[type=checkbox]').click()
             break
@@ -586,9 +586,9 @@ context('Channel Sets', () => {
             page.find('input[name="ee:ChannelField[news_body][field_name]"]').clear().type('event_body'
             page.find('input[name="ee:ChannelField[news_extended][field_name]"]').clear().type('event_extended'
             page.find('input[name="ee:ChannelField[news_image][field_name]"]').clear().type('event_image'
-            page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
+            page.find('input[name="ee:ChannelField[news_image][field_name]"]').blur()
             page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').clear().type('Event'
-            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
+            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').blur()
             page.submit
 
             check_success
@@ -679,7 +679,7 @@ context('Channel Sets', () => {
 
             page.find('input[name="ee:UploadDestination[Images][server_path]"]').clear().type('{base_path}/images/uploads'
             page.find('input[name="ee:UploadDestination[Images][url]"]').clear().type('/images/uploads'
-            page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
+            page.find('input[name="ee:UploadDestination[Images][url]"]').blur()
             page.submit
 
             check_success
@@ -710,8 +710,8 @@ context('Channel Sets', () => {
             it('shows errors when the channel set cannot be imported'
             do
                 import_channel_set('no-json') do
-                    page.get('alert').text.should include 'Cannot Import Channel'
-            page.get('alert').text.should include 'Missing channel_set.json file.'
+                    page.get('alert').contains('Cannot Import Channel'
+            page.get('alert').contains('Missing channel_set.json file.'
             }
             }
 
@@ -879,7 +879,7 @@ context('Channel Sets', () => {
             page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').clear().type('Uploads'
             page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').clear().type('{base_path}/images/uploads'
             page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').clear().type('/images/uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
+            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').blur()
             page.submit
 
             check_success

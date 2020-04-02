@@ -37,14 +37,14 @@ context('SQL Manager', () => {
   }
 
   it('should sort the table', () => {
-    page.table.find('th.highlight').text.should eq 'Table Name'
+    page.table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Table Name'
     page.sort_links[0].click()
 
     tables = get_tables
 
     page.tables.map {|source| source.text}.should == tables.reverse
     page.should have(tables.count).tables
-    page.table.find('th.highlight').text.should eq 'Table Name'
+    page.table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Table Name'
   }
 
   it('should search the table names', () => {

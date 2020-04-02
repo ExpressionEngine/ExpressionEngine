@@ -28,31 +28,31 @@ context('Spam Module', () => {
       page.load()
 
       page.displayed?
-      page.heading.text.contains('All SPAM'
+      page.get('heading').text.contains('All SPAM'
       page.should have_keyword_search
     }
 
     it('can search by phrases', () => {
-      page.keyword_search.clear().type('about'
-      page.keyword_search.send_keys(:enter)
+      page.get('keyword_search').clear().type('about'
+      page.get('keyword_search').send_keys(:enter)
       cy.hasNoErrors()
 
-      page.heading.text.should eq 'Search Results we found 5 results for "about"'
-      page.keyword_search.value.should eq 'about'
+      page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "about"'
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal('about'
       page.get('wrap').contains('about'
     }
 
     it('can mark as ham', () => {
-      page.find('.check-ctrl input[type="checkbox"]').set true
-      page.wait_until_bulk_action_visible
+      page.find('.check-ctrl input[type="checkbox"]').check()
+      page.get('bulk_action').should('be.visible')
       page.bulk_action.select "approve"
       page.get('action_submit_button').click()
       cy.hasNoErrors()
     }
 
     it('can mark as spam', () => {
-      page.find('.check-ctrl input[type="checkbox"]').set true
-      page.wait_until_bulk_action_visible
+      page.find('.check-ctrl input[type="checkbox"]').check()
+      page.get('bulk_action').should('be.visible')
       page.bulk_action.select "approve"
       page.get('action_submit_button').click()
       cy.hasNoErrors()

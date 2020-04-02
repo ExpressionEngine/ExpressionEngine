@@ -38,38 +38,38 @@ context('Access Throttling Settings', () => {
     // AJAX validation
     page.load()
     page.lockout_time.clear().type('sdfsdfsd'
-    page.lockout_time.trigger 'blur'
+    page.lockout_time.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.lockout_time, integer_error)
     should_have_form_errors(page)
 
     page.max_page_loads.clear().type('sdfsdfsd'
-    page.max_page_loads.trigger 'blur'
+    page.max_page_loads.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.max_page_loads, integer_error)
     should_have_form_errors(page)
 
     page.time_interval.clear().type('sdfsdfsd'
-    page.time_interval.trigger 'blur'
+    page.time_interval.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.time_interval, integer_error)
     should_have_form_errors(page)
 
     // Fix everything
     page.lockout_time.clear().type('5'
-    page.lockout_time.trigger 'blur'
+    page.lockout_time.blur()
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.lockout_time)
     should_have_form_errors(page)
 
     page.max_page_loads.clear().type('15'
-    page.max_page_loads.trigger 'blur'
+    page.max_page_loads.blur()
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.max_page_loads)
     should_have_form_errors(page)
 
     page.time_interval.clear().type('8'
-    page.time_interval.trigger 'blur'
+    page.time_interval.blur()
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.time_interval)
     should_have_no_form_errors(page)
@@ -77,13 +77,13 @@ context('Access Throttling Settings', () => {
 
   it('should reject XSS', () => {
     page.banishment_url.set $xss_vector
-    page.banishment_url.trigger 'blur'
+    page.banishment_url.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.banishment_url, $xss_error)
     should_have_form_errors(page)
 
     page.banishment_message.set $xss_vector
-    page.banishment_message.trigger 'blur'
+    page.banishment_message.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.banishment_url, $xss_error)
     should_have_error_text(page.banishment_message, $xss_error)

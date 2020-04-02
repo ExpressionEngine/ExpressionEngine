@@ -35,14 +35,14 @@ context('Grid Field Settings', () => {
   }
 
   it('shows the Grid field settings', () => {
-    page.field_name.value.should eq 'test_grid'
+    page.field_name.invoke('val').then((val) => { expect(val).to.be.equal('test_grid'
     page.should have_text('Grid Fields')
   }
 
   it('should autopopulate the column name', () => {
     column = GridSettings::column(1)
     column.label.clear().type('Test Column'
-    column.name.value.should eq 'test_column'
+    column.name.invoke('val').then((val) => { expect(val).to.be.equal('test_column'
 
     page.submit
     cy.hasNoErrors()
@@ -51,17 +51,17 @@ context('Grid Field Settings', () => {
     // Column label shouldn't update automatically on existing columns
     column = GridSettings::column(1)
     column.label.clear().type('News column label'
-    column.name.value.should eq 'test_column'
+    column.name.invoke('val').then((val) => { expect(val).to.be.equal('test_column'
 
     // Ensure column name generation works in new and cloned columns
     GridSettings::add_column
     column2 = GridSettings::column(2)
     column2.label.clear().type('New column'
-    column2.name.value.should eq 'new_column'
+    column2.name.invoke('val').then((val) => { expect(val).to.be.equal('new_column'
 
     column2 = GridSettings::clone_column(1)
     column2.label.clear().type('New column 2'
-    column2.name.value.should eq 'new_column_2'
+    column2.name.invoke('val').then((val) => { expect(val).to.be.equal('new_column_2'
   }
 
   it('should validate column names and labels', () => {
@@ -77,7 +77,7 @@ context('Grid Field Settings', () => {
     // No column label and duplicate column label
     column = GridSettings::add_column
     column.label.clear().type('Test column'
-    column.name.value.should eq 'test_column'
+    column.name.invoke('val').then((val) => { expect(val).to.be.equal('test_column'
     column.name.click()
     column.label.click() // Blur, .trigger('blur') isn't working
     page.wait_for_error_message_count(2)

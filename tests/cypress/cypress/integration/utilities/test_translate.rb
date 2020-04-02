@@ -20,7 +20,7 @@ context('Translate Tool', () => {
     @list_page.should be_displayed
     @edit_page.should_not be_displayed
 
-    @list_page.heading.text.should eq 'English Language Files'
+    @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('English Language Files'
     @list_page.should have_phrase_search
     @list_page.should have_search_submit_button
   }
@@ -34,11 +34,11 @@ context('Translate Tool', () => {
 
     @edit_page.should be_displayed
 
-    @edit_page.heading.text.should include 'addons_lang.php Translation'
+    @edit_page.get('heading').contains('addons_lang.php Translation'
     @edit_page.should have_breadcrumb
     @edit_page.should have_items
     @edit_page.should have_submit_button
-    @edit_page.breadcrumb.text.should include 'English Language Files'
+    @edit_page.breadcrumb.contains('English Language Files'
   }
 
   after(function() {
@@ -74,7 +74,7 @@ context('Translate Tool', () => {
     @list_page.search_submit_button.click()
     cy.hasNoErrors()
 
-    @list_page.heading.text.should eq 'Search Results we found 2 results for "' + my_phrase + '"'
+    @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 2 results for "' + my_phrase + '"'
     @list_page.phrase_search.value.should eq my_phrase
     @list_page.get('wrap').contains(my_phrase
     @list_page.should have(3).rows // 2 rows + header row
@@ -88,7 +88,7 @@ context('Translate Tool', () => {
     @list_page.search_submit_button.click()
     cy.hasNoErrors()
 
-    @list_page.heading.text.should eq 'Search Results we found 0 results for "' + my_phrase + '"'
+    @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + my_phrase + '"'
     @list_page.phrase_search.value.should eq my_phrase
     @list_page.should_not have_pagination
     @list_page.get('no_results').should('exist')
@@ -141,7 +141,7 @@ context('Translate Tool', () => {
     cy.hasNoErrors()
 
     @list_page.find('input[type="checkbox"][title="select all"]').set(true)
-    @list_page.wait_until_bulk_action_visible
+    @list_page.get('bulk_action').should('be.visible')
     @list_page.bulk_action.select "Export (Download)"
     @list_page.get('action_submit_button').click()
     cy.hasNoErrors()
@@ -163,14 +163,14 @@ context('Translate Tool', () => {
 
     visit(new_url)
 
-    @list_page.heading.text.should eq 'English Language Files'
+    @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('English Language Files'
   }
 
   it('can use multiple languages', :edit => false do
     click_link "Rspeclingo"
     cy.hasNoErrors()
 
-    @list_page.heading.text.should eq 'Rspeclingo Language Files'
+    @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Rspeclingo Language Files'
     @list_page.should have_pagination
     @list_page.should have(6).pages
     @list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]

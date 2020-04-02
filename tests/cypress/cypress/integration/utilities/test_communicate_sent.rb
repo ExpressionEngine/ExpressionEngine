@@ -15,7 +15,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should be_displayed
-    page.heading.text.should eq 'Sent Emails'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Sent Emails'
     page.should have_phrase_search
     page.should have_search_submit_button
     page.should have_email_table
@@ -26,7 +26,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should be_displayed
-    page.heading.text.should eq 'Sent Emails'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Sent Emails'
     page.should have_phrase_search
     page.should have_search_submit_button
     page.should have_email_table
@@ -45,7 +45,7 @@ context('Communicate > Sent', () => {
     }
     load_page
 
-    page.find('th.highlight').text.should eq 'Subject'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Subject'
     page.find('th.highlight').should have_css 'a.sort.asc'
     page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     page.should have(21).rows // +1 for the header
@@ -63,7 +63,7 @@ context('Communicate > Sent', () => {
     page.subject_header.find('a.sort').click()
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Subject'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Subject'
     page.find('th.highlight').should have_css 'a.sort.desc'
     page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     page.should have(21).rows // +1 for the header
@@ -83,7 +83,7 @@ context('Communicate > Sent', () => {
     page.date_header.find('a.sort').click()
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Date'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Date'
     page.find('th.highlight').should have_css 'a.sort.asc'
     page.dates.map {|date| date.text}.should == dates[0..19]
     page.should have(21).rows // +1 for the header
@@ -105,7 +105,7 @@ context('Communicate > Sent', () => {
     page.date_header.find('a.sort').click() // DESC sort
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Date'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Date'
     page.find('th.highlight').should have_css 'a.sort.desc'
     page.dates.map {|date| date.text}.should == dates[0..19]
     page.should have(21).rows // +1 for the header
@@ -122,7 +122,7 @@ context('Communicate > Sent', () => {
     page.total_sent_header.find('a.sort').click()
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Total Sent'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
     page.find('th.highlight').should have_css 'a.sort.asc'
     page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     page.should have(21).rows // +1 for the header
@@ -143,7 +143,7 @@ context('Communicate > Sent', () => {
     page.total_sent_header.find('a.sort').click() // DESC sort
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Total Sent'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
     page.find('th.highlight').should have_css 'a.sort.desc'
     page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     page.should have(21).rows // +1 for the header
@@ -162,7 +162,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.get('wrap').contains(data
     page.should have(6).rows #+1 for the header
@@ -181,7 +181,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -199,7 +199,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -217,7 +217,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -235,7 +235,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -253,7 +253,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -271,7 +271,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.should have(6).rows #+1 for the header
   }
@@ -286,7 +286,7 @@ context('Communicate > Sent', () => {
     page.search_submit_button.click()
     cy.hasNoErrors()
 
-    page.heading.text.should eq 'Search Results we found 0 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
 
     page.get('no_results').should('exist')
@@ -314,10 +314,10 @@ context('Communicate > Sent', () => {
     page.search_submit_button.click()
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Total Sent'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
     page.find('th.highlight').should have_css 'a.sort.asc'
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.get('wrap').contains(data
     page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.toString()}
@@ -374,7 +374,7 @@ context('Communicate > Sent', () => {
       click_link "Next"
     cy.hasNoErrors()
 
-    page.find('th.highlight').text.should eq 'Total Sent'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
     page.find('th.highlight').should have_css 'a.sort.asc'
   }
 
@@ -393,7 +393,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.get('wrap').contains(data
     page.should_not have_text "Albatross"
@@ -417,11 +417,11 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should_not have_no_results
-    page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
     page.phrase_search.value.should eq phrase
     page.get('wrap').contains(data
     page.should_not have_text "Albatross"
-    page.find('th.highlight').text.should eq 'Total Sent'
+    page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
     page.find('th.highlight').should have_css 'a.sort.asc'
   }
 
@@ -432,19 +432,19 @@ context('Communicate > Sent', () => {
     page.should have_pagination
       page.should have(6).pages
       page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '1'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('1'
 
     click_link "Next"
     cy.hasNoErrors()
 
       page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '2'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('2'
 
     page.total_sent_header.find('a.sort').click()
     cy.hasNoErrors()
 
       page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '1'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('1'
   }
 
   it('resets the page on a new search', () => {
@@ -457,20 +457,20 @@ context('Communicate > Sent', () => {
     page.should have_pagination
       page.should have(6).pages
       page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '1'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('1'
 
     click_link "Next"
     cy.hasNoErrors()
 
       page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '2'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('2'
 
     page.phrase_search.set phrase
     page.search_submit_button.click()
     cy.hasNoErrors()
 
       page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
-    page.pagination.find('a.act').text.should eq '1'
+    page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('1'
   }
 
   it('can view an email', () => {
@@ -486,8 +486,8 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.should have_modal
-    page.modal_title.text.should eq my_subject
-    page.modal.text.should include my_body
+    page.get('modal_title').text.should eq my_subject
+    page.get('modal').contains(my_body
   }
 
   it('can resend an email', () => {
@@ -505,7 +505,7 @@ context('Communicate > Sent', () => {
     communicate = Communicate.new
 
     communicate.should be_displayed
-    communicate.heading.text.should eq 'Communicate'
+    communicate.heading.invoke('text').then((text) => { expect(text).to.be.equal('Communicate'
 
     communicate.subject.value.should eq my_subject
     communicate.from_email.value.should eq test_from
@@ -525,19 +525,19 @@ context('Communicate > Sent', () => {
 
     page.rows.each do |row|
       if row.text.include? data
-        row.find('input[type="checkbox"]').set true
+        row.find('input[type="checkbox"]').check()
       }
     }
 
-    page.wait_until_bulk_action_visible
-    page.bulk_action.select "Remove"
+    page.get('bulk_action').should('be.visible')
+    page.bulk_action.select("Remove")
     page.get('action_submit_button').click()
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include data
-    page.modal.all('.checklist li').length.should eq 5
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains(data
+    page.get('modal').find('.checklist li').length.should eq 5
   }
 
   it('displays a bulk confirmation modal when removing more than 5 emails', () => {
@@ -550,18 +550,18 @@ context('Communicate > Sent', () => {
 
     page.rows.each do |row|
       if row.text.include? data
-        row.find('input[type="checkbox"]').set true
+        row.find('input[type="checkbox"]').check()
       }
     }
 
-    page.wait_until_bulk_action_visible
-    page.bulk_action.select "Remove"
+    page.get('bulk_action').should('be.visible')
+    page.bulk_action.select("Remove")
     page.get('action_submit_button').click()
 
-    page.wait_until_modal_visible
-    page.modal_title.text.should eq "Confirm Removal"
-    page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-    page.modal.text.should include "Sent Emails: 6 Emails"
+    page.get('modal').should('be.visible')
+    page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal"
+    page.get('modal').contains("You are attempting to remove the following items, please confirm this action."
+    page.get('modal').contains("Sent Emails: 6 Emails"
   }
 
   it('can remove emails in bulk', () => {
@@ -574,14 +574,14 @@ context('Communicate > Sent', () => {
 
     page.rows.each do |row|
       if row.text.include? data
-        row.find('input[type="checkbox"]').set true
+        row.find('input[type="checkbox"]').check()
       }
     }
 
-    page.wait_until_bulk_action_visible
-    page.bulk_action.select "Remove"
+    page.get('bulk_action').should('be.visible')
+    page.bulk_action.select("Remove")
     page.get('action_submit_button').click()
-    page.wait_until_modal_visible
+    page.get('modal').should('be.visible')
     page.get('modal_submit_button').click() // Submits a form
     cy.hasNoErrors()
 

@@ -17,14 +17,14 @@ context('Hit Tracking', () => {
 
     // Ajax testing
     page.dynamic_tracking_disabling.clear().type('three'
-    page.dynamic_tracking_disabling.trigger 'blur'
+    page.dynamic_tracking_disabling.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.dynamic_tracking_disabling, is_numeric_error)
     should_have_form_errors(page)
 
     // Clean up after Ajax testing
     page.dynamic_tracking_disabling.clear().type('3'
-    page.dynamic_tracking_disabling.trigger 'blur'
+    page.dynamic_tracking_disabling.blur()
     page.wait_for_error_message_count(0)
 
     // Form Validation

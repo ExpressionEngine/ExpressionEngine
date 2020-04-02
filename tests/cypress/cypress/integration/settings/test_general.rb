@@ -97,7 +97,7 @@ context('General Settings', () => {
   //   empty
   def test_field(field, value, error = false)
     field.set value
-    field.trigger 'blur'
+    field.blur()
 
     cy.hasNoErrors()
 

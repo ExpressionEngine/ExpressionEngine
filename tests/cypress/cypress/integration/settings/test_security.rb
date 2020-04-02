@@ -69,38 +69,38 @@ context('Security & Privacy Settings', () => {
     // AJAX validation
     page.load()
     page.un_min_len.clear().type('sdfsdfsd'
-    page.un_min_len.trigger 'blur'
+    page.un_min_len.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.un_min_len, integer_error)
     should_have_form_errors(page)
 
     page.password_lockout_interval.clear().type('sdfsdfsd'
-    page.password_lockout_interval.trigger 'blur'
+    page.password_lockout_interval.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.password_lockout_interval, integer_error)
     should_have_form_errors(page)
 
     page.pw_min_len.clear().type('sdfsdfsd'
-    page.pw_min_len.trigger 'blur'
+    page.pw_min_len.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.pw_min_len, integer_error)
     should_have_form_errors(page)
 
     // Fix everything
     page.un_min_len.clear().type('5'
-    page.un_min_len.trigger 'blur'
+    page.un_min_len.blur()
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.un_min_len)
     should_have_form_errors(page)
 
     page.password_lockout_interval.clear().type('15'
-    page.password_lockout_interval.trigger 'blur'
+    page.password_lockout_interval.blur()
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.password_lockout_interval)
     should_have_form_errors(page)
 
     page.pw_min_len.clear().type('8'
-    page.pw_min_len.trigger 'blur'
+    page.pw_min_len.blur()
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.pw_min_len)
     should_have_no_form_errors(page)

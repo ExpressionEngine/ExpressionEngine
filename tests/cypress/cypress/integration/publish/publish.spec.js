@@ -105,7 +105,7 @@ context('Publish Page - Create', () => {
 
               cy.wait(1000)
 
-              //page.wait_until_modal_visible
+              //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
               //page.file_modal.wait_for_filters
 
@@ -126,7 +126,7 @@ context('Publish Page - Create', () => {
 
           link.parent().find("a:contains('About')").click()
 
-          //page.wait_until_modal_visible
+          //page.get('modal').should('be.visible')
           file_modal.get('files').should('be.visible')
           //page.file_modal.wait_for_filters
 
@@ -158,7 +158,7 @@ context('Publish Page - Create', () => {
 
               cy.wait(500)
 
-              //page.wait_until_modal_visible
+              //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
               //page.file_modal.wait_for_filters
 
@@ -243,7 +243,7 @@ context('Publish Page - Create', () => {
               field.find('a:contains("Choose Existing")').click()
               cy.wait(500)
               fluid_field.get('items').eq(index).find('a:contains("Choose Existing")').parent().find('a:contains("About")').click()
-              //page.wait_until_modal_visible
+              //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
               //page.file_modal.wait_for_files
               cy.wait(500)

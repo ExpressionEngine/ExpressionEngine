@@ -20,13 +20,13 @@ context('Search and Replace', () => {
   it('should validate the form', () => {
     page.submit_enabled?.should eq true
 
-    page.search_term.trigger 'blur'
+    page.search_term.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.search_term, @field_required)
     should_have_form_errors(page)
 
     page.search_term.clear().type('Text'
-    page.search_term.trigger 'blur'
+    page.search_term.blur()
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.search_term)
     should_have_no_form_errors(page)
@@ -37,7 +37,7 @@ context('Search and Replace', () => {
     should_have_error_text(page.replace_where, @field_required)
     should_have_form_errors(page)
 
-    page.password_auth.trigger 'blur'
+    page.password_auth.blur()
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.search_term)
     should_have_error_text(page.replace_where, @field_required)
@@ -45,11 +45,11 @@ context('Search and Replace', () => {
     should_have_form_errors(page)
 
     page.password_auth.clear().type('password'
-    page.password_auth.trigger 'blur'
+    page.password_auth.blur()
     page.wait_for_error_message_count(1)
 
     page.password_auth.clear().type('test'
-    page.password_auth.trigger 'blur'
+    page.password_auth.blur()
     page.wait_for_error_message_count(2)
     should_have_no_error_text(page.search_term)
     should_have_error_text(page.replace_where, @field_required)
@@ -57,7 +57,7 @@ context('Search and Replace', () => {
     should_have_form_errors(page)
 
     page.password_auth.clear().type('password'
-    page.password_auth.trigger 'blur'
+    page.password_auth.blur()
     page.wait_for_error_message_count(1)
     page.replace_where.select('Channel Entry Titles'
     page.wait_for_error_message_count(0)
@@ -90,12 +90,12 @@ context('Search and Replace', () => {
     cy.hasNoErrors()
 
     page.search_term.clear().type('Text'
-    page.search_term.trigger 'blur'
+    page.search_term.blur()
     page.wait_for_error_message_count(2)
     page.replace_where.select('Channel Entry Titles'
     page.wait_for_error_message_count(1)
     page.password_auth.clear().type('password'
-    page.password_auth.trigger 'blur'
+    page.password_auth.blur()
     page.wait_for_error_message_count(0)
 
     should_have_no_error_text(page.search_term)

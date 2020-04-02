@@ -19,22 +19,22 @@ context('Member Group List', () => {
     // Be sane and make sure it's there before we search for it
     page.get('wrap').contains('Super Admin'
 
-    page.keyword_search.clear().type("Super Admin"
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').clear().type("Super Admin"
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 1 results for "Super Admin"'
-    page.keyword_search.value.should eq "Super Admin"
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Super Admin"'
+    page.get('keyword_search').value.should eq "Super Admin"
     page.get('wrap').contains('Super Admin'
     page.list.should have(1).groups
   }
 
   it('shows no results on a failed search', () => {
     our_action = 'BadMemberGroup'
-    page.keyword_search.set our_action
-    page.keyword_search.send_keys(:enter)
+    page.get('keyword_search').set our_action
+    page.get('keyword_search').send_keys(:enter)
 
-    page.heading.text.should eq 'Search Results we found 0 results for "' + our_action + '"'
-    page.keyword_search.value.should eq our_action
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_action + '"'
+    page.get('keyword_search').value.should eq our_action
     page.get('wrap').contains(our_action
 
     page.list.get('no_results').should('exist')

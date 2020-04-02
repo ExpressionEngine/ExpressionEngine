@@ -36,13 +36,13 @@ context('Template Settings', () => {
     // AJAX validation
     page.load()
     page.max_tmpl_revisions.clear().type('sdfsdfsd'
-    page.max_tmpl_revisions.trigger 'blur'
+    page.max_tmpl_revisions.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains($integer_error
 
     page.max_tmpl_revisions.clear().type('100'
-    page.max_tmpl_revisions.trigger 'blur'
+    page.max_tmpl_revisions.blur()
     page.wait_for_error_message_count(0)
   }
 

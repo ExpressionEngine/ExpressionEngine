@@ -48,7 +48,7 @@ context('Installer', () => {
       page.install_form.install_submit.click()
 
       cy.hasNoErrors()
-      page.header.text.should eq 'Install Complete!'
+      page.header.invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!'
       page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       page.install_success.all_there?.should == true
     }
@@ -65,7 +65,7 @@ context('Installer', () => {
       page.install_form.install_submit.click()
 
       cy.hasNoErrors()
-      page.header.text.should eq 'Install Complete!'
+      page.header.invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!'
       page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       page.install_success.all_there?.should == true
     }
@@ -86,7 +86,7 @@ context('Installer', () => {
       page.install_form.install_submit.click()
 
       cy.hasNoErrors()
-      page.header.text.should eq 'Install Complete!'
+      page.header.invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!'
       page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       page.install_success.all_there?.should == true
 
@@ -105,7 +105,7 @@ context('Installer', () => {
       page.install_form.install_submit.click()
 
       cy.hasNoErrors()
-      page.header.text.should eq 'Install Complete!'
+      page.header.invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!'
       page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       page.install_success.all_there?.should == true
 
@@ -217,7 +217,7 @@ context('Installer', () => {
       page.install_form.all_there?.should == true
       page.inline_errors.should have(0).items
       page.should have_error
-      page.error.text.should include 'The database user and password combination you submitted is invalid.'
+      page.error.contains('The database user and password combination you submitted is invalid.'
     }
   }
 

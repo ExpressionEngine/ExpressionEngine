@@ -8,7 +8,7 @@ context('Statistics', () => {
     page.load()
 
     page.should be_displayed
-    page.heading.text.should eq 'Manage Statistics'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Manage Statistics'
     page.should have_content_table
   }
 
@@ -19,23 +19,23 @@ context('Statistics', () => {
   }
 
   it "can sort by source" do
-    page.all('a.sort')[0].click()
+    page.find('a.sort')[0].click()
     page.sources.map {|source| source.text}.should == ["Sites", "Members", "Channel Entries"]
-    page.content_table.find('th.highlight').text.should eq 'Source'
+    page.content_table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Source'
 
-    page.all('a.sort')[0].click()
+    page.find('a.sort')[0].click()
     page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
-    page.content_table.find('th.highlight').text.should eq 'Source'
+    page.content_table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Source'
   }
 
   it "can sort by count" do
-    page.all('a.sort')[1].click()
+    page.find('a.sort')[1].click()
     page.counts.map {|count| count.text}.should == ["1", "7", "10"]
-    page.content_table.find('th.highlight').text.should eq 'Record Count'
+    page.content_table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Record Count'
 
-    page.all('a.sort')[1].click()
+    page.find('a.sort')[1].click()
     page.counts.map {|count| count.text}.should == ["10", "7", "1"]
-    page.content_table.find('th.highlight').text.should eq 'Record Count'
+    page.content_table.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Record Count'
   }
 
   it "reports accurate record count after adding a member" do
@@ -56,7 +56,7 @@ context('Statistics', () => {
 
   it "can sync multiple sources" do
     page.find('input[type="checkbox"][title="select all"]').set(true)
-    page.wait_until_bulk_action_visible
+    page.get('bulk_action').should('be.visible')
     page.bulk_action.select "Sync"
     page.get('action_submit_button').click()
 

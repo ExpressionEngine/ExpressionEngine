@@ -28,12 +28,12 @@ context('Query Form', () => {
 
     // AJAX Validation
     page.load()
-    page.query_form.trigger 'blur'
+    page.query_form.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.query_form, field_required)
 
     page.query_form.clear().type('SELECT'
-    page.query_form.trigger 'blur'
+    page.query_form.blur()
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.query_form)
   }
@@ -143,7 +143,7 @@ context('Query Form', () => {
 
     cy.hasNoErrors()
     results.contains('Search Results we found 2 results for "the"'
-    results.search_field.value.should eq 'the'
+    results.search_field.invoke('val').then((val) => { expect(val).to.be.equal('the'
     results.should have(0).pages
     results.should have(2).rows
     results.table.find('tbody tr:nth-child(2) td:nth-child(7)').contains('About the Label'
@@ -152,7 +152,7 @@ context('Query Form', () => {
     results.sort_links[0].click()
     cy.hasNoErrors()
     results.contains('Search Results we found 2 results for "the"'
-    results.search_field.value.should eq 'the'
+    results.search_field.invoke('val').then((val) => { expect(val).to.be.equal('the'
     results.should have(0).pages
     results.should have(2).rows
     // This should be in the next row down now
@@ -223,7 +223,7 @@ context('Query Form', () => {
 
     cy.hasNoErrors()
     results.contains('Search Results we found '+searched.count.toString()+' results for "alter"'
-    results.search_field.value.should eq 'alter'
+    results.search_field.invoke('val').then((val) => { expect(val).to.be.equal('alter'
     results.should have(0).pages
     results.should have(searched.count).rows
     results.first_column.map {|source| source.text}.should == searched
@@ -231,7 +231,7 @@ context('Query Form', () => {
     // Make sure we can still sort and maintain search results
     results.sort_links[0].click()
     results.contains('Search Results we found '+searched.count.toString()+' results for "alter"'
-    results.search_field.value.should eq 'alter'
+    results.search_field.invoke('val').then((val) => { expect(val).to.be.equal('alter'
     results.should have(0).pages
     results.should have(searched.count).rows
     results.first_column.map {|source| source.text}.should == searched.reverse

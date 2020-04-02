@@ -20,20 +20,20 @@ context('File Manager / Upload File', () => {
     page.displayed?
 
     // Check that the heder data is intact
-    page.manager_title.text.should eq 'File Manager'
+    page.manager_title.invoke('text').then((text) => { expect(text).to.be.equal('File Manager'
     page.should have_title_toolbar
     page.should have_download_all
 
     // Check that we have a sidebar
     page.should have_sidebar
-    page.upload_directories_header.text.should include 'Upload Directories'
+    page.upload_directories_header.contains('Upload Directories'
     page.should have_new_directory_button
-    page.watermarks_header.text.should include 'Watermarks'
+    page.watermarks_header.contains('Watermarks'
     page.should have_new_watermark_button
-    page.sidebar.find('li.act').text.should eq 'Main Upload Directory'
+    page.sidebar.find('li.act').invoke('text').then((text) => { expect(text).to.be.equal('Main Upload Directory'
 
     page.should_not have_breadcrumb
-    page.heading.text.should eq 'File Upload'
+    page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('File Upload'
 
     page.should have_file_input
     page.should have_title_input
@@ -52,10 +52,10 @@ context('File Manager / Upload File', () => {
   }
 
   it('shows the upload form', () => {
-    page.title_input.value.should eq ''
-    page.description_input.value.should eq ''
-    page.credit_input.value.should eq ''
-    page.location_input.value.should eq ''
+    page.title_input.invoke('val').then((val) => { expect(val).to.be.equal(''
+    page.description_input.invoke('val').then((val) => { expect(val).to.be.equal(''
+    page.credit_input.invoke('val').then((val) => { expect(val).to.be.equal(''
+    page.location_input.invoke('val').then((val) => { expect(val).to.be.equal(''
   }
 
   it('requires that a file be uploaded', () => {
@@ -64,8 +64,8 @@ context('File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.get('alert').text.should include "Cannot Upload File"
-    page.get('alert').text.should include "You did not select a file to upload."
+    page.get('alert').contains("Cannot Upload File"
+    page.get('alert').contains("You did not select a file to upload."
   }
 
   it('can upload a Markdown file', () => {
@@ -76,10 +76,10 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file README.md was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file README.md was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "README.md"
+    @return.selected_file.contains("README.md"
   }
 
   it('can upload a Markdown file and set the title', () => {
@@ -91,11 +91,11 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file RSpec README was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file RSpec README was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "README.md"
-    @return.selected_file.text.should include "RSpec README"
+    @return.selected_file.contains("README.md"
+    @return.selected_file.contains("RSpec README"
   }
 
   it('can upload a Markdown file and set the description', () => {
@@ -107,10 +107,10 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file README.md was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file README.md was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "README.md"
+    @return.selected_file.contains("README.md"
 
     @return.selected_file.find('li.edit a').click()()
     cy.hasNoErrors()
@@ -128,10 +128,10 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file README.md was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file README.md was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "README.md"
+    @return.selected_file.contains("README.md"
 
     @return.selected_file.find('li.edit a').click()()
     cy.hasNoErrors()
@@ -149,10 +149,10 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file README.md was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file README.md was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "README.md"
+    @return.selected_file.contains("README.md"
 
     @return.selected_file.find('li.edit a').click()()
     cy.hasNoErrors()
@@ -168,8 +168,8 @@ context('File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.get('alert').text.should include "Cannot Upload File"
-    page.get('alert').text.should include "File not allowed."
+    page.get('alert').contains("Cannot Upload File"
+    page.get('alert').contains("File not allowed."
   }
 
   it('can upload a image when the directory is restricted to images', () => {
@@ -185,10 +185,10 @@ context('File Manager / Upload File', () => {
     @return.displayed?
     @return.should have_alert
     @return.should have_alert_success
-    @return.alert.text.should include "File Upload Success"
-    @return.alert.text.should include "The file programming.gif was uploaded successfully."
+    @return.alert.contains("File Upload Success"
+    @return.alert.contains("The file programming.gif was uploaded successfully."
     @return.should have_selected_file
-    @return.selected_file.text.should include "programming.gif"
+    @return.selected_file.contains("programming.gif"
 
     // Cleaning up after myself
     File.delete(File.expand_path('../../images/about/programming.gif'))
@@ -207,8 +207,8 @@ context('File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.get('alert').text.should include "Cannot Upload File"
-    page.get('alert').text.should include "File not allowed."
+    page.get('alert').contains("Cannot Upload File"
+    page.get('alert').contains("File not allowed."
   }
 
   it('cannot upload a PHP script masquerading as an image', () => {
@@ -223,8 +223,8 @@ context('File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.get('alert').text.should include "Cannot Upload File"
-    page.get('alert').text.should include "File not allowed."
+    page.get('alert').contains("Cannot Upload File"
+    page.get('alert').contains("File not allowed."
   }
 
   it('shows an error if the directory upload path has no write permissions', () => {
@@ -234,9 +234,9 @@ context('File Manager / Upload File', () => {
 
     page.should have_alert
     page.should have_alert_error
-    page.get('alert').text.should include "Directory Not Writable"
-    page.get('alert').text.should include "Cannot write to the directory"
-    page.get('alert').text.should include "Check your file permissions on the server"
+    page.get('alert').contains("Directory Not Writable"
+    page.get('alert').contains("Cannot write to the directory"
+    page.get('alert').contains("Check your file permissions on the server"
     File.chmod(0777, @upload_dir)
   }
 
@@ -245,11 +245,11 @@ context('File Manager / Upload File', () => {
     page.load()
     cy.hasNoErrors()
 
-    page.text.should include "404"
+    page.contains("404"
 
     // page.should have_alert
     // page.should have_alert_error
-    // page.get('alert').text.should include "Cannot find the directory"
+    // page.get('alert').contains("Cannot find the directory"
     File.rename(@upload_dir + '.rspec', @upload_dir)
   }
 

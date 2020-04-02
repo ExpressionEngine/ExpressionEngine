@@ -25,46 +25,46 @@ context('Watermark Create/Edit', () => {
     // Required name
     page.load()
     page.wm_name.clear().type(''
-    page.wm_name.trigger 'blur'
+    page.wm_name.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.wm_name, $required_error)
     should_have_form_errors(page)
 
     // Text required when watermark type is text
     page.wm_text.clear().type(''
-    page.wm_text.trigger 'blur'
+    page.wm_text.blur()
     page.wait_for_error_message_count(2)
     should_have_error_text(page.wm_text, $required_error)
     should_have_form_errors(page)
 
     // Numbers
     page.wm_padding.clear().type('sdfsd'
-    page.wm_padding.trigger 'blur'
+    page.wm_padding.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.wm_padding, $natural_number)
     should_have_form_errors(page)
 
     page.wm_font_size.clear().type('sdfsd'
-    page.wm_font_size.trigger 'blur'
+    page.wm_font_size.blur()
     page.wait_for_error_message_count(4)
     should_have_error_text(page.wm_font_size, $natural_number_not_zero)
     should_have_form_errors(page)
 
     page.wm_shadow_distance.clear().type('sdfsd'
-    page.wm_shadow_distance.trigger 'blur'
+    page.wm_shadow_distance.blur()
     page.wait_for_error_message_count(5)
     should_have_error_text(page.wm_shadow_distance, $integer_error)
     should_have_form_errors(page)
 
     // Hex colors
     page.wm_shadow_color.clear().type('sdfsd'
-    page.wm_shadow_color.trigger 'blur'
+    page.wm_shadow_color.blur()
     page.wait_for_error_message_count(6)
     should_have_error_text(page.wm_shadow_color, $hex_color)
     should_have_form_errors(page)
 
     page.wm_font_color.clear().type('sdfsd'
-    page.wm_font_color.trigger 'blur'
+    page.wm_font_color.blur()
     page.wait_for_error_message_count(7)
     should_have_error_text(page.wm_font_color, $hex_color)
     should_have_form_errors(page)
@@ -78,13 +78,13 @@ context('Watermark Create/Edit', () => {
     page.wait_for_error_message_count(2)
 
     page.wm_image_path.clear().type('sdfsd'
-    page.wm_image_path.trigger 'blur'
+    page.wm_image_path.blur()
     page.wait_for_error_message_count(3)
     should_have_error_text(page.wm_image_path, $invalid_path)
     should_have_form_errors(page)
 
     page.wm_opacity.clear().type('sdfsd'
-    page.wm_opacity.trigger 'blur'
+    page.wm_opacity.blur()
     page.wait_for_error_message_count(4)
     should_have_error_text(page.wm_opacity, $natural_number)
     should_have_form_errors(page)
@@ -177,7 +177,7 @@ context('Watermark Create/Edit', () => {
 
   it('should reject XSS', () => {
     page.wm_name.set $xss_vector
-    page.wm_name.trigger 'blur'
+    page.wm_name.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.wm_name, $xss_error)
     should_have_form_errors(page)

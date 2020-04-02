@@ -46,25 +46,25 @@ context('Import File Converter', () => {
     // Avoid triggering another request so quickly in succession,
     // seems to be causing some intermittent errors
     cy.wait(1000)
-    page.delimiter_special.trigger 'blur'
+    page.delimiter_special.blur()
 
     page.wait_for_error_message_count(1)
     should_have_error_text(page.delimiter_special, custom_delimit_required)
     should_have_form_errors(page)
 
     page.delimiter_special.clear().type('"'
-    page.delimiter_special.trigger 'blur'
+    page.delimiter_special.blur()
     page.wait_for_error_message_count(0)
 
     // Invalid custom delimiter
     page.delimiter_special.clear().type('d'
-    page.delimiter_special.trigger 'blur'
+    page.delimiter_special.blur()
     page.wait_for_error_message_count(1)
     should_have_error_text(page.delimiter_special, custom_delimit_validation)
     should_have_form_errors(page)
 
     page.delimiter_special.clear().type('"'
-    page.delimiter_special.trigger 'blur'
+    page.delimiter_special.blur()
 
     page.wait_for_error_message_count(0)
     should_have_no_error_text(page.delimiter_special)

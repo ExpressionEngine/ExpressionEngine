@@ -46,7 +46,7 @@ context('Updater', () => {
     @installer.delete_database_config
     page.load()
     page.header.text.should == 'Install Failed'
-    page.error.text.should include 'Unable to locate any database connection information.'
+    page.error.contains('Unable to locate any database connection information.'
   }
 
   context('when updating from 2.x to 3.x', () => {
@@ -201,7 +201,7 @@ context('Updater', () => {
     cy.hasNoErrors()
 
     page.header.text.should match /ExpressionEngine to \d+\.\d+\.\d+/
-    page.updater_steps.text.should include 'Running'
+    page.updater_steps.contains('Running'
 
     // Sleep until ready
     while (page.has_updater_steps? && (page.updater_steps.text.include? 'Running'))

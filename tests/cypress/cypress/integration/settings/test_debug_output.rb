@@ -47,13 +47,13 @@ context('Debugging & Output Settings', () => {
     // AJAX validation
     page.load()
     page.max_caches.clear().type('sdfsdfsd'
-    page.max_caches.trigger 'blur'
+    page.max_caches.blur()
     page.wait_for_error_message_count(1)
     should_have_form_errors(page)
     page.get('wrap').contains(max_caches_error
 
     page.max_caches.clear().type('100'
-    page.max_caches.trigger 'blur'
+    page.max_caches.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
   }
