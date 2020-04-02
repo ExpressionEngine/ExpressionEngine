@@ -428,14 +428,14 @@ function FieldInputs (props) {
 
   if (props.nested) {
     return (
-      <ul className={'lots-of-checkboxes__items field-nested' + divClass}>
+      <ul className={'field-inputs lots-of-checkboxes__items field-nested' + divClass}>
         {props.children}
       </ul>
     )
   }
 
   return (
-    <div className={'lots-of-checkboxes__items' + divClass}>
+    <div className={'field-inputs lots-of-checkboxes__items' + divClass}>
       {props.children}
     </div>
   )
@@ -479,7 +479,7 @@ class SelectItem extends React.Component {
           <span className="icon-reorder icon-left"></span>
         )}
         {props.editable && (
-            <a href="#" dangerouslySetInnerHTML={{ __html: label }}></a>
+            <a href="#" class="flyout-edit" dangerouslySetInnerHTML={{ __html: label }}></a>
         )}
         { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
         {" "}
@@ -487,7 +487,7 @@ class SelectItem extends React.Component {
           <span className="meta-info">{props.item.instructions}</span>
         )}
         {props.removable && (
-            <a href="" className="button button--danger button--small float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-sm fa-trash"></i></a>
+            <a href="" className="button button--small button--secondary-alt float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
         )}
         </div>
       </label>

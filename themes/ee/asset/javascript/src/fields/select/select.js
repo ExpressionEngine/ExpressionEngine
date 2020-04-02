@@ -74,10 +74,11 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var tooManyLimit = typeof this.props.tooManyLimit !== 'undefined' && this.props.tooManyLimit !== null ? this.props.tooManyLimit : SelectList.defaultProps.tooManyLimit;
       var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
         selected: this.state.selected,
         selectionChanged: this.selectionChanged,
-        tooMany: SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit,
+        tooMany: SelectList.countItems(this.props.items) > tooManyLimit,
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
         handleRemove: function handleRemove(e, item) {

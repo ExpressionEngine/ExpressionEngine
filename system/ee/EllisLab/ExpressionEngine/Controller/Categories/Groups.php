@@ -429,6 +429,7 @@ class Groups extends AbstractCategoriesController {
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'  => 'category_fields',
 			'choices'     => $choices,
+			'tooManyLimit'		=> 999,
 			'value'       => NULL,
 			'force_react' => TRUE,
 			'multi'       => FALSE,
