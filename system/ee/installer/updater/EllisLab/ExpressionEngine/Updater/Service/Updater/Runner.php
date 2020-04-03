@@ -144,6 +144,7 @@ class Runner {
 			$this->makeLoggerService()->log($log_message);
 
 			// Legacy logger lib to log versions to update_log table
+			ee()->load->library('logger');
 			ee()->logger->updater($log_message);
 
 			$db_updater->runStep($step);
