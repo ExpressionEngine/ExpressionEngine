@@ -32,6 +32,7 @@ class EE_Encrypt {
 	{
 		$this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? FALSE : TRUE;
 		$this->mb_available = (MB_ENABLED) ?: extension_loaded('mbstring');
+		ee()->load->helper('multibyte');
 		log_message('debug', "Encrypt Class Initialized");
 	}
 
@@ -279,16 +280,19 @@ class EE_Encrypt {
 	{
 		$data = $this->_remove_cipher_noise($data, $key);
 		$init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
-		$mb_adjusted_data_length =  ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+		$mb_adjusted_data_length =  ee_mb_strlen($data, 'ascii');
 
 		if ($init_size > $mb_adjusted_data_length)
 		{
 			return FALSE;
 		}
 
-		$init_vect = ($this->mb_available) ? mb_substr($data, 0, $init_size, 'ascii') : substr($data, 0, $init_size);
-		$data = ($this->mb_available) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
+		$init_vect = ee_mb_substr($data, 0, $init_size, 'ascii');
+
+		$data = ee_mb_substr($data, $init_size, ee_mb_strlen($data, 'ascii'), 'ascii');
+
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
+
 	}
 
 	/**
@@ -306,9 +310,9 @@ class EE_Encrypt {
 	function _add_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ee_mb_strlen($keyhash, 'ascii');
 		$str = '';
-		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ee_mb_strlen($data, 'ascii');
 
         for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
@@ -336,9 +340,9 @@ class EE_Encrypt {
 	function _remove_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ee_mb_strlen($keyhash, 'ascii');
 		$str = '';
-		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ee_mb_strlen($data, 'ascii');
 
 		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{

@@ -72,7 +72,11 @@ class Runner {
 		$unpacker->moveUpdater();
 
 		$this->logger->log('Taking the site offline');
-		ee('Config')->getFile()->set('is_system_on', 'n', TRUE);
+
+		// We'll save the current system on setting
+		$config = ee('Config')->getFile();
+		$config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'));
+		$config->set('is_system_on', 'n', TRUE);
 	}
 
 	public function rollback()

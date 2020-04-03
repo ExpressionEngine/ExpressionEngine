@@ -289,7 +289,7 @@ abstract class Core {
 	 */
 	public function setTimeLimit($t)
 	{
-		if (function_exists("set_time_limit") && @ini_get("safe_mode") == 0)
+		if (function_exists("set_time_limit"))
 		{
 			@set_time_limit($t);
 		}
