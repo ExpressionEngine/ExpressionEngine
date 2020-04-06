@@ -31,7 +31,7 @@ if (empty($argv))
 	$value = ee()->config->item($item);
 	if (empty($value))
 	{
-		exit('empty');
+		exit('');
 	}
 	exit((string)$value);
 }

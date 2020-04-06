@@ -35,9 +35,9 @@ context('Throttling Log', () => {
     // These should always be true at all times if not something has gone wrong
     page.displayed?
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Access Throttling Logs'
-    page.should have_keyword_search
+    page.get('keyword_search').should('exist')
     page.should have_submit_button
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
   }
 
   context('when throttling is disabled', () => {
@@ -71,10 +71,10 @@ context('Throttling Log', () => {
       page.get('wrap').contains(our_ip
 
       page.get('keyword_search').clear().type("172.16.11"
-      page.get('keyword_search').send_keys(:enter)
+      page.get('keyword_search').type('{enter}')
 
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "172.16.11"'
-      page.get('keyword_search').value.should eq "172.16.11"
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("172.16.11"
       page.get('wrap').contains(our_ip
       page.should('have.length', 1)
     }
@@ -83,16 +83,16 @@ context('Throttling Log', () => {
       our_ip = "NotFoundHere"
 
       page.get('keyword_search').set our_ip
-      page.get('keyword_search').send_keys(:enter)
+      page.get('keyword_search').type('{enter}')
 
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_ip + '"'
-      page.get('keyword_search').value.should eq our_ip
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal(our_ip
       page.get('wrap').contains(our_ip
-      page.should have_perpage_filter
+      page.get('perpage_filter').should('exist')
 
       page.get('no_results').should('exist')
 
-      page.should_not have_pagination
+      page.get('pagination').should('not.exist')
       page.should_not have_remove_all
     }
 
@@ -134,11 +134,11 @@ context('Throttling Log', () => {
       cy.hasNoErrors()
 
       page.get('keyword_search').clear().type("172.16.11"
-      page.get('keyword_search').send_keys(:enter)
+      page.get('keyword_search').type('{enter}')
 
       page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 27 results for "172.16.11"'
-      page.get('keyword_search').value.should eq "172.16.11"
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("172.16.11"
       page.get('wrap').contains(our_ip
       page.should have(25).items
       page.should have_pagination
@@ -156,7 +156,7 @@ context('Throttling Log', () => {
     //    log = page.find('section.item-wrap div.item', :text => our_action)
     //    log.find('li.remove a').click()
     #
-    //    page.should have_alert
+    //    page.get('alert').should('be.visible')
     //    page.should have_no_content our_action
     // }
 
@@ -169,11 +169,11 @@ context('Throttling Log', () => {
       page.get('modal').contains("Access Throttling Logs: All"
       page.get('modal_submit_button').click() // Submits a form
 
-      page.should have_alert
+      page.get('alert').should('be.visible')
       page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 250 log(s) deleted from Throttling logs"
 
       page.get('no_results').should('exist')
-      page.should_not have_pagination
+      page.get('pagination').should('not.exist')
     }
 
     // Confirming Pagination behavior
@@ -222,12 +222,12 @@ context('Throttling Log', () => {
       cy.hasNoErrors()
 
       page.get('keyword_search').clear().type("172.16.11"
-      page.get('keyword_search').send_keys(:enter)
+      page.get('keyword_search').type('{enter}')
       cy.hasNoErrors()
 
       // Page 1
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "172.16.11"'
-      page.get('keyword_search').value.should eq "172.16.11"
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("172.16.11"
       page.items.should_not have_text "10.0"
       page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
       page.should have(25).items
@@ -239,7 +239,7 @@ context('Throttling Log', () => {
 
       // Page 2
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "172.16.11"'
-      page.get('keyword_search').value.should eq "172.16.11"
+      page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("172.16.11"
       page.items.should_not have_text "10.0"
       page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
       page.should have(10).items

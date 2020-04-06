@@ -17,7 +17,7 @@ context('Member Registration', () => {
   })
 
   /*it('loads', () => {
-    page.all_there?.should == true
+    page.all_there?.should('eq', true
   }*/
 
   it('prevents duplicate gmail email addresses', () => {
@@ -29,7 +29,7 @@ context('Member Registration', () => {
 
     cy.hasNoErrors()
     // Save and New is the only action
-    //page.all_there?.should == true
+    //page.all_there?.should('eq', true
 
     page.get('email').clear().type('t.e.s.t@gmail.com')
     page.get('email').blur()

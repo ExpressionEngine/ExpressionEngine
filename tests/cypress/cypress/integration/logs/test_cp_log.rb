@@ -19,11 +19,11 @@ context('CP Log', () => {
     page.displayed?
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Control Panel Access Logs'
 
-    page.should have_keyword_search
+    page.get('keyword_search').should('exist')
     page.should have_submit_button
     page.should have_username_filter
     page.should have_date_filter
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
   }
 
   it('shows the Control Panel Access Logs page', :pregen => true do
@@ -50,10 +50,10 @@ context('CP Log', () => {
     page.get('wrap').contains(our_action
 
     page.get('keyword_search').clear().type("Rspec"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Rspec"'
-    page.get('keyword_search').value.should eq "Rspec"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Rspec"
     page.get('wrap').contains(our_action
     page.should('have.length', 1)
   }
@@ -62,19 +62,19 @@ context('CP Log', () => {
     our_action = "NotFoundHere"
 
     page.get('keyword_search').set our_action
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_action + '"'
-    page.get('keyword_search').value.should eq our_action
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal(our_action
     page.get('wrap').contains(our_action
 
     page.get('no_results').should('exist')
 
     page.should have_username_filter
     page.should have_date_filter
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
 
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.should_not have_remove_all
   }
 
@@ -86,7 +86,7 @@ context('CP Log', () => {
 
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('filters by custom username', :pregen => true do
@@ -97,7 +97,7 @@ context('CP Log', () => {
 
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   // @TODO Need data for extra site in order to filter by it
@@ -165,7 +165,7 @@ context('CP Log', () => {
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.items.should_not have_text "admin"
   }
 
@@ -184,13 +184,13 @@ context('CP Log', () => {
 
     // Now, combine the filters
     page.get('keyword_search').clear().type("johndoe"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 15 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.items.should_not have_text "admin"
   }
 
@@ -211,7 +211,7 @@ context('CP Log', () => {
     page.get('modal').contains(our_action
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 1 log(s) deleted from Control Panel logs"
 
     page.should have_no_content our_action
@@ -226,11 +226,11 @@ context('CP Log', () => {
     page.get('modal').contains("Control Panel Access Logs: All"
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 167 log(s) deleted from Control Panel logs"
 
     page.get('no_results').should('exist')
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   // Confirming Pagination behavior
@@ -277,12 +277,12 @@ context('CP Log', () => {
     cy.hasNoErrors()
 
     page.get('keyword_search').clear().type("johndoe"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
     cy.hasNoErrors()
 
     // Page 1
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.items.should_not have_text "admin"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
@@ -294,7 +294,7 @@ context('CP Log', () => {
 
     // Page 2
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.items.should_not have_text "admin"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(10).items

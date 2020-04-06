@@ -71,7 +71,7 @@ context('Grid Field Settings', () => {
     cy.hasNoErrors()
     page.submit
     column = GridSettings::column(1)
-    should_have_error_text(column.label, $required_error)
+    page.hasError(column.label, $required_error)
     cy.hasNoErrors()
 
     // No column label and duplicate column label
@@ -80,8 +80,8 @@ context('Grid Field Settings', () => {
     column.name.invoke('val').then((val) => { expect(val).to.be.equal('test_column'
     column.name.click()
     column.label.click() // Blur, .trigger('blur') isn't working
-    page.wait_for_error_message_count(2)
-    should_have_error_text(column.name, 'Column field names must be unique.')
+    //page.wait_for_error_message_count(2)
+    page.hasError(column.name, 'Column field names must be unique.')
 
     // No column name, duplicate column label, and no column name
     column = GridSettings::add_column
@@ -89,8 +89,8 @@ context('Grid Field Settings', () => {
     column.name.clear().type(''
     column.name.click()
     column.label.click()
-    page.wait_for_error_message_count(3)
-    should_have_error_text(column.name, $required_error)
+    // page.wait_for_error_message_count(3)
+    page.hasError(column.name, $required_error)
   }
 
   it('should only duplicate columns once', () => {
@@ -128,7 +128,7 @@ context('Grid Field Settings', () => {
     column.name.clear().type(''
     page.submit
     column = GridSettings::column(1)
-    should_have_error_text(column.name, $required_error)
+    page.hasError(column.name, $required_error)
     cy.hasNoErrors()
 
     // Put back the column name for validation

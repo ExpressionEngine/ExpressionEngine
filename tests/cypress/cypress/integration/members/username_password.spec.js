@@ -13,7 +13,7 @@ context('Profile - Username and Password', () => {
   })
 
   /*it('should load', () => {
-    page.all_there?.should == true
+    page.all_there?.should('eq', true
   }*/
 
   it('should submit with no changes', () => {
@@ -21,7 +21,7 @@ context('Profile - Username and Password', () => {
     page.get('profile_form').submit()
 
     cy.hasNoErrors()
-    //page.all_there?.should == true
+    //page.all_there?.should('eq', true
   })
 
   it('should submit with a password change', () => {
@@ -31,7 +31,7 @@ context('Profile - Username and Password', () => {
     page.get('profile_form').submit()
 
     cy.hasNoErrors()
-    //page.all_there?.should == true
+    //page.all_there?.should('eq', true
   })
 
   it('should not submit with a password that is too long', () => {

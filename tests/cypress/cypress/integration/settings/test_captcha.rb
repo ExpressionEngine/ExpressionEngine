@@ -21,12 +21,12 @@ context('CAPTCHA Settings', () => {
     captcha_rand = eeConfig({item: 'captcha_rand')
     captcha_require_members = eeConfig({item: 'captcha_require_members')
 
-    page.require_captcha.value.should == require_captcha
-    page.captcha_font.value.should == captcha_font
-    page.captcha_rand.value.should == captcha_rand
-    page.captcha_require_members.value.should == captcha_require_members
-    page.captcha_url.value.should == eeConfig({item: 'captcha_url')
-    page.captcha_path.value.should == eeConfig({item: 'captcha_path')
+    page.require_captcha.invoke('val').then((val) => { expect(val).to.be.equal(require_captcha
+    page.captcha_font.invoke('val').then((val) => { expect(val).to.be.equal(captcha_font
+    page.captcha_rand.invoke('val').then((val) => { expect(val).to.be.equal(captcha_rand
+    page.captcha_require_members.invoke('val').then((val) => { expect(val).to.be.equal(captcha_require_members
+    page.captcha_url.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'captcha_url')
+    page.captcha_path.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'captcha_path')
   }
 
   it('should validate the form', () => {
@@ -34,17 +34,19 @@ context('CAPTCHA Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
-    should_have_error_text(page.captcha_path, $invalid_path)
+    page.hasError(page.captcha_path, $invalid_path)
 
     // AJAX validation
     page.load()
     page.captcha_path.clear().type('sdfsdfsd'
     page.captcha_path.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.captcha_path, $invalid_path)
-    should_have_form_errors(page)
+    page.hasError(page.captcha_path, $invalid_path)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.captcha_path.set @upload_path
     page.captcha_path.blur()
@@ -53,23 +55,26 @@ context('CAPTCHA Settings', () => {
     page.captcha_path.clear().type('/'
     page.captcha_path.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.captcha_path, $not_writable)
-    should_have_form_errors(page)
+    page.hasError(page.captcha_path, $not_writable)
+    page.hasErrors()
+//should_have_form_errors(page)
   }
 
   it('should reject XSS', () => {
-    page.captcha_url.set $xss_vector
+    page.captcha_url.clear().type(page.messages.xss_vector)
     page.captcha_url.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.captcha_url, $xss_error)
-    should_have_form_errors(page)
+    page.hasError(page.captcha_url, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
 
-    page.captcha_path.set $xss_vector
+    page.captcha_path.clear().type(page.messages.xss_vector)
     page.captcha_path.blur()
-    page.wait_for_error_message_count(2)
-    should_have_error_text(page.captcha_url, $xss_error)
-    should_have_error_text(page.captcha_path, $xss_error)
-    should_have_form_errors(page)
+    //page.wait_for_error_message_count(2)
+    page.hasError(page.captcha_url, page.messages.xss_error)
+    page.hasError(page.captcha_path, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
   }
 
   it('should save and load the settings', () => {
@@ -91,7 +96,7 @@ context('CAPTCHA Settings', () => {
     page.captcha_font.value.should_not == captcha_font
     page.captcha_rand.value.should_not == captcha_rand
     page.captcha_require_members.value.should_not == captcha_require_members
-    page.captcha_url.value.should == 'http://hello'
-    page.captcha_path.value.should == @upload_path
+    page.captcha_url.invoke('val').then((val) => { expect(val).to.be.equal('http://hello'
+    page.captcha_path.invoke('val').then((val) => { expect(val).to.be.equal(@upload_path
   }
 }

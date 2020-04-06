@@ -76,7 +76,8 @@ class ControlPanel {
                 "unique": 'This field must be unique.',
                 "xss": 'The data you submitted did not pass our security check.',
             },
-            "xss_vector": '"><script>alert(\'stored xss\')<%2fscript>'
+            "xss_vector": '"><script>alert(\'stored xss\')<%2fscript>',
+            'xss_error': 'The data you submitted did not pass our security check.'
         }
     }
 

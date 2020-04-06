@@ -65,8 +65,8 @@ context('Communicate', () => {
     page.from_email.clear().type(''
     page.submit_button.click()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Attention: Email not sent"
 
     page.subject.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -93,26 +93,26 @@ context('Communicate', () => {
     page.bcc.set my_email
     page.submit_button.click()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Attention: Email not sent"
 
-    page.from_email.value.should eq my_email
+    page.from_emailinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     page.from_email.first(:xpath, ".//..").contains('field must contain a valid email address.'
 
-    page.recipient.value.should eq my_email
+    page.recipientinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.recipient.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.recipient.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     page.recipient.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
 
-    page.cc.value.should eq my_email
+    page.ccinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.cc.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.cc.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     page.cc.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
 
-    page.bcc.value.should eq my_email
+    page.bccinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.bcc.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.bcc.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     page.bcc.first(:xpath, ".//..").contains('field must contain all valid email addresses.'
@@ -124,11 +124,11 @@ context('Communicate', () => {
     page.from_email.set my_email
     page.submit_button.click()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains('Attention: Email not sent'
 
-    page.from_email.value.should eq my_email
+    page.from_emailinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     page.from_email.first(:xpath, ".//..").contains('field must contain a valid email address.'
@@ -141,17 +141,17 @@ context('Communicate', () => {
     page.bcc.set my_email
     page.submit_button.click()
 
-    page.recipient.value.should eq my_email
+    page.recipientinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.recipient.first(:xpath, ".//../..")[:class].should_not include 'invalid'
     page.recipient.first(:xpath, ".//..").should_not have_css 'em.ee-form-error-message'
     page.recipient.first(:xpath, ".//..").should_not have_text 'field must contain all valid email addresses.'
 
-    page.cc.value.should eq my_email
+    page.ccinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.cc.first(:xpath, ".//../..")[:class].should_not include 'invalid'
     page.cc.first(:xpath, ".//..").should_not have_css 'em.ee-form-error-message'
     page.cc.first(:xpath, ".//..").should_not have_text 'field must contain all valid email addresses.'
 
-    page.bcc.value.should eq my_email
+    page.bccinvoke('val').then((val) => { expect(val).to.be.equal(my_email
     page.bcc.first(:xpath, ".//../..")[:class].should_not include 'invalid'
     page.bcc.first(:xpath, ".//..").should_not have_css 'em.ee-form-error-message'
     page.bcc.first(:xpath, ".//..").should_not have_text 'field must contain all valid email addresses.'
@@ -178,7 +178,7 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -200,7 +200,7 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -224,7 +224,7 @@ context('Communicate', () => {
 //    page.mailtype.select "Markdown"
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -252,7 +252,7 @@ context('Communicate', () => {
 //    page.plaintext_alt.set plain_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -277,7 +277,7 @@ context('Communicate', () => {
 //    page.attach_file('attachment', 'config.rb')
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -302,7 +302,7 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -326,7 +326,7 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Your email has been sent'
 #
@@ -355,7 +355,7 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
+//    page.get('alert').should('be.visible')
 //    page.get('alert_success').should('be.visible')
 //    page.get('alert').contains('Total number of emails sent: 2'
 #
@@ -393,8 +393,8 @@ context('Communicate', () => {
 //    page.body.set my_body
 //    page.submit_button.click()
 #
-//    page.should have_alert
-//    page.should have_alert_important
+//    page.get('alert').should('be.visible')
+//    page.get('alert_important').should('be.visible')
 //    page.get('alert').contains('The email sending routine will begin in'
 #
 //    // Manually "follow" the meta-refresh URL
@@ -437,8 +437,8 @@ context('Communicate', () => {
 //    page.attach_file('attachment', 'config.rb')
 //    page.submit_button.click()
 #
-//    page.should have_alert
-//    page.should have_alert_important
+//    page.get('alert').should('be.visible')
+//    page.get('alert_important').should('be.visible')
 //    page.get('alert').contains('The email sending routine will begin in'
 #
 //    // Manually "follow" the meta-refresh URL

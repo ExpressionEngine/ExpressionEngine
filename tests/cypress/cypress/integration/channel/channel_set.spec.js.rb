@@ -48,7 +48,7 @@ context('Channel Sets', () => {
 
             if block_given ?
                 cy.hasNoErrors()
-            page.should have_alert_error
+            page.get('alert_error').should('be.visible')
             yield
             else
                 send('check_' + method)
@@ -71,7 +71,7 @@ context('Channel Sets', () => {
             // @return [void]
             def check_issue_duplicate
             cy.hasNoErrors()
-            page.should have_alert_error
+            page.get('alert_error').should('be.visible')
             page.get('alert').contains('Import Creates Duplicates'
             page.get('alert').contains('This channel set uses names that already exist on your site. Please rename the following items.'
             }
@@ -536,7 +536,7 @@ context('Channel Sets', () => {
             if compare[key.toString()ym].is_a ? (TrueClass) then['y', '1', 1, true].should include value
             elsif compare[key.toString()ym].is_a ? (FalseClass) then['n', '0', 0, false].should include value
             else
-                value.should == compare[key.toString()ym]
+                invoke('val').then((val) => { expect(val).to.be.equal(compare[key.toString()ym]
             }
             }
             }

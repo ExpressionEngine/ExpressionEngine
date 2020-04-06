@@ -22,8 +22,9 @@ context('Search and Replace', () => {
 
     page.search_term.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.search_term, @field_required)
-    should_have_form_errors(page)
+    page.hasError(page.search_term, @field_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.search_term.clear().type('Text'
     page.search_term.blur()
@@ -34,15 +35,17 @@ context('Search and Replace', () => {
     page.replace_where.select('Site Preferences (Choose from the following)'
     page.wait_for_error_message_count(1)
     should_have_no_error_text(page.search_term)
-    should_have_error_text(page.replace_where, @field_required)
-    should_have_form_errors(page)
+    page.hasError(page.replace_where, @field_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.password_auth.blur()
-    page.wait_for_error_message_count(2)
+    //page.wait_for_error_message_count(2)
     should_have_no_error_text(page.search_term)
-    should_have_error_text(page.replace_where, @field_required)
-    should_have_error_text(page.password_auth, @field_required)
-    should_have_form_errors(page)
+    page.hasError(page.replace_where, @field_required)
+    page.hasError(page.password_auth, @field_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.password_auth.clear().type('password'
     page.password_auth.blur()
@@ -50,11 +53,12 @@ context('Search and Replace', () => {
 
     page.password_auth.clear().type('test'
     page.password_auth.blur()
-    page.wait_for_error_message_count(2)
+    //page.wait_for_error_message_count(2)
     should_have_no_error_text(page.search_term)
-    should_have_error_text(page.replace_where, @field_required)
-    should_have_error_text(page.password_auth, 'The password entered is incorrect.')
-    should_have_form_errors(page)
+    page.hasError(page.replace_where, @field_required)
+    page.hasError(page.password_auth, 'The password entered is incorrect.')
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.password_auth.clear().type('password'
     page.password_auth.blur()
@@ -82,16 +86,17 @@ context('Search and Replace', () => {
     page.submit
 
     page.get('wrap').contains('Attention: Search and replace not run'
-    should_have_error_text(page.search_term, @field_required)
-    should_have_error_text(page.replace_where, @field_required)
-    should_have_error_text(page.password_auth, @field_required)
-    should_have_form_errors(page)
+    page.hasError(page.search_term, @field_required)
+    page.hasError(page.replace_where, @field_required)
+    page.hasError(page.password_auth, @field_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     cy.hasNoErrors()
 
     page.search_term.clear().type('Text'
     page.search_term.blur()
-    page.wait_for_error_message_count(2)
+    //page.wait_for_error_message_count(2)
     page.replace_where.select('Channel Entry Titles'
     page.wait_for_error_message_count(1)
     page.password_auth.clear().type('password'

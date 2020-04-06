@@ -32,7 +32,7 @@ context.skip('Status Create/Edit', () => {
         cy.hasNoErrors()
         page.hasErrors()
         cy.contains('Cannot Create Status')
-        should_have_error_text(page.get('status'), $required_error)
+        page.hasError(page.get('status'), $required_error)
 
         page.load_view_for_status_group(1)
         page.load_create_for_status_group(1)
@@ -40,7 +40,7 @@ context.skip('Status Create/Edit', () => {
         // AJAX validation
         // Required name
         page.get('status').trigger('blur')
-        should_have_error_text(page.get('status'), $required_error)
+        page.hasError(page.get('status'), $required_error)
         page.hasErrors()
 
         page.get('status').clear().type('Test')
@@ -51,7 +51,7 @@ context.skip('Status Create/Edit', () => {
         // Duplicate status name
         page.get('status').clear().type('open')
         page.get('status').trigger('blur')
-        should_have_error_text(page.get('status'), 'A status already exists with the same name.')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
         page.hasErrors()
 
         page.get('status').clear().type('Test')
@@ -97,12 +97,12 @@ context.skip('Status Create/Edit', () => {
     it('should reject XSS', function() {
         page.load_create_for_status_group(1)
 
-        page.get('status').clear().type($xss_vector)
+        page.get('status').clear().type(page.messages.xss_vector)
         page.get('status').trigger('blur')
-        should_have_error_text(page.get('status'), $xss_error)
+        page.hasError(page.get('status'), page.messages.xss_error)
         page.hasErrors()
 
-        page.get('highlight').clear().type($xss_vector)
+        page.get('highlight').clear().type(page.messages.xss_vector)
         page.get('highlight').trigger('blur')
         page.get('highlight').should('have.value', '')
     })
@@ -115,7 +115,7 @@ context.skip('Status Create/Edit', () => {
         page.submit()
 
         cy.contains('Cannot Create Status')
-        should_have_error_text(page.get('status'), 'A status already exists with the same name.')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
 
         page.get('status').should('have.value', 'Open')
         page.get('status_access').eq(0).should('not.be.checked')

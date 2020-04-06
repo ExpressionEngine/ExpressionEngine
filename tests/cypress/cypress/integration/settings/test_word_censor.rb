@@ -18,17 +18,18 @@ context('Word Censorship Settings', () => {
     censor_replacement = eeConfig({item: 'censor_replacement')
     censored_words = eeConfig({item: 'censored_words')
 
-    page.enable_censoring.value.should == enable_censoring
-    page.censor_replacement.value.should == eeConfig({item: 'censor_replacement')
-    page.censored_words.value.should == eeConfig({item: 'censored_words').gsub('|', "\n")
+    page.enable_censoring.invoke('val').then((val) => { expect(val).to.be.equal(enable_censoring
+    page.censor_replacement.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'censor_replacement')
+    page.censored_words.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'censored_words').gsub('|', "\n")
   }
 
   it('should reject XSS', () => {
-    page.censor_replacement.set $xss_vector
+    page.censor_replacement.clear().type(page.messages.xss_vector)
     page.submit
 
-    should_have_error_text(page.censor_replacement, $xss_error)
-    should_have_form_errors(page)
+    page.hasError(page.censor_replacement, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
   }
 
   it('should save and load the settings', () => {
@@ -38,8 +39,8 @@ context('Word Censorship Settings', () => {
     page.submit
 
     page.get('wrap').contains('Preferences updated'
-    page.enable_censoring.value.should == 'y'
-    page.censor_replacement.value.should == '####'
-    page.censored_words.value.should == "Poop\nPerl"
+    page.enable_censoring.invoke('val').then((val) => { expect(val).to.be.equal('y'
+    page.censor_replacement.invoke('val').then((val) => { expect(val).to.be.equal('####'
+    page.censored_words.invoke('val').then((val) => { expect(val).to.be.equal("Poop\nPerl"
   }
 }

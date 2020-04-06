@@ -39,14 +39,15 @@ context('General Settings', () => {
       page.submit
 
       cy.hasNoErrors()
-      should_have_form_errors(page)
+      page.hasErrors()
+//should_have_form_errors(page)
       page.get('wrap').contains('Attention: Settings not saved'
-      should_have_error_text(page.site_name, @error_text)
-      page.is_system_on.value.should == 'n'
+      page.hasError(page.site_name, @error_text)
+      page.is_system_on.invoke('val').then((val) => { expect(val).to.be.equal('n'
       page.new_version_check.has_checked_radio('n').should == true
       page.date_format.has_checked_radio('%Y-%m-%d').should == true
       page.time_format.has_checked_radio('24').should == true
-      page.include_seconds.value.should == 'y'
+      page.include_seconds.invoke('val').then((val) => { expect(val).to.be.equal('y'
     }
 
     // AJAX validation
@@ -54,11 +55,11 @@ context('General Settings', () => {
       // Make sure old values didn't save after validation error
       should_have_no_form_errors(page)
       should_have_no_error_text(page.site_name)
-      page.is_system_on.value.should == 'y'
+      page.is_system_on.invoke('val').then((val) => { expect(val).to.be.equal('y'
       page.new_version_check.has_checked_radio('y').should == true
       page.date_format.has_checked_radio('%n/%j/%Y').should == true
       page.time_format.has_checked_radio('12').should == true
-      page.include_seconds.value.should == 'n'
+      page.include_seconds.invoke('val').then((val) => { expect(val).to.be.equal('n'
 
       // Blank Title
       test_field(page.site_name, '', @error_text)
@@ -77,10 +78,10 @@ context('General Settings', () => {
       test_field(page.site_short_name, 'default_site')
 
       // XSS
-      test_field(page.site_name, '"><script>alert(\'stored xss\')<%2fscript>', $xss_error)
+      test_field(page.site_name, '"><script>alert(\'stored xss\')<%2fscript>', page.messages.xss_error)
       test_field(page.site_name, 'EE2')
 
-      test_field(page.site_name, '<script>alert(\'stored xss\')</script>', $xss_error)
+      test_field(page.site_name, '<script>alert(\'stored xss\')</script>', page.messages.xss_error)
       test_field(page.site_name, 'EE2')
 
       page.submit
@@ -103,8 +104,9 @@ context('General Settings', () => {
 
     if error
       page.wait_for_error_message_count(1)
-      should_have_form_errors(page)
-      should_have_error_text(field, error)
+      page.hasErrors()
+//should_have_form_errors(page)
+      page.hasError(field, error)
     else
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
@@ -128,14 +130,14 @@ context('General Settings', () => {
     cy.hasNoErrors()
     should_have_no_form_errors(page)
     page.get('wrap').contains('Preferences updated'
-    page.site_name.value.should == 'My sweet site'
-    page.site_short_name.value.should == 'my_sweet_site'
-    page.is_system_on.value.should == 'n'
+    page.site_name.invoke('val').then((val) => { expect(val).to.be.equal('My sweet site'
+    page.site_short_name.invoke('val').then((val) => { expect(val).to.be.equal('my_sweet_site'
+    page.is_system_on.invoke('val').then((val) => { expect(val).to.be.equal('n'
     page.new_version_check.has_checked_radio('n').should == true
     page.should have_check_version_btn
     page.date_format.has_checked_radio('%Y-%m-%d').should == true
     page.time_format.has_checked_radio('24').should == true
-    page.include_seconds.value.should == 'y'
+    page.include_seconds.invoke('val').then((val) => { expect(val).to.be.equal('y'
   }
 
   it('should check for new versions of EE manually', () => {

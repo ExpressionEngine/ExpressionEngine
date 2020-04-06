@@ -18,11 +18,11 @@ context('Email Log', () => {
     // These should always be true at all times if not something has gone wrong
     page.displayed?
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Email Logs'
-    page.should have_keyword_search
+    page.get('keyword_search').should('exist')
     page.should have_submit_button
     page.should have_username_filter
     page.should have_date_filter
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
   }
 
   it('shows the Email Logs page', :pregen => true do
@@ -49,10 +49,10 @@ context('Email Log', () => {
     page.get('wrap').contains(our_subject
 
     page.get('keyword_search').clear().type("Rspec"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Rspec"'
-    page.get('keyword_search').value.should eq "Rspec"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Rspec"
     page.get('wrap').contains(our_subject
     page.should('have.length', 1)
   }
@@ -61,18 +61,18 @@ context('Email Log', () => {
     our_subject = "NotFoundHere"
 
     page.get('keyword_search').set our_subject
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_subject + '"'
-    page.get('keyword_search').value.should eq our_subject
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal(our_subject
     page.get('wrap').contains(our_subject
     page.should have_username_filter
     page.should have_date_filter
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
 
     page.get('no_results').should('exist')
 
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.should_not have_remove_all
   }
 
@@ -84,7 +84,7 @@ context('Email Log', () => {
 
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('filters by custom username', :pregen => true do
@@ -95,7 +95,7 @@ context('Email Log', () => {
 
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('filters by date', :pregen => true do
@@ -158,7 +158,7 @@ context('Email Log', () => {
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
     page.username_filter.invoke('text').then((text) => { expect(text).to.be.equal("username (johndoe)"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.items.should_not have_text "admin"
   }
 
@@ -177,13 +177,13 @@ context('Email Log', () => {
 
     // Now, combine the filters
     page.get('keyword_search').clear().type("johndoe"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (150)"
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 15 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.should have(15).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.items.should_not have_text "admin"
   }
 
@@ -203,7 +203,7 @@ context('Email Log', () => {
     page.get('modal').contains(our_subject
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 1 log(s) deleted from Email logs"
 
     page.should have_no_content our_subject
@@ -218,11 +218,11 @@ context('Email Log', () => {
     page.get('modal').contains("Email Logs: All"
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 165 log(s) deleted from Email logs"
 
     page.get('no_results').should('exist')
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('can display a single email', :pregen => true do
@@ -283,12 +283,12 @@ context('Email Log', () => {
     cy.hasNoErrors()
 
     page.get('keyword_search').clear().type("johndoe"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
     cy.hasNoErrors()
 
     // Page 1
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.items.should_not have_text "admin"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
@@ -300,7 +300,7 @@ context('Email Log', () => {
 
     // Page 2
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "johndoe"'
-    page.get('keyword_search').value.should eq "johndoe"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("johndoe"
     page.items.should_not have_text "admin"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(10).items

@@ -17,9 +17,9 @@ context('Template Settings', () => {
     strict_urls = eeConfig({item: 'strict_urls')
     save_tmpl_revisions = eeConfig({item: 'save_tmpl_revisions')
 
-    page.strict_urls.value.should == strict_urls
+    page.strict_urls.invoke('val').then((val) => { expect(val).to.be.equal(strict_urls
     page.site_404.find('div.field-input-selected').contains(eeConfig({item: 'site_404')
-    page.save_tmpl_revisions.value.should == save_tmpl_revisions
+    page.save_tmpl_revisions.invoke('val').then((val) => { expect(val).to.be.equal(save_tmpl_revisions
   }
 
   it('should validate the form', () => {
@@ -27,7 +27,8 @@ context('Template Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
     page.get('wrap').contains($integer_error
     page.get('wrap').invoke('text').then((text) => {
@@ -38,7 +39,8 @@ context('Template Settings', () => {
     page.max_tmpl_revisions.clear().type('sdfsdfsd'
     page.max_tmpl_revisions.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains($integer_error
 
     page.max_tmpl_revisions.clear().type('100'
@@ -54,9 +56,9 @@ context('Template Settings', () => {
     page.submit
 
     page.get('wrap').contains('Preferences Updated'
-    page.strict_urls.value.should == 'n'
+    page.strict_urls.invoke('val').then((val) => { expect(val).to.be.equal('n'
     page.site_404.find('div.field-input-selected').contains('search/index'
-    page.save_tmpl_revisions.value.should == 'y'
-    page.max_tmpl_revisions.value.should == '300'
+    page.save_tmpl_revisions.invoke('val').then((val) => { expect(val).to.be.equal('y'
+    page.max_tmpl_revisions.invoke('val').then((val) => { expect(val).to.be.equal('300'
   }
 }

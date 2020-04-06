@@ -149,7 +149,7 @@ context('Installer', () => {
       @settings = UrlsSettings.new
       @settings.load
 
-      @settings.base_url.value.should == $test_config[:app_host]
+      @settings.base_url.invoke('val').then((val) => { expect(val).to.be.equal($test_config[:app_host]
       @settings.base_path.value.should_not == ''
       @settings.site_url.value.should include '{base_url}'
       @settings.cp_url.value.should include '{base_url}'

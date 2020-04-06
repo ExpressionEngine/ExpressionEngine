@@ -33,7 +33,7 @@ context('Communicate > Sent', () => {
     page.get('no_results').should('exist')
     page.get('wrap').contains('No Sent emails found'
     page.get('wrap').contains('Create new Email'
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('sorts by subject (asc)', () => {
@@ -163,7 +163,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.get('wrap').contains(data
     page.should have(6).rows #+1 for the header
   }
@@ -182,7 +182,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -200,7 +200,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -218,7 +218,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -236,7 +236,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -254,7 +254,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -272,7 +272,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.should have(6).rows #+1 for the header
   }
 
@@ -287,7 +287,7 @@ context('Communicate > Sent', () => {
     cy.hasNoErrors()
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
 
     page.get('no_results').should('exist')
   }
@@ -318,7 +318,7 @@ context('Communicate > Sent', () => {
     page.find('th.highlight').should have_css 'a.sort.asc'
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.get('wrap').contains(data
     page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.toString()}
     page.should have(21).rows // +1 for the header
@@ -328,7 +328,7 @@ context('Communicate > Sent', () => {
     page.generate_data(count: 25)
     load_page
 
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('will paginate at over 26 emails', () => {
@@ -394,7 +394,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.get('wrap').contains(data
     page.should_not have_text "Albatross"
   }
@@ -418,7 +418,7 @@ context('Communicate > Sent', () => {
 
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
-    page.phrase_search.value.should eq phrase
+    page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
     page.get('wrap').contains(data
     page.should_not have_text "Albatross"
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
@@ -507,12 +507,12 @@ context('Communicate > Sent', () => {
     communicate.should be_displayed
     communicate.heading.invoke('text').then((text) => { expect(text).to.be.equal('Communicate'
 
-    communicate.subject.value.should eq my_subject
-    communicate.from_email.value.should eq test_from
-    communicate.recipient.value.should eq email
-    communicate.cc.value.should eq email
-    communicate.bcc.value.should eq email
-    communicate.body.value.should eq my_body
+    communicate.subjectinvoke('val').then((val) => { expect(val).to.be.equal(my_subject
+    communicate.from_emailinvoke('val').then((val) => { expect(val).to.be.equal(test_from
+    communicate.recipientinvoke('val').then((val) => { expect(val).to.be.equal(email
+    communicate.ccinvoke('val').then((val) => { expect(val).to.be.equal(email
+    communicate.bccinvoke('val').then((val) => { expect(val).to.be.equal(email
+    communicate.bodyinvoke('val').then((val) => { expect(val).to.be.equal(my_body
   }
 
   it('displays an itemized confirmation modal when removing 5 or less emails', () => {
@@ -530,7 +530,7 @@ context('Communicate > Sent', () => {
     }
 
     page.get('bulk_action').should('be.visible')
-    page.bulk_action.select("Remove")
+    page.get('bulk_action').select("Remove")
     page.get('action_submit_button').click()
 
     page.get('modal').should('be.visible')
@@ -555,7 +555,7 @@ context('Communicate > Sent', () => {
     }
 
     page.get('bulk_action').should('be.visible')
-    page.bulk_action.select("Remove")
+    page.get('bulk_action').select("Remove")
     page.get('action_submit_button').click()
 
     page.get('modal').should('be.visible')
@@ -579,7 +579,7 @@ context('Communicate > Sent', () => {
     }
 
     page.get('bulk_action').should('be.visible')
-    page.bulk_action.select("Remove")
+    page.get('bulk_action').select("Remove")
     page.get('action_submit_button').click()
     page.get('modal').should('be.visible')
     page.get('modal_submit_button').click() // Submits a form

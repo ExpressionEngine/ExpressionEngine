@@ -71,8 +71,9 @@ context('Forum Tab', () => {
     page.forum_tab.forum_topic_id.clear().type('1'
     page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
-    should_have_error_text(
+    page.hasErrors()
+//should_have_form_errors(page)
+    page.hasError(
       page.forum_tab.forum_topic_id,
       'Do not specify a forum Title or Body when setting a Forum Topic ID.'
     )
@@ -83,8 +84,9 @@ context('Forum Tab', () => {
     page.forum_tab.forum_topic_id.clear().type('999'
     page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
-    should_have_error_text(
+    page.hasErrors()
+//should_have_form_errors(page)
+    page.hasError(
       page.forum_tab.forum_topic_id,
       'There is no forum topic with that ID.'
     )
@@ -102,8 +104,9 @@ context('Forum Tab', () => {
     page.forum_tab.forum_title.blur()
     page.forum_tab.forum_body.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
-    should_have_error_text(
+    page.hasErrors()
+//should_have_form_errors(page)
+    page.hasError(
       page.forum_tab.forum_body,
       'You cannot create a forum topic without content.'
     )
@@ -119,8 +122,9 @@ context('Forum Tab', () => {
     page.forum_tab.forum_body.blur()
     page.forum_tab.forum_title.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
-    should_have_error_text(
+    page.hasErrors()
+//should_have_form_errors(page)
+    page.hasError(
       page.forum_tab.forum_title,
       'You must give the forum topic a title.'
     )

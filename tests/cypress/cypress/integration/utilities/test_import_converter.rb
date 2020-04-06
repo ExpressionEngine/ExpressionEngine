@@ -49,8 +49,9 @@ context('Import File Converter', () => {
     page.delimiter_special.blur()
 
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.delimiter_special, custom_delimit_required)
-    should_have_form_errors(page)
+    page.hasError(page.delimiter_special, custom_delimit_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.delimiter_special.clear().type('"'
     page.delimiter_special.blur()
@@ -60,8 +61,9 @@ context('Import File Converter', () => {
     page.delimiter_special.clear().type('d'
     page.delimiter_special.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.delimiter_special, custom_delimit_validation)
-    should_have_form_errors(page)
+    page.hasError(page.delimiter_special, custom_delimit_validation)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.delimiter_special.clear().type('"'
     page.delimiter_special.blur()
@@ -118,7 +120,8 @@ context('Import File Converter', () => {
 
     page.get('wrap').contains('Attention: File not converted'
     page.get('wrap').contains(custom_delimit_validation
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     cy.hasNoErrors()
   }
 

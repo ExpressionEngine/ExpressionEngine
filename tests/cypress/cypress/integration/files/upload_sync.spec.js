@@ -80,7 +80,7 @@ context('Upload Sync', () => {
     /*cy.document().then( document => {
       var base = document.createElement('base');
       base.href = Cypress.config('baseUrl');
-      document.getElementsByTagName('head')[0].appendChild(base);
+      document.getElementsByTagName('head').eq(0).appendChild(base);
       console.log(base);
       cy.log(base.href);
     });*/
@@ -93,7 +93,7 @@ context('Upload Sync', () => {
     // This was a nice idea, but it's too intermittent, the AJAX is
     // sometimes too fast for RSpec. Uncomment if you want to test locally.
     //progress_bar_values = page.log_progress_bar_moves
-    //progress_bar_values.should == page.progress_bar_moves_for_file_count($images_count)
+    //progress_bar_values.should('eq', page.progress_bar_moves_for_file_count($images_count)
 
     page.get('alert').should('exist')
 
@@ -148,7 +148,7 @@ context('Upload Sync', () => {
     // This was a nice idea, but it's too intermittent, the AJAX is
     // sometimes too fast for RSpec. Uncomment if you want to test locally.
     //progress_bar_values = page.log_progress_bar_moves
-    //progress_bar_values.should == page.progress_bar_moves_for_file_count($images_count)
+    //progress_bar_values.should('eq', page.progress_bar_moves_for_file_count($images_count)
 
     page.get('alert').should('exist')
 

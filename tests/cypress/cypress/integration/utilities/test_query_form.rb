@@ -23,14 +23,15 @@ context('Query Form', () => {
 
     cy.hasNoErrors()
     page.get('wrap').contains(form_error
-    should_have_error_text(page.query_form, field_required)
-    should_have_form_errors(page)
+    page.hasError(page.query_form, field_required)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     // AJAX Validation
     page.load()
     page.query_form.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.query_form, field_required)
+    page.hasError(page.query_form, field_required)
 
     page.query_form.clear().type('SELECT'
     page.query_form.blur()

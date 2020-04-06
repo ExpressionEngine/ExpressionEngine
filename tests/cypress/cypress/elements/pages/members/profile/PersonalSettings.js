@@ -1,4 +1,4 @@
-import ProfileForm from 'ProfileForm'
+import ProfileForm from './ProfileForm'
 
 class PersonalSettings extends ProfileForm {
   constructor() {

@@ -21,7 +21,7 @@ context('Site Manager', () => {
   })
 
   /*it('displays', () => {
-    page.all_there?.should == true
+    page.all_there?.should('eq', true
   })*/
 
   context('with multiple sites', () => {

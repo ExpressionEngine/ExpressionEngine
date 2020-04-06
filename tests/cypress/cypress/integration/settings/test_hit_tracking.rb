@@ -19,8 +19,9 @@ context('Hit Tracking', () => {
     page.dynamic_tracking_disabling.clear().type('three'
     page.dynamic_tracking_disabling.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.dynamic_tracking_disabling, is_numeric_error)
-    should_have_form_errors(page)
+    page.hasError(page.dynamic_tracking_disabling, is_numeric_error)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     // Clean up after Ajax testing
     page.dynamic_tracking_disabling.clear().type('3'
@@ -32,9 +33,10 @@ context('Hit Tracking', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
-    should_have_error_text(page.dynamic_tracking_disabling, is_numeric_error)
+    page.hasError(page.dynamic_tracking_disabling, is_numeric_error)
   }
 
   it('saves settings on page load', () => {
@@ -53,6 +55,6 @@ context('Hit Tracking', () => {
     page.enable_online_user_tracking.value.should_not == enable_online_user_tracking
     page.enable_hit_tracking.value.should_not == enable_hit_tracking
     page.enable_entry_view_tracking.value.should_not == enable_entry_view_tracking
-    page.dynamic_tracking_disabling.value.should == '360'
+    page.dynamic_tracking_disabling.invoke('val').then((val) => { expect(val).to.be.equal('360'
   }
 }

@@ -19,17 +19,17 @@ context('Member Settings', () => {
     allow_member_localization = eeConfig({item: 'allow_member_localization')
     new_member_notification = eeConfig({item: 'new_member_notification')
 
-    page.allow_member_registration.value.should == allow_member_registration
-    page.require_terms_of_service.value.should == require_terms_of_service
-    page.allow_member_localization.value.should == allow_member_localization
+    page.allow_member_registration.invoke('val').then((val) => { expect(val).to.be.equal(allow_member_registration
+    page.require_terms_of_service.invoke('val').then((val) => { expect(val).to.be.equal(require_terms_of_service
+    page.allow_member_localization.invoke('val').then((val) => { expect(val).to.be.equal(allow_member_localization
     page.req_mbr_activation.has_checked_radio(eeConfig({item: 'req_mbr_activation')).should == true
     page.default_member_group.has_checked_radio(eeConfig({item: 'default_member_group')).should == true
     page.member_theme.has_checked_radio(eeConfig({item: 'member_theme')).should == true
     page.memberlist_order_by.has_checked_radio(eeConfig({item: 'memberlist_order_by')).should == true
     page.memberlist_sort_order.has_checked_radio(eeConfig({item: 'memberlist_sort_order')).should == true
     page.memberlist_row_limit.has_checked_radio(eeConfig({item: 'memberlist_row_limit')).should == true
-    page.new_member_notification.value.should == new_member_notification
-    page.mbr_notification_emails.value.should == eeConfig({item: 'mbr_notification_emails')
+    page.new_member_notification.invoke('val').then((val) => { expect(val).to.be.equal(new_member_notification
+    page.mbr_notification_emails.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'mbr_notification_emails')
   }
 
   it('should validate the form', () => {
@@ -39,17 +39,19 @@ context('Member Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
-    should_have_error_text(page.mbr_notification_emails, emails_error)
+    page.hasError(page.mbr_notification_emails, emails_error)
 
     // AJAX validation
     page.load()
     page.mbr_notification_emails.clear().type('sdfsdfsd'
     page.mbr_notification_emails.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.mbr_notification_emails, emails_error)
-    should_have_form_errors(page)
+    page.hasError(page.mbr_notification_emails, emails_error)
+    page.hasErrors()
+//should_have_form_errors(page)
 
     page.mbr_notification_emails.clear().type('trey@trey.com, test@test.com'
     page.mbr_notification_emails.blur()
@@ -88,6 +90,6 @@ context('Member Settings', () => {
     page.memberlist_sort_order.has_checked_radio('asc').should == true
     page.memberlist_row_limit.has_checked_radio('50').should == true
     page.new_member_notification.value.should_not == new_member_notification
-    page.mbr_notification_emails.value.should == 'test@test.com'
+    page.mbr_notification_emails.invoke('val').then((val) => { expect(val).to.be.equal('test@test.com'
   }
 }

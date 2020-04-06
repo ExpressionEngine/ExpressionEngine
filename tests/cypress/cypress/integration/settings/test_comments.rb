@@ -18,11 +18,11 @@ context('Comment Settings', () => {
     comment_word_censoring = eeConfig({item: 'comment_word_censoring')
     comment_moderation_override = eeConfig({item: 'comment_moderation_override')
 
-    page.enable_comments.value.should == enable_comments
-    page.comment_word_censoring.value.should == comment_word_censoring
-    page.comment_moderation_override.value.should == comment_moderation_override
+    page.enable_comments.invoke('val').then((val) => { expect(val).to.be.equal(enable_comments
+    page.comment_word_censoring.invoke('val').then((val) => { expect(val).to.be.equal(comment_word_censoring
+    page.comment_moderation_override.invoke('val').then((val) => { expect(val).to.be.equal(comment_moderation_override
 
-    page.comment_edit_time_limit.value.should == '0'
+    page.comment_edit_time_limit.invoke('val').then((val) => { expect(val).to.be.equal('0'
   }
 
   it('should validate the form', () => {
@@ -32,7 +32,8 @@ context('Comment Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
     page.get('wrap').contains(comment_edit_time_error
 
@@ -41,7 +42,8 @@ context('Comment Settings', () => {
     page.comment_edit_time_limit.clear().type('sdfsdfsd'
     page.comment_edit_time_limit.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains(comment_edit_time_error
 
     page.comment_edit_time_limit.clear().type('100'
@@ -65,6 +67,6 @@ context('Comment Settings', () => {
     page.enable_comments.value.should_not == enable_comments
     page.comment_word_censoring.value.should_not == comment_word_censoring
     page.comment_moderation_override.value.should_not == comment_moderation_override
-    page.comment_edit_time_limit.value.should == '300'
+    page.comment_edit_time_limit.invoke('val').then((val) => { expect(val).to.be.equal('300'
   }
 }

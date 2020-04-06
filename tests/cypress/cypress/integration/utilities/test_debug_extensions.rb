@@ -28,7 +28,7 @@ context('Debug Extensions', () => {
     // Disable an add-on
     page.checkbox_header.find('input[type="checkbox"]').check()
     page.get('bulk_action').should('be.visible')
-    page.bulk_action.select "Disable"
+    page.get('bulk_action').select "Disable"
     page.get('action_submit_button').click()
     cy.hasNoErrors()
 
@@ -37,7 +37,7 @@ context('Debug Extensions', () => {
     // Enable an add-on
     page.checkbox_header.find('input[type="checkbox"]').check()
     page.get('bulk_action').should('be.visible')
-    page.bulk_action.select "Enable"
+    page.get('bulk_action').select "Enable"
     page.get('action_submit_button').click()
     cy.hasNoErrors()
 

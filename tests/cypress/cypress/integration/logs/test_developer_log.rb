@@ -3,10 +3,10 @@ require './bootstrap.rb'
 def confirm (page)
   page.displayed?
   page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Developer Logs'
-  page.should have_keyword_search
+  page.get('keyword_search').should('exist')
   page.should have_submit_button
   page.should have_date_filter
-  page.should have_perpage_filter
+  page.get('perpage_filter').should('exist')
 }
 
 context('Developer Log', () => {
@@ -51,10 +51,10 @@ context('Developer Log', () => {
     page.get('wrap').contains(our_desc
 
     page.get('keyword_search').clear().type("Rspec"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 1 results for "Rspec"'
-    page.get('keyword_search').value.should eq "Rspec"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Rspec"
     page.get('wrap').contains(our_desc
     page.should('have.length', 1)
   }
@@ -72,7 +72,7 @@ context('Developer Log', () => {
     page.get('wrap').contains(our_phrase
 
     page.get('keyword_search').set our_phrase
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('wrap').contains(our_phrase
     page.should_not have_no_results
@@ -88,17 +88,17 @@ context('Developer Log', () => {
     confirm page
 
     page.get('keyword_search').set our_desc
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + our_desc + '"'
-    page.get('keyword_search').value.should eq our_desc
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal(our_desc
     page.get('wrap').contains(our_desc
     page.should have_date_filter
-    page.should have_perpage_filter
+    page.get('perpage_filter').should('exist')
 
     page.get('no_results').should('exist')
 
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
     page.should_not have_remove_all
   }
 
@@ -118,7 +118,7 @@ context('Developer Log', () => {
 
     page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.should have(19).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('can change page size', () => {
@@ -183,7 +183,7 @@ context('Developer Log', () => {
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.should have(23).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   it('can combine phrase search with filters', () => {
@@ -203,14 +203,14 @@ context('Developer Log', () => {
     cy.hasNoErrors()
 
     page.get('keyword_search').clear().type("Rspec"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
 
     page.date_filter.invoke('text').then((text) => { expect(text).to.be.equal("date (Last 24 Hours)"
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "Rspec"'
-    page.get('keyword_search').value.should eq "Rspec"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Rspec"
     page.get('wrap').contains(our_desc
     page.should have(5).items
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   // Confirming the log deletion action
@@ -233,7 +233,7 @@ context('Developer Log', () => {
     page.get('modal').contains(our_desc
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 1 log(s) deleted from Developer logs"
 
     page.should have_no_content our_desc
@@ -254,11 +254,11 @@ context('Developer Log', () => {
     page.get('modal').contains("Developer Logs: All"
     page.get('modal_submit_button').click() // Submits a form
 
-    page.should have_alert
+    page.get('alert').should('be.visible')
     page.get('alert').invoke('text').then((text) => { expect(text).to.be.equal("Logs Deleted 250 log(s) deleted from Developer logs"
 
     page.get('no_results').should('exist')
-    page.should_not have_pagination
+    page.get('pagination').should('not.exist')
   }
 
   // Confirming Pagination behavior
@@ -328,12 +328,12 @@ context('Developer Log', () => {
     cy.hasNoErrors()
 
     page.get('keyword_search').clear().type("Visible"
-    page.get('keyword_search').send_keys(:enter)
+    page.get('keyword_search').type('{enter}')
     cy.hasNoErrors()
 
     // Page 1
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "Visible"'
-    page.get('keyword_search').value.should eq "Visible"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Visible"
     page.items.should_not have_text "Hidden"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(25).items
@@ -345,7 +345,7 @@ context('Developer Log', () => {
 
     // Page 2
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 35 results for "Visible"'
-    page.get('keyword_search').value.should eq "Visible"
+    page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Visible"
     page.items.should_not have_text "Hidden"
     page.perpage_filter.invoke('text').then((text) => { expect(text).to.be.equal("show (25)"
     page.should have(10).items

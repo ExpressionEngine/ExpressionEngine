@@ -62,8 +62,8 @@ context('File Manager / Upload File', () => {
     page.form_submit_button.click()
     cy.hasNoErrors()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Cannot Upload File"
     page.get('alert').contains("You did not select a file to upload."
   }
@@ -116,7 +116,7 @@ context('File Manager / Upload File', () => {
     cy.hasNoErrors()
 
     @file.displayed?
-    @file.description_input.value.should eq "RSpec README"
+    @file.description_inputinvoke('val').then((val) => { expect(val).to.be.equal("RSpec README"
   }
 
   it('can upload a Markdown file and set the credit', () => {
@@ -137,7 +137,7 @@ context('File Manager / Upload File', () => {
     cy.hasNoErrors()
 
     @file.displayed?
-    @file.credit_input.value.should eq "RSpec README"
+    @file.credit_inputinvoke('val').then((val) => { expect(val).to.be.equal("RSpec README"
   }
 
   it('can upload a Markdown file and set the location', () => {
@@ -158,7 +158,7 @@ context('File Manager / Upload File', () => {
     cy.hasNoErrors()
 
     @file.displayed?
-    @file.location_input.value.should eq "RSpec README"
+    @file.location_inputinvoke('val').then((val) => { expect(val).to.be.equal("RSpec README"
   }
 
   it('cannot upload a shell script', () => {
@@ -166,8 +166,8 @@ context('File Manager / Upload File', () => {
     page.form_submit_button.click()
     cy.hasNoErrors()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Cannot Upload File"
     page.get('alert').contains("File not allowed."
   }
@@ -205,8 +205,8 @@ context('File Manager / Upload File', () => {
     page.form_submit_button.click()
     cy.hasNoErrors()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Cannot Upload File"
     page.get('alert').contains("File not allowed."
   }
@@ -221,8 +221,8 @@ context('File Manager / Upload File', () => {
     page.form_submit_button.click()
     cy.hasNoErrors()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Cannot Upload File"
     page.get('alert').contains("File not allowed."
   }
@@ -232,8 +232,8 @@ context('File Manager / Upload File', () => {
     page.load()
     cy.hasNoErrors()
 
-    page.should have_alert
-    page.should have_alert_error
+    page.get('alert').should('be.visible')
+    page.get('alert_error').should('be.visible')
     page.get('alert').contains("Directory Not Writable"
     page.get('alert').contains("Cannot write to the directory"
     page.get('alert').contains("Check your file permissions on the server"
@@ -247,8 +247,8 @@ context('File Manager / Upload File', () => {
 
     page.contains("404"
 
-    // page.should have_alert
-    // page.should have_alert_error
+    // page.get('alert').should('be.visible')
+    // page.get('alert_error').should('be.visible')
     // page.get('alert').contains("Cannot find the directory"
     File.rename(@upload_dir + '.rspec', @upload_dir)
   }

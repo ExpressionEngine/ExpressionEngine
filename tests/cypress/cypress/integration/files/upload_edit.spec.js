@@ -685,7 +685,7 @@ context('Upload Destination Create/Edit', () => {
     page.submit()
 
     page.get('wrap').contains('Upload directory saved')
-    // page.get('name').value.should == 'New name upload dir'
+    // page.get('name').invoke('val').then((val) => { expect(val).to.be.equal('New name upload dir'
   })
 
   it('should reject XSS', () => {

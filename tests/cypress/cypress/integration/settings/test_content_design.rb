@@ -19,14 +19,14 @@ context('Content & Design Settings', () => {
     auto_assign_cat_parents = eeConfig({item: 'auto_assign_cat_parents')
     enable_emoticons = eeConfig({item: 'enable_emoticons')
 
-    page.new_posts_clear_caches.value.should == new_posts_clear_caches
-    page.enable_sql_caching.value.should == enable_sql_caching
-    page.auto_assign_cat_parents.value.should == auto_assign_cat_parents
+    page.new_posts_clear_caches.invoke('val').then((val) => { expect(val).to.be.equal(new_posts_clear_caches
+    page.enable_sql_caching.invoke('val').then((val) => { expect(val).to.be.equal(enable_sql_caching
+    page.auto_assign_cat_parents.invoke('val').then((val) => { expect(val).to.be.equal(auto_assign_cat_parents
     page.image_resize_protocol.has_checked_radio(eeConfig({item: 'image_resize_protocol')).should == true
-    page.image_library_path.value.should == eeConfig({item: 'image_library_path')
-    page.thumbnail_suffix.value.should == eeConfig({item: 'thumbnail_prefix')
-    page.enable_emoticons.value.should == enable_emoticons
-    page.emoticon_url.value.should == eeConfig({item: 'emoticon_url')
+    page.image_library_path.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'image_library_path')
+    page.thumbnail_suffix.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'thumbnail_prefix')
+    page.enable_emoticons.invoke('val').then((val) => { expect(val).to.be.equal(enable_emoticons
+    page.emoticon_url.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'emoticon_url')
   }
 
   context('when validating the form', () => {
@@ -38,8 +38,9 @@ context('Content & Design Settings', () => {
       page.image_library_path.clear().type(''
       page.image_library_path.blur()
       page.wait_for_error_message_count(1)
-      should_have_form_errors(page)
-      should_have_error_text(page.image_library_path, image_library_path_error)
+      page.hasErrors()
+//should_have_form_errors(page)
+      page.hasError(page.image_library_path, image_library_path_error)
     }
 
     it('validates image resize protocol when using NetPBM', () => {
@@ -47,8 +48,9 @@ context('Content & Design Settings', () => {
       page.image_library_path.clear().type(''
       page.image_library_path.blur()
       page.wait_for_error_message_count(1, 10)
-      should_have_form_errors(page)
-      should_have_error_text(page.image_library_path, image_library_path_error)
+      page.hasErrors()
+//should_have_form_errors(page)
+      page.hasError(page.image_library_path, image_library_path_error)
     }
 
     it('validates a nonsense image library path', () => {
@@ -56,8 +58,9 @@ context('Content & Design Settings', () => {
       page.image_library_path.clear().type('dfsdf'
       page.image_library_path.blur()
       page.wait_for_error_message_count(1)
-      should_have_form_errors(page)
-      should_have_error_text(page.image_library_path, $invalid_path)
+      page.hasErrors()
+//should_have_form_errors(page)
+      page.hasError(page.image_library_path, $invalid_path)
     }
 
     it('validates a valid set of library and path', () => {
@@ -71,23 +74,26 @@ context('Content & Design Settings', () => {
   }
 
   it('should reject XSS', () => {
-    page.image_library_path.set $xss_vector
+    page.image_library_path.clear().type(page.messages.xss_vector)
     page.image_library_path.blur()
     page.wait_for_error_message_count(1)
-    should_have_error_text(page.image_library_path, $xss_error)
-    should_have_form_errors(page)
+    page.hasError(page.image_library_path, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
 
-    page.thumbnail_suffix.set $xss_vector
+    page.thumbnail_suffix.clear().type(page.messages.xss_vector)
     page.thumbnail_suffix.blur()
-    page.wait_for_error_message_count(2)
-    should_have_error_text(page.thumbnail_suffix, $xss_error)
-    should_have_form_errors(page)
+    //page.wait_for_error_message_count(2)
+    page.hasError(page.thumbnail_suffix, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
 
-    page.emoticon_url.set $xss_vector
+    page.emoticon_url.clear().type(page.messages.xss_vector)
     page.emoticon_url.blur()
-    page.wait_for_error_message_count(3)
-    should_have_error_text(page.emoticon_url, $xss_error)
-    should_have_form_errors(page)
+    // page.wait_for_error_message_count(3)
+    page.hasError(page.emoticon_url, page.messages.xss_error)
+    page.hasErrors()
+//should_have_form_errors(page)
   }
 
   it('should save and load the settings', () => {
@@ -112,9 +118,9 @@ context('Content & Design Settings', () => {
     page.enable_sql_caching.value.should_not == enable_sql_caching
     page.auto_assign_cat_parents.value.should_not == auto_assign_cat_parents
     page.image_resize_protocol.has_checked_radio('imagemagick').should == true
-    page.image_library_path.value.should == '/'
-    page.thumbnail_suffix.value.should == 'mysuffix'
+    page.image_library_path.invoke('val').then((val) => { expect(val).to.be.equal('/'
+    page.thumbnail_suffix.invoke('val').then((val) => { expect(val).to.be.equal('mysuffix'
     page.enable_emoticons.value.should_not == enable_emoticons
-    #page.emoticon_url.value.should == 'http://myemoticons/'
+    #page.emoticon_url.invoke('val').then((val) => { expect(val).to.be.equal('http://myemoticons/'
   }
 }

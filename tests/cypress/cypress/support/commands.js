@@ -126,7 +126,10 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
 
     cy.log(`Changing EE Config - ${command}`)
 
-    cy.exec(command)
+    cy.exec(command).then((harvest) => {
+
+        return harvest.stdout;
+    })
 })
 
 // Create a number of entries

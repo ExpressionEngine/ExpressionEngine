@@ -23,14 +23,14 @@ context('Debugging & Output Settings', () => {
 
     // This is ridiculous -- testing *each* radio button's status
     page.debug.has_checked_radio(debug)
-    page.show_profiler.value.should == show_profiler
-    page.enable_devlog_alerts.value.should == enable_devlog_alerts
-    page.gzip_output.value.should == gzip_output
-    page.force_query_string.value.should == force_query_string
-    page.send_headers.value.should == send_headers
+    page.show_profiler.invoke('val').then((val) => { expect(val).to.be.equal(show_profiler
+    page.enable_devlog_alerts.invoke('val').then((val) => { expect(val).to.be.equal(enable_devlog_alerts
+    page.gzip_output.invoke('val').then((val) => { expect(val).to.be.equal(gzip_output
+    page.force_query_string.invoke('val').then((val) => { expect(val).to.be.equal(force_query_string
+    page.send_headers.invoke('val').then((val) => { expect(val).to.be.equal(send_headers
     page.redirect_method.has_checked_radio(eeConfig({item: 'redirect_method'))
     page.cache_driver.has_checked_radio(eeConfig({item: 'cache_driver'))
-    page.max_caches.value.should == eeConfig({item: 'max_caches')
+    page.max_caches.invoke('val').then((val) => { expect(val).to.be.equal(eeConfig({item: 'max_caches')
   }
 
   it('should validate the form', () => {
@@ -40,7 +40,8 @@ context('Debugging & Output Settings', () => {
     page.submit
 
     cy.hasNoErrors()
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
     page.get('wrap').contains(max_caches_error
 
@@ -49,7 +50,8 @@ context('Debugging & Output Settings', () => {
     page.max_caches.clear().type('sdfsdfsd'
     page.max_caches.blur()
     page.wait_for_error_message_count(1)
-    should_have_form_errors(page)
+    page.hasErrors()
+//should_have_form_errors(page)
     page.get('wrap').contains(max_caches_error
 
     page.max_caches.clear().type('100'
@@ -83,7 +85,7 @@ context('Debugging & Output Settings', () => {
     page.force_query_string.value.should_not == force_query_string
     page.send_headers.value.should_not == send_headers
     page.cache_driver.has_checked_radio('memcached')
-    page.max_caches.value.should == '300'
+    page.max_caches.invoke('val').then((val) => { expect(val).to.be.equal('300'
 
     // Should show a message when the selected caching driver
     // cannot be initialized

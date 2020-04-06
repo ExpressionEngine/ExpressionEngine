@@ -29,12 +29,12 @@ context('Spam Module', () => {
 
       page.displayed?
       page.get('heading').text.contains('All SPAM'
-      page.should have_keyword_search
+      page.get('keyword_search').should('exist')
     }
 
     it('can search by phrases', () => {
       page.get('keyword_search').clear().type('about'
-      page.get('keyword_search').send_keys(:enter)
+      page.get('keyword_search').type('{enter}')
       cy.hasNoErrors()
 
       page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 5 results for "about"'
@@ -45,7 +45,7 @@ context('Spam Module', () => {
     it('can mark as ham', () => {
       page.find('.check-ctrl input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')
-      page.bulk_action.select "approve"
+      page.get('bulk_action').select "approve"
       page.get('action_submit_button').click()
       cy.hasNoErrors()
     }
@@ -53,7 +53,7 @@ context('Spam Module', () => {
     it('can mark as spam', () => {
       page.find('.check-ctrl input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')
-      page.bulk_action.select "approve"
+      page.get('bulk_action').select "approve"
       page.get('action_submit_button').click()
       cy.hasNoErrors()
     }

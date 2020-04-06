@@ -36,8 +36,8 @@ context('Pages Settings', () => {
     page.homepage_display.has_checked_radio('not_nested').should == true
 
     page.default_channel.has_checked_radio('0').should == true
-    page.channel_default_template[0].value.should == '0'
-    page.channel_default_template[1].value.should == '0'
+    page.channel_default_template[0].invoke('val').then((val) => { expect(val).to.be.equal('0'
+    page.channel_default_template[1].invoke('val').then((val) => { expect(val).to.be.equal('0'
   }
 
   it('should save new Pages settings', () => {
@@ -51,7 +51,7 @@ context('Pages Settings', () => {
     page.get('wrap').contains('Preferences updated'
     page.homepage_display.has_checked_radio('nested').should == true
     page.default_channel.has_checked_radio('1').should == true
-    page.channel_default_template[0].value.should == '2'
-    page.channel_default_template[1].value.should == '10'
+    page.channel_default_template[0].invoke('val').then((val) => { expect(val).to.be.equal('2'
+    page.channel_default_template[1].invoke('val').then((val) => { expect(val).to.be.equal('10'
   }
 }

@@ -75,10 +75,10 @@ context('Translate Tool', () => {
     cy.hasNoErrors()
 
     @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 2 results for "' + my_phrase + '"'
-    @list_page.phrase_search.value.should eq my_phrase
+    @list_page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(my_phrase
     @list_page.get('wrap').contains(my_phrase
     @list_page.should have(3).rows // 2 rows + header row
-    @list_page.should_not have_pagination
+    @list_page.get('pagination').should('not.exist')
   }
 
   it('reports "no results" when a search fails', :edit => false do
@@ -89,8 +89,8 @@ context('Translate Tool', () => {
     cy.hasNoErrors()
 
     @list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + my_phrase + '"'
-    @list_page.phrase_search.value.should eq my_phrase
-    @list_page.should_not have_pagination
+    @list_page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(my_phrase
+    @list_page.get('pagination').should('not.exist')
     @list_page.get('no_results').should('exist')
   }
 
@@ -129,7 +129,7 @@ context('Translate Tool', () => {
   // The capybara/webkit driver is munging headers.
   // it('can export language files', :edit => false do
   //   @list_page.find('input[type="checkbox"][title="select all"]').set(true)
-  //   @list_page.bulk_action.select "Export (Download)"
+  //   @list_page.get('bulk_action').select "Export (Download)"
   //   @list_page.get('action_submit_button').click()
   //   @list_page.response_headers['Content-Disposition'].should include 'attachment; filename='
   // }
@@ -142,11 +142,11 @@ context('Translate Tool', () => {
 
     @list_page.find('input[type="checkbox"][title="select all"]').set(true)
     @list_page.get('bulk_action').should('be.visible')
-    @list_page.bulk_action.select "Export (Download)"
+    @list_page.get('bulk_action').select "Export (Download)"
     @list_page.get('action_submit_button').click()
     cy.hasNoErrors()
 
-    @list_page.should have_alert
+    @list_page.get('alert').should('be.visible')
 
     FileUtils.chmod 0644, language_path + 'rspeclingo/admin_lang.php'
   }
@@ -154,7 +154,7 @@ context('Translate Tool', () => {
   // Not sure how to force this error
   // it('shows an error if a ZipArchive cannot be created', :edit => false do
   //   @list_page.find('input[type="checkbox"][title="select all"]').set(true)
-  //   @list_page.bulk_action.select "Export (Download)"
+  //   @list_page.get('bulk_action').select "Export (Download)"
   //   @list_page.get('action_submit_button').click()
   // }
 
@@ -204,8 +204,8 @@ context('Translate Tool', () => {
     @edit_page.submit_button.click()
     cy.hasNoErrors()
 
-    @edit_page.should have_alert
-    @edit_page.should have_alert_error
+    @edit_page.get('alert').should('be.visible')
+    @edit_page.get('alert_error').should('be.visible')
 
     FileUtils.chmod t_stat.mode, translations_path
   }
@@ -219,7 +219,7 @@ context('Translate Tool', () => {
     @edit_page.submit_button.click()
     cy.hasNoErrors()
 
-    @edit_page.should have_alert
+    @edit_page.get('alert').should('be.visible')
     @edit_page.get('alert_success').should('be.visible')
     File.exists?(language_path + 'english/addons_lang.php')
   }
@@ -231,8 +231,8 @@ context('Translate Tool', () => {
     @edit_page.submit_button.click()
     cy.hasNoErrors()
 
-    @edit_page.should have_alert
-    @edit_page.should have_alert_error
+    @edit_page.get('alert').should('be.visible')
+    @edit_page.get('alert_error').should('be.visible')
 
     FileUtils.chmod 0777, language_path + 'english/addons_lang.php'
   }
@@ -248,8 +248,8 @@ context('Translate Tool', () => {
     @edit_page.submit_button.click()
     cy.hasNoErrors()
 
-    @edit_page.should have_alert
-    @edit_page.should have_alert_error
+    @edit_page.get('alert').should('be.visible')
+    @edit_page.get('alert_error').should('be.visible')
 
     FileUtils.chmod 0644, language_path + 'rspeclingo/addons_lang.php'
   }

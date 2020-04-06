@@ -8,7 +8,7 @@ class ElementCollection {
         console.log(`Finding ${element}`, { elements: this.elements });
 
         if (element.includes('.')) {
-            let el = this.find(element.split('.')[0]);
+            let el = this.find(element.split('.').eq(0));
 
             if (el instanceof ElementCollection) {
                 return el.find(element.split('.').slice(1).join('.'))
