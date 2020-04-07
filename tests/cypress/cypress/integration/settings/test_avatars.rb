@@ -36,14 +36,14 @@ context('Avatar Settings', () => {
     page.hasErrors()
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
-    page.get('wrap').contains($invalid_path
+    page.get('wrap').contains(page.messages.validation.invalid_path
 
     // AJAX validation
     page.load()
     page.avatar_path.clear().type('sdfsdfsd'
     page.avatar_path.blur()
     page.wait_for_error_message_count(1)
-    page.hasError(page.avatar_path, $invalid_path)
+    page.hasError(page.avatar_path, page.messages.validation.invalid_path)
     page.hasErrors()
 //should_have_form_errors(page)
 
@@ -61,21 +61,21 @@ context('Avatar Settings', () => {
     page.avatar_max_width.clear().type('dfsd'
     page.avatar_max_width.blur()
     //page.wait_for_error_message_count(2)
-    page.hasError(page.avatar_max_width, $integer_error)
+    page.hasError(page.avatar_max_width, page.messages.validation.integer_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.avatar_max_height.clear().type('dsfsd'
     page.avatar_max_height.blur()
     // page.wait_for_error_message_count(3)
-    page.hasError(page.avatar_max_height, $integer_error)
+    page.hasError(page.avatar_max_height, page.messages.validation.integer_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.avatar_max_kb.clear().type('sdfsdfsd'
     page.avatar_max_kb.blur()
     // page.wait_for_error_message_count4)
-    page.hasError(page.avatar_max_kb, $integer_error)
+    page.hasError(page.avatar_max_kb, page.messages.validation.integer_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
@@ -83,28 +83,28 @@ context('Avatar Settings', () => {
     page.avatar_path.set @upload_path
     page.avatar_path.blur()
     // page.wait_for_error_message_count(3)
-    should_have_no_error_text(page.avatar_path)
+    page.hasNoError(page.avatar_path)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.avatar_max_width.clear().type('100'
     page.avatar_max_width.blur()
     //page.wait_for_error_message_count(2)
-    should_have_no_error_text(page.avatar_max_width)
+    page.hasNoError(page.avatar_max_width)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.avatar_max_height.clear().type('100'
     page.avatar_max_height.blur()
     page.wait_for_error_message_count(1)
-    should_have_no_error_text(page.avatar_max_height)
+    page.hasNoError(page.avatar_max_height)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.avatar_max_kb.clear().type('100'
     page.avatar_max_kb.blur()
     page.wait_for_error_message_count(0)
-    should_have_no_error_text(page.avatar_max_kb)
+    page.hasNoError(page.avatar_max_kb)
     should_have_no_form_errors(page)
   }
 

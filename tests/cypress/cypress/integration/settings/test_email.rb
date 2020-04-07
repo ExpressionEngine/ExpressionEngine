@@ -59,12 +59,12 @@ context('Outgoing Email Settings', () => {
       page.webmaster_email.invoke('val').then((val) => { expect(val).to.be.equal('test@test.com'
       page.webmaster_name.invoke('val').then((val) => { expect(val).to.be.equal('Trey Anastasio'
       page.email_charset.invoke('val').then((val) => { expect(val).to.be.equal('somecharset'
-      page.mail_protocol.has_checked_radio('smtp').should == true
+      page.mail_protocol.filter('[value=smtp').should == true
       page.smtp_server.invoke('val').then((val) => { expect(val).to.be.equal('google.com'
       page.smtp_port.invoke('val').then((val) => { expect(val).to.be.equal('587'
       page.smtp_username.invoke('val').then((val) => { expect(val).to.be.equal('username'
       page.smtp_password.invoke('val').then((val) => { expect(val).to.be.equal('password'
-      page.mail_format.has_checked_radio('html').should == true
+      page.mail_format.filter('[value=html').should == true
       page.word_wrap.invoke('val').then((val) => { expect(val).to.be.equal('n'
     }
   }
@@ -98,7 +98,7 @@ context('Outgoing Email Settings', () => {
       page.webmaster_email.clear().type('test@test.com'
       page.webmaster_email.blur()
       page.wait_for_error_message_count(0)
-      should_have_no_error_text(page.webmaster_email)
+      page.hasNoError(page.webmaster_email)
     }
 
     it('validates webmaster name using a xss vector', () => {
@@ -112,7 +112,7 @@ context('Outgoing Email Settings', () => {
       page.webmaster_name.clear().type('Trey Anastasio'
       page.webmaster_name.blur()
       page.wait_for_error_message_count(0)
-      should_have_no_error_text(page.webmaster_name)
+      page.hasNoError(page.webmaster_name)
     }
 
     it('validates webmaster email when using nonsense', () => {
@@ -124,12 +124,12 @@ context('Outgoing Email Settings', () => {
       page.webmaster_email.clear().type('test@test.com'
       page.webmaster_email.blur()
       page.wait_for_error_message_count(0)
-      should_have_no_error_text(page.webmaster_email)
+      page.hasNoError(page.webmaster_email)
     }
 
     it('validates mail protocol when using PHP mail', () => {
       page.mail_protocol.choose_radio_option('mail')
-      page.mail_protocol[0].blur()
+      page.mail_protocoleq(0).blur()
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
     }
@@ -152,7 +152,7 @@ context('Outgoing Email Settings', () => {
       page.smtp_port.blur()
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
-      should_have_no_error_text(page.smtp_port)
+      page.hasNoError(page.smtp_port)
     }
   }
 }

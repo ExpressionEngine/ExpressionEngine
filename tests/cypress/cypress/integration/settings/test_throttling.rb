@@ -63,21 +63,21 @@ context('Access Throttling Settings', () => {
     page.lockout_time.clear().type('5'
     page.lockout_time.blur()
     //page.wait_for_error_message_count(2)
-    should_have_no_error_text(page.lockout_time)
+    page.hasNoError(page.lockout_time)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.max_page_loads.clear().type('15'
     page.max_page_loads.blur()
     page.wait_for_error_message_count(1)
-    should_have_no_error_text(page.max_page_loads)
+    page.hasNoError(page.max_page_loads)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.time_interval.clear().type('8'
     page.time_interval.blur()
     page.wait_for_error_message_count(0)
-    should_have_no_error_text(page.time_interval)
+    page.hasNoError(page.time_interval)
     should_have_no_form_errors(page)
   }
 
@@ -114,7 +114,7 @@ context('Access Throttling Settings', () => {
     page.lockout_time.invoke('val').then((val) => { expect(val).to.be.equal('60'
     page.max_page_loads.invoke('val').then((val) => { expect(val).to.be.equal('40'
     page.time_interval.invoke('val').then((val) => { expect(val).to.be.equal('30'
-    page.banishment_type.has_checked_radio('404').should == true
+    page.banishment_type.filter('[value=404').should == true
     page.banishment_url.invoke('val').then((val) => { expect(val).to.be.equal('http://yahoo.com'
     page.banishment_message.invoke('val').then((val) => { expect(val).to.be.equal('You are banned'
   }

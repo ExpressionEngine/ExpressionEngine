@@ -53,7 +53,7 @@ context('Forum Tab', () => {
     page.get('title').clear().type('Second Forum Tab Test'
     page.tab_links[4].click()
     page.forum_tab.forum_topic_id.set 1
-    page.submit_buttons[1].click()
+    page.submit_buttons.eq(1).click()
 
     $db.query('SELECT count(entry_id) as count FROM exp_channel_titles WHERE forum_topic_id = 1').each do |row|
       row['count'].should == 1
@@ -95,7 +95,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_topic_id.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
-    should_have_no_error_text(page.forum_tab.forum_topic_id)
+    page.hasNoError(page.forum_tab.forum_topic_id)
   }
 
   it('requires both the forum title and body when creating new forum topics', () => {
@@ -116,7 +116,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_body.blur()
     page.wait_for_error_message_count(0)
     should_have_no_form_errors(page)
-    should_have_no_error_text(page.forum_tab.forum_body)
+    page.hasNoError(page.forum_tab.forum_body)
 
     page.forum_tab.forum_body.set body
     page.forum_tab.forum_body.blur()
@@ -136,7 +136,7 @@ context('Forum Tab', () => {
 
     edit = EntryManager.new
     edit.load
-    edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click()
+    edit.entry_rowseq(0).find('.toolbar-wrap a[href*="publish/edit/entry"]').click()
 
     page.get('title').set title + " Edited"
     page.submit_buttons[2].click()
@@ -152,7 +152,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_body.set body
     page.forum_tab.forum_id.click()
     page.forum_tab.wait_until_forum_id_choices_visible
-    page.forum_tab.forum_id_choices[0].click()
+    page.forum_tab.forum_id_choiceseq(0).click()
 
     page.submit_buttons[2].click()
 

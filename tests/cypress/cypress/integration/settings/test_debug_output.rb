@@ -78,13 +78,13 @@ context('Debugging & Output Settings', () => {
     page.submit
 
     page.get('wrap').contains('Preferences updated'
-    page.debug.has_checked_radio('0')
+    page.debug.filter('[value=0')
     page.show_profiler.value.should_not == show_profiler
     page.enable_devlog_alerts.value.should_not == enable_devlog_alerts
     page.gzip_output.value.should_not == gzip_output
     page.force_query_string.value.should_not == force_query_string
     page.send_headers.value.should_not == send_headers
-    page.cache_driver.has_checked_radio('memcached')
+    page.cache_driver.filter('[value=memcached')
     page.max_caches.invoke('val').then((val) => { expect(val).to.be.equal('300'
 
     // Should show a message when the selected caching driver

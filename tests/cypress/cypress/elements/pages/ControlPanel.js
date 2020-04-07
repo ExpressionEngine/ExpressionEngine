@@ -148,6 +148,10 @@ class ControlPanel {
         element.closest('fieldset').find('.field-control em.ee-form-error-message').should('not.exist')
     }
 
+    hasNoErrorText(text) {
+        this.get('error_messages').filter(':contains("'+text+'")').should('not.exist')
+    }
+
     hasErrors() {
         this.get('submit_buttons').filter(':visible').first().should('be.disabled')
         this.get('fieldset_errors').should('exist')
@@ -176,6 +180,10 @@ class ControlPanel {
 
         return Cypress._.toUpper(button_value) != 'errors found' && this.get('submit_buttons').first().its('disabled') != true
     }
+
+    /*has_checked_radio(value){
+        if ()
+    }*/
 
 }
 

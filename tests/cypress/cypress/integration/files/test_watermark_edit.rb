@@ -58,7 +58,7 @@ context('Watermark Create/Edit', () => {
     page.wm_shadow_distance.clear().type('sdfsd'
     page.wm_shadow_distance.blur()
     page.wait_for_error_message_count(5)
-    page.hasError(page.wm_shadow_distance, $integer_error)
+    page.hasError(page.wm_shadow_distance, page.messages.validation.integer_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
@@ -88,7 +88,7 @@ context('Watermark Create/Edit', () => {
     page.wm_image_path.clear().type('sdfsd'
     page.wm_image_path.blur()
     // page.wait_for_error_message_count(3)
-    page.hasError(page.wm_image_path, $invalid_path)
+    page.hasError(page.wm_image_path, page.messages.validation.invalid_path)
     page.hasErrors()
 //should_have_form_errors(page)
 
@@ -127,15 +127,15 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
 
     page.wm_name.invoke('val').then((val) => { expect(val).to.be.equal('Test'
-    page.wm_type.has_checked_radio('text').should == true
-    page.wm_vrt_alignment.has_checked_radio('middle').should == true
-    page.wm_hor_alignment.has_checked_radio('right').should == true
+    page.wm_type.filter('[value=text').should == true
+    page.wm_vrt_alignment.filter('[value=middle').should == true
+    page.wm_hor_alignment.filter('[value=right').should == true
     page.wm_padding.invoke('val').then((val) => { expect(val).to.be.equal('10'
     page.wm_hor_offset.invoke('val').then((val) => { expect(val).to.be.equal('20'
     page.wm_vrt_offset.invoke('val').then((val) => { expect(val).to.be.equal('30'
     page.wm_use_font[:class].should include "on"
     page.wm_text.invoke('val').then((val) => { expect(val).to.be.equal('Test text'
-    page.wm_font.has_checked_radio('texb.ttf').should == true
+    page.wm_font.filter('[value=texb.ttf').should == true
     page.wm_font_size.invoke('val').then((val) => { expect(val).to.be.equal('18'
     page.wm_font_color.invoke('val').then((val) => { expect(val).to.be.equal('ccc'
     page.wm_use_drop_shadow[:class].should include "on"
@@ -173,9 +173,9 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
 
     page.wm_name.invoke('val').then((val) => { expect(val).to.be.equal('Test'
-    page.wm_type.has_checked_radio('image').should == true
-    page.wm_vrt_alignment.has_checked_radio('bottom').should == true
-    page.wm_hor_alignment.has_checked_radio('center').should == true
+    page.wm_type.filter('[value=image').should == true
+    page.wm_vrt_alignment.filter('[value=bottom').should == true
+    page.wm_hor_alignment.filter('[value=center').should == true
     page.wm_padding.invoke('val').then((val) => { expect(val).to.be.equal('10'
     page.wm_hor_offset.invoke('val').then((val) => { expect(val).to.be.equal('20'
     page.wm_vrt_offset.invoke('val').then((val) => { expect(val).to.be.equal('30'

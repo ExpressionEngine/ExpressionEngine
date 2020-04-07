@@ -56,7 +56,7 @@ context('Member Settings', () => {
     page.mbr_notification_emails.clear().type('trey@trey.com, test@test.com'
     page.mbr_notification_emails.blur()
     page.wait_for_error_message_count(0)
-    should_have_no_error_text(page.mbr_notification_emails)
+    page.hasNoError(page.mbr_notification_emails)
     should_have_no_form_errors(page)
   }
 
@@ -81,14 +81,14 @@ context('Member Settings', () => {
 
     page.get('wrap').contains('Preferences Updated'
     page.allow_member_registration.value.should_not == allow_member_registration
-    page.req_mbr_activation.has_checked_radio('none').should == true
+    page.req_mbr_activation.filter('[value=none').should == true
     page.require_terms_of_service.value.should_not == require_terms_of_service
     page.allow_member_localization.value.should_not == allow_member_localization
-    page.default_member_group.has_checked_radio('1').should == true
-    page.member_theme.has_checked_radio('default').should == true
-    page.memberlist_order_by.has_checked_radio('dates').should == true
-    page.memberlist_sort_order.has_checked_radio('asc').should == true
-    page.memberlist_row_limit.has_checked_radio('50').should == true
+    page.default_member_group.filter('[value=1').should == true
+    page.member_theme.filter('[value=default').should == true
+    page.memberlist_order_by.filter('[value=dates').should == true
+    page.memberlist_sort_order.filter('[value=asc').should == true
+    page.memberlist_row_limit.filter('[value=50').should == true
     page.new_member_notification.value.should_not == new_member_notification
     page.mbr_notification_emails.invoke('val').then((val) => { expect(val).to.be.equal('test@test.com'
   }

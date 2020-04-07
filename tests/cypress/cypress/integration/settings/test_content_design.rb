@@ -60,7 +60,7 @@ context('Content & Design Settings', () => {
       page.wait_for_error_message_count(1)
       page.hasErrors()
 //should_have_form_errors(page)
-      page.hasError(page.image_library_path, $invalid_path)
+      page.hasError(page.image_library_path, page.messages.validation.invalid_path)
     }
 
     it('validates a valid set of library and path', () => {
@@ -69,7 +69,7 @@ context('Content & Design Settings', () => {
       page.image_library_path.blur()
       page.wait_for_error_message_count(0)
       should_have_no_form_errors(page)
-      should_have_no_error_text(page.image_library_path)
+      page.hasNoError(page.image_library_path)
     }
   }
 
@@ -117,7 +117,7 @@ context('Content & Design Settings', () => {
     page.new_posts_clear_caches.value.should_not == new_posts_clear_caches
     page.enable_sql_caching.value.should_not == enable_sql_caching
     page.auto_assign_cat_parents.value.should_not == auto_assign_cat_parents
-    page.image_resize_protocol.has_checked_radio('imagemagick').should == true
+    page.image_resize_protocol.filter('[value=imagemagick').should == true
     page.image_library_path.invoke('val').then((val) => { expect(val).to.be.equal('/'
     page.thumbnail_suffix.invoke('val').then((val) => { expect(val).to.be.equal('mysuffix'
     page.enable_emoticons.value.should_not == enable_emoticons

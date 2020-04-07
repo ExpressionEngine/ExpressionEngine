@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-import AddonManager from '../../elements/pages/AddonManager';
+import AddonManager from '../../elements/pages/addons/AddonManager';
 const page = new AddonManager;
 const { _, $ } = Cypress
 

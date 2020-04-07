@@ -37,14 +37,14 @@ context('CAPTCHA Settings', () => {
     page.hasErrors()
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved'
-    page.hasError(page.captcha_path, $invalid_path)
+    page.hasError(page.captcha_path, page.messages.validation.invalid_path)
 
     // AJAX validation
     page.load()
     page.captcha_path.clear().type('sdfsdfsd'
     page.captcha_path.blur()
     page.wait_for_error_message_count(1)
-    page.hasError(page.captcha_path, $invalid_path)
+    page.hasError(page.captcha_path, page.messages.validation.invalid_path)
     page.hasErrors()
 //should_have_form_errors(page)
 
