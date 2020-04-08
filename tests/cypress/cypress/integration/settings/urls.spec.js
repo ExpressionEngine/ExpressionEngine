@@ -97,7 +97,7 @@ context('URL and Path Settings', () => {
 
     page.get('cp_url').clear()
     page.get('cp_url').blur()
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
     page.hasErrors()
     //should_have_form_errors(page)
     page.hasError(page.get('site_url'), field_required)
@@ -105,11 +105,11 @@ context('URL and Path Settings', () => {
 
     page.get('theme_folder_url').clear()
     page.get('theme_folder_url').blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
 
     page.get('theme_folder_path').clear()
     page.get('theme_folder_path').blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
 
     page.hasErrors()
     //should_have_form_errors(page)
@@ -121,19 +121,19 @@ context('URL and Path Settings', () => {
     page.get('theme_folder_path').clear()
     // When a text field is invalid, shouldn't need to blur
     // page.get('theme_folder_path').blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     // Make sure validation timer is still bound to field
     page.get('theme_folder_path').clear()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
     page.get('theme_folder_path').clear()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     // Timer should be unbound on blur
     page.get('theme_folder_path').blur()
 
     // Invalid theme path
     page.get('theme_folder_path').clear().type('/dfsdfsdfd')
     page.get('theme_folder_path').blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
 
     page.hasErrors()
 //should_have_form_errors(page)
@@ -147,21 +147,21 @@ context('URL and Path Settings', () => {
   it('should reject XSS', () => {
     page.get('site_index').clear().type(page.messages.xss_vector)
     page.get('site_index').blur()
-    //page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.get('site_index'), page.messages.xss_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.get('site_url').clear().type(page.messages.xss_vector)
     page.get('site_url').blur()
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
     page.hasError(page.get('site_url'), page.messages.xss_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.get('cp_url').clear().type(page.messages.xss_vector)
     page.get('cp_url').blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     page.hasErrors()
 //should_have_form_errors(page)
     page.hasError(page.get('site_url'), page.messages.xss_error)
@@ -169,11 +169,11 @@ context('URL and Path Settings', () => {
 
     page.get('theme_folder_url').clear().type(page.messages.xss_vector)
     page.get('theme_folder_url').blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
 
     page.get('theme_folder_path').clear().type(page.messages.xss_vector)
     page.get('theme_folder_path').blur()
-    //page.wait_for_error_message_count(5)
+    page.hasErrorsCount(5)
 
     page.hasErrors()
 //should_have_form_errors(page)

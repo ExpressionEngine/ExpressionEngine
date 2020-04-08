@@ -62,7 +62,7 @@ context('Communicate', () => {
   }
 
   it "shows errors when required fields are not populated" do
-    page.from_email.clear().type(''
+    page.from_email.clear()
     page.submit_button.click()
 
     page.get('alert').should('be.visible')

@@ -65,6 +65,7 @@ class ControlPanel {
             "validation": {
                 "required": 'This field is required.',
                 "integer": 'This field must contain an integer.',
+                "integer_error": 'This field must contain an integer.',
                 "natural_number": 'This field must contain only positive numbers.',
                 "natural_number_not_zero": 'This field must contain a number greater than zero.',
                 "numeric": 'This field must contain only numeric characters.',
@@ -158,8 +159,12 @@ class ControlPanel {
     }
 
     hasErrorsCount(number) {
-        this.get('submit_buttons').filter(':visible').first().should('be.disabled')
-        this.get('fieldset_errors').should('have.length', number)
+        if (number==0) {
+            return this.hasNoErrors()
+        } else {
+            this.get('submit_buttons').filter(':visible').first().should('be.disabled')
+            this.get('fieldset_errors').should('have.length', number)
+        }
     }
 
     hasNoErrors() {

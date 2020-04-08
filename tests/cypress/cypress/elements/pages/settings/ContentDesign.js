@@ -13,7 +13,7 @@ class ContentDesign extends ControlPanel {
         'auto_assign_cat_parents': 'input[name=auto_assign_cat_parents]', //visible => false
         'image_resize_protocol': 'input[name=image_resize_protocol]',
         'image_library_path': 'input[name=image_library_path]',
-        'thumbnail_suffix': 'input[name=thumbnail_prefix]',
+        'thumbnail_prefix': 'input[name=thumbnail_prefix]',
         'enable_emoticons_toggle': 'a[data-toggle-for=enable_emoticons]',
         'enable_emoticons': 'input[name=enable_emoticons]', //visible => false
         'emoticon_url': 'input[name=emoticon_url]'

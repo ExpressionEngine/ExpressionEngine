@@ -48,19 +48,19 @@ context('Import File Converter', () => {
     cy.wait(1000)
     page.delimiter_special.blur()
 
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.delimiter_special, custom_delimit_required)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.delimiter_special.clear().type('"'
     page.delimiter_special.blur()
-    page.wait_for_error_message_count(0)
+    page.hasErrorsCount(0)
 
     // Invalid custom delimiter
     page.delimiter_special.clear().type('d'
     page.delimiter_special.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.delimiter_special, custom_delimit_validation)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -68,7 +68,7 @@ context('Import File Converter', () => {
     page.delimiter_special.clear().type('"'
     page.delimiter_special.blur()
 
-    page.wait_for_error_message_count(0)
+    page.hasErrorsCount(0)
     should_have_no_error_text(page.delimiter_special)
     should_have_no_form_errors(page)
 

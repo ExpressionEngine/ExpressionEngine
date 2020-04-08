@@ -70,7 +70,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_body.clear().type('Lorem ipsum dolor sit amet...'
     page.forum_tab.forum_topic_id.clear().type('1'
     page.forum_tab.forum_topic_id.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasErrors()
 //should_have_form_errors(page)
     page.hasError(
@@ -83,7 +83,7 @@ context('Forum Tab', () => {
     page.tab_links[4].click()
     page.forum_tab.forum_topic_id.clear().type('999'
     page.forum_tab.forum_topic_id.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasErrors()
 //should_have_form_errors(page)
     page.hasError(
@@ -91,9 +91,9 @@ context('Forum Tab', () => {
       'There is no forum topic with that ID.'
     )
 
-    page.forum_tab.forum_topic_id.clear().type(''
+    page.forum_tab.forum_topic_id.clear()
     page.forum_tab.forum_topic_id.blur()
-    page.wait_for_error_message_count(0)
+    page.hasErrorsCount(0)
     should_have_no_form_errors(page)
     page.hasNoError(page.forum_tab.forum_topic_id)
   }
@@ -103,7 +103,7 @@ context('Forum Tab', () => {
     page.forum_tab.forum_title.set title
     page.forum_tab.forum_title.blur()
     page.forum_tab.forum_body.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasErrors()
 //should_have_form_errors(page)
     page.hasError(
@@ -111,17 +111,17 @@ context('Forum Tab', () => {
       'You cannot create a forum topic without content.'
     )
 
-    page.forum_tab.forum_title.clear().type(''
+    page.forum_tab.forum_title.clear()
     page.forum_tab.forum_title.blur()
     page.forum_tab.forum_body.blur()
-    page.wait_for_error_message_count(0)
+    page.hasErrorsCount(0)
     should_have_no_form_errors(page)
     page.hasNoError(page.forum_tab.forum_body)
 
     page.forum_tab.forum_body.set body
     page.forum_tab.forum_body.blur()
     page.forum_tab.forum_title.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasErrors()
 //should_have_form_errors(page)
     page.hasError(

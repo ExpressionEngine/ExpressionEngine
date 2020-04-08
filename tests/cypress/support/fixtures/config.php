@@ -33,6 +33,7 @@ if (empty($argv))
 	{
 		exit('');
 	}
+	$value = preg_replace("/\n/", "\\n", $value);
 	exit((string)$value);
 }
 

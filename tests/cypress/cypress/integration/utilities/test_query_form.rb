@@ -30,12 +30,12 @@ context('Query Form', () => {
     // AJAX Validation
     page.load()
     page.query_form.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.query_form, field_required)
 
     page.query_form.clear().type('SELECT'
     page.query_form.blur()
-    page.wait_for_error_message_count(0)
+    page.hasErrorsCount(0)
     should_have_no_error_text(page.query_form)
   }
 

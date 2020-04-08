@@ -165,12 +165,12 @@ context('General Settings', () => {
     cy.hasNoErrors()
 
     if (error) {
-      //page.wait_for_error_message_count(1)
+      page.hasErrorsCount(1)
       page.hasErrors()
       //should_have_form_errors(page)
       page.hasError(field, error)
     } else {
-      //page.wait_for_error_message_count(0)
+      page.hasErrorsCount(0)
       page.hasNoErrors()
       //should_have_no_form_errors(page)
       //page.hasNoError(field)

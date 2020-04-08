@@ -51,7 +51,7 @@ context('Template Settings', () => {
     page.load()
     page.get('max_tmpl_revisions').clear().type('sdfsdfsd')
     page.get('max_tmpl_revisions').blur()
-    //page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasErrors()
     //should_have_form_errors(page)
     page.get('wrap').contains(page.messages.validation.integer_error)

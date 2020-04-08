@@ -62,7 +62,7 @@ context('Ban Settings', () => {
 
     page.get('banned_emails').clear().type(page.messages.xss_vector)
     page.get('banned_emails').blur()
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
     page.hasErrors()
@@ -70,7 +70,7 @@ context('Ban Settings', () => {
 
     page.get('banned_usernames').clear().type(page.messages.xss_vector)
     page.get('banned_usernames').blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     page.hasError(page.get('banned_usernames'), page.messages.xss_error)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
@@ -79,7 +79,7 @@ context('Ban Settings', () => {
 
     page.get('banned_screen_names').clear().type(page.messages.xss_vector)
     page.get('banned_screen_names').blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
     page.hasError(page.get('banned_screen_names'), page.messages.xss_error)
     page.hasError(page.get('banned_usernames'), page.messages.xss_error)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)

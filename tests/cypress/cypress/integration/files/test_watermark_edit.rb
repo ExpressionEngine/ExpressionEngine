@@ -25,17 +25,17 @@ context('Watermark Create/Edit', () => {
     // AJAX validation
     // Required name
     page.load()
-    page.wm_name.clear().type(''
+    page.wm_name.clear()
     page.wm_name.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.wm_name, $required_error)
     page.hasErrors()
 //should_have_form_errors(page)
 
     // Text required when watermark type is text
-    page.wm_text.clear().type(''
+    page.wm_text.clear()
     page.wm_text.blur()
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
     page.hasError(page.wm_text, $required_error)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -43,21 +43,21 @@ context('Watermark Create/Edit', () => {
     // Numbers
     page.wm_padding.clear().type('sdfsd'
     page.wm_padding.blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     page.hasError(page.wm_padding, $natural_number)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.wm_font_size.clear().type('sdfsd'
     page.wm_font_size.blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
     page.hasError(page.wm_font_size, $natural_number_not_zero)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.wm_shadow_distance.clear().type('sdfsd'
     page.wm_shadow_distance.blur()
-    page.wait_for_error_message_count(5)
+    page.hasErrorsCount(5)
     page.hasError(page.wm_shadow_distance, page.messages.validation.integer_error)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -65,14 +65,14 @@ context('Watermark Create/Edit', () => {
     // Hex colors
     page.wm_shadow_color.clear().type('sdfsd'
     page.wm_shadow_color.blur()
-    page.wait_for_error_message_count(6)
+    page.hasErrorsCount(6)
     page.hasError(page.wm_shadow_color, $hex_color)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.wm_font_color.clear().type('sdfsd'
     page.wm_font_color.blur()
-    page.wait_for_error_message_count(7)
+    page.hasErrorsCount(7)
     page.hasError(page.wm_font_color, $hex_color)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -83,18 +83,18 @@ context('Watermark Create/Edit', () => {
     page.wait_until_wm_opacity_visible
     page.wait_until_wm_x_transp_visible
     page.wait_until_wm_y_transp_visible
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
 
     page.wm_image_path.clear().type('sdfsd'
     page.wm_image_path.blur()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     page.hasError(page.wm_image_path, page.messages.validation.invalid_path)
     page.hasErrors()
 //should_have_form_errors(page)
 
     page.wm_opacity.clear().type('sdfsd'
     page.wm_opacity.blur()
-    // page.wait_for_error_message_count4)
+    page.hasErrorsCount(4)
     page.hasError(page.wm_opacity, $natural_number)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -188,7 +188,7 @@ context('Watermark Create/Edit', () => {
   it('should reject XSS', () => {
     page.wm_name.clear().type(page.messages.xss_vector)
     page.wm_name.blur()
-    page.wait_for_error_message_count(1)
+    page.hasErrorsCount(1)
     page.hasError(page.wm_name, page.messages.xss_error)
     page.hasErrors()
 //should_have_form_errors(page)

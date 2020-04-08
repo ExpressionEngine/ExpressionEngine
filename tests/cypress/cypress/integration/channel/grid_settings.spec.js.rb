@@ -80,16 +80,16 @@ context('Grid Field Settings', () => {
     column.name.invoke('val').then((val) => { expect(val).to.be.equal('test_column'
     column.name.click()
     column.label.click() // Blur, .trigger('blur') isn't working
-    //page.wait_for_error_message_count(2)
+    page.hasErrorsCount(2)
     page.hasError(column.name, 'Column field names must be unique.')
 
     // No column name, duplicate column label, and no column name
     column = GridSettings::add_column
     column.label.clear().type('Test column no name'
-    column.name.clear().type(''
+    column.name.clear()
     column.name.click()
     column.label.click()
-    // page.wait_for_error_message_count(3)
+    page.hasErrorsCount(3)
     page.hasError(column.name, $required_error)
   }
 
@@ -125,7 +125,7 @@ context('Grid Field Settings', () => {
 
     // Sabbotage a column to make sure data is retained on validation error
     column = GridSettings::column(1)
-    column.name.clear().type(''
+    column.name.clear()
     page.submit
     column = GridSettings::column(1)
     page.hasError(column.name, $required_error)
