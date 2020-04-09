@@ -30,6 +30,14 @@ else
 	}
 }
 
+// add EE constants
+$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+
+foreach ($constants as $k => $v) {
+	if ( ! defined($k)) {
+		define($k, $v);
+	}
+}
 
 /*
  * ------------------------------------------------------
