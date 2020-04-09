@@ -109,6 +109,8 @@ class EE_Template {
 
 	protected $modified_vars      = FALSE;
 
+	protected $ignore_fetch		  = [ 'url_title' ];
+
 	/**
 	 * Constructor
 	 *
@@ -1903,6 +1905,13 @@ class EE_Template {
 	 */
 	public function fetch_param($which, $default = FALSE)
 	{
+
+		if(isset($this->tagparams[$which]) && in_array($which, $this->ignore_fetch)) {
+
+			return $this->tagparams[$which];
+
+		}
+
 		if ( ! isset($this->tagparams[$which]))
 		{
 			return $default;
@@ -3527,7 +3536,9 @@ class EE_Template {
 
 		$last = end($this->log);
 		$time = number_format($time, 6);
-		$time_gain = $time - $last['time'];
+		$last_time = isset($last['time']) ? $last['time'] : 0;
+		$time_gain = $time - $last_time;
+		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
 		$memory_gain = $memory_usage - $last['memory'];
 
 		$this->log[] = array(

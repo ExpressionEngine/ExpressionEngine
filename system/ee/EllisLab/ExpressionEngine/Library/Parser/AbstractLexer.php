@@ -76,11 +76,7 @@ abstract class AbstractLexer {
 		// if mbstring.func_overload is enabled strcspn here and substr in move()
 		// will not have matching lengths, so only use strcspn when they match
 		// and fall back to regex otherwise
-		if ( ! (ini_get('mbstring.func_overload') & 2))
-		{
-			$n = strcspn($this->str, $char_mask);
-		}
-		elseif ($n = preg_match('/^[^'.preg_quote($char_mask, '/').']*/', $this->str, $matches))
+		if ($n = preg_match('/^[^'.preg_quote($char_mask, '/').']*/', $this->str, $matches))
 		{
 			$n = strlen($matches[0]);
 		}

@@ -15,7 +15,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Numeric Validation Rule
  */
-class Numeric extends ValidationRule {
+class ValidateNumeric extends ValidationRule {
 
 	public function validate($key, $value)
 	{

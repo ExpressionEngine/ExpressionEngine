@@ -19,6 +19,9 @@ class ExactLength extends ValidationRule {
 
 	public function validate($key, $value)
 	{
+
+		ee()->load->helper('multibyte');
+
 		list($length) = $this->assertParameters('length');
 
 		$length = $this->numericOrConstantParameter($length);
@@ -28,12 +31,8 @@ class ExactLength extends ValidationRule {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($value) != $length) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($value) == $length);
 
-		return (strlen($value) != $length) ? FALSE : TRUE;
 	}
 
 	public function getLanguageKey()

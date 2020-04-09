@@ -195,13 +195,6 @@ class EE_Email {
 	public $bcc_batch_size	= 200;
 
 	/**
-	 * Whether PHP is running in safe mode. Initialized by the class constructor.
-	 *
-	 * @var	bool
-	 */
-	protected $_safe_mode		= FALSE;
-
-	/**
 	 * Subject header
 	 *
 	 * @var	string
@@ -360,7 +353,6 @@ class EE_Email {
 		$this->charset = config_item('charset');
 
 		$this->_smtp_auth = ! ($this->smtp_user === '' && $this->smtp_pass === '');
-		$this->_safe_mode = (bool) @ini_get('safe_mode');
 
 		$this->charset = strtoupper($this->charset);
 
@@ -407,7 +399,6 @@ class EE_Email {
 		$this->clear();
 
 		$this->_smtp_auth = ! ($this->smtp_user === '' && $this->smtp_pass === '');
-		$this->_safe_mode = (bool) @ini_get('safe_mode');
 
 		return $this;
 	}
@@ -1631,25 +1622,18 @@ class EE_Email {
 			$this->_recipients = implode(', ', $this->_recipients);
 		}
 
-		if ($this->_safe_mode === TRUE)
-		{
-			return mail($this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str);
-		}
-		else
-		{
-			$params = NULL;
-			$return_path = $this->clean_email($this->_headers['Return-Path']);
+		$params = NULL;
+		$return_path = $this->clean_email($this->_headers['Return-Path']);
 
-			// CVE-2016-10033, CVE-2016-10045: Don't pass -f if characters will be escaped.
-			if ($this->isShellSafe($return_path))
-			{
-				// most documentation of sendmail using the "-f" flag lacks a space after it, however
-				// we've encountered servers that seem to require it to be in place.
-				$params = '-f '.$return_path;
-			}
-
-			return mail($this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str, $params);
+		// CVE-2016-10033, CVE-2016-10045: Don't pass -f if characters will be escaped.
+		if ($this->isShellSafe($return_path))
+		{
+			// most documentation of sendmail using the "-f" flag lacks a space after it, however
+			// we've encountered servers that seem to require it to be in place.
+			$params = '-f '.$return_path;
 		}
+
+		return mail($this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str, $params);
 	}
 
 	/**

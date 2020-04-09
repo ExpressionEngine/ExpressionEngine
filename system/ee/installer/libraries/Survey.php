@@ -44,8 +44,7 @@ class Survey {
 		// Get a list of add-ons in their third_party folder
 		ee()->load->helper('directory');
 
-		$mysql_info = (ee()->db->dbdriver == 'mysqli')
-			? mysqli_get_server_info(ee()->db->conn_id) : mysql_get_server_info();
+		$mysql_info = mysqli_get_server_info(ee()->db->conn_id);
 
 		return array(
 			'anon_id'			=> md5($site_url),
