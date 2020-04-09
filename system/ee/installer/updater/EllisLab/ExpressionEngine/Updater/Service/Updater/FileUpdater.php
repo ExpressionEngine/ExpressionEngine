@@ -244,6 +244,9 @@ class FileUpdater {
 
 		$contents = $this->filesystem->getDirectoryContents($source);
 
+		$source = str_replace("\\", "/", $source);
+		$destination = str_replace("\\", "/", $destination);
+
 		foreach ($contents as $path)
 		{
 			// Skip exclusions and .DS_Store
@@ -251,6 +254,8 @@ class FileUpdater {
 			{
 				continue;
 			}
+
+			$path = str_replace("\\", "/", $path);
 
 			$new_path = str_replace($source, $destination, $path);
 
