@@ -319,7 +319,7 @@ class Filesystem {
 			throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
 		}
 
-		rename(
+		@rename(
 			$this->normalize($source),
 			$this->normalize($dest)
 		);
