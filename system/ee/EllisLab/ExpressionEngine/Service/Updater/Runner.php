@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -72,7 +72,11 @@ class Runner {
 		$unpacker->moveUpdater();
 
 		$this->logger->log('Taking the site offline');
-		ee('Config')->getFile()->set('is_system_on', 'n', TRUE);
+
+		// We'll save the current system on setting
+		$config = ee('Config')->getFile();
+		$config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'));
+		$config->set('is_system_on', 'n', TRUE);
 	}
 
 	public function rollback()

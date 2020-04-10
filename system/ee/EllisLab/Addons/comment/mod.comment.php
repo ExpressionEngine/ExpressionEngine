@@ -10,7 +10,7 @@ use EllisLab\Addons\Comment\Service\Variables\Comment as CommentVars;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -584,9 +584,13 @@ class Comment {
 		{
 			++$count;
 
+			$absoluteCount = (isset($pagination))
+								? $pagination->offset + $count
+								: $count;
+
 			$vars[] = array_merge(
 				[
-					'absolute_count' => $pagination->offset + $count,
+					'absolute_count' => $absoluteCount,
 					'absolute_results' => $total_results,
 					'absolute_reverse_count' => $total_results - $count + 1,
 					'count' => $count,
@@ -606,6 +610,23 @@ class Comment {
 		// So we need to loop it for now, deprecate it, and change/remove it in v5
 		$return = '';
 
+		// Custom parse {switch=} until we can use parse_variables()
+		if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", ee()->TMPL->tagdata, $matches, PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
+
+				if (isset($sparam['switch']))
+				{
+					$sopt = explode("|", $sparam['switch']);
+
+					$switch[$match[1]] = $sopt;
+				}
+			}
+		}
+
+		$count = 0;
 		foreach ($vars as $variables)
 		{
 			$tagdata = ee()->TMPL->tagdata;
@@ -621,6 +642,12 @@ class Comment {
 			}
 			//
 			// -------------------------------------------
+
+			$count++;
+			foreach ($switch as $key => $val)
+			{
+				$variables[$key] = $switch[$key][($count + count($val) -1) % count($val)];
+			}
 
 			$return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
 		}
@@ -1007,6 +1034,8 @@ class Comment {
 
 				$name = ( ! isset($_POST['name'])) ? $name : $_POST['name'];
 
+				$name = ee()->functions->encode_ee_tags($name, TRUE);
+
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($name), $tagdata);
 			}
 
@@ -1018,6 +1047,8 @@ class Comment {
 			{
 				$email = ( ! isset($_POST['email'])) ? ee()->session->userdata['email'] : $_POST['email'];
 
+				$email = ee()->functions->encode_ee_tags($email, TRUE);
+
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($email), $tagdata);
 			}
 
@@ -1028,6 +1059,8 @@ class Comment {
 			if ($key == 'url')
 			{
 				$url = ( ! isset($_POST['url'])) ? ee()->session->userdata['url'] : $_POST['url'];
+
+				$url = ee()->functions->encode_ee_tags($url, TRUE);
 
 				if ($url == '')
 				{
@@ -1044,6 +1077,8 @@ class Comment {
 			if ($key == 'location')
 			{
 				$location = ( ! isset($_POST['location'])) ? ee()->session->userdata['location'] : $_POST['location'];
+
+				$location = ee()->functions->encode_ee_tags($location, TRUE);
 
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($location), $tagdata);
 			}
@@ -1117,15 +1152,21 @@ class Comment {
 		/**  Create form
 		/** ----------------------------------------*/
 
-		$RET = ee()->functions->fetch_current_uri();
+		$RET = ee('Encrypt')->encode(
+			ee()->functions->fetch_current_uri(),
+			ee()->config->item('session_crypt_key')
+		);
 
 		if (isset($_POST['RET']))
 		{
+			// previews / post should already be encoded
 			$RET = ee()->input->post('RET');
 		}
 		elseif (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "")
 		{
-			$RET =  ee()->TMPL->fetch_param('return');
+			$RET = ee('Encrypt')->encode(
+				ee()->TMPL->fetch_param('return'),
+				ee()->config->item('session_crypt_key'));
 		}
 
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
@@ -1936,7 +1977,8 @@ class Comment {
 		//
 		// -------------------------------------------
 
-		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
+		$RET = ee('Encrypt')->decode($_POST['RET'], ee()->config->item('session_crypt_key'));
+		$return_link = ( ! stristr($RET,'http://') && ! stristr($RET,'https://')) ? ee()->functions->create_url($RET) : $RET;
 
 		//  Insert data
 		$comment = ee('Model')->make('Comment', $data)->save();
@@ -1991,10 +2033,10 @@ class Comment {
 		if (ee()->input->post('save_info'))
 		{
 			ee()->input->set_cookie('save_info', 'yes', 60*60*24*365);
-			ee()->input->set_cookie('my_name', $_POST['name'], 60*60*24*365);
-			ee()->input->set_cookie('my_email', $_POST['email'], 60*60*24*365);
-			ee()->input->set_cookie('my_url', $_POST['url'], 60*60*24*365);
-			ee()->input->set_cookie('my_location', $_POST['location'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 60*60*24*365);
 		}
 		else
 		{

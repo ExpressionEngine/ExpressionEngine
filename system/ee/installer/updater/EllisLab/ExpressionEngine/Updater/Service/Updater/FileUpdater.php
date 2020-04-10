@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -244,6 +244,9 @@ class FileUpdater {
 
 		$contents = $this->filesystem->getDirectoryContents($source);
 
+		$source = str_replace("\\", "/", $source);
+		$destination = str_replace("\\", "/", $destination);
+
 		foreach ($contents as $path)
 		{
 			// Skip exclusions and .DS_Store
@@ -251,6 +254,8 @@ class FileUpdater {
 			{
 				continue;
 			}
+
+			$path = str_replace("\\", "/", $path);
 
 			$new_path = str_replace($source, $destination, $path);
 

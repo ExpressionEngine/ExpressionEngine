@@ -1,6 +1,6 @@
 module Installer
   class Updater < SitePrism::Page
-    set_url '/system/index.php'
+    set_url '/admin.php'
 
     element :header, 'h1'
     element :updater_steps, 'ul.updater-steps'

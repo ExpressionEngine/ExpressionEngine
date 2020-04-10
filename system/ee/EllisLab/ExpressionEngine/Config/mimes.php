@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -104,6 +104,7 @@ return array(
 	'image/pjpeg', // .jpg, .jpe, .jpeg
 	'image/png', // .png
 	'image/svg+xml', // .svg
+	'image/svg', // .svg
 	'image/tiff', // .tif, .tiff
 	'image/x-png', // .png
 	'message/rfc822', // .eml

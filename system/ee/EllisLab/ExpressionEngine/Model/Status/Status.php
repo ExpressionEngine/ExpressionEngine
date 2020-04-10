@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,6 +20,8 @@ class Status extends Model {
 
 	protected static $_primary_key = 'status_id';
 	protected static $_table_name = 'statuses';
+
+	protected static $_hook_id = 'status';
 
 	protected static $_typed_columns = array(
 		'site_id'         => 'int',

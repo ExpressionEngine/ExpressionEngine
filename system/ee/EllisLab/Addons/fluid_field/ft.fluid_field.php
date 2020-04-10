@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -686,7 +686,28 @@ class Fluid_field_ft extends EE_Fieldtype {
 	 */
 	public function replace_total_fields($data, $params = '', $tagdata = '')
 	{
-		$fluid_field_data = $this->getFieldData($this->id(), $this->row('entry_id'));
+		ee()->load->library('fluid_field_parser');
+
+		$fluid_field_data = $this->getFieldData();
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+
+			if ($data['entry_id'] == $this->content_id())
+			{
+				$fluid_field_data = ee()->fluid_field_parser->overrideWithPreviewData(
+					$fluid_field_data,
+					[$this->id()]
+				);
+
+				if ( ! isset($data["field_id_{$this->id()}"])
+					|| ! isset($data["field_id_{$this->id()}"]['fields']))
+				{
+					return 0;
+				}
+			}
+		}
 
 		if (isset($params['type']))
 		{

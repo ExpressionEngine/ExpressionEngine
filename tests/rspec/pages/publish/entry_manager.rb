@@ -1,5 +1,5 @@
 class EntryManager < ControlPanelPage
-  set_url '/system/index.php?/cp/publish/edit{&perpage}{&filter_by_channel}'
+  set_url '/admin.php?/cp/publish/edit{&perpage}{&filter_by_channel}'
 
   elements :entry_rows, '.w-16 .tbl-ctrls form table tbody tr'
   elements :entry_checkboxes, '.w-16 .tbl-ctrls form table tbody tr input[type="checkbox"]'

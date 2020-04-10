@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -140,7 +140,7 @@ class Channel_form_lib
 		//temporarily set the site_id for cross-site channel:form
 		$current_site_id = ee()->config->item('site_id');
 
-		ee()->config->set_item('site_id', $this->site_id);
+		$this->switch_site($this->site_id);
 
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
@@ -149,7 +149,7 @@ class Channel_form_lib
 
 		if ( ! $this->member)
 		{
-			ee()->config->set_item('site_id', $current_site_id);
+			$this->switch_site($current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -158,7 +158,7 @@ class Channel_form_lib
 		// Can they post?
 		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
 		{
-			ee()->config->set_item('site_id', $current_site_id);
+			$this->switch_site($current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -184,7 +184,7 @@ class Channel_form_lib
 		{
 			if (ee()->TMPL->no_results())
 			{
-				ee()->config->set_item('site_id', $current_site_id);
+				$this->switch_site($current_site_id);
 				return ee()->TMPL->no_results();
 			}
 
@@ -274,7 +274,7 @@ class Channel_form_lib
 			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
 			if (ee()->extensions->end_script === TRUE)
 			{
-				ee()->config->set_item('site_id', $current_site_id);
+				$this->switch_site($current_site_id);
 				return;
 			}
 		}
@@ -323,7 +323,9 @@ class Channel_form_lib
 
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
-					$custom_field_variables_row['display_field'] = $this->display_field($field_name);
+					$custom_field_variables_row['display_field'] = $this->encode_ee_tags(
+						$this->display_field($field_name)
+					);
 				}
 
 				foreach ($custom_field_variables_row as $key => $value)
@@ -352,7 +354,11 @@ class Channel_form_lib
 				$custom_field_output .= $temp;
 			}
 
-			ee()->TMPL->tagdata = str_replace($match[0], $custom_field_output, ee()->TMPL->tagdata);
+			ee()->TMPL->tagdata = str_replace(
+				$match[0],
+				$this->encode_ee_tags($custom_field_output),
+				ee()->TMPL->tagdata
+			);
 		}
 
 		if ( ! empty($this->markitup))
@@ -399,7 +405,13 @@ class Channel_form_lib
 
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace(
+							$matches[0][$match_index],
+							$this->encode_ee_tags(
+								$this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata)
+							),
+							ee()->TMPL->tagdata
+						);
 					}
 				}
 			}
@@ -454,8 +466,14 @@ class Channel_form_lib
 			}
 		}
 
-		//edit form or post-error submission
-		if ($this->edit OR ! empty($_POST))
+		// edit form or post-error submission
+		// check to make sure the POST request is meant for this form
+		if ( ! empty($_POST) && ! is_numeric($this->_hidden_fields['ACT']))
+		{
+			$this->_hidden_fields['ACT'] = ee()->functions->insert_action_ids($this->_hidden_fields['ACT']);
+		}
+
+		if ($this->edit OR ee()->input->post('ACT') == $this->_hidden_fields['ACT'])
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -478,12 +496,16 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
-					if ($this->get_field_type($match[1]) == 'checkboxes' OR $this->get_field_type($match[1]) == 'grid')
+					if ($this->get_field_type($match[1]) == 'checkboxes' ||
+						$this->get_field_type($match[1]) == 'grid' ||
+						$this->get_field_type($match[1]) == 'file_grid')
 					{
 						$checkbox_fields[] = $match[1];
 					}
 
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->display_field($match[1]) : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields))
+						? $this->encode_ee_tags($this->display_field($match[1]))
+						: '';
 				}
 
 				elseif (preg_match('/^label:(.*)$/', $key, $match))
@@ -569,7 +591,9 @@ class Channel_form_lib
 					}
 					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
 					{
-						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
+						$this->parse_variables[$key] = $this->encode_ee_tags(
+							form_prep($this->entry($name), $name)
+						);
 					}
 				}
 			}
@@ -692,7 +716,9 @@ class Channel_form_lib
 						$checkbox_fields[] = $field->field_name;
 					}
 
-					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field->field_name) : '';
+					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields))
+						? $this->encode_ee_tags($this->display_field($field->field_name))
+						: '';
 				}
 			}
 
@@ -804,7 +830,7 @@ class Channel_form_lib
 
 		$this->_build_javascript();
 
-		ee()->config->set_item('site_id', $current_site_id);
+		$this->switch_site($current_site_id);
 
 
 		//make head appear by default
@@ -977,7 +1003,8 @@ class Channel_form_lib
 
 		$this->output_js['json'] = array(
 			'EE'					=> $addt_js,
-			'mySettings'			=> $markItUp,
+			'EE.markitup'			=> new StdClass(),
+			'EE.markitup.settings'			=> $markItUp,
 		);
 
 		$include_jquery = ee()->TMPL->fetch_param('include_jquery');
@@ -1123,7 +1150,7 @@ GRID_FALLBACK;
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = ee()->TMPL->fetch_param('rte_selector', '.WysiHat-field');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
 
 		if ($rte_selector)
 		{
@@ -1487,21 +1514,6 @@ GRID_FALLBACK;
 		else
 		{
 			$this->fetch_entry(0);
-
-			if (ee()->input->post('unique_url_title', TRUE))
-			{
-				$title = ee()->input->post('title', TRUE);
-				$url_title = ($this->_meta['url_title']) ?: ee('Format')->make('Text', $title)->urlSlug();
-
-				// Max URL title length, minus uniqid length, minus separator
-				$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
-
-				$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
-
-				$_POST['url_title'] = uniqid($url_title . $separator, TRUE);
-
-				$this->_meta['url_title'] = $_POST['url_title'];
-			}
 		}
 
 		ee()->legacy_api->instantiate('channel_fields');
@@ -1762,11 +1774,25 @@ GRID_FALLBACK;
 			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug()->compile();
 		}
 
+		if (ee()->input->post('unique_url_title', TRUE))
+		{
+			$url_title = $_POST['url_title'];
+
+			// Max URL title length, minus uniqid length, minus separator
+			$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
+
+			$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
+
+			$_POST['url_title'] = uniqid($url_title . $separator, TRUE);
+
+			$this->_meta['url_title'] = $_POST['url_title'];
+		}
+
 		//temporarily change site_id for cross-site forms
 		//channel_entries api doesn't allow you to specifically set site_id
 		$current_site_id = ee()->config->item('site_id');
 
-		ee()->config->set_item('site_id', $this->site_id);
+		$this->switch_site($this->site_id);
 
 		// Structure category data the way the ChannelEntry model expects it
 		$cat_groups = explode('|', $this->entry->Channel->cat_group);
@@ -1830,7 +1856,7 @@ GRID_FALLBACK;
 			$this->errors[] = lang('unauthorized_for_this_channel');
 		}
 
-		ee()->config->set_item('site_id', $current_site_id);
+		$this->switch_site($current_site_id);
 
 		$new_id = $this->entry('entry_id');
 		$this->clear_entry();
@@ -2124,7 +2150,22 @@ GRID_FALLBACK;
 		{
 			return $this->entry->getProperty($key);
 		}
+	}
 
+	/**
+	 * Encode EE tags in field contents. Channel Form may output module tags or
+	 * other when they're in the data of an entry, and since they will be output
+	 * during module parsing, the template engine will parse any module code
+	 * that is output. So we'll encode EE tags with a special marker that we can
+	 * reverse after template parsing has completed so the original field
+	 * contents aren't altered on edit.
+	 *
+	 * @param string $string Field data
+	 * @return string Encoded string
+	 */
+	private function encode_ee_tags($string)
+	{
+		return str_replace([LD, RD], ['CFORM-ENCODE-LEFT-BRACKET', 'CFORM-ENCODE-RIGHT-BRACKET'], $string);
 	}
 
 	/**
@@ -2330,6 +2371,7 @@ GRID_FALLBACK;
 			$query->filter('url_title', $url_title);
 		}
 
+		$query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
 		$query->filter('ChannelEntry.site_id', $this->site_id);
 
 		$entry = $query->first();
@@ -3549,6 +3591,19 @@ SCRIPT;
 		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
 
 		ee()->session->userdata['group_id'] = $id;
+	}
+
+	/**
+	 * Sets site_id, used to allow across site forms
+	 *
+	 * @param	int $site_id The site_id to switch to
+	 *
+	 * @return	void
+	 */
+	private function switch_site($site_id)
+	{
+		ee()->config->set_item('site_id', $site_id);
+		ee()->config->site_prefs('', $site_id);
 	}
 }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -109,13 +109,9 @@
 	define('REQ', 'CP');
 
 	// force the installer/updater?
-	if (file_exists(FCPATH.'.env.php') && (require FCPATH.'.env.php') == TRUE && getenv('EE_INSTALL_MODE') === 'TRUE')
+	if (file_exists(FCPATH.'.env.php') && (require FCPATH.'.env.php') == TRUE)
 	{
-		define('INSTALL_MODE', TRUE);
-	}
-	else
-	{
-		define('INSTALL_MODE', FALSE);
+		define('INSTALL_MODE', getenv('EE_INSTALL_MODE') === 'TRUE');
 	}
 
 /*

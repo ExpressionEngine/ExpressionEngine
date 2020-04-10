@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,11 @@ class Publish extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		if ( ! ee('Permission')->hasAny(
+			'can_create_entries',
+			'can_edit_self_entries',
+			'can_edit_other_entries'
+		))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

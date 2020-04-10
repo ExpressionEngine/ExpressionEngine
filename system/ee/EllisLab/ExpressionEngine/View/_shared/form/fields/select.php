@@ -95,7 +95,7 @@ else:
 	// If $value is FALSE and we're rendering the field with React, FALSE
 	// probably isn't a valid value and probably came from asking the config
 	// library for the field's value in form/field.php
-	if ($no_radio_value && $value === FALSE && isset($normalized_choices[0]['value']))
+	if ($no_radio_value && ($value === FALSE || is_null($value)) && isset($normalized_choices[0]['value']))
 	{
 		$value = $normalized_choices[0]['value'];
 	}
@@ -103,7 +103,11 @@ else:
 	if ($value !== FALSE && $value !== NULL && ! is_array($value) && ! $multi)
 	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
-		$value = [$value => $label];
+
+		if ($label)
+		{
+			$value = [$value => $label];
+		}
 	}
 	elseif ($multi && ! is_array($value))
 	{

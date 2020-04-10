@@ -4,13 +4,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use LogicException;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
@@ -54,11 +55,7 @@ class Select extends Query {
 			$aliases = array_merge(array($this->root_alias), array_keys($withs));
 			foreach ($aliases as $alias)
 			{
-				if (stripos($alias, ' as ') !== FALSE)
-				{
-					$parts = explode(' ', $alias);
-					$alias = end($parts);
-				}
+				list($from, $alias) = $this->splitAlias($alias);
 
 				$class = $this->getClass($alias);
 				if ( ! is_null($class::getMetaData('field_data')))
@@ -291,10 +288,35 @@ class Select extends Query {
 		}
 		else
 		{
-			$fields = ee('Model')->get($meta_field_data['field_model'])
+			if ($meta_field_data['field_model'] == 'MemberField' && ! empty(ee()->session))
+			{
+				$fields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
+
+				// might be empty, so need to be specific
+				if ( ! is_array($fields))
+				{
+					// get ALL fields, since this cache key is shared elsewhere and expects all fields
+					$fields = ee('Model')->get($meta_field_data['field_model'])
+						->all()
+						->asArray();
+					ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', $fields);
+				}
+
+				// filter just for non-legacy fields
+				$fields = new Collection($fields);
+				$fields = $fields->filter(function($mfield) use ($column_prefix)
+					{
+						$colname = $column_prefix.'legacy_field_data';
+						return $mfield->$colname == FALSE;
+					})->asArray();
+			}
+			else
+			{
+				$fields = ee('Model')->get($meta_field_data['field_model'])
 				->filter($column_prefix.'legacy_field_data', 'n')
 				->all()
 				->asArray();
+			}
 		}
 
 		if ( ! empty($fields))

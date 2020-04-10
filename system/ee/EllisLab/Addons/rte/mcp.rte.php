@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -211,7 +211,7 @@ class Rte_mcp {
 		ee()->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('default_toolset'),
-			'required|is_numeric|enum[' . implode($toolids, ',') . ']'
+			'required|is_numeric|enum[' . implode(',', $toolids) . ']'
 		);
 
 		if (ee()->form_validation->run())

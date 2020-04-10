@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'Grid',
@@ -9,9 +9,14 @@ return array(
 	'namespace'      => 'EllisLab\Addons\Grid',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
-	'fieldtypes'     => array(
-		'grid' => array(
+	'fieldtypes'     => [
+		'grid' => [
+			'name' => 'Grid',
 			'compatibility' => 'grid'
-		)
-	)
-);
+		],
+		'file_grid' => [
+			'name' => 'File Grid',
+			'compatibility' => 'file_grid'
+		]
+	]
+];

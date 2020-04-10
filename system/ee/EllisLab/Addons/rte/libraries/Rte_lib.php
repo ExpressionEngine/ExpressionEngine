@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -295,9 +295,13 @@ class Rte_lib {
 	 * @param	bool	If TRUE, includes tools that are for the control panel only
 	 * @return	string 	The JS needed to embed the RTE
 	 */
-	public function build_js($toolset_id, $selector, $include = array(), $cp_only = FALSE)
+	public function build_js($toolset_id, $selector, $include = [], $cp_only = FALSE)
 	{
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
+
+		if( ! is_array($include) ) {
+			$include = [];
+		}
 
 		// no toolset specified?
 		if ( ! $toolset_id)
@@ -332,7 +336,7 @@ class Rte_lib {
 			)
 		);
 
-		if ($include['jquery_ui'])
+		if (array_key_exists('jquery_ui', $include) && $include['jquery_ui'])
 		{
 			$bits['libraries']['ui'] = array('core', 'widget');
 		}
@@ -405,7 +409,7 @@ class Rte_lib {
 			$js .= '
 				var EE = ' . json_encode(ee()->javascript->global_vars) . ';';
 
-			if ($include['jquery'])
+			if (array_key_exists('jquery', $include) && $include['jquery'])
 			{
 				$js .= '
 					var j = document.createElement("script");
@@ -537,8 +541,14 @@ class Rte_lib {
 	{
 		if ( ! ee()->session->cache('rte', 'loaded'))
 		{
+			$rte_toolset_id = 0;
+			if (isset(ee()->TMPL))
+			{
+				$rte_toolset_id = (int) ee()->TMPL->fetch_param('rte_toolset_id', 0);
+			}
+
 			ee()->javascript->output(
-				ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, (REQ == 'CP'))
+				ee()->rte_lib->build_js($rte_toolset_id, '.WysiHat-field', NULL, (REQ == 'CP'))
 			);
 
 			ee()->session->set_cache('rte', 'loaded', TRUE);
@@ -558,7 +568,7 @@ class Rte_lib {
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// Check the RTE module and user's preferences
-		if (ee()->session->userdata('rte_enabled') == 'y'
+		if ((ee()->session->userdata('rte_enabled') == 'y' OR (ee()->session->userdata('rte_enabled') != 'y'AND ee()->session->userdata('group_id') == 3))
 			AND ee()->config->item('rte_enabled') == 'y')
 		{
 			$field['class']	.= ' WysiHat-field';

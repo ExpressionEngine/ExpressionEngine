@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -109,6 +109,8 @@ class EE_Template {
 
 	protected $modified_vars      = FALSE;
 
+	protected $ignore_fetch		  = [ 'url_title' ];
+
 	/**
 	 * Constructor
 	 *
@@ -175,6 +177,8 @@ class EE_Template {
 		{
 			$this->final_template = $this->parse_globals($this->final_template);
 		}
+
+		$this->final_template = $this->decode_channel_form_ee_tags($this->final_template);
 
 		$this->log_item("Template Parsing Finished");
 
@@ -1901,6 +1905,13 @@ class EE_Template {
 	 */
 	public function fetch_param($which, $default = FALSE)
 	{
+
+		if(isset($this->tagparams[$which]) && in_array($which, $this->ignore_fetch)) {
+
+			return $this->tagparams[$which];
+
+		}
+
 		if ( ! isset($this->tagparams[$which]))
 		{
 			return $default;
@@ -3092,6 +3103,19 @@ class EE_Template {
 	}
 
 	/**
+	 * Decode tags encoded by Channel_form_lib::encode_ee_tags to prevent
+	 * modules from being parsed inside Channel Form fields but preserve
+	 * original content on edit.
+	 *
+	 * @param string $template
+	 * @return string Decoded string
+	 */
+	private function decode_channel_form_ee_tags($template)
+	{
+		return str_replace(['CFORM-ENCODE-LEFT-BRACKET', 'CFORM-ENCODE-RIGHT-BRACKET'], [LD, RD], $template);
+	}
+
+	/**
 	 * Parse Globals
 	 *
 	 * The syntax is generally: {global:variable_name}
@@ -3512,7 +3536,9 @@ class EE_Template {
 
 		$last = end($this->log);
 		$time = number_format($time, 6);
-		$time_gain = $time - $last['time'];
+		$last_time = isset($last['time']) ? $last['time'] : 0;
+		$time_gain = $time - $last_time;
+		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
 		$memory_gain = $memory_usage - $last['memory'];
 
 		$this->log[] = array(

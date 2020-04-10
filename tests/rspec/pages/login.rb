@@ -7,7 +7,7 @@ module Login
   attr_accessor :button
 
   def self.visit
-    go_to '/system'
+    go_to '/admin.php'
     @button = page.find('input.btn');
   end
 

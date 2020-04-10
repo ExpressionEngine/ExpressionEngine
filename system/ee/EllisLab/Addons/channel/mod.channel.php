@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -217,26 +217,9 @@ class Channel {
 					$per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
 				}
 
-				if (($this->fetch_cache('field_pagination')) !== FALSE)
+				if ($this->pagination->build(trim($cache), $per_page) == FALSE)
 				{
-					if (($pg_query = $this->fetch_cache('pagination_query')) !== FALSE)
-					{
-						$this->pagination->paginate = TRUE;
-						$this->pagination->field_pagination = TRUE;
-						$this->pagination->cfields = $this->cfields;
-						$this->pagination->field_pagination_query = ee()->db->query(trim($pg_query));
-						if ($this->pagination->build(trim($cache), $per_page) == FALSE)
-						{
-							$this->sql = '';
-						}
-					}
-				}
-				else
-				{
-					if ($this->pagination->build(trim($cache), $per_page) == FALSE)
-					{
-						$this->sql = '';
-					}
+					$this->sql = '';
 				}
 			}
 		}
@@ -263,6 +246,14 @@ class Channel {
 			}
 
 			$this->query = ee()->db->query($this->sql);
+
+			// Spanning an entry pagination needs the query result
+			if ($this->pagination->field_pagination	== TRUE)
+			{
+				$this->pagination->cfields = $this->cfields;
+				$this->pagination->field_pagination_query = ($this->query->num_rows() == 1) ? $this->query : NULL;
+				$this->pagination->build(1, 1);
+			}
 
 			// -------------------------------------
 			//  "Relaxed" View Tracking
@@ -447,7 +438,7 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		if ( ! $this->isLivePreviewEntry())
+		if ( ! is_null($this->query))
 		{
 			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
 
@@ -470,7 +461,7 @@ class Channel {
 				return;
 			}
 
-			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+			$sql .= implode(',', array_unique(array_filter($categories))) . ')';
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -721,18 +712,18 @@ class Channel {
 			$sites = ($site_ids ? $site_ids : array(ee()->config->item('site_id')));
 			foreach ($sites as $site_name => $site_id)
 			{
-				// If fields_sql isn't empty then this isn't a first
-				// loop and we have terms that need to be ored together.
-				if($fields_sql !== '') {
-					$fields_sql .= ' OR ';
-				}
-
 				// We're goign to repeat the search on each site
 				// so store the terms in a temp.  FIXME Necessary?
 				$terms = $search_terms;
 				if ( ! isset($this->cfields[$site_id][$field_name]))
 				{
 					continue;
+				}
+
+				// If fields_sql isn't empty then this isn't a first
+				// loop and we have terms that need to be ored together.
+				if($fields_sql !== '') {
+					$fields_sql .= ' OR ';
 				}
 
 				$field_id = $this->cfields[$site_id][$field_name];
@@ -1280,19 +1271,10 @@ class Channel {
 
 		$sql_b .= ", exp_channels.channel_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
-		{
-			$sql_b .= ",wd.* ";
-		}
-
 		$sql = "FROM exp_channel_titles AS t
 				LEFT JOIN exp_channels ON t.channel_id = exp_channels.channel_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
-		{
-			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
-		}
-		elseif (in_array('custom_field', $order_array))
+		if (in_array('custom_field', $order_array))
 		{
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
 		}
@@ -2010,6 +1992,7 @@ class Channel {
 		{
 			$joins = '';
 			$legacy_fields = array();
+			$joined_fields = [];
 			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
 			{
 				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
@@ -2018,12 +2001,21 @@ class Channel {
 					if (isset($this->cfields[$site_id][$field_name]))
 					{
 						$field_id = $this->cfields[$site_id][$field_name];
+
+						if (isset($joined_fields[$field_id]))
+						{
+							continue;
+						}
+
 						$field = ee('Model')->get('ChannelField', $field_id)
 							->fields('legacy_field_data')
 							->first();
+
 						if ( ! $field->legacy_field_data)
 						{
 							$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+
+							$joined_fields[$field_id] = TRUE;
 						}
 						else
 						{
@@ -2189,6 +2181,7 @@ class Channel {
 						break;
 
 						case 'custom_field' :
+
 							if (strpos($corder[$key], '|') !== FALSE)
 							{
 								$field_list = [];
@@ -2205,7 +2198,7 @@ class Channel {
 									{
 										if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
 										{
-											$join .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+											$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
 											$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
 										}
 
@@ -2213,6 +2206,8 @@ class Channel {
 
 									}
 								}
+
+								$field_list = implode(', ', $field_list);
 
 								$end .= "CONCAT(".$field_list.")";
 								$distinct_select .= ', '.$field_list.' ';
@@ -2308,7 +2303,7 @@ class Channel {
 		// We do this hear so we can use the offset into next, then later one as well
 		$offset = ( ! ee()->TMPL->fetch_param('offset') OR ! is_numeric(ee()->TMPL->fetch_param('offset'))) ? '0' : ee()->TMPL->fetch_param('offset');
 
-		// Do we need pagination?
+		// Do we need entry pagination?
 		// We'll run the query to find out
 		if ($this->pagination->paginate == TRUE)
 		{
@@ -2336,30 +2331,11 @@ class Channel {
 				}
 
 				$this->pagination->build($total, $this->pagination->per_page);
-			}
-			else
-			{
-				$this->pager_sql = $sql_a.$sql_b.$sql;
-
-				$query = ee()->db->query($this->pager_sql);
-
-				$total = $query->num_rows;
-				$this->absolute_results = $total;
-
-				$this->pagination->cfields = $this->cfields;
-				$this->pagination->field_pagination_query = $query;
-				$this->pagination->build($total, 1);
 
 				if (ee()->config->item('enable_sql_caching') == 'y')
 				{
-					$this->save_cache($this->pager_sql, 'pagination_query');
-					$this->save_cache('1', 'field_pagination');
+					$this->save_cache($total, 'pagination_count');
 				}
-			}
-
-			if (ee()->config->item('enable_sql_caching') == 'y')
-			{
-				$this->save_cache($total, 'pagination_count');
 			}
 		}
 
@@ -2451,7 +2427,7 @@ class Channel {
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
 
-		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+		$end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2545,7 +2521,7 @@ class Channel {
 
 		$sql .= $from;
 
-		$sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+		$sql .= "WHERE t.entry_id IN (" . implode(',', $entries) . ")";
 		return $sql;
 	}
 
@@ -2703,6 +2679,7 @@ class Channel {
 		list($column, $comparison, $value) = explode(' ',  trim($condition));
 		list($table, $key) = explode('.', $column);
 
+		$datum = $data[$key];
 		$value = trim($value, "'");
 
 		$passes = FALSE;
@@ -2710,34 +2687,56 @@ class Channel {
 		switch ($comparison)
 		{
 			case '=':
-				$passes = ($data[$key] == $value);
+				if (is_array($datum))
+				{
+					$passes = in_array($value, $datum);
+				}
+				else
+				{
+					$passes = ($datum == $value);
+				}
 				break;
 
 			case '!=':
-				$passes = ($data[$key] != $value);
+				if (is_array($datum))
+				{
+					$passes = ! in_array($value, $datum);
+				}
+				else
+				{
+					$passes = ($datum != $value);
+				}
 				break;
 
 			case '>':
-				$passes = ($data[$key] > $value);
+				$passes = ($datum > $value);
 				break;
 
 			case '<':
-				$passes = ($data[$key] < $value);
+				$passes = ($datum < $value);
 				break;
 
 			case '>=':
-				$passes = ($data[$key] >= $value);
+				$passes = ($datum >= $value);
 				break;
 
 			case '<=':
-				$passes = ($data[$key] <= $value);
+				$passes = ($datum <= $value);
 				break;
 
 			case 'IN':
 				$value = trim($value, '()');
 				$value = explode(',', str_replace("'", '', $value));
 
-				$passes = in_array($data[$key], $value);
+				if (is_array($datum))
+				{
+					$passes = array_intersect($datum, $value);
+					$passes = ! empty($passes);
+				}
+				else
+				{
+					$passes = in_array($datum, $value);
+				}
 				break;
 		}
 
@@ -2872,7 +2871,7 @@ class Channel {
 
 	private function getExtraData($query_result)
 	{
-		$where = "WHERE t.entry_id IN (" . implode(ee()->session->cache['channel']['entry_ids'], ',') . ")";
+		$where = "WHERE t.entry_id IN (" . implode(',', ee()->session->cache['channel']['entry_ids']) . ")";
 
 		foreach ($this->chunks as $chunk)
 		{
@@ -3543,6 +3542,23 @@ class Channel {
 		// Combine the group IDs from multiple channels into a string
 		$group_ids = implode('|', $group_ids);
 
+		if ($category_group = ee()->TMPL->fetch_param('category_group'))
+		{
+			if (substr($category_group, 0, 4) == 'not ')
+			{
+				$x = explode('|', substr($category_group, 4));
+				$group_ids = array_diff(explode('|', $group_ids), $x);
+			}
+			else
+			{
+				$x = explode('|', $category_group);
+
+				$group_ids = array_intersect(explode('|', $group_ids), $x);
+			}
+
+			$group_ids = implode('|', $group_ids);
+		}
+
 		$sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date
 				FROM exp_channel_titles, exp_category_posts
 				WHERE channel_id IN ('".implode("','", $channel_ids)."')
@@ -3578,7 +3594,6 @@ class Channel {
 		{
 			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('show'), 'exp_category_posts.cat_id').' ';
 		}
-
 
 		$orderby  = ee()->TMPL->fetch_param('orderby');
 
@@ -5529,30 +5544,6 @@ class Channel {
 
 		$WC = new Channel_calendar();
 		return $WC->calendar();
-	}
-
-	/**
-	  *  Ajax Image Upload
-	  *
-	  * Used by the SAEF
-	  */
-
-	public function filemanager_endpoint($function = '', $params = array())
-	{
-		ee()->load->library('filemanager');
-		ee()->lang->loadfile('content');
-		//ee()->load->library('cp');
-
-		$config = array();
-
-		if ($function)
-		{
-			ee()->filemanager->_initialize($config);
-
-			return call_user_func_array(array($this->filemanager, $function), $params);
-		}
-
-		ee()->filemanager->process_request($config);
 	}
 
 	/**

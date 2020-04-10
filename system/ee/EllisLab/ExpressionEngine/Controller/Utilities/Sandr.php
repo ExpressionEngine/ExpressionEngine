@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -93,13 +93,13 @@ class Sandr extends Utilities {
 	function _do_search_and_replace($search, $replace, $where)
 	{
 		// escape search and replace for use in queries
-		$search = $this->db->escape_str($search);
-		$replace = $this->db->escape_str($replace);
+		$search_escaped = $this->db->escape_str($search);
+		$replace_escaped = $this->db->escape_str($replace);
 		$where = $this->db->escape_str($where);
 
 		if ($where == 'title')
 		{
-			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search_escaped}', '{$replace_escaped}')";
 		}
 		elseif ($where == 'preferences' OR strncmp($where, 'site_preferences_', 17) == 0)
 		{
@@ -167,7 +167,7 @@ class Sandr extends Utilities {
 				foreach($fields as $field)
 				{
 					$this->db->query("UPDATE `{$table}`
-								SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
+								SET `{$field}` = REPLACE(`{$field}`, '{$search_escaped}', '{$replace_escaped}')
 								WHERE `{$site_field}` = '".$this->db->escape_str($site_id)."'");
 
 					$rows += $this->db->affected_rows();
@@ -187,7 +187,7 @@ class Sandr extends Utilities {
 						foreach($preferences['exp_forums'] as $field)
 						{
 							$this->db->query("UPDATE `exp_forums`
-										SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
+										SET `{$field}` = REPLACE(`{$field}`, '{$search_escaped}', '{$replace_escaped}')
 										WHERE `board_id` = '".$this->db->escape_str($row['board_id'])."'");
 
 							$rows += $this->db->affected_rows();
@@ -234,16 +234,16 @@ class Sandr extends Utilities {
 		{
 			$field_id = str_replace('field_id_', '', $where);
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
-			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search_escaped}', '{$replace_escaped}')";
 
-			if ($field->field_type == 'grid')
+			if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 			{
 				ee()->load->model('grid_model');
 				$affected_grid_rows = ee()->grid_model->search_and_replace(
 					'channel',
 					$field->getId(),
 					$search,
-					$replace
+					$replace_escaped
 				);
 			}
 		}

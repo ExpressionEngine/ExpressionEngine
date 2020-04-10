@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '5.0.0';	// The version being installed
+	public $version           = '5.3.1';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -961,7 +961,7 @@ class Wizard extends CI_Controller {
 
 	public function themes_user_writable($radio)
 	{
-		if ( ! is_really_writable($this->root_theme_path.'user'))
+		if ( $radio == 'y' && ! is_really_writable($this->root_theme_path.'user'))
 		{
 			ee()->form_validation->set_message(
 				'themes_user_writable',

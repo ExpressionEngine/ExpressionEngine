@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -151,13 +151,20 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$data = array();
 		$authors = array();
-		$i = 1;
+		$i = $entry->Versions->count();
+		$current_author_id = FALSE;
+		$current_id = $i+1;
 
-		foreach ($entry->Versions as $version)
+		foreach ($entry->Versions->sortBy('version_date')->reverse() as $version)
 		{
 			if ( ! isset($authors[$version->author_id]))
 			{
 				$authors[$version->author_id] = $version->getAuthorName();
+			}
+
+			if ( ! $current_author_id)
+			{
+				$current_author_id = $authors[$version->author_id];
 			}
 
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
@@ -182,36 +189,33 @@ abstract class AbstractPublish extends CP_Controller {
 					$toolbar
 				)
 			);
-			$i++;
+			$i--;
 		}
+
 
 		if ( ! $entry->isNew())
 		{
-			if ( ! $version_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
+			$attrs = (!$version_id) ? array('class' => 'selected') : array();
 
-			if ( ! isset($authors[$entry->author_id]))
-			{
-				$authors[$entry->author_id] = $entry->getAuthorName();
-			}
+			$current_author_id = (!$current_author_id) ? $entry->getAuthorName() : $current_author_id;
+
 
 			// Current
 			$edit_date = ($entry->edit_date)
 				? ee()->localize->human_time($entry->edit_date->format('U'))
 				: NULL;
 
-			$data[] = array(
+			array_unshift($data, array(
 				'attrs'   => $attrs,
 				'columns' => array(
-					$i,
+					$current_id,
 					$edit_date,
-					$authors[$entry->author_id],
+					$current_author_id,
 					'<span class="st-open">' . lang('current') . '</span>'
-				)
+				))
 			);
 		}
+
 
 		$table->setData($data);
 
@@ -235,9 +239,36 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$data = array();
 		$authors = array();
-		$i = 1;
+		$i = $entry->getAutosaves()->count();
 
-		foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave)
+		if ( ! $entry->isNew())
+		{
+			$i++;
+			$attrs = ( ! $autosave_id) ? ['class' => 'selected'] : [];
+
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->getAuthorName();
+			}
+
+			// Current
+			$edit_date = ($entry->edit_date)
+				? ee()->localize->human_time($entry->edit_date->format('U'))
+				: NULL;
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					$edit_date,
+					$authors[$entry->author_id],
+					'<span class="st-open">' . lang('current') . '</span>'
+				)
+			);
+			$i--;
+		}
+
+		foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave)
 		{
 			if ( ! isset($authors[$autosave->author_id]) && $autosave->Author)
 			{
@@ -268,32 +299,7 @@ abstract class AbstractPublish extends CP_Controller {
 					$toolbar
 				)
 			);
-			$i++;
-		}
-
-		if ( ! $entry->isNew())
-		{
-			$attrs = ( ! $autosave_id) ? ['class' => 'selected'] : [];
-
-			if ( ! isset($authors[$entry->author_id]))
-			{
-				$authors[$entry->author_id] = $entry->getAuthorName();
-			}
-
-			// Current
-			$edit_date = ($entry->edit_date)
-				? ee()->localize->human_time($entry->edit_date->format('U'))
-				: NULL;
-
-			$data[] = array(
-				'attrs'   => $attrs,
-				'columns' => array(
-					$i,
-					$edit_date,
-					$authors[$entry->author_id],
-					'<span class="st-open">' . lang('current') . '</span>'
-				)
-			);
+			$i--;
 		}
 
 		$table->setData($data);
@@ -465,23 +471,28 @@ abstract class AbstractPublish extends CP_Controller {
 				'working' => 'btn_saving',
 				// Disable these while JS is still loading key components, re-enabled in publish.js
 				'attrs' => 'disabled="disabled"'
-			],
-			[
+			]
+		];
+
+		if (ee('Permission')->has('can_create_entries'))
+		{
+			$buttons[] = [
 				'name' => 'submit',
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
 				'working' => 'btn_saving',
 				'attrs' => 'disabled="disabled"'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_close',
-				'text' => 'save_and_close',
-				'working' => 'btn_saving',
-				'attrs' => 'disabled="disabled"'
-			]
+			];
+		}
+
+		$buttons[] = [
+			'name' => 'submit',
+			'type' => 'submit',
+			'value' => 'save_and_close',
+			'text' => 'save_and_close',
+			'working' => 'btn_saving',
+			'attrs' => 'disabled="disabled"'
 		];
 
 		// get rid of Save & New button if we've reached the max entries for this channel

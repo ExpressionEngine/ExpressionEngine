@@ -4,13 +4,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
+use NumberFormatter;
 
 /**
  * Formatter\Number
@@ -105,6 +106,7 @@ class Number extends Formatter {
 		// This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
 		// localization formatting lookup tables. The 100% solution is easily achieved by ensuring
 		// that the intl extension is loaded in PHP, handled above.
+		// NOTE: `money_format` is deprecated in PHP7.4
 		if (function_exists('money_format'))
 		{
 			// grab the current monetary locale to reset after formatting
@@ -182,6 +184,32 @@ class Number extends Formatter {
 		$hours = number_format($remainder);
 
 		$this->content = $hours.':'.$minutes.':'.$seconds;
+		return $this;
+	}
+
+	/**
+	 * Number Format Formatter
+	 *
+	 * Formats a number with typical options
+	 *
+	 * @param  array  $options (int) decimals, (string) decimal_point, (string) thousands_separator
+	 * @return self This returns a reference to itself
+	 */
+	public function number_format($options = [])
+	{
+		$options = [
+			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : 0,
+			'decimal_point' => (isset($options['decimal_point'])) ? $options['decimal_point'] : '.',
+			'thousands_separator' => (isset($options['thousands_separator'])) ? $options['thousands_separator'] : ',',
+		];
+
+		$this->content = number_format(
+			(float) $this->content,
+			$options['decimals'],
+			$options['decimal_point'],
+			$options['thousands_separator']
+		);
+
 		return $this;
 	}
 

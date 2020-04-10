@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -80,7 +80,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'cookie_path',
-					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v4/cp/settings/security-privacy.html#path')),
+					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL.'cp/settings/security-privacy.html#path')),
 					'fields' => array(
 						'cookie_path' => array('type' => 'text')
 					)

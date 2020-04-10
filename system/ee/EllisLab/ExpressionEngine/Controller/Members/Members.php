@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -590,6 +590,19 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
+			$can_edit_member = FALSE;
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				if ($member->MemberGroup->getId() == 1)
+				{
+					$can_edit_member = (bool) (ee()->session->userdata('group_id') == 1);
+				}
+				else
+				{
+					$can_edit_member = TRUE;
+				}
+			}
+
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
 			$toolbar = array(
 				'edit' => array(
@@ -624,13 +637,13 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member)
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
 			else
 			{
-				$username_display = $member['username'];
+				$username_display = $member->username;
 				unset($toolbar['edit']);
 			}
 
@@ -650,9 +663,13 @@ class Members extends CP_Controller {
 			$toolbar = array('toolbar_items' => $toolbar);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member)
 			{
 				$column[] = $toolbar;
+			}
+			else
+			{
+				$column[] = ['toolbar_items' => []];
 			}
 
 			// add the checkbox if they can delete members
@@ -663,7 +680,8 @@ class Members extends CP_Controller {
 					'value' => $member->member_id,
 					'data' => array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
-					)
+					),
+					'disabled' => ! $can_edit_member
 				);
 			}
 
@@ -755,6 +773,8 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
+			$can_edit_member = ee()->session->userdata('group_id') == 1 || $member['group_id'] != 1;
+
 			$attributes = array();
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
@@ -773,7 +793,7 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'pending';
-					if (ee()->cp->allowed_group('can_edit_members'))
+					if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 					{
 						$toolbar['toolbar_items']['approve'] = array(
 							'href' => '#',
@@ -793,7 +813,7 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
 			}
@@ -820,7 +840,14 @@ class Members extends CP_Controller {
 			// add the toolbar if they can edit members
 			if (ee()->cp->allowed_group('can_edit_members'))
 			{
-				$row['columns'][] = $toolbar;
+				if ($can_edit_member)
+				{
+					$row['columns'][] = $toolbar;
+				}
+				else
+				{
+					$row['columns'][] = ['toolbar_items' => []];
+				}
 			}
 
 			// add the checkbox if they can delete members
@@ -831,7 +858,8 @@ class Members extends CP_Controller {
 					'value' => $member['member_id'],
 					'data'	=> array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member['username'], ENT_QUOTES, 'UTF-8') . '</b>'
-					)
+					),
+					'disabled' => ! $can_edit_member
 				);
 			}
 
@@ -868,6 +896,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('approved_member_notification') == 'y')
@@ -934,6 +963,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('declined_member_notification') == 'y')
@@ -1000,6 +1030,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id', 'authcode')
+			->filter('group_id', 4)
 			->all();
 
 		$template = ee('Model')->get('SpecialtyTemplate')
@@ -1274,29 +1305,17 @@ class Members extends CP_Controller {
 
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
-			// We need to update the versions first else we'll trigger a new
-			// version when we update the entries
-			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
 
-			foreach ($entries as $entry)
-			{
-				$entry->version_data['author_id'] = $heir->getId();
-			}
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('channel_titles', array('author_id' => $heir->getId()));
 
-			$entries->Author = $heir;
-			$entries->save();
+			ee()->db->where_in('uploaded_by_member_id', $member_ids);
+			ee()->db->update('files', array('uploaded_by_member_id' => $heir->getId()));
 
-			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
-			$entries->Author = $heir;
-			$entries->save();
-
-			$entries = ee('Model')->get('File')->filter('uploaded_by_member_id', 'IN', $member_ids)->all();
-			$entries->UploadAuthor = $heir;
-			$entries->save();
-
-			$entries = ee('Model')->get('File')->filter('modified_by_member_id', 'IN', $member_ids)->all();
-			$entries->ModifyAuthor = $heir;
-			$entries->save();
+			ee()->db->where_in('modified_by_member_id', $member_ids);
+			ee()->db->update('files', array('modified_by_member_id' => $heir->getId()));
 
 			$heir->updateAuthorStats();
 		}

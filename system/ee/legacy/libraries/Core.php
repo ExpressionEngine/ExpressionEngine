@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -41,7 +41,7 @@ class EE_Core {
 		}
 
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
+		if (function_exists("set_time_limit") == TRUE)
 		{
 			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
@@ -72,8 +72,8 @@ class EE_Core {
 
 		// application constants
 		define('APP_NAME',		'ExpressionEngine');
-		define('APP_BUILD',		'20181029');
-		define('APP_VER',		'5.0.0');
+		define('APP_BUILD',		'20200402');
+		define('APP_VER',		'5.3.1');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -453,7 +453,7 @@ class EE_Core {
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
 			$safe_refresh = ee()->cp->get_safe_refresh();
-			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.ee('Encrypt')->encode($safe_refresh);
+			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.urlencode(ee('Encrypt')->encode($safe_refresh));
 
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}

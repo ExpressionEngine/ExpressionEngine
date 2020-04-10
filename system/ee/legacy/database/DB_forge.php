@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -77,7 +77,7 @@ class CI_DB_forge {
 	 */
 	function add_key($key, $primary = FALSE)
 	{
-		if (is_array($key))
+		if ($primary && is_array($key))
 		{
 			foreach($key as $one)
 			{

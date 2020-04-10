@@ -1597,7 +1597,6 @@ LOCK TABLES `exp_actions` WRITE;
 ALTER TABLE `exp_actions` DISABLE KEYS;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(1,'Channel','submit_entry',0),
-	(2,'Channel','filemanager_endpoint',0),
 	(3,'Channel','smiley_pop',0),
 	(4,'Channel','combo_loader',0),
 	(5,'Member','registration_form',0),
@@ -1890,15 +1889,16 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(4,'date','1.0.0','YTowOnt9','n'),
 	(5,'file','1.0.0','YTowOnt9','n'),
 	(6,'grid','1.0.0','YTowOnt9','n'),
-	(7,'multi_select','1.0.0','YTowOnt9','n'),
-	(8,'checkboxes','1.0.0','YTowOnt9','n'),
-	(9,'radio','1.0.0','YTowOnt9','n'),
-	(10,'relationship','1.0.0','YTowOnt9','n'),
-	(11,'rte','1.0.0','YTowOnt9','n'),
-	(12,'url','1.0.0','YTowOnt9','n'),
-	(13,'email_address','1.0.0','YTowOnt9','n'),
-	(14,'toggle','1.0.0','YTowOnt9','n'),
-	(15,'fluid_field','1.0.0','YTowOnt9','n');
+	(7,'file_grid','1.0.0','YTowOnt9','n'),
+	(8,'multi_select','1.0.0','YTowOnt9','n'),
+	(9,'checkboxes','1.0.0','YTowOnt9','n'),
+	(10,'radio','1.0.0','YTowOnt9','n'),
+	(11,'relationship','1.0.0','YTowOnt9','n'),
+	(12,'rte','1.0.0','YTowOnt9','n'),
+	(13,'url','1.0.0','YTowOnt9','n'),
+	(14,'email_address','1.0.0','YTowOnt9','n'),
+	(15,'toggle','1.0.0','YTowOnt9','n'),
+	(16,'fluid_field','1.0.0','YTowOnt9','n');
 ALTER TABLE `exp_fieldtypes` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2441,12 +2441,12 @@ UNLOCK TABLES;
 LOCK TABLES `exp_upload_prefs` WRITE;
 ALTER TABLE `exp_upload_prefs` DISABLE KEYS;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `default_modal_view`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','list','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
-	(2,1,'About','../images/about/','/images/about/','img','list','','','','','','','','','',NULL,NULL,0),
-	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','list','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','list','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+	(1,1,'Main Upload Directory','{base_path}/images/uploads/','/images/uploads/','all','list','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
+	(2,1,'About','{base_path}/images/about/','/images/about/','img','list','','','','','','','','','',NULL,NULL,0),
+	(3,1,'Avatars','{base_path}/images/avatars/','/images/avatars/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(4,1,'Default Avatars','{base_path}/images/avatars/default/','/images/avatars/default/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'Signature Attachments','{base_path}/images/signature_attachments/','/images/signature_attachments/','img','list','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(6,1,'PM Attachments','{base_path}/images/pm_attachments/','/images/pm_attachments/','img','list','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 ALTER TABLE `exp_upload_prefs` ENABLE KEYS;
 UNLOCK TABLES;
 

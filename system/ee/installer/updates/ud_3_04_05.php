@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,7 +17,7 @@ class Updater {
 
 	var $version_suffix = '';
 
-	public $affected_tables = ['exp_actions', 'exp_modules'];
+	public $affected_tables = ['actions', 'modules'];
 
 	/**
 	 * Do Update

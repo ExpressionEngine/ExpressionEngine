@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -288,7 +288,7 @@ class Search_model extends CI_Model {
 
 					if (count($keyword_clauses))
 					{
-						$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+						$where_clause .= " AND (" . join(' AND ', $keyword_clauses);
 					}
 					else
 					{

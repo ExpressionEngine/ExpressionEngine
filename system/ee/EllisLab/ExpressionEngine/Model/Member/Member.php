@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -300,8 +300,11 @@ class Member extends ContentModel {
 		{
 			if (isset($changed['password']))
 			{
+				// Did the hash length change? Then the algorithm changed
+				$password_change_type = (strlen($changed['password']) != strlen($this->password)) ? 'member_hash_algo_changed' : 'member_changed_password';
+
 				ee()->logger->log_action(sprintf(
-					lang('member_changed_password'),
+					lang($password_change_type),
 					$this->username,
 					$this->member_id
 				));
@@ -342,8 +345,11 @@ class Member extends ContentModel {
 
 		if (isset($changed['password']))
 		{
-			// email the current email address telling them their password changed
-			$this->notifyOfChanges('password_changed_notification', $this->email);
+			if (strlen($changed['password']) == strlen($this->password))
+			{
+				// email the current email address telling them their password changed
+				$this->notifyOfChanges('password_changed_notification', $this->email);
+			}
 		}
 
 		if (isset($changed['screen_name']))
@@ -733,6 +739,8 @@ class Member extends ContentModel {
 	 */
 	public function validatePassword($key, $password)
 	{
+		ee()->lang->loadfile('myaccount');
+
 		$pw_length = ee()->config->item('pw_min_len');
 		if (strlen($password) < $pw_length)
 		{
@@ -786,7 +794,6 @@ class Member extends ContentModel {
 			{
 				if ($val == 0)
 				{
-					ee()->lang->loadfile('myaccount');
 					return 'not_secure_password';
 				}
 			}

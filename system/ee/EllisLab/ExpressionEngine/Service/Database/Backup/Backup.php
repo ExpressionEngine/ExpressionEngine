@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,7 +46,7 @@ class Backup {
 	 * decide to advise the caller to start a new request, should they be backing
 	 * up via a web interface
 	 */
-	protected $row_limit = 5000;
+	protected $row_limit = 4000;
 
 	/**
 	 * @var int Number of rows exported in the current session for when we need
@@ -65,12 +65,18 @@ class Backup {
 	 * @param	Backup\Query     $query     Query object for generating query strings
 	 * @param	Filesystem       $filesytem Filesystem object for writing to files
 	 * @param	string           $file_path Path to write SQL file to
+	 * @param	int              $row_limit Override $row_limit class property
 	 */
-	public function __construct(Filesystem $filesystem, Query $query, $file_path)
+	public function __construct(Filesystem $filesystem, Query $query, $file_path, $row_limit)
 	{
 		$this->filesystem = $filesystem;
 		$this->query = $query;
 		$this->file_path = $file_path;
+
+		if ($row_limit)
+		{
+			$this->row_limit = $row_limit;
+		}
 	}
 
 	/**

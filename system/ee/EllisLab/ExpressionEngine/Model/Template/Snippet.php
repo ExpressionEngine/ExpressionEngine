@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,8 @@ class Snippet extends FileSyncedModel {
 
 	protected static $_primary_key = 'snippet_id';
 	protected static $_table_name = 'snippets';
+
+	protected static $_hook_id = 'snippet';
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -273,6 +275,12 @@ class Snippet extends FileSyncedModel {
 			if ($item->isFile() && $item->getExtension() == 'html')
 			{
 				$name = $item->getBasename('.html');
+
+				// limited to 50 characters in db
+				if (strlen($name) > 50)
+				{
+					continue;
+				}
 
 				if ( ! in_array($name, $existing))
 				{

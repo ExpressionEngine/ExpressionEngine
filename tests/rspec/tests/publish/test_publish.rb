@@ -64,8 +64,14 @@ feature 'Publish Page - Create' do
     end
 
     it 'the file field properly assigns image data when using the filepicker modal in a channel with two file fields' do
-      @page.file_fields.each do |link|
+      @page.file_fields.each do |field|
+        link = field.find('a', text: 'Choose Existing')
         link.click
+
+        if link[:class].include? 'js-filter-link'
+          field.find('a', text: 'About').click
+        end
+
         @page.wait_until_modal_visible
         @page.file_modal.wait_for_filters
 
@@ -78,7 +84,7 @@ feature 'Publish Page - Create' do
     end
 
     it 'the file field restricts you to the chosen directory' do
-      @page.file_fields[0].click
+      @page.file_fields[0].find('a.btn.action', text: 'Choose Existing').click
 
       @page.wait_until_modal_visible
       @page.file_modal.wait_for_filters
@@ -97,8 +103,14 @@ feature 'Publish Page - Create' do
     end
 
     it 'the file field retains data after being created and edited' do
-      @page.file_fields.each do |link|
+      @page.file_fields.each do |field|
+        link = field.find('a', text: 'Choose Existing')
         link.click
+
+        if link[:class].include? 'js-filter-link'
+          field.find('a', text: 'About').click
+        end
+
         @page.wait_until_modal_visible
         @page.file_modal.wait_for_filters
 
@@ -172,7 +184,8 @@ feature 'Publish Page - Create' do
         when 'url'
           field.find('input').set 'http://www.example.com/page/' + skew.to_s
         when 'file'
-          field.find('a.file-field-filepicker').click
+          field.find('a', text: 'Choose Existing').click
+          field.find('a', text: 'About').click
           @page.wait_until_modal_visible
           @page.file_modal.wait_for_files
 

@@ -12,7 +12,7 @@
 		<a class="fluid-remove" href="" title=""></a>
 		<?=$filters?>
 	</div>
-	<div class="fluid-field <?php if ($field->getType() == 'grid') echo 'fieldset-faux'; ?>">
+	<div class="fluid-field <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid') echo 'fieldset-faux'; ?>">
 		<div class="field-instruct">
 			<em><?=$field->getItem('field_instructions')?></em>
 		</div>

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -89,7 +89,7 @@ class Relationship_model extends CI_Model {
 			return $this->overrideWithPreviewData([], $type, $fluid_field_data_id);
 		}
 
-		$db = $this->db;
+		$db = ee('db');
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
@@ -215,7 +215,7 @@ class Relationship_model extends CI_Model {
 
 				foreach ($all_fields as $field)
 				{
-					if ($field->field_type == 'grid')
+					if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 					{
 						$grid_field_ids[$field->getId()] = TRUE;
 					}
@@ -239,7 +239,7 @@ class Relationship_model extends CI_Model {
 
 				return $this->overrideGridRelationships($result, $data, array_keys($grid_field_ids), $fluid_field_data_id);
 			}
-			elseif ($fluid_field_data_id)
+			elseif ($fluid_field_data_id && ! is_int($fluid_field_data_id))
 			{
 				list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
 				$data = $data[$fluid_field]['fields'][$field_id];

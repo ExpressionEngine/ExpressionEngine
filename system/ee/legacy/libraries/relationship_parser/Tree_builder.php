@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -215,14 +215,12 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = ['parents', 'siblings'];
-		foreach ($this->relationship_field_names as $field_name)
-		{
-			if (strpos($field_name, ':') === FALSE)
-			{
-				$all_fields[] = $field_name;
-			}
-		}
+		$all_fields = array_merge($this->relationship_field_names, ['parents', 'siblings']);
+
+		usort($all_fields, function ($a, $b){
+			return strlen($b) - strlen($a);
+		});
+
 		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
@@ -230,7 +228,7 @@ class EE_relationship_tree_builder {
 		// 0 => full_match
 		// 1 => rel:pre:fix:
 		// 2 => tag:modified param="value"
-		$is_grid = ( ! empty($this->grid_relationship_names));
+		$is_grid = ($this->grid_field_id);
 
 		if ( ! $is_grid)
 		{
@@ -271,6 +269,12 @@ class EE_relationship_tree_builder {
 			$tag_name = rtrim($relationship_prefix, ':');
 			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
 			$in_fluid_field = (bool) ($this->fluid_field_data_id && $this->fluid_field_data_id > 0);
+
+            // We found something in a fluid field that is not a relationship tag, skip it.
+            if ($in_fluid_field && $relationship_prefix == 'content:')
+            {
+                continue;
+            }
 
 			if (($in_grid || $in_fluid_field) && $match[2])
 			{
@@ -315,7 +319,7 @@ class EE_relationship_tree_builder {
 
                 if ( ! array_key_exists($parent_node_name, $open_nodes))
                 {
-                    throw new EE_Relationship_exception("Found <code>{{$tag_name}}</code> relationship, but no parent <code>{{$parent_node_name}}</code> tag pair was found.");
+                   throw new EE_Relationship_exception("Found <code>{{$tag_name}}</code> relationship, but no parent <code>{{$parent_node_name}}</code> tag pair was found.");
                 }
 
 				$parent_node = $open_nodes[$parent_node_name];
@@ -351,9 +355,13 @@ class EE_relationship_tree_builder {
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
-			if ($is_only_relationship && ! $node->in_cond)
+			// This is needed to tease out modifiers vs opening tags/opening tags with parameters
+			if ($is_only_relationship && ! $node->in_cond && (empty($match[2])) || ! empty($params))
 			{
-				$open_nodes[$tag_name] = $node;
+				if ($node->shortcut != 'entry_ids')
+				{
+					$open_nodes[$tag_name] = $node;
+				}
 			}
 
 			$parent_node->add($node);
@@ -534,7 +542,7 @@ class EE_relationship_tree_builder {
 					break;
 				}
 
-				if ($i == 0 && $leaf['L0_grid_col_id'] && ! empty($this->grid_relationship_names))
+				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
 					$names = $this->grid_relationship_names;
 				}

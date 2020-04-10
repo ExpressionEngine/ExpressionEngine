@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -777,45 +777,6 @@ class EE_Input {
 
 			exit();  // We halt system execution since we're done
 		}
-
-		$filter_keys = TRUE;
-
-		if ($request_type == 'CP'
-			&& isset($_GET['BK'])
-			&& isset($_GET['channel_id'])
-			&& isset($_GET['title'])
-			&& ee()->session->userdata('admin_sess') == 1)
-		{
-			if (in_array(ee()->input->get_post('channel_id'), ee()->functions->fetch_assigned_channels()))
-			{
-				$filter_keys = FALSE;
-			}
-		}
-
-		if (isset($_GET) && $filter_keys == TRUE)
-		{
-			foreach($_GET as $key => $val)
-			{
-				$clean = $this->_clean_get_input_data($val);
-
-				if ( ! $clean)
-				{
-					// Only notify super admins of the offending data
-					if (ee()->session->userdata('group_id') == 1)
-					{
-						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
-
-						set_status_header(503);
-						exit(sprintf("Invalid GET Data %s", $data));
-					}
-					// Otherwise, handle it more gracefully and just unset the variable
-					else
-					{
-						unset($_GET[$key]);
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -868,8 +829,11 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					global $$global;
+					
+					global ${$global};
+
 					$$global = NULL;
+
 				}
 			}
 			else
@@ -878,8 +842,11 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						global $$key;
+						
+						global ${$key};
+
 						$$key = NULL;
+
 					}
 				}
 			}
@@ -951,30 +918,13 @@ class EE_Input {
 	 *
 	 * @param	string Variable's key
 	 * @param	mixed Variable's value- may be string or array
+	 * @deprecated 5.2.3
 	 * @return	string
 	 */
 	function _clean_get_input_data($str)
 	{
-		if (is_array($str))
-		{
-			foreach ($str as $k => $v)
-			{
-				$out = $this->_clean_get_input_data($v);
-
-				if ($out == FALSE)
-				{
-					return FALSE;
-				}
-			}
-
-			return TRUE;
-		}
-
-		if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $str))
-		{
-			return FALSE;
-		}
-
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.2.3', "nada. Don't execute user input, duh. Use nothing");
 		return TRUE;
 	}
 
@@ -991,19 +941,6 @@ class EE_Input {
 	*/
 	function _clean_input_keys($str)
 	{
-		if ( ! preg_match("/^[a-z0-9:_\/ \-".EMOJI_REGEX."]+$/iu", $str))
-		{
-			set_status_header(503);
-			$error = 'Disallowed Key Characters';
-
-			if (DEBUG)
-			{
-				$error .= ': '.htmlentities($str, ENT_QUOTES, 'UTF-8');
-			}
-
-			exit($error);
-		}
-
 		// Clean UTF-8 if supported
 		if (UTF8_ENABLED === TRUE)
 		{
@@ -1033,12 +970,6 @@ class EE_Input {
 				$new_array[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
 			}
 			return $new_array;
-		}
-
-		// We strip slashes if magic quotes is on to keep things consistent
-		if (get_magic_quotes_gpc())
-		{
-			$str = stripslashes($str);
 		}
 
 		// Clean UTF-8 if supported

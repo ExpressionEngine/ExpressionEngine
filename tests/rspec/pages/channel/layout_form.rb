@@ -52,11 +52,11 @@ class ChannelLayoutForm < ControlPanelPage
   end
 
   def create(number)
-  visit '/system/index.php?/cp/channels/layouts/create/' + number.to_s
+  visit '/admin.php?/cp/channels/layouts/create/' + number.to_s
   end
 
   def edit(number)
-  visit '/system/index.php?/cp/channels/layouts/edit/' + number.to_s
+  visit '/admin.php?/cp/channels/layouts/edit/' + number.to_s
   end
 
 end

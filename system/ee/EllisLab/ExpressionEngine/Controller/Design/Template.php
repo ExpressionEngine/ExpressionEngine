@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -369,9 +369,10 @@ class Template extends AbstractDesignController {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
-		$i = 1;
 
-		foreach ($template->Versions->sortBy('item_date') as $version)
+		$i = $template->Versions->count();
+
+		foreach ($template->Versions->sortBy('item_date')->reverse() as $version)
 		{
 			$attrs = array();
 
@@ -409,7 +410,7 @@ class Template extends AbstractDesignController {
 					$toolbar
 				)
 			);
-			$i++;
+			$i--;
 		}
 
 		$table->setData($data);
@@ -831,6 +832,7 @@ class Template extends AbstractDesignController {
 				'fields' => array(
 					'template_notes' => array(
 						'type' => 'textarea',
+						'attrs' => 'class="textarea--large"',
 						'value' => $template->template_notes,
 					)
 				)

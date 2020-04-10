@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -208,7 +208,7 @@ class Variables extends AbstractDesignController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('design/variables/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
-			'save_btn_text_working' => 'btn_create_template_variable_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -226,8 +226,7 @@ class Variables extends AbstractDesignController {
 						'fields' => array(
 							'variable_data' => array(
 								'type' => 'textarea',
-								'attrs' => 'class="textarea-medium"',
-								'required' => TRUE
+								'attrs' => 'class="textarea-medium"'
 							)
 						)
 					),
@@ -265,12 +264,7 @@ class Variables extends AbstractDesignController {
 			array(
 				'field' => 'variable_name',
 				'label' => 'lang:variable_name',
-				'rules' => 'required|callback__variable_name_checks'
-			),
-			array(
-				'field' => 'variable_data',
-				'label' => 'lang:variable_data',
-				'rules' => 'required'
+				'rules' => 'required|max_length[50]|callback__variable_name_checks'
 			)
 		));
 
@@ -343,7 +337,7 @@ class Variables extends AbstractDesignController {
 				'old_name' => $variable->variable_name
 			),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
-			'save_btn_text_working' => 'btn_edit_template_variable_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -363,7 +357,6 @@ class Variables extends AbstractDesignController {
 							'variable_data' => array(
 								'type' => 'textarea',
 								'attrs' => 'class="textarea-medium"',
-								'required' => TRUE,
 								'value' => $variable->variable_data
 							)
 						)
@@ -396,12 +389,7 @@ class Variables extends AbstractDesignController {
 			array(
 				'field' => 'variable_name',
 				'label' => 'lang:variable_name',
-				'rules' => 'required|callback__variable_name_checks'
-			),
-			array(
-				'field' => 'variable_data',
-				'label' => 'lang:variable_data',
-				'rules' => 'required'
+				'rules' => 'required|max_length[50]|callback__variable_name_checks'
 			)
 		));
 

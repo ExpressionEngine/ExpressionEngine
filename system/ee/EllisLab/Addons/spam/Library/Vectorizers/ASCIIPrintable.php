@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,17 +26,28 @@ class ASCIIPrintable implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
-		$length = mb_strlen($source);
+
+		$length = ee_mb_strlen($source);
+
 		if ($length !== 0)
 		{
+
 			$ratio = $non_ascii / $length;
+
 		}
 		else
 		{
+
 			$ratio = 1;
+
 		}
+
 		return $ratio;
+
 	}
 
 }

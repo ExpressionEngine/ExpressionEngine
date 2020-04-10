@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,8 +24,13 @@ class Text extends Formatter {
 
 	public function __construct($content, $lang, $session, $config, $options)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$this->multibyte = extension_loaded('mbstring');
+
 		parent::__construct($content, $lang, $session, $config, $options);
+
 	}
 
 	/**
@@ -407,25 +412,24 @@ class Text extends Formatter {
 	 */
 	public function length()
 	{
-		$this->content = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$this->content = ee_mb_strlen($this->content, 'utf8');
 		return $this;
 	}
 
 	/**
 	 * Limit to X characters, with an optional end character. Strips HTML.
 	 *
-	 * @param  array  $options Options: (int) characters, (string) end_char
+	 * @param  array  $options Options: (int) characters, (string) end_char, (boolean) preserve_words
 	 * @return self $this
 	 */
 	public function limitChars($options = [])
 	{
-
-
 		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
 		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
+		$preserve_words = (isset($options['preserve_words'])) ? $options['preserve_words'] : FALSE;
 		$this->content = strip_tags($this->content);
 
-		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ee_mb_strlen($this->content, 'utf8');
 
 		if ($length < $limit)
 		{
@@ -442,14 +446,29 @@ class Text extends Formatter {
 			)
 		);
 
-		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ee_mb_strlen($this->content, 'utf8');
 
 		if ($length <= $limit)
 		{
 			return $this;
 		}
 
-		$cut = ($this->multibyte) ? mb_substr($this->content, 0, $limit, 'utf8') : substr($this->content, 0, $limit);
+		if ($preserve_words)
+		{
+			// wordwrap() currently doesn't account for multi-byte, so those
+			// characters may affect where the wrap occurs
+			$this->content = wordwrap($this->content, $limit, "\n", true);
+
+			$cut = ee_mb_substr($this->content, 0, ee_mb_strpos($this->content, "\n"), 'utf8');
+
+		}
+		else
+		{
+
+			$cut = ee_mb_substr($this->content, 0, $limit, 'utf8');
+
+		}
+
 		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
 		return $this;
@@ -486,6 +505,7 @@ class Text extends Formatter {
 			return $this;
 		}
 
+		$find = $this->removeEvalModifier($find);
 		$valid = @preg_match($find, NULL);
 
 		// valid regex only, unless DEBUG is enabled
@@ -495,6 +515,22 @@ class Text extends Formatter {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Remove deprecated and potentially unsafe eval (`e`) modifier from regex
+	 * patterns, assumes the pattern is already properly delimited
+	 *
+	 * @param string $pattern Regex pattern
+	 * @return string Regex pattern sans eval modifier
+	 */
+	private function removeEvalModifier($pattern)
+	{
+		$pattern_parts = explode($pattern[0], trim($pattern));
+		$pattern_last = sizeof($pattern_parts) - 1;
+		$pattern_parts[$pattern_last] = str_replace('e', '', $pattern_parts[$pattern_last]);
+
+		return implode($pattern[0], $pattern_parts);
 	}
 
 	/**
@@ -579,7 +615,7 @@ class Text extends Formatter {
 			$options['separator'] = ($this->getConfig('word_separator') == 'underscore') ? '_' : '-';
 		}
 
-		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
+		$lowercase = (isset($options['lowercase']) && get_bool_from_string($options['lowercase']) === FALSE) ? FALSE : TRUE;
 
 		$this->accentsToAscii();
 
@@ -590,7 +626,7 @@ class Text extends Formatter {
 			// remove named entities
 			'#&\S+?;#i' => '',
 			// replace whitespace and forward slashes with the separator
-			'#\s+|/+#i' => $options['separator'],
+			'#\s+|/+|\|+#i' => $options['separator'],
 			// only allow low ascii letters, numbers, dash, dot, underscore, and emoji
 			 '#[^a-z0-9\-\._'.$this->getConfig('emoji_regex').']#iu' => '',
 			// no dot-then-separator (in case multiple sentences were passed)

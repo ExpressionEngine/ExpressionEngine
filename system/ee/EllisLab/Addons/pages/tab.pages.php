@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -140,16 +140,41 @@ class Pages_tab {
 	public function validate($entry, $values)
 	{
 		$validator = ee('Validation')->make(array(
-			'pages_template_id' => 'validTemplate',
-			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
+			'pages_template_id' => 'validTemplate|validHasTemplate',
+			'pages_uri' => 'validURI|validHasTemplate|validSegmentCount|notDuplicated',
 		));
 
 		$validator->defineRule('validTemplate', $this->makeValidTemplateRule($values));
 		$validator->defineRule('validURI', $this->makeValidURIRule());
 		$validator->defineRule('validSegmentCount', $this->makeValidSegmentCountRule());
 		$validator->defineRule('notDuplicated', $this->makeNotDuplicatedRule($entry));
+		$validator->defineRule('validHasTemplate', $this->makeValidHasTemplateRule($values));
 
 		return $validator->validate($values);
+	}
+
+	/**
+	 * Validates whether a pages URI has been selected with a template
+	 * @param  array 	$values array of pages values coming from tab
+	 * @return Closure The logic needed to validate the data.
+	 */
+	private function makeValidHasTemplateRule($values)
+	{
+
+		return function($field, $value) use($values)
+		{
+
+			if(
+				$values['pages_uri'] === ""
+				|| ($values['pages_uri'] !== "" && $values['pages_template_id'] === ""))
+			{
+				return 'invalid_template';
+			}
+
+			return true;
+
+		};
+
 	}
 
 	/**

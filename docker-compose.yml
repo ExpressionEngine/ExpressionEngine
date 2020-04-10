@@ -5,7 +5,7 @@ services:
     image: ee_node_tools
     build:
       context: .
-    command: node_modules/.bin/babel themes/ee/asset/javascript/src/ --watch -x ".es6" --out-dir themes/ee/asset/javascript/src/
+    command: npx babel themes/ee/asset/javascript/src/ --watch -x ".es6" --out-dir themes/ee/asset/javascript/src/
     volumes:
       - .:/opt/app:delegated
       - /opt/app/node_modules # Prevent local node_modules from being mounted

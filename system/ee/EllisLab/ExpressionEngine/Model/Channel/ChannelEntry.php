@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -802,6 +802,11 @@ class ChannelEntry extends ContentModel {
 			return array_key_exists('cat_group_id_'.$cat_group_id, $categories);
 		});
 
+		if (empty($cat_groups))
+		{
+			return;
+		}
+
 		$category_ids = array();
 
 		// Set the data on the fields in case we come back from a validation error
@@ -1206,6 +1211,13 @@ class ChannelEntry extends ContentModel {
 		{
 			$data[$key] = ($data[$key]) ? 'y' : 'n';
 		}
+
+		$cat_ids = [];
+		foreach ($this->Categories as $cat)
+		{
+			$cat_ids[] = $cat->getId();
+		}
+		$data['cat_id'] = $cat_ids;
 
 		return $data;
 	}

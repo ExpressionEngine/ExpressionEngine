@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -2378,7 +2378,7 @@ class Member {
 			$dates = array(
 				'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
 				'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
-				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['last_entry_date'],
+				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['join_date'],
 				'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
 				'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
 				'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']
@@ -2441,7 +2441,7 @@ class Member {
 				}
 
 
-				// Special condideration for {total_forum_replies}, and
+				// Special consideration for {total_forum_replies}, and
 				// {total_forum_posts} whose meanings do not match the
 				// database field names
 				if ($key == 'total_forum_replies')

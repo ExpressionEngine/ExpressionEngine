@@ -227,6 +227,8 @@ $lang = array(
 
 'member_anonymized_member' => 'Anonymized member with ID: %d',
 
+'member_hash_algo_changed' => 'Hash algorithm changed for "%s" (%d)',
+
 'member_id' => 'Member ID',
 
 'member_logged_in' => 'Logged in',
@@ -417,8 +419,6 @@ $lang = array(
 'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
 
 'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
-
-'software_unregistered' => 'Software Unregistered',
 
 
 /* CP Errors */

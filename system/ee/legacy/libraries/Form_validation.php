@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -39,6 +39,7 @@ class EE_Form_validation {
 
 		// Automatically load the form helper
 		ee()->load->helper('form');
+		ee()->load->helper('multibyte');
 
 		// Set the character encoding in MB.
 		if (function_exists('mb_internal_encoding'))
@@ -1610,12 +1611,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) < $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) < $val) ? FALSE : TRUE;
 
-		return (strlen($str) < $val) ? FALSE : TRUE;
 	}
 
 	/**
@@ -1633,12 +1630,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) > $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) > $val) ? FALSE : TRUE;
 
-		return (strlen($str) > $val) ? FALSE : TRUE;
 	}
 
 	/**
@@ -1656,12 +1649,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) != $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) != $val) ? FALSE : TRUE;
 
-		return (strlen($str) != $val) ? FALSE : TRUE;
 	}
 
 	/**

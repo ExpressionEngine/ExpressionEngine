@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,7 +16,7 @@ class Rte_ext {
 	var $name			= 'Rich Text Editor';
 	var $version		= '1.0.1';
 	var $settings_exist	= 'n';
-	var $docs_url		= 'https://docs.expressionengine.com/v4/add-ons/rte/control_panel/index.html';
+	var $docs_url		= DOC_URL.'add-ons/rte/control_panel/index.html';
 	var $required_by	= array('module', 'fieldtype');
 
 	private $module = 'rte';

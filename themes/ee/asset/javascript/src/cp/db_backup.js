@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -90,6 +90,11 @@ EE.cp.DbBackup = {
 		request.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
 
 		request.onload = function() {
+			if (request.responseText.indexOf('bytes exhausted') != -1) {
+				that._presentError(EE.db_backup.out_of_memory_lang);
+				return;
+			}
+
 			try {
 				var response = JSON.parse(request.responseText);
 			} catch(e) {
@@ -185,11 +190,10 @@ EE.cp.DbBackup = {
 	 */
 	_presentError: function(text) {
 		var alert = EE.db_backup.backup_ajax_fail_banner.replace('%body%', text),
-			alert_div = document.createElement('div'),
-			form = document.querySelectorAll('.form-standard form')[0];
+			alert_div = document.createElement('div');
 
 		alert_div.innerHTML = alert;
-		form.insertBefore(alert_div, form.firstChild);
+		$('.form-standard .form-btns-top').after(alert_div);
 
 		this._enableButton();
 		this._disableButton();

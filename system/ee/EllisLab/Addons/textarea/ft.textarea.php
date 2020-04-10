@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -189,6 +189,12 @@ class Textarea_ft extends EE_Fieldtype {
 			'rows'     => $this->settings['field_ta_rows'],
 			'dir'      => $this->settings['field_text_direction']
 		);
+
+		if (isset($this->settings['field_show_formatting_btns']) &&
+			$this->settings['field_show_formatting_btns'] == 'y')
+		{
+			$params['data-markitup'] = 'yes';
+		}
 
 		if ($this->get_setting('field_disabled'))
 		{

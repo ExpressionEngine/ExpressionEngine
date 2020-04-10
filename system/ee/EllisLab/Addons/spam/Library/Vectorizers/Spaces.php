@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,17 +26,30 @@ class Spaces implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$whitespace = preg_match_all('/\s/u', $source, $matches);
-		$characters  = mb_strlen($source);
+
+		$characters  = ee_mb_strlen($source);
+
 		if ($characters !== 0)
 		{
+
 			$ratio = $whitespace / $characters;
+
 		}
+
 		else
+
 		{
+
 			$ratio = 1;
+
 		}
+
 		return $ratio;
+
 	}
 
 }
