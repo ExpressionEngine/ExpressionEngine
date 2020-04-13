@@ -45,8 +45,13 @@ class Encrypt {
 	 */
 	public function __construct($key)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$this->default_key = $key;
+
 		$this->mb_available = extension_loaded('mbstring');
+
 	}
 
 	/**
@@ -109,8 +114,9 @@ class Encrypt {
 
 		$iv_size = openssl_cipher_iv_length($this->method);
 
-		$iv = ($this->mb_available) ? mb_substr($data, 0, $iv_size, 'ascii') : substr($data, 0, $iv_size);
-		$data = ($this->mb_available) ? mb_substr($data, $iv_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $iv_size);
+		$iv = ee_mb_substr($data, 0, $iv_size, 'ascii');
+		
+		$data = ee_mb_substr($data, $iv_size, ee_mb_strlen($data, 'ascii'), 'ascii');
 
 		return openssl_decrypt($data, $this->method, $key, $this->options, $iv);
 	}
@@ -130,9 +136,9 @@ class Encrypt {
 	protected function addNoise($data, $key)
 	{
 		$keyhash = sha1($key);
-		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ee_mb_strlen($keyhash, 'ascii');
 		$str = '';
-		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ee_mb_strlen($data, 'ascii');
 
         for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
@@ -160,9 +166,9 @@ class Encrypt {
 	protected function removeNoise($data, $key)
 	{
 		$keyhash = sha1($key);
-		$keylen = ($this->mb_available) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
+		$keylen = ee_mb_strlen($keyhash, 'ascii');
 		$str = '';
-		$len = ($this->mb_available) ? mb_strlen($data, 'ascii') : strlen($data);
+		$len = ee_mb_strlen($data, 'ascii');
 
 		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{

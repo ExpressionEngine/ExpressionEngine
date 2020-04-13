@@ -10,11 +10,11 @@ Bullet list below, e.g.
 
 - Added Jump Menu. Navigate ExpressionEngine fast
 - Added a new color picker fieldtype
-  
+
 - Member Groups have been replaced with member roles.
   - Members have one primary roles, and can also can have multiple other roles
   - Role permissions are additive
-  
+
 - New Control Panel Design
   - Many new changes and improvements that make the control panel cleaner, and more delightful to use
   - Brand new dark theme.
@@ -32,7 +32,7 @@ Bullet list below, e.g.
   - The dashboard has been upgraded to be more useful.
   - "Remove" wording has been changed to the more appropriate "delete" for destructive actions.
   - Deletion confirm dialogs are more scarry
-  - Pagination improvements. Pagination shows 8 pages, instead of 3. 
+  - Pagination improvements. Pagination shows 8 pages, instead of 3.
   - You can now tab to toggle buttons
   - And many more changes!
   - Template editor improvements

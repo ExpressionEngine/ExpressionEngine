@@ -81,7 +81,7 @@ class Edit extends AbstractPublishController {
 
 		$count = $entry_listing->getEntryCount();
 
-		// if no entries check to see if we have any channels 
+		// if no entries check to see if we have any channels
 		if(empty($count))
 		{
 			// cast to bool
@@ -134,7 +134,7 @@ class Edit extends AbstractPublishController {
 		$table->setColumns($columns);
 		if($vars['channels_exist'])
 		{
-			$table->setNoResultsText(lang('no_entries_exist'));	
+			$table->setNoResultsText(lang('no_entries_exist'));
 		}
 		else
 		{
@@ -709,6 +709,28 @@ class Edit extends AbstractPublishController {
 		}
 
 		$entry_names = $entries->all()->pluck('title');
+
+		// Remove pages URIs
+		$site_id = ee()->config->item('site_id');
+		$site_pages = ee()->config->item('site_pages');
+
+		if ($site_pages !== FALSE && $entries && count($site_pages[$site_id]) > 0)
+		{
+
+			foreach ($entries->all() as $entry)
+			{
+
+				unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+				unset($site_pages[$site_id]['templates'][$entry->entry_id]);
+
+				ee()->config->set_item('site_pages', $site_pages);
+
+				$entry->Site->site_pages = $site_pages;
+				$entry->Site->save();
+
+			}
+
+		}
 
 		$entries->delete();
 

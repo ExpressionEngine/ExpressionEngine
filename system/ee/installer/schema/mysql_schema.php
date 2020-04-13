@@ -1344,7 +1344,7 @@ class EE_Schema {
 			PRIMARY KEY (`item_id`),
 			KEY `set_id` (`set_id`)
 			)";
-			
+
 		$Q[] = "CREATE TABLE `exp_dashboard_layouts` (
   			`layout_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   			`member_id` int(10) unsigned DEFAULT NULL,

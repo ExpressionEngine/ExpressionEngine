@@ -111,8 +111,8 @@ class EE_Core
         } else {
             define('IS_PRO', false);
         }
-         
-     
+
+
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
