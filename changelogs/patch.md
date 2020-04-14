@@ -8,7 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
-
+   - Fixed a bug ([#399](https://github.com/ExpressionEngine/ExpressionEngine/issues/399)) in the Page's tab where setting a default template forced the Page URI field to be required.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
