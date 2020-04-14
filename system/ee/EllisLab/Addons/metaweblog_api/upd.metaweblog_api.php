@@ -8,17 +8,25 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Metaweblog API Module update class
  */
-class Metaweblog_api_upd {
+class Metaweblog_api_upd extends Installer
+{
 
-	var $version = '2.3.0';
+	public $actions = [
+        [
+			'method' => 'incoming',
+			'csrf_exempt' => true
+        ]
+	];
 
-	function __construct()
-	{
-		ee()->load->dbforge();
-	}
+	public function __construct()
+    {
+        parent::__construct();
+    }
 
 
 	/**
@@ -29,19 +37,9 @@ class Metaweblog_api_upd {
 	 */
 	function install()
 	{
-		$data = array(
-			'module_name' 	=> 'Metaweblog_api',
-			'module_version' 	=> $this->version,
-			'has_cp_backend' 	=> 'y'
-		);
-		ee()->db->insert('modules', $data);
+		parent::install();
 
-		$data = array(
-			'class' 	=> 'Metaweblog_api',
-			'method' 	=> 'incoming',
-			'csrf_exempt' => 1
-		);
-		ee()->db->insert('actions', $data);
+		ee()->load->dbforge();
 
 		$fields = array(
 			'metaweblog_id'         => array(
@@ -137,17 +135,9 @@ class Metaweblog_api_upd {
 	 */
 	function uninstall()
 	{
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Metaweblog_api'));
+		parent::uninstall();
 
-		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_roles');
-
-		ee()->db->where('module_name', 'Metaweblog_api');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Metaweblog_api');
-		ee()->db->delete('actions');
+		ee()->load->dbforge();
 
 		ee()->dbforge->drop_table('metaweblog_api');
 

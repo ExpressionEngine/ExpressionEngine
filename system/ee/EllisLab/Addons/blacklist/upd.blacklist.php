@@ -8,12 +8,18 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Blacklist update class
  */
-class Blacklist_upd {
+class Blacklist_upd extends Installer
+{
 
-	var $version	= '3.0.1';
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
 	/**
 	 * Module Installer
@@ -24,57 +30,53 @@ class Blacklist_upd {
 
 	function install()
 	{
-		ee()->load->dbforge();
+		$installed = parent::install();
+        if ($installed) {
 
-		$data = array(
-			'module_name' 	 => 'Blacklist',
-			'module_version' => $this->version,
-			'has_cp_backend' => 'y'
-		);
+			ee()->load->dbforge();
 
-		ee()->db->insert('modules', $data);
+			$fields = array(
+				'blacklisted_id'	=> array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'blacklisted_type'  => array(
+					'type' 				=> 'varchar',
+					'constraint'		=> '20',
+				),
+				'blacklisted_value' => array(
+					'type'				=> 'longtext'
+				)
+			);
 
-		$fields = array(
-			'blacklisted_id'	=> array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'blacklisted_type'  => array(
-				'type' 				=> 'varchar',
-				'constraint'		=> '20',
-			),
-			'blacklisted_value' => array(
-				'type'				=> 'longtext'
-			)
-		);
+			ee()->dbforge->add_field($fields);
+			ee()->dbforge->add_key('blacklisted_id', TRUE);
+			ee()->dbforge->create_table('blacklisted');
 
-		ee()->dbforge->add_field($fields);
-		ee()->dbforge->add_key('blacklisted_id', TRUE);
-		ee()->dbforge->create_table('blacklisted');
+			$fields = array(
+				'whitelisted_id'	=> array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'whitelisted_type'  => array(
+					'type' 				=> 'varchar',
+					'constraint'		=> '20',
+				),
+				'whitelisted_value' => array(
+					'type'				=> 'longtext'
+				)
+			);
 
-		$fields = array(
-			'whitelisted_id'	=> array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'whitelisted_type'  => array(
-				'type' 				=> 'varchar',
-				'constraint'		=> '20',
-			),
-			'whitelisted_value' => array(
-				'type'				=> 'longtext'
-			)
-		);
+			ee()->dbforge->add_field($fields);
+			ee()->dbforge->add_key('whitelisted_id', TRUE);
+			ee()->dbforge->create_table('whitelisted');
 
-		ee()->dbforge->add_field($fields);
-		ee()->dbforge->add_key('whitelisted_id', TRUE);
-		ee()->dbforge->create_table('whitelisted');
-
-		return TRUE;
+		}
+        return $installed;
 	}
 
 	/**
@@ -85,29 +87,13 @@ class Blacklist_upd {
 	 */
 	function uninstall()
 	{
-		ee()->load->dbforge();
-
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Blacklist'));
-		$module_id_row = $query->row();
-		$module_id = $module_id_row->module_id;
-
-		ee()->db->where('module_id', $module_id);
-		ee()->db->delete('module_member_roles');
-
-		ee()->db->where('module_name', 'Blacklist');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Blacklist');
-		ee()->db->delete('actions');
-
-		ee()->db->where('class', 'Blacklist_mcp');
-		ee()->db->delete('actions');
-
-		ee()->dbforge->drop_table('blacklisted');
-		ee()->dbforge->drop_table('whitelisted');
-
-		return TRUE;
+		$uninstalled = parent::uninstall();
+        if ($uninstalled) {
+			ee()->load->dbforge();
+			ee()->dbforge->drop_table('blacklisted');
+			ee()->dbforge->drop_table('whitelisted');
+        }
+        return $uninstalled;
 	}
 
 	/**

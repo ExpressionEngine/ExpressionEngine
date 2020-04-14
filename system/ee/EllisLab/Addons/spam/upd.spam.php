@@ -8,18 +8,17 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Spam Module update class
  */
-class Spam_upd {
-
-	public $version;
-	private $name = 'Spam';
+class Spam_upd extends Installer
+{
 
 	function __construct()
 	{
-		$addon = ee('Addon')->get('spam');
-		$this->version = $addon->getVersion();
+		parent::__construct();
 
 		ee()->load->dbforge();
 		ee()->load->library('smartforge');
@@ -33,13 +32,7 @@ class Spam_upd {
 	 */
 	function install()
 	{
-		$data = array(
-			'module_name' => 'Spam' ,
-			'module_version' => $this->version,
-			'has_cp_backend' => 'y'
-		);
-
-		ee()->db->insert('modules', $data);
+		parent::install();
 
 		$fields = array(
 			'kernel_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
@@ -119,20 +112,7 @@ class Spam_upd {
 	 */
 	function uninstall()
 	{
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Spam'));
-
-		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_roles');
-
-		ee()->db->where('module_name', 'Spam');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Spam');
-		ee()->db->delete('actions');
-
-		ee()->db->where('class', 'Spam_mcp');
-		ee()->db->delete('actions');
+		parent::uninstall();
 
 		ee()->dbforge->drop_table('spam_vocabulary');
 		ee()->dbforge->drop_table('spam_parameters');

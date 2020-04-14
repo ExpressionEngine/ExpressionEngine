@@ -8,12 +8,24 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Email Module update class
  */
-class Email_upd {
+class Email_upd extends Installer
+{
 
-	var $version = '2.1.0';
+	public $actions = [
+        [
+            'method' => 'send_email'
+        ]
+	];
+
+	public function __construct()
+    {
+        parent::__construct();
+    }
 
 	/**
 	 * Module Installer
@@ -23,8 +35,7 @@ class Email_upd {
 	 */
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Email', '$this->version', 'n')";
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Email', 'send_email')";
+		parent::install();
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_email_tracker (
 			email_id int(10) unsigned NOT NULL auto_increment,
 			email_date int(10) unsigned default '0' NOT NULL,
@@ -53,11 +64,7 @@ class Email_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'");
-
-		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Email'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Email'";
+		parent::uninstall();
 		$sql[] = "DROP TABLE IF EXISTS exp_email_tracker";
 
 		foreach ($sql as $query)

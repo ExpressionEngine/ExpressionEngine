@@ -18,12 +18,15 @@ class Installer
     public $addon;
     public $has_cp_backend = 'n';
     public $has_publish_fields = 'n';
-    public $actions = [];
+    public $actions = []; //module actions
+    public $settings = []; //extension settings
+    public $methods = []; //extensions methods
 
-    public function __construct()
+    public function __construct($settings = [])
     {
         $caller = strtolower(str_replace(['_upd', '_ext'], '', get_class($this)));
         $this->addon = ee('Addon')->get($caller);
+        $this->settings = $settings;
     }
 
     /**
@@ -31,14 +34,19 @@ class Installer
      */
     public function install()
     {
+        $classname = $this->addon->getModuleClass();
+
         ee('Model')->make('Module', [
-            'module_name' => $this->addon->getModuleClass(),
+            'module_name' => $classname,
             'module_version' => $this->addon->getVersion(),
             'has_cp_backend' => $this->has_cp_backend,
             'has_publish_fields' => $this->has_publish_fields,
         ])->save();
 
         foreach ($this->actions as $action) {
+            if (!isset($action['class'])) {
+                $action['class'] = $classname;
+            }
             ee('Model')->make('Action', $action)->save();
         }
 
@@ -50,12 +58,22 @@ class Installer
      */
     public function uninstall()
     {
+        $classname = $this->addon->getModuleClass();
+
         ee('Model')
             ->get('Module')
-            ->filter('module_name', $this->addon->getModuleClass())
+            ->filter('module_name', $classname)
+            ->delete();
+
+        ee('Model')
+            ->get('Module')
+            ->filter('module_name', $this->addon->getControlPanelClass())
             ->delete();
 
         foreach ($this->actions as $action) {
+            if (!isset($action['class'])) {
+                $action['class'] = $classname;
+            }
             ee('Model')
                 ->get('Action')
                 ->filter('class', $action['class'])
@@ -65,6 +83,39 @@ class Installer
 
         return true;
     }
+
+    /**
+     * Extension installer
+     */
+    public function activate_extension()
+    {
+        $classname = $this->addon->getExtensionClass();
+
+        foreach ($this->methods as $method) {
+            ee('Model')->make('Extension', [
+                'class' => $classname,
+                'method' => isset($method['method']) ? $method['method'] : $method['hook'],
+				'hook' => $method['hook'],
+				'settings' => serialize($this->settings),
+				'priority' => isset($method['priority']) ? (int) $method['priority'] : 10,
+                'version' => $this->addon->getVersion(),
+                'enabled' => (isset($method['enabled']) && in_array($method['enabled'], ['n', false])) ? 'n' : 'y'
+            ])->save();
+        }
+        return true;
+    }
+
+    /**
+     * Extension installer
+     */
+    public function disable_extension()
+	{
+        ee('Model')
+            ->get('Extension')
+            ->filter('class', $this->addon->getExtensionClass())
+            ->delete();
+        return true;
+	}
 }
 
 // EOF
