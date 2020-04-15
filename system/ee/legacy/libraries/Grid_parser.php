@@ -488,8 +488,8 @@ class Grid_parser {
 					$channel_row,
 					$content,
 					$content_type,
-					$row['orig_row_id'] ?? $row['row_id'],
-					$row['fluid_field_data_id'] ?? 0
+					!empty($row['orig_row_id']) ? $row['orig_row_id'] : $row['row_id'],
+					!empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
 				);
 
 				// Replace tag pair
@@ -511,8 +511,8 @@ class Grid_parser {
 					$channel_row,
 					FALSE,
 					$content_type,
-					$row['orig_row_id'] ?? $row['row_id'],
-					$row['fluid_field_data_id'] ?? 0
+					!empty($row['orig_row_id']) ? $row['orig_row_id'] : $row['row_id'],
+					!empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
 				);
 			}
 			// Check to see if this is a field in the table for
