@@ -2426,6 +2426,7 @@ class Channel {
 
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
+		ee()->session->cache['channel']['channel_ids'] = $channel_ids;
 
 		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
 
@@ -5795,6 +5796,15 @@ class Channel {
 		}
 
 		return array($field_sqla, $field_sqlb);
+	}
+
+	public function live_preview()
+	{
+		$entry_id = ee()->input->get_post('entry_id');
+		$channel_id = ee()->input->get_post('channel_id');
+		$return = urldecode(ee()->input->get('return'));
+
+		return ee('LivePreview')->preview($channel_id, $entry_id, $return);
 	}
 }
 // END CLASS

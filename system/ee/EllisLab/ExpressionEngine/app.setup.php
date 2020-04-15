@@ -687,4 +687,16 @@ return [
 	],
 ];
 
+if (is_dir(SYSPATH . 'ee/EllisLab/Addons/pro/')) {
+    foreach ($setup['models'] as $model => $namespace) {
+        $pro_file = SYSPATH . 'ee/EllisLab/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+        if (file_exists($pro_file)) {
+            $setup['models'][$model] =  "\EllisLab\Addons\Pro\\" . $namespace;
+        }
+    }
+    //var_dump($setup['models']);
+}
+
+return $setup;
+
 // EOF

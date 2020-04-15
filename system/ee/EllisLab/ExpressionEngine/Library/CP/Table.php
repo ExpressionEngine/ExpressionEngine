@@ -76,6 +76,7 @@ class Table {
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'   => true,
 			'class'             => '',
 			'attrs'				=> array(),
 			'no_results'        => array(

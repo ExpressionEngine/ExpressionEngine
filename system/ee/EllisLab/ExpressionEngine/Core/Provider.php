@@ -212,6 +212,12 @@ class Provider extends InjectionBindingDecorator {
 				return $this->partial($element, $scope);
 			}
 
+			//do not namespace models that are root
+			if (strpos($element, '\\')===0)
+			{
+				return $element;
+			}
+
 			return $ns.'\\'.$element;
 		});
 	}

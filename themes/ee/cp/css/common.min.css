@@ -427,6 +427,7 @@ input.checkbox--small[type="checkbox"]:after,
 .fieldset-required > .field-instruct label:after,
 .fieldset-security-caution > .field-instruct label:after,
 .fieldset-invalid > .field-instruct label:after,
+.checklist li:before,
 .select__button-label::after,
 .select-popup::after,
 select::after,
@@ -586,6 +587,7 @@ input.fa-pull-left[type="checkbox"]:after,
 .fieldset-required > .field-instruct label.fa-pull-left:after,
 .fieldset-security-caution > .field-instruct label.fa-pull-left:after,
 .fieldset-invalid > .field-instruct label.fa-pull-left:after,
+.checklist li.fa-pull-left:before,
 .fa-pull-left.select__button-label::after,
 .fa-pull-left.select-popup::after,
 select.fa-pull-left::after,
@@ -631,6 +633,7 @@ input.fa-pull-right[type="checkbox"]:after,
 .fieldset-required > .field-instruct label.fa-pull-right:after,
 .fieldset-security-caution > .field-instruct label.fa-pull-right:after,
 .fieldset-invalid > .field-instruct label.fa-pull-right:after,
+.checklist li.fa-pull-right:before,
 .fa-pull-right.select__button-label::after,
 .fa-pull-right.select-popup::after,
 select.fa-pull-right::after,
@@ -4930,6 +4933,7 @@ input.checkbox--small[type="checkbox"]:after,
 .fieldset-required > .field-instruct label:after,
 .fieldset-security-caution > .field-instruct label:after,
 .fieldset-invalid > .field-instruct label:after,
+.checklist li:before,
 .select__button-label::after,
 .select-popup::after,
 select::after,
@@ -6209,6 +6213,9 @@ input[type='url'] {
   input[type='url']:-ms-input-placeholder {
     opacity: 1;
     color: var(--ee-input-placeholder); }
+
+.textarea-medium {
+  min-height: 300px; }
 
 .grid-instruct {
   display: block;
@@ -8739,6 +8746,17 @@ fieldset {
     .list a:hover {
       color: var(--ee-link-hover); }
 
+.checklist {
+  list-style-type: none; }
+  .checklist li:before {
+    content: "\f00c";
+    margin-right: 5px;
+    position: relative;
+    color: var(--ee-secondary-sidebar-item-icon); }
+
+.ajax ul {
+  list-style-type: none; }
+
 .file-preview-modal {
   display: flex;
   flex-direction: row; }
@@ -8878,6 +8896,12 @@ fieldset {
 .grid-field__table tr.ui-sortable-helper {
   box-shadow: var(--ee-shadow-dropdown);
   background: var(--ee-accent-light); }
+
+#routes .grid-field__table tr {
+  background: inherit; }
+
+#routes .table-responsive {
+  overflow-x: inherit; }
 
 .grid-field__column-label {
   display: none; }

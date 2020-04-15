@@ -65,7 +65,7 @@ function () {
     value: function bindEdit() {
       var _this2 = this;
 
-      this.field.parent().on('click', 'label > a', function (e) {
+      this.field.parent().on('click', 'label a', function (e) {
         e.preventDefault();
         var itemId = $(e.target).closest('[data-id]').data('id');
 

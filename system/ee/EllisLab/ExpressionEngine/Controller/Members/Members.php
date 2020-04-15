@@ -1459,9 +1459,11 @@ class Members extends CP_Controller {
 			$member->language = ee()->config->item('deft_lang');
 
 			$role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
+			$roles = ee('Request')->post('roles') ?? [];
+			$roles[ee()->input->post('role_id')] = ee()->input->post('role_id');
 
 			$member->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
-			$member->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
+			$member->Roles = ee('Model')->get('Role', $roles)->all();
 
 			$result = $member->validate();
 			$password_confirm = $validator->validate($_POST);
@@ -1693,8 +1695,7 @@ class Members extends CP_Controller {
 	 */
 	public function approve($ids)
 	{
-		if ( ! ee('Permission')->can('edit_members') OR
-			ee('Request')->method() !== 'POST')
+		if ( ! ee('Permission')->can('edit_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

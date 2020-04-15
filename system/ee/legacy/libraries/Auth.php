@@ -477,7 +477,7 @@ class Auth {
 		$member->free_result();
 
 		//if they can access CP, build jump menu now
-		if (ee('Permission')->can('access_cp'))
+		if (!empty(ee()->session) && ee()->session->getMember()!==null && ee('Permission')->can('access_cp'))
 		{
 			ee('CP/JumpMenu')->primeCache();
 		}

@@ -15,6 +15,7 @@ define('APPPATH',  BASEPATH);
 // application constants
 define('AMP', '&amp;');
 define('SELF', 'index.php');
+define('EESELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 

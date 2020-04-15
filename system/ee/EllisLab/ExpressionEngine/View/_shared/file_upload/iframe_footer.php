@@ -1,5 +1,5 @@
 <?php
-	echo ee()->cp->render_footer_js();
+	echo ee()->cp->render_footer_js(false);
 
 	if (isset($library_src))
 	{

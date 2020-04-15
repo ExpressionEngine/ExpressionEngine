@@ -142,9 +142,9 @@ class Edit extends AbstractPublishController {
 			sprintf(lang('no_found'), lang('channels'))
 			.' <a href="'.ee('CP/URL', 'channels/create').'">'.lang('add_new').'</a>');
 		}
-		
 
-		$show_new_button = TRUE;
+
+		$show_new_button = $vars['channels_exist'];
 		if ($channel_id)
 		{
 			$channel = $entry_listing->getChannelModelFromFilter();
@@ -495,6 +495,12 @@ class Edit extends AbstractPublishController {
 			'in_modal_context' => $sequence_editing
 		);
 
+		if (ee()->input->get('hide_closer')==='y' && ee()->input->get('return')!='')
+		{
+			$vars['form_hidden'] = ['return'	=> urldecode(ee()->input->get('return'))];
+			$vars['hide_sidebar'] = true;
+		}
+
 		if ($sequence_editing)
 		{
 			$vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
@@ -507,12 +513,33 @@ class Edit extends AbstractPublishController {
 			]];
 		}
 
-		if ($entry->isLivePreviewable())
-		{
-			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
-			]);
+		if ($entry->isLivePreviewable()) {
+
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'Channel')
+				->where('method', 'live_preview')
+				->get('actions');
+			$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
+			if (ee()->input->get('return')!='')
+			{
+				$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+			}
+			$modal_vars = [
+				'preview_url' => $preview_url,
+				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+			];
+			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
 			ee('CP/Modal')->addModal('live-preview', $modal);
+
+		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
+
+			$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+				->asIssue()
+				->canClose()
+				->withTitle(lang('preview_url_not_set'))
+				->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/'.$entry->channel_id)->compile().'#tab=t-4&id=fieldset-preview_url'));
+			ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
 		}
 
 		$version_id = ee()->input->get('version');

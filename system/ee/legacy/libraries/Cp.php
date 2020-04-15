@@ -190,15 +190,12 @@ class Cp {
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
 
-		if (ee()->session->userdata('member_id')!=0)
-		{
-			ee()->javascript->set_global(array(
-				'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
-				'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
-			));
+		ee()->javascript->set_global(array(
+			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
+			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+		));
 
-			$js_scripts['file'][] = 'cp/jump_menu';
-		}
+		$js_scripts['file'][] = 'cp/jump_menu';
 
 		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
 			'name'		=> 'modal-default-confirm-remove',
@@ -526,12 +523,14 @@ class Cp {
 	/**
 	 * Render Footer Javascript
 	 *
+	 * @param bool Whether to include 'common.js' automatically
+	 *
 	 * @return string
 	 */
-	public function render_footer_js()
+	public function render_footer_js($include_common = true)
 	{
 		$str = '';
-		$requests = $this->_seal_combo_loader();
+		$requests = $this->_seal_combo_loader($include_common);
 
 		foreach($requests as $req)
 		{
@@ -549,13 +548,22 @@ class Cp {
 	/**
 	 * Seal the current combo loader and reopen a new one.
 	 *
+	 * @param bool Whether to include 'common.js' automatically
 	 * @access	private
 	 * @return	array
 	 */
-	function _seal_combo_loader()
+	function _seal_combo_loader($include_common = true)
 	{
 		$str = '';
 		$mtimes = array();
+
+		if ($include_common) {
+			ee()->cp->add_js_script([
+				'file' => [
+					'common'
+				]
+			]);
+		}
 
 		$this->js_files = array_map('array_unique', $this->js_files);
 
@@ -582,7 +590,8 @@ class Cp {
 					'plugin'			=> array(),
 					'file'				=> array(),
 					'package'			=> array(),
-					'fp_module'			=> array()
+					'fp_module'			=> array(),
+					'pro_file'			=> array()
 			);
 
 			$this->requests[] = $str.AMP.'v='.max($mtimes);
@@ -620,6 +629,8 @@ class Cp {
 			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
 			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
+				break;
+			case 'pro_file':		$file = PATH_PRO_THEMES.'js/'.$name.'.js';
 				break;
 			case 'package':
 				if (strpos($name, ':') !== FALSE)
@@ -1091,7 +1102,6 @@ class Cp {
 		// Version in anchor is sans dots
 		$version = implode('', explode('.', $version));
 		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
-		return $changelog_url;
 	}
 }
 

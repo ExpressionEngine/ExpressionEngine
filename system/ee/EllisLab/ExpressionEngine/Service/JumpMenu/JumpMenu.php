@@ -61,10 +61,10 @@ class JumpMenu extends AbstractJumpMenu
 				'target' => 'members/create',
 				'permission' => 'can_create_members'
 			),
-			'createMemberGroup' => array(
+			'createMemberRole' => array(
 				'icon' => 'fa-plus',
-				'command' => 'create new publish member group',
-				'command_title' => 'Create <b>Member Group</b>',
+				'command' => 'create new publish member role',
+				'command_title' => 'Create <b>Member Role</b>',
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'members/groups/create',
@@ -127,7 +127,7 @@ class JumpMenu extends AbstractJumpMenu
 			'viewMembersIn' => array(
 				'icon' => 'fa-eye',
 				'command' => 'view members in',
-				'command_title' => 'View <b>Members</b> in <i>[member group]</i>',
+				'command_title' => 'View <b>Members</b> in <i>[member role]</i>',
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'members/view',
@@ -142,10 +142,10 @@ class JumpMenu extends AbstractJumpMenu
 				'target' => 'members/edit',
 				'permission' => 'can_edit_members'
 			),
-			'editMemberGroup' => array(
+			'editMemberRole' => array(
 				'icon' => 'fa-pencil-alt',
-				'command' => 'edit member group titled',
-				'command_title' => 'Edit <b>Member Group</b> titled <i>[group]</i>',
+				'command' => 'edit member role titled',
+				'command_title' => 'Edit <b>Member Role</b> titled <i>[role]</i>',
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'members/group',
@@ -585,6 +585,11 @@ class JumpMenu extends AbstractJumpMenu
 	 */
 	public function getItems()
 	{
+		if (empty(ee()->session) || ee()->session->getMember()===null)
+		{
+			return [];
+		}
+
 		$items = ee()->cache->file->get('jumpmenu/'.ee()->session->getMember()->getId());
 		if (empty($items))
 		{
