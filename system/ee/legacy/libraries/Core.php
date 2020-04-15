@@ -40,7 +40,7 @@ class EE_Core
         }
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-        if (function_exists("set_time_limit") == true and @ini_get("safe_mode") == 0) {
+        if (function_exists("set_time_limit") == true) {
             @set_time_limit((REQ == 'CP') ? 300 : 90);
         }
 
