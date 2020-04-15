@@ -13,7 +13,9 @@ use EllisLab\ExpressionEngine\Service\Addon\Installer;
 /**
  * Rich Text Editor Module update class
  */
-class Rte_upd extends Installer {
+class Rte_upd extends Installer
+{
+	public $has_cp_backend = 'y';
 
 	public $actions = [
         [

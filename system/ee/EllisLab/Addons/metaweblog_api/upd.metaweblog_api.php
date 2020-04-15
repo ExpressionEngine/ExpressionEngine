@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\Addon\Installer;
  */
 class Metaweblog_api_upd extends Installer
 {
+	public $has_cp_backend = 'y';
 
 	public $actions = [
         [

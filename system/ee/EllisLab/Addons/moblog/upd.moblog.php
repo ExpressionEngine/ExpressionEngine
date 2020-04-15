@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\Addon\Installer;
  */
 class Moblog_upd extends Installer
 {
+	public $has_cp_backend = 'y';
 
     public function __construct()
     {
