@@ -160,6 +160,7 @@ class Pagination {
 
 			$url = clone $base_url;
 			$url->setQueryStringVariable((string) $this->page_variable, ${$key});
+			$url->setQueryStringVariable('perpage', $this->per_page);
 			$links[$key] = $url->compile();
 		}
 
@@ -186,8 +187,13 @@ class Pagination {
 		{
 			$url = clone $base_url;
 			$url->setQueryStringVariable($this->page_variable, $i);
+			$url->setQueryStringVariable('perpage', $this->per_page);
 			$links['pages'][$i] = $url->compile();
 		}
+
+		$links['per_page_selector'] = ee('CP/Filter')
+			->add('Perpage', $this->total_count, 'all_items', FALSE, TRUE)
+			->render($base_url, '__');
 
 		return $this->view->render(array('pagination' => $links));
 	}

@@ -382,7 +382,7 @@ class Communicate extends Utilities {
 		}
 
 		// Get member role emails
-		$member_roles = ee('Model')->get('Roles', $roles)
+		$member_roles = ee('Model')->get('Role', $roles)
 			->with('Members')
 			->all();
 
@@ -783,30 +783,33 @@ class Communicate extends Utilities {
 
 		$table->setNoResultsText('no_cached_emails', 'create_new_email', ee('CP/URL')->make('utilities/communicate'));
 
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-
-		$offset = ($page - 1) * 50; // Offset is 0 indexed
-
 		$count = 0;
 
 		$emails = ee('Model')->get('EmailCache');
 
-		$search = $table->search;
+		$filters = ee('CP/Filter')
+			->add('Keyword');
+
+		$search = ee()->input->get_post('filter_by_keyword');
 		if ( ! empty($search))
 		{
 			$emails = $emails->filterGroup()
-				               ->filter('subject', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('message', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('from_name', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('from_email', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('recipient', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('cc', 'LIKE', '%' . $table->search . '%')
-				               ->orFilter('bcc', 'LIKE', '%' . $table->search . '%')
+				               ->filter('subject', 'LIKE', '%' . $search . '%')
+				               ->orFilter('message', 'LIKE', '%' . $search . '%')
+				               ->orFilter('from_name', 'LIKE', '%' . $search . '%')
+				               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
+				               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
+				               ->orFilter('cc', 'LIKE', '%' . $search . '%')
+				               ->orFilter('bcc', 'LIKE', '%' . $search . '%')
 						     ->endFilterGroup();
 		}
 
 		$count = $emails->count();
+		$filters->add('Perpage', $count);
+		$params = $filters->values();
+
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $params['perpage']; // Offset is 0 indexed
 
 		$sort_map = array(
 			'subject' => 'subject',
@@ -816,7 +819,7 @@ class Communicate extends Utilities {
 		);
 
 		$emails = $emails->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
+			->limit($params['perpage'])
 			->offset($offset)
 			->all();
 
@@ -874,20 +877,23 @@ class Communicate extends Utilities {
 
 		$base_url = ee('CP/URL')->make('utilities/communicate/sent');
 		$vars['table'] = $table->viewData($base_url);
+		ee()->view->filters = $filters->render($base_url);
+		$base_url->addQueryStringVariables($params);
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($params['perpage'])
 			->currentPage($page)
-			->render($vars['table']['base_url']);
+			->render($base_url);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
 
 		// Set search results heading
-		if ( ! empty($vars['table']['search']))
+		if ( ! empty($search))
 		{
 			ee()->view->cp_heading = sprintf(
 				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+				$count,
+				htmlspecialchars($search, ENT_QUOTES, 'UTF-8')
 			);
 		}
 

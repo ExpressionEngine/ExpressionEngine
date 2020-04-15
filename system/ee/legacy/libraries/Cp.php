@@ -523,12 +523,14 @@ class Cp {
 	/**
 	 * Render Footer Javascript
 	 *
+	 * @param bool Whether to include 'common.js' automatically
+	 *
 	 * @return string
 	 */
-	public function render_footer_js()
+	public function render_footer_js($include_common = true)
 	{
 		$str = '';
-		$requests = $this->_seal_combo_loader();
+		$requests = $this->_seal_combo_loader($include_common);
 
 		foreach($requests as $req)
 		{
@@ -546,13 +548,22 @@ class Cp {
 	/**
 	 * Seal the current combo loader and reopen a new one.
 	 *
+	 * @param bool Whether to include 'common.js' automatically
 	 * @access	private
 	 * @return	array
 	 */
-	function _seal_combo_loader()
+	function _seal_combo_loader($include_common = true)
 	{
 		$str = '';
 		$mtimes = array();
+
+		if ($include_common) {
+			ee()->cp->add_js_script([
+				'file' => [
+					'common'
+				]
+			]);
+		}
 
 		$this->js_files = array_map('array_unique', $this->js_files);
 

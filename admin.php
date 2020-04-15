@@ -91,7 +91,8 @@
  */
 
 	// The name of this file
-	define('SELF', basename(__FILE__));
+	define('SELF', basename(__FILE__)); // Deprecated as of 6.0.0
+	define('EESELF', basename(__FILE__));
 
 	// Path to this file
 	define('FCPATH', __DIR__.'/');

@@ -215,6 +215,11 @@ class Query extends Utilities {
 		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : $query;
 		$total_results = (is_object($query)) ? $query->num_rows() : 0;
 
+		//set up pagination filter
+		$filters = ee('CP/Filter')
+			->add('Perpage', $total_results);
+		$row_limit = $filters->values()['perpage'];
+
 		// Does this query already have a limit?
 		$limited_query = (preg_match("/LIMIT\s+[0-9]/i", $sql));
 

@@ -29,7 +29,6 @@
 		<?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('common.js')?>
 		<?=ee()->javascript->get_global()?>
 		<?=ee()->cp->render_footer_js()?>
 

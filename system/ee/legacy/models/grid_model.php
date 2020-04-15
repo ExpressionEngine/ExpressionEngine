@@ -476,6 +476,7 @@ class Grid_model extends CI_Model {
 				{
 					$override[$i] = [
 						'row_id' => crc32($row_id),
+						'orig_row_id' => $row_id,
 						'entry_id' => $entry_id,
 						'row_order' => $i,
 						'fluid_field_data_id' => $fluid_field_data_id

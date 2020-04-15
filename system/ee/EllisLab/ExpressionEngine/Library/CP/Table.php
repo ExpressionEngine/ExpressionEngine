@@ -76,6 +76,7 @@ class Table {
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'   => true,
 			'class'             => '',
 			'attrs'				=> array(),
 			'no_results'        => array(
@@ -679,7 +680,9 @@ class Table {
 				$this->config['search'] = '';
 			}
 
-			$base_url->setQueryStringVariable('search', $this->config['search']);
+			if (!empty($this->config['search'])) {
+				$base_url->setQueryStringVariable('search', $this->config['search']);
+			}
 			$base_url->setQueryStringVariable($this->config['sort_col_qs_var'], $this->getSortCol());
 			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}

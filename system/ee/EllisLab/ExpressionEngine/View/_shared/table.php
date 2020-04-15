@@ -459,8 +459,9 @@ else: ?>
 				<?=$action_content?>
 			</div>
 			<?php endif; ?>
-
+			<?php if ($show_add_button) : ?>
 			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>

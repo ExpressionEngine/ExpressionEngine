@@ -1,13 +1,14 @@
 <?php $this->extend('_templates/default-nav') ?>
 
 <div class="tbl-ctrls">
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
+<?=form_open($form_url)?>
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-	<?=form_open($form_url)?>
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
 		<?php if (isset($filters)) echo $filters; ?>
-	</form>
-	<?=form_open($form_url)?>
+	</div>
+
 		<section>
 			<?php if (count($logs) == 0): ?>
 				<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>

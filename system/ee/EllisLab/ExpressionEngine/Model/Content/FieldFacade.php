@@ -26,6 +26,7 @@ class FieldFacade {
 	private $content_type;
 	private $value;
 	private $api;
+	private $icon;
 
 	/**
 	 * @var Flag to ensure defaults are only loaded once
@@ -165,6 +166,15 @@ class FieldFacade {
 		return $fts[$type]['name'];
 	}
 
+	public function getIcon()
+	{
+		if (empty($this->icon)) {
+			$addon = ee('Addon')->get($this->getItem('field_type'));
+			$this->icon = $addon->getIconUrl('field.svg');
+		}
+		return $this->icon;
+	}
+
 	public function validate($value)
 	{
 		$this->initField();
@@ -296,6 +306,8 @@ class FieldFacade {
 	public function replaceTag($tagdata, $params = array(), $modifier = '', $full_modifier = '')
 	{
 		$ft = $this->getNativeField();
+
+		$this->initField();
 
 		$data = $this->getItem('row');
 
