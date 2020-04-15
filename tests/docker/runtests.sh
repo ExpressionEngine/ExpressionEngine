@@ -70,7 +70,9 @@ function setup_permissions {
 }
 
 ARTIFACTS_DIR="/app/artifacts/${PHP_VERSION}"
-mkdir -p $ARTIFACTS_DIR
+if [ ! -d $ARTIFACTS_DIR ]; then
+	mkdir -p $ARTIFACTS_DIR;
+fi
 
 function start_apache_mysql {
 	# https://github.com/docker/for-linux/issues/72
