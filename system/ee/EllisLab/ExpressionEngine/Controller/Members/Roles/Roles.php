@@ -167,7 +167,12 @@ class Roles extends AbstractRolesController {
 			? $group->name . '&mdash;' . lang('roles' )
 			: lang('all_roles');
 		$vars['roles'] = $data;
-		$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];
+		$vars['disable_action'] = (bool) $group_id;
+		if ($group_id) {
+			$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')) . ' &mdash; ' . $group->name];
+		} else {
+			$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];
+		}
 
 		ee()->cp->render('members/roles/index', $vars);
 	}
@@ -285,6 +290,12 @@ class Roles extends AbstractRolesController {
 		{
 			unset($vars['buttons'][2]);
 		}
+
+		ee()->javascript->output('
+			$("input[name=name]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=short_name]");
+			});
+		');
 
 		ee()->view->cp_page_title = lang('create_new_role');
 
@@ -1695,21 +1706,46 @@ class Roles extends AbstractRolesController {
 			$role_ids = array($role_ids);
 		}
 
-		$roles = ee('Model')->get('Role', $role_ids)->all();
+		//not all roles can be removed
+		$need_to_stay = [];
+		$restricted = [1, 2, 3, 4, ee()->config->item('default_primary_role')];
+		foreach ($role_ids as $i=>$role_id) {
+			if (in_array($role_id, $restricted)) {
+				$need_to_stay[] = $role_id;
+				unset($role_ids[$i]);
+			}
+		}
 
-		$role_names = $roles->pluck('name');
+		if (!empty($need_to_stay)) {
 
-		$roles->delete();
-		ee('CP/Alert')->makeInline('roles')
-			->asSuccess()
-			->withTitle(lang('success'))
-			->addToBody(lang('roles_deleted_desc'))
-			->addToBody($role_names)
-			->defer();
+			$role_names = ee('Model')->get('Role', $need_to_stay)->all()->pluck('name');
 
-		foreach ($role_names as $role_name)
-		{
-			ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
+			ee('CP/Alert')->makeInline('roles-error')
+				->asWarning()
+				->withTitle(lang('roles_delete_error'))
+				->addToBody(lang('roles_not_deleted_desc'))
+				->addToBody($role_names)
+				->defer();
+
+		}
+
+		if (!empty($role_ids)) {
+			$roles = ee('Model')->get('Role', $role_ids)->all();
+
+			$role_names = $roles->pluck('name');
+
+			$roles->delete();
+			ee('CP/Alert')->makeInline('roles')
+				->asSuccess()
+				->withTitle(lang('success'))
+				->addToBody(lang('roles_deleted_desc'))
+				->addToBody($role_names)
+				->defer();
+
+			foreach ($role_names as $role_name)
+			{
+				ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
+			}
 		}
 	}
 }

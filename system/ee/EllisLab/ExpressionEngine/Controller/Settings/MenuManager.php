@@ -441,6 +441,7 @@ class MenuManager extends Settings {
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'  => 'menu_items',
 			'choices'     => $set->buildItemsTree(),
+			'tooManyLimit'		=> 999,
 			'value'       => NULL,
 			'multi'       => FALSE,
 			'nested'      => TRUE,

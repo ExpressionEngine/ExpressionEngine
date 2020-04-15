@@ -95,7 +95,7 @@ class Groups extends AbstractRolesController {
 				}
 				elseif (ee('Request')->post('submit') == 'save_and_close')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('fields'));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups'));
 				}
 				else
 				{

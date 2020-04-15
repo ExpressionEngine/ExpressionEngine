@@ -191,6 +191,7 @@ class Group extends AbstractDesignController {
 						$template->last_author_id = 0;
 						$template->edit_date = ee()->localize->now;
 						$template->site_id = ee()->config->item('site_id');
+						$template->Roles = ee('Model')->get('Role')->all();
 						$template->save();
 					}
 					else
@@ -284,7 +285,7 @@ class Group extends AbstractDesignController {
 								'choices' => $choices,
 								'value' => $values,
 								'no_results' => [
-									'text' => sprintf(lang('no_found'), lang('roles'))
+									'text' => sprintf(lang('no_roles_with_design_access_found'))
 								]
 							)
 						)

@@ -1,5 +1,5 @@
 <?php
-$too_many = 8;
+$too_many = isset($too_many) ? $too_many : 8;
 $class = isset($class) ? $class : '';
 
 if (count($choices) == 0)
@@ -136,6 +136,7 @@ else:
 		'unremovableChoices' => isset($unremovable_choices) ? $unremovable_choices : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
+		'tooManyLimit' => isset($tooManyLimit) ? $tooManyLimit : NULL,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
 		'toggleAll' => $toggle_all,

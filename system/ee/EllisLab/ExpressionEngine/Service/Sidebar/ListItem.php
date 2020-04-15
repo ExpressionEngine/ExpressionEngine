@@ -69,8 +69,7 @@ abstract class ListItem {
 	public function withUrl($url)
 	{
 		$this->url = $url;
-		if ($url instanceof URL && $url->matchesTheRequestedURI())
-		{
+		if ($url instanceof URL && $url->isTheRequestedURI()) {
 			$this->isActive();
 		}
 		return $this;
