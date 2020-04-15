@@ -390,30 +390,59 @@ $(document).ready(function(){
 	window.addEventListener('resize', function () { updateFilterBars() })
 	updateFilterBars()
 
-	// Tabs
+	// Tabs and Scrolls
 	// -------------------------------------------------------------------
+
+		//Load initial tab, if requested
+		var hash_params = {}
+		window.location.hash.substring(1).split('&').map(hk => {
+			let temp = hk.split('=');
+			hash_params[temp[0]] = temp[1];
+		});
+
+		if (typeof(hash_params.tab)!='undefined') {
+			var _tab = $('.tab-wrap .js-tab-button[rel='+hash_params.tab+']');
+			if (_tab.length) {
+				switchToTab(_tab.first());
+			}
+		}
+
+		//scroll to element
+		if (typeof(hash_params.id)!='undefined') {
+			if ($('#'+hash_params.id).length) {
+				window.scrollTo({top: document.getElementById(hash_params.id).offsetTop, behavior: 'smooth' });
+			}
+		}
 
 		// listen for clicks on tabs
 		$('body').on('click', '.tab-wrap .js-tab-button', function(e){
+
 			e.preventDefault()
 
+			switchToTab($(this));
+
+		});
+
+		//switch to tab
+		function switchToTab(_this) {
+
 			// Get the tab that needs to be opened
-			var tabClassIs = $(this).attr('rel');
+			var tabClassIs = _this.attr('rel');
 
 			// Add the class js-active-tab-group to the parent tab-wrapper of the tab button that was pressed
 			// This allows us to only target the tabs that are part of this tab group,
 			// not other tabs that are somewhere else, such as in a different model
 			$('.js-active-tab-group').removeClass('js-active-tab-group');
-			$(this).parents('.tab-wrap').addClass('js-active-tab-group');
+			_this.parents('.tab-wrap').addClass('js-active-tab-group');
 
 			// Close other tabs, ignoring the current one
 			$('.js-active-tab-group .js-tab-button').not(this).removeClass('active');
 			$('.js-active-tab-group .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
 
 			// Open the new tab
-			$(this).addClass('active');
+			_this.addClass('active');
 			$('.js-active-tab-group .tab.'+tabClassIs).addClass('tab-open');
-		});
+		}
 
 
 	// App about / updates pop up
