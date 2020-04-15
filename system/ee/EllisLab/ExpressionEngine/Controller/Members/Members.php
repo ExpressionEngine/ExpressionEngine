@@ -1459,7 +1459,7 @@ class Members extends CP_Controller {
 			$member->language = ee()->config->item('deft_lang');
 
 			$role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
-			$roles = ee('Request')->post('roles') ?? [];
+			$roles = !empty(ee('Request')->post('roles')) ? ee('Request')->post('roles') : array();
 			$roles[ee()->input->post('role_id')] = ee()->input->post('role_id');
 
 			$member->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
