@@ -8,69 +8,21 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Query Module update class
  */
-class Query_upd {
-
-	var $version = '2.0.0';
-
-	/**
-	 * Module Installer
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function install()
-	{
-		$data = array(
-			'module_name' 	 => 'Query',
-			'module_version' => $this->version,
-			'has_cp_backend' => 'n'
-		);
-
-		ee()->db->insert('modules', $data);
-
-		return TRUE;
-	}
+class Query_upd extends Installer
+{
 
 	/**
-	 * Module Uninstaller
-	 *
-	 * @access	public
-	 * @return	bool
+	 * Constructor
 	 */
-	function uninstall()
-	{
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Query'));
-		$module_id = $query->row('module_id');
-
-		ee()->db->where('module_id', $module_id);
-		ee()->db->delete('module_member_roles');
-
-		ee()->db->where('module_name', 'Query');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Query');
-		ee()->db->delete('actions');
-
-		ee()->db->where('class', 'Query_mcp');
-		ee()->db->delete('actions');
-
-		return TRUE;
-	}
-
-	/**
-	 * Module Updater
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	public function update($current='')
-	{
-		return TRUE;
-	}
+	public function __construct()
+    {
+        parent::__construct();
+    }
 
 }
 // END CLASS

@@ -8,12 +8,19 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Moblog Module update class
  */
-class Moblog_upd {
+class Moblog_upd extends Installer
+{
+	public $has_cp_backend = 'y';
 
-	var $version 			= '3.2.0';
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
 	/**
 	 * Module Installer
@@ -24,13 +31,9 @@ class Moblog_upd {
 
 	function install()
 	{
-		ee()->load->dbforge();
+		parent::install();
 
-		ee()->db->insert('modules', array(
-			'module_name'		=> 'Moblog',
-			'module_version'	=> $this->version,
-			'has_cp_backend'	=> 'y'
-		));
+		ee()->load->dbforge();
 
 		$fields = array(
 			'moblog_id'					=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'auto_increment' => TRUE),
@@ -85,15 +88,7 @@ class Moblog_upd {
 	 */
 	function uninstall()
 	{
-		// Get the module ID from modules
-		$qry = ee()->db->select('module_id')
-							->get_where('modules', array('module_name' => 'Moblog'));
-
-		// Delete all mentions of the moblog from other tables
-		ee()->db->delete('module_member_roles', array('module_id' => $qry->row('module_id')));
-		ee()->db->delete('modules', array('module_name' => 'Moblog'));
-		ee()->db->delete('actions', array('class' => 'Moblog'));
-		ee()->db->delete('actions', array('class' => 'Moblog_mcp'));
+		parent::uninstall();
 
 		// Drop the table
 		ee()->load->dbforge();

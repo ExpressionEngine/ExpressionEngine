@@ -8,12 +8,20 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
+
 /**
  * Pages Module update class
  */
-class Pages_upd {
+class Pages_upd extends Installer
+{
+	public $has_cp_backend = 'y';
+	public $has_publish_fields = 'y';
 
-	var $version		= '2.2.0';
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
 	function tabs()
 	{
@@ -46,7 +54,7 @@ class Pages_upd {
 
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('Pages', '$this->version', 'y', 'y')";
+		parent::install();
 
 		if ( ! ee()->db->field_exists('site_pages', 'exp_sites'))
 		{
@@ -80,12 +88,7 @@ class Pages_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Pages'");
-
-		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Pages'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages_mcp'";
+		parent::uninstall();
 		$sql[] = "DROP TABLE `exp_pages_configuration`";
 
 		foreach ($sql as $query)
