@@ -297,6 +297,8 @@ class FieldFacade {
 	{
 		$ft = $this->getNativeField();
 
+		$this->initField();
+
 		$data = $this->getItem('row');
 
 		$this->api->apply('_init', array(array(
