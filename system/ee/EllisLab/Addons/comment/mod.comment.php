@@ -584,9 +584,13 @@ class Comment {
 		{
 			++$count;
 
+			$absoluteCount = (isset($pagination))
+								? $pagination->offset + $count
+								: $count;
+
 			$vars[] = array_merge(
 				[
-					'absolute_count' => $pagination->offset + $count,
+					'absolute_count' => $absoluteCount,
 					'absolute_results' => $total_results,
 					'absolute_reverse_count' => $total_results - $count + 1,
 					'count' => $count,

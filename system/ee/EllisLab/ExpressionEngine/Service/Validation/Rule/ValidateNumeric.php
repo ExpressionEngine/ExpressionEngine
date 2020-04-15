@@ -13,31 +13,18 @@ namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * Minimum Length Validation Rule
+ * Numeric Validation Rule
  */
-class MinLength extends ValidationRule {
+class ValidateNumeric extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-
-		ee()->load->helper('multibyte');
-
-		list($length) = $this->assertParameters('length');
-
-		$length = $this->numericOrConstantParameter($length);
-
-		if ($length === FALSE)
-		{
-			return FALSE;
-		}
-
-		return (ee_mb_strlen($value) < $length) ? FALSE : TRUE;
-
+		return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
 	}
 
 	public function getLanguageKey()
 	{
-		return 'min_length';
+		return 'is_numeric';
 	}
 }
 

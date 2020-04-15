@@ -332,6 +332,11 @@ class Validator {
 	{
 		$rule_class = implode('', array_map('ucfirst', explode('_', $rule_name)));
 
+		// Fix for Numeric class
+		if($rule_class == 'Numeric') {
+			$rule_class = 'ValidateNumeric';
+		}
+
 		$class = __NAMESPACE__."\\Rule\\{$rule_class}";
 
 		if (class_exists($class))

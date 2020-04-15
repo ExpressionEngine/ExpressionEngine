@@ -777,21 +777,6 @@ class EE_Input {
 
 			exit();  // We halt system execution since we're done
 		}
-
-		$filter_keys = TRUE;
-
-		if ($request_type == 'CP'
-			&& isset($_GET['BK'])
-			&& isset($_GET['channel_id'])
-			&& isset($_GET['title'])
-			&& ee()->session->userdata('admin_sess') == 1)
-		{
-			if (in_array(ee()->input->get_post('channel_id'), ee()->functions->fetch_assigned_channels()))
-			{
-				$filter_keys = FALSE;
-			}
-		}
-
 	}
 
 	/**
@@ -844,8 +829,11 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					global $$global;
+
+					global ${$global};
+
 					$$global = NULL;
+
 				}
 			}
 			else
@@ -854,8 +842,11 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						global $$key;
+
+						global ${$key};
+
 						$$key = NULL;
+
 					}
 				}
 			}
@@ -979,12 +970,6 @@ class EE_Input {
 				$new_array[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
 			}
 			return $new_array;
-		}
-
-		// We strip slashes if magic quotes is on to keep things consistent
-		if (get_magic_quotes_gpc())
-		{
-			$str = stripslashes($str);
 		}
 
 		// Clean UTF-8 if supported

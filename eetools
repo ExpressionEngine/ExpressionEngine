@@ -48,7 +48,9 @@ else
 
 	((STATUS+=$?))
 
-	mkdir /tmp/artifacts > /dev/null
+	if [ ! -d /tmp/artifacts ]; then
+		mkdir /tmp/artifacts > /dev/null
+	fi
 	docker cp $HELPER_CONTAINER_ID:/app/artifacts/. /tmp/artifacts
 fi
 

@@ -295,9 +295,13 @@ class Rte_lib {
 	 * @param	bool	If TRUE, includes tools that are for the control panel only
 	 * @return	string 	The JS needed to embed the RTE
 	 */
-	public function build_js($toolset_id, $selector, $include = array(), $cp_only = FALSE)
+	public function build_js($toolset_id, $selector, $include = [], $cp_only = FALSE)
 	{
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
+
+		if( ! is_array($include) ) {
+			$include = [];
+		}
 
 		// no toolset specified?
 		if ( ! $toolset_id)
@@ -332,7 +336,7 @@ class Rte_lib {
 			)
 		);
 
-		if ($include['jquery_ui'])
+		if (array_key_exists('jquery_ui', $include) && $include['jquery_ui'])
 		{
 			$bits['libraries']['ui'] = array('core', 'widget');
 		}
@@ -405,7 +409,7 @@ class Rte_lib {
 			$js .= '
 				var EE = ' . json_encode(ee()->javascript->global_vars) . ';';
 
-			if ($include['jquery'])
+			if (array_key_exists('jquery', $include) && $include['jquery'])
 			{
 				$js .= '
 					var j = document.createElement("script");
