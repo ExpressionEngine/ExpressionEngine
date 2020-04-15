@@ -36,13 +36,12 @@ Cypress.Commands.add("login", (user) => {
 })
 
 Cypress.Commands.add("auth", (user) => {
-    cy.visit('http://private60.ee/admin.php');
+    cy.visit('admin.php');
     cy.login(user);
 })
 
 Cypress.Commands.add("authVisit", (url, user) => {
-    cy.visit('http://private60.ee/admin.php');
-    cy.login(user);
+    cy.auth(user);
     cy.visit(url);
 })
 

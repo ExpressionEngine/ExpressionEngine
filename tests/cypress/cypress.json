@@ -1,9 +1,10 @@
 {
-    "baseUrl": "http://private60.ee/",
+    "baseUrl": "http://localhost:8888",
     "video": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
-    "watchForFileChanges": false
+    "watchForFileChanges": false,
+    "testFiles": "**/*.spec.js"
 }
