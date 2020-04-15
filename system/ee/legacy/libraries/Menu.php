@@ -191,6 +191,8 @@ class EE_Menu {
 			}
 		}
 
+		$menu['all'] = array_merge($menu['edit'], $menu['create']);
+
 		return $menu;
 	}
 
