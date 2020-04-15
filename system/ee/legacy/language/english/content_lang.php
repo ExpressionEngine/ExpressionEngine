@@ -376,6 +376,8 @@ $lang = array(
 
 'fields' => 'Fields',
 
+'add' => 'Add',
+
 'add_field' => 'Add Field',
 
 'file_exists' => 'A file already exists with this name',
