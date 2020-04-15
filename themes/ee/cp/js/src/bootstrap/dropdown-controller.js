@@ -121,7 +121,7 @@ var DropdownController = (function() {
 		dropdown.classList.add('dropdown--open');
 
 		if (dropdown.classList.contains('js-dropdown-auto-focus-input')) {
-			$(dropdown).find('.dropdown__search input').focus()
+			$(dropdown).find('.dropdown__search input').focus();
 		}
 
 		dropdown._popper.update()
@@ -188,6 +188,14 @@ var DropdownController = (function() {
 
 		return dropdown
 	}
+
+	$('.dropdown__search input').each(function(){
+    var customFieldName = $(this).attr('name');
+    var _form = $(this).parents('form').first();
+    $(this).on('keyup', function(){
+      _form.find('.dropdown__search input[name='+customFieldName+']').val($(this).val());
+    });
+  });
 
 	return {
 		hideAllDropdowns: hideAllDropdowns,

@@ -17,7 +17,7 @@ class File_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'File',
-		'version'	=> '1.0.0'
+		'version'	=> '1.1.0'
 	);
 
 	var $has_array_data = TRUE;

@@ -46,7 +46,8 @@ class Updater {
 				'addLivePreview',
 				'addWidgetsTable',
 				'addDashboardLayoutsTable',
-				'addLayoutWidgetsTable'
+				'addLayoutWidgetsTable',
+				'addAddonIcons'
 			]
 		);
 
@@ -1019,6 +1020,23 @@ class Updater {
 		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
 		ee()->smartforge->add_key('dashboard_layout_widgets', ['layout_id', 'widget_id'], 'layouts_widgets');
 
+	}
+
+	private function addAddonIcons()
+	{
+		$row_data = array(
+			'class' => 'File',
+			'method' => 'addonIcon',
+			'csrf_excempt' => 1
+		);
+
+		ee()->db->where($row_data);
+		$count = ee()->db->count_all_results('actions');
+
+		if ($count == 0)
+		{
+			ee()->db->insert('actions', $row_data);
+		}
 	}
 
 }

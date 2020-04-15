@@ -410,6 +410,10 @@ $lang = array(
 
 'upload_member_groups_desc' => 'The following user groups are allowed to upload to this directory.</em><br /><em>Super Administrators are <b>always</b> allowed.',
 
+'upload_roles' => 'Allowed member roles',
+
+'upload_roles_desc' => 'The following member roles are allowed to upload to this directory.<br />Super Administrators are <b>always</b> allowed.',
+
 'upload_path' => 'Upload path',
 
 'upload_path_desc' => 'Full path location of this <code>upload</code> directory.',

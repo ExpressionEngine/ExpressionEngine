@@ -264,7 +264,7 @@ $lang = array(
 
 'role_updated_desc' => 'Role has been saved successfully.',
 
-'roles_deleted_desc' => 'Role has been deleted successfully.',
+'role_deleted_desc' => 'Role has been deleted successfully.',
 
 'roles_remove_problem' => 'There was a problem deleting roles.',
 
@@ -1041,6 +1041,10 @@ $lang = array(
 'edit_role_success_desc' => 'The role <b>%s</b> has been updated.',
 
 'roles_deleted_desc' => 'The following roles were deleted',
+
+'roles_delete_error' => 'Cannot Delete Roles',
+
+'roles_not_deleted_desc' => 'The following roles could not be deleted',
 
 'channel_access' => 'Channel access',
 

@@ -74,6 +74,8 @@ $lang = array(
 
 'btn_login' => 'Login',
 
+'btn_login_working' => 'Logging you in...',
+
 'btn_save_settings' => 'Save Settings',
 
 'bulletin_board' => 'Bulletin Board',

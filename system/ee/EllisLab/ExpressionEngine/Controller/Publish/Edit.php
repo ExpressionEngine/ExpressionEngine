@@ -513,8 +513,8 @@ class Edit extends AbstractPublishController {
 			]];
 		}
 
-		if ($entry->isLivePreviewable())
-		{
+		if ($entry->isLivePreviewable()) {
+
 			$action_id = ee()->db->select('action_id')
 				->where('class', 'Channel')
 				->where('method', 'live_preview')
@@ -530,6 +530,16 @@ class Edit extends AbstractPublishController {
 			];
 			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
 			ee('CP/Modal')->addModal('live-preview', $modal);
+
+		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
+
+			$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+				->asIssue()
+				->canClose()
+				->withTitle(lang('preview_url_not_set'))
+				->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/'.$entry->channel_id)->compile().'#tab=t-4&id=fieldset-preview_url'));
+			ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
 		}
 
 		$version_id = ee()->input->get('version');

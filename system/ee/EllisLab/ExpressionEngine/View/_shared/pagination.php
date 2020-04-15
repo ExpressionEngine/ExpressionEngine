@@ -14,6 +14,10 @@
 		<li class="pagination__item"><span class="pagination__divider">&hellip;</span></li>
 		<li class="pagination__item"><a class="pagination__link" href="<?=$pagination['last']?>"><?=$pagination['total_pages']?></a></li>
 		<?php endif;?>
+
+		<?php if (isset($pagination['per_page_selector']) && !empty($pagination['per_page_selector'])) : ?>
+		<li class="pagination__item"><?=$pagination['per_page_selector']?></li>
+		<?php endif;?>
 	</ul>
 </div>
 <?php endif; ?>

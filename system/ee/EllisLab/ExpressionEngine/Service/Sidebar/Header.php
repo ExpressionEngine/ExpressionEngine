@@ -93,9 +93,6 @@ class Header {
 	 */
 	public function hasUrl()
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
-
 		return !empty($this->url);
 	}
 

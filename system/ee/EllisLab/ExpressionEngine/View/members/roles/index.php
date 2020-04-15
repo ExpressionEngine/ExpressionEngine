@@ -15,6 +15,7 @@
 			<?php $this->embed('_shared/table-list', ['data' => $roles]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 
+			<?php if (!isset($disable_action) || empty($disable_action)) : ?>
 			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
@@ -22,6 +23,7 @@
 				</select>
 				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
+			<?php endif; ?>
 		</form>
 	</div>
 </div>

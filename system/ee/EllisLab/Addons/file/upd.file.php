@@ -13,7 +13,7 @@
  */
 class File_upd {
 
-	var $version		= '1.0.0';
+	var $version		= '1.1.0';
 
 	/**
 	 * Module Installer
@@ -30,6 +30,14 @@ class File_upd {
 					);
 
 		ee()->db->insert('modules', $data);
+
+		$data = array(
+			'class' => 'File',
+			'method' => 'addonIcon',
+			'csrf_excempt' => 1
+		);
+
+		ee()->db->insert('actions', $data);
 
 		return TRUE;
 	}

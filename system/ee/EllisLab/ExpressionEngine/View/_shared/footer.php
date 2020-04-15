@@ -50,7 +50,6 @@
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('common.js')?>
 		<?php
 
 		echo ee()->javascript->get_global();
@@ -118,8 +117,8 @@
 				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
 
 				<div class="jump-menu__footer">
-					<span class="jump-menu__shortcut">Shortcut: &nbsp;&nbsp; <span class="key"><i class="fab fa-sm fa-windows"></i> J</span> or <span class="key">&#8984; J</span> or <span class="key">Ctrl J</span></span>
-					<span class="jump-menu__close">Close <span class="key">ESC</span></span>
+					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: &nbsp;&nbsp; <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
+					<span class="jump-menu__close"><?=lang('close')?> <span class="key">ESC</span></span>
 				</div>
 			</div>
 		</div>

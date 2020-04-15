@@ -260,6 +260,7 @@ class Addons extends CP_Controller {
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
+			$addon['icon_url'] = $info->getIconUrl();
 
 			if ( ! empty($addon))
 			{
@@ -274,9 +275,7 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-                if (file_exists(PATH_THIRD_THEMES . $name . '/icon.png')) {
-                    $addon['icon_url'] = URL_THIRD_THEMES . $name . '/icon.png';
-                }
+
 
 				$addons[$name] = $addon;
 			}

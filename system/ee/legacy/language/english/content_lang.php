@@ -376,6 +376,8 @@ $lang = array(
 
 'fields' => 'Fields',
 
+'add' => 'Add',
+
 'add_field' => 'Add Field',
 
 'file_exists' => 'A file already exists with this name',
@@ -617,6 +619,10 @@ $lang = array(
 'preview_entry' => 'Preview Entry',
 
 'preview_layout' => 'Preview Layout',
+
+'preview_url_not_set' => 'Preview URL is not set',
+
+'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
 
 'publish' => 'Publish',
 

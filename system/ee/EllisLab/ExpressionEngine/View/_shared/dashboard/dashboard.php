@@ -1,12 +1,12 @@
-<?php 
+<?php
 $menu = ee()->menu->generate_menu();
-if ($can_create_channels || count($menu['channels']['create'])): ?>
+if ($can_create_channels || count($menu['channels']['edit'])): ?>
 	<div class="dashboard__item widget">
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('recent_entries'); ?></h2>
 
 			<div>
-				<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
+				<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
 					<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="button button--secondary-alt"><?= lang('view_all') ?></a>
 				<?php endif; ?>
 			</div>

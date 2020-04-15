@@ -2,7 +2,10 @@
 	<div class="fluid__item-content">
 		<div class="fluid__item-fieldset reorder js-toggle-fluid-item">
 			<div class="field-instruct">
-				<label><?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?></label>
+				<label>
+					<i class="icon--reorder"></i>
+					<?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
+				</label>
 				<em><?=$field->getItem('field_instructions')?></em>
 			</div>
 		</div>

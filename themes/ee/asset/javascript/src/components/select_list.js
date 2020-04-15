@@ -511,12 +511,12 @@ function FieldInputs(props) {
 
   if (props.nested) {
     return React.createElement("ul", {
-      className: 'lots-of-checkboxes__items field-nested' + divClass
+      className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
   }
 
   return React.createElement("div", {
-    className: 'lots-of-checkboxes__items' + divClass
+    className: 'field-inputs lots-of-checkboxes__items' + divClass
   }, props.children);
 }
 
@@ -571,6 +571,7 @@ function (_React$Component2) {
         className: "icon-reorder icon-left"
       }), props.editable && React.createElement("a", {
         href: "#",
+        "class": "flyout-edit",
         dangerouslySetInnerHTML: {
           __html: label
         }
@@ -582,12 +583,12 @@ function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
-        className: "button button--danger button--small float-right",
+        className: "button button--small button--secondary-alt float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
-        "class": "fas fa-sm fa-trash"
+        "class": "fas fa-fw fa-trash-alt"
       }))));
 
       if (props.nested) {
