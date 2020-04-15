@@ -5,11 +5,7 @@
 
 	<div class="title-bar">
 		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
-		<div class="title-bar__extra-tools">
-			<div class="search-input">
-			<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-			</div>
-		</div>
+		<?php if (isset($filters)) echo $filters; ?>
 	</div>
 
 	<?php $this->embed('_shared/table', $table); ?>

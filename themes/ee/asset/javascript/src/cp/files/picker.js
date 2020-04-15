@@ -84,7 +84,7 @@
 			}
 		});
 
-		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
+		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
 			var new_url = $(this).attr('href');
 
@@ -96,7 +96,7 @@
 		// Capture form submission
 		$('.modal-file').on('submit', 'form', function(e) {
 			var url = $(this).attr('action'),
-				payload_elements = $('input[name=search], input[name=perpage]', this);
+				payload_elements = $('.filter-bar input', this);
 
 			// Only do this if we're on the file listing screen
 			if (payload_elements.size() == 0) {
