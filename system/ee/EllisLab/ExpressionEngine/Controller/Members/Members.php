@@ -602,6 +602,7 @@ class Members extends CP_Controller {
 				->now();
 		}
 
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('banned_members');
 		ee()->cp->render('members/banned', $vars);
 	}
 
@@ -615,7 +616,7 @@ class Members extends CP_Controller {
 
 		$this->generateSidebar('ban-settings');
 		$this->stdHeader();
-		$this->base_url = ee('CP/URL', 'members/banned');
+		$this->base_url = ee('CP/URL', 'members/ban-settings');
 
 		$values = [
 			'banned_ips' => '',
@@ -786,6 +787,7 @@ class Members extends CP_Controller {
 				->now();
 		}
 
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('manage_bans');
 		ee()->cp->render('members/ban_settings', $vars);
 	}
 
