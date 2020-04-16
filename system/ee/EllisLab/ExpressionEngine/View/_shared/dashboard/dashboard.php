@@ -1,4 +1,5 @@
 <?php
+ee()->load->helper('text');
 $menu = ee()->menu->generate_menu();
 if ($can_create_channels || count($menu['channels']['edit'])): ?>
 	<div class="dashboard__item widget">
