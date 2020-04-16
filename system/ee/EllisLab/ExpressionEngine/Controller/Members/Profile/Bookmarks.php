@@ -153,6 +153,7 @@ class Bookmarks extends Settings {
 
 		if ( ! empty($_POST))
 		{
+			$this->bookmarks[$id] = new \stdClass();
 			$this->bookmarks[$id]->name = ee()->input->post('name');
 			$this->bookmarks[$id]->channel = ee()->input->post('channel');
 			$this->bookmarks[$id]->field = ee()->input->post('field');
