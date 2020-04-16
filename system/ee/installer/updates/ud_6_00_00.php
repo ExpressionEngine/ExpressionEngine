@@ -876,7 +876,7 @@ class Updater {
 			]
 		);
   }
-  
+
 	private function addLivePreview()
 	{
 		$row_data = array(
@@ -1027,7 +1027,7 @@ class Updater {
 		$row_data = array(
 			'class' => 'File',
 			'method' => 'addonIcon',
-			'csrf_excempt' => 1
+			'csrf_exempt' => 1
 		);
 
 		ee()->db->where($row_data);
