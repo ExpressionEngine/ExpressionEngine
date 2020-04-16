@@ -26,9 +26,6 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
-				'removeDefaultAvatars',
-				'removeJqueryAddon',
-				'removeEmoticonAddon',
 				'addRoles',
 				'addRoleGroups',
 				'addAndPopulatePermissionsTable',
@@ -42,6 +39,9 @@ class Updater {
 				'convertMembersGroupToPrimaryRole',
 				'reassignLayoutsToPrimaryRole',
 				'reassignEmailCacheToPrimaryRole',
+				'removeDefaultAvatars',
+				'removeJqueryAddon',
+				'removeEmoticonAddon',
 				'addColorPickerFieldType',
 				'addLivePreview',
 				'addWidgetsTable',
@@ -157,7 +157,6 @@ class Updater {
 		ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', ['Default Avatars'])
 			->all()
-			->indexBy('name')
 			->delete();
 
 		// Remove avatar config items
