@@ -79,7 +79,7 @@ $current_page = ee()->uri->segment(2);
 							<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
 							<?php foreach ($cp_main_menu['channels']['all'] as $channel_name => $link): ?>
 								<div class="dropdown__item">
-									<a href="<?=(isset($cp_main_menu['channels']['edit'][$channel_name]) ? $link : '#')?>">
+									<a href="<?=(isset($cp_main_menu['channels']['edit'][$channel_name]) ? $cp_main_menu['channels']['edit'][$channel_name] : '#')?>">
 									<?=$channel_name?>
 									</a>
 									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
