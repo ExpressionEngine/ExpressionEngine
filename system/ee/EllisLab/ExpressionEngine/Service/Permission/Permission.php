@@ -51,14 +51,18 @@ class Permission {
 		}
 	}
 
-	public function rolesThatHave($permission, $site_id = NULL)
+	public function rolesThatHave($permission, $site_id = NULL, $fuzzy = false)
 	{
 		$site_id = ($site_id) ?: $this->site_id;
-		$groups = $this->model_delegate->get('Permission')
+		$query = $this->model_delegate->get('Permission')
 			->fields('role_id')
-			->filter('site_id', $site_id)
-			->filter('permission', $permission)
-			->all();
+			->filter('site_id', $site_id);
+		if (!$fuzzy) {
+			$query->filter('permission', $permission);
+		} else {
+			$query->filter('permission', 'LIKE', $permission . '%');
+		}
+		$groups = $query->all();
 
 		if ($groups)
 		{
@@ -234,7 +238,7 @@ class Permission {
 			}
 			return FALSE;
 		}
-		
+
 		$k = $this->getUserdatum($which);
 
 		if ($k === TRUE OR $k == 'y')
