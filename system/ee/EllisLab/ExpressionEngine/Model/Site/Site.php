@@ -254,7 +254,7 @@ class Site extends Model {
 	}
 
 	/**
-	 * Creates permissions for this site by cloning site 1's permisisons
+	 * Creates permissions for this site by cloning site 1's permissions
 	 *
 	 * @return void
 	 */

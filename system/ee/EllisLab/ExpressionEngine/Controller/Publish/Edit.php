@@ -21,7 +21,7 @@ use Mexitek\PHPColors\Color;
  */
 class Edit extends AbstractPublishController {
 
-	protected $permisisons;
+	protected $permissions;
 
 	public function __construct()
 	{
@@ -67,14 +67,14 @@ class Edit extends AbstractPublishController {
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
 			ee()->input->get_post('search_in') ?: 'titles',
-			ee('Permission')->hasAny($this->permisisons['others'])
+			ee('Permission')->hasAny($this->permissions['others'])
 		);
 
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
 
-		if ( ! ee('Permission')->hasAny($this->permisisons['others']))
+		if ( ! ee('Permission')->hasAny($this->permissions['others']))
 		{
 			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}
