@@ -376,6 +376,7 @@ class Msm extends CP_Controller {
 			'title' => lang('edit_site'),
 		);
 
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');
 		ee()->cp->render('settings/form', $vars);
 	}
 

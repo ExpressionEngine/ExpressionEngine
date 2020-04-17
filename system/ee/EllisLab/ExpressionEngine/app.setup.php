@@ -50,7 +50,7 @@ use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
-return [
+$setup = [
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
@@ -633,6 +633,10 @@ return [
 			'MenuSet' => 'Model\Menu\MenuSet',
 			'MenuItem' => 'Model\Menu\MenuItem',
 
+			// ..\Dashboard
+			'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
+			'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
+
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',
 
@@ -688,13 +692,12 @@ return [
 ];
 
 if (is_dir(SYSPATH . 'ee/EllisLab/Addons/pro/')) {
-    foreach ($setup['models'] as $model => $namespace) {
-        $pro_file = SYSPATH . 'ee/EllisLab/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
-        if (file_exists($pro_file)) {
-            $setup['models'][$model] =  "\EllisLab\Addons\Pro\\" . $namespace;
-        }
-    }
-    //var_dump($setup['models']);
+	foreach($setup['models'] as $model => $namespace) {
+		$pro_file = SYSPATH . 'ee/EllisLab/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+		if (file_exists($pro_file)) {
+			$setup['models'][$model] =  "\EllisLab\Addons\Pro\\".$namespace;
+		}
+	}
 }
 
 return $setup;
