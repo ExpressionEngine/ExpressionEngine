@@ -74,7 +74,7 @@ if( ! function_exists('ee_mb_strlen'))
 
 		$encoding = ee_get_encoding($encoding);
 
-		if($encoding === 'CP850' || $encoding === 'ASCII')
+		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
 		{
 
 			return strlen($str);
@@ -102,7 +102,7 @@ if( ! function_exists('ee_mb_strpos'))
 	{
 		$encoding = ee_get_encoding($encoding);
 
-		if($encoding === 'CP850' || $encoding === 'ASCII')
+		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
 		{
 
 			return strpos($haystack, $needle, $offset);
@@ -139,7 +139,7 @@ if( ! function_exists( 'ee_mb_substr ') )
 	{
 		$encoding = ee_get_encoding($encoding);
 
-		if('CP850' === $encoding || 'ASCII' === $encoding)
+		if('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv'))
 		{
 
 			return (string) substr($str, $start, null === $length ? 2147483647 : $length);
