@@ -10447,7 +10447,7 @@ tr.no-results {
   bottom: -5px;
   right: -5px; }
 
-.tbl-search input:not([type="button"]) {
+.tbl-search input:not([type="button"][type="button"]) {
   box-shadow: none !important;
   height: 29px;
   line-height: 29px;
