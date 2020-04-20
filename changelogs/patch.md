@@ -5,8 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug (#[406](https://github.com/ExpressionEngine/ExpressionEngine/issues/406)) where missing iconv extension was causing issues.
 
 
 
