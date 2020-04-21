@@ -319,6 +319,7 @@ class Filesystem {
 			throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
 		}
 
+		// Suppressing potential warning when renaming a directory to one that already exists.
 		@rename(
 			$this->normalize($source),
 			$this->normalize($dest)
