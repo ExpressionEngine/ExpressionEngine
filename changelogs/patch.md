@@ -16,6 +16,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
         - Ternary checks for $last_time and $last_memory
     - system/ee/legacy/core/Input.php
         - PHP version check for magic_quotes_gpc
-    
+- Optimized template syncronization queries.
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
