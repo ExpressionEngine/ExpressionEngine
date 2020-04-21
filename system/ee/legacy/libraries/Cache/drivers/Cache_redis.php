@@ -76,7 +76,14 @@ class EE_Cache_redis extends CI_Driver
 		}
 
 		// Delete specific key
-		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
+		if (method_exists($this->_redis, 'del'))
+		{
+			return ( $this->_redis->del($this->unique_key($key, $scope)) === 1);
+		}
+		else if (method_exists($this->_redis, 'delete'))
+		{
+			return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
+		}
 	}
 
 	/**
