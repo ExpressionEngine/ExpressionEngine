@@ -92,9 +92,6 @@ class Design extends AbstractDesignController {
 
 		$templates = ee('Model')->get('Template')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
 
-		//var_dump($group->group_id);
-
-
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates, FALSE, $group);
 
 		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
