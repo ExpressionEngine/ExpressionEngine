@@ -1,3 +1,3 @@
-<div class="sidebar <?=$class?>">
+<div class="box sidebar <?=$class?>">
 	<?=$sidebar?>
 </div>
