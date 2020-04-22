@@ -20,6 +20,7 @@
 	</div>
 
 	<div class="main-nav__toolbar">
+		<a class="button button--secondary show-sidebar" href="#" title="Show sidebar">Show sidebar</a>
 		<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
 			<?php foreach ($header['toolbar_items'] as $name => $item): ?>
 				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
