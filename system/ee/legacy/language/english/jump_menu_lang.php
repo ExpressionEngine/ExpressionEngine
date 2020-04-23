@@ -66,6 +66,12 @@ $lang = array(
 'jump_systemUtilitiesStatistics' => 'System Utilities &raquo; Data Operations &raquo; <b>Statistics</b>',
 'jump_systemUtilitiesSearchAndReplace' => 'System Utilities &raquo; Data Operations &raquo; <b>Search and Replace</b>',
 'jump_switchTheme' => 'Switch <b>Theme</b> to <i>[theme]</i>',
+'jump_editSite' => 'Edit <b>Site</b> titled <i>[site]</i>',
+'jump_switchSite' => 'Switch <b>Site</b> to <i>[site]</i>',
+'jump_logout' => 'Log out',
+'jump_profile' => 'My Profile',
+'jump_menuLink' => 'Menu link',
+'jump_quickLink' => 'Quick link',
 
 );
 
