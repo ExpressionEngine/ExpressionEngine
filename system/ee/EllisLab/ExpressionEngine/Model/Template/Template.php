@@ -251,7 +251,7 @@ class Template extends FileSyncedModel {
 
 	public function onBeforeInsert()
 	{
-		if (is_null($this->Roles))
+		if (!isset($this->Roles) || is_null($this->Roles))
 		{
 			$this->Roles = $this->getModelFacade()->get('Role')->all();
 		}
