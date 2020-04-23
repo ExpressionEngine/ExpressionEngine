@@ -163,6 +163,7 @@ EE.cp.form_group_toggle = function(element) {
 EE.cp.fieldToggleDisable = function(context, fieldName) {
 	$('fieldset :input:hidden', context)
 		.not('.filter-item__search input')
+		.not('.search-input__input')
 		.not('.fields-grid-item:visible :input') // Don't disable collapsed Grid settings
 		.not('.fields-grid-setup:visible .fields-grid-item.hidden :input') // Don't disable phantom Grid columns
 		.attr('disabled', true);

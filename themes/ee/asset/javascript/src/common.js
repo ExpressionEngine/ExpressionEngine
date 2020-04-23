@@ -416,15 +416,18 @@ $(document).ready(function(){
 
 		// listen for clicks on tabs
 		$('body').on('click', '.tab-wrap .js-tab-button', function(e){
-
 			e.preventDefault()
-
 			switchToTab($(this));
+		});
 
+		//legacy tabs
+		$('body').on('click', '.tab-wrap ul.tabs a', function(e){
+			e.preventDefault()
+			switchToTab($(this), 'tb-act', 'act', 'ul a');
 		});
 
 		//switch to tab
-		function switchToTab(_this) {
+		function switchToTab(_this, active_group_class = 'js-active-tab-group', active_class='active', tab_selector = '.js-tab-button') {
 
 			// Get the tab that needs to be opened
 			var tabClassIs = _this.attr('rel');
@@ -432,16 +435,16 @@ $(document).ready(function(){
 			// Add the class js-active-tab-group to the parent tab-wrapper of the tab button that was pressed
 			// This allows us to only target the tabs that are part of this tab group,
 			// not other tabs that are somewhere else, such as in a different model
-			$('.js-active-tab-group').removeClass('js-active-tab-group');
-			_this.parents('.tab-wrap').addClass('js-active-tab-group');
+			$('.'+active_group_class).removeClass(active_group_class);
+			_this.parents('.tab-wrap').addClass(active_group_class);
 
 			// Close other tabs, ignoring the current one
-			$('.js-active-tab-group .js-tab-button').not(this).removeClass('active');
-			$('.js-active-tab-group .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
+			$('.'+active_group_class+' '+tab_selector).not(this).removeClass(active_class);
+			$('.'+active_group_class+' .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
 
 			// Open the new tab
-			_this.addClass('active');
-			$('.js-active-tab-group .tab.'+tabClassIs).addClass('tab-open');
+			_this.addClass(active_class);
+			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
 		}
 
 

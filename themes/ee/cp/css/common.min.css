@@ -7268,7 +7268,7 @@ tr.selected .st-status {
   border-bottom: 1px solid var(--ee-border);
   color: var(--ee-text-secondary); }
   .sidebar__section-title a:not(.button):not(.filter-bar__button) {
-    color: var(--ee-link); }
+    color: var(--ee-text-normal); }
   .sidebar__section-title:first-child {
     margin-top: 0; }
   .sidebar__section-title .button, .sidebar__section-title .filter-bar__button, .sidebar__section-title .no-results a, .no-results .sidebar__section-title a,
@@ -7288,34 +7288,38 @@ tr.selected .st-status {
   margin: 10px 0; }
 
 .legacy-sidebar {
-  border: 1px solid var(--ee-border);
+  border: 0px solid var(--ee-border);
   font-size: 0.9em;
   border-radius: 3px;
   overflow: hidden; }
   .legacy-sidebar .sidebar__link {
     margin: 0; }
-    .legacy-sidebar .sidebar__link:hover {
-      color: var(--ee-link-hover); }
     .legacy-sidebar .sidebar__link.active {
       font-weight: 700; }
   .legacy-sidebar .sidebar__section-divider {
     margin: 0; }
-  .legacy-sidebar .scroll-wrap + .sidebar__section-title,
-  .legacy-sidebar .sidebar__link + .sidebar__section-title {
-    border-top: 1px solid var(--ee-border); }
   .legacy-sidebar .sidebar__section-title {
     border-bottom: none;
     padding-bottom: 0;
     padding: 6px 12px;
-    margin: 0;
-    background: var(--ee-bg-5);
-    border-bottom: 1px solid var(--ee-border); }
+    margin: 0; }
     .legacy-sidebar .sidebar__section-title:last-child {
       border-bottom: none; }
+    .legacy-sidebar .sidebar__section-title:hover, .legacy-sidebar .sidebar__section-title.active {
+      color: var(--ee-text-normal);
+      border-radius: 3px;
+      background: var(--ee-secondary-sidebar-item-bg); }
     .legacy-sidebar .sidebar__section-title.active {
-      font-weight: 700; }
+      color: #fff;
+      background: var(--ee-secondary-sidebar-item-bg-active); }
       .legacy-sidebar .sidebar__section-title.active, .legacy-sidebar .sidebar__section-title.active a {
-        color: #01bf75; }
+        color: #fff;
+        font-weight: 700; }
+      .legacy-sidebar .sidebar__section-title.active i {
+        color: #fff;
+        opacity: 0.95; }
+      .legacy-sidebar .sidebar__section-title.active .toolbar {
+        border: none; }
 
 .file-card-wrapper {
   display: grid;
@@ -10447,7 +10451,7 @@ tr.no-results {
   bottom: -5px;
   right: -5px; }
 
-.tbl-search input:not([type="button"]) {
+.tbl-search input:not([type="button"][type="radio"]) {
   box-shadow: none !important;
   height: 29px;
   line-height: 29px;
