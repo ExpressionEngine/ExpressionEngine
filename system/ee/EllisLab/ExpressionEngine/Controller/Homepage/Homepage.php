@@ -152,6 +152,17 @@ class Homepage extends CP_Controller {
 		);
 	}
 
+	/**
+	 * Sets the CP view mode (with full menu or jump menu)
+	 */
+	public function setViewmode() {
+		$viewmode = ee()->input->post('ee_cp_viewmode');
+		if (in_array($viewmode, ['classic', 'jumpmenu'])) {
+			ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 99999999);
+		}
+		ee()->functions->redirect(ee('CP/URL')->make('homepage'));
+	}
+
 }
 
 // EOF

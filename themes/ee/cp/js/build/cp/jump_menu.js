@@ -60,10 +60,13 @@ EE.cp.JumpMenu = {
     document.querySelector('#jumpEntry2').addEventListener("focus", function () {
       EE.cp.JumpMenu._showResults(2);
     });
-    document.querySelector('.js-jump-menu-trigger').addEventListener("click", function (e) {
-      e.preventDefault();
+    document.querySelectorAll('.js-jump-menu-trigger').forEach(
+      function(triggerLink) {
+        triggerLink.addEventListener("click", function (e) {
+          e.preventDefault();
 
-      EE.cp.JumpMenu._showJumpMenu(1);
+          EE.cp.JumpMenu._showJumpMenu(1);
+      })
     });
     document.querySelector('.app-overlay').addEventListener("click", function () {
       document.querySelector('.jump-to').blur();

@@ -93,6 +93,10 @@ class View {
 
 		$vars['blocks'] = $this->blocks;
 
+		if (ee()->input->cookie('ee_cp_viewmode')) {
+			$vars['ee_cp_viewmode'] = ee()->input->cookie('ee_cp_viewmode');
+		}
+
 		$this->processing = $vars;
 
 		// parse the current view
