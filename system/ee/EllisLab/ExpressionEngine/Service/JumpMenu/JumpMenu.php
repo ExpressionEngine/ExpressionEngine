@@ -137,6 +137,20 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'members/group',
                 'permission' => 'can_edit_roles'
             ),
+            'logout' => array(
+                'icon' => 'fa-sign-out-alt',
+                'command' => 'logout log out sign out',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'login/logout'
+            ),
+            'myProfile' => array(
+                'icon' => 'fa-user',
+                'command' => 'profile',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'members/profile'
+            ),
             'viewAddons' => array(
                 'icon' => 'fa-eye',
                 'command' => 'view addons add-ons modules plugins extensions',
@@ -556,6 +570,67 @@ class JumpMenu extends AbstractJumpMenu
 
         $items = self::$items;
 
+        //if this is multi-site install, add links
+        if (ee()->config->item('multiple_sites_enabled') === 'y') {
+            $site_list = ee()->session->userdata('assigned_sites');
+            if (count($site_list) > 1) {
+                $items[1]['switchSite'] = array(
+                    'icon' => 'fa-globe',
+                    'command' => 'switch site msm',
+                    'dynamic' => true,
+                    'addon' => false,
+                    'target' => 'sites/switch'
+                );
+
+                if (ee('Permission')->can('admin_sites')) {
+                    $items[1]['editSite'] = array(
+                        'icon' => 'fa-pencil-alt',
+                        'command' => 'edit site msm',
+                        'dynamic' => true,
+                        'addon' => false,
+                        'target' => 'sites/edit'
+                    );
+                }
+            }
+        }
+
+        //add custom menu links (addons to be included later)
+        $menuItems = ee('Model')->get('MenuItem')
+			->fields('MenuItem.*', 'Children.*')
+            ->with(array('Set' => 'RoleSettings'), 'Children')
+            ->filter('type', 'IN', ['link', 'submenu'])
+			->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+			->order('MenuItem.sort')
+			->order('Children.sort')
+			->all();
+
+		foreach ($menuItems as $item)
+		{
+			if ($item->type == 'submenu')
+			{
+				foreach ($item->Children as $child)
+				{
+                    $items[1]['custom_' . $child->item_id] = array(
+                        'icon' => 'fa-link',
+                        'command' => 'menu link ' . $child->name,
+                        'command_title' => lang('jump_menuLink') . ': ' . $item->name . ' / ' . $child->name,
+                        'dynamic' => false,
+                        'target' => $child->data
+                    );
+				}
+			}
+			elseif ($item->parent_id == 0)
+			{
+                $items[1]['custom_' . $item->item_id] = array(
+                    'icon' => 'fa-link',
+                    'command' => 'menu link ' . $item->name,
+                    'command_title' => lang('jump_menuLink') . ': ' . $item->name,
+                    'dynamic' => false,
+                    'target' => $item->data
+                );
+			}
+		}
+
         foreach ($items[1] as $name => $item) {
             if (!ee('Permission')->isSuperAdmin() && !empty($item['permission']) && !ee('Permission')->hasAny($item['permission'])) {
                 unset($items[1][$name]);
@@ -596,6 +671,22 @@ class JumpMenu extends AbstractJumpMenu
                 $items[1] = array_merge($items[1], $info->getJumps());
             }
         }
+
+        //member quick links
+        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        if (!empty($member->quick_links)) {
+			foreach (explode("\n", $member->quick_links) as $i=>$row) {
+                $x = explode('|', $row);
+                $items[1]['quicklink_' . $i] = array(
+                    'icon' => 'fa-link',
+                    'command' => 'quick link ' . $x[0],
+                    'command_title' => lang('jump_quickLink') . ': ' . $x[0],
+                    'dynamic' => false,
+                    'target' => $x[1]
+                );
+			}
+		}
+
 
         // Cache our items. We're bypassing the checks for the default
         // cache driver because we want this to be cached and working
