@@ -129,13 +129,25 @@
 		<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
 		<script type="text/javascript">
 		$(document).ready(function(){
-			$('#welcome-screen').slideDown(2000);
+			$('#welcome-screen').show();
 
 			$('.show-sidebar').on('click', function(){
 				$('.ee-main--dashboard').css('background', 'var(--ee-dashboard-bg)');
 				$('.ee-sidebar').removeClass('hidden');
 				$('.main-nav').removeClass('hidden');
-			})
+			});
+
+			$('#jump-menu').on('modal:open', function () {
+				$('.welcome-jump-instructions').fadeIn();
+			}).on('modal:close', function () {
+				$('.welcome-jump-instructions').fadeOut();
+			});
+
+			if (navigator.appVersion.indexOf("Mac") != -1) {
+				$('#jump-trigger').html('⌘');
+			} else {
+				$('#jump-trigger').html('<span class="key-ctrl">ctrl</span>');
+			}
 		});
 		</script>
 		<?php endif; ?>
