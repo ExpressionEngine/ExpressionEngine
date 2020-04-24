@@ -62,8 +62,16 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'create new publish member role group',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/groups/create',
+                'target' => 'members/roles/create',
                 'permission' => 'can_create_roles'
+            ),
+            'viewCategories' => array(
+                'icon' => 'fa-eye',
+                'command' => 'view categories',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'categories',
+                'permission' => 'can_edit_categories'
             ),
             'createCategoryIn' => array(
                 'icon' => 'fa-plus',
@@ -129,13 +137,37 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'members/edit',
                 'permission' => 'can_edit_members'
             ),
+            'viewMemberRoles' => array(
+                'icon' => 'fa-eye',
+                'command' => 'view member roles groups',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/roles',
+                'permission' => 'can_edit_roles'
+            ),
             'editMemberRole' => array(
                 'icon' => 'fa-pencil-alt',
                 'command' => 'edit member role group titled',
                 'dynamic' => true,
                 'addon' => false,
-                'target' => 'members/group',
+                'target' => 'members/role',
                 'permission' => 'can_edit_roles'
+            ),
+            'viewMemberFields' => array(
+                'icon' => 'fa-eye',
+                'command' => 'view member fields',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/fields',
+                'permission' => 'can_admin_roles'
+            ),
+            'editMemberField' => array(
+                'icon' => 'fa-pencil-alt',
+                'command' => 'edit member field',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'members/field',
+                'permission' => 'can_admin_roles'
             ),
             'logout' => array(
                 'icon' => 'fa-sign-out-alt',

@@ -52,6 +52,26 @@ class Members extends Jumps {
 		$this->sendResponse($response);
 	}
 
+	public function field()
+	{
+		$fields = $this->loadMemberFields(ee()->input->post('searchString'));
+
+		$response = array();
+
+		foreach ($fields as $field) {
+			$response['editMemberField' . $field->m_field_id] = array(
+				'icon' => 'fa-pencil-alt',
+				'command' => $field->m_field_label . ' ' . $field->m_field_name,
+				'command_title' => $field->m_field_name,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('members/fields/edit/' . $field->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
+	}
+
 	public function role()
 	{
 		$roles = $this->loadMemberRoles(ee()->input->post('searchString'));
@@ -93,6 +113,22 @@ class Members extends Jumps {
 		}
 
 		$this->sendResponse($response);
+	}
+
+	private function loadMemberFields($searchString = false)
+	{
+		$groups = ee('Model')->get('MemberField');
+
+		if (!empty($searchString)) {
+			// Break the search string into individual keywords so we can partially match them.
+			$keywords = explode(' ', $searchString);
+
+			foreach ($keywords as $keyword) {
+				$groups->filter('m_field_name', 'LIKE', '%' . $keyword . '%');
+			}
+		}
+
+		return $groups->order('m_field_name', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMemberRoles($searchString = false)
