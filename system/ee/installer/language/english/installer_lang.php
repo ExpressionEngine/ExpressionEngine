@@ -47,7 +47,7 @@ $lang = array(
 
     // Share Analytics
     'share_analytics' => 'I want to share analytics with the ExpressionEngine Development Team',
-    'share_analytics_desc' => 'EllisLab asks users to help improve ExpressionEngine by occasionally <a href="' . DOC_URL . 'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
+    'share_analytics_desc' => 'PacketTide asks users to help improve ExpressionEngine by occasionally <a href="' . DOC_URL . 'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
 
     'start_installation'         => 'Install',
 
@@ -137,7 +137,7 @@ $lang = array(
 'would_you_recommend'          => 'How likely is it that you will recommend ExpressionEngine to a colleague or friend?',
 'unlikely'                     => 'Unlikely',
 'highly_likely'                => 'Highly Likely',
-'additional_comments'          => 'What could ExpressionEngine or EllisLab do to delight you?',
+'additional_comments'          => 'What could ExpressionEngine or PacketTide do to delight you?',
 
 );
 
