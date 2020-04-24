@@ -1563,7 +1563,7 @@ class EE_Schema {
 
 		}
 
-		$role_permisisons = [
+		$role_permissions = [
 			1 => [
 				'can_view_offline_system',
 				'can_access_cp',
@@ -1673,7 +1673,7 @@ class EE_Schema {
 			]
 		];
 
-		foreach ($role_permisisons as $role_id => $permissions)
+		foreach ($role_permissions as $role_id => $permissions)
 		{
 			foreach ($permissions as $permission)
 			{

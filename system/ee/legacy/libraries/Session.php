@@ -514,7 +514,7 @@ class EE_Session {
 
 		$this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
 
-		foreach ($role->Permisisons as $permission)
+		foreach ($role->Permissions as $permission)
 		{
 			$this->userdata[$permission->permission] = 'y';
 		}

@@ -549,7 +549,7 @@ class Roles extends AbstractRolesController {
 						'site_id'    => $site->getId(),
 						'permission' => $perm
 					]);
-					$role->Permisisons->getAssociation()->add($p);
+					$role->Permissions->getAssociation()->add($p);
 				}
 			}
 		}
