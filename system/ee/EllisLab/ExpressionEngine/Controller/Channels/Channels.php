@@ -286,7 +286,7 @@ class Channels extends AbstractChannelsController {
 			'categories'  => $this->renderCategoriesTab($channel, $vars['errors']),
 			'statuses'    => $this->renderStatusesTab($channel, $vars['errors']),
 			'settings'    => $this->renderSettingsTab($channel, $vars['errors']),
-			'permissions' => $this->renderPermisisonsTab($channel, $vars['errors']),
+			'permissions' => $this->renderPermissionsTab($channel, $vars['errors']),
 		];
 
 		ee()->javascript->set_global([
@@ -1303,7 +1303,7 @@ class Channels extends AbstractChannelsController {
 	 *   on the form.
 	 * @return string HTML
 	 */
-	private function renderPermisisonsTab($channel, $errors)
+	private function renderPermissionsTab($channel, $errors)
 	{
 		// Not a superadmin?  Preselect their roles
 		if ($channel->isNew())

@@ -158,7 +158,7 @@ class Site extends Model {
 		$this->createNewStats();
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
-		$this->copyPermisisons();
+		$this->copyPermissions();
 		$this->copyRoleSettings();
     }
 
@@ -258,7 +258,7 @@ class Site extends Model {
 	 *
 	 * @return void
 	 */
-	protected function copyPermisisons()
+	protected function copyPermissions()
 	{
 		$permissions = $this->getModelFacade()->get('Permission')
 			->filter('site_id', 1)
