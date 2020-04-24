@@ -517,6 +517,13 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => true,
                 'addon' => false,
                 'target' => 'themes/switch'
+            ),
+            'toggleSidebar' => array(
+                'icon' => 'fa-toggle-on',
+                'command' => 'toggle sidebar navigation',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'homepage/toggle-viewmode'
             )
         )
     );

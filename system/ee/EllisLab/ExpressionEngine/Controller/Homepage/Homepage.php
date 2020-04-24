@@ -163,6 +163,24 @@ class Homepage extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL')->make('homepage'));
 	}
 
+	/**
+	 * Toggles the viewmode to the opposite setting.
+	 *
+	 * @return void
+	 */
+	public function toggleViewmode() {
+		$viewmode = ee()->input->cookie('ee_cp_viewmode');
+
+		// If it doesn't exist, or it's set to jumpmenu, flip the sidebar on.
+		if (empty($viewmode) || $viewmode == 'jumpmenu') {
+			ee()->input->set_cookie('ee_cp_viewmode', 'classic', 99999999);
+		} else {
+			ee()->input->set_cookie('ee_cp_viewmode', 'jumpmenu', 99999999);
+		}
+
+		ee()->functions->redirect(ee('CP/URL')->make('homepage'));
+	}
+
 }
 
 // EOF

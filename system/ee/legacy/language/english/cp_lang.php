@@ -30,7 +30,8 @@ $lang = array(
 'dark_theme'  => 'Dark Theme',
 'light_theme' => 'Light Theme',
 
-'go_to' => 'Go To...',
+'jump_menu_item' => 'Jump Menu',
+'jump_menu_input' => 'Go To...',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',

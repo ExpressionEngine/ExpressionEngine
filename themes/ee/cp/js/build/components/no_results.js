@@ -7,5 +7,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 function NoResults(props) {
-    return (React.createElement("label", { className: "field-empty", dangerouslySetInnerHTML: { __html: props.text } }));
+    return React.createElement("label", {
+        className: "field-empty",
+        dangerouslySetInnerHTML: {
+            __html: props.text
+        }
+    });
 }

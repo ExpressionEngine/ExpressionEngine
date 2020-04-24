@@ -146,16 +146,17 @@
 	animation-fill-mode: both;
 }
 .zoomIn.logo {
+	animation-delay: 3s;
 	animation-duration: 3s;
 }
 .zoomIn.welcome {
-	animation-delay: 3s;
+	animation-delay: 6s;
 	animation-duration: 3s;
 }
 .zoomIn.shortcut {
 	display: inline-block;
 	animation-name: heartBeat;
-	animation-delay: 6s;
+	animation-delay: 9s;
 	animation-duration: 30s;
 	/* animation-duration: 3s; */
 	font-size: 40px;
@@ -168,8 +169,17 @@
 	/* animation-timing-function: ease-in-out; */
 }
 .zoomIn.choices {
-	animation-delay: 20s;
+	animation-delay: 54s;
 	animation-duration: 3s;
+	position: absolute;
+	left: 50%;
+	bottom: 20px;
+	width: 400px;
+	margin-left: -200px;
+
+}
+.zoomIn.choices .btn:first-child {
+	margin-right: 20px;
 }
 .choices p {
 	line-height: 3em;
@@ -252,13 +262,15 @@
 		<svg class="zoomIn logo" xmlns="http://www.w3.org/2000/svg" width="148.157" height="126.181" viewBox="0 0 38.157 26.181"><defs><style>.a{fill:#ffffff;}</style></defs><g transform="translate(-175.171 -12.013)"><path class="a" d="M68.174,225.238a11.006,11.006,0,0,1-2.59,1.979,5.335,5.335,0,0,1-2.3.534,3.019,3.019,0,0,1-2.283-.9,3.533,3.533,0,0,1-.856-2.533l.074-1.089.151-.026a27.272,27.272,0,0,0,5.95-1.524,6.794,6.794,0,0,0,2.774-1.97,3.716,3.716,0,0,0,.84-2.218,2.676,2.676,0,0,0-1.023-2.164,4.53,4.53,0,0,0-2.961-.867,10.486,10.486,0,0,0-4.976,1.227,9.452,9.452,0,0,0-3.636,3.352,8.3,8.3,0,0,0-1.327,4.436,5.39,5.39,0,0,0,1.568,4.075,6.052,6.052,0,0,0,4.334,1.5,8.73,8.73,0,0,0,3.66-.777,11.565,11.565,0,0,0,3.319-2.5ZM60.4,222.122a12.165,12.165,0,0,1,2.07-5.29,2.918,2.918,0,0,1,2.28-1.381,1.4,1.4,0,0,1,1.092.5,1.954,1.954,0,0,1,.425,1.323,4.61,4.61,0,0,1-1.713,3.473,8.12,8.12,0,0,1-3.931,1.6l-.273.05Z" transform="translate(130.676 -196.872)"/><path class="a" d="M31.787,219.629c-1.508-5.9,2.063-12.07,8.2-14.885-.154.055-.3.118-.449.175a4.081,4.081,0,0,1,.4-.173l-11.49,2.964,3.063,1.813c-4.012,3.4-6.082,7.608-5.089,11.491,1.553,6.079,10.056,9.249,19.687,7.691C39.382,229.207,33.294,225.53,31.787,219.629Z" transform="translate(149 -190.905)"/><path class="a" d="M87.7,209.482c1.508,5.9-2.062,12.071-8.2,14.886.153-.056.3-.119.449-.176a3.845,3.845,0,0,1-.4.174l11.49-2.964-3.063-1.812c4.011-3.4,6.081-7.61,5.089-11.492-1.553-6.078-10.057-9.249-19.687-7.689C80.107,199.905,86.2,203.582,87.7,209.482Z" transform="translate(120.011 -188)"/></g></svg>
 
 		<h4 class="zoomIn welcome">Welcome to EE 6 Alpha</h4>
-		<div class="zoomIn shortcut cta"><span id="jump-trigger"></span> + J</div>
+		<div class="zoomIn shortcut cta"><span class="jump-trigger"></span> J</div>
 
 		<?=form_open(ee('CP/URL')->make('homepage/set-viewmode'))?>
-		<div class="zoomIn choices" style="padding-top: 35px;">
+		<div class="zoomIn choices">
 			<p><em>How would you like to proceed?</em></p>
-			<p><?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="btn button--action" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?></p>
-			<p><?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="btn button--secondary" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?></p>
+			<p>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="btn button--action" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="btn button--action" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?>
+			</p>
 		</div>
 		<?=form_close()?>
 	</div>

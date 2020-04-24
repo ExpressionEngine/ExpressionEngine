@@ -106,7 +106,7 @@
 		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input" id="jumpMenu1">
-					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('go_to')?>">
+					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
 				</div>
 				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
 					<span id="jumpEntry1Selection" class="action-tag"></span>
@@ -142,12 +142,6 @@
 			}).on('modal:close', function () {
 				$('.welcome-jump-instructions').fadeOut();
 			});
-
-			if (navigator.appVersion.indexOf("Mac") != -1) {
-				$('#jump-trigger').html('⌘');
-			} else {
-				$('#jump-trigger').html('<span class="key-ctrl">ctrl</span>');
-			}
 		});
 		</script>
 		<?php endif; ?>

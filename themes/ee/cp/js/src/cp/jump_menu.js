@@ -47,6 +47,7 @@ EE.cp.JumpMenu = {
 	typingTimeout: false,
 	ajaxRequest: false,
 	currentFocus: 1,
+	shortcut: 'ctrl',
 	commandKeys: {
 		1: ''
 	},
@@ -54,6 +55,12 @@ EE.cp.JumpMenu = {
 	lastSearch: '',
 
 	init: function() {
+		if (navigator.appVersion.indexOf("Mac") != -1) {
+			EE.cp.JumpMenu.shortcut = '⌘';
+		}
+		
+		$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
+
 		document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
 		document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
 

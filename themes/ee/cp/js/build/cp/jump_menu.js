@@ -47,11 +47,17 @@ EE.cp.JumpMenu = {
   typingTimeout: false,
   ajaxRequest: false,
   currentFocus: 1,
+  shortcut: 'ctrl',
   commandKeys: {
     1: ''
   },
   lastSearch: '',
   init: function init() {
+    if (navigator.appVersion.indexOf("Mac") != -1) {
+      EE.cp.JumpMenu.shortcut = '⌘';
+    }
+
+    $('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
     document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
     document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
     document.querySelector('#jumpEntry1').addEventListener("focus", function () {
@@ -60,13 +66,12 @@ EE.cp.JumpMenu = {
     document.querySelector('#jumpEntry2').addEventListener("focus", function () {
       EE.cp.JumpMenu._showResults(2);
     });
-    document.querySelectorAll('.js-jump-menu-trigger').forEach(
-      function(triggerLink) {
-        triggerLink.addEventListener("click", function (e) {
-          e.preventDefault();
+    document.querySelectorAll('.js-jump-menu-trigger').forEach(function (triggerLink) {
+      triggerLink.addEventListener("click", function (e) {
+        e.preventDefault();
 
-          EE.cp.JumpMenu._showJumpMenu(1);
-      })
+        EE.cp.JumpMenu._showJumpMenu(1);
+      });
     });
     document.querySelector('.app-overlay').addEventListener("click", function () {
       document.querySelector('.jump-to').blur();
@@ -100,6 +105,7 @@ EE.cp.JumpMenu = {
       }
     } else if ((!e.target || e.target.className.indexOf('jump-to') === -1) && (e.key == 'j' || e.key == 'J') && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
+
       EE.cp.JumpMenu._showJumpMenu();
     }
   },

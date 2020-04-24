@@ -72,6 +72,7 @@ $lang = array(
 'jump_profile' => 'My Profile',
 'jump_menuLink' => 'Menu link',
 'jump_quickLink' => 'Quick link',
+'jump_toggleSidebar' => 'Toggle Sidebar Navigation',
 
 );
 
