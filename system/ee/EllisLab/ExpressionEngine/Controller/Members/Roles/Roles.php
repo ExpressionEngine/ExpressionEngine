@@ -541,15 +541,15 @@ class Roles extends AbstractRolesController {
 		{
 			// Apply these to all sites
 			$sites = ee('Model')->get('Site')->all();
-			foreach ($sites as $site)
-			{
-				foreach ($allowed_perms as $perm)
-				{
-					$p = ee('Model')->make('Permission', [
-						'site_id'    => $site->getId(),
-						'permission' => $perm
-					]);
-					$role->Permissions->getAssociation()->add($p);
+			foreach ($sites as $site) {
+				foreach ($allowed_perms as $perm) {
+					if (!empty($perm)) {
+						$p = ee('Model')->make('Permission', [
+							'site_id'    => $site->getId(),
+							'permission' => $perm
+						]);
+						$role->Permissions->getAssociation()->add($p);
+					}
 				}
 			}
 		}
@@ -563,13 +563,14 @@ class Roles extends AbstractRolesController {
 				->delete();
 
 			// Add back in all the allowances
-			foreach ($allowed_perms as $perm)
-			{
-				ee('Model')->make('Permission', [
-					'role_id'    => $role->getId(),
-					'site_id'    => ee()->config->item('site_id'),
-					'permission' => $perm
-				])->save();
+			foreach ($allowed_perms as $perm) {
+				if (!empty($perm)) {
+					ee('Model')->make('Permission', [
+						'role_id'    => $role->getId(),
+						'site_id'    => ee()->config->item('site_id'),
+						'permission' => $perm
+					])->save();
+				}
 			}
 		}
 
