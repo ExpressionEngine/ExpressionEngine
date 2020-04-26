@@ -1352,6 +1352,11 @@ class EE_Session {
 				->all()
 				->pluck('site_id');
 
+			if (empty($site_ids)) {
+				$this->userdata['assigned_sites'] = [];
+				return;
+			}
+
 			$assigned_sites->filter('site_id', 'IN', $site_ids);
 		}
 
