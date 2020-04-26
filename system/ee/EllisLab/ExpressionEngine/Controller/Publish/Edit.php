@@ -452,7 +452,7 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
-		if ( ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->chanel_id)
+		if ( ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
 			&& $entry->author_id != ee()->session->userdata('member_id'))
 		{
 			show_error(lang('unauthorized_access'), 403);
