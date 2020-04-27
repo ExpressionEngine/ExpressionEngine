@@ -21,6 +21,11 @@
 			echo $item."\n";
 		}
 		?>
+		<style type="text/css">
+			.title-bar {
+				padding-right: 20px;
+			}
+		</style>
 	</head>
 	<body id="top">
 		<div class="box"><?=$content?></div>
