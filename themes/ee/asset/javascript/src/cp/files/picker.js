@@ -115,6 +115,7 @@
 		function openInIframe(url) {
 			$('div.box', modal).html("<iframe></iframe>");
 
+			var theme = $('body').data('theme');
 			var frame = $('iframe', modal);
 			frame.css('border', 'none');
 			frame.css('width', '100%');
@@ -160,6 +161,7 @@
 					}
 					callback(response);
 				} catch(e) {
+					$(this).contents().find('body').attr('data-theme', theme);
 					frame.show();
 					bindFrameUnload();
 
