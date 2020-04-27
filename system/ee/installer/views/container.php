@@ -28,7 +28,7 @@
 			</div>
 			<section class="bar">
 				<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-				<p class="right">&copy;<?=date('Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a> Corp.</p>
+				<p class="right">&copy;<?=date('Y')?> <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
 			</section>
 		</section>
 
