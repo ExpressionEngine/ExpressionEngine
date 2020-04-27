@@ -38,14 +38,14 @@ class Members extends Jumps {
 
 		$response = array();
 
-		foreach ($groups as $group) {
-			$response['viewMemberGroup' . $group->name] = array(
+		foreach ($roles as $role) {
+			$response['viewMemberRole' . $role->name] = array(
 				'icon' => 'fa-eye',
-				'command' => $group->name,
-				'command_title' => $group->name,
+				'command' => $role->name,
+				'command_title' => $role->name,
 				'dynamic' => false,
 				'addon' => false,
-				'target' => ee('CP/URL')->make('members', array('role_id' => $group->getId()))->compile()
+				'target' => ee('CP/URL')->make('members', array('role_id' => $role->getId()))->compile()
 			);
 		}
 
@@ -117,34 +117,34 @@ class Members extends Jumps {
 
 	private function loadMemberFields($searchString = false)
 	{
-		$groups = ee('Model')->get('MemberField');
+		$fields = ee('Model')->get('MemberField');
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				$groups->filter('m_field_name', 'LIKE', '%' . $keyword . '%');
+				$fields->filter('m_field_name', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
-		return $groups->order('m_field_name', 'ASC')->limit(11)->all();
+		return $fields->order('m_field_name', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMemberRoles($searchString = false)
 	{
-		$groups = ee('Model')->get('Role');
+		$roles = ee('Model')->get('Role');
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				$groups->filter('name', 'LIKE', '%' . $keyword . '%');
+				$roles->filter('name', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
-		return $groups->order('name', 'ASC')->limit(11)->all();
+		return $roles->order('name', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMembers($searchString = false)
