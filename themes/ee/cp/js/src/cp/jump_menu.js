@@ -120,6 +120,7 @@ EE.cp.JumpMenu = {
 			if (e.key == 'Escape') {
 				// Pressing ESC should close the jump menu. We blur the field to make sure
 				// subsequent keystrokes aren't entered into it just in case.
+				jumpContainer.document.querySelector('.jump-to').value = '';
 				jumpContainer.document.querySelector('.jump-to').blur();
 			} else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
 				let numItems = jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
