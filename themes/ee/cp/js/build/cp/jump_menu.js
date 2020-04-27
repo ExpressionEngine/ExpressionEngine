@@ -47,7 +47,7 @@ EE.cp.JumpMenu = {
   typingTimeout: false,
   ajaxRequest: false,
   currentFocus: 1,
-  shortcut: 'ctrl',
+  shortcut: 'Ctrl',
   commandKeys: {
     1: ''
   },
