@@ -41,6 +41,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /**
  * EE Jump Menu
  */
+var jumpContainer = window.top;
 EE.cp.JumpMenu = {
   typingAjaxDelay: 400,
   // Internal Variables
@@ -57,30 +58,30 @@ EE.cp.JumpMenu = {
       EE.cp.JumpMenu.shortcut = '⌘';
     }
 
-    $('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
-    document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
-    document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
-    document.querySelector('#jumpEntry1').addEventListener("focus", function () {
+    jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
+    jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
+    jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
+    jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function () {
       EE.cp.JumpMenu._showResults(1);
     });
-    document.querySelector('#jumpEntry2').addEventListener("focus", function () {
+    jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function () {
       EE.cp.JumpMenu._showResults(2);
     });
-    document.querySelectorAll('.js-jump-menu-trigger').forEach(function (triggerLink) {
+    jumpContainer.document.querySelectorAll('.js-jump-menu-trigger').forEach(function (triggerLink) {
       triggerLink.addEventListener("click", function (e) {
         e.preventDefault();
 
         EE.cp.JumpMenu._showJumpMenu(1);
       });
     });
-    document.querySelector('.app-overlay').addEventListener("click", function () {
-      document.querySelector('.jump-to').blur();
+    jumpContainer.document.querySelector('.app-overlay').addEventListener("click", function () {
+      jumpContainer.document.querySelector('.jump-to').blur();
     });
   },
   _showJumpMenu: function _showJumpMenu() {
     var loadResults = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    $('#jump-menu').trigger('modal:open');
-    document.querySelector('#jump-menu .jump-to').focus();
+    jumpContainer.$('#jump-menu').trigger('modal:open');
+    jumpContainer.document.querySelector('#jump-menu .jump-to').focus();
 
     if (loadResults) {
       EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, '');
@@ -90,12 +91,12 @@ EE.cp.JumpMenu = {
     if (e.target && e.target.className.indexOf('jump-to') !== -1) {
       if (e.key == 'Enter') {
         // User selected an option.
-        document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active').click();
+        jumpContainer.document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active').click();
       } else if (e.key == 'Tab' && e.shiftKey) {
         // If the user hit backspace on the secondary input field and it's empty, focus the top level field.
         e.preventDefault();
-        document.querySelector('#jumpMenu1').style.display = 'block';
-        document.querySelector('#jumpEntry1').focus();
+        jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+        jumpContainer.document.querySelector('#jumpEntry1').focus();
       } else if (e.key == 'Backspace' && EE.cp.JumpMenu.currentFocus > 1) {
         // If the user pressed Backspace, record the current value of the field before
         // the `_keyUp` is triggered so we know if we should switch fields.
@@ -117,15 +118,15 @@ EE.cp.JumpMenu = {
       if (e.key == 'Escape') {
         // Pressing ESC should close the jump menu. We blur the field to make sure
         // subsequent keystrokes aren't entered into it just in case.
-        document.querySelector('.jump-to').blur();
+        jumpContainer.document.querySelector('.jump-to').blur();
       } else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
-        var numItems = document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
+        var numItems = jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
 
         if (numItems > 0) {
           // User is scrolling through the available options so highlight the current one.
-          var activeIndex = Array.from(document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link')).indexOf(document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active')); // Unhighlight any currently selected option.
+          var activeIndex = Array.from(jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link')).indexOf(jumpContainer.document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active')); // Unhighlight any currently selected option.
 
-          document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active').classList.remove('jump-menu__link--active');
+          jumpContainer.document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active').classList.remove('jump-menu__link--active');
           var nextIndex = 0;
 
           if (e.key == 'ArrowUp') {
@@ -144,12 +145,12 @@ EE.cp.JumpMenu = {
           } // Highlight the selected result for the current result set.
 
 
-          document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link')[nextIndex].classList.add('jump-menu__link--active');
+          jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link')[nextIndex].classList.add('jump-menu__link--active');
         }
       } else if (EE.cp.JumpMenu.currentFocus > 1 && e.key == 'Backspace' && lastSearch == '') {
         // If the user hit backspace on the secondary input field and it's empty, focus the top level field.
-        document.querySelector('#jumpMenu1').style.display = 'block';
-        document.querySelector('#jumpEntry1').focus();
+        jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+        jumpContainer.document.querySelector('#jumpEntry1').focus();
       } else if (e.key != 'Enter' && e.key != 'Shift' && e.key != 'Tab') {
         // Check if we're on a sub-level as those will always be dynamic.
         if (EE.cp.JumpMenu.currentFocus > 1) {
@@ -168,15 +169,15 @@ EE.cp.JumpMenu = {
   handleClick: function handleClick(commandKey) {
     // Check if we're changing the theme.
     if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
-      document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
-      localStorage.setItem('theme', document.body.dataset.theme);
+      jumpContainer.document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
+      localStorage.setItem('theme', jumpContainer.document.body.dataset.theme);
     } else {
       // Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
       EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
       EE.cp.JumpMenu.currentFocus++; // Make sure to clear out the previous commands at this new level.
 
       EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus] = {};
-      document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus).innerHTML = '';
+      jumpContainer.document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus).innerHTML = '';
       this.handleDynamic(commandKey);
     }
   },
@@ -188,11 +189,11 @@ EE.cp.JumpMenu = {
    */
   handleDynamic: function handleDynamic(commandKey) {
     var searchString = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    document.querySelector('#jumpMenu1').style.display = 'none'; // Load the secondary input field and focus it. This also shows the secondary results box.
+    jumpContainer.document.querySelector('#jumpMenu1').style.display = 'none'; // Load the secondary input field and focus it. This also shows the secondary results box.
 
     this._showResults(2);
 
-    document.querySelector('#jumpEntry2').focus();
+    jumpContainer.document.querySelector('#jumpEntry2').focus();
 
     this._loadData(commandKey, searchString);
   },
@@ -301,11 +302,11 @@ EE.cp.JumpMenu = {
     var entryInputTarget = '#jumpEntry' + level;
     var resultsTarget = '#jumpMenuResults' + level; // Show the first or secondary input box.
 
-    document.querySelector(entryTarget).style.display = 'flex';
-    document.querySelector(entryInputTarget).focus(); // Reset the target results box to empty for our new results.
+    jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
+    jumpContainer.document.querySelector(entryInputTarget).focus(); // Reset the target results box to empty for our new results.
 
-    document.querySelector(resultsTarget).innerHTML = '';
-    document.querySelector(resultsTarget).style.display = 'block'; // Note that the first entry that matches should be selected so the user can just hit enter.
+    jumpContainer.document.querySelector(resultsTarget).innerHTML = '';
+    jumpContainer.document.querySelector(resultsTarget).style.display = 'block'; // Note that the first entry that matches should be selected so the user can just hit enter.
 
     var firstMatch = true;
     var matchClass = '';
@@ -314,14 +315,14 @@ EE.cp.JumpMenu = {
     for (var commandKey in commandSet) {
       if (!searchString || commandSet[commandKey].command.match(searchRegex)) {
         // We have at least one match, make sure to remove the 'no results' box.
-        document.querySelector('#jumpMenuNoResults').style.display = 'none'; // Keep track of how many commands we've displayed so we can limit the result list.
+        jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'none'; // Keep track of how many commands we've displayed so we can limit the result list.
 
         displayedCommands++; // Only display a few commands at a time to prevent overflowing the result listing.
         // We only want to display 10 so by checking for 11, we know we have at least 1
         // more so we can display a "there are more results" message.
 
         if (displayedCommands >= 11) {
-          document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">More than 10 results found, please refine your search</div>';
+          jumpContainer.document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">More than 10 results found, please refine your search</div>';
           break;
         }
 
@@ -346,17 +347,17 @@ EE.cp.JumpMenu = {
           commandContext = commandSet[commandKey].command_context;
         }
 
-        document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fas fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
+        jumpContainer.document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fas fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
         firstMatch = false;
         matchClass = '';
       }
     }
 
     if (displayedCommands == 0) {
-      document.querySelectorAll('.jump-menu__items').forEach(function (el) {
+      jumpContainer.document.querySelectorAll('.jump-menu__items').forEach(function (el) {
         el.style.display = 'none';
       });
-      document.querySelector('#jumpMenuNoResults').style.display = 'block';
+      jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'block';
     }
   },
 
@@ -366,25 +367,25 @@ EE.cp.JumpMenu = {
    */
   _showResults: function _showResults(level) {
     EE.cp.JumpMenu.currentFocus = level;
-    document.querySelector('#jumpMenuResults1').style.display = 'none';
-    document.querySelector('#jumpMenuResults2').style.display = 'none';
+    jumpContainer.document.querySelector('#jumpMenuResults1').style.display = 'none';
+    jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
 
     if (level === 1) {
       // Show the results for the first level.
-      document.querySelector('#jumpMenuResults1').style.display = 'block'; // Hide the secondary input and clear it's value so a previous sub-search's text
+      jumpContainer.document.querySelector('#jumpMenuResults1').style.display = 'block'; // Hide the secondary input and clear it's value so a previous sub-search's text
       // isn't still in the field if the user selects a different top-level command.
 
-      document.querySelector('#jumpMenu2').style.display = 'none';
-      document.querySelector('#jumpEntry2').value = '';
+      jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
+      jumpContainer.document.querySelector('#jumpEntry2').value = '';
     } else if (level === 2) {
       // Show the command we selected from the top-level.
       var parentCommandKey = EE.cp.JumpMenu.commandKeys[1];
       var commandTitle = EE.cp.JumpMenuCommands[1][parentCommandKey].command_title;
       commandTitle = commandTitle.replace(/\[([^\]]*)\]/g, '');
-      document.querySelector('#jumpEntry1Selection').innerHTML = commandTitle;
-      document.querySelector('#jumpEntry1Selection').style.display = 'inline-block';
-      document.querySelector('#jumpMenu2').style.display = 'flex';
-      document.querySelector('#jumpMenuResults2').style.display = 'block';
+      jumpContainer.document.querySelector('#jumpEntry1Selection').innerHTML = commandTitle;
+      jumpContainer.document.querySelector('#jumpEntry1Selection').style.display = 'inline-block';
+      jumpContainer.document.querySelector('#jumpMenu2').style.display = 'flex';
+      jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'block';
     }
   },
 
@@ -395,14 +396,14 @@ EE.cp.JumpMenu = {
    */
   _presentError: function _presentError(text) {
     console.log('_presentError', text); // var alert = EE.db_backup.backup_ajax_fail_banner.replace('%body%', text),
-    // alert_div = document.createElement('div');
+    // alert_div = jumpContainer.document.createElement('div');
     // alert_div.innerHTML = alert;
     // $('.form-standard .form-btns-top').after(alert_div);
   }
 };
 
-if (document.readyState != 'loading') {
+if (jumpContainer.document.readyState != 'loading') {
   EE.cp.JumpMenu.init();
 } else {
-  document.addEventListener('DOMContentLoaded', EE.cp.JumpMenu.init);
+  jumpContainer.document.addEventListener('DOMContentLoaded', EE.cp.JumpMenu.init);
 }

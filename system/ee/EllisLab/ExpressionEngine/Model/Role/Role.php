@@ -34,7 +34,7 @@ class Role extends Model {
 				'key' => 'layout_id',
 			)
 		),
-		'Permisisons' => array(
+		'Permissions' => array(
 			'model' => 'Permission',
 			'type' => 'hasMany'
 		),

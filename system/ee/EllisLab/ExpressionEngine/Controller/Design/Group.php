@@ -399,7 +399,7 @@ class Group extends AbstractDesignController {
 						else
 						{
 							$role_ids = [];
-							$permisisons = [];
+							$permissions = [];
 
 							foreach (ee('Request')->post('roles') as $value)
 							{

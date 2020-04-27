@@ -410,7 +410,7 @@ class EE_Output {
 		}
 
 		if (REQ == 'PAGE')
-		{			
+		{
 			/* -------------------------------------------
 			/*	Hidden Configuration Variables
 			/*	- remove_unparsed_vars => Whether or not to remove unparsed EE variables
@@ -640,7 +640,10 @@ class EE_Output {
 
 		$output = stripslashes($template_data);
 
-		// Pass the output template through the normal template parser to handle any other tags a user might add.
+		// Pass the output template thro ugh the normal template parser to handle any other tags a user might add.
+		if (!isset(ee()->TMPL)) {
+			ee()->load->library('template', NULL, 'TMPL');
+		}
 		ee()->TMPL->parse($output);
 		$output = ee()->TMPL->parse_globals(ee()->TMPL->final_template);
 

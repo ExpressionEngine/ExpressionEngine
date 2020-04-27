@@ -514,7 +514,7 @@ class EE_Session {
 
 		$this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
 
-		foreach ($role->Permisisons as $permission)
+		foreach ($role->Permissions as $permission)
 		{
 			$this->userdata[$permission->permission] = 'y';
 		}
@@ -1351,6 +1351,11 @@ class EE_Session {
 				->filter('role_id', 'IN', $roles)
 				->all()
 				->pluck('site_id');
+
+			if (empty($site_ids)) {
+				$this->userdata['assigned_sites'] = [];
+				return;
+			}
 
 			$assigned_sites->filter('site_id', 'IN', $site_ids);
 		}
