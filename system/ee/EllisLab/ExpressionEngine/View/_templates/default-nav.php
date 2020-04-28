@@ -108,6 +108,7 @@
 
 				<a class="dropdown__link js-jump-menu-trigger" href=""><?= lang('jump_menu_item') ?> <span class="key"><span class="jump-trigger"></span> J</span></a>
 				<a class="dropdown__link js-dark-theme-toggle" href=""><?= lang('dark_theme') ?></a>
+				<a class="dropdown__link" href="<?=ee('CP/URL')->make('homepage/toggle-viewmode')?>"><?= lang('navigation_toggle') ?></a>
 
 				<div class="dropdown__divider"></div>
 
