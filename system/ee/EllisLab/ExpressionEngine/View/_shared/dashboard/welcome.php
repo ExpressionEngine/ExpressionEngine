@@ -201,22 +201,22 @@
 	z-index: 110;
 }
 #ji-title {
-	top: 25px;
+	top: 20px;
 	left: 0;
 	right: 0;
 	color: #fff;
-	font-size: 19px;
+	font-size: 49px;
 	text-align: center;
 }
 #ji-one-arrow {
-	top: 60px;
+	top:110px;
     left: 50%;
     width: 100px;
     height: 100px;
     margin-left: -380px;
 }
 #ji-one {
-    top: 151px;
+    top: 201px;
     left: 50%;
     width: 175px;
     height: 100px;
@@ -225,7 +225,7 @@
 	font-size: 20px;
 }
 #ji-two-arrow {
-	top: 275px;
+	top: 325px;
     left: 50%;
     width: 100px;
     height: 100px;
@@ -233,7 +233,7 @@
     transform: scaleX(-1);
 }
 #ji-two {
-    top: 360px;
+    top: 410px;
     left: 50%;
     width: 250px;
     height: 100px;
@@ -242,14 +242,14 @@
 	font-size: 20px;
 }
 #ji-three-arrow {
-	top: 405px;
+	top: 455px;
     left: 50%;
     width: 75px;
     height: 75px;
     margin-left: -357px;
 }
 #ji-three {
-    top: 470px;
+    top: 520px;
     left: 50%;
     width: 190px;
     height: 100px;
@@ -291,7 +291,7 @@
 	right: 40px;
 }
 .modal-wrap {
-	top: 80px;
+	top: 130px;
 }
 .atlwdg-trigger {
 	display: none;
