@@ -30,7 +30,8 @@ $lang = array(
 'dark_theme'  => 'Dark Theme',
 'light_theme' => 'Light Theme',
 
-'go_to' => 'Go To...',
+'jump_menu_item' => 'Jump Menu',
+'jump_menu_input' => 'Go To...',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
@@ -187,6 +188,7 @@ $lang = array(
 
 'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
 
+'navigation_toggle' => 'Toggle Navigation',
 
 /* Buttons */
 'cancel' => 'Cancel',
@@ -705,7 +707,7 @@ $lang = array(
 
 'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
 
-/* Permisisons */
+/* Permissions */
 
 'can_create_templates' => 'Create templates',
 

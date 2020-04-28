@@ -72,6 +72,7 @@ $lang = array(
 'jump_profile' => 'My Profile',
 'jump_menuLink' => 'Menu link',
 'jump_quickLink' => 'Quick link',
+'jump_toggleSidebar' => 'Toggle Sidebar Navigation',
 'jump_viewCategories' => 'View <b>Categories</b>',
 'jump_viewMemberRoles' => 'View <b>Member Roles</b>',
 'jump_viewMemberFields' => 'View <b>Member Fields</b>',

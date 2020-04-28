@@ -106,7 +106,7 @@
 		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input" id="jumpMenu1">
-					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('go_to')?>">
+					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
 				</div>
 				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
 					<span id="jumpEntry1Selection" class="action-tag"></span>
@@ -129,13 +129,23 @@
 		<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
 		<script type="text/javascript">
 		$(document).ready(function(){
-			$('#welcome-screen').slideDown(2000);
+			$('#welcome-screen').show();
 
 			$('.show-sidebar').on('click', function(){
 				$('.ee-main--dashboard').css('background', 'var(--ee-dashboard-bg)');
 				$('.ee-sidebar').removeClass('hidden');
 				$('.main-nav').removeClass('hidden');
-			})
+			});
+
+			$('.main-nav__account').clone().css('display', 'none').appendTo('.dashboard');
+
+			$('#jump-menu').on('modal:open', function () {
+				$('.welcome-jump-instructions').fadeIn();
+				$('.main-nav__account').fadeIn();
+			}).on('modal:close', function () {
+				$('.welcome-jump-instructions').fadeOut();
+				$('.main-nav__account').fadeOut();
+			});
 		});
 		</script>
 		<?php endif; ?>

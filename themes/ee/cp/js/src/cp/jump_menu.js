@@ -49,6 +49,7 @@ EE.cp.JumpMenu = {
 	typingTimeout: false,
 	ajaxRequest: false,
 	currentFocus: 1,
+	shortcut: 'Ctrl',
 	commandKeys: {
 		1: ''
 	},
@@ -56,6 +57,12 @@ EE.cp.JumpMenu = {
 	lastSearch: '',
 
 	init: function() {
+		if (navigator.appVersion.indexOf("Mac") != -1) {
+			EE.cp.JumpMenu.shortcut = '⌘';
+		}
+		
+		jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
+
 		jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
 		jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
 
@@ -113,6 +120,7 @@ EE.cp.JumpMenu = {
 			if (e.key == 'Escape') {
 				// Pressing ESC should close the jump menu. We blur the field to make sure
 				// subsequent keystrokes aren't entered into it just in case.
+				jumpContainer.document.querySelector('.jump-to').value = '';
 				jumpContainer.document.querySelector('.jump-to').blur();
 			} else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
 				let numItems = jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
