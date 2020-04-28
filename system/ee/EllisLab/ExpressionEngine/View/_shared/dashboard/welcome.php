@@ -293,6 +293,9 @@
 .modal-wrap {
 	top: 80px;
 }
+.atlwdg-trigger {
+	display: none;
+}
 </style>
 
 <div class="dashboard__item dashboard__item--full color: var(--ee-text-normal);" id="welcome-screen" style="display: none">
