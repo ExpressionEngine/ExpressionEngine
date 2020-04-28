@@ -137,10 +137,14 @@
 				$('.main-nav').removeClass('hidden');
 			});
 
+			$('.main-nav__account').clone().css('display', 'none').appendTo('.dashboard');
+
 			$('#jump-menu').on('modal:open', function () {
 				$('.welcome-jump-instructions').fadeIn();
+				$('.main-nav__account').fadeIn();
 			}).on('modal:close', function () {
 				$('.welcome-jump-instructions').fadeOut();
+				$('.main-nav__account').fadeOut();
 			});
 		});
 		</script>

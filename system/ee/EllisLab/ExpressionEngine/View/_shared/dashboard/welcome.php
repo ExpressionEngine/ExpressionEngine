@@ -169,7 +169,7 @@
 	/* animation-timing-function: ease-in-out; */
 }
 .zoomIn.choices {
-	animation-delay: 54s;
+	animation-delay: 34s;
 	animation-duration: 3s;
 	position: absolute;
 	left: 50%;
@@ -200,15 +200,23 @@
 	position: fixed;
 	z-index: 110;
 }
+#ji-title {
+	top: 25px;
+	left: 0;
+	right: 0;
+	color: #fff;
+	font-size: 19px;
+	text-align: center;
+}
 #ji-one-arrow {
-	top: 24px;
+	top: 60px;
     left: 50%;
     width: 100px;
     height: 100px;
     margin-left: -380px;
 }
 #ji-one {
-    top: 111px;
+    top: 151px;
     left: 50%;
     width: 175px;
     height: 100px;
@@ -217,7 +225,7 @@
 	font-size: 20px;
 }
 #ji-two-arrow {
-	top: 80px;
+	top: 275px;
     left: 50%;
     width: 100px;
     height: 100px;
@@ -225,7 +233,7 @@
     transform: scaleX(-1);
 }
 #ji-two {
-    top: 170px;
+    top: 360px;
     left: 50%;
     width: 250px;
     height: 100px;
@@ -234,15 +242,30 @@
 	font-size: 20px;
 }
 #ji-three-arrow {
-	top: 207px;
+	top: 405px;
     left: 50%;
     width: 75px;
     height: 75px;
     margin-left: -357px;
 }
 #ji-three {
-    top: 273px;
+    top: 470px;
     left: 50%;
+    width: 190px;
+    height: 100px;
+    margin-left: -459px;
+    color: #fff;
+    font-size: 16px;
+}
+#ji-four-arrow {
+	top: 8px;
+	right: 80px;
+	width: 75px;
+	height: 75px;
+}
+#ji-four {
+	top: 75px;
+    right: 80px;
     width: 190px;
     height: 100px;
     margin-left: -459px;
@@ -261,6 +284,14 @@
     font-size: 33px;
     padding: 0 13px;
     vertical-align: text-top;
+}
+.main-nav__account {
+	position: fixed;
+	top: 30px;
+	right: 40px;
+}
+.modal-wrap {
+	top: 80px;
 }
 </style>
 
@@ -284,6 +315,8 @@
 </div>
 
 <div class="welcome-jump-instructions">
+	<div id="ji-title" class="info-element">Introducing the Jump Menu</div>
+
 	<svg id="ji-one-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
 	<div id="ji-one" class="info-element">
 		Start typing where you want to go
@@ -298,5 +331,10 @@
 	<svg id="ji-three-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
 	<div id="ji-three" class="info-element">
 		Some results show a <em>[bracketed]</em> option, which will require a secondary input.
+	</div>
+
+	<svg id="ji-four-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
+	<div id="ji-four" class="info-element">
+		You can toggle the navigation or jump menu from here at any time.
 	</div>
 </div>
