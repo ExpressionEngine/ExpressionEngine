@@ -21,13 +21,8 @@
 			echo $item."\n";
 		}
 		?>
-		<style type="text/css">
-			.title-bar {
-				padding-right: 20px;
-			}
-		</style>
 	</head>
-	<body id="top">
+	<body class="iframe">
 		<div class="box"><?=$content?></div>
 		<?=ee()->javascript->inline('var EE = window.parent.EE;');?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
