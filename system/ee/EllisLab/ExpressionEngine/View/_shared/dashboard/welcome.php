@@ -210,7 +210,7 @@
 #ji-one {
     top: 111px;
     left: 50%;
-    width: 200px;
+    width: 175px;
     height: 100px;
     margin-left: -464px;
     color: #fff;
@@ -243,7 +243,7 @@
 #ji-three {
     top: 273px;
     left: 50%;
-    width: 206px;
+    width: 190px;
     height: 100px;
     margin-left: -459px;
     color: #fff;
