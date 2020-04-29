@@ -1684,6 +1684,7 @@ class EE_Schema {
 		// default statuses - these are really always needed
 		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('closed', '2', '990000')";
+		$Q[] = "INSERT INTO exp_statuses_roles (role_id, status_id) VALUES ('5', '1'), ('5', '2')";
 
 		$button_config = ee()->config->loadFile('html_buttons');
 
