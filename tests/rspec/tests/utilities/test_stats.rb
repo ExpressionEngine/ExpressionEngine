@@ -12,11 +12,15 @@ feature 'Statistics' do
     @page.should have_content_table
   end
 
+    # moved --Brad
+
   it "shows the Manage Statistics page" do
     @page.should have(4).rows # 3 rows + header
     @page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
     @page.counts.map {|count| count.text}.should == ["10", "7", "1"]
   end
+
+  # moved --Brad
 
   it "can sort by source" do
     @page.all('a.sort')[0].click

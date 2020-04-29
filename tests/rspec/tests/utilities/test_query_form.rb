@@ -291,3 +291,4 @@ feature 'Query Form' do
     @page.should have_text 'No rows returned'
   end
 end
+

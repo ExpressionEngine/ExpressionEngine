@@ -42,6 +42,7 @@ class CommunicateSent extends ControlPanel {
     message= null,
     total_sent= null
     )
+  
   {
       let command = "cd fixtures && php emailCache.php"
 

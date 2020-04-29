@@ -21,17 +21,40 @@ class ForumTab extends ControlPanel {
     // Create board
     cy.get('.w-12 a[href*="cp/addons/settings/forum/create/board"]').click()
     cy.get('input[name="board_label"]').type('Board')
-    cy.get('.w-12 button[value="save_and_close"]:first-child').click()
-
+    
+    //cy.get('.w-12 button[value="save_and_close"]:first-child').click()
+    this.get('wrap').find('div').find('button').eq(2).click()
     // Create category
     cy.get('.tbl-search a[href*="cp/addons/settings/forum/create/category/1"]').click()
     cy.get('input[name="forum_name"]').type('Category')
-    cy.get('.w-12 button[value="save_and_close"]:first-child').click()
-
+    //cy.get('.w-12 button[value="save_and_close"]:first-child').click()
+    this.get('wrap').find('div').find('button').eq(2).click()
     // Create forum
     cy.get('.tbl-action a[href*="cp/addons/settings/forum/create/forum/1"]').click()
     cy.get('input[name="forum_name"]').type('Forum')
-    cy.get('.w-12 button[value="save_and_close"]:first-child').click()
+    
+    this.get('wrap').find('div').find('button').eq(2).click()
+    //cy.get('.w-12 button[value="save_and_close"]:first-child').click()
   }
+
+  create_entry(){
+    cy.get('.ajax-validate > .fieldset-required > .field-control > input').type('title')
+    cy.get('textarea').type('body')
+    cy.get(':nth-child(5) > .field-control > .fields-select > .field-inputs > :nth-child(3) > input').click()
+    cy.get('.form-btns-top > [value="save_and_close"]').click()
+    cy.get('.app-notice__content > :nth-child(2)').contains("The forum")
+    cy.get('.app-notice__content > :nth-child(2)').contains(" has been created")
+    
+
+  }
+
+  //   page.submit_buttons[2].click()
+
+  //   page.all_there?.should == false
+  //   page.get('alert').has_content?("The entry #{title} has been created.").should == true
+
+
 }
 export default ForumTab;
+
+
