@@ -7,7 +7,7 @@
 		<meta name="referrer" content="no-referrer">
 		<?=ee()->view->head_link('css/out.min.css')?>
 	</head>
-	<body>
+	<body data-ee-version="<?=APP_VER?>">
 		<section class="flex-wrap">
 			<section class="wrap">
 

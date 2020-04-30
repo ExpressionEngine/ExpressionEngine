@@ -33,4 +33,4 @@
 	}
 	?>
 </head>
-<body id="mainContent" class="pageContents">
+<body data-ee-version="<?=APP_VER?>" id="mainContent" class="pageContents">
