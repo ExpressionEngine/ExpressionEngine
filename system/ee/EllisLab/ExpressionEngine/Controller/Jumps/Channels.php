@@ -59,6 +59,26 @@ class Channels extends Jumps
 		$this->sendResponse($response);
 	}
 
+	public function field()
+	{
+		$fields = $this->loadChannelFields(ee()->input->post('searchString'));
+
+		$response = array();
+
+		foreach ($fields as $field) {
+			$response['editChannelField' . $field->field_id] = array(
+				'icon' => 'fa-pencil-alt',
+				'command' => $field->field_label . ' ' . $field->field_name,
+				'command_title' => $field->field_label,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('fields/edit/' . $field->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
+	}
+
 	private function loadChannels($searchString = false)
 	{
 		$channels = ee('Model')->get('Channel');
@@ -73,5 +93,21 @@ class Channels extends Jumps
 		}
 
 		return $channels->order('channel_title', 'ASC')->limit(11)->all();
+	}
+
+	private function loadChannelFields($searchString = false)
+	{
+		$fields = ee('Model')->get('ChannelField');
+
+		if (!empty($searchString)) {
+			// Break the search string into individual keywords so we can partially match them.
+			$keywords = explode(' ', $searchString);
+
+			foreach ($keywords as $keyword) {
+				$fields->filter('field_label', 'LIKE', '%' . $keyword . '%');
+			}
+		}
+
+		return $fields->order('field_label', 'ASC')->limit(11)->all();
 	}
 }
