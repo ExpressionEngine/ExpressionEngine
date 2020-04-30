@@ -108,7 +108,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<div class="d-flex">
 					<div>
 						<p class="meta-info">
-							<a href="admin.php?/cp/members"><?=$comment->name?></a>
+							<a href="<?=ee('CP/URL')->make('cp/members')?>"><?=$comment->name?></a>
 							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
 						</p>
 						<p><?=ellipsize($comment->comment, 150)?></p>
