@@ -79,6 +79,7 @@ $lang = array(
 'jump_viewMemberRoles' => 'View <b>Member Roles</b>',
 'jump_viewMemberFields' => 'View <b>Member Fields</b>',
 'jump_editMemberField' => 'Edit <b>Member Field</b> titled <i>[field]</i>',
+'jump_my_Profile' => 'My Profile',
 
 );
 

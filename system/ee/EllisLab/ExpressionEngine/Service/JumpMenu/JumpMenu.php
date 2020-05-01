@@ -187,7 +187,7 @@ class JumpMenu extends AbstractJumpMenu
             'myProfile' => array(
                 'icon' => 'fa-user',
                 'command' => 'profile',
-                'dynamic' => true,
+                'dynamic' => false,
                 'addon' => false,
                 'target' => 'members/profile'
             ),
