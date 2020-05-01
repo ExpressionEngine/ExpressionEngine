@@ -1771,7 +1771,7 @@ class Addons extends CP_Controller {
 		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
-		$FT->settings = $fieldtype['settings'];
+		$FT->settings = isset($fieldtype['settings']) ? $fieldtype['settings'] : [];
 
 		$fieldtype_settings = ee()->api_channel_fields->apply('display_global_settings');
 
