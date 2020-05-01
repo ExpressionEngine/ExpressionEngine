@@ -1,4 +1,4 @@
-<div class="box sidebar">
+<div class="box sidebar legacy-sidebar">
 	<?php
 	// Grab the first and last items from the menu to determine
 	// which items we need to put 'first' and 'last' classes on
@@ -9,7 +9,7 @@
 	foreach ($nav as $key => $value):
 
 		$button = NULL;
-		$class = '';
+		$class = 'sidebar__section-title ';
 		$next = array_values(array_slice($nav, $i, 1));
 		$i++;
 
@@ -58,23 +58,30 @@
 				<?php endif; ?>
 			</h2>
 		<?php else: ?>
-			<ul<?php if ( ! empty($class)):?> class="<?=$class?>"<?php endif ?>>
-				<?php foreach ($value as $text => $link): ?>
+			<div class="scroll-wrap">
+				<div class="folder-list">
+					<?php foreach ($value as $text => $link): ?>
 					<?php if(is_array($link)): ?>
-					<li class="<?=$link['class']?>">
-						<a
-							<?php if ( ! empty($link['attrs'])): ?>
-								<?php foreach ($link['attrs'] as $attr => $val): ?>
-								<?=$attr?>="<?=$val?>"
-								<?php endforeach ?>
-							<?php endif ?>
-							href="<?=$link['href']?>"><?=lang($text)?></a>
-					</li>
+					<div class="sidebar__link sidebar__link--parent <?=$link['class']?>"
+						<?php if ( ! empty($link['attrs'])): ?>
+						<?php foreach ($link['attrs'] as $attr => $val): ?>
+						 data-<?=$attr?>="<?=$val?>">
+						<?php endforeach ?>
+						<?php endif ?>
+						<a href="<?=$link['href']?>">
+							<?=lang($text)?>
+						</a>
+					</div>
 					<?php else: ?>
-					<li><a href="<?=$link?>"><?=lang($text)?></a></li>
+					<div class="sidebar__link sidebar__link--parent">
+						<a href="<?=$link?>">
+							<?=lang($text)?>
+						</a>
+					</div>
 					<?php endif ?>
-				<?php endforeach ?>
-			</ul>
+					<?php endforeach ?>
+				</div>
+			</div>
 		<?php endif;
 	endforeach ?>
 </div>

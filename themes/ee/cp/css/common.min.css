@@ -7303,6 +7303,8 @@ body.iframe .title-bar {
     margin: 0; }
     .legacy-sidebar .sidebar__link.active {
       font-weight: 700; }
+  .legacy-sidebar .sidebar__link--parent {
+    padding-left: 12px; }
   .legacy-sidebar .sidebar__section-divider {
     margin: 0; }
   .legacy-sidebar .sidebar__section-title {
@@ -10535,6 +10537,14 @@ tr.no-results {
   font-weight: bold;
   margin: 40px 0 20px 0;
   padding: 0 0 10px 0; }
+
+.form-standard h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 10px 0; }
+
+.form-standard p {
+  margin-top: 10px; }
 
 .field-toggle-all {
   display: inline-block;
