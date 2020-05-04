@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Addon;
+namespace ExpressionEngine\Service\Addon;
 
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Provider;
 
 /**
  * Addon Service
@@ -597,7 +597,7 @@ class Addon {
 		{
 			ee()->db->insert_batch('dashboard_widgets', $widgets);
 		}
-		
+
 	}
 
 	public function getInstalledConsentRequests()
@@ -752,7 +752,7 @@ class Addon {
 	/**
 	 * Get the add-on Provider
 	 *
-	 * @return EllisLab\ExpressionEngine\Core\Provider
+	 * @return ExpressionEngine\Core\Provider
 	 */
 	 public function getProvider()
 	 {

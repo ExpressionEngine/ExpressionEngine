@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\Mixin;
+namespace ExpressionEngine\Library\Mixin;
 
 use BadMethodCallException;
-use EllisLab\ExpressionEngine\Service\Event\Publisher;
+use ExpressionEngine\Service\Event\Publisher;
 
 /**
  * Mixin Manager

@@ -7,9 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Model\Config;
+namespace ExpressionEngine\Model\Config;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 /**
  * Config Model

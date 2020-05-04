@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Alert;
+namespace ExpressionEngine\Service\Alert;
 
 use \EE_Session;
 use \EE_Lang;
-use EllisLab\ExpressionEngine\Service\Alert\Alert;
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\Alert\Alert;
+use ExpressionEngine\Service\View\View;
 
 /**
  * Alert Service Collection
@@ -261,7 +261,7 @@ class AlertCollection {
 	 *
 	 * @param string $name The name of the alert
 	 * @param string $type The type of the alert (inline, banner, or alert)
-	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 * @return ExpressionEngine\Service\Alert\Alert An Alert
 	 */
 	public function make($name = '', $type = 'alert')
 	{
@@ -272,7 +272,7 @@ class AlertCollection {
 	 * Makes a new named inline alert.
 	 *
 	 * @param string $name The name of the alert
-	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 * @return ExpressionEngine\Service\Alert\Alert An Alert
 	 */
 	public function makeInline($name = '')
 	{
@@ -283,7 +283,7 @@ class AlertCollection {
 	 * Makes a new named banner alert.
 	 *
 	 * @param string $name The name of the alert
-	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 * @return ExpressionEngine\Service\Alert\Alert An Alert
 	 */
 	public function makeBanner($name = '')
 	{
@@ -294,7 +294,7 @@ class AlertCollection {
 	 * Makes a new named standard alert.
 	 *
 	 * @param string $name The name of the alert
-	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 * @return ExpressionEngine\Service\Alert\Alert An Alert
 	 */
 	public function makeStandard($name = '')
 	{
@@ -306,7 +306,7 @@ class AlertCollection {
 	 * @deprecated use makeStandard() instead.
 	 *
 	 * @param string $name The name of the alert
-	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 * @return ExpressionEngine\Service\Alert\Alert An Alert
 	 */
 	public function makeAlert($name = '')
 	{

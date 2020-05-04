@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Addons\Forum;
+namespace ExpressionEngine\Addons\Forum;
 
-use EllisLab\Addons\Forum\Service\Notifications;
-use EllisLab\Addons\Spam\Service\SpamModerationInterface;
+use ExpressionEngine\Addons\Forum\Service\Notifications;
+use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Moderate Spam for the Forum module

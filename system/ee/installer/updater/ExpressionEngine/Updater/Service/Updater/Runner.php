@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
+namespace ExpressionEngine\Updater\Service\Updater;
 
-use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Updater\Service;
-use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
+use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
+use ExpressionEngine\Updater\Service;
+use ExpressionEngine\Updater\Service\Updater\Logger;
 
 /**
  * Handles the bulk of the upgrade process, namely backing up the files and
@@ -147,7 +147,7 @@ class Runner {
 			if (ee()->load->is_loaded('logger') === false) {
 				ee()->load->library('logger');
 			}
-			
+
 			ee()->logger->updater($log_message);
 
 			$db_updater->runStep($step);

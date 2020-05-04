@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\ChannelSet;
+namespace ExpressionEngine\Service\ChannelSet;
 
 use StdClass;
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Channel Set Service: Export

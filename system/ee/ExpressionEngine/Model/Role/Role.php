@@ -7,10 +7,10 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Model\Role;
+namespace ExpressionEngine\Model\Role;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Role Model

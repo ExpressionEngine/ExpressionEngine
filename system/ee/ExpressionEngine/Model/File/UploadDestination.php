@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\File;
+namespace ExpressionEngine\Model\File;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Member\Member;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Member\Member;
 
 /**
  * File Upload Location Model
@@ -58,7 +58,7 @@ class UploadDestination extends Model {
 	);
 
 	protected static $_type_classes = array(
-		'LocalPath' => 'EllisLab\ExpressionEngine\Model\File\Column\LocalPath',
+		'LocalPath' => 'ExpressionEngine\Model\File\Column\LocalPath',
 	);
 
 	protected static $_typed_columns = array(

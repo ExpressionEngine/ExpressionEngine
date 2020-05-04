@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\File;
+namespace ExpressionEngine\Service\File;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Library\Filesystem\FilesystemException;
+use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 /**
  * A directory behaves just like the filesystem rooted at a certain path

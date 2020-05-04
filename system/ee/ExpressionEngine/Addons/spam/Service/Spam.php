@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Spam\Service;
+namespace ExpressionEngine\Addons\Spam\Service;
 
-use EllisLab\ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
+use ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
 
 /**
  * Spam Protocol
@@ -46,7 +46,7 @@ class Spam implements SpamProtocol {
 	/**
 	 * Returns true if the string is classified as spam
 	 *
-	 * @see EllisLab\ExpressionEngine\Protocol\Spam\Spam
+	 * @see ExpressionEngine\Protocol\Spam\Spam
 	 */
 	public function isSpam($source)
 	{
@@ -63,7 +63,7 @@ class Spam implements SpamProtocol {
 	/**
 	 * Moderate Spam
 	 *
-	 * @see EllisLab\ExpressionEngine\Protocol\Spam\Spam
+	 * @see ExpressionEngine\Protocol\Spam\Spam
 	 */
 	public function moderate($content_type, $entity, $document, $optional_data)
 	{

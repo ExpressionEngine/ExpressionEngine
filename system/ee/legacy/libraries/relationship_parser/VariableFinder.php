@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Lexer;
+use ExpressionEngine\Library\Parser\Conditional\Lexer;
 
 /**
  * A small helper class to find all tags and conditional variables

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Controller\Updater;
+namespace ExpressionEngine\Updater\Controller\Updater;
 
-use EllisLab\ExpressionEngine\Updater\Service\Updater\Runner;
+use ExpressionEngine\Updater\Service\Updater\Runner;
 
 /**
  * Updater controller, funnels update commands to the updater runner

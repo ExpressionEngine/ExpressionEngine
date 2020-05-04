@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Utilities;
+namespace ExpressionEngine\Controller\Utilities;
 
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\Email\EmailCache;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Email\EmailCache;
 
 /**
  * Communicate Controller

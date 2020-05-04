@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Event;
+namespace ExpressionEngine\Tests\Service\Event;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Event\Emitter;
-use EllisLab\ExpressionEngine\Service\Event\Publisher;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber;
-use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
+use ExpressionEngine\Service\Event\Emitter;
+use ExpressionEngine\Service\Event\Publisher;
+use ExpressionEngine\Service\Event\Subscriber;
+use ExpressionEngine\Service\Event\ReflexiveSubscriber;
 use PHPUnit\Framework\TestCase;
 
 class EmitterTest extends TestCase {

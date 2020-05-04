@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel;
+namespace ExpressionEngine\Model\Channel;
 
-use EllisLab\ExpressionEngine\Service\Model\Model as Model;
+use ExpressionEngine\Service\Model\Model as Model;
 
 /**
  * Channel Entry Autosave Model

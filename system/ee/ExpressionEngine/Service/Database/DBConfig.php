@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Database;
+namespace ExpressionEngine\Service\Database;
 
-use \EllisLab\ExpressionEngine\Service\Config\ConfigWithDefaults;
-use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
+use \ExpressionEngine\Service\Config\ConfigWithDefaults;
+use \ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
  * Database Config

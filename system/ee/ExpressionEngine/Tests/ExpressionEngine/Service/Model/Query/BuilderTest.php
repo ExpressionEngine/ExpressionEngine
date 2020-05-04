@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Test\ExpressionEngine\Service\Model\Query;
+namespace ExpressionEngine\Tests\Service\Model\Query;
 
 use Mockery as m;
 
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Service\Model\Query\Builder;
 use PHPUnit\Framework\TestCase;
 
 class BuilderTest extends TestCase {

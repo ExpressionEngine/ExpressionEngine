@@ -8,8 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Discussion Forum Module control panel

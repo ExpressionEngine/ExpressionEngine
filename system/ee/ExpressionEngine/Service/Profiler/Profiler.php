@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Profiler;
+namespace ExpressionEngine\Service\Profiler;
 
 use EE_Lang;
 use EE_URI;
-use EllisLab\ExpressionEngine\Service\View\ViewFactory;
-use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
+use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * ExpressionEngine Profiler
@@ -21,7 +21,7 @@ use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
 class Profiler {
 
 	/**
-	 * @var object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 * @var object $fmt_factory ExpressionEngine\Service\Formatter\FormatterFactory
 	 **/
 	protected $fmt_factory;
 
@@ -44,9 +44,9 @@ class Profiler {
 	 * Constructor
 	 *
 	 * @param object $lang EE_Lang
-	 * @param object $view_factory EllisLab\ExpressionEngine\Service\View\ViewFactory
+	 * @param object $view_factory ExpressionEngine\Service\View\ViewFactory
 	 * @param object $uri EE_URI
-	 * @param object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 * @param object $fmt_factory ExpressionEngine\Service\Formatter\FormatterFactory
 	 */
 	public function __construct(EE_Lang $lang, ViewFactory $view_factory, EE_URI $uri, FormatterFactory $fmt_factory)
 	{

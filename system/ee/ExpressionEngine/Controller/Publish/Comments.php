@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish;
+namespace ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use ExpressionEngine\Service\Model\Query\Builder;
 
 /**
  * Publish/Comments Controller

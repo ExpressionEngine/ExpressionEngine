@@ -18,7 +18,7 @@ if (empty($el_config__emoji_map))
 {
 	// sourced from https://github.com/iamcal/emoji-data, MIT License
 	// currently at v4.0.4 2018-04-16 build
-	$emoji = @json_decode(file_get_contents(SYSPATH.'ee/EllisLab/ExpressionEngine/Config/emoji.json'));
+	$emoji = @json_decode(file_get_contents(SYSPATH.'ee/ExpressionEngine/Config/emoji.json'));
 
 	if (empty($emoji))
 	{

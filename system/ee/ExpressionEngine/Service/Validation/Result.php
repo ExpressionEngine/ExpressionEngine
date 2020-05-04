@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace ExpressionEngine\Service\Validation;
 
-use EllisLab\ExpressionEngine\Service\View\View;
-use EllisLab\ExpressionEngine\Service\View\StringView;
+use ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\View\StringView;
 
 /**
  * Validation Result

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Member\Display;
+namespace ExpressionEngine\Model\Member\Display;
 
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
+use ExpressionEngine\Model\Content\Display\DefaultLayout;
 
 /**
  * Member Field Layout

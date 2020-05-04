@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Session;
+namespace ExpressionEngine\Model\Session;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 /**
  * Session Model

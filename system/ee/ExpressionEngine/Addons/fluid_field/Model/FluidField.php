@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\FluidField\Model;
+namespace ExpressionEngine\Addons\FluidField\Model;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Content\FieldData;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\FieldData;
 
 /**
  * ExpressionEngine Fluid Field Model

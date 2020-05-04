@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\DataStructure;
+namespace ExpressionEngine\Library\DataStructure;
 
 /**
  * PHP's arrays don't accept objects as keys and SplObjectStorage

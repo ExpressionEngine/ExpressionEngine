@@ -7,9 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Model\Permission;
+namespace ExpressionEngine\Model\Permission;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 /**
  * Permission Model

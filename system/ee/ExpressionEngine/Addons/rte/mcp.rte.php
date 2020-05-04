@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Rich Text Editor Module control panel

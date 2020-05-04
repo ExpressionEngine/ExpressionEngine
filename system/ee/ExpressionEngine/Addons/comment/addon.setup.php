@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Comment',
 	'description'    => '',
 	'version'        => '2.3.3',
-	'namespace'      => 'EllisLab\Addons\Comment',
+	'namespace'      => 'ExpressionEngine\Addons\Comment',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 );

@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Sidebar;
+namespace ExpressionEngine\Service\Sidebar;
 
-use EllisLab\ExpressionEngine\Service\View\ViewFactory;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Library\CP\URL;
 
 /**
  * Sidebar Header

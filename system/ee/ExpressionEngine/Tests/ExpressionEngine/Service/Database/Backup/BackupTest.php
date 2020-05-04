@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Database\Backup;
+namespace ExpressionEngine\Tests\Service\Database\Backup;
 
-use EllisLab\ExpressionEngine\Service\Database\Backup\Backup;
+use ExpressionEngine\Service\Database\Backup\Backup;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -10,8 +10,8 @@ class BackupTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
-		$this->query = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Backup\Query');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+		$this->query = Mockery::mock('ExpressionEngine\Service\Database\Backup\Query');
 		$this->filesystem->shouldReceive('write');
 
 		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql', 0);

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace ExpressionEngine\Service\Validation;
 
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Validator Factory
@@ -44,7 +44,7 @@ class Factory {
 	 * posted 'ee_fv_field' and returns an error message, or success message
 	 * but only if the request was an AJAX request.
 	 *
-	 * @param EllisLab\ExpressionEngine\Service\Validation\Result $result A model validation result
+	 * @param ExpressionEngine\Service\Validation\Result $result A model validation result
 	 * @return array|NULL NULL if the request was not via AJAX, otherwise an
 	 *   an array with an error message or a success notification.
 	 */

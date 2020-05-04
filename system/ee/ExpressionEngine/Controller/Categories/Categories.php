@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Categories;
+namespace ExpressionEngine\Controller\Categories;
 
-use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategoriesController;
-use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
-use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
+use ExpressionEngine\Library\CP;
+use ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategoriesController;
+use ExpressionEngine\Addons\FilePicker\FilePicker as FilePicker;
+use ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
 
 /**
  * Categories Controller

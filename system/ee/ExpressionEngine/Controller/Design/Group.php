@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Design;
+namespace ExpressionEngine\Controller\Design;
 
-use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Model\Template\TemplateGroup as TemplateGroupModel;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use ExpressionEngine\Model\Template\TemplateGroup as TemplateGroupModel;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Design\Group Controller

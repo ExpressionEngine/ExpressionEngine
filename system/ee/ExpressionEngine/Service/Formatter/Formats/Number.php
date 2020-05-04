@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
+namespace ExpressionEngine\Service\Formatter\Formats;
 
-use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
+use ExpressionEngine\Service\Formatter\Formatter;
 use NumberFormatter;
 
 /**

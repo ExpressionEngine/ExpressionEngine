@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\FilePicker;
+namespace ExpressionEngine\Addons\FilePicker;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Model\File\UploadDestination;
 
 /**
  * FilePicker

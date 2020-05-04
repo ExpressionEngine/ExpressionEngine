@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Template\Variables;
+namespace ExpressionEngine\Tests\Service\Template\Variables;
 
-use EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser;
+use ExpressionEngine\Service\Template\Variables\LegacyParser;
 use PHPUnit\Framework\TestCase;
 
 class LegacyParserTest extends TestCase {

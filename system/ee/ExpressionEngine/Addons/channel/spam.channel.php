@@ -1,7 +1,7 @@
 <?php
 
-namespace EllisLab\Addons\Channel;
-use EllisLab\Addons\Spam\Service\SpamModerationInterface;
+namespace ExpressionEngine\Addons\Channel;
+use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Moderate Spam for the Channel Form
@@ -11,7 +11,7 @@ class Channel_spam implements SpamModerationInterface  {
 	/**
 	 * Approve Trapped Spam
 	 *
-	 * @param  object $entry EllisLab\ExpressionEngine\Model\ChannelEntry
+	 * @param  object $entry ExpressionEngine\Model\ChannelEntry
 	 * @param  array $post_data The original $_POST data
 	 * @return void
 	 */
@@ -46,7 +46,7 @@ class Channel_spam implements SpamModerationInterface  {
 	/**
 	 * Reject Trapped Spam
 	 *
-	 * @param  object $entry EllisLab\ExpressionEngine\Model\ChannelEntry
+	 * @param  object $entry ExpressionEngine\Model\ChannelEntry
 	 * @param  array $post_data The original $_POST data
 	 * @return void
 	 */

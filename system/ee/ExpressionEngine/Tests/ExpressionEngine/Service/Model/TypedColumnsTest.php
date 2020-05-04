@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Tests\Service\Model;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 use PHPUnit\Framework\TestCase;
 
 class TypedColumnsTest extends TestCase {

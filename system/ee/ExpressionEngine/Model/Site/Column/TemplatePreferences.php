@@ -4,14 +4,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Site\Column;
+namespace ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
-use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
+use ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * Template Preferences Columns

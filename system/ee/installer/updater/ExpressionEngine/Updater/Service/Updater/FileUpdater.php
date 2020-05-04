@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
+namespace ExpressionEngine\Updater\Service\Updater;
 
-use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
+use ExpressionEngine\Updater\Service\Updater\Logger;
+use ExpressionEngine\Updater\Service\Updater\UpdaterException;
+use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
 
 /**
  * Backs up and updates the ExpressionEngine install's files to the new,

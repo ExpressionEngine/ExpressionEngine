@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Settings;
+namespace ExpressionEngine\Controller\Settings;
 
-use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Consent\ConsentRequest;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Consents Controller

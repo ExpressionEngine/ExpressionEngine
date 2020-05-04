@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Members\Roles;
+namespace ExpressionEngine\Controller\Members\Roles;
 
-use EllisLab\ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
-use EllisLab\ExpressionEngine\Model\Role\RoleGroup;
+use ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
+use ExpressionEngine\Model\Role\RoleGroup;
 /**
  * Members\Roles\Groups Controller
 */

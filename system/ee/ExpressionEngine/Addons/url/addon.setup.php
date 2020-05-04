@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'URL',
 	'description'    => 'Simple URL Field',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\Url',
+	'namespace'      => 'ExpressionEngine\Addons\Url',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => array(

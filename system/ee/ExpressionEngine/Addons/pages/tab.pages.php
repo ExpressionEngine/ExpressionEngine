@@ -132,9 +132,9 @@ class Pages_tab {
 	/**
 	 * Validates our publish tab data
 	 *
-	 * @param EllisLab\ExpressionEngine\Model\Channel\ChannelEntry $entry
+	 * @param ExpressionEngine\Model\Channel\ChannelEntry $entry
 	 * @param array $values An associative array of field => value
-	 * @return EllisLab\ExpressionEngine\Service\Validation\Result A result
+	 * @return ExpressionEngine\Service\Validation\Result A result
 	 *  object.
 	 */
 	public function validate($entry, $values)
@@ -285,7 +285,7 @@ class Pages_tab {
 	/**
 	 * Prepares the site pages array with the submitted values
 	 *
-	 * @param EllisLab\ExpressionEngine\Model\Channel\ChannelEntry $entry
+	 * @param ExpressionEngine\Model\Channel\ChannelEntry $entry
 	 *  An instance of the ChannelEntry entity.
 	 * @param array $values An associative array of field => value
 	 * @return	array A multidimensional array of site page data
@@ -327,7 +327,7 @@ class Pages_tab {
 	 * Saves the page's publish form data. This function is called in the
 	 * ChannelEntry's afterSave() event.
 	 *
-	 * @param EllisLab\ExpressionEngine\Model\Channel\ChannelEntry $entry
+	 * @param ExpressionEngine\Model\Channel\ChannelEntry $entry
 	 *  An instance of the ChannelEntry entity.
 	 * @param array $values An associative array of field => value
 	 * @return 	void

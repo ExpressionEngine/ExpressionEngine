@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
+namespace ExpressionEngine\Tests\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner as ConditionalRunner;
+use ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
+use ExpressionEngine\Library\Parser\Conditional\Runner as ConditionalRunner;
 use PHPUnit\Framework\TestCase;
 
 class ConditionalAnnotationsIntegrationTest extends TestCase {

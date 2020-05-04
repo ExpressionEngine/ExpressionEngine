@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use  EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
+use  ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
  * Template Router

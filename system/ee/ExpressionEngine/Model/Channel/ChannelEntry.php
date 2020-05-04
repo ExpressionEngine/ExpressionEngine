@@ -8,14 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel;
+namespace ExpressionEngine\Model\Channel;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\Content\ContentModel;
-use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Model\Content\ContentModel;
+use ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Channel Entry

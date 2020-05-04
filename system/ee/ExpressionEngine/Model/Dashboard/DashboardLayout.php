@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Dashboard;
+namespace ExpressionEngine\Model\Dashboard;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 /**
  * Dashboard Layout Model
@@ -49,13 +49,13 @@ class DashboardLayout extends Model {
 	protected $role_id;
 	protected $order;
 
-	
+
 	/**
 	 * Generate dashboard html
 	 */
 	public function generateDashboardHtml()
 	{
-		
+
 		$vars = [];
 
 		// First login, this is 0 on the first page load
@@ -177,7 +177,7 @@ class DashboardLayout extends Model {
 		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
 		$vars['can_create_entries'] = ee('Permission')->can('can_create_entries');
-		
+
 		return ee('View')->make('_shared/dashboard/dashboard')->render($vars);
 	}
 }

@@ -8,8 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Template\Variables;
-use EllisLab\ExpressionEngine\Service\Template\Variables;
+namespace ExpressionEngine\Service\Template\Variables;
+use ExpressionEngine\Service\Template\Variables;
 
 /**
  * Standard Global Variables

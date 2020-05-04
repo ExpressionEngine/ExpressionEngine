@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Alert;
+namespace ExpressionEngine\Service\Alert;
 
 use Serializable;
 use BadMethodCallException;
 use InvalidArgumentException;
 use \EE_Lang;
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\View\View;
 
 /**
  * Alert Service

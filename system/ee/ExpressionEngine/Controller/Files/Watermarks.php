@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Files;
+namespace ExpressionEngine\Controller\Files;
 
-use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
+use ExpressionEngine\Library\CP;
+use ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 
 /**
  * Watermarks Controller

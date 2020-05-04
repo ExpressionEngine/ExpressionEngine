@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
+namespace ExpressionEngine\Service\Model\Mixin;
 
-use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
-use EllisLab\ExpressionEngine\Service\Model\Association\Association;
+use ExpressionEngine\Library\Mixin\Mixin;
+use ExpressionEngine\Service\Model\Association\Association;
 
 /**
  * This is NOT the class you're looking for. Just some leftover dust.

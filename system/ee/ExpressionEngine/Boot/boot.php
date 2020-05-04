@@ -19,7 +19,7 @@
 	define('BASEPATH', SYSPATH.'ee/legacy/');
 
 	// load user configurable constants
-	$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
 
 	if (file_exists(SYSPATH.'user/config/constants.php'))
 	{
@@ -37,10 +37,10 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
-	require SYSPATH.'ee/EllisLab/ExpressionEngine/Core/Autoloader.php';
+	require SYSPATH.'ee/ExpressionEngine/Core/Autoloader.php';
 
-	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
-		->addPrefix('EllisLab', SYSPATH.'ee/EllisLab/')
+	ExpressionEngine\Core\Autoloader::getInstance()
+		->addPrefix('ExpressionEngine', SYSPATH.'ee/ExpressionEngine/')
 		->addPrefix('Michelf', SYSPATH.'ee/legacy/libraries/typography/Markdown/Michelf/')
 		->addPrefix('Mexitek', SYSPATH.'ee/Mexitek/')
 		->register();
@@ -64,7 +64,7 @@
  *  Check for the installer if we're booting the CP
  * ------------------------------------------------------
  */
-	use EllisLab\ExpressionEngine\Core;
+	use ExpressionEngine\Core;
 
 	if (
 		defined('REQ') && in_array(REQ, ['CP', 'CLI']) &&

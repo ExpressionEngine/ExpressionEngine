@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Addons\FilePicker\FilePicker;
 
 /**
  * Textarea Fieldtype

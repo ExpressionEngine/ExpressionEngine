@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Addons\Comment;
+namespace ExpressionEngine\Addons\Comment;
 
-use EllisLab\Addons\Comment\Service\Notifications;
-use EllisLab\Addons\Comment\Service\Variables\Comment as CommentVars;
+use ExpressionEngine\Addons\Comment\Service\Notifications;
+use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
 
 /**
  * This source file is part of the open source project

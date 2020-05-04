@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
+namespace ExpressionEngine\Controller\Members\Profile;
 
 /**
  * Access Controller
@@ -223,7 +223,7 @@ class Access extends Profile {
 
 		if ($this->member->isSuperAdmin() || array_key_exists($permission, $permissions))
 		{
-			
+
 
 			$data['access'] = TRUE;
 			$data['granted'] = $permissions[$permission];

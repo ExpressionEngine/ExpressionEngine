@@ -8,17 +8,17 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\Addons\Spam\Service\Spam;
-use EllisLab\Addons\Spam\Service\Training;
-use EllisLab\Addons\Spam\Service\Update;
+use ExpressionEngine\Addons\Spam\Service\Spam;
+use ExpressionEngine\Addons\Spam\Service\Training;
+use ExpressionEngine\Addons\Spam\Service\Update;
 
 return array(
-	'author'      => 'EllisLab',
-	'author_url'  => 'https://ellislab.com/',
+	'author'      => 'ExpressionEngine',
+	'author_url'  => 'https://expressionengine.com/',
 	'name'        => 'ExpressionEngine Spam Module',
 	'description' => 'Block spammy comments, forum posts, and member registrations',
 	'version'     => '2.0.0',
-	'namespace'   => 'EllisLab\Addons\Spam',
+	'namespace'   => 'ExpressionEngine\Addons\Spam',
 	'settings_exist' => TRUE,
 	'services' => array(
 		'Core' => 'Service\Spam',

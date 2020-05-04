@@ -14,7 +14,7 @@ class Comment_ext {
 	/**
 	 * Add the comment Menu
 	 *
-	 * @param object $menu EllisLab\ExpressionEngine\Service\CustomMenu\Menu
+	 * @param object $menu ExpressionEngine\Service\CustomMenu\Menu
 	 */
 	public function addCommentMenu($menu)
 	{

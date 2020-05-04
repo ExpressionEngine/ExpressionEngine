@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\Addons\Forum\Service;
+namespace ExpressionEngine\Addons\Forum\Service;
 
 /**
  * Notifications class for Forum Module
@@ -9,7 +9,7 @@ namespace EllisLab\Addons\Forum\Service;
 class Notifications {
 
 	/**
-	 * @var object EllisLab\ExpressionEngine\Model\Member
+	 * @var object ExpressionEngine\Model\Member
 	 */
 	protected $member;
 
@@ -31,9 +31,9 @@ class Notifications {
 	/**
 	 * Constructor
 	 *
-	 * @param object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param object $topic ExpressionEngine\Addons\Forum\Model\Topic
 	 * @param string $url URL to the forum post
-	 * @param object $reply EllisLab\Addons\Forum\Model\Post
+	 * @param object $reply ExpressionEngine\Addons\Forum\Model\Post
 	 */
 	public function __construct($topic, $url, $reply = NULL)
 	{
@@ -54,8 +54,8 @@ class Notifications {
 	/**
 	 * Setup Administrator Recipients
 	 *
-	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
-	 * @param  object $reply EllisLab\Addons\Forum\Model\Post
+	 * @param  object $topic ExpressionEngine\Addons\Forum\Model\Topic
+	 * @param  object $reply ExpressionEngine\Addons\Forum\Model\Post
 	 * @return void
 	 */
 	private function setupAdminRecipients($topic, $reply = NULL)
@@ -118,8 +118,8 @@ class Notifications {
 	/**
 	 * Setup Recipients
 	 *
-	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
-	 * @param  object $member EllisLab\ExpressionEngine\Model\Member
+	 * @param  object $topic ExpressionEngine\Addons\Forum\Model\Topic
+	 * @param  object $member ExpressionEngine\Model\Member
 	 * @return void
 	 */
 	private function setupRecipients($topic, $member)
@@ -163,9 +163,9 @@ class Notifications {
 	/**
 	 * Setup Variables
 	 *
-	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param  object $topic ExpressionEngine\Addons\Forum\Model\Topic
 	 * @param  string $url URL of the post
-	 * @param  object $reply EllisLab\Addons\Forum\Model\Post
+	 * @param  object $reply ExpressionEngine\Addons\Forum\Model\Post
 	 * @return void
 	 */
 	private function setupVariables($topic, $url, $reply = NULL)
@@ -206,7 +206,7 @@ class Notifications {
 	/**
 	 * Get Forum URL
 	 *
-	 * @param  object $topic EllisLab\Addons\Forum\Model\Topic
+	 * @param  object $topic ExpressionEngine\Addons\Forum\Model\Topic
 	 * @return string the forum's base URL
 	 */
 	private function getForumUrl($topic)

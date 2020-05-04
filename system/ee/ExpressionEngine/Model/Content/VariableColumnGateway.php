@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Content;
+namespace ExpressionEngine\Model\Content;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway;
+use ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Content Variable Column Gateway

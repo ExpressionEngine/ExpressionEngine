@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
+namespace ExpressionEngine\Controller\Members\Profile;
 
 use CP_Controller;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Member Profile Ignore Settings Controller

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column\Serialized;
+namespace ExpressionEngine\Service\Model\Column\Serialized;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
+use ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
  * Model Service Serialized Typed Column

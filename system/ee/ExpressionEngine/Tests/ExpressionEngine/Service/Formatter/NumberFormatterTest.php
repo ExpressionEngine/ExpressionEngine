@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Formatter;
+namespace ExpressionEngine\Tests\Service\Formatter;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Formatter\Formats\Number;
+use ExpressionEngine\Service\Formatter\Formats\Number;
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__.'/../../../../../EllisLab/ExpressionEngine/Boot/boot.common.php';
+require_once __DIR__.'/../../../../../ExpressionEngine/Boot/boot.common.php';
 
 class NumberFormatterTest extends TestCase {
 

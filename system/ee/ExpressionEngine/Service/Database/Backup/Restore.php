@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Database\Backup;
+namespace ExpressionEngine\Service\Database\Backup;
 
-use EllisLab\ExpressionEngine\Service\Database;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Database;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Runs an SQL file against the current database

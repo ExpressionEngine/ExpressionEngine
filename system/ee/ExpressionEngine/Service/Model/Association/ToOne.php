@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Association;
+namespace ExpressionEngine\Service\Model\Association;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Model Service: To One Association

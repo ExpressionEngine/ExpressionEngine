@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Dashboard;
+namespace ExpressionEngine\Model\Dashboard;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Dashboard Widget Model
@@ -51,9 +51,9 @@ class DashboardWidget extends Model {
 	protected $widget_type;
 	/**
 	 * widget source
-	 * 
+	 *
 	 * `template` for template (editable) widgets
-	 * `ee` for native widgets 
+	 * `ee` for native widgets
 	 * `addon_name` for third-party
 	 * */
 	protected $widget_source;

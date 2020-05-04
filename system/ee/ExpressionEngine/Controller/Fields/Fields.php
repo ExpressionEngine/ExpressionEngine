@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Fields;
+namespace ExpressionEngine\Controller\Fields;
 
-use EllisLab\ExpressionEngine\Controller\Fields\AbstractFields as AbstractFieldsController;
-use EllisLab\ExpressionEngine\Model\Channel\ChannelField;
+use ExpressionEngine\Controller\Fields\AbstractFields as AbstractFieldsController;
+use ExpressionEngine\Model\Channel\ChannelField;
 
 /**
  * Fields Controller

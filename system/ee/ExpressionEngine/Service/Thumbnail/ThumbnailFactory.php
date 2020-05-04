@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Thumbnail;
+namespace ExpressionEngine\Service\Thumbnail;
 
-use EllisLab\ExpressionEngine\Model\File\File;
+use ExpressionEngine\Model\File\File;
 
 /**
  * Thumbnail Service Factory

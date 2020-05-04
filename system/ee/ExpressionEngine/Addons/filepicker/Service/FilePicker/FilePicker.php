@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\FilePicker\Service\FilePicker;
+namespace ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 
-use EllisLab\ExpressionEngine\Service\URL\URLFactory;
-use EllisLab\ExpressionEngine\Model\File\File;
+use ExpressionEngine\Service\URL\URLFactory;
+use ExpressionEngine\Model\File\File;
 
 /**
  * FilePicker Service

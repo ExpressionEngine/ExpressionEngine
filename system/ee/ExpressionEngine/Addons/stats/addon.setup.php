@@ -1,11 +1,11 @@
 <?php
 
 return array(
-	'author'      => 'EllisLab',
-	'author_url'  => 'https://ellislab.com/',
+	'author'      => 'ExpressionEngine',
+	'author_url'  => 'https://expressionengine.com/',
 	'name'        => 'Stats',
 	'description' => 'Tracks a number of system statistics',
 	'version'     => '2.0.0',
-	'namespace'   => 'EllisLab\Addons\Stats',
+	'namespace'   => 'ExpressionEngine\Addons\Stats',
 	'settings_exist' => FALSE,
 );

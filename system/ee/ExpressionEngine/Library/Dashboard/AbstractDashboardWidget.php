@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\Dashboard;
+namespace ExpressionEngine\Library\Dashboard;
 
-use EllisLab\Addons\Pro\Model\Dashboard\DashboardWidget;
+use ExpressionEngine\Addons\Pro\Model\Dashboard\DashboardWidget;
 
 /**
  * Abstract Dashboard Widget class
@@ -39,7 +39,7 @@ abstract class AbstractDashboardWidget implements DashboardWidgetInterface {
 			'widget'		=> $this->getContent()
 		];
 	}
-	
+
 	public function getTitle() : string
 	{
 		return $this->title;

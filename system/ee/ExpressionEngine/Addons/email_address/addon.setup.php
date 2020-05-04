@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Email Address',
 	'description'    => 'Email Address Field',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\EmailAddress',
+	'namespace'      => 'ExpressionEngine\Addons\EmailAddress',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => array(

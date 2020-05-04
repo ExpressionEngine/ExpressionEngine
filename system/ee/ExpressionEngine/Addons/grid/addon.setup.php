@@ -1,12 +1,12 @@
 <?php
 
 return [
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Grid',
 	'description'    => '',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\Grid',
+	'namespace'      => 'ExpressionEngine\Addons\Grid',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => [

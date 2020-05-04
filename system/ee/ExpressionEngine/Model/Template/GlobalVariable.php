@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Template;
+namespace ExpressionEngine\Model\Template;
 
 use FilesystemIterator;
-use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Model\FileSyncedModel;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Global Variable Model
@@ -275,7 +275,7 @@ class GlobalVariable extends FileSyncedModel {
 			if ($item->isFile() && $item->getExtension() == 'html')
 			{
 				$name = $item->getBasename('.html');
-				
+
 				// limited to 50 characters in db
 				if (strlen($name) > 50)
 				{

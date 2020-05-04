@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Content;
+namespace ExpressionEngine\Model\Content;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\VariableColumnModel;
-use EllisLab\ExpressionEngine\Model\Content\FieldModel;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\VariableColumnModel;
+use ExpressionEngine\Model\Content\FieldModel;
 
 /**
  * ExpressionEngine FieldData Model

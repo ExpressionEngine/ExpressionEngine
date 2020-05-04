@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Consent;
+namespace ExpressionEngine\Service\Consent;
 
-use EllisLab\ExpressionEngine\Service\Model\Facade as ModelFacade;
-use EllisLab\ExpressionEngine\Model\Member\Member;
-use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Model\Facade as ModelFacade;
+use ExpressionEngine\Model\Member\Member;
+use ExpressionEngine\Model\Consent\ConsentRequest;
+use ExpressionEngine\Service\Model\Collection;
 use InvalidArgumentException;
 
 /**
@@ -432,7 +432,7 @@ class Consent {
 	/**
 	 * Checks to make sure the caller has write access premission to a Consent Request
 	 *
-	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @param  object $request ExpressionEngine\Model\Consent\ConsentRequest
 	 * @return bool whether or not the caller has permission to modify the user's consent
 	 */
 	protected function callerHasPermission($request)
@@ -581,7 +581,7 @@ class Consent {
 	/**
 	 * Updates the cached consents for the affected member with the new consent
 	 *
-	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\Consent
+	 * @param  object $request ExpressionEngine\Model\Consent\Consent
 	 * @return void
 	 */
 	protected function updateConsentCache($consent)

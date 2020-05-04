@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish\BulkEdit;
+namespace ExpressionEngine\Controller\Publish\BulkEdit;
 
-use EllisLab\ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
+use ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
 
 /**
  * Bulk Edit Controller

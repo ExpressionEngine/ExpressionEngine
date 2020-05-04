@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Controllers\Design;
+namespace ExpressionEngine\Tests\Controllers\Design;
 
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ class SnippetsTest extends TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Design\Snippets') as $method)
+		foreach (get_class_methods('ExpressionEngine\Controller\Design\Snippets') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish;
+namespace ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use Mexitek\PHPColors\Color;
 
 /**
@@ -488,7 +488,7 @@ class Edit extends AbstractPublishController {
 			'form_url' => $base_url,
 			'form_attributes' => $form_attributes,
 			'form_title' => lang('edit_entry'),
-			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
+			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),

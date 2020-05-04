@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Comment\Service;
+namespace ExpressionEngine\Addons\Comment\Service;
 
 /**
  * Notifications class for Comment Module
@@ -39,7 +39,7 @@ class Notifications {
 	/**
 	 * Setup Recipients
 	 *
-	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  object $comment ExpressionEngine\Model\Comment
 	 * @return void
 	 */
 	private function setupRecipients($comment)
@@ -69,7 +69,7 @@ class Notifications {
 	/**
 	 * Setup Variables
 	 *
-	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  object $comment ExpressionEngine\Model\Comment
 	 * @param  string $url URL to the comment
 	 * @return void
 	 */

@@ -8,22 +8,22 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
+namespace ExpressionEngine\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\AbstractLexer;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
+use ExpressionEngine\Library\Parser\AbstractLexer;
+use ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Token;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Comment;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Other;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\StringLiteral;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Tag;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
+use ExpressionEngine\Library\Parser\Conditional\Token\Token;
+use ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
+use ExpressionEngine\Library\Parser\Conditional\Token\Comment;
+use ExpressionEngine\Library\Parser\Conditional\Token\Number;
+use ExpressionEngine\Library\Parser\Conditional\Token\Operator;
+use ExpressionEngine\Library\Parser\Conditional\Token\Other;
+use ExpressionEngine\Library\Parser\Conditional\Token\StringLiteral;
+use ExpressionEngine\Library\Parser\Conditional\Token\Tag;
+use ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
-use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
+use ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 
 /**
  * Conditional Lexer

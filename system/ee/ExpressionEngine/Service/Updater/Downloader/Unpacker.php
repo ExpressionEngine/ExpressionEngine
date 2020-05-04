@@ -8,14 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\Downloader\UpdaterPaths;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Service\Updater\Verifier;
-use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Updater\RequirementsCheckerLoader;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Updater\Downloader\UpdaterPaths;
+use ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\Updater\Verifier;
+use ExpressionEngine\Service\Updater\Logger;
+use ExpressionEngine\Service\Updater\RequirementsCheckerLoader;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 use ZipArchive;
 
 /**
@@ -113,7 +113,7 @@ class Unpacker {
 		$this->logger->log('Checking server requirements of new ExpressionEngine version');
 
 		$this->requirements->setClassPath(
-			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
+			$this->getExtractedArchivePath().'/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
 		);
 		$result = $this->requirements->check();
 

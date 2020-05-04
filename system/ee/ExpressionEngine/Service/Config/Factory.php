@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Config;
+namespace ExpressionEngine\Service\Config;
 
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Provider;
 
 /**
  * Config Factory
@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Core\Provider;
 class Factory {
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Core\Provider
+	 * @var ExpressionEngine\Core\Provider
 	 */
 	protected $provider;
 

@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
+namespace ExpressionEngine\Tests\Service\Dependency;
 
 use stdClass;
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
+use ExpressionEngine\Service\Dependency\InjectionContainer;
 use PHPUnit\Framework\TestCase;
 
 class InjectionContainerTest extends TestCase {
@@ -68,15 +68,15 @@ class InjectionContainerTest extends TestCase {
 	public function testChaining()
 	{
 		$di = $this->di->register('Foo', 'Bar');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer', $di);
+		$this->assertInstanceOf('ExpressionEngine\Service\Dependency\InjectionContainer', $di);
 		$this->assertSame($this->di, $di);
 
 		$di = $this->di->registerSingleton('Bar', 'Baz');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer', $di);
+		$this->assertInstanceOf('ExpressionEngine\Service\Dependency\InjectionContainer', $di);
 		$this->assertSame($this->di, $di);
 
 		$di = $this->di->bind('Foo', 'Bar');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
+		$this->assertInstanceOf('ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
 		$this->assertFalse($this->di === $di);
 	}
 

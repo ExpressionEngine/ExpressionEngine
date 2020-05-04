@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish;
+namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 /**
  * Abstract Publish Controller
  */

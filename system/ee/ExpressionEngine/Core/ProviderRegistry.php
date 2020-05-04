@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Core;
+namespace ExpressionEngine\Core;
 
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
+use ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 use FilesystemIterator;
 
 /**

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column\Scalar;
+namespace ExpressionEngine\Service\Model\Column\Scalar;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
+use ExpressionEngine\Service\Model\Column\StaticType;
 
 /**
  * Model Service Float Typed Column

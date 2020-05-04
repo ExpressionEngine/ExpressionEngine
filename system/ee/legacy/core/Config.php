@@ -238,7 +238,7 @@ class EE_Config {
 	public function loadFile($file)
 	{
 		$file = str_replace('..', '', $file);
-		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
+		$syspath = SYSPATH.'ee/ExpressionEngine/Config/'.$file.'.php';
 		$userpath = SYSPATH.'user/config/'.$file.'.php';
 
 		$out = array();
@@ -1956,7 +1956,7 @@ class EE_Config {
 		}
 
 		$pref = parse_config_variables($pref);
-		
+
 		if (strpos($pref, '/')!==0 && stripos($pref, 'http:')!==0 && stripos($pref, 'https:')!==0 )
 		{
 			$pref = '/'.$pref;

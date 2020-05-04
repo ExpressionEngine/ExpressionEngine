@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Encrypt;
+namespace ExpressionEngine\Service\Encrypt;
 
 use \InvalidArgumentException;
 
@@ -115,7 +115,7 @@ class Encrypt {
 		$iv_size = openssl_cipher_iv_length($this->method);
 
 		$iv = ee_mb_substr($data, 0, $iv_size, 'ascii');
-		
+
 		$data = ee_mb_substr($data, $iv_size, ee_mb_strlen($data, 'ascii'), 'ascii');
 
 		return openssl_decrypt($data, $this->method, $key, $this->options, $iv);

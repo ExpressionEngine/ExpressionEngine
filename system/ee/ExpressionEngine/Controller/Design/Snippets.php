@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Design;
+namespace ExpressionEngine\Controller\Design;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Design\Snippets Controller

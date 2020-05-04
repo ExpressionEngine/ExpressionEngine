@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service;
+namespace ExpressionEngine\Tests\Service;
 
-use EllisLab\ExpressionEngine\Service\Filter\Custom;
+use ExpressionEngine\Service\Filter\Custom;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
@@ -34,8 +34,8 @@ class CustomTest extends TestCase {
 		$this->assertNull($filter->value(), 'The value is NULL by default.');
 		$this->assertTrue($filter->isValid(), 'The default is valid');
 
-		$vf = m::mock('EllisLab\ExpressionEngine\Service\View\ViewFactory');
-		$url = m::mock('EllisLab\ExpressionEngine\Library\CP\URL');
+		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
+		$url = m::mock('ExpressionEngine\Library\CP\URL');
 
 		$vf->shouldReceive('make->render');
 		$url->shouldReceive('setQueryStringVariable', 'compile');

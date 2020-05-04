@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\EntryListing;
+namespace ExpressionEngine\Service\EntryListing;
 
 use Serializable;
 use BadMethodCallException;
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\View\View;
 
 /**
  * CP Entry Listing Service

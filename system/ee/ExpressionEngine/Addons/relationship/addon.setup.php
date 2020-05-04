@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Relationships',
 	'description'    => '',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\Relationships',
+	'namespace'      => 'ExpressionEngine\Addons\Relationships',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => array(

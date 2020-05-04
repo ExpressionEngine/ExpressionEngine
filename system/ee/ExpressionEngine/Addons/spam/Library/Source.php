@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Spam\Library;
+namespace ExpressionEngine\Addons\Spam\Library;
 
 /**
  * ExpressionEngine Spam Module Source class. We use the Source class

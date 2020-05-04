@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Permission;
+namespace ExpressionEngine\Tests\Service\Permission;
 
-use EllisLab\ExpressionEngine\Service\Permission\Permission;
+use ExpressionEngine\Service\Permission\Permission;
 use PHPUnit\Framework\TestCase;
 
 class PermissionTest extends TestCase {

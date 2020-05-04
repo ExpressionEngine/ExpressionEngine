@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\PHPUnit\Extensions\Database\TestCase;
+namespace ExpressionEngine\Tests\PHPUnit\Extensions\Database\TestCase;
 
-use EllisLab\Tests\PHPUnit\Extensions\Database\DataSet\ArrayDataSet;
+use ExpressionEngine\Tests\PHPUnit\Extensions\Database\DataSet\ArrayDataSet;
 
 
 abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCase {

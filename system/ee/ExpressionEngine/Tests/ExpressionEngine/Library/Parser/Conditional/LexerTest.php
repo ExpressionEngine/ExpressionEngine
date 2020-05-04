@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
+namespace ExpressionEngine\Tests\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Lexer;
+use ExpressionEngine\Library\Parser\Conditional\Lexer;
 use PHPUnit\Framework\TestCase;
 
 class LexerTest extends TestCase {
@@ -87,7 +87,7 @@ class LexerTest extends TestCase {
 	 */
 	public function testBadDataProvider($description, $str_in)
 	{
-		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException');
+		$this->setExpectedException('ExpressionEngine\Library\Parser\Conditional\Exception\LexerException');
 		$this->lexer->tokenize($str_in);
 	}
 
@@ -97,8 +97,8 @@ class LexerTest extends TestCase {
 	 * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
 	 * confirms that.
 	 *
-	 * See: https://github.com/EllisLab/ExpressionEngine/pull/208
-	 *      https://ellislab.com/forums/viewthread/245744/#1066847
+	 * See: https://github.com/ExpressionEngine/pull/208
+	 *      https://expressionengine.com/forums/viewthread/245744/#1066847
 	 */
 	public function testCommentsAtEndOfTag()
 	{

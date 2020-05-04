@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Category;
+namespace ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Content\StructureModel;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\StructureModel;
 
 /**
  * Category Group Model

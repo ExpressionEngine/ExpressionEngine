@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Service\Model;
 
 use Closure;
 
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
-use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
-use EllisLab\ExpressionEngine\Service\Database\Database;
+use ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Service\Model\Relation\Relation;
+use ExpressionEngine\Service\Database\Database;
 
 /**
  * Model Service DataStore
@@ -27,28 +27,28 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
 class DataStore {
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Database\Database
+	 * @var ExpressionEngine\Service\Database\Database
 	 */
 	private $db;
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Model\RelationGraph
+	 * @var ExpressionEngine\Service\Model\RelationGraph
 	 */
 	private $graph;
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Model\Configuration
+	 * @var ExpressionEngine\Service\Model\Configuration
 	 */
 	private $config;
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Model\Registry
+	 * @var ExpressionEngine\Service\Model\Registry
 	 */
 	private $registry;
 
 	/**
-	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
-	 * @param $config EllisLab\ExpressionEngine\Service\Model\Configuration
+	 * @param $db ExpressionEngine\Service\Database\Database
+	 * @param $config ExpressionEngine\Service\Model\Configuration
 	 */
 	public function __construct(Database $db, Configuration $config)
 	{

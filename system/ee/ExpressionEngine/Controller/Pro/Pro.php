@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Pro;
+namespace ExpressionEngine\Controller\Pro;
 
 use CP_Controller;
 
@@ -35,11 +35,11 @@ class Pro extends CP_Controller {
 	{
 		$function = array_shift($arguments);
 		$name = ucfirst($name);
-		$class = "\EllisLab\Addons\Pro\Controller\\".$name."\\".$name;
+		$class = "\ExpressionEngine\Addons\Pro\Controller\\".$name."\\".$name;
 		$controller = new $class();
 		return $controller->$function($arguments);
 	}
-	
+
 }
 
 // EOF

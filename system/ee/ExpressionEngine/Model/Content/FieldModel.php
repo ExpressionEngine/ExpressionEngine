@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Content;
+namespace ExpressionEngine\Model\Content;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Content Field Model abstract

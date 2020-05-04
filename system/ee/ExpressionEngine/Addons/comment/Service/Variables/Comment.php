@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Comment\Service\Variables;
+namespace ExpressionEngine\Addons\Comment\Service\Variables;
 
-use EllisLab\ExpressionEngine\Model\Comment\Comment as CommentModel;
-use EllisLab\ExpressionEngine\Service\Template\Variables;
+use ExpressionEngine\Model\Comment\Comment as CommentModel;
+use ExpressionEngine\Service\Template\Variables;
 
 /**
  * Comment Variables
@@ -19,22 +19,22 @@ use EllisLab\ExpressionEngine\Service\Template\Variables;
 class Comment extends Variables {
 
 	/**
-	 * @var object namespace EllisLab\ExpressionEngine\Model\Member\Member
+	 * @var object namespace ExpressionEngine\Model\Member\Member
 	 */
 	private $author;
 
 	/**
-	 * @var object EllisLab\ExpressionEngine\Model\Channel\Channel
+	 * @var object ExpressionEngine\Model\Channel\Channel
 	 */
 	private $channel;
 
 	/**
-	 * @var object EllisLab\ExpressionEngine\Model\Comment\Comment
+	 * @var object ExpressionEngine\Model\Comment\Comment
 	 */
 	private $comment;
 
 	/**
-	 * @var object EllisLab\ExpressionEngine\Model\Channel\ChannelEntry
+	 * @var object ExpressionEngine\Model\Channel\ChannelEntry
 	 */
 	private $entry;
 
@@ -51,7 +51,7 @@ class Comment extends Variables {
 	/**
 	 * Constructor
 	 *
-	 * @param object $comment EllisLab\ExpressionEngine\Model\Comment\Comment
+	 * @param object $comment ExpressionEngine\Model\Comment\Comment
 	 * @param array Collection of Member Field models to parse
 	 * @param array Template variables from ee('Variables/Parser')->extractVariables(), indexed by name
 	 */

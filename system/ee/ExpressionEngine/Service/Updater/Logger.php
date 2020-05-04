@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Logger\File;
+use ExpressionEngine\Service\Logger\File;
 
 /**
  * Updater Logger class

@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Addons;
+namespace ExpressionEngine\Controller\Addons;
 
 use CP_Controller;
 use Michelf\MarkdownExtra;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Addons Controller
@@ -311,7 +311,7 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$addon_info = ee('Addon')->get($addon);
-			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+			$party = ($addon_info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
 			$addon_info->updateConsentRequests();
 
@@ -493,7 +493,7 @@ class Addons extends CP_Controller {
 		{
 			$info = ee('Addon')->get($addon);
 
-			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+			$party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
 			$requests[$party] = array_merge($requests[$party], $info->getInstalledConsentRequests());
 		}
@@ -520,7 +520,7 @@ class Addons extends CP_Controller {
 				$info = ee('Addon')->get($addon);
 				ee()->load->add_package_path($info->getPath());
 
-				$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+				$party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
 				try
 				{
@@ -657,7 +657,7 @@ class Addons extends CP_Controller {
 				continue;
 			}
 
-			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+			$party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)

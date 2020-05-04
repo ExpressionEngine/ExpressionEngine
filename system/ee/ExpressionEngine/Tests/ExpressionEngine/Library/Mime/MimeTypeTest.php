@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Mime;
+namespace ExpressionEngine\Tests\Library\Mime;
 
-use EllisLab\ExpressionEngine\Library\Mime\MimeType;
+use ExpressionEngine\Library\Mime\MimeType;
 use PHPUnit\Framework\TestCase;
 
 class MimeTypeTest extends TestCase {

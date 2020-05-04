@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Tests\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Verifier;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\Updater\Verifier;
+use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class VerifierTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 
 		$this->verifier = new Verifier($this->filesystem);
 	}

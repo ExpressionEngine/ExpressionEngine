@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Tests\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\Downloader\Unpacker;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\Updater\Downloader\Unpacker;
+use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -11,11 +11,11 @@ class UnpackerTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->zip_archive = Mockery::mock('ZipArchive');
-		$this->verifier = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Verifier');
-		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
-		$this->requirements = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\RequirementsCheckerLoader');
+		$this->verifier = Mockery::mock('ExpressionEngine\Service\Updater\Verifier');
+		$this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
+		$this->requirements = Mockery::mock('ExpressionEngine\Service\Updater\RequirementsCheckerLoader');
 
 		$this->logger->shouldReceive('log'); // Logger's gonna log
 		$this->filesystem->shouldReceive('mkDir'); // For update path creation
@@ -82,7 +82,7 @@ class UnpackerTest extends TestCase {
 		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
 		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
 
-		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$this->unpacker->checkRequirements();

@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Category;
+namespace ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Model\Content\ContentModel;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
-use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Model\Content\ContentModel;
+use ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Category Model

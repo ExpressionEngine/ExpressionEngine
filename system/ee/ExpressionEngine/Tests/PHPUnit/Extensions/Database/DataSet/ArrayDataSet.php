@@ -4,7 +4,7 @@
 
 //require_once 'PHPUnit/Extensions/Database/DataSet/AbstractDataSet.php';
 
-namespace EllisLab\Tests\PHPUnit\Extensions\Database\DataSet;
+namespace ExpressionEngine\Tests\PHPUnit\Extensions\Database\DataSet;
 
 class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet {
 

@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Msm;
+namespace ExpressionEngine\Controller\Msm;
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Multiple Site Manager Controller

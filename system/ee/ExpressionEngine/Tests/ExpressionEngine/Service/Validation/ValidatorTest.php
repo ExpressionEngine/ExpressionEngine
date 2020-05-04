@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Validation;
+namespace ExpressionEngine\Tests\Service\Validation;
 
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use ExpressionEngine\Service\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class ValidatorTest extends TestCase {

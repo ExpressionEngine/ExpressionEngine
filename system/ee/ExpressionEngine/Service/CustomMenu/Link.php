@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\CustomMenu;
+namespace ExpressionEngine\Service\CustomMenu;
 
 /**
  * Custom Menu Link
@@ -30,7 +30,7 @@ class Link {
 
 		$base = ee('CP/URL')->make('')->compile();
 
-		if (is_a($url, 'EllisLab\ExpressionEngine\Library\CP\URL'))
+		if (is_a($url, 'ExpressionEngine\Library\CP\URL'))
 		{
 			$url = $url->compile();
 		}

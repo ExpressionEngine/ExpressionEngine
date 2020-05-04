@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Config\File;
+use ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\License\ExpressionEngineLicense;
+use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Updater\Logger;
+use ExpressionEngine\Service\Config\File;
 
 /**
  * Updater preflight checker

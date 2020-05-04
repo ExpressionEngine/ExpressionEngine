@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Protocol\Spam;
+namespace ExpressionEngine\Protocol\Spam;
 
 /**
  * ExpressionEngine Spam Protocol interface

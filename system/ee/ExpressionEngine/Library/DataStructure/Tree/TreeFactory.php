@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
+namespace ExpressionEngine\Library\DataStructure\Tree;
 
 /**
  * Tree Factory
@@ -34,7 +34,7 @@ class TreeFactory {
 			array(
 				'id'	 		 => 'id',
 				'parent' 	 	 => 'parent_id',
-				'class_name'	 => '\EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode'
+				'class_name'	 => '\ExpressionEngine\Library\DataStructure\Tree\TreeNode'
 			),
 			(array) $conf
 		);

@@ -1,12 +1,12 @@
 <?php
 
 return [
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Consent',
 	'description'    => 'Front end Consent management',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\Consent',
+	'namespace'      => 'ExpressionEngine\Addons\Consent',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 

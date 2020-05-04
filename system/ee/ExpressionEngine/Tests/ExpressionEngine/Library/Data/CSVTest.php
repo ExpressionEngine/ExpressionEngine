@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Data;
+namespace ExpressionEngine\Tests\Library\Data;
 
-use EllisLab\ExpressionEngine\Library\Data\CSV;
+use ExpressionEngine\Library\Data\CSV;
 use PHPUnit\Framework\TestCase;
 
 class CSVTest extends TestCase {
@@ -25,8 +25,8 @@ class CSVTest extends TestCase {
 	public function testAddsAssociaitiveArrayRow()
 	{
 		$result = $this->csv->addRow(array(
-			'name'  => 'EllisLab',
-			'email' => 'team@ellislab.com',
+			'name'  => 'ExpressionEngine',
+			'email' => 'support@expressionengine.com',
 		));
 
 		$this->assertEquals($result, $this->csv);
@@ -35,8 +35,8 @@ class CSVTest extends TestCase {
 	public function testAddsObjectRow()
 	{
 		$row = new \stdClass();
-		$row->name = 'EllisLab';
-		$row->email = 'team@ellislab.com';
+		$row->name = 'ExpressionEngine';
+		$row->email = 'support@expressionengine.com';
 		$result = $this->csv->addRow($row);
 
 		$this->assertEquals($result, $this->csv);
@@ -47,7 +47,7 @@ class CSVTest extends TestCase {
 	 */
 	public function testFailsIndexedArrayRow()
 	{
-		$this->csv->addRow(array('team@ellislab.com', 'hello@ellislab.com'));
+		$this->csv->addRow(array('support@expressionengine.com', 'hello@ellislab.com'));
 	}
 
 	/**
@@ -55,23 +55,23 @@ class CSVTest extends TestCase {
 	 */
 	public function testFailsString()
 	{
-		$this->csv->addRow('team@ellislab.com');
+		$this->csv->addRow('support@expressionengine.com');
 	}
 
 	public function testToString()
 	{
 		$this->csv
 			->addRow(array(
-				'name'  => 'EllisLab Team',
-				'email' => 'team@ellislab.com',
+				'name'  => 'ExpressionEngine Team',
+				'email' => 'support@expressionengine.com',
 			))
 			->addRow(array(
-				'name'  => 'EllisLab Support',
+				'name'  => 'ExpressionEngine Support',
 				'email' => 'support@ellislab.com',
 			));
 
 		$this->assertEquals(
-			"\"name\",\"email\"\n\"EllisLab Team\",\"team@ellislab.com\"\n\"EllisLab Support\",\"support@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\"\n\"ExpressionEngine Support\",\"support@ellislab.com\"\n",
 			(string) $this->csv
 		);
 	}
@@ -80,18 +80,18 @@ class CSVTest extends TestCase {
 	{
 		$this->csv
 			->addRow(array(
-				'name'  => 'EllisLab Team',
-				'email' => 'team@ellislab.com',
+				'name'  => 'ExpressionEngine Team',
+				'email' => 'support@expressionengine.com',
 			))
 			->addRow(array(
-				'name'  => 'EllisLab Support',
+				'name'  => 'ExpressionEngine Support',
 				'email' => 'support@ellislab.com',
 			));
 
 		$this->csv->save('/var/tmp/test.csv');
 		$this->assertFileExists('/var/tmp/test.csv');
 		$this->assertEquals(
-			"\"name\",\"email\"\n\"EllisLab Team\",\"team@ellislab.com\"\n\"EllisLab Support\",\"support@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\"\n\"ExpressionEngine Support\",\"support@ellislab.com\"\n",
 			file_get_contents('/var/tmp/test.csv')
 		);
 	}
@@ -100,17 +100,17 @@ class CSVTest extends TestCase {
 	{
 		$this->csv
 			->addRow(array(
-				'name'  => 'EllisLab Team',
-				'email' => 'team@ellislab.com'
+				'name'  => 'ExpressionEngine Team',
+				'email' => 'support@expressionengine.com'
 			))
 			->addRow(array(
 				'email'      => 'developers@ellislab.com',
-				'first_name' => 'EllisLab',
+				'first_name' => 'ExpressionEngine',
 				'last_name'  => 'Developers'
 			));
 
 		$this->assertEquals(
-			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"ExpressionEngine\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -118,17 +118,17 @@ class CSVTest extends TestCase {
 	public function testAddDifferentObjects()
 	{
 		$row1             = new \stdClass();
-		$row1->name       = 'EllisLab Team';
-		$row1->email      = 'team@ellislab.com';
+		$row1->name       = 'ExpressionEngine Team';
+		$row1->email      = 'support@expressionengine.com';
 		$row2             = new \stdClass();
 		$row2->email      = 'developers@ellislab.com';
-		$row2->first_name = 'EllisLab';
+		$row2->first_name = 'ExpressionEngine';
 		$row2->last_name  = 'Developers';
 
 		$this->csv->addRow($row1)->addRow($row2);
 
 		$this->assertEquals(
-			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"ExpressionEngine\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -136,18 +136,18 @@ class CSVTest extends TestCase {
 	public function testAddDifferentArraysAndObjects()
 	{
 		$row1             = new \stdClass();
-		$row1->name       = 'EllisLab Team';
-		$row1->email      = 'team@ellislab.com';
+		$row1->name       = 'ExpressionEngine Team';
+		$row1->email      = 'support@expressionengine.com';
 
 		$this->csv->addRow($row1)
 			->addRow(array(
 				'email'      => 'developers@ellislab.com',
-				'first_name' => 'EllisLab',
+				'first_name' => 'ExpressionEngine',
 				'last_name'  => 'Developers'
 			));
 
 		$this->assertEquals(
-			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"EllisLab Team\",\"team@ellislab.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"EllisLab\",\"Developers\"\n",
+			"\"name\",\"email\",\"first_name\",\"last_name\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\",\"\",\"\"\n\"\",\"developers@ellislab.com\",\"ExpressionEngine\",\"Developers\"\n",
 			(string) $this->csv
 		);
 	}
@@ -155,12 +155,12 @@ class CSVTest extends TestCase {
 	public function testCommasInRows()
 	{
 		$result = $this->csv->addRow(array(
-			'name'  => 'Team, EllisLab',
-			'email' => 'team@ellislab.com',
+			'name'  => 'Team, ExpressionEngine',
+			'email' => 'support@expressionengine.com',
 		));
 
 		$this->assertEquals(
-			"\"name\",\"email\"\n\"Team, EllisLab\",\"team@ellislab.com\"\n",
+			"\"name\",\"email\"\n\"Team, ExpressionEngine\",\"support@expressionengine.com\"\n",
 			(string) $this->csv
 		);
 	}

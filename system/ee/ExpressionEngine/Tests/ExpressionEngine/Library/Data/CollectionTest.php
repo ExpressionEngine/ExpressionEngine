@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Data;
+namespace ExpressionEngine\Tests\Library\Data;
 
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Library\Data\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase {

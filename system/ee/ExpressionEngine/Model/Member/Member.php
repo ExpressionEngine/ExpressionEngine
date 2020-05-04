@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Member;
+namespace ExpressionEngine\Model\Member;
 
 use DateTimeZone;
-use EllisLab\ExpressionEngine\Model\Content\ContentModel;
-use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Model\Content\ContentModel;
+use ExpressionEngine\Model\Member\Display\MemberFieldLayout;
+use ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Member
@@ -503,7 +503,7 @@ class Member extends ContentModel {
 	 * to the site's defined HTML buttons
 	 *
 	 * @param int $site_id The site ID
-	 * @return EllisLab\ExpressionEngine\Library\Data\Collection A collection of HTMLButton entities
+	 * @return ExpressionEngine\Library\Data\Collection A collection of HTMLButton entities
 	 */
 	public function getHTMLButtonsForSite($site_id)
 	{
@@ -577,7 +577,7 @@ class Member extends ContentModel {
 	 * then the groups preferences, falling back to the default.
 	 *
 	 * @param	int	Optional site ID to get member homepage for, defaults to current site
-	 * @return EllisLab\ExpressionEngine\Library\CP\URL The URL
+	 * @return ExpressionEngine\Library\CP\URL The URL
 	 */
 	public function getCPHomepageURL($site_id = NULL)
 	{
@@ -1223,13 +1223,13 @@ class Member extends ContentModel {
 	 */
 	public function getAllCustomFields()
 	{
-		$member_cfields = ee()->session->cache('EllisLab::RoleModel', 'getCustomFields');
+		$member_cfields = ee()->session->cache('ExpressionEngine::RoleModel', 'getCustomFields');
 
 		// might be empty, so need to be specific
 		if ( ! is_array($member_cfields))
 		{
 			$member_cfields = $this->getModelFacade()->get('MemberField')->all()->asArray();
-			ee()->session->set_cache('EllisLab::RoleModel', 'getCustomFields', $member_cfields);
+			ee()->session->set_cache('ExpressionEngine::RoleModel', 'getCustomFields', $member_cfields);
 		}
 
 		return $member_cfields;

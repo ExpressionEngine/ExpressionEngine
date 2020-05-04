@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Protocol\Config;
+namespace ExpressionEngine\Protocol\Config;
 
 /**
  * ExpressionEngine Config Protocol interface

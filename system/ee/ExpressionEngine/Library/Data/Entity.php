@@ -8,15 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Library\Data;
+namespace ExpressionEngine\Library\Data;
 
 use Closure;
 use InvalidArgumentException;
 use Serializable;
-use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
-use EllisLab\ExpressionEngine\Service\Event\Emitter;
-use EllisLab\ExpressionEngine\Service\Event\Publisher;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber;
+use ExpressionEngine\Library\Mixin\MixableImpl;
+use ExpressionEngine\Service\Event\Emitter;
+use ExpressionEngine\Service\Event\Publisher;
+use ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * Data Entity Abstract
@@ -171,7 +171,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 			$child = $class;
 		}
 		while (($class = get_parent_class($class))
-			&& $child != 'EllisLab\ExpressionEngine\Service\Model\Model');
+			&& $child != 'ExpressionEngine\Service\Model\Model');
 
 		return array_reverse($values);
 	}

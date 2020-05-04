@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Database;
+namespace ExpressionEngine\Service\Database;
 
 /**
  * Database Log
@@ -155,7 +155,7 @@ class Log {
 
 					if (strpos($class, 'CI_DB_') !== 0 &&
 						strpos($class, __NAMESPACE__) !== 0 &&
-						strpos($class, 'EllisLab\ExpressionEngine\Service\Model') !== 0)
+						strpos($class, 'ExpressionEngine\Service\Model') !== 0)
 					{
 						break;
 					}

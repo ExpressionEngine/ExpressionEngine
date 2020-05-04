@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service;
+namespace ExpressionEngine\Tests\Service;
 
-use EllisLab\ExpressionEngine\Service\Filter\Username;
+use ExpressionEngine\Service\Filter\Username;
 use Mockery as m;
 use stdClass;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ class UsernameTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->query = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
+		$this->query = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
 		$this->usernames = array(
 			'1' => 'admin',
@@ -42,8 +42,8 @@ class UsernameTest extends TestCase {
 		$this->assertNull($filter->value(), 'The value is NULL by default.');
 		$this->assertTrue($filter->isValid(), 'The default is invalid');
 
-		$vf = m::mock('EllisLab\ExpressionEngine\Service\View\ViewFactory');
-		$url = m::mock('EllisLab\ExpressionEngine\Library\CP\URL');
+		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
+		$url = m::mock('ExpressionEngine\Library\CP\URL');
 
 		$vf->shouldReceive('make->render');
 		$url->shouldReceive('setQueryStringVariable', 'compile');
@@ -190,7 +190,7 @@ class UsernameTest extends TestCase {
 		$_POST['filter_by_username'] = 'admin';
 		$filter = $this->makeFilterWithQuery();
 
-		$members = m::mock('EllisLab\ExpressionEngine\Service\Model\Collection');
+		$members = m::mock('ExpressionEngine\Service\Model\Collection');
 		$this->query->shouldReceive("filter->all")->andReturn($members);
 		$members->shouldReceive('count')->andReturn(1);
 		$members->shouldReceive('pluck')->with('member_id')->andReturn(1);
@@ -204,7 +204,7 @@ class UsernameTest extends TestCase {
 		$_POST['filter_by_username'] = 'ferdinand.von.zeppelin';
 		$filter = $this->makeFilterWithQuery();
 
-		$members = m::mock('EllisLab\ExpressionEngine\Service\Model\Collection');
+		$members = m::mock('ExpressionEngine\Service\Model\Collection');
 		$this->query->shouldReceive("filter->all")->andReturn($members);
 		$members->shouldReceive('count')->andReturn(0);
 

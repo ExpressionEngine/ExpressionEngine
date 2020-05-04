@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Security;
+namespace ExpressionEngine\Tests\Library\Security;
 
-use EllisLab\ExpressionEngine\Library\Security\XSS;
+use ExpressionEngine\Library\Security\XSS;
 use PHPUnit\Framework\TestCase;
 
-require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.common.php';
+require_once SYSPATH.'ee/ExpressionEngine/Boot/boot.common.php';
 
 class XSSTest extends TestCase {
 

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Service\Model;
 
-use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
+use ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
 /**
  * Model Service Facade
@@ -28,7 +28,7 @@ class Facade {
 	protected $validation;
 
 	/**
-	 * @param $datastore EllisLab\ExpressionEngine\Service\Model\DataStore
+	 * @param $datastore ExpressionEngine\Service\Model\DataStore
 	 */
 	public function __construct(DataStore $datastore)
 	{

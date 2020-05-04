@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\FluidField\Service;
+namespace ExpressionEngine\Addons\FluidField\Service;
 
-use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
+use ExpressionEngine\Model\Content\FieldFacade;
 
 /**
  * A tag for a fieldtype within a Fluid Field

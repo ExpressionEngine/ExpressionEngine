@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
+namespace ExpressionEngine\Tests\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner;
+use ExpressionEngine\Library\Parser\Conditional\Runner;
 use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase {
@@ -237,7 +237,7 @@ class RunnerTest extends TestCase {
 
 	public function badDataProvider()
 	{
-		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException';
+		$parser_exception = 'ExpressionEngine\Library\Parser\Conditional\Exception\ParserException';
 
 		return array(
 			array($parser_exception,	'Double float',						'{if 1.2.3 }out{/if}'),
