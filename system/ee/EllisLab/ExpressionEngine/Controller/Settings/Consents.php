@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ class Consents extends Settings {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee('Permission')->has('can_manage_consents'))
+		if ( ! ee('Permission')->can('manage_consents'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -219,8 +219,8 @@ class Consents extends Settings {
 
 			ee('CP/Alert')->makeInline('user-alerts')
 				->asSuccess()
-				->withTitle(lang('consent_requests_removed'))
-				->addToBody(sprintf(lang('consent_requests_removed_desc'), count($request_ids)))
+				->withTitle(lang('consent_requests_deleted'))
+				->addToBody(sprintf(lang('consent_requests_deleted_desc'), count($request_ids)))
 				->defer();
 		}
 		else

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,11 @@ abstract class ListItem {
 	 * @var string $text The text of the item
 	 */
 	protected $text;
+
+	/**
+	 * @var string $text Optional icon for the item
+	 */
+	protected $icon;
 
 	/**
 	 * @var URL|string $url The URL to use as an href attribute
@@ -64,8 +69,7 @@ abstract class ListItem {
 	public function withUrl($url)
 	{
 		$this->url = $url;
-		if ($url instanceof URL && $url->isTheRequestedURI())
-		{
+		if ($url instanceof URL && $url->isTheRequestedURI()) {
 			$this->isActive();
 		}
 		return $this;
@@ -80,6 +84,19 @@ abstract class ListItem {
 	public function urlIsExternal($external = TRUE)
 	{
 		$this->url_is_external = $external;
+		return $this;
+	}
+
+	/**
+	 * Sets the icon of the item
+	 *
+	 * @param string $icon Name of the icon
+	 * @return self This returns a reference to itself
+	 */
+	public function withIcon($icon)
+	{
+		$this->icon = $icon;
+
 		return $this;
 	}
 
@@ -125,7 +142,7 @@ abstract class ListItem {
 	 */
 	public function isActive()
 	{
-		return $this->addClass('act');
+		return $this->addClass('active');
 	}
 
 	/**
@@ -135,7 +152,7 @@ abstract class ListItem {
 	 */
 	public function isInactive()
 	{
-		return $this->removeClass('act');
+		return $this->removeClass('active');
 	}
 
 	/**

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@ class Member_settings extends Member {
 	{
 		$menu = $this->_load_element('menu');
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			$menu = $this->_deny_if('allow_localization', $menu);
 		}
@@ -100,7 +100,7 @@ class Member_settings extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata('can_view_profiles') == 'n')
+		if ( ! ee('Permission')->can('view_profiles'))
 		{
 			return ee()->output->show_user_error('general',
 					array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
@@ -112,30 +112,10 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
 
-		/** ----------------------------------------
-		/**  Fetch the member data
-		/** ----------------------------------------*/
-/*
-		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename,
-					m.photo_width, m.photo_height, m.join_date, m.last_visit,
-					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date,
-					m.total_entries, m.total_comments, m.total_forum_topics,
-					m.total_forum_posts, m.language, m.timezone,
-					m.accept_user_email, m.accept_messages,
-					g.group_title, g.can_send_private_messages';
-
-		ee()->db->select($select);
-		ee()->db->from(array('members m', 'member_groups g'));
-		ee()->db->where('m.member_id', (int)$this->cur_id);
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('m.group_id', 'g.group_id', FALSE);
-*/
-
 		// Default Member Data
 		$not_in = array(3, 4);
 
-		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
 			$not_in[] = 2;
 		}
@@ -143,9 +123,8 @@ class Member_settings extends Member {
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
-			->with('MemberGroup')
-			->filter('group_id', 'NOT IN', $not_in)
-			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
+			->with(['PrimaryRole' => 'RoleSettings'])
+			->filter('role_id', 'NOT IN', $not_in)
 			->first();
 
 		if ( ! $member)
@@ -154,7 +133,11 @@ class Member_settings extends Member {
 		}
 
 		// Fetch the row
-		$row = array_merge($member->getValues(), $member->MemberGroup->getValues());
+		$row = array_merge(
+			$member->getValues(),
+			$member->PrimaryRole->getValues(),
+			$member->PrimaryRole->RoleSettings->getValues()
+		);
 
 		// Use member field names
 		$member_fields = ee('Model')->get('MemberField')
@@ -454,7 +437,7 @@ class Member_settings extends Member {
 			/** ----------------------------------------*/
 			if (stristr($val['0'], 'can_private_message'))
 			{
-				if ($row['can_send_private_messages'] == 'n' OR $row['accept_messages'] == 'n')
+				if ( ! $member->can('send_private_messages') OR $row['accept_messages'] == 'n')
 				{
 					$content = preg_replace("/".LD.$val['0'].RD."(.+?)".LD.'\/if'.RD."/s", "", $content);
 				}
@@ -570,7 +553,7 @@ class Member_settings extends Member {
 
 			if ($key == "member_group")
 			{
-				$content = $this->_var_swap_single($val, $row['group_title'] , $content);
+				$content = $this->_var_swap_single($val, $member->PrimaryRole->name , $content);
 			}
 
 			/** ----------------------
@@ -637,7 +620,7 @@ class Member_settings extends Member {
 
 		if ($member_fields)
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$member_fields = $member_fields->filter(function($field) {
 					return $field->m_field_public == 'y';
@@ -867,7 +850,7 @@ class Member_settings extends Member {
 
 		$sql = "SELECT *  FROM exp_member_fields ";
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= " WHERE m_field_public = 'y' ";
 		}
@@ -886,7 +869,7 @@ class Member_settings extends Member {
 		{
 			foreach ($this->member->getDisplay()->getFields() as $field)
 			{
-				if (ee()->session->userdata['group_id'] != 1 && $field->get('field_public') != 'y')
+				if ( ! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y')
 				{
 					continue;
 				}
@@ -970,7 +953,7 @@ class Member_settings extends Member {
 
 
 		ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			ee()->db->where('m_field_public = "y"');
 		}
@@ -1233,7 +1216,7 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_userpass'))
 				),
 				'row:username_form'				=>
-					(ee()->session->userdata['group_id'] == 1 OR ee()->config->item('allow_username_change') == 'y') ?
+					(ee('Permission')->isSuperAdmin() OR ee()->config->item('allow_username_change') == 'y') ?
 						$this->_load_element('username_row') :
 						$this->_load_element('username_change_disallowed'),
 				'path:update_username_password'	=>	$this->_member_path('update_userpass'),
@@ -1336,7 +1319,7 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}
@@ -1382,7 +1365,7 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}
@@ -1595,11 +1578,14 @@ class Member_settings extends Member {
 
 		$group_opts = '';
 
-		$query = ee()->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ORDER BY group_title");
+		$roles = ee('Model')->get('Role')
+			->fields('role_id', 'name')
+			->order('name')
+			->all();
 
-		foreach ($query->result_array() as $row)
+		foreach ($roles as $role)
 		{
-			$group_opts .= "<option value='{$row['group_id']}'>{$row['group_title']}</option>";
+			$group_opts .= "<option value='{$role->getId()}'>{$role->name()}</option>";
 		}
 
 		$template = $this->_var_swap($this->_load_element('search_members'),
@@ -1651,7 +1637,7 @@ class Member_settings extends Member {
 			{
 				if ($val != 'any')
 				{
-					$search_query[] = " group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
+					$search_query[] = " role_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
 			else
@@ -1671,8 +1657,8 @@ class Member_settings extends Member {
 
   		$Q = implode(" AND ", $search_query);
 
-		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups
-				WHERE exp_members.group_id = exp_member_groups.group_id AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_roles
+				WHERE exp_members.role_id = exp_roles.role_id '
 				AND ".$Q;
 
 		$query = ee()->db->query($sql);

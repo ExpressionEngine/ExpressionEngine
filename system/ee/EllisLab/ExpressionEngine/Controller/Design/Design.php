@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,7 +28,7 @@ class Design extends AbstractDesignController {
 
 	public function export()
 	{
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -38,6 +38,18 @@ class Design extends AbstractDesignController {
 
 	public function manager($group_name = NULL)
 	{
+		$assigned_groups = NULL;
+
+		if ( ! ee('Permission')->isSuperAdmin())
+		{
+			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
+
+			if (empty($assigned_groups))
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('design/system'));
+			}
+		}
+
 		if (is_null($group_name))
 		{
 			$group = $this->getAssignedTemplateGroup(NULL, TRUE);
@@ -70,7 +82,7 @@ class Design extends AbstractDesignController {
 
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			if ($this->hasEditTemplatePrivileges($group->group_id))
+			if (ee('Permission')->can('delete_templates_template_group_id_' . $group->getId()))
 			{
 				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
@@ -94,8 +106,8 @@ class Design extends AbstractDesignController {
 
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
 
-		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
-		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
+		$vars['show_new_template_button'] = ee('Permission')->can('can_create_templates_template_group_id_' . $group->getId());
+		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates_template_group_id_' . $group->getId());
 		$vars['group_id'] = $group->group_name;
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
@@ -161,7 +173,7 @@ class Design extends AbstractDesignController {
 	{
 		if ( ! ($group_names = ee()->input->post('groups'))
 			OR ! AJAX_REQUEST
-			OR ! ee()->cp->allowed_group('can_edit_template_groups'))
+			OR ! ee('Permission')->can('edit_template_groups'))
 		{
 			return;
 		}
@@ -191,6 +203,8 @@ class Design extends AbstractDesignController {
 		{
 			return FALSE;
 		}
+
+		$roles = ee('Model')->get('Role')->all();
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('template_structure');
@@ -327,7 +341,9 @@ class Design extends AbstractDesignController {
 					 );
 
 					// do it!
-					$template_model = ee('Model')->make('Template', $data)->save();
+					$template_model = ee('Model')->make('Template', $data);
+					$template_model->Roles = $roles;
+					$template_model->save();
 					$this->saveNewTemplateRevision($template_model);
 
 					// add to existing array so we don't try to create this template again
@@ -347,7 +363,9 @@ class Design extends AbstractDesignController {
 						'site_id'				=> ee()->config->item('site_id')
 					 );
 
-					$template_model = ee('Model')->make('Template', $data)->save();
+ 					$template_model = ee('Model')->make('Template', $data);
+ 					$template_model->Roles = $roles;
+ 					$template_model->save();
 					$this->saveNewTemplateRevision($template_model);
 				}
 

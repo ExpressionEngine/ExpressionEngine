@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -317,14 +317,6 @@ class Textarea_ft extends EE_Fieldtype {
 						),
 						'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
 					),
-					'field_show_smileys' => array(
-						'type' => 'checkbox',
-						'scalar' => TRUE,
-						'choices' => array(
-							'y' => lang('show_smileys'),
-						),
-						'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
-					),
 					'field_show_file_selector' => array(
 						'type' => 'checkbox',
 						'scalar' => TRUE,
@@ -335,11 +327,6 @@ class Textarea_ft extends EE_Fieldtype {
 					)
 				)
 			);
-
-			if ( ! ee('Addon')->get('emoticon')->isInstalled())
-			{
-				unset($field_tools['fields']['field_show_smileys']);
-			}
 
 			$settings[] = $field_tools;
 		}

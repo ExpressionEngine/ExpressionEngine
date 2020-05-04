@@ -5,7 +5,11 @@ $lang = array(
 /* Sidebar Menu */
 'addon' => 'Add-On',
 
-'addon_manager' => 'Add-On Manager',
+'addon_manager' => 'Add-Ons',
+
+'updates' => 'Updates',
+
+'add-on-store' => 'Add-On Store',
 
 'addons' => 'Add-Ons',
 

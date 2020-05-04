@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,6 +16,7 @@ return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'ExpressionEngine Spam Module',
+	'description' => 'Block spammy comments, forum posts, and member registrations',
 	'version'     => '2.0.0',
 	'namespace'   => 'EllisLab\Addons\Spam',
 	'settings_exist' => TRUE,

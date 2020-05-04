@@ -77,6 +77,7 @@ $lang = array(
 
 'yes' => 'Yes',
 
+'edit_this' => 'Edit this',
 
 /* Errors */
 'captcha_incorrect' => 'You did not submit the word exactly as it appears in the image',
@@ -128,7 +129,7 @@ If you made these changes, please accept the modifications on the control panel 
 
 'submission_error' => 'The form you submitted contained the following errors',
 
-'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
+'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <code>Themes Path</code> and <code>Themes URL</code>.',
 
 'unable_to_load_field_type' => 'Unable to load requested field type file: %s.<br /> Confirm the fieldtype file is located in the /'.SYSDIR.'/user/addons/ directory',
 
@@ -183,6 +184,8 @@ If you made these changes, please accept the modifications on the control panel 
 'password_has_been_reset' => 'Your password was reset and a new one has been emailed to you.',
 
 'password_reset_flood_lock' => 'You have tried to reset your password too many times today. Please check your inbox and spam folders for previous requests, or contact the site administrator.',
+
+'forgotten_username_email_sent' => 'If this email address is associated with an account, an email containing your username has just been emailed to you.',
 
 'your_new_login_info' => 'Login information',
 

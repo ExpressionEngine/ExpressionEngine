@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -356,13 +356,12 @@ class Forum_tab {
 	{
 		$allowed = array();
 
-		$group_id = ee()->session->userdata('group_id');
 		$member_id = ee()->session->userdata('member_id');
 
 		// Get Admins
 		$admins = array();
 
-		if ($group_id != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$adminq = ee()->db->get('forum_administrators');
 
@@ -378,20 +377,25 @@ class Forum_tab {
 								->where('f.forum_is_cat', 'n')
 								->get();
 
+		$member = ee()->session->getMember();
+		$role_ids = $member->getAllRoles()->pluck('role_id');
+
 		foreach ($forums->result() as $row)
 		{
 			$perms = unserialize(stripslashes($row->forum_permissions));
+			$can_post_topics = ( ! isset($perms['can_post_topics'])) ? [] : explode('|', trim($perms['can_post_topics'], '|'));
+			$can_post = array_intersect($can_post_topics, $role_ids);
 
-			if ( ! isset($perms['can_post_topics']) OR strpos($perms['can_post_topics'], '|'.$group_id.'|') === FALSE)
+			if (empty($can_post))
 			{
-				if ($group_id != 1)
+				if ( ! ee('Permission')->isSuperAdmin())
 				{
 					if ( ! isset($admins[$row->board_id]))
 					{
 						continue;
 					}
 					elseif ($admins[$row->board_id]['member_id'] != $member_id &&
-					 	$admins[$row->board_id]['group_id'] != $group_id)
+					 	! in_array($admins[$row->board_id]['group_id'], $role_ids))
 					{
 						continue;
 					}

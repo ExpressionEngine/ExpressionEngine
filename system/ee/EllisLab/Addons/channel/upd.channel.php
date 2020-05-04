@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@
  */
 class Channel_upd {
 
-	var $version		= '2.0.1';
+	var $version		= '2.1.0';
 
 	/**
 	 * Module Installer
@@ -50,6 +50,13 @@ class Channel_upd {
 			'method' => 'combo_loader'
 		);
 
+    ee()->db->insert('actions', $data);
+    
+		$data = array(
+			'class' => 'Channel',
+			'method' => 'live_preview'
+		);
+
 		ee()->db->insert('actions', $data);
 
 		ee()->db->insert('content_types', array('name' => 'channel'));
@@ -70,7 +77,7 @@ class Channel_upd {
 		ee()->db->where('module_name', 'Channel');
 		$query = ee()->db->get();
 
-		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		ee()->db->delete('module_member_roles', array('module_id' => $query->row('module_id')));
 		ee()->db->delete('modules', array('module_name' => 'Channel'));
 		ee()->db->delete('actions', array('class' => 'Channel'));
 		ee()->db->delete('actions', array('class' => 'Channel_mcp'));
@@ -86,7 +93,7 @@ class Channel_upd {
 	 */
 	function update()
 	{
-		return TRUE;
+    return TRUE;
 	}
 
 }

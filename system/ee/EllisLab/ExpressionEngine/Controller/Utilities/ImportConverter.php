@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,7 +30,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_import'))
+		if ( ! ee('Permission')->can('access_import'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -253,7 +253,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function import_fieldmap()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -337,7 +337,7 @@ class ImportConverter extends Utilities {
 	 */
 	private function _datafile_to_array($file, $delimiter, $enclosure)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -375,7 +375,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importFieldmapConfirm()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -458,7 +458,7 @@ class ImportConverter extends Utilities {
 	 */
 	public function importCodeOutput()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

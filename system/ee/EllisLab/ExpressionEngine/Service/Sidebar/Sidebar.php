@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,9 +18,9 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 class Sidebar {
 
 	/**
-	 * @var array $headers The headers in this sidebar
+	 * @var array $items The items in this sidebar
 	 */
-	protected $headers = array();
+	protected $items = [];
 
 	/**
 	 * @var ViewFactory $view A ViewFactory object with which we will render the sidebar.
@@ -82,9 +82,15 @@ class Sidebar {
 			$output .= $this->list->render($this->view);
 		}
 
-		foreach ($this->headers as $header)
-		{
-			$output .= $header->render($this->view);
+		$is_legacy = false;
+
+		foreach ($this->items as $item) {
+			$output .= $item->render($this->view);
+
+			// LEGACY: Check if the header has a link, if it does, the legacy sidebar styles need to be used.
+			if ($item instanceof Header && $item->hasUrl()) {
+				$is_legacy = true;
+			}
 		}
 
 		if ( ! empty($this->action_bar))
@@ -97,11 +103,30 @@ class Sidebar {
 			return '';
 		}
 
+		if ($is_legacy) {
+			$this->class .= ' legacy-sidebar';
+		}
+
 		return $this->view->make('_shared/sidebar/sidebar')
 			     ->render([
 					'class' => $this->class,
 					'sidebar' => $output,
 				]);
+	}
+
+	/**
+	 * Adds a basic item to the sidebar
+	 *
+	 * @param string $text The text of the item
+	 * @param URL|string $url An optional CP\URL object or string containing the
+	 *   URL for the text.
+	 * @return Header A new BasicItem object.
+	 */
+	public function addItem($text, $url = NULL)
+	{
+		$item = new BasicItem($text, $url);
+		$this->items[] = $item;
+		return $item;
 	}
 
 	/**
@@ -115,8 +140,19 @@ class Sidebar {
 	public function addHeader($text, $url = NULL)
 	{
 		$header = new Header($text, $url);
-		$this->headers[] = $header;
+		$this->items[] = $header;
 		return $header;
+	}
+
+	/**
+	 * Adds a divider to the sidebar
+	 *
+	 * @return Divider A new divider object.
+	 */
+	public function addDivider() {
+		$divider = new Divider();
+		$this->items[] = $divider;
+		return $divider;
 	}
 
 	/**

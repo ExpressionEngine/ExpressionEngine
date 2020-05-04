@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@ class Avatars extends Settings {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_members', 'can_admin_design'))
+		if ( ! ee('Permission')->hasAll('can_access_members', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -30,22 +30,6 @@ class Avatars extends Settings {
 	public function index()
 	{
 		$vars['sections'] = array(
-			array(
-				array(
-					'title' => 'enable_avatars',
-					'desc' => 'enable_avatars_desc',
-					'fields' => array(
-						'enable_avatars' => array('type' => 'yes_no')
-					)
-				),
-				array(
-					'title' => 'allow_avatar_uploads',
-					'desc' => 'allow_avatar_uploads_desc',
-					'fields' => array(
-						'allow_avatar_uploads' => array('type' => 'yes_no')
-					)
-				)
-			),
 			'url_path_settings_title' => array(
 				array(
 					'title' => 'avatar_url',

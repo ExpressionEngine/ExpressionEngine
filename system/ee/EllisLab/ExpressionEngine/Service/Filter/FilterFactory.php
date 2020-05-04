@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -274,16 +274,17 @@ class FilterFactory {
 	 * @param  string $lang_key The optional lang key to use for the "All
 	 *                          <<$total>> items" option
 	 * @param  bool $is_modal Is this Perpage filter in/for a modal?
+	 * @param  bool $hide_reset Should we force hiding 'clear filters' button?
 	 * @return Filter\Perpage a Perpage Filter object
 	 */
-	protected function createDefaultPerpage($total, $lang_key = NULL, $is_modal = FALSE)
+	protected function createDefaultPerpage($total, $lang_key = NULL, $is_modal = FALSE, $hide_reset = FALSE)
 	{
 		if ( ! isset($lang_key))
 		{
 			return new Filter\Perpage($total);
 		}
 
-		return new Filter\Perpage($total, $lang_key, $is_modal);
+		return new Filter\Perpage($total, $lang_key, $is_modal, $hide_reset);
 	}
 
 	/**
@@ -314,6 +315,15 @@ class FilterFactory {
 		return $filter;
 	}
 
+	/**
+	 * This will instantiate and return a default ViewType filter
+	 *
+	 * @return Filter\ViewType a ViewType Filter object
+	 */
+	protected function createDefaultViewType($options = [], $default = 'table')
+	{
+		return new Filter\ViewType($options, $default);
+	}
 }
 
 // EOF

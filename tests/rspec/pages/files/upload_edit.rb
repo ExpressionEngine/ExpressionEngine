@@ -9,7 +9,7 @@ class UploadEdit < FileManagerPage
   element :max_height, 'input[name=max_height]'
   element :image_manipulations, '#image_manipulations'
   elements :grid_rows, '#image_manipulations tr'
-  elements :upload_member_groups, 'input[name="upload_member_groups[]"]'
+  elements :upload_roles, 'input[name="upload_roles[]"]'
   elements :cat_group, 'input[name="cat_group[]"]'
 
   def load

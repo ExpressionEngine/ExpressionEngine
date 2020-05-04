@@ -1,18 +1,15 @@
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<?php if ($search_allowed): ?>
-		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$search ? form_prep($search) : ''?>">
-			<input class="btn submit" type="submit" value="<?=lang('search_files')?>">
-		</fieldset>
-	<?php endif ?>
+	<?php if (isset($filters)) : ?>
+	<fieldset class="tbl-search right">
+		<?=$filters?>
+	</fieldset>
+	<?php endif; ?>
 	<h1>
 		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 	</h1>
 
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-
-	<?php if (isset($filters)) echo $filters; ?>
 
 	<?php if($type == 'thumb'): ?>
 	<div class="tbl-wrap">

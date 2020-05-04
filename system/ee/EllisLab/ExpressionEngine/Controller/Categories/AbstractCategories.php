@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,7 @@ abstract class AbstractCategories extends CP_Controller {
 			['createCat', 'editCat', 'categoryGroupPublishField']
 		))
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories'
 			))
@@ -42,7 +42,7 @@ abstract class AbstractCategories extends CP_Controller {
 		}
 		else
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories',
 				'can_delete_categories'
@@ -76,10 +76,12 @@ abstract class AbstractCategories extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addFolderList('categories')
+		$header = $sidebar->addHeader(lang('category_groups'));
+
+		$list = $header->addFolderList('categories')
 			->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
-		if (ee()->cp->allowed_group('can_delete_categories'))
+		if (ee('Permission')->can('delete_categories'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('categories/groups/remove'))
 				->withRemovalKey('content_id');
@@ -99,16 +101,16 @@ abstract class AbstractCategories extends CP_Controller {
 			$item = $list->addItem(
 				$group_name,
 				ee('CP/URL')->make('categories/group/' . $group->getId())
-			);
+			)->withIcon('tags');
 
-			if (ee()->cp->allowed_group('can_edit_categories'))
+			if (ee('Permission')->can('edit_categories'))
 			{
 				$item->withEditUrl(
 					ee('CP/URL')->make('categories/groups/edit/' . $group->getId())
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_categories'))
+			if (ee('Permission')->can('delete_categories'))
 			{
 				$item->withRemoveConfirmation(
 					lang('category_group') . ': <b>' . $group_name . '</b>'

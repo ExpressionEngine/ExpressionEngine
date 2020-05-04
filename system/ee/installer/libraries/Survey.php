@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,8 +44,7 @@ class Survey {
 		// Get a list of add-ons in their third_party folder
 		ee()->load->helper('directory');
 
-		$mysql_info = (ee()->db->dbdriver == 'mysqli')
-			? mysqli_get_server_info(ee()->db->conn_id) : mysql_get_server_info();
+		$mysql_info = mysqli_get_server_info(ee()->db->conn_id);
 
 		return array(
 			'anon_id'			=> md5($site_url),

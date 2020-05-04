@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/metaweblog_api/create')?>"><?=lang('create_new')?></a>
@@ -9,15 +8,14 @@
 
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 			</select>
-			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	<?=form_close();?>
-</div>
 
 <?php
 $modal_vars = array(

@@ -126,8 +126,6 @@ $lang = array(
 
 'dimensions_too_big' => 'Images must not exceed a width of %x pixels by %y pixels',
 
-'display_avatars' => 'Display member avatars in forum threads',
-
 'display_signatures' => 'Display member signatures in forum threads',
 
 'downloads' => 'Downloads:',

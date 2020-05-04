@@ -22,11 +22,10 @@
 		}
 		?>
 	</head>
-	<body id="top">
+	<body class="iframe">
 		<div class="box"><?=$content?></div>
 		<?=ee()->javascript->inline('var EE = window.parent.EE;');?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('common.js')?>
 		<?=ee()->cp->render_footer_js()?>
 		<script type="text/javascript">
 			$('input.btn').on('click', function(event) {

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 /* This file exposes three callback functions:
@@ -20,7 +20,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		$('table .toolbar .view a').click(function (e) {
+		$('a[rel=modal-view-file]').click(function (e) {
 			var modal = $(this).attr('rel');
 			$.ajax({
 				type: "GET",
@@ -28,6 +28,7 @@
 				dataType: 'html',
 				success: function (data) {
 					$("." + modal + " div.box").html(data);
+					SelectField.renderFields()
 				}
 			})
 		});

@@ -1,17 +1,19 @@
-<div class="filters">
-	<ul>
-		<li>
-			<a class="has-sub" href="">Add</a>
-			<div class="sub-menu" style="display: none;">
-				<fieldset class="filter-search">
-					<input type="text" value="" data-fuzzy-filter="true" placeholder="filter fields">
-				</fieldset>
-				<ul>
-					<?php foreach ($fields as $field): ?>
-					<li><a href="#" data-field-name="<?=$field->getShortName()?>"><?=$field->getItem('field_label')?></a></li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-		</li>
-	</ul>
-</div>
+<?php if (count($fields) < 20) : ?>
+
+	<?php foreach ($fields as $field): ?>
+		<a href="#" class="button button--auto button--secondary-alt" data-field-name="<?=$field->getShortName()?>">
+			<img src="<?=$field->getIcon()?>" width="24" height="24" /><br />
+			<?=lang('add')?> <?=$field->getItem('field_label')?>
+		</a>
+	<?php endforeach; ?>
+
+<?php else: ?>
+
+	<a href="javascript:void(0)" class="js-dropdown-toggle button button--auto button--secondary-alt"><i class="fa-2x icon--add"></i><br /> <?=lang('add_field')?></a>
+	<div class="dropdown">
+		<?php foreach ($fields as $field): ?>
+			<a href="#" class="dropdown__link" data-field-name="<?=$field->getShortName()?>"><img src="<?=$field->getIcon()?>" width="12" height="12" /> <?=$field->getItem('field_label')?></a>
+		<?php endforeach; ?>
+	</div>
+
+<?php endif; ?>

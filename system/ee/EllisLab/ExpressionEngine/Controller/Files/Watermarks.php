@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,7 +25,7 @@ class Watermarks extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
+		if ( ! ee('Permission')->can('create_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -46,9 +46,6 @@ class Watermarks extends AbstractFilesController {
 			array(
 				'name',
 				'type',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
 				array(
 					'type'	=> CP\Table::COL_CHECKBOX
 				)
@@ -79,12 +76,6 @@ class Watermarks extends AbstractFilesController {
 					'href' => $edit_url
 				),
 				$watermark->wm_type,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					)
-				)),
 				array(
 					'name' => 'watermarks[]',
 					'value' => $watermark->getId(),
@@ -145,8 +136,8 @@ class Watermarks extends AbstractFilesController {
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('watermarks_removed'))
-					->addToBody(sprintf(lang('watermarks_removed_desc'), count($watermarks)))
+					->withTitle(lang('watermarks_deleted'))
+					->addToBody(sprintf(lang('watermarks_deleted_desc'), count($watermarks)))
 					->defer();
 			}
 		}

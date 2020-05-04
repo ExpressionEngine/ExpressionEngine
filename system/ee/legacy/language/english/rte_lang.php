@@ -10,7 +10,7 @@ $lang = array(
 
 'configuration' => 'Configuration',
 
-'create_new' => 'create new',
+'create_new' => 'Create New',
 
 'create_tool_set' => 'Create Tool Set',
 

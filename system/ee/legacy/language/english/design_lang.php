@@ -6,11 +6,11 @@ $lang = array(
 
 'all_sites' => 'All Sites',
 
-'allowed_member_groups' => 'Allowed member groups',
+'allowed_roles' => 'Allowed roles',
 
-'allowed_member_groups_desc' => 'The following user groups are allowed to access this template.',
+'allowed_roles_desc' => 'The following roles are allowed to access this template.',
 
-'allowed_member_groups_super_admin' => 'Super Administrators are <b>always</b> allowed.',
+'allowed_roles_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
 'author_unknown' => 'unknown',
 
@@ -87,6 +87,8 @@ $lang = array(
 'edit_partial' => 'Edit Partial',
 
 'edit_template' => 'Edit Template: %s',
+
+'edit_template_title' => 'Edit Template',
 
 'edit_template_group' => 'Edit Template Group',
 
@@ -168,7 +170,7 @@ $lang = array(
 
 'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
-'member_groups' => 'Member Groups',
+'roles' => 'Roles',
 
 'messages' => 'Messages',
 
@@ -220,25 +222,25 @@ $lang = array(
 
 'snippet_name_taken' => 'The template partial name you submitted is already taken',
 
-'snippets_removed_desc' => 'The following snippets were removed',
+'snippets_deleted_desc' => 'The following snippets were deleted',
 
 'sync_all_templates' => 'Sync All Templates',
 
 'system_templates' => 'System Templates',
 
-'template_group_removed' => 'Template Group Removed',
+'template_group_deleted' => 'Template Group deleted',
 
-'template_group_removed_desc' => 'The template group <b>%s</b> has been removed.',
+'template_group_deleted_desc' => 'The template group <b>%s</b> has been deleted.',
 
 'template_group_taken' => 'The template group name you submitted is already taken',
 
 'template_groups' => 'Template Groups',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
-'template_member_groups' => 'Allowed member groups',
+'template_roles' => 'Allowed roles',
 
-'template_member_groups_desc' => 'Users in these member groups can create, edit, and/or delete templates in this template group.',
+'template_roles_desc' => 'Users in these roles can perform each selected action in this template group.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
@@ -256,7 +258,7 @@ $lang = array(
 
 'template_route_override' => 'Template route override',
 
-'template_route_override_desc' => 'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
+'template_route_override_desc' => 'Overrides the ExpressionEngine standard <code>group/template</code> routing.',
 
 'template_routes' => 'Template Routes',
 
@@ -270,11 +272,11 @@ $lang = array(
 
 'template_variables_header' => 'Template Variables<br><i>Reusable static content replacements.</i>',
 
-'template_variables_removed_desc' => 'The following template variables were removed',
+'template_variables_deleted_desc' => 'The following template variables were deleted',
 
 'templates_in_group' => 'Templates in <b>%s</b>',
 
-'templates_removed_desc' => 'The following templates were removed',
+'templates_deleted_desc' => 'The following templates were deleted',
 
 'update_template_error' => 'Cannot Update Template',
 
@@ -290,7 +292,7 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'view_rendered' => 'view rendered',
+'view_rendered' => 'View Rendered',
 
 'zero_template_groups_found' => 'No <b>Template Groups</b> found',
 
@@ -492,7 +494,7 @@ $lang = array(
 
 'group_order' => 'Group order',
 
-'group_restriction' => 'Restrict this template to specific member groups',
+'group_restriction' => 'Restrict this template to specific roles',
 
 'history_cleared' => 'Template revision history has been deleted.',
 

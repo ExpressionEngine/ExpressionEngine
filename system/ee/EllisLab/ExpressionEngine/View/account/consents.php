@@ -1,31 +1,28 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($form_url)?>
-       <h1>
-			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
-       </h1>
-
 		<?=ee('CP/Alert')->get('shared-form')?>
 
-       <?php if (isset($filters)) echo $filters; ?>
+	   <div class="title-bar">
+			<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+			<?php if (isset($filters)) echo $filters; ?>
+		</div>
 
        <?php $this->embed('_shared/table', $table); ?>
 
        <?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
        <?php if ( ! empty($table['data'])): ?>
-       <fieldset class="tbl-bulk-act hidden">
+       <fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
        		        <option value="">-- <?=lang('with_selected')?> --</option>
        		        <option value="opt_out"><?=lang('opt_out')?></option>
        		        <option value="opt_in"><?=lang('opt_in')?></option>
        		</select>
-	   		<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+	   		<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
        </fieldset>
        <?php endif; ?>
 <?=form_close()?>
-</div>
 
 <?php foreach($requests as $request): ?>
 	<?php ee('CP/Modal')->startModal('modal-consent-request-' . $request->getId()); ?>

@@ -4,22 +4,27 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * IP to Nation Update / Installer Class
  */
-class Ip_to_nation_upd {
+class Ip_to_nation_upd extends Installer
+{
 
-	var $version = '3.0.0';
+	public $has_cp_backend = 'y';
 
 	/**
 	  * Constructor
 	  */
 	function __construct()
 	{
+		parent::__construct();
+
 		ee()->load->dbforge();
 	}
 
@@ -31,6 +36,8 @@ class Ip_to_nation_upd {
 	 */
 	function install()
 	{
+		parent::install();
+
 		ee()->dbforge->drop_table('ip2nation');
 
 		$fields = array(
@@ -80,14 +87,6 @@ class Ip_to_nation_upd {
 		ee()->dbforge->add_key('code', TRUE);
 		ee()->dbforge->create_table('ip2nation_countries');
 
-		$data = array(
-			'module_name' 	 => 'Ip_to_nation',
-			'module_version' => $this->version,
-			'has_cp_backend' => 'y'
-		);
-
-		ee()->db->insert('modules', $data);
-
 		ee()->config->_update_config(array(
 			'ip2nation' => 'y',
 			'ip2nation_db_date' => 1335677198
@@ -104,22 +103,7 @@ class Ip_to_nation_upd {
 	 */
 	function uninstall()
 	{
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Ip_to_nation'));
-		$module_id_row = $query->row();
-		$module_id = $module_id_row->module_id;
-
-		ee()->db->where('module_id', $module_id);
-		ee()->db->delete('module_member_groups');
-
-		ee()->db->where('module_name', 'Ip_to_nation');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Ip_to_nation');
-		ee()->db->delete('actions');
-
-		ee()->db->where('class', 'Ip_to_nation');
-		ee()->db->delete('actions');
+		parent::uninstall();
 
 		ee()->dbforge->drop_table('ip2nation');
 		ee()->dbforge->drop_table('ip2nation_countries');

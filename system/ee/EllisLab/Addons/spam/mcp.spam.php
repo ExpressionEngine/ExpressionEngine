@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -191,6 +191,16 @@ class Spam_mcp {
 			'file' => array('cp/addons/spam'),
 		));
 
+		ee()->view->header = array(
+			'title' => lang('all_spam'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL', 'addons/settings/spam/settings'),
+					'title' => lang('settings')
+				)
+			)
+		);
+
 		return array(
 			'body'       => ee('View')->make('spam:index')->render($data),
 			'heading' => lang('all_spam')
@@ -338,7 +348,8 @@ class Spam_mcp {
 
 		$vars['base_url'] = $base_url;
 		$vars['ajax_validate'] = TRUE;
-		$vars['cp_page_title'] = lang('spam_settings');
+		$vars['cp_page_title'] = '';
+		$vars['hide_top_buttons'] = TRUE;
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
 

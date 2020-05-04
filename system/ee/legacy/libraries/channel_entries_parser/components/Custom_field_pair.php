@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -156,6 +156,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 					list($modifier, $content, $params, $chunk) = $chk_data;
 
+
+
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
 					// we have a modifier
@@ -200,6 +202,16 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 							$content,
 							$modifier
 						));
+					}
+
+					//frontend edit link
+					if (IS_PRO) 
+					{
+						if (!isset($ft->disable_frontedit) || $ft->disable_frontedit!=true)
+						{						 
+							$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
+							$tpl_chunk = $frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $field_name).$tpl_chunk;
+						}
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -29,8 +29,8 @@ class Extensions extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_addons')
-			OR ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee('Permission')->can('access_addons')
+			OR ! ee('Permission')->can('admin_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -324,7 +324,7 @@ class Extensions extends Utilities {
 				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
+						AND ee('Permission')->isSuperAdmin()))
 				{
 					include($file);
 				}

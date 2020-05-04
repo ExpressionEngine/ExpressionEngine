@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -107,8 +107,14 @@ class Toggle_ft extends EE_Fieldtype {
 
 		$data = (is_null($data) OR $data === '') ? $this->settings['field_default_value'] : $data;
 
-		if (REQ == 'CP')
+		if (REQ == 'CP' || REQ == 'ACTION')
 		{
+			ee()->cp->add_js_script([
+				'file' => [
+					'common'
+				]
+			]);
+			
 			return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
 				'field_name' => $this->field_name,
 				'value'      => $data,

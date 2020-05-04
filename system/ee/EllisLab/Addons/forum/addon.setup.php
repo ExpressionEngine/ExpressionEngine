@@ -4,7 +4,7 @@ return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'Forum',
-	'description'    => '',
+	'description'    => 'Add a full-featured forum to your site',
 	'version'        => '5.0.1',
 	'namespace'      => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,
@@ -38,7 +38,7 @@ return array(
 	'models.dependencies' => array(
 		'Administrator'   => array(
 			'ee:Member',
-			'ee:MemberGroup'
+			'ee:Role'
 		),
 		'Attachment'   => array(
 			'ee:Member'
@@ -51,7 +51,7 @@ return array(
 		),
 		'Moderator'   => array(
 			'ee:Member',
-			'ee:MemberGroup'
+			'ee:Role'
 		),
 		'Poll'   => array(
 			'ee:Member'

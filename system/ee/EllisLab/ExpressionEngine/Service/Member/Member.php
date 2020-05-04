@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,10 +25,19 @@ class Member {
 	public function getAuthors($search = NULL, $limited = TRUE)
 	{
 		// First, get member groups who should be in the list
-		$member_groups = ee('Model')->get('MemberGroup')
+		$role_settings = ee('Model')->get('RoleSetting')
 			->filter('include_in_authorlist', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
+
+		$roles = $role_settings->Role;
+		$role_ids = $roles->pluck('role_id');
+
+		$member_ids = [];
+		foreach ($roles as $role)
+		{
+			$member_ids = array_merge($role->getAllMembers()->pluck('member_id'), $member_ids);
+		}
 
 		// Then authors who are individually selected to appear in author list
 		$authors = ee('Model')->get('Member')
@@ -41,9 +50,9 @@ class Member {
 		}
 
 		// Then grab any members that are part of the member groups we found
-		if ($member_groups->count())
+		if ( ! empty($member_ids))
 		{
-			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
+			$authors->orFilter('member_id', 'IN', $member_ids);
 		}
 
 		if ($search)

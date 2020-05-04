@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -461,7 +461,7 @@ class Channel {
 				return;
 			}
 
-			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+			$sql .= implode(',', array_unique(array_filter($categories))) . ')';
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -1121,7 +1121,7 @@ class Channel {
 		}
 
 		/**------
-		/**  Assing the order variables
+		/**  Passing the order variables
 		/**------*/
 
 		$order  = ee()->TMPL->fetch_param('orderby');
@@ -1981,7 +1981,7 @@ class Channel {
 		if ($group_id = ee()->TMPL->fetch_param('group_id'))
 		{
 			$join_member_table = TRUE;
-			$sql .= ee()->functions->sql_andor_string($group_id, 'm.group_id');
+			$sql .= ee()->functions->sql_andor_string($group_id, 'm.role_id');
 		}
 
 		/** ---------------------------------------
@@ -2426,8 +2426,9 @@ class Channel {
 
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
+		ee()->session->cache['channel']['channel_ids'] = $channel_ids;
 
-		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+		$end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2443,7 +2444,7 @@ class Channel {
 	{
 		$sql = " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id,
+						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id,
 						wd.*";
 
 		$from = " FROM exp_channel_titles		AS t
@@ -2521,7 +2522,7 @@ class Channel {
 
 		$sql .= $from;
 
-		$sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+		$sql .= "WHERE t.entry_id IN (" . implode(',', $entries) . ")";
 		return $sql;
 	}
 
@@ -2871,7 +2872,7 @@ class Channel {
 
 	private function getExtraData($query_result)
 	{
-		$where = "WHERE t.entry_id IN (" . implode(ee()->session->cache['channel']['entry_ids'], ',') . ")";
+		$where = "WHERE t.entry_id IN (" . implode(',', ee()->session->cache['channel']['entry_ids']) . ")";
 
 		foreach ($this->chunks as $chunk)
 		{
@@ -5795,6 +5796,15 @@ class Channel {
 		}
 
 		return array($field_sqla, $field_sqlb);
+	}
+
+	public function live_preview()
+	{
+		$entry_id = ee()->input->get_post('entry_id');
+		$channel_id = ee()->input->get_post('channel_id');
+		$return = urldecode(ee()->input->get('return'));
+
+		return ee('LivePreview')->preview($channel_id, $entry_id, $return);
 	}
 }
 // END CLASS

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -411,7 +411,7 @@ class Buttons extends Settings {
 	private function predefined()
 	{
 		$buttons = array();
-		$result = "<b>" . lang('add_preset_button') . "</b>";
+		$result = '<span class="mr-s">' . lang('add_preset_button') . "</span> ";
 
 		foreach ($this->predefined as $name => $button)
 		{
@@ -431,7 +431,7 @@ class Buttons extends Settings {
 			}
 		}
 
-		$result .= ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons));
+		$result = '<div class="d-flex align-items-center">' . $result . ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons)) . '</div>';
 		return $result;
 	}
 

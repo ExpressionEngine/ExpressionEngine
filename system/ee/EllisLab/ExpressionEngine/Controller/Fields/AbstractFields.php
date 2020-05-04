@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ abstract class AbstractFields extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_create_channel_fields',
 			'can_edit_channel_fields',
 			'can_delete_channel_fields'
@@ -41,7 +41,7 @@ abstract class AbstractFields extends CP_Controller {
 			'title' => lang('field_manager')
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$header['action_button'] = [
 				'text' => lang('new_field'),
@@ -66,17 +66,20 @@ abstract class AbstractFields extends CP_Controller {
 		// More than one group can be active, so we use an array
 		$active_groups = (is_array($active)) ? $active : array($active);
 
-		$all_fields = ee('CP/Sidebar')->makeNew()->addMarginBottom();
-		$all_fields->addHeader(lang('all_fields'), ee('CP/URL')->make('fields'))->isInactive();
-
 		$sidebar = ee('CP/Sidebar')->makeNew();
+
+		$all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'));
+
+		if ($active) {
+			$all_fields->isInactive();
+		}
 
 		$list = $sidebar->addHeader(lang('field_groups_uc'));
 
 		$list = $list->addFolderList('field_groups')
 			->withNoResultsText(sprintf(lang('no_found'), lang('field_groups')));
 
-		if (ee()->cp->allowed_group('can_delete_channel_fields'))
+		if (ee('Permission')->can('delete_channel_fields'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('fields/groups/remove', ee()->cp->get_url_state()))
 				->withRemovalKey('content_id');
@@ -98,14 +101,14 @@ abstract class AbstractFields extends CP_Controller {
 				ee('CP/URL')->make('fields', ['group_id' => $group->getId()])
 			);
 
-			if (ee()->cp->allowed_group('can_edit_channel_fields'))
+			if (ee('Permission')->can('edit_channel_fields'))
 			{
 				$item->withEditUrl(
 					ee('CP/URL')->make('fields/groups/edit/' . $group->getId())
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_channel_fields'))
+			if (ee('Permission')->can('delete_channel_fields'))
 			{
 				$item->withRemoveConfirmation(
 					lang('field_group') . ': <b>' . $group_name . '</b>'
@@ -133,7 +136,7 @@ abstract class AbstractFields extends CP_Controller {
 				ee('CP/URL')->make('fields/groups/create')
 			);
 
-		ee()->view->left_nav = $all_fields->render().$sidebar->render();
+		ee()->view->left_nav = $sidebar->render();
 	}
 
 	/**

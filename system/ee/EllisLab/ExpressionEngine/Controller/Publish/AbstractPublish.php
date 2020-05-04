@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -33,7 +33,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->cp->get_installed_modules();
 
-		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
+		$this->is_admin = (ee('Permission')->isSuperAdmin());
 		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
 
 		$this->pruneAutosaves();
@@ -103,7 +103,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
 			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
-			'publish.lang.no_member_groups'  => lang('no_member_groups'),
+			'publish.lang.no_member_groups'  => lang('no_member_roles'),
 			'publish.lang.refresh_layout'    => lang('refresh_layout'),
 			'publish.lang.tab_count_zero'    => lang('tab_count_zero'),
 			'publish.lang.tab_has_req_field' => lang('tab_has_req_field'),
@@ -113,7 +113,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.url_title_prefix'       => $entry->Channel->url_title_prefix,
 			'publish.which'                  => ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'         => ee()->config->item('word_separator') != "dash" ? '_' : '-',
-			'user.can_edit_html_buttons'     => ee()->cp->allowed_group('can_edit_html_buttons'),
+			'user.can_edit_html_buttons'     => ee('Permission')->can('edit_html_buttons'),
 			'user.foo'                       => FALSE,
 			'user_id'                        => ee()->session->userdata('member_id'),
 		));
@@ -343,7 +343,7 @@ abstract class AbstractPublish extends CP_Controller {
 			}
 		}
 
-		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+		if ( ! ee('Permission')->can('assign_post_authors'))
 		{
 			unset($_POST['author_id']);
 		}
@@ -411,7 +411,15 @@ abstract class AbstractPublish extends CP_Controller {
 		}
 		elseif (ee()->input->post('submit') == 'save')
 		{
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
+			if (ee()->input->post('return')!='')
+			{
+				$redirect_url = ee()->input->post('return');
+			}
+			else
+			{
+				$redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+			}
+			ee()->functions->redirect($redirect_url);
 		}
 		elseif (ee()->input->post('submit') == 'save_and_close')
 		{
@@ -520,8 +528,7 @@ abstract class AbstractPublish extends CP_Controller {
 			}
 		}
 
-		if ($has_preview_button)
-		{
+		if ($has_preview_button) {
 			$extra_class = ($show_preview_button) ? '' : ' hidden';
 
 			$buttons[] = [
@@ -529,8 +536,19 @@ abstract class AbstractPublish extends CP_Controller {
 				'type'    => 'submit',
 				'value'   => 'preview',
 				'text'    => 'preview',
-				'class'   => 'action js-modal-link--side' . $extra_class,
+				'class'   => 'action' . $extra_class,
 				'attrs'   => 'rel="live-preview" disabled="disabled"',
+				'working' => 'btn_previewing'
+			];
+		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
+			$buttons[] = [
+				'name'    => 'submit',
+				'type'    => 'button',
+				'value'   => 'preview',
+				'text'    => 'preview',
+				'html'		=> '<i class="app-notice__icon"></i> ',
+				'class'   => 'action',
+				'attrs'   => 'rel="live-preview-setup" disabled="disabled"',
 				'working' => 'btn_previewing'
 			];
 		}

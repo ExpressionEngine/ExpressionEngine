@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,6 +27,11 @@ class Thumbnail {
 	 * @var str The path to the thumbnail
 	 */
 	protected $path;
+
+	/**
+	 * @var boolean Whether the file is missing
+	 */
+	protected $missing = false;
 
 	/**
 	 * Constructor: sets the url and path properties based on the arguments
@@ -80,6 +85,7 @@ class Thumbnail {
 	 */
 	public function setMissing()
 	{
+		$this->missing = true;
 		$this->url = PATH_CP_GBL_IMG . 'missing.jpg';
 		$this->path = PATH_THEMES . 'asset/img/missing.jpg';
 	}

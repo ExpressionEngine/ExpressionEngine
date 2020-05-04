@@ -1,26 +1,27 @@
-<!-- Live preview setup, should only be available on Publish and Edit forms. -->
-<div class="app-modal app-modal--side app-modal--live-preview" rev="live-preview">
-	<div class="app-modal__content">
-		<div class="app-modal__dismiss">
-			<a class="js-modal-close" rel="modal-side" href="#"><?=lang('cancel_preview')?></a> <span class="txt-fade">[<?=lang('esc')?>]</span>
-		</div>
+<div class="live-preview-container">
+	<div class="live-preview live-preview--closed">
+		<div class="live-preview__form">
+			<div class="live-preview__form-header">
+				<?php if (!isset($hide_closer) || !$hide_closer): ?>
+				<h1><a href class="js-close-live-preview"><i class="fas fa-times"></i> <?=lang('close_preview')?></a></h1>
+				<?php endif; ?>
+				<div class="button-group">
+					<button href="" class="button button--primary js-live-preview-save-button"><?=lang('save')?></button>
+				</div>
+			</div>
 
-		<div class="form-standard form-standard--stacked">
+			<div class="live-preview__form-content">
+
+			</div>
+		</div>
+		<div class="live-preview__divider"></div>
+		<div class="live-preview__preview">
+			<div class="live-preview__preview-loader">
+				<!-- <span><?=lang('refreshing')?></span> -->
+				<span class="pulse-loader"></span>
+			</div>
+
+			<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
 		</div>
 	</div>
-</div>
-<!-- Website iframe -->
-<div class="live-preview">
-	<div class="app-notice app-notice--banner app-notice---attention">
-		<div class="app-notice__tag">
-			<span class="app-notice__icon"></span>
-		</div>
-		<div class="app-notice__content">
-			<p><b><?=lang('preview')?></b> <span data-unpublished>(<?=lang('unpublished')?>)</span><span class="hidden" data-loading>(<?=lang('loading')?>)</span></p>
-		</div>
-		<div class="app-notice__controls">
-			<a href="#" class="txt-rsp-lrg js-preview-wide align-block-right" data-close="<?=lang('continue_editing')?>" data-open="<?=lang('view_wider')?>"><?=lang('view_wider')?></a>
-		</div>
-	</div>
-	<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
 </div>

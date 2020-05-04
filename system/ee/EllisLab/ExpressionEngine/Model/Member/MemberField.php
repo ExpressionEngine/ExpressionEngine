@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,6 @@ class MemberField extends FieldModel {
 	protected static $_hook_id = 'member_field';
 
 	protected static $_events = array(
-		'afterSave',
 		'beforeInsert'
 	);
 
@@ -95,14 +94,6 @@ class MemberField extends FieldModel {
 		$this->setProperty('m_field_settings', $field->saveSettingsForm($data));
 
 		return $this;
-	}
-
-	/**
-	 * Clear MemberGroup member field cache
-	 */
-	public function onAfterSave()
-	{
-		ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', NULL);
 	}
 
 	/**

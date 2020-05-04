@@ -8,8 +8,4 @@ $build = ee()->localize->format_date(
 	TRUE
 );
 ?>
-<div class="app-about-info__latest">
-	<h3><?=lang('latest_version')?></h3>
-	<?=lang('version')?>: <?=formatted_version($version)?><br>
-	<em><?=lang('build')?> <?=$build?></em>
-</div>
+<b><?=formatted_version($version)?></b><em><?=lang('build')?> <?=$build?></em>

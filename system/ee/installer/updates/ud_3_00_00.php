@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1216,7 +1216,6 @@ class Updater {
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->site_id = $site_id;
 			$directory->name = $name;
-			$directory->removeNoAccess();
 			$directory->setModule($module);
 
 			foreach ($dir as $property => $value)
@@ -1225,6 +1224,9 @@ class Updater {
 			}
 
 			$directory->save();
+
+			ee()->db->where('upload_id', $directory->getId());
+			ee()->db->delete('upload_no_access');
 		}
 
 		return TRUE;

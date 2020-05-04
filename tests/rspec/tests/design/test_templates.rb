@@ -57,10 +57,10 @@ feature 'Templates' do
 
       form.access_tab.click
       # Says "radio" but works with checkboxes
-      form.allowed_member_groups.has_checked_radio('2').should == true
-      form.allowed_member_groups.has_checked_radio('3').should == true
-      form.allowed_member_groups.has_checked_radio('4').should == true
-      form.allowed_member_groups.has_checked_radio('5').should == true
+      form.allowed_roles.has_checked_radio('2').should == true
+      form.allowed_roles.has_checked_radio('3').should == true
+      form.allowed_roles.has_checked_radio('4').should == true
+      form.allowed_roles.has_checked_radio('5').should == true
       form.no_access_redirect.each_with_index do |el, i|
         # Only "None" should be selected
         el.checked?.should == (i == 0)
@@ -114,7 +114,7 @@ feature 'Templates' do
       @page.should have_hit_counter
 
       @page.access_tab.click
-      @page.should have_allowed_member_groups
+      @page.should have_allowed_roles
       @page.should have_no_access_redirect
       @page.should have_enable_http_auth
       @page.should have_template_route
@@ -140,7 +140,7 @@ feature 'Templates' do
       @page.hit_counter.set '10'
 
       @page.access_tab.click
-      @page.allowed_member_groups[0].set(false)
+      @page.allowed_roles[0].set(false)
       @page.no_access_redirect.choose_radio_option('27')
       @page.enable_http_auth.click
       @page.template_route.set 'et/phone/home'
@@ -160,10 +160,10 @@ feature 'Templates' do
       @page.hit_counter.value.should eq '10'
 
       @page.access_tab.click
-      @page.allowed_member_groups.has_checked_radio('2').should == false
-      @page.allowed_member_groups.has_checked_radio('3').should == true
-      @page.allowed_member_groups.has_checked_radio('4').should == true
-      @page.allowed_member_groups.has_checked_radio('5').should == true
+      @page.allowed_roles.has_checked_radio('2').should == false
+      @page.allowed_roles.has_checked_radio('3').should == true
+      @page.allowed_roles.has_checked_radio('4').should == true
+      @page.allowed_roles.has_checked_radio('5').should == true
       @page.no_access_redirect.has_checked_radio('27')
       @page.enable_http_auth[:class].should include 'on'
       @page.template_route.value.should eq 'et/phone/home'
@@ -190,7 +190,7 @@ feature 'Templates' do
       @page.should have_hit_counter
 
       @page.access_tab.click
-      @page.should have_allowed_member_groups
+      @page.should have_allowed_roles
       @page.should have_no_access_redirect
       @page.should have_enable_http_auth
       @page.should have_template_route

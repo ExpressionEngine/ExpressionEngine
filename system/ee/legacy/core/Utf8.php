@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,7 +30,6 @@ class EE_Utf8 {
 		if (
 			preg_match('/./u', 'é') === 1						// PCRE must support UTF-8
 			AND function_exists('iconv')						// iconv must be installed
-			AND ! (bool) (ini_get('mbstring.func_overload') & 2)	// Multibyte string function overloading cannot be enabled
 			AND $CFG->item('charset') == 'UTF-8'				// Application charset must be UTF-8
 			)
 		{

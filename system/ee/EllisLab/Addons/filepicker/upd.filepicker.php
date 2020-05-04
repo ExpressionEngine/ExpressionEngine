@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -39,49 +39,53 @@ class Filepicker_upd {
 		// When installing, ee()->config will contain the installer app values,
 		// not the ExpressionEngine application values.
 		// So fetch them from the model - dj
-		$member_prefs = ee('Model')->get('Site', $site_id)->first()->site_member_preferences;
+		if (ee()->db->table_exists('config'))
+		{
+			$member_prefs = ee('Model')->get('Config')
+				->filter('site_id', $site_id)
+				->filter('key', 'IN', ee()->config->divination('member'))
+				->all()
+				->getDictionary('key', 'value');
+		}
+		else
+		{
+			$sites = ee()->db->get_where('sites', ['site_id' => $site_id]);
+			$site = $sites->result_array();
+			$member_prefs = unserialize(base64_decode($site[0]['site_member_preferences']));
+		}
 
 		$member_directories['Avatars'] = array(
-			'server_path' => $member_prefs->avatar_path,
-			'url' => $member_prefs->avatar_url,
+			'server_path' => $member_prefs['avatar_path'],
+			'url' => $member_prefs['avatar_url'],
 			'allowed_types' => 'img',
-			'max_width' => $member_prefs->avatar_max_width,
-			'max_height' => $member_prefs->avatar_max_height,
-			'max_size' => $member_prefs->avatar_max_kb,
-		);
-
-		$member_directories['Default Avatars'] = array(
-			'server_path' => rtrim($member_prefs->avatar_path, '/').'/default/',
-			'url' => rtrim($member_prefs->avatar_url, '/').'/default/',
-			'allowed_types' => 'img',
-			'max_width' => $member_prefs->avatar_max_width,
-			'max_height' => $member_prefs->avatar_max_height,
-			'max_size' => $member_prefs->avatar_max_kb,
+			'max_width' => $member_prefs['avatar_max_width'],
+			'max_height' => $member_prefs['avatar_max_height'],
+			'max_size' => $member_prefs['avatar_max_kb'],
 		);
 
 		$member_directories['Member Photos'] = array(
-			'server_path' => $member_prefs->photo_path,
-			'url' => $member_prefs->photo_url,
+			'server_path' => $member_prefs['photo_path'],
+			'url' => $member_prefs['photo_url'],
 			'allowed_types' => 'img',
-			'max_width' => $member_prefs->photo_max_width,
-			'max_height' => $member_prefs->photo_max_height,
-			'max_size' => $member_prefs->photo_max_kb,
+			'max_width' => $member_prefs['photo_max_width'],
+			'max_height' => $member_prefs['photo_max_height'],
+			'max_size' => $member_prefs['photo_max_kb'],
 		);
 
 		$member_directories['Signature Attachments'] = array(
-			'server_path' => $member_prefs->sig_img_path,
-			'url' => $member_prefs->sig_img_url,
+			'server_path' => $member_prefs['sig_img_path'],
+			'url' => $member_prefs['sig_img_url'],
 			'allowed_types' => 'img',
-			'max_width' => $member_prefs->sig_img_max_width,
-			'max_height' => $member_prefs->sig_img_max_height,
-			'max_size' => $member_prefs->sig_img_max_kb,
+			'max_width' => $member_prefs['sig_img_max_width'],
+			'max_height' => $member_prefs['sig_img_max_height'],
+			'max_size' => $member_prefs['sig_img_max_kb'],
 		);
 
 		$member_directories['PM Attachments'] = array(
-			'server_path' => $member_prefs->prv_msg_upload_path,
-			'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
+			'server_path' => $member_prefs['prv_msg_upload_path'],
+			'url' => str_replace('avatars', 'pm_attachments', $member_prefs['avatar_url']),
 			'allowed_types' => 'img',
-			'max_size' => $member_prefs->prv_msg_attach_maxsize
+			'max_size' => $member_prefs['prv_msg_attach_maxsize']
 		);
 
 		$existing = ee('Model')->get('UploadDestination')
@@ -101,7 +105,6 @@ class Filepicker_upd {
 			$dir = ee('Model')->make('UploadDestination', $data);
 			$dir->site_id = $site_id;
 			$dir->name = $name;
-			$dir->removeNoAccess();
 			$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 			$dir->save();
 		}
@@ -123,7 +126,7 @@ class Filepicker_upd {
 			))->row('module_id');
 
 		ee()->db->where('module_id', $mod_id)
-			->delete('module_member_groups');
+			->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Filepicker')
 			->delete('modules');

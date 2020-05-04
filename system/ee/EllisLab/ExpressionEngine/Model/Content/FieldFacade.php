@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,6 +26,7 @@ class FieldFacade {
 	private $content_type;
 	private $value;
 	private $api;
+	private $icon;
 
 	/**
 	 * @var Flag to ensure defaults are only loaded once
@@ -165,6 +166,15 @@ class FieldFacade {
 		return $fts[$type]['name'];
 	}
 
+	public function getIcon()
+	{
+		if (empty($this->icon)) {
+			$addon = ee('Addon')->get($this->getItem('field_type'));
+			$this->icon = $addon->getIconUrl('field.svg');
+		}
+		return $this->icon;
+	}
+
 	public function validate($value)
 	{
 		$this->initField();
@@ -208,6 +218,27 @@ class FieldFacade {
 		$value = $this->data;
 		$this->initField();
 		return $this->data = $this->api->apply('post_save', array($value));
+	}
+
+	public function hasReindex()
+	{
+		$ft = $this->getNativeField();
+
+		return method_exists($ft, 'reindex');
+	}
+
+	public function reindex($model = NULL)
+	{
+		if ( ! $this->hasReindex())
+		{
+			return FALSE;
+		}
+
+		$this->ensurePopulatedDefaults();
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = $this->api->apply('reindex', array($value, $model));
 	}
 
 	public function getForm()

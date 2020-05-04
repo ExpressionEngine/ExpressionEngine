@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -580,7 +580,10 @@ class Updater {
 
 		foreach ($all_site_ids_query as $site)
 		{
-			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
+			$query = ee()->db->get_where('sites', array('site_id' => $site));
+			$row = $query->row_array();
+
+			$config = unserialize(base64_decode($row['site_template_preferences']));
 
 			// If ANY sites save as file, they all must
 			if (isset($config['save_tmpl_files']))

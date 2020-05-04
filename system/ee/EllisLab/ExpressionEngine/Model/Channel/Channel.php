@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -78,11 +78,11 @@ class Channel extends StructureModel {
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
-		'AssignedMemberGroups' => array(
+		'AssignedRoles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'channel_member_groups'
+				'table' => 'channel_member_roles'
 			)
 		),
 		'ChannelLayouts' => array(

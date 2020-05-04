@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,7 @@ class Auth extends Settings {
 		{
 			// set and save the member as the various permissions allow
 			if ($this->config->item('allow_username_change') == 'y' OR
-				$this->session->userdata('group_id') == 1)
+				ee('Permission')->isSuperAdmin())
 			{
 				 $this->member->username = ee()->input->post('username');
 			}
@@ -49,7 +49,7 @@ class Auth extends Settings {
 
 			// require authentication to change user/pass
 			$validator = ee('Validation')->make();
-			$validator->setRule('verify_password', 'authenticated');
+			$validator->setRule('verify_password', 'authenticated[useAuthTimeout]');
 
 			if (ee()->input->post('password'))
 			{
@@ -154,21 +154,25 @@ class Auth extends Settings {
 						)
 					)
 				)
-			),
-			'secure_form_ctrls' => array(
+			)
+		);
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'verify_password' => array(
 							'type'      => 'password',
-							'required' => TRUE,
+							'required'  => TRUE,
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)
 				)
-			)
-		);
+			);
+		}
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;

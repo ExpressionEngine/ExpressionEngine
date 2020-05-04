@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -112,7 +112,7 @@ class Fluid_field_parser {
 	 */
 	private function getPossibleFields(array $field_channel_fields)
 	{
-		$cache_key = 'ChannelFields/' . implode($field_channel_fields, ',') . '/field_name';
+		$cache_key = 'ChannelFields/' . implode(',', $field_channel_fields) . '/field_name';
 
 		if (($possible_fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
 		{

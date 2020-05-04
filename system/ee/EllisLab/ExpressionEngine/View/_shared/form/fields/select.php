@@ -1,5 +1,5 @@
 <?php
-$too_many = 8;
+$too_many = isset($too_many) ? $too_many : 8;
 $class = isset($class) ? $class : '';
 
 if (count($choices) == 0)
@@ -31,10 +31,6 @@ foreach ($normalized_choices as $key => $choice)
 	if (isset($choice['children']))
 	{
 		$nested = TRUE;
-	}
-	if ( ! empty($choice['component']))
-	{
-		$force_react = TRUE;
 	}
 }
 
@@ -82,9 +78,12 @@ if ($count <= $too_many
 					OR ( ! is_bool($value) && $key == $value));
 				$disabled = in_array($key, $disabled_choices) ? ' disabled' : ''; ?>
 
-				<label<?php if ($checked): ?> class="act"<?php endif ?>>
-					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>> <?=$label?>
+				<label class="checkbox-label" <?php if ($checked): ?> class="act"<?php endif ?>>
+					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
+					<div class="checkbox-label__text">
+					<?=$label?>
 						<?php if ($instructions): ?><i><?=$instructions?></i><?php endif ?>
+					</div>
 				</label>
 			<?php endforeach; ?>
 		</div>
@@ -137,6 +136,7 @@ else:
 		'unremovableChoices' => isset($unremovable_choices) ? $unremovable_choices : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
+		'tooManyLimit' => isset($tooManyLimit) ? $tooManyLimit : NULL,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
 		'toggleAll' => $toggle_all,

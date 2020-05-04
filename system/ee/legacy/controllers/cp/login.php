@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -105,7 +105,7 @@ class Login extends CP_Controller {
 		}
 
 		// Normal login button state
-		$this->view->btn_class = 'btn';
+		$this->view->btn_class = 'button button--action button--large button--wide';
 		$this->view->btn_label = lang('login');
 		$this->view->btn_disabled = '';
 
@@ -465,7 +465,7 @@ class Login extends CP_Controller {
 	 */
 	public function logout()
 	{
-		if ($this->session->userdata('group_id') == 3)
+		if (ee()->session->getMember() && ee()->session->getMember()->isPending())
 		{
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}

@@ -22,10 +22,6 @@ $lang = array(
 
 'avatar_updated' => 'Avatar has been updated',
 
-'avatar_upload_disallowed' => 'Avatar uploads are not currently enabled.',
-
-'avatars_not_enabled' => 'Avatars are currently disabled',
-
 'avatars_not_found' => 'Unable to locate the desired avatars',
 
 'blue' => 'Blue',
@@ -71,8 +67,6 @@ $lang = array(
 'delete_selected_members' => 'Delete selected member(s)',
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
-
-'display_avatars' => 'Display member avatars in entries',
 
 'display_signatures' => 'Display member signatures in entries',
 
@@ -399,6 +393,8 @@ $lang = array(
 'mbr_url' => 'URL',
 
 'mbr_username' => 'Username',
+
+'mbr_username_email_sent' => 'Forgot Username Email Sent',
 
 'mbr_username_length' => 'Usernames must be at least %x characters long',
 

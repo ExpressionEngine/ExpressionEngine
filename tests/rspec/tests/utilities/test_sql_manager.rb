@@ -50,25 +50,25 @@ feature 'SQL Manager' do
   it 'should search the table names' do
     tables = get_tables
 
-    @page.search_field.set 'access'
+    @page.search_field.set 'role'
     @page.search_btn.click
 
-    @page.should have_text 'Search Results we found 3 results for "access"'
+    @page.should have_text 'Search Results we found 13 results for "role"'
 
-    @page.tables.map {|source| source.text}.should == tables.grep(/access/)
+    @page.tables.map {|source| source.text}.should == tables.grep(/role/)
   end
 
   it 'should sort search results' do
     tables = get_tables
 
-    @page.search_field.set 'access'
+    @page.search_field.set 'role'
     @page.search_btn.click
 
     @page.sort_links[0].click
 
-    @page.should have_text 'Search Results we found 3 results for "access"'
+    @page.should have_text 'Search Results we found 13 results for "role"'
 
-    @page.tables.map {|source| source.text}.should == tables.grep(/access/).reverse
+    @page.tables.map {|source| source.text}.should == tables.grep(/role/).reverse
   end
 
   it 'should validate the table operations submission' do
@@ -141,7 +141,7 @@ feature 'SQL Manager' do
     no_php_js_errors
     results.should have_text 'SQL Managerexp_actions Table' # How Capybara sees the breadcrumb
     results.should have_text 'exp_actions Table'
-    results.should have(21).rows
+    results.should have(22).rows
 
     # Make sure breadcrumb info persists in base URL
     results.sort_links[0].click

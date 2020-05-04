@@ -1,31 +1,33 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($form_url)?>
-		<?php if($show_new_template_button): ?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
-		</fieldset>
-		<?php endif; ?>
-		<h1><?=$cp_heading?></h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<?php if (isset($filters)) echo $filters; ?>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_heading?></h2>
+			<?php if (isset($filters)) echo $filters; ?>
+			<div class="title-bar__extra-tools">
+				<?php if($show_new_template_button): ?>
+				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?= lang('create_new_template') ?></a>
+			<?php endif; ?>
+			</div>
+		</div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($show_bulk_delete): ?>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-template"><?=lang('delete')?></option>
 				<?php endif; ?>
 				<option value="export"><?=lang('export_templates')?></option>
 			</select>
-			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>
-</div>
 
 <?php ee('CP/Modal')->startModal('template-settings'); ?>
 
@@ -45,13 +47,13 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-template',
+	'name'		=> 'modal-confirm-delete-template',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove-template', $modal);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete-template', $modal);
 ?>

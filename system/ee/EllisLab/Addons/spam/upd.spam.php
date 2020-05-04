@@ -4,22 +4,21 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Spam Module update class
  */
-class Spam_upd {
-
-	public $version;
-	private $name = 'Spam';
+class Spam_upd extends Installer
+{
 
 	function __construct()
 	{
-		$addon = ee('Addon')->get('spam');
-		$this->version = $addon->getVersion();
+		parent::__construct();
 
 		ee()->load->dbforge();
 		ee()->load->library('smartforge');
@@ -33,13 +32,7 @@ class Spam_upd {
 	 */
 	function install()
 	{
-		$data = array(
-			'module_name' => 'Spam' ,
-			'module_version' => $this->version,
-			'has_cp_backend' => 'y'
-		);
-
-		ee()->db->insert('modules', $data);
+		parent::install();
 
 		$fields = array(
 			'kernel_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
@@ -119,20 +112,7 @@ class Spam_upd {
 	 */
 	function uninstall()
 	{
-		ee()->db->select('module_id');
-		$query = ee()->db->get_where('modules', array('module_name' => 'Spam'));
-
-		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_groups');
-
-		ee()->db->where('module_name', 'Spam');
-		ee()->db->delete('modules');
-
-		ee()->db->where('class', 'Spam');
-		ee()->db->delete('actions');
-
-		ee()->db->where('class', 'Spam_mcp');
-		ee()->db->delete('actions');
+		parent::uninstall();
 
 		ee()->dbforge->drop_table('spam_vocabulary');
 		ee()->dbforge->drop_table('spam_parameters');
@@ -427,14 +407,14 @@ class Spam_upd {
 			}
 
 			// fake out the group ID so the entry will validate properly
-			ee()->session->userdata['group_id'] = $entry->Author->group_id;
+			ee()->session->userdata['group_id'] = $entry->Author->role_id;
 
 			// just in case this member group doesn't exist or have channel assignments anymore
-			if ( ! isset($assigned_channels[$entry->Author->group_id]))
+			if ( ! isset($assigned_channels[$entry->Author->role_id]))
 			{
 				continue;
 			}
-			ee()->session->userdata['assigned_channels'] = $assigned_channels[$entry->Author->group_id];
+			ee()->session->userdata['assigned_channels'] = $assigned_channels[$entry->Author->role_id];
 			ee()->config->set_item('site_id', $entry->Channel->site_id);
 
 			$entry->set($postdata);

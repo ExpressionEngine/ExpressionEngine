@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,6 +76,7 @@ class Table {
 			'reorder'           => FALSE,
 			'reorder_header'    => FALSE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'   => true,
 			'class'             => '',
 			'attrs'				=> array(),
 			'no_results'        => array(
@@ -679,7 +680,9 @@ class Table {
 				$this->config['search'] = '';
 			}
 
-			$base_url->setQueryStringVariable('search', $this->config['search']);
+			if (!empty($this->config['search'])) {
+				$base_url->setQueryStringVariable('search', $this->config['search']);
+			}
 			$base_url->setQueryStringVariable($this->config['sort_col_qs_var'], $this->getSortCol());
 			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}

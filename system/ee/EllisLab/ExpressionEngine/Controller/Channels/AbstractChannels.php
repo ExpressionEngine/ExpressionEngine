@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -38,7 +38,7 @@ abstract class AbstractChannels extends CP_Controller {
 		// Allow AJAX requests for category editing
 		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories'
 			))
@@ -48,11 +48,11 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 		else
 		{
-			if ( ! ee()->cp->allowed_group('can_admin_channels'))
+			if ( ! ee('Permission')->can('admin_channels'))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}
-			elseif ( ! ee()->cp->allowed_group_any(
+			elseif ( ! ee('Permission')->hasAny(
 				'can_create_channels',
 				'can_edit_channels',
 				'can_delete_channels',
@@ -81,7 +81,18 @@ abstract class AbstractChannels extends CP_Controller {
 					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
 				)
-			)
+			),
+			'action_buttons' => [
+				[
+					'text' => lang('import'),
+					'href' => '#',
+					'rel' => 'import-channel'
+				],
+				[
+					'text' => lang('new_channel'),
+					'href' => ee('CP/URL', 'channels/create')
+				]
+			]
 		);
 
 		ee()->javascript->set_global(

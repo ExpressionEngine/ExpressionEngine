@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -359,6 +359,20 @@ class Addon {
 	}
 
 	/**
+	 * Get the jump class
+	 *
+	 * @return string The fqcn or $class
+	 */
+	public function getJumpClass()
+	{
+		$this->requireFile('jump');
+
+		$class = ucfirst($this->shortname).'_jump';
+
+		return $this->getFullyQualified($class);
+	}
+
+	/**
 	 * Has a README.md file?
 	 *
 	 * @return bool TRUE of it does, FALSE if not
@@ -419,6 +433,16 @@ class Addon {
 	}
 
 	/**
+	 * Has a jump.* file?
+	 *
+	 * @return bool TRUE of it does, FALSE if not
+	 */
+	public function hasJumpMenu()
+	{
+		return $this->hasFile('jump');
+	}
+
+	/**
 	 * Has an ext.* file?
 	 *
 	 * @return bool TRUE of it does, FALSE if not
@@ -448,6 +472,44 @@ class Addon {
 	public function hasSpam()
 	{
 		return $this->hasFile('spam');
+	}
+
+	/**
+	 * Gets an array of the jump menu items
+	 *
+	 * @return array An array of jump menu items
+	 */
+	public function getJumps()
+	{
+		$class = $this->getJumpClass();
+		$jumpMenu = new $class;
+
+		$items = $jumpMenu->getItems();
+
+		foreach ($items as $key => $item)
+		{
+			// Prepend the add-on shortname to the item key to prevent command collisions.
+			$newKey = $this->shortname . '_' . ucfirst($key);
+
+			// Save the command under the new key.
+			$items[$newKey] = $item;
+
+			// Unset the old key so we don't end up with duplicates.
+			unset($items[$key]);
+
+			// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
+			$items[$newKey]['addon'] = true;
+			$items[$newKey]['command'] = $this->shortname . ' ' . $items[$newKey]['command'];
+			$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . $items[$newKey]['command_title'];
+
+			if ($item['dynamic'] === true) {
+				$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
+			} else {
+				$items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+			}
+		}
+
+		return $items;
 	}
 
 	/**
@@ -482,6 +544,60 @@ class Addon {
 		}
 
 		return $names;
+	}
+
+	/**
+	 * Install, update or remove dashboard widgets provided by add-on
+	 */
+	public function updateDashboardWidgets($remove_all = FALSE)
+	{
+		//build the widgets list out of present files
+		$widget_source = $this->getProvider()->getPrefix();
+		$widgets = [];
+		foreach ($this->getFilesMatching('widgets/*.*') as $path)
+		{
+			if (preg_match('/widgets\/(.*).(html|php)/', $path, $matches))
+			{
+				$widgets[$matches[1].'.'.$matches[2]] = [
+					'widget_file'	=> $matches[1],
+					'widget_type'	=> $matches[2],
+					'widget_source'=> $widget_source
+				];
+			}
+		}
+
+		//is anything already installed?
+		//if something is not in the list, remove it
+		$widgets_q = ee()->db->select('widget_id, widget_type, widget_file')
+			->from('dashboard_widgets')
+			->where('widget_source', $widget_source)
+			->get();
+		if ($widgets_q->num_rows() > 0)
+		{
+			foreach ($widgets_q->result_array() as $row)
+			{
+				$key = $row['widget_file'].'.'.$row['widget_type'];
+				if (!isset($widgets[$key]) || $remove_all)
+				{
+					ee()->db->where('widget_id', $row['widget_id']);
+					ee()->db->delete('dashboard_widgets');
+
+					ee()->db->where('widget_id', $row['widget_id']);
+					ee()->db->delete('dashboard_layout_widgets');
+				}
+				else
+				{
+					unset($widgets[$key]);
+				}
+			}
+		}
+
+		//is still something in the list? install those
+		if (!$remove_all && !empty($widgets))
+		{
+			ee()->db->insert_batch('dashboard_widgets', $widgets);
+		}
+		
 	}
 
 	public function getInstalledConsentRequests()
@@ -643,6 +759,39 @@ class Addon {
 		 return $this->provider;
 	 }
 
+	 /**
+	 * Get icon URL
+	 *
+	 * @param string default icon file name
+	 * @return string URL for add-on's icon, or generic one
+	 */
+	 public function getIconUrl($default = null)
+	 {
+		$masks = [
+			'icon.svg',
+			'icon.png'
+		];
+		foreach ($masks as $mask) {
+			$icon = $this->getFilesMatching($mask);
+			if (!empty($icon)) {
+				break;
+			}
+		}
+
+		if (!empty($icon)) {
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'File')
+				->where('method', 'addonIcon')
+				->get('actions');
+			$url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'addon='.$this->shortname . AMP . 'file=' . $mask;
+		} else {
+			if (empty($default)) $default = 'default-addon-on-icon.png';
+			$url = URL_THEMES . 'asset/img/'.$default;
+		}
+
+		return $url;
+	 }
+
 	/**
 	 * Get the fully qualified class name
 	 *
@@ -669,7 +818,7 @@ class Addon {
 	/**
 	 * Check if the file with a given prefix exists
 	 *
-	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
+	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp', 'jump')
 	 * @return bool TRUE if it has the file, FALSE if not
 	 */
 	protected function hasFile($prefix)
@@ -680,7 +829,7 @@ class Addon {
 	/**
 	 * Call require on a given file
 	 *
-	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
+	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp', 'jump')
 	 * @return void
 	 */
 	protected function requireFile($prefix)

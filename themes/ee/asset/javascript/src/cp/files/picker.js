@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -84,7 +84,7 @@
 			}
 		});
 
-		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
+		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
 			var new_url = $(this).attr('href');
 
@@ -96,7 +96,7 @@
 		// Capture form submission
 		$('.modal-file').on('submit', 'form', function(e) {
 			var url = $(this).attr('action'),
-				payload_elements = $('input[name=search], input[name=perpage]', this);
+				payload_elements = $('.filter-bar input', this);
 
 			// Only do this if we're on the file listing screen
 			if (payload_elements.size() == 0) {
@@ -115,6 +115,7 @@
 		function openInIframe(url) {
 			$('div.box', modal).html("<iframe></iframe>");
 
+			var theme = $('body').data('theme');
 			var frame = $('iframe', modal);
 			frame.css('border', 'none');
 			frame.css('width', '100%');
@@ -160,6 +161,7 @@
 					}
 					callback(response);
 				} catch(e) {
+					$(this).contents().find('body').attr('data-theme', theme);
 					frame.show();
 					bindFrameUnload();
 

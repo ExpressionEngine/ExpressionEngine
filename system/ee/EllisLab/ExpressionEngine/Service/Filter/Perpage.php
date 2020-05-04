@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,7 @@ class Perpage extends Filter {
 
 	protected $total_threshold = 1000;
 	protected $confirm_show_all = FALSE;
+	protected $hide_reset = FALSE;
 
 	/**
 	 * Initializes our Perpage filter
@@ -34,9 +35,10 @@ class Perpage extends Filter {
 	 * @param  string $lang_key The optional lang key to use for the "All
 	 *                          <<$total>> items" option
 	 * @param  bool $is_modal Is this Perpage filter in/for a modal?
+	 * @param  bool $hide_reset Should we force hiding 'clear filters' button?
 	 * @return void
 	 */
-	public function __construct($total, $all_lang_key = 'all_items', $is_modal = FALSE)
+	public function __construct($total, $all_lang_key = 'all_items', $is_modal = FALSE, $hide_reset = FALSE)
 	{
 		$total = (int) $total;
 
@@ -48,6 +50,7 @@ class Perpage extends Filter {
 			));
 		}
 
+		$this->hide_reset = $hide_reset;
 		$this->name = 'perpage';
 		$this->label = 'perpage_filter';
 		$this->placeholder = lang('custom_limit');
@@ -64,8 +67,19 @@ class Perpage extends Filter {
 		if ($is_modal)
 		{
 			$this->options = array('10' => '10 '.lang('results')) + $this->options;
-			$this->default_value = 10;
+			$this->default_value = 25;
 		}
+	}
+
+	/**
+	 * Determines if the value set for this filter is the default value or not.
+	 *
+	 * @return bool TRUE if the value is not the default, FALSE otherwise
+	 */
+	public function canReset()
+	{
+		if ($this->hide_reset) return !$this->hide_reset;
+		return ($this->value() != $this->default_value);
 	}
 
 	/**

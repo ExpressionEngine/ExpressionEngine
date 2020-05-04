@@ -24,7 +24,7 @@ $lang = array(
 
 'channel_form_layouts' => '%s &ndash; Publish Layouts',
 
-'channel_manager' => 'Channel Manager',
+'channel_manager' => 'Channels',
 
 'channel_module_description' => 'Channel module',
 
@@ -60,9 +60,9 @@ $lang = array(
 
 'channels' => 'Channels',
 
-'channels_removed' => 'Channels removed',
+'channels_deleted' => 'Channels deleted',
 
-'channels_removed_desc' => '%d channels were removed.',
+'channels_deleted_desc' => '%d channels were deleted.',
 
 'create_channel' => 'New Channel',
 
@@ -126,7 +126,7 @@ $lang = array(
 
 'layouts' => 'Layouts',
 
-'layouts_removed_desc' => 'The following publish layouts were removed',
+'layouts_deleted_desc' => 'The following publish layouts were deleted',
 
 'manage_channels' => 'Manage Channels',
 
@@ -310,11 +310,11 @@ $lang = array(
 
 'enable_channel_entry_notification' => 'Enable channel entry notification?',
 
-'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <code>comma (,)</code>.',
 
 'enable_comment_notification' => 'Enable comment notification?',
 
-'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <code>comma (,)</code>.',
 
 'enable_versioning' => 'Enable entry versioning?',
 
@@ -396,7 +396,7 @@ $lang = array(
 
 'cat_field_ajax_reorder_fail_desc' => 'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
-'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions exist.',
+'cat_group_no_roles_found' => 'No <b>roles</b> with permissions exist.',
 
 'cat_image_choose' => 'Choose from directory',
 
@@ -408,9 +408,9 @@ $lang = array(
 
 'categories_not_found' => 'No <b>Categories</b> found.',
 
-'categories_removed' => 'Categories removed',
+'categories_deleted' => 'Categories deleted',
 
-'categories_removed_desc' => '%d categories were removed.',
+'categories_deleted_desc' => '%d categories were deleted.',
 
 'category' => 'Category',
 
@@ -466,11 +466,11 @@ $lang = array(
 
 'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
 
-'category_groups_removed' => 'Category group removed',
+'category_groups_deleted' => 'Category group deleted',
 
-'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
+'category_groups_deleted_desc' => 'The category group <b>%s</b> has been deleted.',
 
-'category_manager' => 'Category Manager',
+'category_manager' => 'Categories',
 
 'category_not_created' => 'Cannot Create Category',
 
@@ -498,7 +498,7 @@ $lang = array(
 
 'delete_categories' => 'Delete Categories',
 
-'delete_categories_desc' => 'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+'delete_categories_desc' => 'Users in selected roles will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
@@ -506,7 +506,7 @@ $lang = array(
 
 'edit_categories' => 'Edit Categories',
 
-'edit_categories_desc' => 'Users in selected groups will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+'edit_categories_desc' => 'Users in selected roles will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'edit_category' => 'Edit Category',
 
@@ -599,6 +599,12 @@ $lang = array(
 'statuses_removed' => 'Statuses removed',
 
 'statuses_removed_desc' => '%d statuses were removed.',
+
+'channel_roles' => 'Allowed Roles',
+
+'channel_roles_desc' => 'Users in these roles can perform each selected action in this channel.',
+
+'edit_in_full_form'	=> 'Edit in full form'
 
 );
 

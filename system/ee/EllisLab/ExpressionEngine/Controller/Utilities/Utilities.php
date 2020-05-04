@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,7 +27,7 @@ class Utilities extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -48,78 +48,74 @@ class Utilities extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		if (ee()->cp->allowed_group('can_access_comm'))
+		if (ee('Permission')->can('access_comm'))
 		{
-			$left_nav = $sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'));
+			$sidebar->addHeader(lang('communicate'));
 
-			if (ee()->cp->allowed_group('can_send_cached_email'))
+			$sidebar->addItem(lang('send_email'), ee('CP/URL')->make('utilities/communicate'));
+
+			if (ee('Permission')->can('send_cached_email'))
 			{
-				$left_nav->addBasicList()
-					->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
+				$sidebar->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_translate'))
+		$sidebar->addDivider();
+
+		if (ee('Permission')->can('access_translate'))
 		{
-			$langauge_list = $sidebar->addHeader(lang('cp_translation'))
-				->addBasicList();
-			$default_language = ee()->config->item('deft_lang') ?: 'english';
-			$languages = array();
+			$translation_item = $sidebar->addItem(lang('cp_translations'), ee('CP/URL')->make('utilities/translate'));
+
 			foreach (ee()->lang->language_pack_names() as $key => $value)
 			{
-				$menu_title = $value;
 				$url = ee('CP/URL')->make('utilities/translate/' . $key);
-				if ($key == $default_language)
-				{
-					$menu_title .= ' (' . lang('default') . ')';
-					// Make the default language first
-					$languages = array_merge(array($menu_title => $url), $languages);
-					continue;
+
+				if ($url->matchesTheRequestedURI()) {
+					$translation_item->isActive();
 				}
-				$languages[$menu_title] = $url;
-			}
-			foreach ($languages as $menu_title => $url)
-			{
-				$langauge_list->addItem($menu_title, $url);
 			}
 		}
 
-		$sidebar->addHeader(lang('php_info'), ee('CP/URL')->make('utilities/php'))
+		$sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
 			->urlIsExternal();
 
-		if (ee()->cp->allowed_group('can_access_addons') && ee()->cp->allowed_group('can_admin_addons'))
-		{
-			$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
+		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
+			$sidebar->addItem(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
 		}
 
 		if (ee('Permission')->hasAny('can_access_import', 'can_access_members'))
 		{
 			$member_tools = $sidebar->addHeader(lang('member_tools'))
 				->addBasicList();
-			if (ee('Permission')->has('can_access_import'))
+			if (ee('Permission')->can('access_import'))
 			{
 				$member_tools->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
 				$member_tools->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
 			}
-			if (ee('Permission')->has('can_access_members'))
+			if (ee('Permission')->can('access_members'))
 			{
 				$member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_sql_manager'))
+		if (ee('Permission')->can('access_sql_manager'))
 		{
 			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
-			$db_list->addItem(lang('backup_utility'), ee('CP/URL')->make('utilities/db-backup'));
+			$db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
 			$db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
-			$db_list->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
+			$url = ee('CP/URL')->make('utilities/query');
+			$item = $db_list->addItem(lang('query_form'), $url);
+			if ($url->matchesTheRequestedURI()) {
+				$item->isActive();
+			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_data'))
+		if (ee('Permission')->can('access_data'))
 		{
 			$data_list = $sidebar->addHeader(lang('data_operations'))
 			->addBasicList();
 			$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
+			$data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
 			$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
 			$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
 		}

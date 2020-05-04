@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,7 +22,7 @@ class MemberGateway extends Gateway {
 
 	// Properties
 	protected $member_id;
-	protected $group_id;
+	protected $role_id;
 	protected $username;
 	protected $screen_name;
 	protected $password;
@@ -63,7 +63,6 @@ class MemberGateway extends Gateway {
 	protected $accept_user_email;
 	protected $notify_by_default;
 	protected $notify_of_pm;
-	protected $display_avatars;
 	protected $display_signatures;
 	protected $parse_smileys;
 	protected $smart_notifications;

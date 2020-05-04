@@ -4,16 +4,30 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Simple Commerce Module update class
  */
-class Simple_commerce_upd {
+class Simple_commerce_upd extends Installer
+{
 
-	var $version			= '2.2.0';
+	public $has_cp_backend = 'y';
+	public $actions = [
+        [
+			'method' => 'incoming_ipn',
+			'csrf_exempt' => true
+        ]
+	];
+
+	public function __construct()
+    {
+        parent::__construct();
+    }
 
 	/**
 	 * Module Installer
@@ -23,12 +37,7 @@ class Simple_commerce_upd {
 	 */
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules
-				  (module_name, module_version, has_cp_backend)
-				  VALUES
-				  ('Simple_commerce', '$this->version', 'y')";
-
-		$sql[] = "INSERT INTO exp_actions (class, method, csrf_exempt) VALUES ('Simple_commerce', 'incoming_ipn', 1)";
+		parent::install();
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_items` (
   `item_id` int(8) unsigned NOT NULL auto_increment,
@@ -121,11 +130,7 @@ class Simple_commerce_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'");
-
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Simple_commerce'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Simple_commerce'";
+		parent::uninstall();
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_items";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_purchases";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_emails";

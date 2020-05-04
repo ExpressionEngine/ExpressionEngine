@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,7 @@ class Login extends Profile {
 	{
 		parent::__construct();
 
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -53,23 +53,41 @@ class Login extends Profile {
 						'other' => array('type' => 'text')
 					)
 				)
-			),
-			'secure_form_ctrls' => array(
+			)
+		);
+
+		$rules = [
+			[
+				'field' => 'redirect',
+				'label' => 'lang:redirect_to',
+				'rules' => 'enum[site_index,cp_index,other]'
+			]
+		];
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'password' => array(
 							'type'      => 'password',
-							'required' => TRUE,
+							'required'  => TRUE,
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)
 				)
-			)
-		);
+			);
 
-		if ($this->member->getMemberGroup()->can_access_cp == 'y')
+			$rules[] = [
+				'field' => 'password',
+				'label' => 'lang:password',
+				'rules' => 'required|auth_password[useAuthTimeout]'
+			];
+		}
+
+		if ($this->member->can('access_cp'))
 		{
 			$choices =& $vars['sections'][0][0]['fields']['redirect']['choices'];
 			$choices = array_slice($choices, 0 , 1, TRUE)
@@ -83,13 +101,7 @@ class Login extends Profile {
 			->addToBody(sprintf(lang('login_as_warning'), $this->member->screen_name), 'warning')
 			->now();
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'password',
-				 'label'   => 'lang:password',
-				 'rules'   => 'required'
-			)
-		));
+		ee()->form_validation->set_rules($rules);
 
 		if (AJAX_REQUEST)
 		{
@@ -119,18 +131,6 @@ class Login extends Profile {
 
 	private function login()
 	{
-		// Check password authentication
-		ee()->load->library('auth');
-		$validate = ee()->auth->authenticate_id(
-			ee()->session->userdata['member_id'],
-			ee()->input->post('password')
-		);
-
-		if ( ! $validate)
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		ee()->logger->log_action(sprintf(
 			lang('member_login_as'),
 			$this->member->username,

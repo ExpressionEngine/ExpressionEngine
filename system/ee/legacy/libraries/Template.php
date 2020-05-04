@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -108,6 +108,8 @@ class EE_Template {
 	private $globals_regex;
 
 	protected $modified_vars      = FALSE;
+
+	protected $ignore_fetch		  = [ 'url_title' ];
 
 	/**
 	 * Constructor
@@ -332,10 +334,7 @@ class EE_Template {
 			'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
 		];
 
-		foreach ($this->user_vars as $user_var)
-		{
-			$added_globals['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
-		}
+		$added_globals = array_merge($added_globals, $this->getMemberVariables());
 
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
@@ -435,6 +434,37 @@ class EE_Template {
 			$layout = $this->_find_layout();
 		}
 
+		// Parse error conditinal tags
+		$errors = ee()->session->flashdata('errors');
+
+		// Make sure to age the flashdata so it doesn't appear on the next request accidentally.
+		// ee()->session->_age_flashdata();
+
+		// If we have any errors from the submit, display those inline.
+		if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match))
+		{
+			// If we have field errors, remove the template conditional and leave the error tags,
+			// otherwise, remove the conditional and error tags completely.
+			if (! empty($errors))
+			{
+				$this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+			}
+			else
+			{
+				$this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
+			}
+		}
+
+		if (!empty($errors))
+		{
+			// Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
+			$errors = array_map(function($error) {
+				return array('error' => $error);
+			}, $errors);
+
+			$this->template = $this->parse_variables($this->template, array(array('errors' => $errors)));
+		}
+
 		// Parse date format string "constants"
 		foreach (ee()->localize->format as $date_key => $date_val)
 		{
@@ -521,14 +551,11 @@ class EE_Template {
 		}
 
 		// Set up logged_in_* variables for early conditional evaluation
-		$logged_in_user_cond = array();
+		$logged_in_user_cond = [];
 
 		if ($this->cache_status != 'EXPIRED')
 		{
-			foreach ($this->user_vars as $user_var)
-			{
-				$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
-			}
+			$logged_in_user_cond = $this->getMemberVariables();
 		}
 
 		// Smite Our Enemies:  Conditionals & Modifiers
@@ -1903,6 +1930,13 @@ class EE_Template {
 	 */
 	public function fetch_param($which, $default = FALSE)
 	{
+
+		if(isset($this->tagparams[$which]) && in_array($which, $this->ignore_fetch)) {
+
+			return $this->tagparams[$which];
+
+		}
+
 		if ( ! isset($this->tagparams[$which]))
 		{
 			return $default;
@@ -2604,36 +2638,45 @@ class EE_Template {
 		{
 			$this->log_item("HTTP Authentication in Progress");
 
-			ee()->db->select('member_group');
-			ee()->db->where('template_id', $query->row('template_id'));
-			$results = ee()->db->get('template_no_access');
+			$disallowed_roles = ee('Model')->get('Role')
+				->all()
+				->getDictionary('role_id', 'name');
 
-			$not_allowed_groups = array();
+			ee()->db->select('role_id');
+			ee()->db->where('template_id', $query->row('template_id'));
+			$results = ee()->db->get('templates_roles');
 
 			if ($results->num_rows() > 0)
 			{
 				foreach($results->result_array() as $row)
 				{
-					$not_allowed_groups[] = $row['member_group'];
+					unset($disallowed_roles[$row['role_id']]);
 				}
 			}
 
 			ee()->load->library('auth');
 			ee()->auth->authenticate_http_basic(
-				$not_allowed_groups,
+				array_keys($disallowed_roles),
 				$this->realm
 			);
 		}
 
 		// Is the current user allowed to view this template?
-		if ($query->row('enable_http_auth') != 'y' && ee()->session->userdata('group_id') != 1)
+		if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin())
 		{
-			ee()->db->select('COUNT(*) as count');
-			ee()->db->where('template_id', $query->row('template_id'));
-			ee()->db->where('member_group', ee()->session->userdata('group_id'));
-			$result = ee()->db->get('template_no_access');
+			if(!ee()->session->getMember()) {
+				$templates = [];
+				$role = ee('Model')->get('Role', 3)->first();
 
-			if ($result->row('count') > 0)
+				foreach ($role->AssignedTemplates as $template)
+				{
+					$templates[$template->getId()] = $template->template_id;
+				}
+			}else{
+				$templates = ee()->session->getMember()->getAssignedTemplates()->pluck('template_id');
+			}
+
+			if ( ! in_array($query->row('template_id'), $templates))
 			{
 				$this->log_item("No Template Access Privileges");
 
@@ -2655,12 +2698,7 @@ class EE_Template {
 						->get();
 
 					// If the redirect template is not allowed, give them a 404
-					ee()->db->select('COUNT(*) as count');
-					ee()->db->where('template_id', $query->row('template_id'));
-					ee()->db->where('member_group', ee()->session->userdata('group_id'));
-					$result = ee()->db->get('template_no_access');
-
-					if ($result->row('count') > 0)
+					if ( ! in_array($query->row('template_id'), $templates))
 					{
 						$this->log_item("Access redirect denied, Show 404");
 
@@ -2849,6 +2887,32 @@ class EE_Template {
 	}
 
 	/**
+	 * Take a template path string and fetch the corresponding template.
+	 * @param  string  $template_path  A template path string like 'site/about'
+	 * @return string                  The raw template code
+	 */
+	public function fetch_template_from_path($template_path)
+	{
+		list($template_group, $template_name, $site_id) = $this->_get_fetch_data($template_path);
+
+		return $this->fetch_template($template_group, $template_name, FALSE, $site_id);
+	}
+
+	/**
+	 * Take a template path string, fetch the corresponding template, and run it through the parser.
+	 * @param  string  $template_path A template path string like 'site/about'
+	 * @return string                 The parsed template code
+	 */
+	public function fetch_template_and_parse_from_path($template_path)
+	{
+		list($template_group, $template_name, $site_id) = $this->_get_fetch_data($template_path);
+
+		$this->run_template_engine($template_group, $template_name);
+
+		return ee()->output->get_output();
+	}
+
+	/**
 	 * Create From File
 	 *
 	 * Attempts to create a template group / template from a file
@@ -2970,7 +3034,11 @@ class EE_Template {
 			'site_id'				=> ee()->config->item('site_id')
 		 );
 
-		$template_id = ee()->template_model->create_template($data);
+		$template_model = ee('Model')->make('Template', $data);
+		$template_model->Roles = ee('Model')->get('Role')->all();
+		$template_model->save();
+
+		$template_id = $template_model->getId();
 
 		// Clear db cache or it will create a new template record each page load!
 		ee()->functions->clear_caching('db');
@@ -3165,7 +3233,7 @@ class EE_Template {
 		// Restore XML declaration if it was encoded
 		$str = $this->restore_xml_declaration($str);
 
-		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
+		ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
 		$this->user_vars[] = 'member_group';
 
 		// parse all standard global variables
@@ -3415,13 +3483,14 @@ class EE_Template {
 		foreach ($this->user_vars as $user_var)
 		{
 			$data[$user_var] = ee()->session->userdata[$user_var];
-			$data['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 		}
+
+		$data = array_merge($data, $this->getMemberVariables());
 
 		// Define an alternate variable for {group_id} since some tags use
 		// it natively, causing it to be unavailable as a global
 
-		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['group_id'];
+		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['role_id'];
 
 		// Logged in and logged out variables
 		$data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
@@ -3527,7 +3596,9 @@ class EE_Template {
 
 		$last = end($this->log);
 		$time = number_format($time, 6);
-		$time_gain = $time - $last['time'];
+		$last_time = isset($last['time']) ? $last['time'] : 0;
+		$time_gain = $time - $last_time;
+		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
 		$memory_gain = $memory_usage - $last['memory'];
 
 		$this->log[] = array(
@@ -4389,6 +4460,41 @@ class EE_Template {
 		}
 
 		return $this->annotations->create($data);
+	}
+
+	protected function getMemberVariables()
+	{
+		static $vars;
+
+		if (empty($vars))
+		{
+			foreach ($this->user_vars as $user_var)
+			{
+				$vars['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+			}
+
+			if ( ! ee()->session->getMember())
+			{
+				$role = ee('Model')->get('Role', 3)->first();
+				$roles = array($role);
+				$assigned_role_ids = array(3);
+			}
+			else
+			{
+				$member = ee()->session->getMember();
+				$assigned_role_ids = $member->getAllRoles()->pluck('role_id');
+				$roles = ee('Model')->get('Role')->all();
+			}
+
+			foreach ($roles as $role)
+			{
+				$value = in_array($role->getId(), $assigned_role_ids);
+
+				$vars['has_role_'.$role->short_name] = $value;
+			}
+		}
+
+		return $vars;
 	}
 }
 // END CLASS

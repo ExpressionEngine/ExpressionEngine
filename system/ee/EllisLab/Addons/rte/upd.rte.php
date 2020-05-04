@@ -4,20 +4,38 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Rich Text Editor Module update class
  */
-class Rte_upd {
+class Rte_upd extends Installer
+{
+	public $has_cp_backend = 'y';
 
-	private $name	= 'Rte';
-	public $version	= '1.0.1';
+	public $actions = [
+        [
+            'method' => 'get_js'
+        ]
+	];
+
+	public $methods = [
+		[
+			'hook' => 'myaccount_nav_setup'
+		],
+		[
+			'hook' => 'cp_menu_array'
+		]
+	];
 
 	public function __construct()
 	{
+		parent::__construct();
+
 		ee()->load->dbforge();
 	}
 
@@ -28,27 +46,7 @@ class Rte_upd {
 	 */
 	public function install()
 	{
-		// module
-		ee()->db->insert(
-			'modules',
-			array(
-				'module_name'		=> $this->name,
-				'module_version'	=> $this->version,
-				'has_cp_backend'	=> 'y'
-			)
-		);
-
-		// Actions
-		ee()->db->insert_batch(
-			'actions',
-			array(
-				// Build the Toolset JS
-				array(
-					'class'		=> $this->name,
-					'method'	=> 'get_js'
-				)
-			)
-		);
+		parent::install();
 
 		// RTE Toolsets Table
 		$fields = array(
@@ -113,29 +111,7 @@ class Rte_upd {
 		ee()->rte_toolset_model->load_default_toolsets();
 
 		// Install the extension
-		ee()->db->insert_batch(
-			'extensions',
-			array(
-				array(
-					'class'    => $this->name.'_ext',
-					'hook'     => 'myaccount_nav_setup',
-					'method'   => 'myaccount_nav_setup',
-					'settings' => '',
-					'priority' => 10,
-					'version'  => $this->version,
-					'enabled'  => 'y'
-				),
-				array(
-					'class'    => $this->name.'_ext',
-					'hook'     => 'cp_menu_array',
-					'method'   => 'cp_menu_array',
-					'settings' => '',
-					'priority' => 10,
-					'version'  => $this->version,
-					'enabled'  => 'y'
-				)
-			)
-		);
+		parent::activate_extension();
 
 		// Update the config
 		ee()->config->update_site_prefs(
@@ -157,32 +133,9 @@ class Rte_upd {
 	 */
 	public function uninstall()
 	{
-		$module_id = ee()->db->select('module_id')
-			->get_where('modules', array( 'module_name' => $this->name ))
-			->row('module_id');
+		parent::uninstall();
 
-		// Member access
-		ee()->db->delete(
-			'module_member_groups',
-			array('module_id' => $module_id)
-		);
-
-		// Module
-		ee()->db->delete(
-			'modules',
-			array('module_name' => $this->name)
-		);
-
-		// Actions
-		ee()->db->where('class', $this->name)
-			->or_where('class', $this->name . '_mcp')
-			->delete('actions');
-
-		// Extension
-		ee()->db->delete(
-			'extensions',
-			array('class' => $this->name.'_ext')
-		);
+		parent::disable_extension();
 
 		// Tables
 		ee()->dbforge->drop_table('rte_toolsets');

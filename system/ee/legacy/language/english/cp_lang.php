@@ -7,22 +7,31 @@ $lang = array(
 
 
 /* Develop Menu */
-'addon_manager' => 'Add-On Manager',
+'addon_manager' => 'Add-Ons',
 
-'channel_manager' => 'Channel Manager',
+'channel_manager' => 'Channels',
+
+'entries' => 'Entries',
+
+'menu_entries' => 'Entries',
 
 'logs' => 'Logs',
 
-'msm_manager' => 'Site Manager',
+'msm_manager' => 'Sites',
 
 'nav_developer' => 'Developer',
 
 'nav_developer_tools' => 'Developer Tools',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
 'utilities' => 'Utilities',
 
+'dark_theme'  => 'Dark Theme',
+'light_theme' => 'Light Theme',
+
+'jump_menu_item' => 'Jump Menu',
+'jump_menu_input' => 'Go To...',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
@@ -111,6 +120,8 @@ $lang = array(
 
 'password' => 'Password',
 
+'password_for' => 'Password for %s',
+
 'password_label' => 'Password:',
 
 'powered_by' => 'Powered By',
@@ -153,6 +164,10 @@ $lang = array(
 
 'unauthorized_access' => 'You are not authorized to access this page',
 
+'machines_only_request' => 'You really shouldn\'t be here. This land is only for bots and machines.',
+
+'addon_missing_jump_method' => 'Add-on missing requested jump menu method.',
+
 'update_check_btn' => 'Check for Update',
 
 'update_btn' => 'Upgrade Now',
@@ -173,6 +188,7 @@ $lang = array(
 
 'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
 
+'navigation_toggle' => 'Toggle Navigation',
 
 /* Buttons */
 'cancel' => 'Cancel',
@@ -287,9 +303,11 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
+'recent_members' => 'Recent Members',
+
 'results' => 'results',
 
-'select_all' => 'select all',
+'select_all' => 'Select All',
 
 'search_in' => 'Search in',
 
@@ -336,6 +354,14 @@ $lang = array(
 'will_be_logged' => 'This action will be logged',
 
 'important' => 'Important!',
+
+'view_as' => 'View as ',
+
+'viewtype_list' => 'List',
+
+'viewtype_thumb' => 'Thumbnails',
+
+'viewtype_hybrid' => 'Hybrid',
 
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
@@ -428,7 +454,7 @@ $lang = array(
 
 
 /* Common */
-'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
+'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'auto_br' => 'Auto line break',
 
@@ -480,9 +506,9 @@ $lang = array(
 
 'image' => 'Image',
 
-'keyword_filter' => 'keywords, hit enter',
+'keyword_filter' => 'Search',
 
-'log_out' => 'log out',
+'log_out' => 'Log Out',
 
 'menu_create' => 'Create',
 
@@ -495,6 +521,8 @@ $lang = array(
 'my_profile' => 'My Profile',
 
 'name' => 'Name',
+
+'short_name' => 'Short name',
 
 'name_your_site' => 'Name your site',
 
@@ -509,6 +537,8 @@ $lang = array(
 'no_channels' => 'No <b>Channels</b> found.',
 
 'no_found' => 'No <b>%s</b> found.',
+
+'no_roles_with_design_access_found' => 'No <b>Roles</b> with <b>template manager access</b> found.',
 
 'no_rows_returned' => 'No rows returned',
 
@@ -528,7 +558,7 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
-'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
+'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
 'settings_save_error' => 'Attention: Settings not saved',
 
@@ -550,6 +580,19 @@ $lang = array(
 
 'xhtml' => 'XHTML',
 
+/* Members Menu */
+
+'new_member' => 'New Member',
+
+'all_members' => 'All Members',
+
+'pending_members' => 'Pending Members',
+
+'ban_management' => 'Ban Management',
+
+'roles' => 'Roles',
+
+'custom_member_fields' => 'Member Fields',
 
 /* Footer */
 'about_expressionengine' => 'About ExpressionEngine',
@@ -586,9 +629,11 @@ $lang = array(
 
 'report_bug' => 'Report Bug',
 
+'whats_new' => 'What\'s New?',
+
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
 
 'up_to_date' => 'Up to date!',
 
@@ -608,6 +653,14 @@ $lang = array(
 
 'btn_confirm_and_save_working' => 'Saving...',
 
+/* confirm delete modal */
+'btn_confirm_and_delete' => 'Confirm and Delete',
+
+'btn_confirm_and_delete_working' => 'Deleting...',
+
+'confirm_delete' => 'Are You Sure?',
+
+'confirm_deletion_desc' => 'You are attempting to delete the following items:',
 
 /*confirm show all modal */
 'all_items' => 'All %d items',
@@ -641,6 +694,53 @@ $lang = array(
 'html_button_ajax_reorder_fail' => 'Attention: Failed to save html buttons order',
 
 'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
+
+/* Search Reindex tip */
+
+'search_reindex_tip' => 'Search Reindex',
+
+'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
+
+'reindex_not_needed' => 'Reindexing Not Necessary',
+
+'reindex_not_needed_desc' => 'Your search index is up-to-date!',
+
+'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
+
+/* Permissions */
+
+'can_create_templates' => 'Create templates',
+
+'can_edit_templates' => 'Edit templates',
+
+'can_delete_templates' => 'Delete templates',
+
+'can_manage_settings' => 'Manage settings & access',
+
+'can_create_entries' => 'Create entries',
+
+'can_edit_self_entries' => 'Edit own entries',
+
+'can_delete_self_entries' => 'Delete own entries',
+
+'can_edit_other_entries' => 'Edit entries, by others',
+
+'can_delete_all_entries' => 'Delete entries, by others',
+
+'can_assign_post_authors' => 'Change entry author',
+
+/* Dashboard Widgets */
+
+'save_dashboard_layout'	=> 'Save layout',
+
+'edit_dashboard_layout'	=> 'Edit layout',
+
+'dashboard_layout_saved'	=> 'Layout saved',
+
+'dashboard_layout_save_error' => 'Could not save layout',
+
+'dashboard_needs_some_widgets' => 'Please enable at least one widget',
+
 
 );
 

@@ -14,11 +14,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -27,164 +27,165 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 function makeFilterableComponent(WrappedComponent) {
-  return (
-    /*#__PURE__*/
-    function (_React$Component) {
-      _inherits(_class2, _React$Component);
+  var _temp;
 
-      function _class2(props) {
-        var _this;
+  return _temp =
+  /*#__PURE__*/
+  function (_React$Component) {
+    _inherits(_temp, _React$Component);
 
-        _classCallCheck(this, _class2);
+    function _temp(props) {
+      var _this;
 
-        _this = _possibleConstructorReturn(this, _getPrototypeOf(_class2).call(this, props));
+      _classCallCheck(this, _temp);
 
-        _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "itemsChanged", function (items) {
-          _this.setState({
-            items: items
-          });
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(_temp).call(this, props));
+
+      _defineProperty(_assertThisInitialized(_this), "itemsChanged", function (items) {
+        _this.setState({
+          items: items
+        });
+      });
+
+      _defineProperty(_assertThisInitialized(_this), "initialItemsChanged", function (items) {
+        _this.initialItems = items;
+
+        if (!_this.ajaxFilter && _this.state.filterValues.search) {
+          items = _this.filterItems(items, _this.state.filterValues.search);
+        }
+
+        _this.setState({
+          items: items
         });
 
-        _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initialItemsChanged", function (items) {
-          _this.initialItems = items;
+        if (_this.props.itemsChanged) {
+          _this.props.itemsChanged(items);
+        }
+      });
 
-          if (!_this.ajaxFilter && _this.state.filterValues.search) {
-            items = _this.filterItems(items, _this.state.filterValues.search);
-          }
+      _defineProperty(_assertThisInitialized(_this), "filterChange", function (name, value) {
+        var filterState = _this.state.filterValues;
+        filterState[name] = value;
 
-          _this.setState({
-            items: items
-          });
+        _this.setState({
+          filterValues: filterState
+        }); // DOM filter
 
-          if (_this.props.itemsChanged) {
-            _this.props.itemsChanged(items);
-          }
+
+        if (!_this.ajaxFilter && name == 'search') {
+          _this.itemsChanged(_this.filterItems(_this.initialItems, value));
+
+          return;
+        } // Debounce AJAX filter
+
+
+        clearTimeout(_this.ajaxTimer);
+        if (_this.ajaxRequest) _this.ajaxRequest.abort();
+        var params = filterState;
+        params.selected = _this.getSelectedValues(_this.props.selected);
+
+        _this.setState({
+          loading: true
         });
 
-        _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "filterChange", function (name, value) {
-          var filterState = _this.state.filterValues;
-          filterState[name] = value;
+        _this.ajaxTimer = setTimeout(function () {
+          _this.ajaxRequest = _this.forceAjaxRefresh(params);
+        }, 300);
+      });
 
-          _this.setState({
-            filterValues: filterState
-          }); // DOM filter
+      _this.initialItems = SelectList.formatItems(props.items);
+      _this.state = {
+        items: _this.initialItems,
+        initialCount: _this.initialItems.length,
+        filterValues: {},
+        loading: false
+      };
+      _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
+      _this.ajaxTimer = null;
+      _this.ajaxRequest = null;
+      return _this;
+    }
 
+    _createClass(_temp, [{
+      key: "filterItems",
+      value: function filterItems(items, searchTerm) {
+        var _this2 = this;
 
-          if (!_this.ajaxFilter && name == 'search') {
-            _this.itemsChanged(_this.filterItems(_this.initialItems, value));
+        items = items.map(function (item) {
+          // Clone item so we don't modify reference types
+          item = Object.assign({}, item); // If any children contain the search term, we'll keep the parent
 
-            return;
-          } // Debounce AJAX filter
-
-
-          clearTimeout(_this.ajaxTimer);
-          if (_this.ajaxRequest) _this.ajaxRequest.abort();
-          var params = filterState;
-          params.selected = _this.getSelectedValues(_this.props.selected);
-
-          _this.setState({
-            loading: true
-          });
-
-          _this.ajaxTimer = setTimeout(function () {
-            _this.ajaxRequest = _this.forceAjaxRefresh(params);
-          }, 300);
+          if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
+          var itemFoundInChildren = item.children && item.children.length > 0;
+          var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+          return itemFound || itemFoundInChildren ? item : false;
         });
-
-        _this.initialItems = SelectList.formatItems(props.items);
-        _this.state = {
-          items: _this.initialItems,
-          initialCount: _this.initialItems.length,
-          filterValues: {},
-          loading: false
-        };
-        _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
-        _this.ajaxTimer = null;
-        _this.ajaxRequest = null;
-        return _this;
+        return items.filter(function (item) {
+          return item;
+        });
       }
+    }, {
+      key: "getSelectedValues",
+      value: function getSelectedValues(selected) {
+        var values = [];
 
-      _createClass(_class2, [{
-        key: "filterItems",
-        value: function filterItems(items, searchTerm) {
-          var _this2 = this;
-
-          items = items.map(function (item) {
-            // Clone item so we don't modify reference types
-            item = Object.assign({}, item); // If any children contain the search term, we'll keep the parent
-
-            if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
-            var itemFoundInChildren = item.children && item.children.length > 0;
-            var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
-            return itemFound || itemFoundInChildren ? item : false;
+        if (selected instanceof Array) {
+          values = selected.map(function (item) {
+            return item.value;
           });
-          return items.filter(function (item) {
-            return item;
-          });
+        } else if (selected.value) {
+          values = [selected.value];
         }
-      }, {
-        key: "getSelectedValues",
-        value: function getSelectedValues(selected) {
-          var values = [];
 
-          if (selected instanceof Array) {
-            values = selected.map(function (item) {
-              return item.value;
+        return values.join('|');
+      }
+    }, {
+      key: "forceAjaxRefresh",
+      value: function forceAjaxRefresh(params) {
+        var _this3 = this;
+
+        if (!params) {
+          params = this.state.filterValues;
+          params.selected = this.getSelectedValues(this.props.selected);
+        }
+
+        return $.ajax({
+          url: this.props.filterUrl,
+          data: $.param(params),
+          dataType: 'json',
+          success: function success(data) {
+            _this3.setState({
+              loading: false
             });
-          } else if (selected.value) {
-            values = [selected.value];
-          }
 
-          return values.join('|');
-        }
-      }, {
-        key: "forceAjaxRefresh",
-        value: function forceAjaxRefresh(params) {
-          var _this3 = this;
+            _this3.initialItemsChanged(SelectList.formatItems(data));
+          },
+          error: function error() {} // Defined to prevent error on .abort above
 
-          if (!params) {
-            params = this.state.filterValues;
-            params.selected = this.getSelectedValues(this.props.selected);
-          }
+        });
+      }
+    }, {
+      key: "render",
+      value: function render() {
+        var _this4 = this;
 
-          return $.ajax({
-            url: this.props.filterUrl,
-            data: $.param(params),
-            dataType: 'json',
-            success: function success(data) {
-              _this3.setState({
-                loading: false
-              });
+        return React.createElement(WrappedComponent, _extends({}, this.props, {
+          loading: this.state.loading,
+          filterChange: function filterChange(name, value) {
+            return _this4.filterChange(name, value);
+          },
+          initialItems: this.initialItems,
+          initialCount: this.state.initialCount,
+          items: this.state.items,
+          itemsChanged: this.initialItemsChanged
+        }));
+      }
+    }]);
 
-              _this3.initialItemsChanged(SelectList.formatItems(data));
-            },
-            error: function error() {} // Defined to prevent error on .abort above
-
-          });
-        }
-      }, {
-        key: "render",
-        value: function render() {
-          var _this4 = this;
-
-          return React.createElement(WrappedComponent, _extends({}, this.props, {
-            loading: this.state.loading,
-            filterChange: function filterChange(name, value) {
-              return _this4.filterChange(name, value);
-            },
-            initialItems: this.initialItems,
-            initialCount: this.state.initialCount,
-            items: this.state.items,
-            itemsChanged: this.initialItemsChanged
-          }));
-        }
-      }]);
-
-      return _class2;
-    }(React.Component)
-  );
+    return _temp;
+  }(React.Component), _temp;
 }

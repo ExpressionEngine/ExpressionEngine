@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -155,7 +155,9 @@ class Consent {
 		else
 		{
 			$this->setAlertFlashdata('success', $message);
-			$return = ee('Encrypt')->decode(ee()->input->post('RET'));
+			$return = ee()->input->post('RET')
+						? ee('Encrypt')->decode(ee()->input->post('RET'))
+						: ee()->functions->form_backtrack(1);
 			ee()->functions->redirect(ee()->functions->create_url($return));
 		}
 	}

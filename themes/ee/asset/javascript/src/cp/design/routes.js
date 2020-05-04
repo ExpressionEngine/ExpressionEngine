@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,6 +14,6 @@ $(document).ready(function () {
 
 	$('#routes').on('grid:addRow', function(e, el) {
 		$(el).addClass('setting-field');
-		Dropdown.renderFields($(el).find('td').eq(1));
+		Dropdown.renderFields($(el).find('td').first());
 	});
 });

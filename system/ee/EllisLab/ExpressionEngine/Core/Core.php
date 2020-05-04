@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -289,7 +289,7 @@ abstract class Core {
 	 */
 	public function setTimeLimit($t)
 	{
-		if (function_exists("set_time_limit") && @ini_get("safe_mode") == 0)
+		if (function_exists("set_time_limit"))
 		{
 			@set_time_limit($t);
 		}

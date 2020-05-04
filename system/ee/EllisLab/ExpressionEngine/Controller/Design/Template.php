@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -36,11 +36,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -51,7 +46,8 @@ class Template extends AbstractDesignController {
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('create_templates_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -60,10 +56,12 @@ class Template extends AbstractDesignController {
 		$template->site_id = ee()->config->item('site_id');
 		$template->TemplateGroup = $group;
 
+		$dup_id = ee()->input->post('template_id');
+
 		// Duplicate a template?
-		if (ee()->input->post('template_id'))
+		if ( ! empty($dup_id))
 		{
-			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
+			$master_template = ee('Model')->get('Template', $dup_id)
 				->first();
 
 			$properties = $master_template->getValues();
@@ -86,13 +84,13 @@ class Template extends AbstractDesignController {
 			{
 				// Unless we are duplicating a template the default is to
 				// allow access to everyone
-				if ( ! ee()->input->post('template_id'))
+				if ( ! empty(ee()->input->post('template_id')))
 				{
-					$template->NoAccess = NULL;
+					$template->Roles = $master_template->Roles;
 				}
 				else
 				{
-					$template->NoAccess = $master_template->NoAccess;
+					$template->Roles = ee('Model')->get('Role')->all();
 				}
 
 				$template->save();
@@ -193,11 +191,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_edit_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$template = ee('Model')->get('Template', $template_id)
 			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -220,7 +213,8 @@ class Template extends AbstractDesignController {
 
 		$group = $template->getTemplateGroup();
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -278,8 +272,6 @@ class Template extends AbstractDesignController {
 			'tabs' => array(
 				'edit' => $this->renderEditPartial($template, $errors),
 				'notes' => $this->renderNotesPartial($template, $errors),
-				'settings' => $this->renderSettingsPartial($template, $errors),
-				'access' => $this->renderAccessPartial($template, $errors),
 			),
 			'buttons' => array(
 				array(
@@ -299,6 +291,12 @@ class Template extends AbstractDesignController {
 			),
 			'sections' => array(),
 		);
+
+		if (ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
+		{
+			$vars['tabs']['settings'] = $this->renderSettingsPartial($template, $errors);
+			$vars['tabs']['access'] = $this->renderAccessPartial($template, $errors);
+		}
 
 		if (bool_config_item('save_tmpl_revisions'))
 		{
@@ -328,7 +326,11 @@ class Template extends AbstractDesignController {
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
-		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
+		ee()->view->header = array(
+			'title' => lang('edit_template_title'),
+		);
+
+		ee()->view->cp_page_title = $group->group_name . '/' . $template->template_name;
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
 			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
@@ -422,11 +424,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_edit_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -438,7 +435,8 @@ class Template extends AbstractDesignController {
 
 		$group = $template->getTemplateGroup();
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -520,7 +518,7 @@ class Template extends AbstractDesignController {
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			if (ee()->cp->allowed_group('can_delete_templates'))
+			if (ee('Permission')->can('delete_templates'))
 			{
 				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/template/search', ee()->cp->get_url_state()));
@@ -555,7 +553,7 @@ class Template extends AbstractDesignController {
 		$base_url = ee('CP/URL')->make('design/template/search');
 		$base_url->setQueryStringVariable('search', $search_terms);
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
 			$templates->filter('group_id', 'IN', $assigned_groups);
@@ -573,7 +571,7 @@ class Template extends AbstractDesignController {
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates, TRUE);
 
 		$vars['show_new_template_button'] = FALSE;
-		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
+		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates');
 
 		ee()->view->cp_heading = sprintf(
 			lang('search_results_heading'),
@@ -643,17 +641,21 @@ class Template extends AbstractDesignController {
 		}
 		else
 		{
-			$member_groups = ee('Model')->get('MemberGroup')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', '!=', 1)
+			$access = ee()->input->post('allowed_roles') ?: array();
+
+			$roles = ee('Model')->get('Role', $access)
+				->filter('role_id', '!=', 1)
 				->all();
 
-			$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
-
-			$template->NoAccess = $member_groups->filter(function($group) use ($allowed_member_groups)
+			if ($roles->count() > 0)
 			{
-				return ! in_array($group->group_id, $allowed_member_groups);
-			});
+				$template->Roles = $roles;
+			}
+			else
+			{
+				// Remove all roles from this template
+				$template->Roles = NULL;
+			}
 		}
 
 		return $result;
@@ -978,30 +980,25 @@ class Template extends AbstractDesignController {
 		// Remove current template from options
 		unset($existing_templates[$template->template_id]);
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', 1)
-			->all();
-
-		$allowed_member_groups = array_diff(
-			$member_groups->pluck('group_id'),
-			$template->getNoAccess()->pluck('group_id')
-		);
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		$sections = array(
 			array(
 				array(
-					'title' => 'allowed_member_groups',
-					'desc' => 'allowed_member_groups_desc',
-					'desc_cont' => 'allowed_member_groups_super_admin',
+					'title' => 'allowed_roles',
+					'desc' => 'allowed_roles_desc',
+					'desc_cont' => 'allowed_roles_super_admin',
 					'fields' => array(
-						'allowed_member_groups' => array(
+						'allowed_roles' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
-							'value' => $allowed_member_groups,
+							'choices' => $roles,
+							'value' => $template->Roles->pluck('role_id'),
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)

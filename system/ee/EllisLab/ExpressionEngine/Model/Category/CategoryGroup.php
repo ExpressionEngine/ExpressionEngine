@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -134,30 +134,26 @@ class CategoryGroup extends StructureModel {
 		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
 		$editable = FALSE;
 
-		if (ee()->session->userdata['group_id'] == 1
-			|| (ee()->session->userdata['can_edit_categories'] == 'y'
-				&& in_array(ee()->session->userdata['group_id'], $can_edit)
-				))
-			{
-				$editable = TRUE;
-			}
+		if (ee('Permission')->isSuperAdmin()
+			|| (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit)))
+		{
+			$editable = TRUE;
+		}
 
 		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
 		$deletable = FALSE;
 
-		if (ee()->session->userdata['group_id'] == 1
-			|| (ee()->session->userdata['can_delete_categories'] =='y'
-				&& in_array(ee()->session->userdata['group_id'], $can_delete)
-				))
-			{
-				$deletable = TRUE;
-			}
+		if (ee('Permission')->isSuperAdmin()
+			|| (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete)))
+		{
+			$deletable = TRUE;
+		}
 
 		$no_results = [
 			'text' => sprintf(lang('no_found'), lang('categories'))
 		];
 
-		if ( ! INSTALLER && ee('Permission')->has('can_create_categories'))
+		if ( ! INSTALLER && ee('Permission')->can('create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());
@@ -179,7 +175,7 @@ class CategoryGroup extends StructureModel {
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
-			'add_btn_label'	        => REQ == 'CP' && ee()->cp->allowed_group('can_create_categories')
+			'add_btn_label'	        => REQ == 'CP' && ee('Permission')->can('create_categories')
 				? lang('add_category')
 				: NULL,
 			'content_item_label'	=> lang('category'),

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,10 +46,11 @@ class SelectField extends React.Component {
   }
 
   render () {
+    let tooManyLimit = (typeof(this.props.tooManyLimit)!=='undefined' && this.props.tooManyLimit !== null) ? this.props.tooManyLimit : SelectList.defaultProps.tooManyLimit;
     let selectItem = <FilterableSelectList {...this.props}
       selected={this.state.selected}
       selectionChanged={this.selectionChanged}
-      tooMany={SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit}
+      tooMany={SelectList.countItems(this.props.items) > tooManyLimit}
       reorderable={this.props.reorderable || this.state.editing}
       removable={this.props.removable || this.state.editing}
       handleRemove={(e, item) => this.handleRemove(e, item)}

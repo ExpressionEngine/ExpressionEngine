@@ -63,14 +63,16 @@ function setup_permissions {
 		chmod -R 777 images
 		chmod -R 777 themes/user
 		# JS Shim for ES5/ES6 with Capybara
-		cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
-		cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
-		mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
+		cp themes/ee/cp/js/build/vendor/react/react.min.js themes/ee/cp/js/build/vendor/react/react.min~orig.js
+		cat tests/rspec/shim.min.js themes/ee/cp/js/build/vendor/react/react.min.js > themes/ee/cp/js/build/vendor/react/react.min-shimmed.js
+		mv themes/ee/cp/js/build/vendor/react/react.min-shimmed.js themes/ee/cp/js/build/vendor/react/react.min.js
 	popd > /dev/null
 }
 
 ARTIFACTS_DIR="/app/artifacts/${PHP_VERSION}"
-mkdir -p $ARTIFACTS_DIR
+if [ ! -d $ARTIFACTS_DIR ]; then
+	mkdir -p $ARTIFACTS_DIR;
+fi
 
 function start_apache_mysql {
 	# https://github.com/docker/for-linux/issues/72

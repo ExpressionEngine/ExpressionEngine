@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -100,7 +100,7 @@ class Forum {
 		// Is the forum enabled?
 		// If not, only super admins can view it
 		if ($this->preferences['board_enabled'] == 'n'
-			&& ee()->session->userdata('group_id') != 1)
+			&& ! ee('Permission')->isSuperAdmin())
 		{
 			return $this->display_forum('offline_page');
 		}
@@ -1426,12 +1426,7 @@ class Forum {
 				return FALSE;
 			}
 
-			if ($group_id == 0)
-			{
-				$group_id = ee()->session->userdata('group_id');
-			}
-
-			if ($group_id == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				return TRUE;
 			}
@@ -1442,19 +1437,19 @@ class Forum {
 
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			ee()->db->select('group_id');
-			$query = ee()->db->get_where('members', array(
-												'member_id' => $member_id));
+			if ($member_id = ee()->session->userdata('member_id'))
+			{
+				return ee('Permission')->isSuperAdmin();
+			}
 
-			if ($query->num_rows() == 0)
+			$member = ee('Model')->get('Member', $member_id)->first();
+
+			if ( ! $member)
 			{
 				return FALSE;
 			}
 
-			if ($query->row('group_id') == 1)
-			{
-				return TRUE;
-			}
+			return $member->isSuperAdmin();
 		}
 
 		return FALSE;

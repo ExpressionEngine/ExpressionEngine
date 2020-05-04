@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -273,7 +273,7 @@ class EE_Exceptions {
 		// We'll only want to show certain information, like file paths, if we're allowed
 		if (isset(ee()->config) && isset(ee()->session))
 		{
-			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee()->session->userdata('group_id') == 1);
+			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee('Permission')->isSuperAdmin());
 		}
 
 		// Hide sensitive information such as file paths and database information

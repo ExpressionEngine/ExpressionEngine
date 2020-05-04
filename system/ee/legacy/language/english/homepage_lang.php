@@ -30,7 +30,9 @@ $lang = array(
 
 'field_groups' => 'Field Groups',
 
-'flagged_as_spam' => 'flagged as potential spam',
+'flagged_as_spam' => 'flagged as spam',
+
+'commented_on' => 'commented on',
 
 'has' => 'has',
 
@@ -42,11 +44,11 @@ $lang = array(
 
 'members_desc' => 'Members are registered users of your site. You <em>must</em> have at least one member, an administrator.',
 
-'new_comments' => '<em>new</em> comments',
+'new_comments' => 'new comments',
 
 'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
 
-'new_spam' => '<em>new</em> items in the Spam queue',
+'new_spam' => 'new items in the Spam queue',
 
 'news_fetch_failure' => 'Oops, we couldn\'t fetch the news.',
 

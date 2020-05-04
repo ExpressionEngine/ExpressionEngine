@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -213,22 +213,16 @@ class Rte_ext {
 
 		// If this isn't a Super Admin, let's check to see if they can modify
 		// the RTE module
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$access = (bool) ee()->db->select('COUNT(m.module_id) AS count')
-				->from('modules m')
-				->join('module_member_groups mmg', 'm.module_id = mmg.module_id')
-				->where(array(
-					'mmg.group_id' 	=> ee()->session->userdata('group_id'),
-					'm.module_name' => ucfirst($this->module)
-				))
-				->get()
-				->row('count');
+			$member = ee()->session->getMember();
+			$assigned_modules = $member->getAssignedModules()->pluck('module_name');
+			$access = in_array($this->module, $assigned_modules);
 
-			$has_access = $access AND ee()->cp->allowed_group('can_access_addons');
+			$has_access = $access AND ee('Permission')->can('access_addons');
 		}
 
-		if (ee()->session->userdata('group_id') == 1 OR $has_access)
+		if (ee('Permission')->isSuperAdmin() OR $has_access)
 		{
 			ee()->lang->loadfile($this->module);
 			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;

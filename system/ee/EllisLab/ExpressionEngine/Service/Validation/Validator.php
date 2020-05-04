@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -331,6 +331,11 @@ class Validator {
 	protected function newValidationRule($rule_name)
 	{
 		$rule_class = implode('', array_map('ucfirst', explode('_', $rule_name)));
+
+		// Fix for Numeric class
+		if($rule_class == 'Numeric') {
+			$rule_class = 'ValidateNumeric';
+		}
 
 		$class = __NAMESPACE__."\\Rule\\{$rule_class}";
 

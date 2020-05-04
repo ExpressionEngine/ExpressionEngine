@@ -20,7 +20,7 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_max_width
     @page.should have_max_height
     @page.should have_image_manipulations
-    @page.should have_upload_member_groups
+    @page.should have_upload_roles
     @page.should have_cat_group
   end
 
@@ -337,7 +337,7 @@ feature 'Upload Destination Create/Edit' do
     @page.height_for_row(2).set '40'
 
     # Uncheck Members
-    @page.upload_member_groups[0].set false
+    @page.upload_roles[0].set false
 
     # Check both category groups
     @page.cat_group[0].click
@@ -365,7 +365,7 @@ feature 'Upload Destination Create/Edit' do
     @page.width_for_row(2).value.should == '50'
     @page.height_for_row(2).value.should == '40'
 
-    @page.upload_member_groups[0].checked?.should == false
+    @page.upload_roles[0].checked?.should == false
     @page.cat_group[0].checked?.should == true
     @page.cat_group[1].checked?.should == true
 
@@ -394,7 +394,7 @@ feature 'Upload Destination Create/Edit' do
     @page.width_for_row(2).value.should == '50'
     @page.height_for_row(2).value.should == '40'
 
-    @page.upload_member_groups[0].checked?.should == false
+    @page.upload_roles[0].checked?.should == false
     @page.cat_group[0].checked?.should == true
     @page.cat_group[1].checked?.should == true
   end
@@ -419,7 +419,7 @@ feature 'Upload Destination Create/Edit' do
     @page.height_for_row(2).set '40'
 
     # Uncheck Members
-    @page.upload_member_groups[0].set false
+    @page.upload_roles[0].set false
 
     # Check both category groups
     @page.cat_group[0].click
@@ -447,7 +447,7 @@ feature 'Upload Destination Create/Edit' do
     @page.width_for_row(2).value.should == '50'
     @page.height_for_row(2).value.should == '40'
 
-    @page.upload_member_groups[0].checked?.should == false
+    @page.upload_roles[0].checked?.should == false
     @page.cat_group[0].checked?.should == true
     @page.cat_group[1].checked?.should == true
 

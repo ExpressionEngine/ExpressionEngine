@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,7 +17,7 @@ class File_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'File',
-		'version'	=> '1.0.0'
+		'version'	=> '1.1.0'
 	);
 
 	var $has_array_data = TRUE;
@@ -117,7 +117,7 @@ class File_ft extends EE_Fieldtype {
 				}
 
 				if ($check_permissions &&
-					$file->memberGroupHasAccess(ee()->session->userdata['group_id']) == FALSE)
+					$file->memberHasAccess(ee()->session->getMember()) == FALSE)
 				{
 					return array('value' => '', 'error' => lang('directory_no_access'));
 				}

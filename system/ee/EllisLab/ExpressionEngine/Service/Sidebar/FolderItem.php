@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -179,11 +179,6 @@ class FolderItem extends ListItem {
 	{
 		$class = $this->getClass();
 
-		if ($class)
-		{
-			$class = ' class="' . $class . '"';
-		}
-
 		$vars = array(
 			'text' => $this->text,
 			'url' => $this->url,
@@ -195,7 +190,8 @@ class FolderItem extends ListItem {
 			'modal_name'=> $this->name,
 			'confirm' => $this->remove_confirmation,
 			'key' => $this->removal_key,
-			'value' => $this->removal_key_value
+			'value' => $this->removal_key_value,
+			'icon' => $this->icon
 		);
 
 		return $view->make('_shared/sidebar/folder_item')->render($vars);

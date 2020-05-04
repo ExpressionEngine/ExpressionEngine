@@ -19,7 +19,7 @@ feature 'Messaging Settings' do
     @page.prv_msg_max_chars.value.should == ee_config(item: 'prv_msg_max_chars')
     @page.prv_msg_html_format.has_checked_radio(ee_config(item: 'prv_msg_html_format')).should == true
     @page.prv_msg_auto_links.value.should == prv_msg_auto_links
-    @page.prv_msg_upload_path.value.should == ee_config(item: 'prv_msg_upload_path')
+    @page.prv_msg_upload_path.value.should == ee_config(item: 'prv_msg_upload_path', raw: true)
     @page.prv_msg_max_attachments.value.should == ee_config(item: 'prv_msg_max_attachments')
     @page.prv_msg_attach_maxsize.value.should == ee_config(item: 'prv_msg_attach_maxsize')
     @page.prv_msg_attach_total.value.should == ee_config(item: 'prv_msg_attach_total')

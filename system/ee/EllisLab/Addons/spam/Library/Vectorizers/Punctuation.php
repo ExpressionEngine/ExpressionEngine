@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,17 +26,28 @@ class Punctuation implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$punctuation = preg_match_all('/[!-~]/u', $source, $matches);
-		$characters  = mb_strlen($source);
+
+		$characters  = ee_mb_strlen($source);
+
 		if ($characters !== 0)
 		{
+
 			$ratio = $punctuation / $characters;
+
 		}
 		else
 		{
+
 			$ratio = 1;
+
 		}
+
 		return $ratio;
+
 	}
 
 }

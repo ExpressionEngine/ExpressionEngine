@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -145,7 +145,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('.wrap .form-standard form').append(input).submit();
+			$('.ee-main .form-standard form').append(input).submit();
 		}
 	};
 };

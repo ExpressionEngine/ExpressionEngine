@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -72,11 +72,30 @@ function createCodeMirror(code_textarea)
 		lineWrapping: true,
 		lineNumbers: true,
 		autoCloseBrackets: true,
+		styleActiveLine: true,
+		showCursorWhenSelecting: true,
 		mode: "ee",
 		smartIndent: false,
 		indentWithTabs: usetabs,
 		lint: EE.codemirror_linter
 	});
+
+	// Enable a code commenting command
+	cm.setOption("extraKeys", {
+		"Cmd-/": function(cm) {
+		  cm.toggleComment({
+			// Set the block comment tags to EE's syntax
+			blockCommentStart: "{!--",
+			blockCommentEnd: "--}",
+		  })
+		}
+	  });
+
+	  // Select a whole line when clicking on a gutter number
+	  cm.on("gutterClick", function(cm, n) {
+		cm.setSelection({ line: n, ch: 0}, {line: n + 1, ch:0})
+		cm.focus()
+	  })
 
 	$('.CodeMirror').resizable({
 		handles: "s",

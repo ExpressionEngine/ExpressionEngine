@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -159,13 +159,8 @@ class Fields extends AbstractFieldsController {
 				'href' => $edit_url,
 				'extra' => LD.$field->field_name.RD,
 				'selected' => ($field_id && $field->getId() == $field_id),
-				'toolbar_items' => ee()->cp->allowed_group('can_edit_channel_fields') ? [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					]
-				] : NULL,
-				'selection' => ee()->cp->allowed_group('can_delete_channel_fields') ? [
+				'toolbar_items' => NULL,
+				'selection' => ee('Permission')->can('delete_channel_fields') ? [
 					'name' => 'selection[]',
 					'value' => $field->getId(),
 					'data' => [
@@ -175,7 +170,7 @@ class Fields extends AbstractFieldsController {
 			];
 		}
 
-		if (ee()->cp->allowed_group('can_delete_channel_fields'))
+		if (ee('Permission')->can('delete_channel_fields'))
 		{
 			ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 			ee()->cp->add_js_script(array(
@@ -201,7 +196,7 @@ class Fields extends AbstractFieldsController {
 
 	public function create($group_id = NULL)
 	{
-		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
+		if ( ! ee('Permission')->can('create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -323,6 +318,8 @@ class Fields extends AbstractFieldsController {
 
 		ee()->view->cp_page_title = lang('create_new_field');
 
+		ee()->view->extra_alerts = array('search-reindex'); // for Save & New
+
 		if (AJAX_REQUEST)
 		{
 			return ee()->cp->render('_shared/form', $vars);
@@ -345,7 +342,7 @@ class Fields extends AbstractFieldsController {
 
 	public function edit($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		if ( ! ee('Permission')->can('edit_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -456,6 +453,7 @@ class Fields extends AbstractFieldsController {
 		);
 
 		ee()->view->cp_page_title = lang('edit_field');
+		ee()->view->extra_alerts = array('search-reindex');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -620,7 +618,7 @@ class Fields extends AbstractFieldsController {
 
 	private function remove($field_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
+		if ( ! ee('Permission')->can('delete_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -638,7 +636,7 @@ class Fields extends AbstractFieldsController {
 		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('fields_removed_desc'))
+			->addToBody(lang('fields_deleted_desc'))
 			->addToBody($field_names)
 			->defer();
 

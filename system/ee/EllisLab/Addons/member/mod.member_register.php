@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -379,13 +379,13 @@ class Member_register extends Member {
 		}
 		else
 		{
-			if (ee()->config->item('default_member_group') == '')
+			if (ee()->config->item('default_primary_role') == '')
 			{
 				$data['group_id'] = 4;  // Pending
 			}
 			else
 			{
-				$data['group_id'] = ee()->config->item('default_member_group');
+				$data['group_id'] = ee()->config->item('default_primary_role');
 			}
 		}
 
@@ -662,7 +662,7 @@ class Member_register extends Member {
 		}
 
 		// Set the member group
-		$group_id = ee()->config->item('default_member_group');
+		$group_id = ee()->config->item('default_primary_role');
 
 		// Is there even a Pending (group 4) account for this particular user?
 		$query = ee()->db->select('member_id, group_id, email')

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -541,7 +541,15 @@ class Lexer extends AbstractLexer {
 				{
 					$this->syncWithAnnotation($annotation);
 				}
-			}
+      }
+
+
+      //clean up the conditional from edit link
+      //do regex search based on the marker in url
+      if ($type=='STRING')
+      {
+        $lexeme = preg_replace("/<a href=\"(.*?)\" class=\"eeFrontEdit\"><\/a>/is", '', $lexeme, 1);
+      }
 
 			switch ($type)
 			{

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -50,7 +50,7 @@ class BasicItem extends ListItem {
 
 		if ($class)
 		{
-			$class = ' class="' . $class . '"';
+			$class = ' ' . $class . '';
 		}
 
 		$attrs = '';
@@ -69,7 +69,8 @@ class BasicItem extends ListItem {
 			'text' => $this->text,
 			'url' => $this->url,
 			'attrs' => $attrs,
-			'class' => $class
+			'class' => $class,
+			'icon' => $this->icon
 		);
 
 		return $view->make('_shared/sidebar/basic_item')->render($vars);

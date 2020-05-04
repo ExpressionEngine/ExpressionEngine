@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,7 @@ class Query extends Utilities {
 	public function index($show_validation = TRUE)
 	{
 		// Super Admins only, please
-		if (ee()->session->userdata('group_id') != '1')
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -52,6 +52,30 @@ class Query extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('sql_query_form');
+
+		ee()->cp->add_js_script([
+			'plugin'	=> 'ee_codemirror',
+			'ui'		=> 'resizable',
+			'file'		=> array(
+				'cp/utilities/sql-query-form',
+				'vendor/codemirror/codemirror',
+				'vendor/codemirror/closebrackets',
+				'vendor/codemirror/comment',
+				'vendor/codemirror/lint',
+				'vendor/codemirror/active-line',
+				'vendor/codemirror/overlay',
+				'vendor/codemirror/xml',
+				'vendor/codemirror/css',
+				'vendor/codemirror/javascript',
+				'vendor/codemirror/htmlmixed',
+				'ee-codemirror-mode',
+				'vendor/codemirror/dialog',
+				'vendor/codemirror/searchcursor',
+				'vendor/codemirror/search',
+				'vendor/codemirror/sql',
+			)
+		]);
+
 		ee()->cp->render('utilities/query/index');
 	}
 
@@ -112,7 +136,7 @@ class Query extends Utilities {
 		}
 
 		// If it's a DELETE query, require that a Super Admin be the one submitting it
-		if (ee()->session->userdata('group_id') != '1')
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			if (strpos(strtoupper($sql), 'DELETE') !== FALSE OR strpos(strtoupper($sql), 'ALTER') !== FALSE OR strpos(strtoupper($sql), 'TRUNCATE') !== FALSE OR strpos(strtoupper($sql), 'DROP') !== FALSE)
 			{
@@ -190,6 +214,11 @@ class Query extends Utilities {
 		// Get the total results on the orignal query before we paginate it
 		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : $query;
 		$total_results = (is_object($query)) ? $query->num_rows() : 0;
+
+		//set up pagination filter
+		$filters = ee('CP/Filter')
+			->add('Perpage', $total_results);
+		$row_limit = $filters->values()['perpage'];
 
 		// Does this query already have a limit?
 		$limited_query = (preg_match("/LIMIT\s+[0-9]/i", $sql));

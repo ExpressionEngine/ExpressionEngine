@@ -1,21 +1,23 @@
 <?php if ( ! empty($pagination)): ?>
-<div class="paginate"<?php if (isset($pagination['total_count'])): ?> title="<?=$pagination['total_count']?> <?=lang('total_entries')?>"<?php endif; ?>>
-	<ul>
-		<li><a href="<?=$pagination['first']?>"><?=lang('first')?></a></li>
-		<?php if ( isset($pagination['prev'])): ?>
-		<li><a href="<?=$pagination['prev']?>"><?=lang('prev')?></a></li>
+<div class="add-mrg-top">
+	<ul class="pagination">
+		<?php if (array_keys($pagination['pages'])[0] != 1): ?>
+		<li class="pagination__item"><a class="pagination__link" href="<?=$pagination['first']?>">1</a></li>
+		<li class="pagination__item"><span class="pagination__divider">&hellip;</span></li>
 		<?php endif;?>
 
 		<?php foreach ($pagination['pages'] as $page => $link): ?>
-		<li><a<?php if($pagination['current_page'] == $page): ?> class="act"<?php endif; ?> href="<?=$link?>"><?=$page?></a></li>
+		<li class="pagination__item <?php if($pagination['current_page'] == $page): ?>pagination__item--active<?php endif; ?>"><a class="pagination__link" href="<?=$link?>"><?=$page?></a></li>
 		<?php endforeach; ?>
 
-		<?php if ( isset($pagination['next'])): ?>
-		<li><a href="<?=$pagination['next']?>"><?=lang('next')?></a></li>
+		<?php if (array_reverse(array_keys($pagination['pages']))[0] != $pagination['total_pages']): ?>
+		<li class="pagination__item"><span class="pagination__divider">&hellip;</span></li>
+		<li class="pagination__item"><a class="pagination__link" href="<?=$pagination['last']?>"><?=$pagination['total_pages']?></a></li>
 		<?php endif;?>
-		<li><a class="last" href="<?=$pagination['last']?>"><?=lang('last')?></a></li>
+
+		<?php if (isset($pagination['per_page_selector']) && !empty($pagination['per_page_selector'])) : ?>
+		<li class="pagination__item"><?=$pagination['per_page_selector']?></li>
+		<?php endif;?>
 	</ul>
 </div>
 <?php endif; ?>
-
-<?php

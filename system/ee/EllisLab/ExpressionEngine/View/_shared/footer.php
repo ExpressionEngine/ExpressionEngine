@@ -1,103 +1,48 @@
+			</div>
 		</section>
-		<footer class="app-footer">
-			<section class="app-footer__product">
-				<div class="content--center">
-					<div class="app-about">
-						<?php
-						$version_class = 'app-about__version';
-						$update_available = isset($new_version);
-						$vital_update = $update_available && $new_version['security'];
+	</div>
 
-						if ( ! empty($version_identifier))
-						{
-							$version_class .= ' app-about__version--dev';
-						}
-						elseif ($update_available)
-						{
-							if ($vital_update)
-							{
-								$version_class .= ' app-about__version--update-vital';
-							}
-							else
-							{
-								$version_class .= ' app-about__version--update';
-							}
-						}
-						?>
+		<div class="dropdown app-about" data-dropdown="app-about-dropdown">
+			<div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>
+			<div class="app-about__subtitle">
+				&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">Packet Tide</a>, LLC.
+				<span class="float-right"><?=$ee_build_date?></span>
+			</div>
 
-						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine&reg; <b>CMS</b></a>
+			<a href="https://expressionengine.com/support" class="dropdown__link app-about__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></a>
 
-						<span class="<?=$version_class?> js-about"><?=$formatted_version?></span>
+			<?php if (ee('Permission')->can('access_footer_report_bug')): ?>
+				<a href="https://expressionengine.com/support/bugs/new" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
+			<?php endif ?>
+			<?php if (ee('Permission')->can('access_footer_user_guide')): ?>
+				<a href="<?=DOC_URL?>" class="dropdown__link app-about__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
+			<?php endif; ?>
+			<?php if ($show_news_button): ?>
+				<a href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" class="dropdown__link app-about__link app-about__whats-new-link" rel="external"><i class="fas fa-gift fa-fw"></i> <?=lang('whats_new')?></a>
+			<?php endif ?>
 
-						<?php if ($show_news_button): ?>
-							<a href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" class="app-about__whats-new" rel="external">
-								<span class="icon--gift"></span>
-							</a>
-						<?php endif ?>
 
-						<div class="app-about-info">
-							<div class="app-about-info__installed">
-								<h3><?=lang('installed')?></h3>
-								<?=lang('version')?>: <?=$formatted_version?><br>
-								<em><?=lang('build')?> <?=$ee_build_date?></em>
-							</div>
-							<?php if ($update_available): ?>
-								<?=$this->embed('ee:_shared/_new_version', $new_version)?>
-							<?php endif ?>
-							<?php if (ee()->session->userdata('group_id') == 1): ?>
-								<?php if ( ! $update_available): ?>
-									<div class="app-about-info__update">
-										<?=lang('checking_for_updates')?>
-									</div>
-									<div class="app-about-info__status">
-										<?=lang('up_to_date')?>
-									</div>
-								<?php endif ?>
-								<div class="app-about-info__status app-about-info__status--update<?=$update_available && ! $vital_update ? '' : ' hidden'?>">
-									<?=lang('out_of_date_upgrade')?>
-									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
-								</div>
-								<div class="app-about-info__status app-about-info__status--update-vital<?=$update_available && $vital_update ? '' : ' hidden'?>">
-									<?=lang('out_of_date_recommended')?>
-									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
-								</div>
-							<?php endif ?>
-							<a href="" class="app-about-info__close js-about-close">
-								<span class="icon--close"></span>
-							</a>
-						</div>
-					</div>
-					<div class="app-support">
-						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
-							<a href="https://expressionengine.com/support/bugs/new" class="app-about__link" rel="external noreferrer"><?=lang('report_bug')?></a>
 
-							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-								<b class="sep">&middot;</b>
-							<?php endif; ?>
-						<?php endif; ?>
-
-						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
-						<?php endif; ?>
-					</div>
+			<?php if (ee('Permission')->isSuperAdmin()): ?>
+				<div class="app-about__status app-about__status--checking">
+					<?=lang('checking_for_updates')?>
 				</div>
-			</section>
-			<section class="app-footer__meta">
-				<div class="content--center">
-					<div class="app-footer__license">
-						<?php if ($ee_license->isValid()): ?>
-							<?=lang('license_no')?>: <?=$ee_license->getData('license_number')?>
-							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee('Format')->make('Text', $ee_license->getData('license_contact'))->attributeEscape()?>">
-								<?=ee('Format')->make('Text', ($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact'))->attributeEscape()?>
-							</a>
-						<?php endif; ?>
-					</div>
-					<div class="app-footer__copyright">
-						&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a> Corp.
-					</div>
+				<div class="app-about__status app-about__status--update-to-date hidden">
+					<?=lang('up_to_date')?>
 				</div>
-			</section>
-		</footer>
+				<div class="app-about__status app-about__status--update hidden">
+					<?=lang('out_of_date_upgrade')?>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<div class="app-about__status-version"></div>
+				</div>
+				<div class="app-about__status app-about__status--update-vital hidden">
+					<?=lang('out_of_date_recommended')?>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<div class="app-about__status-version"></div>
+				</div>
+			<?php endif ?>
+		</div>
+
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
@@ -105,7 +50,6 @@
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('common.js')?>
 		<?php
 
 		echo ee()->javascript->get_global();
@@ -125,49 +69,86 @@
 		}
 
 		?>
-		<div id="idle-modal" class="modal-wrap modal-timeout hidden">
-			<div class="modal">
-				<div class="col-group snap">
-					<div class="col w-16 last">
-						<a class="m-close" href="#"></a>
-						<div class="form-standard">
-							<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
-								<div class="form-btns form-btns-top">
-									<h1>Log into <?=ee()->config->item('site_name')?></h1>
-								</div>
-								<?=ee('CP/Alert')
-									->makeInline()
-									->asImportant()
-									->addToBody(lang('session_timeout'))
-									->render()?>
-								<fieldset class="fieldset-required">
-									<div class="field-instruct">
-										<label><?=lang('username')?></label>
-										<em></em>
-									</div>
-									<div class="field-control">
-										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>" disabled="disabled">
-										<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
-									</div>
-								</fieldset>
-								<fieldset class="fieldset-required">
-									<div class="field-instruct">
-										<label><?=lang('password')?></label>
-										<em></em>
-									</div>
-									<div class="field-control">
-										<input type="password" name="password" value="" id="logout-confirm-password">
-									</div>
-								</fieldset>
-								<div class="form-btns">
-									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-								</div>
-							<?=form_close()?>
-						</div>
+		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
+			<div class="modal modal--no-padding dialog dialog--warning">
+
+			<div class="dialog__header dialog__header--centered">
+				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
+				<h2 class="dialog__title">Log into <?=ee()->config->item('site_name')?></h2>
+			</div>
+
+			<div class="dialog__body">
+			<?=lang('session_timeout')?>
+			</div>
+
+			<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
+			<div class="dialog__actions">
+				<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
+				<fieldset class="fieldset-required">
+					<div class="field-instruct">
+						<label><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
+					</div>
+					<div class="field-control">
+						<input type="password" name="password" value="" id="logout-confirm-password">
+					</div>
+				</fieldset>
+
+				<div class="dialog__buttons">
+					<div class="button-group">
+						<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 					</div>
 				</div>
 			</div>
+			<?=form_close()?>
+			</div>
 		</div>
+
+		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
+			<div class="jump-menu">
+				<div class="jump-menu__input" id="jumpMenu1">
+					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
+				</div>
+				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
+					<span id="jumpEntry1Selection" class="action-tag"></span>
+					<input type="text" id="jumpEntry2" class="jump-to" placeholder="Search For..">
+				</div>
+				<div class="jump-menu__items" id="jumpMenuResults1"></div>
+				<div class="jump-menu__items" id="jumpMenuResults2"></div>
+				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
+
+				<div class="jump-menu__footer">
+					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: &nbsp;&nbsp; <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
+					<span class="jump-menu__close"><?=lang('close')?> <span class="key">ESC</span></span>
+				</div>
+			</div>
+		</div>
+
 		<?=ee('CP/Alert')->getStandard()?>
+		<script type="text/javascript" src="https://packettide.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-e6zu8v/b/23/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=3804d578"></script>
+
+		<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$('#welcome-screen').show();
+
+			$('.show-sidebar').on('click', function(){
+				$('.ee-main--dashboard').css('background', 'var(--ee-dashboard-bg)');
+				$('.ee-sidebar').removeClass('hidden');
+				$('.main-nav').removeClass('hidden');
+			});
+
+			$('.main-nav__account').clone().css('display', 'none').appendTo('.dashboard');
+
+			$('#jump-menu').on('modal:open', function () {
+				$('.welcome-jump-instructions').fadeIn();
+				$('.main-nav__account').fadeIn();
+			}).on('modal:close', function () {
+				$('.welcome-jump-instructions').fadeOut();
+				$('.main-nav__account').fadeOut();
+			});
+		});
+		</script>
+		<?php endif; ?>
+
 	</body>
 </html>

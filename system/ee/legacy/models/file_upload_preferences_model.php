@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,22 +27,11 @@ class File_upload_preferences_model extends CI_Model
 	function get_file_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE, $parameters = array())
 	{
 		// for admins, no specific filtering, just give them everything
-		if ($group_id != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			// non admins need to first be checked for restrictions
-			// we'll add these into a where_not_in() check below
-			$this->db->select('upload_id');
-			$no_access = $this->db->get_where('upload_no_access', array('member_group'=>$group_id));
-
-			if ($no_access->num_rows() > 0)
-			{
-				$denied = array();
-				foreach($no_access->result() as $result)
-				{
-					$denied[] = $result->upload_id;
-				}
-				$this->db->where_not_in('id', $denied);
-			}
+			$member = ee()->session->getMember();
+			$assigned_upload_destinations = $member->getAssignedUploadDestinations()->pluck('id');
+			$this->db->where_in('id', $assigned_upload_destinations);
 		}
 
 		// Is there a specific upload location we're looking for?

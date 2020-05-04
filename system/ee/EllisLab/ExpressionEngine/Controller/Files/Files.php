@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,6 +17,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use EllisLab\ExpressionEngine\Service\File\ViewType;
 
 /**
  * Files Controller
@@ -25,6 +26,9 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
+		$viewTypeService = new ViewType();
+		$view_type = $viewTypeService->determineViewType('all', 'table');
+
 		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
 		$base_url = ee('CP/URL')->make('files');
@@ -34,7 +38,7 @@ class Files extends AbstractFilesController {
 			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$vars = $this->listingsPage($files, $base_url);
+		$vars = $this->listingsPage($files, $base_url, $view_type);
 
 		$this->generateSidebar(NULL);
 		$this->stdHeader();
@@ -54,7 +58,11 @@ class Files extends AbstractFilesController {
 			ee()->view->cp_heading = lang('all_files');
 		}
 
-		ee()->cp->render('files/index', $vars);
+		if ($view_type !== 'table') {
+			ee()->cp->render('files/index-' . $view_type, $vars);
+		} else {
+			ee()->cp->render('files/index', $vars);
+		}
 	}
 
 	public function directory($id)
@@ -68,7 +76,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -86,15 +94,18 @@ class Files extends AbstractFilesController {
 
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
+		$viewTypeService = new ViewType();
+		$view_type = $viewTypeService->determineViewType('dir_'.$id, 'table');
+		//$dir->default_modal_view is not used here as it's not modal view
+
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);
 
 		$files = ee('Model')->get('File')
 			->with('UploadDestination')
 			->filter('upload_location_id', $dir->getId());
 
-		$vars = $this->listingsPage($files, $base_url);
+		$vars = $this->listingsPage($files, $base_url, $view_type);
 
-		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 
 		$this->generateSidebar($id);
@@ -102,14 +113,18 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		// Check to see if they can sync the directory
-		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
-			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
+		ee()->view->can_sync_directory = ee('Permission')->can('upload_new_files')
+			&& $dir->memberHasAccess(ee()->session->getMember());
 
 		$this->stdHeader(
 			ee()->view->can_sync_directory ? $id : NULL
 		);
 
-		ee()->cp->render('files/directory', $vars);
+		if ($view_type !== 'table') {
+			ee()->cp->render('files/directory-' . $view_type, $vars);
+		} else {
+			ee()->cp->render('files/directory', $vars);
+		}
 	}
 
 	public function export()
@@ -128,7 +143,7 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -219,7 +234,7 @@ class Files extends AbstractFilesController {
 
 	public function finishUpload($file_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -233,7 +248,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -271,7 +286,7 @@ class Files extends AbstractFilesController {
 
 	public function rmdir()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+		if ( ! ee('Permission')->can('delete_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -286,7 +301,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -296,8 +311,8 @@ class Files extends AbstractFilesController {
 
 		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
-			->withTitle(lang('upload_directory_removed'))
-			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
+			->withTitle(lang('upload_directory_deleted'))
+			->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
 			->defer();
 
 		$return_url = ee('CP/URL')->make('files');
@@ -365,14 +380,14 @@ class Files extends AbstractFilesController {
 			return;
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		// Loop through the files and add them to the zip
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
-			->filter(function($file) use ($member_group) {
-				return $file->memberGroupHasAccess($member_group);
+			->filter(function($file) use ($member) {
+				return $file->memberHasAccess($member);
 			});
 
 		foreach ($files as $file)
@@ -409,7 +424,7 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_files'))
+		if ( ! ee('Permission')->can('delete_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -419,13 +434,13 @@ class Files extends AbstractFilesController {
 			$file_ids = array($file_ids);
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
-			->filter(function($file) use ($member_group) {
-				return $file->memberGroupHasAccess($member_group);
+			->filter(function($file) use ($member) {
+				return $file->memberHasAccess($member);
 			});
 
 		$names = array();
@@ -438,7 +453,7 @@ class Files extends AbstractFilesController {
 		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('files_removed_desc'))
+			->addToBody(lang('files_deleted_desc'))
 			->addToBody($names)
 			->defer();
 	}

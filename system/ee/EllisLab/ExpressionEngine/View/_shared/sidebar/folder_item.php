@@ -1,5 +1,12 @@
-<li<?=$class?> data-<?=$key?>="<?=$value?>">
-	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
+<div class="sidebar__link sidebar__link--parent <?=$class?>" data-<?=$key?>="<?=$value?>">
+	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>>
+		<?php if (!empty($icon)): ?>
+			<i class="fas fa-<?=$icon?>"></i>
+		<?php else: ?>
+			<i class="fas fa-folder"></i>
+		<?php endif; ?>
+		<?=$text?>
+	</a>
 	<?php if ($edit || $remove): ?>
 	<ul class="toolbar">
 		<?php if ($edit): ?>
@@ -10,4 +17,4 @@
 		<?php endif; ?>
 	</ul>
 	<?php endif; ?>
-</li>
+</div>

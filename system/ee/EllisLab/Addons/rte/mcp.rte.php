@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -211,7 +211,7 @@ class Rte_mcp {
 		ee()->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('default_toolset'),
-			'required|is_numeric|enum[' . implode($toolids, ',') . ']'
+			'required|is_numeric|enum[' . implode(',', $toolids) . ']'
 		);
 
 		if (ee()->form_validation->run())
@@ -243,7 +243,7 @@ class Rte_mcp {
 	 */
 	public function new_toolset()
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_toolsets'))
+		if ( ! ee('Permission')->can('upload_new_toolsets'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -266,7 +266,7 @@ class Rte_mcp {
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_toolsets'))
+		if ( ! ee('Permission')->can('edit_toolsets'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -347,7 +347,7 @@ class Rte_mcp {
 				break;
 
 			case 'remove':
-				if ( ! ee()->cp->allowed_group('can_delete_toolsets'))
+				if ( ! ee('Permission')->can('delete_toolsets'))
 				{
 					show_error(lang('unauthorized_access'), 403);
 				}
@@ -457,28 +457,13 @@ class Rte_mcp {
 	private function _permissions_check()
 	{
 		// super admins always can
-		$can_access = (ee()->session->userdata('group_id') == '1');
+		$can_access = (ee('Permission')->isSuperAdmin());
 
 		if ( ! $can_access)
 		{
-			// get the group_ids with access
-			$result = ee()->db->select('module_member_groups.group_id')
-				->from('module_member_groups')
-				->join('modules', 'modules.module_id = module_member_groups.module_id')
-				->where('modules.module_name',$this->name)
-				->get();
-
-			if ($result->num_rows())
-			{
-				foreach ($result->result_array() as $r)
-				{
-					if (ee()->session->userdata('group_id') == $r['group_id'])
-					{
-						$can_access = TRUE;
-						break;
-					}
-				}
-			}
+			$member = ee()->session->getMember();
+			$assigned_modules = $member->getAssignedModules()->pluck('module_name');
+			$can_access = in_array($this->name, $assigned_modules);
 		}
 
 		if ( ! $can_access)

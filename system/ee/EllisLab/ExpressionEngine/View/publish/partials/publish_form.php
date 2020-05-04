@@ -1,11 +1,9 @@
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<div class="form-btns form-btns-top">
-		<h1><?=$form_title?> </h1>
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
-	</div>
+
 	<div class="tab-wrap">
-		<ul class="tabs">
+		<div class="tab-bar tab-bar--sticky">
+			<div class="tab-bar__tabs">
 			<?php
 			foreach ($layout->getTabs() as $index => $tab):
 				if ( ! $tab->isVisible()) continue;
@@ -13,27 +11,25 @@
 
 				if ($index == 0)
 				{
-					$class .= ' act';
+					$class .= ' active';
 				}
 
 				if ($tab->hasErrors($errors))
 				{
 					$class .= ' invalid';
 				}
-
-				$class = trim($class);
-
-				if ( ! empty($class))
-				{
-					$class = ' class="' . $class . '"';
-				}
 			?>
-			<li><a<?=$class?> rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
+			<button type="button" class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></button>
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
-				<li><a href="" rel="t-autosaves"><?=lang('autosaves')?></a></li>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
 			<?php endif ?>
-		</ul>
+			</div>
+
+			<div class="tab-bar__right-buttons">
+				<div class="button-group form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
+			</div>
+		</div>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<?php if ( ! $tab->isVisible()) continue; ?>
@@ -60,10 +56,6 @@
 				if ($field->isCollapsed())
 				{
 					$field_class .= ' fieldset---closed';
-				}
-				if ($field->getType() == 'fluid_field')
-				{
-					$field_class .= ' fieldset-faux-fluid';
 				}
 			?>
 			<?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
@@ -104,9 +96,6 @@
 				</div>
 			</fieldset>
 		</div>
-	</div>
-	<div class="form-btns">
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
 	</div>
 	</form>
 </div>

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -189,6 +189,13 @@ class ThemeInstaller {
 
 		@chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
 
+		//default template preferences
+		$default_template_preference = new \stdClass();
+		$default_template_preference->access = new \stdClass();
+		$default_template_preference->access->Guests = 'y';
+		$default_template_preference->access->Pending = 'y';
+		$default_template_preference->access->Members = 'y';
+
 		$theme_template_dir = $this->installer_path."site_themes/{$theme_name}/templates/";
 		foreach (directory_map($theme_template_dir) as $directory => $contents)
 		{
@@ -249,7 +256,7 @@ class ThemeInstaller {
 						$template,
 						(isset($template_preferences->$group_name->$template_name))
 							? $template_preferences->$group_name->$template_name
-							: new \stdClass()
+							: $default_template_preference
 					);
 					$template->save();
 				}
@@ -294,14 +301,13 @@ class ThemeInstaller {
 		// Set template access
 		if (isset($template_preferences->access))
 		{
-			$member_groups = ee('Model')->get('MemberGroup')
-				->filter('site_id', 1)
-				->filter('group_id', '!=', 1)
+			$roles = ee('Model')->get('Role')
+				->filter('role_id', '!=', 1)
 				->all();
 
 			$access = $template_preferences->access;
-			$template->NoAccess = $member_groups->filter(function($group) use ($access) {
-				return ($access->{$group->group_title} == 'n');
+			$template->Roles = $roles->filter(function($role) use ($access) {
+				return (isset($access->{$role->name}) && $access->{$role->name} == 'y');
 			});
 		}
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -515,7 +515,7 @@ class EE_Channel_data_parser {
 
 		$cond['allow_comments']			= $this->_commenting_allowed($row) ? TRUE : FALSE;
 		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
-		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
+		$cond['avatar']					= ($row['avatar_filename'] == '') ? FALSE : TRUE;
 		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
 		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? FALSE : TRUE;
 		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? FALSE : TRUE;

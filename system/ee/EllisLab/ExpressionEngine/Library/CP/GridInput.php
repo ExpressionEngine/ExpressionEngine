@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,6 +52,7 @@ class GridInput extends Table {
 			'field_name'    => 'grid',
 			'grid_min_rows' => 0,
 			'grid_max_rows' => '',
+			'show_add_button'=> true,
 		);
 
 		parent::__construct(array_merge($defaults, $config));

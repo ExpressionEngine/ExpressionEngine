@@ -1,16 +1,12 @@
-<?php if ($allow_write_htaccess):?>
-<div class="mb">
-	<?php $this->embed('ee:_shared/form')?>
-</div>
-<?php endif;?>
 
-<div class="box">
-	<h1><?=lang('lists')?></h1>
 	<div class="tab-wrap">
-		<ul class="tabs">
-			<li><a class="act" href="" rel="t-0"><?=lang('blacklist')?></a></li>
-			<li><a href="" rel="t-1"><?=lang('whitelist')?></a></li>
-		</ul>
+		<div class="tab-bar">
+			<div class="tab-bar__tabs">
+				<button type="button" class="tab-bar__tab js-tab-button active" rel="t-0"><?=lang('blacklist')?></button>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-1"><?=lang('whitelist')?></button>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-2"><?=lang('settings')?></button>
+			</div>
+		</div>
 		<?=form_open(ee('CP/URL')->make('addons/settings/blacklist/save_lists'), 'class="settings"')?>
 			<?=ee('CP/Alert')->get('lists-form')?>
 			<div class="tab t-0 tab-open">
@@ -20,30 +16,30 @@
 					->addToBody(lang('blacklist_desc'))
 					->render()?>
 				<br>
-				<fieldset class="col-group">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('ip_address')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('ip_address')?></label>
 						<em><?=lang('ip_address_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="blacklist_ip" cols="" rows=""><?=$blacklist_ip?></textarea>
 					</div>
 				</fieldset>
-				<fieldset class="col-group">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('user_agent')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('user_agent')?></label>
 						<em><?=lang('user_agent_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="blacklist_agent" cols="" rows=""><?=$blacklist_agent?></textarea>
 					</div>
 				</fieldset>
-				<fieldset class="col-group last">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('url')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('url')?></label>
 						<em><?=lang('url_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="blacklist_url" cols="" rows=""><?=$blacklist_url?></textarea>
 					</div>
 				</fieldset>
@@ -59,30 +55,30 @@
 					->addToBody(lang('whitelist_desc'))
 					->render()?>
 				<br>
-				<fieldset class="col-group">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('ip_address')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('ip_address')?></label>
 						<em><?=lang('ip_address_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="whitelist_ip" cols="" rows=""><?=$whitelist_ip?></textarea>
 					</div>
 				</fieldset>
-				<fieldset class="col-group">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('user_agent')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('user_agent')?></label>
 						<em><?=lang('user_agent_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="whitelist_agent" cols="" rows=""><?=$whitelist_agent?></textarea>
 					</div>
 				</fieldset>
-				<fieldset class="col-group last">
-					<div class="setting-txt col w-8">
-						<h3><?=lang('url')?></h3>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('url')?></label>
 						<em><?=lang('url_desc')?></em>
 					</div>
-					<div class="setting-field col w-8 last">
+					<div class="field-control">
 						<textarea name="whitelist_url" cols="" rows=""><?=$whitelist_url?></textarea>
 					</div>
 				</fieldset>
@@ -92,5 +88,11 @@
 			</fieldset>
 			</div>
 		<?=form_close();?>
+		<div class="tab t-2">
+			<?php if ($allow_write_htaccess):?>
+			<div class="mb-s">
+				<?php $this->embed('ee:_shared/form')?>
+			</div>
+			<?php endif;?>
+		</div>
 	</div>
-</div>

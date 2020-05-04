@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -53,7 +53,7 @@ class BulkEdit extends AbstractBulkEdit {
 
 		$entry = $this->getMockEntryForIntersectedChannels($entries->Channel);
 
-		if (ee('Permission')->has('can_assign_post_authors'))
+		if (ee('Permission')->can('assign_post_authors'))
 		{
 			$this->standard_default_fields[] = 'author_id';
 		}
@@ -93,7 +93,7 @@ class BulkEdit extends AbstractBulkEdit {
 
 		$fluid_markup = $this->getFluidMarkupForFields($displayed_fields, $field_templates, $fields, $errors);
 
-		$fieldset_class = 'fieldset-faux-fluid';
+		$fieldset_class = '';
 		if ($errors)
 		{
 			$fieldset_class .= ' fieldset-invalid';

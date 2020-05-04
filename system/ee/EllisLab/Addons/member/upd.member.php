@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -70,7 +70,7 @@ class Member_upd {
 			ee()->file_upload_preferences_model->delete_upload_preferences($ids);
 		}
 
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '" . $module_id . "'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '" . $module_id . "'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Member'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Member'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Member_mcp'";

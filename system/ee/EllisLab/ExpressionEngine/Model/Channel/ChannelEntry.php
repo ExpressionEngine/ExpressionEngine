@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -293,15 +293,15 @@ class ChannelEntry extends ContentModel {
 		if (ee()->session->userdata('member_id'))
 		{
 			// A super admin always has channel permission to post as themself
-			$channel_permission = (ee()->session->userdata('group_id') == 1 && ($this->author_id == ee()->session->userdata('member_id'))) ? TRUE : FALSE;
+			$channel_permission = (ee('Permission')->isSuperAdmin() && ($this->author_id == ee()->session->userdata('member_id'))) ? TRUE : FALSE;
 
-			if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+			if ($this->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries'))
 			{
 				return 'not_authorized';
 			}
 
 			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-				(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+				( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 			{
 				return 'not_authorized';
 			}
@@ -309,7 +309,7 @@ class ChannelEntry extends ContentModel {
 		else
 		{
 			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+				( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 			{
 				return 'not_authorized';
 			}
@@ -319,7 +319,7 @@ class ChannelEntry extends ContentModel {
 		// the author_id should either have permission to post to the channel or be in include_in_authorlist
 		if ($this->getBackup('author_id') != $this->author_id && ! $channel_permission)
 		{
-			$assigned_channels = $this->Author->MemberGroup->AssignedChannels->pluck('channel_id');
+			$assigned_channels = $this->Author->getAssignedChannels()->pluck('channel_id');
 			$channel_permission = (in_array($this->channel_id, $assigned_channels)) ? TRUE : FALSE;
 
 			$authors = ee('Member')->getAuthors(NULL, FALSE);
@@ -928,9 +928,9 @@ class ChannelEntry extends ContentModel {
 					'field_label'			=> lang('entry_status'),
 					'field_required'		=> 'n',
 					'field_show_fmt'		=> 'n',
-					'field_instructions'	=> lang('entry_status_desc'),
+					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'select',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateStatus')
@@ -1071,7 +1071,7 @@ class ChannelEntry extends ContentModel {
 	public function populateChannels($field)
 	{
 		$allowed_channel_ids = (ee()->session->userdata('member_id') == 0
-			OR ee()->session->userdata('group_id') == 1
+			OR ee('Permission')->isSuperAdmin()
 			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
@@ -1126,7 +1126,7 @@ class ChannelEntry extends ContentModel {
 			$author_options[$author->getId()] = $author->getMemberName();
 		}
 
-		if (ee('Permission')->has('can_assign_post_authors'))
+		if (ee('Permission')->can('assign_post_authors'))
 		{
 			if ( ! $author OR ($author->getId() != ee()->session->userdata('member_id')))
 			{
@@ -1158,25 +1158,36 @@ class ChannelEntry extends ContentModel {
 
 		if ( ! count($all_statuses))
 		{
-			$status_options = array(
-				'open' => lang('open'),
-				'closed' => lang('closed')
-			);
+			$status_options = [
+				[
+					'value'	=> 'open',
+					'label'	=> lang('open')
+				],
+				[
+					'value'	=> 'closed',
+					'label'	=> lang('closed')
+				]
+			];
 		}
 
-		$member_group_id = ee()->session->userdata('group_id');
+		$member = ee()->session->getMember();
+		$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
 
 		foreach ($all_statuses as $status)
 		{
-			if ($member_group_id != 1 && in_array($member_group_id, $status->NoAccess->pluck('group_id')))
+			if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses))
 			{
-				continue;
+				$status_options[] = $status->getSelectOptionComponent();
 			}
-
-			$status_options[] = $status->getOptionComponent();
 		}
 
-		$field->setItem('field_list_items', $status_options);
+		$field_items = [];
+
+		foreach ($status_options as $option) {
+			$field_items[$option['value']] = $option['label'];
+		}
+
+		$field->setItem('field_list_items', $field_items);
 	}
 
 	public function getAuthorName()

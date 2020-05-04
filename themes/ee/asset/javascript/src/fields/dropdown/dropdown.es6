@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,11 +87,11 @@ class Dropdown extends React.Component {
     const selected = this.state.selected
 
     return (
-      <div className={"fields-select-drop" + (tooMany ? ' field-resizable' : '')}>
-        <div className={"field-drop-selected" + (this.state.open ? ' field-open' : '')} onClick={this.toggleOpen}>
-          <label className={this.state.selected ? 'act' : ''}>
+      <div className={"select" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
+        <div className={"select__button"} onClick={this.toggleOpen}>
+          <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
-              <i>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}{selected.label}</i>
+              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}<span dangerouslySetInnerHTML={{__html: selected.label}}></span></span>
             }
             { ! selected && <i>{this.props.emptyText}</i>}
             <input type="hidden"
@@ -102,15 +102,18 @@ class Dropdown extends React.Component {
             />
           </label>
         </div>
-        <div className="field-drop-choices" style={this.state.open ? {display: 'block'} : {}}>
+
+        <div className="select__dropdown">
           {this.props.initialCount > this.props.tooMany &&
+            <div className="select__dropdown-search">
             <FieldTools>
               <FilterBar>
                 <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />
               </FilterBar>
             </FieldTools>
+            </div>
           }
-          <div className="field-inputs">
+          <div className="select__dropdown-items">
             {this.props.items.length == 0 &&
               <NoResults text={this.props.noResults} />
             }
@@ -135,16 +138,16 @@ function DropdownItem (props) {
 
   if (item.section) {
     return (
-      <div className="field-group-head">
+      <div className="select__dropdown-item select__dropdown-item--head">
         <span className="icon--folder"></span> {item.section}
       </div>
     )
   }
 
   return (
-    <label onClick={props.onClick} className={props.selected ? 'act' : ''}>
-      {item.label} {item.instructions && <i>{item.instructions}</i>}
-    </label>
+    <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')}>
+      <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}
+    </div>
   )
 }
 
@@ -153,9 +156,10 @@ $(document).ready(function () {
 
   // Close when clicked elsewhere
   $(document).on('click',function(e) {
-    $('.field-drop-selected.field-open')
-      .not($(e.target).parents('.fields-select-drop').find('.field-drop-selected.field-open'))
-      .click()
+    $('.select.select--open')
+        .not($(e.target).closest('.select'))
+        .find('.select__button')
+        .click();
   })
 })
 

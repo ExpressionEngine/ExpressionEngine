@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -25,7 +25,7 @@ class FileField extends React.Component {
 
   componentDidMount () {
     this.getFieldContainer()
-      .on('click', 'li.remove a', () => {
+      .on('click', '.button.remove', () => {
         this.setState({
           file: null
         })

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -552,6 +552,37 @@ class File {
 		$filedata['size'] = ($s) ? $s['size'] : FALSE;
 
 		return $filedata;
+	}
+
+	/**
+	 * Add-on Icon
+	 * @return string icon url
+	 */
+	public function addonIcon()
+	{
+		ee()->load->library('mime_type');
+
+		$addon = ee('Addon')->get(ee()->input->get('addon'));
+		$path = $addon->getPath() . '/' . ee()->input->get('file');
+
+		ee()->output->out_type = 'cp_asset';
+		ee()->output->enable_profiler(FALSE);
+		if (file_exists($path) && is_file($path)) {
+			ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
+		} else {
+			$path = PATH_THEMES . 'asset/img/default-addon-on-icon.png';
+		}
+		$mime = ee()->mime_type->ofFile($path);
+		if ($mime=='image/svg') $mime = 'image/svg+xml';
+		@header('Content-type: ' . $mime);
+
+		ee()->output->set_output(file_get_contents($path));
+
+		if (ee()->config->item('send_headers') == 'y')
+		{
+			@header('Content-Length: '.strlen(ee()->output->final_output));
+		}
+
 	}
 
 

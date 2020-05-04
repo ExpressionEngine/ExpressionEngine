@@ -4,63 +4,26 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Emoji Module update class
  */
-class Emoji_upd {
-
-	public $version;
+class Emoji_upd extends Installer
+{
 
 	/**
 	 * Constructor
 	 */
 	public function __construct()
-	{
-		$addon = ee('Addon')->get('emoji');
-		$this->version = $addon->getVersion();
-	}
+    {
+        parent::__construct();
+    }
 
-	/**
-	 * Module Installer
-	 *
-	 * @return	bool
-	 */
-	function install()
-	{
-		ee('Model')->make('Module', [
-			'module_name' => 'Emoji',
-			'module_version' => $this->version,
-			'has_cp_backend' => FALSE,
-			'has_publish_fields' => FALSE,
-		])->save();
-
-		return TRUE;
-	}
-
-	/**
-	 * Module Uninstaller
-	 *
-	 * @return	bool
-	 */
-	function uninstall()
-	{
-		ee('Model')->get('Module')->filter('module_name', 'Emoji')->delete();
-		return TRUE;
-	}
-
-	/**
-	 * Module Updater
-	 *
-	 * @return	bool
-	 */
-	public function update($current='')
-	{
-		return TRUE;
-	}
 }
 // END CLASS
 

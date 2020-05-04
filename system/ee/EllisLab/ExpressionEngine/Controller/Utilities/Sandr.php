@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,7 @@ class Sandr extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_data'))
+		if ( ! ee('Permission')->can('access_data'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -97,6 +97,8 @@ class Sandr extends Utilities {
 		$replace_escaped = $this->db->escape_str($replace);
 		$where = $this->db->escape_str($where);
 
+		$show_reindex_tip = FALSE;
+
 		if ($where == 'title')
 		{
 			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search_escaped}', '{$replace_escaped}')";
@@ -134,11 +136,6 @@ class Sandr extends Utilities {
 					'properties',
 					'file_properties',
 					'url'
-				),
-				'exp_member_groups' => array(
-					'group_title',
-					'group_description',
-					'mbr_delete_notify_emails'
 				),
 				'exp_global_variables'	=> array('variable_data'),
 				'exp_categories'		=> array('cat_image'),
@@ -262,6 +259,17 @@ class Sandr extends Utilities {
 		if (isset($affected_grid_rows))
 		{
 			$rows += $affected_grid_rows;
+		}
+
+		if ($rows > 0 && $show_reindex_tip)
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asImportant()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
 		}
 
 		return $rows;

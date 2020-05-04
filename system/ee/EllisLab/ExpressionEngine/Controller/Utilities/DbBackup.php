@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,7 +20,7 @@ class DbBackup extends Utilities {
 		$tables = ee('Database/Backup/Query')->getTables();
 
 		$vars = [
-			'cp_page_title' => lang('backup_utility'),
+			'cp_page_title' => lang('backup_database'),
 			'save_btn_text' => 'backup_database',
 			'save_btn_text_working' => 'backing_up',
 			'hide_top_buttons' => TRUE,

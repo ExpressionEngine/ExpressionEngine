@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -450,7 +450,7 @@ abstract class ContentModel extends VariableColumnModel {
 	 *
 	 * @param array $changed An associative array of class properties that have changed
 	 */
-	protected function saveFieldData($changed = NULL)
+	public function saveFieldData($changed = NULL)
 	{
 		$dirty = ($changed) ?: $this->getDirty();
 

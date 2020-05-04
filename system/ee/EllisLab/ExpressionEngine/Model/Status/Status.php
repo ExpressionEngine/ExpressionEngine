@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,13 +46,13 @@ class Status extends Model {
 		'Site' => array(
 			'type' => 'BelongsTo'
 		),
-		'NoAccess' => array(
+		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'status_no_access',
+				'table' => 'statuses_roles',
 				'left' => 'status_id',
-				'right' => 'member_group'
+				'right' => 'role_id'
 			)
 		)
 	);
@@ -100,48 +100,46 @@ class Status extends Model {
 	}
 
 	/**
-	 * Get Option Component for option input display (radio, etc.)
+	 * Returns the value and rendered label for option select input display
 	 *
-	 * @param  array  $options (bool) use_ids [default FALSE]
+	 * @param  array $use_ids [default FALSE]
 	 * @return array option component array
 	 */
-	public function getOptionComponent($options = [])
-	{
-		$use_ids = (isset($options['use_ids'])) ? $options['use_ids'] : FALSE;
+	public function getSelectOptionComponent($use_ids = false) {
+		$status_option = [
+			'value' => ($use_ids) ? $this->status_id : $this->status,
+			'label' => $this->renderTag()
+		];
+
+		return $status_option;
+	}
+
+	public function renderTag() {
+		$status_name = ($this->status == 'closed' OR $this->status == 'open') ? lang($this->status) : $this->status;
+
+		$status_class = str_replace(' ', '_', strtolower($this->status));
 
 		$status_component_style = [];
 
 		if ( ! in_array($this->status, array('open', 'closed')) && $this->highlight != '')
 		{
 			$highlight = new Color($this->highlight);
-			$foreground = ($highlight->isLight())
-				? $highlight->darken(100)
-				: $highlight->lighten(100);
+			$foreground = ($highlight->isLight()) ? $highlight->darken(80) : $highlight->lighten(80);
 
 			$status_component_style = [
-				'backgroundColor' => '#'.$this->highlight,
-				'borderColor' => '#'.$this->highlight,
-				'color' => '#'.$foreground,
+				'background-color' => '#' . $this->highlight,
+				'border-color' => '#' . $this->highlight,
+				'color' => '#' . $foreground,
 			];
 		}
 
-		$status_name = ($this->status == 'closed' OR $this->status == 'open')
-			? lang($this->status)
-			: $this->status;
-		$status_class = str_replace(' ', '_', strtolower($this->status));
-
-		$status_option = [
-			'value' => ($use_ids) ? $this->status_id : $this->status,
+		$vars = [
 			'label' => $status_name,
-			'component' => [
-				'tag' => 'span',
-				'label' => $status_name,
-				'class' => 'status-tag st-'.$status_class,
-				'style' => $status_component_style,
-			]
+			'class' => $status_class,
+			'styles' => $status_component_style
 		];
 
-		return $status_option;
+		return ee('View')->make('_shared/status-tag')->render($vars);
 	}
 }
 

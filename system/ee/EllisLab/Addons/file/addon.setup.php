@@ -5,7 +5,7 @@ return array(
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'File',
 	'description'    => '',
-	'version'        => '1.0.0',
+	'version'        => '1.1.0',
 	'namespace'      => 'EllisLab\Addons\File',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,

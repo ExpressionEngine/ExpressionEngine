@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -248,7 +248,7 @@ class Upload {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -339,7 +339,7 @@ class Upload {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

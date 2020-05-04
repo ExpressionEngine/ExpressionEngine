@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -222,43 +222,12 @@ class Metaweblog_api_mcp {
 
 		// Get the directories
 		$upload_directories = array(0 => lang('none'));
-		// Any group restrictions?
-		if (ee()->session->userdata['group_id'] !== 1)
+
+		foreach (ee()->session->getMember()->getAssignedUploadDestinations() as $destination)
 		{
-			ee()->db->select('upload_id');
-			$no_access = ee()->db->get_where('upload_no_access', array('member_group' => ee()->session->userdata['group_id']));
-
-			if (ee()->config->item('multiple_sites_enabled') !== 'y')
-			{
-				ee()->db->where('sites.site_id', 1);
-			}
-
-			if ($no_access->num_rows() > 0)
-			{
-				foreach ($no_access->result() as $row)
-				{
-					ee()->db->where('id', $row->upload_id);
-				}
-			}
-		}
-
-		// Grab them (the above restrictions still apply)
-		ee()->db->select('id, name, site_label');
-		ee()->db->from('upload_prefs');
-		ee()->db->from('sites');
-		ee()->db->where(ee()->db->dbprefix.'upload_prefs.site_id = '.ee()->db->dbprefix.'sites.site_id', NULL, FALSE);
-		ee()->db->order_by('name');
-
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach($query->result() as $row)
-			{
-				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y')
-					? ['label' => $row->name, 'instructions' => $row->site_label]
-					: $row->name;
-			}
+			$upload_directories[$destination->getId()] = (ee()->config->item('multiple_sites_enabled') === 'y')
+				? ['label' => $destination->name, 'instructions' => $destination->Site->site_label]
+				: $destination->name;
 		}
 
 		$vars = array(
@@ -565,7 +534,7 @@ class Metaweblog_api_mcp {
 		$allowed_groups = array();
 		$groups_exist = TRUE;
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries') && count($allowed_channels) == 0)
+		if ( ! ee('Permission')->can('edit_other_entries') && count($allowed_channels) == 0)
 		{
 			$groups_exist = FALSE;
 		}
@@ -577,7 +546,7 @@ class Metaweblog_api_mcp {
 			$channels->filter('site_id', '1');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$channels->filter('channel_id', 'IN', $allowed_channels);
 		}

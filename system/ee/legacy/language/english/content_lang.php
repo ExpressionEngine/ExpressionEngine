@@ -76,7 +76,7 @@ $lang = array(
 
 'comment_status_desc' => 'Status of this comment.',
 
-'comments_removed_desc' => 'The following comments were removed',
+'comments_deleted_desc' => 'The following comments were deleted',
 
 'comments_status_updated_desc' => 'The following comments were set to %s',
 
@@ -114,9 +114,9 @@ $lang = array(
 
 'edit_entry_with_title' => 'Edit Entry: %s',
 
-'entries' => 'entries',
+'entries' => 'Entries',
 
-'entries_removed_desc' => 'The following entries were removed',
+'entries_deleted_desc' => 'The following entries were deleted',
 
 'entry' => 'Entry',
 
@@ -130,9 +130,9 @@ $lang = array(
 
 'entry_limit_reached_one_desc' => 'This channel is limited to one entry.',
 
-'entry_manager' => 'Entry Manager',
+'entry_manager' => 'Entries',
 
-'entry_status' => 'Status',
+'entry_status' => 'Entry Status',
 
 'entry_status_desc' => 'Entry status.',
 
@@ -231,6 +231,8 @@ $lang = array(
 'button_mode' => 'Button Mode:',
 
 'calendar' => 'Calendar',
+
+'close_preview' => 'Close Preview',
 
 'cancel_preview' => 'Cancel Preview',
 
@@ -373,6 +375,10 @@ $lang = array(
 'field_blank' => 'You left a field blank.',
 
 'fields' => 'Fields',
+
+'add' => 'Add',
+
+'add_field' => 'Add Field',
 
 'file_exists' => 'A file already exists with this name',
 
@@ -542,7 +548,7 @@ $lang = array(
 
 'no_glossary' => 'A glossary does not exist',
 
-'no_member_groups' => 'You need to select at least one member group to apply/remove a layout.',
+'no_member_roles' => 'You need to select at least one member role to apply/remove a layout.',
 
 'no_related_entries' => 'No entries exist for this related channel',
 
@@ -613,6 +619,10 @@ $lang = array(
 'preview_entry' => 'Preview Entry',
 
 'preview_layout' => 'Preview Layout',
+
+'preview_url_not_set' => 'Preview URL is not set',
+
+'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
 
 'publish' => 'Publish',
 
@@ -798,7 +808,15 @@ $lang = array(
 
 'add_new_row' => 'Add new row',
 
+'add_row' => 'Add Row',
+
 'collapse' => 'Collapse',
+
+'collapse_all' => 'Collapse All',
+
+'expand' => 'Expand',
+
+'expand_all' => 'Expand All',
 
 'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 

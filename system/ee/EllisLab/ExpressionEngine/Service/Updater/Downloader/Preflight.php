@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,7 +15,6 @@ use EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Updater\Logger;
 use EllisLab\ExpressionEngine\Service\Config\File;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * Updater preflight checker
@@ -28,8 +27,8 @@ class Preflight {
 
 	protected $filesystem;
 	protected $logger;
-	protected $sites;
 	protected $config;
+	protected $theme_paths;
 
 	/**
 	 * Constructor
@@ -37,14 +36,14 @@ class Preflight {
 	 * @param	Filesystem $filesystem Filesystem service object
 	 * @param	Logger $logger Updater logger object
 	 * @param	Config\File $config File config service object
-	 * @param	Collection $sites Collection of all the Site model objects
+	 * @param	array $sites Array of unique theme paths
 	 */
-	public function __construct(Filesystem $filesystem, Logger $logger, File $config, Collection $sites)
+	public function __construct(Filesystem $filesystem, Logger $logger, File $config, array $theme_paths)
 	{
 		$this->filesystem = $filesystem;
 		$this->logger = $logger;
-		$this->sites = $sites;
 		$this->config = $config;
+		$this->theme_paths = $theme_paths;
 	}
 
 	/**
@@ -202,13 +201,7 @@ class Preflight {
 			return [$this->config->get('theme_folder_path')];
 		}
 
-		$theme_paths = [];
-		foreach ($this->sites as $site)
-		{
-			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
-		}
-
-		return array_unique($theme_paths);
+		return $this->theme_paths;
 	}
 }
 

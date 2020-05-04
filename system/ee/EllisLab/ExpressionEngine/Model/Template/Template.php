@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -48,13 +48,13 @@ class Template extends FileSyncedModel {
 			'from_key' => 'last_author_id',
 			'weak'     => TRUE
 		),
-		'NoAccess' => array(
+		'Roles' => array(
 			'type'  => 'HasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'template_no_access',
+				'table' => 'templates_roles',
 				'left'  => 'template_id',
-				'right' => 'member_group'
+				'right' => 'role_id'
 			)
 		),
 		'TemplateRoute' => array(
@@ -86,6 +86,7 @@ class Template extends FileSyncedModel {
 	);
 
 	protected static $_events = array(
+		'beforeInsert',
 		'afterSave',
 	);
 
@@ -246,6 +247,14 @@ class Template extends FileSyncedModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeInsert()
+	{
+		if (!isset($this->Roles) || is_null($this->Roles))
+		{
+			$this->Roles = $this->getModelFacade()->get('Role')->all();
+		}
 	}
 
 	public function onAfterSave()

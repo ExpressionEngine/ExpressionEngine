@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -75,7 +75,7 @@ class Search_upd {
 
 		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'");
 
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search_mcp'";

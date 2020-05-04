@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -172,34 +172,7 @@ class FilePicker {
 
 	public function hasFileGroupAccessPrivileges(UploadDestination $dir)
 	{
-		// 2 = Banned
-		// 3 = Guests
-		// 4 = Pending
-		$hardcoded_disallowed_groups = array('2', '3', '4');
-
-		$member_group_id = ee()->session->userdata['group_id'];
-		// If the user is a Super Admin, return true
-		if ($member_group_id == 1)
-		{
-			return TRUE;
-		}
-
-		if (in_array($member_group_id, $hardcoded_disallowed_groups))
-		{
-			return FALSE;
-		}
-
-		if ( ! $dir)
-		{
-			return FALSE;
-		}
-
-		if (in_array($member_group_id, $dir->NoAccess->pluck('group_id')))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
+		return $dir->memberHasAccess(ee()->session->getMember());
 	}
 
 }

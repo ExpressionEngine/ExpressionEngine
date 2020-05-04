@@ -18,7 +18,7 @@ $lang = array(
 
 'all_throttle_logs' => 'All %d Throttling Logs',
 
-'clear_cp_logs' => 'Remove all CP Access Logs',
+'clear_cp_logs' => 'Delete all CP Access Logs',
 
 'consent_log' => 'Consent',
 
@@ -66,7 +66,7 @@ $lang = array(
 
 
 /* Developer Log */
-'clear_developer_logs' => 'Remove all Developer Logs',
+'clear_developer_logs' => 'Delete all Developer Logs',
 
 'deprecated_function' => 'Deprecated function %s called',
 
@@ -108,7 +108,7 @@ $lang = array(
 
 
 /* Email Log */
-'clear_email_logs' => 'Remove all Email Logs',
+'clear_email_logs' => 'Delete all Email Logs',
 
 'no_email_logs_found' => 'No <b>Email logs</b> found.',
 
@@ -118,7 +118,7 @@ $lang = array(
 
 
 /* Search Log */
-'clear_search_logs' => 'Remove all Search Logs',
+'clear_search_logs' => 'Delete all Search Logs',
 
 'no_search_logs_found' => 'No <b>Search logs</b> found.',
 
@@ -128,7 +128,7 @@ $lang = array(
 /* Throttle Log */
 'blacklist_all_ips' => 'Blacklist All IPs',
 
-'clear_throttle_logs' => 'Remove all Throttling Logs',
+'clear_throttle_logs' => 'Delete all Throttling Logs',
 
 'enable_throttling' => 'Turn Throttling On',
 

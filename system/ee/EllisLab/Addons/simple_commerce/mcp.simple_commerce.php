@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -598,7 +598,7 @@ class Simple_commerce_mcp {
 							'choices' => $member_groups,
 							'value' => $item->new_member_group,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
@@ -640,7 +640,7 @@ class Simple_commerce_mcp {
 							'choices' => $member_groups,
 							'value' => $item->member_group_unsubscribe,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)

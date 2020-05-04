@@ -11,6 +11,6 @@ class BansMembers < MemberManagerPage
 
   def load
     main_menu.members_btn.click
-    click_link 'Ban Settings'
+    click_link 'Ban Management'
   end
 end

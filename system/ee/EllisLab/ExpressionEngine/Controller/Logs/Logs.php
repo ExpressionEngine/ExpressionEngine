@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,7 @@ class Logs extends CP_Controller {
 
 		ee()->lang->loadfile('logs');
 
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if ( ! ee('Permission')->can('access_logs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -56,12 +56,12 @@ class Logs extends CP_Controller {
 		$logs = $sidebar->addHeader(lang('logs'))
 			->addBasicList();
 
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$item = $logs->addItem(lang('developer_log'), ee('CP/URL')->make('logs/developer'));
 		}
 
-		if (ee('Permission')->has('can_manage_consents'))
+		if (ee('Permission')->can('manage_consents'))
 		{
 			$item = $logs->addItem(lang('consent_log'), ee('CP/URL')->make('logs/consent'));
 		}
@@ -85,7 +85,7 @@ class Logs extends CP_Controller {
 	 */
 	public function index()
 	{
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('logs/developer'));
 		}
@@ -105,7 +105,7 @@ class Logs extends CP_Controller {
 	 */
 	protected function delete($model, $log_type)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if ( ! ee('Permission')->can('access_logs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

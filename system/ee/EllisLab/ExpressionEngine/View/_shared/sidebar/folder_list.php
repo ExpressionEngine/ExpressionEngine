@@ -1,7 +1,7 @@
 <div class="scroll-wrap">
-	<ul class="folder-list<?php if ($can_reorder): ?> reorderable<?php endif ?>" <?php if ($can_reorder): ?> data-name="<?=$name?>"<?php endif ?>>
+	<div class="folder-list<?php if ($can_reorder): ?> reorderable<?php endif ?>" <?php if ($can_reorder): ?> data-name="<?=$name?>"<?php endif ?>>
 		<?=$items?>
-	</ul>
+	</div>
 </div>
 
 <?php
@@ -14,6 +14,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal($name, $modal);
 ?>

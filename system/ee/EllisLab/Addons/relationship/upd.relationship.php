@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -58,7 +58,7 @@ class Relationship_upd {
 			->row('module_id');
 
 		ee()->db->delete(
-			'module_member_groups',
+			'module_member_roles',
 			array('module_id' => $module_id)
 		);
 

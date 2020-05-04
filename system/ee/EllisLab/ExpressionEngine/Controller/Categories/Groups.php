@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,7 +22,7 @@ class Groups extends AbstractCategoriesController {
 	 */
 	public function remove()
 	{
-		if ( ! $this->cp->allowed_group('can_delete_categories'))
+		if ( ! ee('Permission')->can('delete_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -34,15 +34,15 @@ class Groups extends AbstractCategoriesController {
 		{
 			$group->delete();
 
-			ee()->logger->log_action(lang('category_groups_removed').':'.NBS.NBS.$group->group_name);
+			ee()->logger->log_action(lang('category_groups_deleted').':'.NBS.NBS.$group->group_name);
 
 			ee()->functions->clear_caching('all', '');
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
-				->withTitle(lang('category_groups_removed'))
+				->withTitle(lang('category_groups_deleted'))
 				->addToBody(sprintf(
-					lang('category_groups_removed_desc'),
+					lang('category_groups_deleted_desc'),
 					htmlentities($group->group_name, ENT_QUOTES, 'UTF-8')
 				))
 				->defer();
@@ -60,7 +60,7 @@ class Groups extends AbstractCategoriesController {
 	 */
 	public function create()
 	{
-		if ( ! $this->cp->allowed_group('can_create_categories'))
+		if ( ! ee('Permission')->can('create_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -73,7 +73,7 @@ class Groups extends AbstractCategoriesController {
 	 */
 	public function edit($group_id)
 	{
-		if ( ! $this->cp->allowed_group('can_edit_categories'))
+		if ( ! ee('Permission')->can('edit_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -324,21 +324,10 @@ class Groups extends AbstractCategoriesController {
 	 */
 	private function renderPermissionsTab($cat_group, $errors)
 	{
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1,2,3,4))
-			->filter('site_id', ee()->config->item('site_id'));
+		$excluded_roles = [1, 2, 3, 4];
 
-		$can_edit_categories = array();
-		foreach ($member_groups->filter('can_edit_categories', 'y')->all() as $member_group)
-		{
-			$can_edit_categories[$member_group->group_id] = $member_group->group_title;
-		}
-
-		$can_delete_categories = array();
-		foreach ($member_groups->filter('can_delete_categories', 'y')->all() as $member_group)
-		{
-			$can_delete_categories[$member_group->group_id] = $member_group->group_title;
-		}
+		$can_edit_categories   = array_diff(ee('Permission')->rolesThatHave('can_edit_categories'), $excluded_roles);
+		$can_delete_categories = array_diff(ee('Permission')->rolesThatHave('can_delete_categories'), $excluded_roles);
 
 		$section = array(
 			ee('CP/Alert')->makeInline('permissions-warn')
@@ -360,7 +349,7 @@ class Groups extends AbstractCategoriesController {
 						'choices' => $can_edit_categories,
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
-							'text' => 'cat_group_no_member_groups_found'
+							'text' => 'cat_group_no_roles_found'
 						)
 					)
 				)
@@ -375,7 +364,7 @@ class Groups extends AbstractCategoriesController {
 						'choices' => $can_delete_categories,
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
-							'text' => 'cat_group_no_member_groups_found'
+							'text' => 'cat_group_no_roles_found'
 						)
 					)
 				)
@@ -440,6 +429,7 @@ class Groups extends AbstractCategoriesController {
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'  => 'category_fields',
 			'choices'     => $choices,
+			'tooManyLimit'		=> 999,
 			'value'       => NULL,
 			'force_react' => TRUE,
 			'multi'       => FALSE,

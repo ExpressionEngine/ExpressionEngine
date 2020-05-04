@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,8 +46,8 @@ class Members {
 		{
 			case 'avatar'	:
 								$edit_image		= 'edit_avatar';
-								$enable_pref	= 'allow_avatar_uploads';
-								$not_enabled	= 'avatars_not_enabled';
+								$enable_pref	= '';
+								$not_enabled	= '';
 								$remove			= 'remove_avatar';
 								$removed		= 'avatar_removed';
 								$updated		= 'avatar_updated';
@@ -75,7 +75,8 @@ class Members {
 
 		if ( ! isset($_POST['remove']))
 		{
-			if (ee()->config->item($enable_pref) == 'n')
+			// Avatars don't have an enabled pref anymore
+			if ($type != 'avatar' AND ee()->config->item($enable_pref) == 'n')
 			{
 				if (REQ == 'CP')
 				{
@@ -337,7 +338,7 @@ class Members {
 		}
 		else
 		{
-			$config['xss_clean'] = (ee()->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee('Permission')->isSuperAdmin()) ? FALSE : TRUE;
 		}
 
 		ee()->load->library('upload', $config);

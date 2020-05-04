@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,7 +28,7 @@ class Translate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_translate'))
+		if ( ! ee('Permission')->can('access_translate'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -71,13 +71,64 @@ class Translate extends Utilities {
 		}
 	}
 
-	/**
-	 * Determine's the default language and lists those files.
-	 */
 	public function index()
 	{
-		$language = ee()->config->item('deft_lang') ?: 'english';
-		$this->listFiles($language);
+		$default_language = ee()->config->item('deft_lang') ?: 'english';
+
+		$vars = [];
+		$data = [];
+
+		foreach (ee()->lang->language_pack_names() as $key => $value) {
+			$language_title = $value;
+
+			if ($key == $default_language) {
+				$language_title .= ' (' . lang('default') . ')';
+			}
+
+			$edit_url = ee('CP/URL')->make('utilities/translate/' . $key);
+
+			$data[] = [
+				'attrs' => [],
+				'columns' => array(
+					'filename' => array(
+						'content' => $language_title,
+						'href' => $edit_url
+					)
+				)
+			];
+		}
+
+		$base_url = ee('CP/URL')->make('utilities/translate/');
+
+		$table = ee('CP/Table', ['autosort' => TRUE, 'autosearch' => TRUE]);
+		$table->setColumns(['language']);
+
+		$table->setNoResultsText('no_search_results');
+		$table->setData($data);
+		$vars['table'] = $table->viewData($base_url);
+
+		if (!empty($vars['table']['data']))
+		{
+			// Paginate!
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
+		}
+
+		// Set search results heading
+		if (!empty($vars['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+			);
+		}
+
+		ee()->view->cp_page_title = lang('cp_translations');
+
+		ee()->cp->render('utilities/translate/languages', $vars);
 	}
 
 	/**
@@ -109,8 +160,6 @@ class Translate extends Utilities {
 
 		$filename_end = '_lang.php';
 		$filename_end_len = strlen($filename_end);
-
-		$languages = array();
 
 		$language_files = get_filenames($path);
 		$english_files = get_filenames(APPPATH.'language/english/');
@@ -272,7 +321,7 @@ class Translate extends Utilities {
 			ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language));
 		}
 
-		ee()->view->cp_page_title = $filename . ' ' . ucfirst(lang('translation'));
+		ee()->view->cp_page_title = ucfirst($language) . ' ' . $filename . ' ' . ucfirst(lang('translation'));
 
 		$vars['language'] = $language;
 		$vars['filename'] = $filename;
@@ -297,8 +346,6 @@ class Translate extends Utilities {
 		{
 			$lang = $M;
 		}
-
-		$keys = array();
 
 		$english = ee()->lang->load($file, 'english', TRUE);
 

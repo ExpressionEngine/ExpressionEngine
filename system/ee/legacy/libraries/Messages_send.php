@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -111,7 +111,7 @@ class EE_Messages_send extends EE_Messages {
 		}
 		else
 		{
-			$config['xss_clean'] = (ee()->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee('Permission')->isSuperAdmin()) ? FALSE : TRUE;
 		}
 
 		ee()->load->library('upload', $config);
@@ -431,7 +431,7 @@ class EE_Messages_send extends EE_Messages {
 
 		$waiting_period = (ee()->config->item('prv_msg_waiting_period') !== FALSE) ? (int) ee()->config->item('prv_msg_waiting_period') : 1;
 
-		if (ee()->session->userdata['group_id'] != 1 && ee()->session->userdata['join_date'] > (ee()->localize->now - $waiting_period * 60 * 60))
+		if ( ! ee('Permission')->isSuperAdmin() && ee()->session->userdata['join_date'] > (ee()->localize->now - $waiting_period * 60 * 60))
 		{
 			return $this->_error_page(str_replace(array('%time%', '%email%', '%site%'),
 												  array($waiting_period, ee()->functions->encode_email(ee()->config->item('webmaster_email')), ee()->config->item('site_name')),
@@ -444,7 +444,7 @@ class EE_Messages_send extends EE_Messages {
 		/*	- prv_msg_throttling_period => How many seconds between PMs?
 		/* -------------------------------------------*/
 
-		if ($status == 'sent' && ee()->session->userdata['group_id'] != 1)
+		if ($status == 'sent' && ! ee('Permission')->isSuperAdmin())
 		{
 			$period = (ee()->config->item('prv_msg_throttling_period') !== FALSE) ? (int) ee()->config->item('prv_msg_throttling_period') : 30;
 
@@ -531,7 +531,7 @@ class EE_Messages_send extends EE_Messages {
 		/**  Super Admins get a free pass
 		/** -------------------------------------*/
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			/** ------------------------------------------
 			/**  Sender Allowed to Send More Messages?
@@ -680,11 +680,11 @@ class EE_Messages_send extends EE_Messages {
 			/*  for error message
 			/* -------------------------------------*/
 
-			$query = ee()->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_member_groups.prv_msg_storage_limit
+			$query = ee()->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_role_settings.prv_msg_storage_limit
 								 FROM exp_members
-								 LEFT JOIN exp_member_groups ON exp_member_groups.group_id = exp_members.group_id
+								 LEFT JOIN exp_role_settings ON exp_role_settings.role_id = exp_members.role_id
 								 WHERE exp_members.member_id IN ('".implode("','",array_merge($details['overflow_recipients'], $details['overflow_cc']))."')
-								 AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
+								 AND exp_role_settings.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
 
 			if ($query->num_rows() > 0)
 			{

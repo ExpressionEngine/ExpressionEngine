@@ -249,7 +249,7 @@ $lang = array(
 
 'reply_notification' => 'Reply notifications',
 
-'reply_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'reply_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
 
 'reply_to_topics' => 'Reply to topics',
 
@@ -295,7 +295,7 @@ $lang = array(
 
 'topic_notification' => 'Topic notifications',
 
-'topic_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'topic_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
 
 'topic_ordering' => 'Topic ordering',
 
@@ -313,7 +313,7 @@ $lang = array(
 
 'upload_directory' => 'Upload directory',
 
-'upload_directory_desc' => 'Full path location of this <mark>upload</mark> directory.',
+'upload_directory_desc' => 'Full path location of this <code>upload</code> directory.',
 
 'view_forums' => 'View forums',
 

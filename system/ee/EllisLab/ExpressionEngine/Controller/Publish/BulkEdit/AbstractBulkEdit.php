@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -37,7 +37,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 		$member_id = ee()->session->userdata('member_id');
 
 		// Can edit others' entries?
-		if ( ! ee('Permission')->has('can_edit_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$other_authors = array_diff($author_ids, [$member_id]);
 
@@ -48,7 +48,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 		}
 
 		// Can edit own entries?
-		if ( ! ee('Permission')->has('can_edit_self_entries') &&
+		if ( ! ee('Permission')->can('edit_self_entries') &&
 			in_array($member_id, $author_ids))
 		{
 			return FALSE;
@@ -89,7 +89,8 @@ abstract class AbstractBulkEdit extends CP_Controller {
 				'filters' => '',
 				'errors' => $errors,
 				'reorderable' => FALSE,
-				'show_field_type' => FALSE
+				'show_field_type' => FALSE,
+				'is_bulk_edit' => TRUE
 			]);
 		}
 
@@ -102,7 +103,8 @@ abstract class AbstractBulkEdit extends CP_Controller {
 				'filters' => '',
 				'errors' => NULL,
 				'reorderable' => FALSE,
-				'show_field_type' => FALSE
+				'show_field_type' => FALSE,
+				'is_bulk_edit' => TRUE
 			]);
 		}
 
@@ -110,6 +112,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 			'fields'          => $displayed_fields_markup,
 			'field_templates' => $template_fields_markup,
 			'filters'         => $filters,
+			'is_bulk_edit'	  => TRUE
 		]);
 	}
 

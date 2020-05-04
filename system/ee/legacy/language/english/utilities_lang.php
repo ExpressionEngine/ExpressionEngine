@@ -7,13 +7,15 @@ $lang = array(
 
 /* Menu */
 
-'backup_utility' => 'Backup Utility',
+'backup_database' => 'Backup Database',
 
 'cache_manager' => 'Cache Manager',
 
 'communicate' => 'Communicate',
 
 'cp_translation' => '<abbr title="Control Panel">CP</abbr> Translation',
+
+'cp_translations' => 'CP Translations',
 
 'data_operations' => 'Data Operations',
 
@@ -43,9 +45,9 @@ $lang = array(
 
 
 /* Communicate */
-'add_member_groups' => 'Add member group(s)',
+'add_member_roles' => 'Add member role(s)',
 
-'add_member_groups_desc' => 'Send Email to <b>all</b> members in chosen group(s).',
+'add_member_roles_desc' => 'Send Email to <b>all</b> members in chosen role(s).',
 
 'attachment' => 'Attachment',
 
@@ -56,6 +58,8 @@ $lang = array(
 'bcc_recipients_desc' => '<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
 
 'btn_send_email' => 'Send Email',
+
+'send_email' => 'Send Email',
 
 'btn_send_email_working' => 'Sending...',
 
@@ -328,6 +332,8 @@ $lang = array(
 
 'member_group' => 'Member group',
 
+'role' => 'Role',
+
 'member_import_error' => 'Attention: Import not completed',
 
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
@@ -402,6 +408,8 @@ $lang = array(
 
 'sql_query_form_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query Form',
 
+'query' => 'Query',
+
 'sql_query_to_run' => 'Query to run',
 
 'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
@@ -469,6 +477,30 @@ $lang = array(
 'total_records' => 'Total Records',
 
 'uptime' => 'Uptime',
+
+/* Search Reindex */
+
+'search_reindex_fail' => 'Reindexing Failed',
+
+'search_reindex' => 'Search Reindex',
+
+'search_reindex_desc' => '%s Channel entries will be reindexed',
+
+'reindex_success' => 'Reindexing Complete',
+
+'reindex_success_desc' => '',
+
+'btn_reindex' => 'Reindex',
+
+'btn_reindex_working' => 'Reindexing',
+
+'all_sites' => 'Reindex All Sites?',
+
+'all_sites_desc' => 'Reindex the Channel entries across all sites, or just this one?',
+
+'search_reindexed_started' => 'Search reindexing started.',
+
+'search_reindexed_completed' => 'Search reindexing complete. %s entries were reindexed.',
 
 /* Export Email Addresses */
 

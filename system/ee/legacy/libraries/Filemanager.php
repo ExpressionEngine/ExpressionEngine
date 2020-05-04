@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -215,6 +215,7 @@ class Filemanager {
 	 */
 	function security_check($file_path, $prefs)
 	{
+
 		ee()->load->helper(array('file', 'xss'));
 		ee()->load->library('mime_type');
 
@@ -304,18 +305,33 @@ class Filemanager {
 	 */
 	function get_image_dimensions($file_path)
 	{
-		if (function_exists('getimagesize'))
-		{
-			$D = @getimagesize($file_path);
 
-			$image_size = array(
-				'height'	=> $D['1'],
-				'width'	=> $D['0']
-				);
+		if( ! file_exists($file_path)) {
 
-			return $image_size;
+			return FALSE;
+
 		}
 
+		// PHP7.4 does not come with GD JPEG processing by default
+		// So, we need to run this check.
+		if (function_exists('getimagesize'))
+		{
+			$imageSize = @getimagesize($file_path);
+
+			if($imageSize && is_array($imageSize)) {
+
+				$imageSizeParsed = [
+					'height'	=> $imageSize['1'],
+					'width'	=> $imageSize['0']
+				];
+
+				return $imageSizeParsed;
+
+			}
+
+		}
+
+		// The file is either not an image, or there was an error.
 		return FALSE;
 	}
 
@@ -629,28 +645,15 @@ class Filemanager {
 	 */
 	private function _check_permissions($dir_id)
 	{
-		$group_id = ee()->session->userdata('group_id');
-
-		// Non admins need to have their permissions checked
-		if ($group_id != 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
-			// non admins need to first be checked for restrictions
-			// we'll add these into a where_not_in() check below
-			ee()->db->select('upload_id');
-			ee()->db->where(array(
-				'member_group' => $group_id,
-				'upload_id'    => $dir_id
-			));
-
-			// If any record shows up, then they do not have access
-			if (ee()->db->count_all_results('upload_no_access') > 0)
-			{
-
-				return FALSE;
-			}
+			return TRUE;
 		}
 
-		return TRUE;
+		$member = ee()->session->getMember();
+		$assigned_upload_destinations = $member->getAssignedUploadDestinations()->indexBy('id');
+
+		return isset($assigned_upload_destinations[$dir_id]);
 	}
 
 
@@ -1206,8 +1209,8 @@ class Filemanager {
 		{
 			$dimensions[] = array(
 				'short_name'	=> 'thumbs',
-				'width'			=> 73,
-				'height'		=> 60,
+				'width'			=> 380, //73,
+				'height'		=> 367, //60
 				'quality'       => 90,
 				'watermark_id'	=> 0,
 				'resize_type'	=> 'crop'
@@ -1681,7 +1684,7 @@ class Filemanager {
 		ee()->load->model('file_upload_preferences_model');
 
 		$directories = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id'),
+			NULL,
 			NULL,
 			$ignore_site_id
 		);
@@ -2338,7 +2341,7 @@ class Filemanager {
 		// Rename the file
 		$config = array(
 			'upload_path'	=> $upload_directory['server_path'],
-			'allowed_types'	=> (ee()->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
+			'allowed_types'	=> (ee('Permission')->isSuperAdmin()) ? 'all' : $upload_directory['allowed_types'],
 			'max_size'		=> round((int) $upload_directory['max_size']*1024, 3),
 			'max_width'		=> $upload_directory['max_width'],
 			'max_height'	=> $upload_directory['max_height']
@@ -2537,7 +2540,7 @@ class Filemanager {
 		ee()->load->model('file_upload_preferences_model');
 
 		$upload_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-										ee()->session->userdata('group_id'),
+										NULL,
 										$file_dir_id);
 
 		$dirs = new stdclass();

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,7 +22,7 @@ class Groups extends AbstractFieldsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_create_channel_fields',
 			'can_edit_channel_fields',
 			'can_delete_channel_fields'
@@ -37,7 +37,7 @@ class Groups extends AbstractFieldsController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
+		if ( ! ee('Permission')->can('create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -143,7 +143,7 @@ class Groups extends AbstractFieldsController {
 
 	public function edit($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		if ( ! ee('Permission')->can('edit_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -367,7 +367,7 @@ class Groups extends AbstractFieldsController {
 
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
+		if ( ! ee('Permission')->can('delete_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -382,7 +382,7 @@ class Groups extends AbstractFieldsController {
 		ee('CP/Alert')->makeInline('field-groups')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('field_groups_removed_desc'))
+			->addToBody(lang('field_groups_deleted_desc'))
 			->addToBody($group_names)
 			->defer();
 

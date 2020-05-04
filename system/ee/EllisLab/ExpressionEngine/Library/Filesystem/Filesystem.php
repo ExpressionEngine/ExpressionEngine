@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -537,13 +537,13 @@ class Filesystem {
 	 */
 	public function isWritable($path)
 	{
-		// If we're on a Unix server with safe_mode off we call is_writable
-		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
+		// If we're on a Unix server we call is_writable
+		if (DIRECTORY_SEPARATOR == '/')
 		{
 			return is_writable($this->normalize($path));
 		}
 
-		// For windows servers and safe_mode "on" installations we'll actually
+		// For windows servers installations we'll actually
 		// write a file then read it.  Bah...
 		if ($this->isDir($path))
 		{

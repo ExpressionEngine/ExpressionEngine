@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,7 +23,7 @@ class Fields extends AbstractCategoriesController {
 	 */
 	public function reorder($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		if ( ! ee('Permission')->can('edit_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -49,7 +49,7 @@ class Fields extends AbstractCategoriesController {
 	 */
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		if ( ! ee('Permission')->can('delete_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -68,7 +68,7 @@ class Fields extends AbstractCategoriesController {
 	 */
 	public function create($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_create_categories'))
+		if ( ! ee('Permission')->can('create_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -84,7 +84,7 @@ class Fields extends AbstractCategoriesController {
 	 */
 	public function edit($group_id, $field_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		if ( ! ee('Permission')->can('edit_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

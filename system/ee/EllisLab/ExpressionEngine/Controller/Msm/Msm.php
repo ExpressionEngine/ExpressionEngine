@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,9 +85,6 @@ class Msm extends CP_Controller {
 				'status' => array(
 					'type' => Table::COL_STATUS
 				),
-				'manage' => array(
-					'type' => Table::COL_TOOLBAR
-				),
 				array(
 					'type' => Table::COL_CHECKBOX
 				)
@@ -100,7 +97,13 @@ class Msm extends CP_Controller {
 
 		foreach ($sites as $site)
 		{
-			if ($site->site_system_preferences->is_site_on == 'y')
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->filter('value', 'y')
+				->count();
+
+			if ($site_on)
 			{
 				$status = array(
 					'class' => 'enable',
@@ -123,12 +126,6 @@ class Msm extends CP_Controller {
 				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					)
-				)),
 				array(
 					'name' => 'selection[]',
 					'value' => $site->site_id,
@@ -140,7 +137,7 @@ class Msm extends CP_Controller {
 
 			if ($site->site_id == 1)
 			{
-				$column[5]['disabled'] = TRUE;
+				$column[4]['disabled'] = TRUE;
 			}
 
 			$attrs = array();
@@ -179,7 +176,7 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
+		if ( ! ee('Permission')->can('admin_sites')) // permission not currently setable, thus admin only
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -269,6 +266,10 @@ class Msm extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('create_site');
 
+		ee()->view->header = array(
+			'title' => lang('create_site'),
+		);
+
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->javascript->output('
 			$("input[name=site_label]").bind("keyup keydown", function() {
@@ -281,7 +282,7 @@ class Msm extends CP_Controller {
 
 	public function edit($site_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		if ( ! ee('Permission')->can('admin_sites'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -343,6 +344,7 @@ class Msm extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'errors' => $errors,
+			'hide_top_buttons' => true,
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -370,8 +372,11 @@ class Msm extends CP_Controller {
 			'sections' => $this->getForm($site, TRUE),
 		);
 
-		ee()->view->cp_page_title = lang('edit_site');
+		ee()->view->header = array(
+			'title' => lang('edit_site'),
+		);
 
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -413,13 +418,18 @@ class Msm extends CP_Controller {
 
 		if ( ! $site->isNew())
 		{
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->first();
+
 			$site_online = array(
 				'title' => 'site_online',
 				'desc' => 'site_online_desc',
 				'fields' => array(
 					'is_site_on' => array(
 						'type' => 'yes_no',
-						'value' => $site->site_system_preferences->is_site_on
+						'value' => ($site_on) ? $site_on->value : 'y'
 					)
 				)
 			);
@@ -462,7 +472,7 @@ class Msm extends CP_Controller {
 
 		if ($action == 'edit')
 		{
-			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+			ee()->config->update_site_prefs(['is_site_on' => ee()->input->post('is_site_on')], [$site->site_id]);
 		}
 
 		$result = $site->validate();
@@ -523,14 +533,14 @@ class Msm extends CP_Controller {
 		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('sites_removed_desc'))
+			->addToBody(lang('sites_deleted_desc'))
 			->addToBody($site_names)
 			->defer();
 
 		// Refresh Sites List
 		$assigned_sites = array();
 
-		if (ee()->session->userdata['group_id'] == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$result = ee('Model')->get('Site')
 				->fields('site_id', 'site_label')
@@ -546,7 +556,7 @@ class Msm extends CP_Controller {
 				->all();
 		}
 
-		if ((ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['assigned_sites'] != '') && count($result) > 0)
+		if ((ee('Permission')->isSuperAdmin() OR ee()->session->userdata['assigned_sites'] != '') && count($result) > 0)
 		{
 			$assigned_sites = $result->getDictionary('site_id', 'site_label');
 		}

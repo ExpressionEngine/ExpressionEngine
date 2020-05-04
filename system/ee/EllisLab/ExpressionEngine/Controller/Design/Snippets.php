@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,7 +28,7 @@ class Snippets extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
+		if ( ! ee('Permission')->hasAny('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -197,7 +197,7 @@ class Snippets extends AbstractDesignController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_template_partials'))
+		if ( ! ee('Permission')->can('create_template_partials'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -310,7 +310,7 @@ class Snippets extends AbstractDesignController {
 
 	public function edit($snippet_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_template_partials'))
+		if ( ! ee('Permission')->can('edit_template_partials'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -443,7 +443,7 @@ class Snippets extends AbstractDesignController {
 	 */
 	private function remove($snippet_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_template_partials'))
+		if ( ! ee('Permission')->can('delete_template_partials'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -467,7 +467,7 @@ class Snippets extends AbstractDesignController {
 		ee('CP/Alert')->makeInline('snippet-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('snippets_removed_desc'))
+			->addToBody(lang('snippets_deleted_desc'))
 			->addToBody($names)
 			->defer();
 	}

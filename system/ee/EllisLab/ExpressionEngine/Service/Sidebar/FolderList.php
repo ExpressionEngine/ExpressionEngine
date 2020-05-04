@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -141,7 +141,7 @@ class FolderList {
 
 		if (empty($items) && $this->no_results)
 		{
-			$items = '<li class="no-results">' . $this->no_results . '</li>';
+			$items = '<div class="no-results">' . $this->no_results . '</div>';
 		}
 
 		return $view->make('_shared/sidebar/folder_list')

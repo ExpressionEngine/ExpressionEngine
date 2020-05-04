@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -153,6 +153,7 @@ class Bookmarks extends Settings {
 
 		if ( ! empty($_POST))
 		{
+			$this->bookmarks[$id] = new \stdClass();
 			$this->bookmarks[$id]->name = ee()->input->post('name');
 			$this->bookmarks[$id]->channel = ee()->input->post('channel');
 			$this->bookmarks[$id]->field = ee()->input->post('field');

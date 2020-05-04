@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -295,9 +295,13 @@ class Rte_lib {
 	 * @param	bool	If TRUE, includes tools that are for the control panel only
 	 * @return	string 	The JS needed to embed the RTE
 	 */
-	public function build_js($toolset_id, $selector, $include = array(), $cp_only = FALSE)
+	public function build_js($toolset_id, $selector, $include = [], $cp_only = FALSE)
 	{
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
+
+		if( ! is_array($include) ) {
+			$include = [];
+		}
 
 		// no toolset specified?
 		if ( ! $toolset_id)
@@ -332,7 +336,7 @@ class Rte_lib {
 			)
 		);
 
-		if ($include['jquery_ui'])
+		if (array_key_exists('jquery_ui', $include) && $include['jquery_ui'])
 		{
 			$bits['libraries']['ui'] = array('core', 'widget');
 		}
@@ -405,7 +409,7 @@ class Rte_lib {
 			$js .= '
 				var EE = ' . json_encode(ee()->javascript->global_vars) . ';';
 
-			if ($include['jquery'])
+			if (array_key_exists('jquery', $include) && $include['jquery'])
 			{
 				$js .= '
 					var j = document.createElement("script");
@@ -508,14 +512,11 @@ class Rte_lib {
 		}
 
 		// Swap the real URL with {filedir_x}
-		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id')
-		);
+		$dirs = ee()->session->getMember()->getAssignedUploadDestinations();
 
 		foreach($dirs as $d)
 		{
-			$data = str_replace($d['url'], "{filedir_{$d['id']}}", $data);
+			$data = str_replace($d->url, "{filedir_{$d->id}}", $data);
 		}
 
 		return $data;
@@ -580,16 +581,13 @@ class Rte_lib {
 
 		// Swap {filedir_x} with the real URL. It will be converted back
 		// upon submit by the RTE Image tool.
-		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id')
-		);
+		$dirs = ee()->session->getMember()->getAssignedUploadDestinations();
 
 		foreach($dirs as $d)
 		{
 			// tag to replace
-			$filedir = "{filedir_{$d['id']}}";
-			$data = str_replace($filedir, $d['url'], $data);
+			$filedir = "{filedir_{$d->id}}";
+			$data = str_replace($filedir, $d->url, $data);
 		}
 
 		$field['value'] = $data;

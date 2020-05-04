@@ -1,10 +1,9 @@
 <?php
 /**
- * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -34,10 +33,6 @@ class Site extends Model {
 	);
 
 	protected static $_typed_columns = array(
-		'site_channel_preferences' => 'ChannelPreferences',
-		'site_member_preferences' => 'MemberPreferences',
-		'site_system_preferences' => 'SystemPreferences',
-		'site_template_preferences' => 'TemplatePreferences',
 		'site_bootstrap_checksums' => 'base64Serialized',
 		'site_pages' => 'base64Serialized',
 	);
@@ -90,8 +85,8 @@ class Site extends Model {
 			'model' => 'UploadDestination',
 			'type' => 'hasMany'
 		),
-		'MemberGroups' => array(
-			'model' => 'MemberGroup',
+		'Permissions' => array(
+			'model' => 'Permission',
 			'type' => 'hasMany'
 		),
 		'HTMLButtons' => array(
@@ -101,7 +96,15 @@ class Site extends Model {
 		'Snippets' => array(
 			'model' => 'Snippet',
 			'type' => 'hasMany'
-		)
+		),
+		'Configs' => array(
+			'model' => 'Config',
+			'type' => 'hasMany'
+		),
+		'RoleSettings' => array(
+			'model' => 'RoleSetting',
+			'type' => 'hasMany'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -119,10 +122,6 @@ class Site extends Model {
 	protected $site_label;
 	protected $site_name;
 	protected $site_description;
-	protected $site_system_preferences;
-	protected $site_member_preferences;
-	protected $site_template_preferences;
-	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 	protected $site_pages;
 
@@ -138,18 +137,29 @@ class Site extends Model {
 
 	public function onBeforeInsert()
 	{
-		$this->setDefaultPreferences('system');
-		$this->setDefaultPreferences('channel');
-		$this->setDefaultPreferences('template');
-		$this->setDefaultPreferences('member');
+		$current_number_of_sites = $this->getModelFacade()->get('Site')->count();
+
+		$can_add = ee('License')->getEELicense()
+			->canAddSites($current_number_of_sites);
+
+		if ( ! $can_add)
+		{
+			throw new \Exception("Site limit reached.");
+		}
 	}
 
 	public function onAfterInsert()
     {
+		$this->setDefaultPreferences('system');
+		$this->setDefaultPreferences('channel');
+		$this->setDefaultPreferences('template');
+		$this->setDefaultPreferences('member');
+
 		$this->createNewStats();
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
-		$this->createMemberGroups();
+		$this->copyPermissions();
+		$this->copyRoleSettings();
     }
 
 	/**
@@ -161,11 +171,13 @@ class Site extends Model {
 	 */
 	protected function setDefaultPreferences($type)
 	{
-		$prefs = $this->getProperty('site_' . $type . '_preferences');
-
-		foreach(ee()->config->divination($type) as $value)
+		foreach(ee()->config->divination($type) as $key)
 		{
-			$prefs->$value = ee()->config->item($value);
+			$this->getModelFacade()->make('Config', [
+				'site_id' => $this->site_id,
+				'key' => $key,
+				'value' => ee()->config->item($key)
+			])->save();
 		}
 	}
 
@@ -242,22 +254,43 @@ class Site extends Model {
 	}
 
 	/**
-	 * Creates member groups for this site by cloning site 1's member groups
+	 * Creates permissions for this site by cloning site 1's permissions
 	 *
 	 * @return void
 	 */
-	protected function createMemberGroups()
+	protected function copyPermissions()
 	{
-		$groups = $this->getModelFacade()->get('MemberGroup')
+		$permissions = $this->getModelFacade()->get('Permission')
 			->filter('site_id', 1)
 			->all();
 
-		foreach($groups as $group)
+		foreach($permissions as $permission)
 		{
-			$data = $group->getValues();
+			$data = $permission->getValues();
 			$data['site_id'] = $this->site_id;
 
-			$this->getModelFacade()->make('MemberGroup', $data)->save();
+			$this->getModelFacade()->make('Permission', $data)->save();
+		}
+	}
+
+	/**
+	 * Creates RoleSettings for this site by cloning site 1's RoleSettings
+	 *
+	 * @return void
+	 */
+	protected function copyRoleSettings()
+	{
+		$role_settings = $this->getModelFacade()->get('RoleSetting')
+			->filter('site_id', 1)
+			->all();
+
+		foreach($role_settings as $role_setting)
+		{
+			$data = $role_setting->getValues();
+			$data['site_id'] = $this->site_id;
+			$data['role_id'] = $role_setting->role_id;
+
+			$this->getModelFacade()->make('RoleSetting', $data)->save();
 		}
 	}
 }

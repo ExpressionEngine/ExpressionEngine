@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -29,6 +29,7 @@ class Activity extends Profile {
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
 		$items = array(
+			'ip_address' 		=> $this->member->ip_address,
 			'join_date'         => $this->getHumanDateOrFalse($this->member->join_date),
 			'last_visit'        => $this->getHumanDateOrFalse($this->member->last_visit),
 			'last_activity'     => $this->getHumanDateOrFalse($this->member->last_activity),
@@ -46,7 +47,7 @@ class Activity extends Profile {
 			$items['total_forum_replies'] = $this->member->total_forum_posts;
 		}
 
-		if (get_bool_from_string($this->member->MemberGroup->can_access_cp))
+		if ($this->member->can('access_cp'))
 		{
 			$log_url = ee('CP/URL')->make('cp/logs/cp', array('filter_by_username' => $this->member->member_id));
 			$items['cp_log'] = '<a href="'.$log_url.'">'.sprintf(lang('view_cp_logs'), $this->member->username).'</a>';

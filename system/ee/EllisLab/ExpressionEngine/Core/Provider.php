@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -210,6 +210,12 @@ class Provider extends InjectionBindingDecorator {
 			if ($element instanceOf Closure)
 			{
 				return $this->partial($element, $scope);
+			}
+
+			//do not namespace models that are root
+			if (strpos($element, '\\')===0)
+			{
+				return $element;
 			}
 
 			return $ns.'\\'.$element;

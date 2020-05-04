@@ -4,60 +4,21 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use EllisLab\ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Stats Module update class
  */
-class Stats_upd {
-
-	var $version	= '2.0.0';
+class Stats_upd extends Installer
+{
 
 	function __construct()
 	{
-		ee()->load->dbforge();
-	}
-
-	/**
-	 * Module Installer
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function install()
-	{
-		$data = array(
-					'module_name' => 'Stats',
-					'module_version' => $this->version,
-					'has_cp_backend' => 'n'
-					);
-
-		ee()->db->insert('modules', $data);
-
-		return TRUE;
-	}
-
-	/**
-	 * Module Uninstaller
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function uninstall()
-	{
-		ee()->db->select('module_id');
-		ee()->db->from('modules');
-		ee()->db->where('module_name', 'Stats');
-		$query = ee()->db->get();
-
-		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
-		ee()->db->delete('modules', array('module_name' => 'Stats'));
-		ee()->db->delete('actions', array('class' => 'Stats'));
-		ee()->db->delete('actions', array('class' => 'Stats_mcp'));
-
-		return TRUE;
+		parent::__construct();
 	}
 
 	/**
@@ -75,6 +36,7 @@ class Stats_upd {
 
 		if (version_compare($current, '2.0', '<'))
 		{
+			ee()->load->dbforge();
 			ee()->dbforge->drop_column('stats', 'weblog_id');
 		}
 

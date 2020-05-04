@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -319,7 +319,7 @@ class AlertCollection {
 		$alert = $this->makeStandard('deprecation-notice')
 			->asWarning();
 
-		if ($this->session->userdata('group_id') == 1 && ee()->config->item('enable_devlog_alerts') == 'y')
+		if (ee('Permission')->isSuperAdmin() && ee()->config->item('enable_devlog_alerts') == 'y')
 		{
 			$count = ee('Model')->get('DeveloperLog')
 				->filter('viewed', 'n')

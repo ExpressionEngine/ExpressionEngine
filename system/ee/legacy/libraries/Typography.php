@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -2597,7 +2597,7 @@ while (--j >= 0)
 		{
 			if (is_php('7.2'))
 			{
-				$parts['host'] = idn_to_ascii($parts['host'], 0, INTL_IDNA_VARIANT_UTS46);
+				$parts['host'] = idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
 			}
 			else
 			{

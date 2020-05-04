@@ -224,6 +224,9 @@ The following subcomponents are licensed under the MIT License:
     The CodeMirror component:
         Copyright (C) 2017 by Marijn Haverbeke <marijnh@gmail.com> and others
 
+    The Popper.js component:
+        Copyright © 2016 Federico Zivolo and contributors
+
     The emoji-data component:
         Copyright (c) 2013 Cal Henderson
 

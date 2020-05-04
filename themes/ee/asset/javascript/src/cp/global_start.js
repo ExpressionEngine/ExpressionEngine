@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -297,7 +297,7 @@ EE.cp.bindSortableFolderLists = function() {
 		containment: 'parent',			// Contain to parent
 		handle: 'a',					// Set drag handle
 		cancel: 'ul.toolbar',			// Do not allow sort on this handle
-		items: '> li',					// Only allow these to be sortable
+		items: '> .sidebar__link',		// Only allow these to be sortable
 		sort: EE.sortable_sort_helper,	// Custom sort handler
 		// After sort finishes
 		stop: function(event, ui)

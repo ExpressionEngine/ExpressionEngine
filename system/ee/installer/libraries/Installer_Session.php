@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -35,6 +35,16 @@ class Installer_Session {
 	public function userdata($which, $default = FALSE)
 	{
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	}
+
+	public function all_userdata()
+	{
+		return $this->userdata;
+	}
+
+	public function getMember()
+	{
+		return ee('Model')->get('Member', 1)->first();
 	}
 
 	public function session_id($which = '')

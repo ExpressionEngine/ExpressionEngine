@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,10 +20,10 @@
 		});
 
 	    var addField = function(e) {
-			var fluidField   = $(this).closest('.fluid-wrap'),
+			var fluidField   = $(this).closest('.fluid'),
 			    fieldToAdd   = $(this).data('field-name'),
 			    fieldCount   = fluidField.data('field-count'),
-			    fieldToClone = fluidField.find('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]'),
+			    fieldToClone = fluidField.find('.fluid-field-templates .fluid__item[data-field-name="' + fieldToAdd + '"]'),
 			    fieldClone   = fieldToClone.clone();
 
 			fieldCount++;
@@ -41,11 +41,13 @@
 			fieldClone.find(':input').removeAttr('disabled');
 
 			// Insert it
-			if ( ! $(this).parents('.fluid-item').length) {
-				// the button at the bottom of the form was used.
+			if ( ! $(this).parents('.fluid__item').length) {
+				// The main add button at the bottom was used
 				fluidField.find('.js-sorting-container').append(fieldClone);
-			} else {
-				$(this).closest('.fluid-item').after(fieldClone);
+			}
+			else {
+				// The item's add button was used, so place it below itself
+				$(this).closest('.fluid__item').after(fieldClone);
 			}
 
 			$.fuzzyFilter();
@@ -56,33 +58,70 @@
 			}
 
 			e.preventDefault();
-			fluidField.find('.open').trigger('click');
+			// Hide the add item menu
+			$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 			$(document).trigger('entry:preview');
 	    };
 
-		$('.fluid-wrap').on('click', 'a[data-field-name]', addField);
+		$('.fluid').on('click', 'a[data-field-name]', addField);
 
-		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
-			var el = $(this).closest('.fluid-item');
+		$('.fluid').on('click', 'a.js-fluid-remove', function(e) {
+			var el = $(this).closest('.fluid__item');
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
 			$(document).trigger('entry:preview');
 			el.remove();
 			e.preventDefault();
 		});
 
+		// Toggle fluid item
+		$('.fluid').on('click', '.js-toggle-fluid-item', function() {
+			$(this).parents('.fluid__item').toggleClass('fluid__item--collapsed');
+
+			// Hide the dropdown menu
+			$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+			return false;
+		});
+
+		// Hide all fluid items
+		$('.fluid').on('click', '.js-hide-all-fluid-items', function() {
+			$(this).parents('.fluid').find('.js-sorting-container .fluid__item').addClass('fluid__item--collapsed');
+
+			// Hide the dropdown menu
+			$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+			return false;
+		});
+
+		// Show all fluid items
+		$('.fluid').on('click', '.js-show-all-fluid-items', function() {
+			$(this).parents('.fluid').find('.js-sorting-container .fluid__item').removeClass('fluid__item--collapsed');
+
+			// Hide the dropdown menu
+			$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+			return false;
+		});
+
+		// Make the fluid fields sortable
 		$('.js-sorting-container').sortable({
-			axis: 'y',						// Only allow horizontal dragging
-			containment: 'parent',			// Contain to parent
-			handle: 'span.reorder',			// Set drag handle to the top box
-			items: '.fluid-item',			// Only allow these to be sortable
+			containment: false,
+			handle: '.reorder', // Set drag handle to the top box
+			items: '.fluid__item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
+			cancel: '.no-drag',
 			start: function (event, ui) {
+				$(ui.item).addClass('fluid__item--dragging')
+
 				FluidField.fireEvent($(ui.item).data('field-type'), 'beforeSort', $(ui.item))
 			},
 			stop: function (event, ui) {
+				$(ui.item).removeClass('fluid__item--dragging')
+
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', $(ui.item))
+
 				$(document).trigger('entry:preview');
 			}
 		});

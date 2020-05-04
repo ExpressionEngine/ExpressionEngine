@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,10 +76,6 @@ class Channels extends AbstractChannelsController {
 				'extra' => LD.$channel->channel_name.RD,
 				'selected' => ($highlight_id && $channel->getId() == $highlight_id) OR in_array($channel->getId(), $imported_channels),
 				'toolbar_items' => [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					],
 					'download' => [
 						'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
 						'title' => lang('export')
@@ -127,7 +123,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_channels'))
+		if ( ! ee('Permission')->can('delete_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -141,8 +137,8 @@ class Channels extends AbstractChannelsController {
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
-				->withTitle(lang('channels_removed'))
-				->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
+				->withTitle(lang('channels_deleted'))
+				->addToBody(sprintf(lang('channels_deleted_desc'), count($channel_ids)))
 				->defer();
 		}
 		else
@@ -158,7 +154,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_channels'))
+		if ( ! ee('Permission')->can('create_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -171,7 +167,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function edit($channel_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		if ( ! ee('Permission')->can('edit_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -285,11 +281,12 @@ class Channels extends AbstractChannelsController {
 
 		$vars['sections'] = [];
 		$vars['tabs'] = [
-			'channel' => $this->renderChannelTab($channel, $vars['errors']),
-			'fields' => $this->renderFieldsTab($channel, $vars['errors']),
-			'categories' => $this->renderCategoriesTab($channel, $vars['errors']),
-			'statuses' => $this->renderStatusesTab($channel, $vars['errors']),
-			'settings' => $this->renderSettingsTab($channel, $vars['errors']),
+			'channel'     => $this->renderChannelTab($channel, $vars['errors']),
+			'fields'      => $this->renderFieldsTab($channel, $vars['errors']),
+			'categories'  => $this->renderCategoriesTab($channel, $vars['errors']),
+			'statuses'    => $this->renderStatusesTab($channel, $vars['errors']),
+			'settings'    => $this->renderSettingsTab($channel, $vars['errors']),
+			'permissions' => $this->renderPermissionsTab($channel, $vars['errors']),
 		];
 
 		ee()->javascript->set_global([
@@ -324,11 +321,10 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
 
 		ee()->javascript->set_global('status.default_name', lang('status'));
-		ee()->javascript->set_global('status.foreground_color_url', ee('CP/URL', 'channels/status/get-foreground-color')->compile());
-		ee()->cp->add_js_script('plugin', 'minicolors');
+		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
 		ee()->view->header = array(
-			'title' => lang('channel_manager'),
+			'title' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/content-design'),
@@ -464,7 +460,7 @@ class Channels extends AbstractChannelsController {
 		$add_groups_button = NULL;
 		$add_fields_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$add_groups_button = [
 				'text' => 'add_group',
@@ -541,7 +537,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('field_groups'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('fields/groups/create');
@@ -589,7 +585,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('fields'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('fields/create');
@@ -617,7 +613,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$add_groups_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_categories'))
+		if (ee('Permission')->can('create_categories'))
 		{
 			$add_groups_button = [
 				'text' => 'add_group',
@@ -670,7 +666,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('category_groups'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_categories'))
+		if (ee('Permission')->can('create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
@@ -698,7 +694,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$add_status_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_statuses'))
+		if (ee('Permission')->can('create_statuses'))
 		{
 			$add_status_button = [
 				'text' => 'add_status',
@@ -738,7 +734,7 @@ class Channels extends AbstractChannelsController {
 
 		foreach ($statuses as $status)
 		{
-			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
+			$status_options[] = $status->getSelectOptionComponent(true);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -760,13 +756,14 @@ class Channels extends AbstractChannelsController {
 			'field_name'       => 'statuses',
 			'choices'          => $status_options,
 			'disabled_choices' => $default,
+			'encode' 		   => FALSE,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
 			'multi'            => TRUE,
 			'force_react'      => TRUE,
-			'reorderable'      => ee()->cp->allowed_group('can_edit_statuses'),
-			'removable'        => ee()->cp->allowed_group('can_delete_statuses'),
-			'editable'         => ee()->cp->allowed_group('can_edit_statuses'),
+			'reorderable'      => ee('Permission')->can('edit_statuses'),
+			'removable'        => ee('Permission')->can('delete_statuses'),
+			'editable'         => ee('Permission')->can('edit_statuses'),
 			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile()
 		]);
 	}
@@ -1285,6 +1282,114 @@ class Channels extends AbstractChannelsController {
 		return $html;
 	}
 
+	private function getPermissionKeys()
+	{
+		return [
+			'can_create_entries_channel_id_'      => lang('can_create_entries'),
+			'can_edit_self_entries_channel_id_'   => lang('can_edit_self_entries'),
+			'can_delete_self_entries_channel_id_' => lang('can_delete_self_entries'),
+			'can_edit_other_entries_channel_id_'  => lang('can_edit_other_entries'),
+			'can_delete_all_entries_channel_id_'  => lang('can_delete_all_entries'),
+			'can_assign_post_authors_channel_id_' => lang('can_assign_post_authors')
+		];
+	}
+
+	/**
+	 * Renders the Permissions tab for the Channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity
+	 * @param null|ValidationResult $errors NULL (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
+	 */
+	private function renderPermissionsTab($channel, $errors)
+	{
+		// Not a superadmin?  Preselect their roles
+		if ($channel->isNew())
+		{
+			$selected_roles = [];
+
+			if ( ! ee('Permission')->isSuperAdmin())
+			{
+				$ids = ee()->session->getMember()->getAllRoles()->pluck('role_id');
+				$selected_roles = ee('Model')->get('Role', $ids)->all();
+			}
+		}
+		else
+		{
+			$selected_roles = $channel->AssignedRoles;
+		}
+
+		$perms = $this->getPermissionKeys();
+
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '>', 4)
+			->order('name', 'asc')
+			->all();
+
+		$choices = [];
+		$values = [];
+
+		foreach ($roles as $role)
+		{
+			$children = [];
+			foreach ($perms as $perm => $lang)
+			{
+				$children[$perm . ':role_id_' . $role->getId()] = $lang;
+			}
+
+			$choices['role_id_' . $role->getId()] = [
+				'label'    => $role->name,
+				'children' => $children
+			];
+		}
+
+		foreach ($selected_roles as $role)
+		{
+			$values[] = 'role_id_' . $role->getId();
+
+			foreach ($perms as $perm => $lang)
+			{
+				if ($channel->isNew())
+				{
+					$values[] = $perm . ':role_id_' . $role->getId();
+				}
+				else
+				{
+					if ($role->has($perm . $channel->getId()))
+					{
+						$values[] = $perm . ':role_id_' . $role->getId();
+					}
+				}
+			}
+
+		}
+
+		$section = [
+			[
+				'title'  => 'channel_roles',
+				'desc'   => 'channel_roles_desc',
+				'fields' => [
+					'roles' => [
+						'type' => 'checkbox',
+						'required' => TRUE,
+						'nested' => TRUE,
+						'auto_select_parents' => TRUE,
+						'choices' => $choices,
+						'value' => $values,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('roles'))
+						]
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
 	/**
 	 * AJAX endpoint for author list filtering
 	 *
@@ -1351,6 +1456,26 @@ class Channels extends AbstractChannelsController {
 		$channel->ChannelFormSettings->allow_guest_posts = ee('Request')->post('allow_guest_posts');
 		$channel->ChannelFormSettings->default_author = ee('Request')->post('default_author') ?: 0;
 
+		$roles = ee('Request')->post('roles');
+
+		if ( ! $roles)
+		{
+			$channel->AssignedRoles = [];
+		}
+		else
+		{
+			$role_ids = [];
+			foreach ($roles as $value)
+			{
+				if (strpos($value, 'role_id_') === 0)
+				{
+					$role_ids[] = str_replace('role_id_', '', $value);
+				}
+			}
+
+			$channel->AssignedRoles = ee('Model')->get('Role', $role_ids)->all();
+		}
+
 		return $channel;
 	}
 
@@ -1414,14 +1539,14 @@ class Channels extends AbstractChannelsController {
 			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$data = array(
-					'group_id'		=> ee()->session->userdata('group_id'),
-					'channel_id'	=> $channel->channel_id
+					'role_id'    => ee()->session->getMember()->PrimaryRole->getId(),
+					'channel_id' => $channel->channel_id
 				);
 
-				ee()->db->insert('channel_member_groups', $data);
+				ee()->db->insert('channel_member_roles', $data);
 			}
 
 			$success_msg = lang('channel_created');
@@ -1431,6 +1556,36 @@ class Channels extends AbstractChannelsController {
 		else
 		{
 			$channel->save();
+		}
+
+		$perms = [];
+		foreach ($this->getPermissionKeys() as $perm => $lang)
+		{
+			$perms[] = $perm . $channel->getId();
+		}
+
+		ee('Model')->get('Permission')
+			->filter('permission', 'IN', $perms)
+			->filter('site_id', ee()->config->item('site_id'))
+			->delete();
+
+		foreach (ee('Request')->post('roles') as $value)
+		{
+			if (empty($value))
+			{
+				continue;
+			}
+
+			if (strpos($value, 'role_id_') !== 0)
+			{
+				list($permission, $role_id) = explode(':role_id_', $value);
+
+				ee('Model')->make('Permission', [
+					'role_id'    => $role_id,
+					'site_id'    => ee()->config->item('site_id'),
+					'permission' => $permission . $channel->getId()
+				])->save();
+			}
 		}
 
 		return $channel;

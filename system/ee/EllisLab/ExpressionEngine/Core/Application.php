@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -210,6 +210,16 @@ class Application {
 		if ( ! file_exists($file))
 		{
 			throw new \Exception("Cannot read setup file: {$path}");
+		}
+
+		// We found another addon with the same name. This could be a problem.
+		if($this->registry->has($prefix)) {
+			// If it is due to the pro version, it is not a problem.
+			// We are intentionally loading that first and skipping this one
+			$provider = $this->registry->get($prefix);
+			if (strpos($provider->getPath(), 'Addons/pro/levelups') !== false) {
+			    return $provider;
+			}
 		}
 
 		$provider = new Provider(

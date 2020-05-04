@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,7 +40,7 @@ class Pagination {
 	/**
 	 * @var int $pages_to_display The number of numbered pages to calculate
 	 */
-	private $pages_to_display = 3;
+	private $pages_to_display = 7;
 
 	/**
 	 * @var View $view A View object for rendering this alert
@@ -151,6 +151,7 @@ class Pagination {
 		$pages_to_display = (int) $this->pages_to_display - 1;
 
 		$links['total_count'] = $this->total_count;
+		$links['total_pages'] = $pages;
 		$links['current_page'] = $this->current_page;
 		$links['first'] = $base_url->compile();
 		foreach (array('prev', 'next', 'last') as $key)
@@ -159,10 +160,12 @@ class Pagination {
 
 			$url = clone $base_url;
 			$url->setQueryStringVariable((string) $this->page_variable, ${$key});
+			$url->setQueryStringVariable('perpage', $this->per_page);
 			$links[$key] = $url->compile();
 		}
 
-		$start = ($this->current_page - 1 > 1) ? $this->current_page - 1 : 1;
+		$start = max($this->current_page - ($pages_to_display / 2), 1);
+
 		if ($start + $pages_to_display <= $pages)
 		{
 			$end = $start + $pages_to_display;
@@ -184,8 +187,13 @@ class Pagination {
 		{
 			$url = clone $base_url;
 			$url->setQueryStringVariable($this->page_variable, $i);
+			$url->setQueryStringVariable('perpage', $this->per_page);
 			$links['pages'][$i] = $url->compile();
 		}
+
+		$links['per_page_selector'] = ee('CP/Filter')
+			->add('Perpage', $this->total_count, 'all_items', FALSE, TRUE)
+			->render($base_url, '__');
 
 		return $this->view->render(array('pagination' => $links));
 	}

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -139,7 +139,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		$fluid_field_data = $this->getFieldData()->indexBy('id');
 
-		$compiled_data_for_search = array();
+		$compiled_data_for_search = [];
 
 		foreach ($data['fields'] as $key => $value)
 		{
@@ -183,6 +183,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			foreach ($value as $field_data)
 			{
 				$field->setData($field_data);
+				$field->validate($field_data);
 				$compiled_data_for_search[] = $field->save($field_data);
 			}
 		}
@@ -238,6 +239,31 @@ class Fluid_field_ft extends EE_Fieldtype {
 		{
 			$this->removeField($fluid_field);
 		}
+	}
+
+	public function reindex($data)
+	{
+		$compiled_data_for_search = [];
+
+		$fluid_field_data = $this->getFieldData();
+		foreach ($fluid_field_data as $fluid_field)
+		{
+			$field = $fluid_field->getField();
+			$field_data = $fluid_field->getFieldData();
+
+			if ($field->hasReindex())
+			{
+				$field->setItem('field_search', true);
+				$compiled_data_for_search[] = $field->reindex($field_data);
+			}
+			else
+			{
+				$compiled_data_for_search[] = $field->getData();
+			}
+
+		}
+
+		return implode(' ', $compiled_data_for_search);
 	}
 
 	private function prepareData($fluid_field, array $values)
@@ -358,7 +384,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 						'filters' => $filters,
 						'errors' => $this->errors,
 						'reorderable' => TRUE,
-						'show_field_type' => TRUE
+						'show_field_type' => FALSE,
+						'fields' => $filter_options
 					]);
 				}
 			}
@@ -393,7 +420,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 					'filters' => $filters,
 					'errors' => $this->errors,
 					'reorderable' => TRUE,
-					'show_field_type' => TRUE
+					'show_field_type' => FALSE,
+					'fields' => $filter_options
 				]);
 			}
 		}
@@ -412,7 +440,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 				'filters' => $filters,
 				'errors' => $this->errors,
 				'reorderable' => TRUE,
-				'show_field_type' => TRUE
+				'show_field_type' => FALSE,
+				'fields' => $filter_options
 			]);
 		}
 
@@ -525,6 +554,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 					->filter('field_id', 'IN', $removed_fields)
 					->all()
 					->delete();
+
+				ee('CP/Alert')->makeInline('search-reindex')
+					->asImportant()
+					->withTitle(lang('search_reindex_tip'))
+					->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+					->defer();
+
+				ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
 
 				$fields = ee('Model')->get('ChannelField', $removed_fields)
 					->fields('field_label')

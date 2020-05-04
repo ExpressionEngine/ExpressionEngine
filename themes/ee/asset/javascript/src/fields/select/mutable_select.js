@@ -11,7 +11,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var MutableSelectField =
@@ -65,7 +65,7 @@ function () {
     value: function bindEdit() {
       var _this2 = this;
 
-      this.field.parent().on('click', 'label > a', function (e) {
+      this.field.parent().on('click', 'label > a, label a.flyout-edit', function (e) {
         e.preventDefault();
         var itemId = $(e.target).closest('[data-id]').data('id');
 

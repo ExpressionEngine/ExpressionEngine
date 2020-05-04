@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,7 +27,7 @@ class Settings extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
+		if ( ! ee('Permission')->can('access_sys_prefs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -47,73 +47,70 @@ class Settings extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL')->make('settings/general'))
-			->addBasicList();
+		$sidebar->addItem(lang('general_settings'), ee('CP/URL')->make('settings/general'));
+		$sidebar->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
-		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
-
-		if (ee()->cp->allowed_group('can_access_comm'))
+		if (ee('Permission')->can('access_comm'))
 		{
-			$list->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
+			$sidebar->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
 		}
 
-		$list->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
+		$sidebar->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
 
 		$content_and_design_link = NULL;
 
-		if (ee()->cp->allowed_group('can_admin_channels'))
+		if (ee('Permission')->can('admin_channels'))
 		{
 			$content_and_design_link = ee('CP/URL')->make('settings/content-design');
 		}
 
-		$list = $sidebar->addHeader(lang('content_and_design'), $content_and_design_link)
+		$list = $sidebar->addHeader(lang('content_and_design'))
 			->addBasicList();
 
-		if (ee()->cp->allowed_group('can_access_addons', 'can_admin_addons'))
+		$list->addItem(lang('settings'), $content_and_design_link);
+
+		if (ee('Permission')->hasAll('can_access_addons', 'can_admin_addons'))
 		{
 			$list->addItem(lang('comment_settings'), ee('CP/URL')->make('settings/comments'));
 		}
 
 		$list->addItem(lang('html_buttons'), ee('CP/URL')->make('settings/buttons'));
 
-		if (ee()->cp->allowed_group('can_access_design', 'can_admin_design'))
+		if (ee('Permission')->hasAll('can_access_design', 'can_admin_design'))
 		{
 			$list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
 		}
 
 		$list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
 
-		if (ee()->addons_model->module_installed('pages'))
-		{
-			$list->addItem(lang('pages_settings'), ee('CP/URL')->make('addons/settings/pages/settings'));
-		}
-
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
-		if (ee()->cp->allowed_group('can_access_members', 'can_admin_mbr_groups'))
+		if (ee('Permission')->hasAll('can_access_members', 'can_admin_roles'))
 		{
-			$list = $sidebar->addHeader(lang('members'), ee('CP/URL')->make('settings/members'))
+			$list = $sidebar->addHeader(lang('members'))
 				->addBasicList();
 
+			$list->addItem(lang('member_settings'), ee('CP/URL')->make('settings/members'));
 			$list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
 			$list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
 		}
 
-		if (ee()->cp->allowed_group('can_access_security_settings'))
+		if (ee('Permission')->can('access_security_settings'))
 		{
-			$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL')->make('settings/security-privacy'))
+			$list = $sidebar->addHeader(lang('security_privacy'))
 				->addBasicList();
 
+			$list->addItem(lang('settings'), ee('CP/URL')->make('settings/security-privacy'));
 			$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
 			$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
 
-			if (ee()->cp->allowed_group('can_manage_consents'))
+			if (ee('Permission')->can('manage_consents'))
 			{
 				$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
 			}
 		}
-		elseif (ee()->cp->allowed_group('can_manage_consents'))
+		elseif (ee('Permission')->can('manage_consents'))
 		{
 			$list = $sidebar->addHeader(lang('security_privacy'))->addBasicList();
 			$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
@@ -137,7 +134,7 @@ class Settings extends CP_Controller {
 
 			foreach ($settings_options as $allow => $link)
 			{
-				if (ee()->cp->allowed_group($allow))
+				if (ee('Permission')->hasAll($allow))
 				{
 					$landing = $link;
 					break;

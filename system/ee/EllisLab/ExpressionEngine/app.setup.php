@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\IpAddress;
+use EllisLab\ExpressionEngine\Service\JumpMenu;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\LivePreview;
 use EllisLab\ExpressionEngine\Service\Logger;
@@ -36,6 +37,7 @@ use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Session;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
@@ -48,7 +50,7 @@ use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
-return [
+$setup = [
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
@@ -72,7 +74,7 @@ return [
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
-				(ee()->session->userdata['group_id'] == 1),
+				(ee('Permission')->isSuperAdmin()),
 				array_keys(ee()->session->userdata['assigned_channels']),
 				ee()->localize->now,
 				$search_value,
@@ -99,6 +101,11 @@ return [
 			);
 
 			return $grid;
+		},
+
+		'CP/JumpMenu' => function($ee)
+		{
+			return new JumpMenu\JumpMenu;
 		},
 
 		'CP/MiniGridInput' => function($ee, $config = array())
@@ -255,10 +262,19 @@ return [
 			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
-		'Permission' => function($ee)
+		'Permission' => function($ee, $site_id = NULL)
 		{
-			$userdata = ee()->session->userdata;
-			return new Permission\Permission($userdata);
+			$userdata = ee()->session->all_userdata();
+			$member = ee()->session->getMember();
+			$site_id = ($site_id) ?: ee()->config->item('site_id');
+
+			return new Permission\Permission(
+				$ee->make('Model'),
+				$userdata,
+				($member) ? $member->getPermissions() : [],
+				($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+				$site_id
+			);
 		},
 
 		'Updater/Runner' => function($ee)
@@ -286,11 +302,16 @@ return [
 
 		'Updater/Preflight' => function($ee)
 		{
+			$theme_paths = $ee->make('Model')->get('Config')
+					->filter('key', 'theme_folder_path')
+					->all()
+					->pluck('parsed_value');
+
 			return new Updater\Downloader\Preflight(
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
 				$ee->make('Config')->getFile(),
-				$ee->make('Model')->get('Site')->all()
+				array_unique($theme_paths)
 			);
 		},
 
@@ -509,6 +530,13 @@ return [
 			return new Library\Security\XSS();
 		},
 
+		'Session' => function($ee)
+		{
+			$session = ee()->session->getSessionModel();
+
+			return new Session\Session($session);
+		},
+
 		'Validation' => function($ee)
 		{
 			return new Validation\Factory();
@@ -598,13 +626,16 @@ return [
 			'HTMLButton' => 'Model\Member\HTMLButton',
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
-			'MemberGroup' => 'Model\Member\MemberGroup',
 			'MemberNewsView' => 'Model\Member\NewsView',
 			'OnlineMember' => 'Model\Member\Online',
 
 			// ..\Menu
 			'MenuSet' => 'Model\Menu\MenuSet',
 			'MenuItem' => 'Model\Menu\MenuItem',
+
+			// ..\Dashboard
+			'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
+			'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
 
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',
@@ -620,8 +651,20 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Permission
+			'Permission' => 'Model\Permission\Permission',
+
+			// ..\Role
+			'Role' => 'Model\Role\Role',
+			'RoleGroup' => 'Model\Role\RoleGroup',
+			'RoleSetting' => 'Model\Role\RoleSetting',
+
+			// ..\Config
+			'Config' => 'Model\Config\Config',
 	),
+
 	'cookies.necessary' => [
 		'cp_last_site_id',
 		'csrf_token',
@@ -644,7 +687,19 @@ return [
 		'notify_me',
 		'save_info',
 		'tracker',
+		'viewtype'
 	],
 ];
+
+if (is_dir(SYSPATH . 'ee/EllisLab/Addons/pro/')) {
+	foreach($setup['models'] as $model => $namespace) {
+		$pro_file = SYSPATH . 'ee/EllisLab/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+		if (file_exists($pro_file)) {
+			$setup['models'][$model] =  "\EllisLab\Addons\Pro\\".$namespace;
+		}
+	}
+}
+
+return $setup;
 
 // EOF
