@@ -74,21 +74,26 @@ class Autoloader {
 	public function loadClass($class)
 	{
 		// @todo this prefix handling will not do sub-namespaces correctly
-		foreach ($this->prefixes as $prefix => $path)
-		{
-			if (empty($prefix))
-			{
+		foreach ($this->prefixes as $prefix => $path) {
+			if (empty($prefix)) {
 				throw new \Exception("No namespace specified for add-on: {$path}");
 			}
 
-			if (strpos($class, $prefix) === 0)
-			{
+			if (strpos($class, $prefix) === 0) {
+				// Are they looking for an EllisLab namespaced class
+				if ($prefix == 'EllisLab\ExpressionEngine') {
+					$el_class = $class;
+					$class = str_replace($prefix, 'ExpressionEngine', $class);
+
+					// Alias the class name to the legacy namespaced class
+					class_alias($class, $el_class);
+				}
+
 				// From inside to out: Strip off the prefix from the namespace, turn the namespace into
 				// a path, prepend the path prefix, append .php.
 				$class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
 
-				if (file_exists($class_path))
-				{
+				if (file_exists($class_path)) {
 					require_once $class_path;
 					return;
 				}

@@ -40,6 +40,7 @@
 	require SYSPATH.'ee/ExpressionEngine/Core/Autoloader.php';
 
 	ExpressionEngine\Core\Autoloader::getInstance()
+		->addPrefix('EllisLab\ExpressionEngine', SYSPATH.'ee/ExpressionEngine/')
 		->addPrefix('ExpressionEngine', SYSPATH.'ee/ExpressionEngine/')
 		->addPrefix('Michelf', SYSPATH.'ee/legacy/libraries/typography/Markdown/Michelf/')
 		->addPrefix('Mexitek', SYSPATH.'ee/Mexitek/')
