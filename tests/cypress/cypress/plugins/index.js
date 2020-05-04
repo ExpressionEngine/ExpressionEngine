@@ -27,7 +27,7 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:seed': () => {
-            return db.seed('database.sql')
+            return db.seed(config.env.DB_DUMP)
         }
     })
 
