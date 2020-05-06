@@ -6,7 +6,7 @@ const page = new Homepage;
 context('Homepage', () => {
 
     before(() => {
-        //cy.task('db:seed')
+        cy.task('db:seed')
     })
 
     beforeEach(() => {

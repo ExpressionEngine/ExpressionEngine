@@ -86,14 +86,9 @@ jobs:
               working-directory: tests/cypress
               run:  npm run cypress:run
 
-            - name: Compress Screenshots
-              working-directory: tests/cypress/cypress
-              if: failure()
-              run: zip -r screenshots.zip screenshots
-
             - name: Archive screenshots
               uses: actions/upload-artifact@v1
               if: failure()
               with:
                 name: cypress-files
-                path: tests/cypress/cypress/screenshots.zip
+                path: tests/cypress/cypress/screenshots/
