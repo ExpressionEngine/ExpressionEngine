@@ -11,7 +11,7 @@ class TranslateEdit extends ControlPanel {
 
       'items': 'form fieldset',
 
-      'submit_button': 'form div.form-btns.form-btns-top input[type="submit"]'
+      'submit_button': 'form .tab-bar__right-buttons .form-btns input[type="submit"]'
     })
   }
 

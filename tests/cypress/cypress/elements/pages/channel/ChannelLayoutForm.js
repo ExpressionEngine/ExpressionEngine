@@ -31,7 +31,7 @@ class ChannelLayoutForm extends ControlPanel {
             // Layout Options
             "layout_name": 'form input[name=layout_name]',
             "member_groups": 'form input[name="member_groups[]"]',
-            "submit_button": 'div.form-btns.form-btns-top button[value="save_and_close"]',
+            "submit_button": '.tab-bar__right-buttons .form-btns button[value="save_and_close"]',
 
             "add_tab_modal": 'div.modal-add-new-tab',
             "add_tab_modal_tab_name": 'div.modal-add-new-tab input[name="tab_name"]',

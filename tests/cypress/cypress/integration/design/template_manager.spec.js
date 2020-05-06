@@ -177,7 +177,7 @@ context('Template Manager', () => {
             form.get('php_parse_stage').check('i')
             form.get('hit_counter').clear().type('10')
 
-            cy.get('.modal form .form-btns-top input.btn[type="submit"]').click()
+            cy.get('.modal form .tab-bar__right-buttons .form-btns input.btn[type="submit"]').click()
 
             page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 

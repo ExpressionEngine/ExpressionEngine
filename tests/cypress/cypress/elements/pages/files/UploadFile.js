@@ -7,16 +7,16 @@ class UploadFile extends FileManagerSection {
 
       this.elements({
         // Main box elements
-        'heading': 'div.form-standard form div.form-btns-top h1',
-      
+        'heading': 'div.form-standard form .tab-bar__right-buttons .form-btns h1',
+
         // Edit form
         'file_input': 'div.col.w-12 div.form-standard form fieldset input[name="file"]',
         'title_input': 'div.col.w-12 div.form-standard form fieldset input[name="title"]',
         'description_input': 'div.col.w-12 div.form-standard form fieldset textarea[name="description"]',
         'credit_input': 'div.col.w-12 div.form-standard form fieldset input[name="credit"]',
         'location_input': 'div.col.w-12 div.form-standard form fieldset input[name="location"]',
-        'form_submit_button': 'div.form-standard form div.form-btns-top input[type="submit"]'
-      
+        'form_submit_button': 'div.form-standard form .tab-bar__right-buttons .form-btns input[type="submit"]'
+
       })
     }
     load() {

@@ -37,7 +37,7 @@ context('Template Routes', () => {
         page.get('routes').eq(0).find('td:nth-child(2)').contains('index')
         page.get('routes').eq(0).find('td:nth-child(3)').contains('about')
         page.get('routes').eq(0).find('td:nth-child(4) input').should('have.value', 'foo/bar')
-        page.get('routes').eq(0).find('td:nth-child(5) a[data-toggle-for=required]').should('have.class', 'off')
+        page.get('routes').eq(0).find('td:nth-child(5) [data-toggle-for=required]').should('have.class', 'off')
     })
 
     it('can edit a route', function() {

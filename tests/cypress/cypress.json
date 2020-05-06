@@ -6,5 +6,5 @@
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
     "watchForFileChanges": false,
-    "testFiles": "**/*.spec.js"
+    "testFiles": "**/*.ee6.js"
 }

@@ -8,7 +8,7 @@ class GeneralSettings extends ControlPanel {
         'site_name': 'input[name=site_name]',
         'site_short_name': 'input[name=site_short_name]',
         'is_system_on': 'input[name=is_system_on]',//: :visible => false
-        'is_system_on_toggle': 'a[data-toggle-for=is_system_on]',
+        'is_system_on_toggle': '[data-toggle-for=is_system_on]',
         'new_version_check': 'input[name=new_version_check]',
         'check_version_btn': 'a[data-for=version-check]',//: :visible => false
         'language': 'input[name=deft_lang]',
@@ -17,7 +17,7 @@ class GeneralSettings extends ControlPanel {
         'date_format': 'input[name=date_format]',
         'time_format': 'input[name=time_format]',
         'include_seconds': 'input[name=include_seconds]',//: :visible => false
-        'include_seconds_toggle': 'a[data-toggle-for=include_seconds]'
+        'include_seconds_toggle': '[data-toggle-for=include_seconds]'
       })
   }
 

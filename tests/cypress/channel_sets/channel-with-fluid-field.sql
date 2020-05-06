@@ -600,7 +600,8 @@ VALUES
 	(12,'url','1.0.0','YTowOnt9','n'),
 	(13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n'),
-	(15,'fluid_field','1.0.0','YTowOnt9','n');
+	(15,'fluid_field','1.0.0','YTowOnt9','n'),
+  (16,'file_grid','1.0.0','YTowOnt9','n');
 
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -8,7 +8,7 @@ class UsernamePassword extends ProfileForm {
       this.elements({
 
         'profile_form': 'form[action*="cp/members/profile"]',
-        'profile_form_submit': 'form[action*="cp/members/profile"] div.form-btns.form-btns-top input[type=submit]',
+        'profile_form_submit': 'form[action*="cp/members/profile"] .tab-bar__right-buttons .form-btns input[type=submit]',
 
         'username': 'input[name=username]:visible',
         'screen_name': 'input[name=screen_name]:visible',

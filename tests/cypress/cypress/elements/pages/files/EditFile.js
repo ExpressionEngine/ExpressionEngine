@@ -7,15 +7,15 @@ class EditFile extends FileManagerSection {
 
       this.elements({
         // Main box elements
-        'heading': 'div.form-standard form div.form-btns-top h1',
-        'crop_button': 'div.form-standard form div.form-btns-top h1 a.action',
-      
+        'heading': 'div.form-standard form .tab-bar__right-buttons .form-btns h1',
+        'crop_button': 'div.form-standard form .tab-bar__right-buttons .form-btns h1 a.action',
+
         // Edit form
         'title_input': 'fieldset input[name="title"]',
         'description_input': 'fieldset textarea[name="description"]',
         'credit_input': 'fieldset input[name="credit"]',
         'location_input': 'fieldset input[name="location"]',
-        'form_submit_button': '.form-btns-top input[type="submit"]'
+        'form_submit_button': '.tab-bar__right-buttons .form-btns input[type="submit"]'
       })
     }
     load() {

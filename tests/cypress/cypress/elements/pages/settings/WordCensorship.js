@@ -6,7 +6,7 @@ class WordCensorship extends ControlPanel {
 
       this.elements({
         'enable_censoring': 'input[name=enable_censoring]', //:visible => false
-        'enable_censoring_toggle': 'a[data-toggle-for=enable_censoring]',
+        'enable_censoring_toggle': '[data-toggle-for=enable_censoring]',
         'censor_replacement': 'input[name=censor_replacement]',
         'censored_words': 'textarea[name=censored_words]'
       })

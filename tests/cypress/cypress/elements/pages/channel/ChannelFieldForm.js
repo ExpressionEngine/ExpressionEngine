@@ -85,8 +85,8 @@ class ChannelFieldForm extends ControlPanel {
     }
 
     select_field_type(type) {
-        this.get('field_type').find('.field-drop-selected').click()
-        cy.get('div[data-input-value="field_type"] .field-drop-choices label').contains(type).click()
+        this.get('field_type').find('.select__button').click()
+        cy.get('div[data-input-value="field_type"] .select__dropdown .select__dropdown-item').contains(type).click()
     }
 
 }

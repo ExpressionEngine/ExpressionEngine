@@ -17,7 +17,7 @@ class EmailSettings extends ControlPanel {
         'email_smtp_crypto': 'input[name=email_smtp_crypto]',
         'mail_format': 'input[name=mail_format]',
         'word_wrap': 'input[name=word_wrap]',//: :visible => false
-        'word_wrap_toggle': 'a[data-toggle-for=word_wrap]'
+        'word_wrap_toggle': '[data-toggle-for=word_wrap]'
       })
   }
 

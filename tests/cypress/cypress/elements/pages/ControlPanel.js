@@ -17,16 +17,16 @@ class ControlPanel {
             "error_messages": 'em.ee-form-error-message',
 
             // Main Section
-            "page_title": '.wrap .box h1',
-            "wrap": 'section.wrap',
-            "nav": '.nav-main',
+            "page_title": '.ee-main .main-nav h1',
+            "wrap": 'section.ee-wrapper .ee-main',
+            "nav": 'section.ee-wrapper .ee-sidebar',
 
             // Tables
             "select_all": 'th.check-ctrl input',
-            "sort_col": 'table th.highlight',
-            "sort_links": 'table a.sort',
-            "bulk_action": 'form fieldset.tbl-bulk-act select[name="bulk_action"]',
-            "action_submit_button": 'form fieldset.tbl-bulk-act .submit',
+            "sort_col": 'table th.column-sort-header--active',
+            "sort_links": 'table a.column-sort',
+            "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
+            "action_submit_button": 'form fieldset.bulk-action-bar button',
 
             // Pagination
             "pagination": 'div.paginate',
@@ -55,7 +55,7 @@ class ControlPanel {
 
             // Tabs
             "tab_bar": 'div.tab-wrap',
-            "tabs": 'div.tab-wrap ul.tabs li',
+            "tabs": 'div.tab-wrap .tab-bar__tab',
 
             "developer_menu": 'a[title="Developer Tools"]',
         }

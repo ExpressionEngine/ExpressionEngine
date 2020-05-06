@@ -10,10 +10,10 @@ class SiteForm extends ControlPanel {
       'title': '.section-header__title',
       'add_site_button': '.section-header__controls a.btn.action',
 
-      'save_button': 'div.form-btns.form-btns-top button[value="save_and_close"]',
+      'save_button': '.tab-bar__right-buttons .form-btns button[value="save_and_close"]',
       'name': 'input[name="site_label"]',
       'short_name': 'input[name="site_name"]',
-      'online': 'a[data-toggle-for="is_site_on"]',
+      'online': '[data-toggle-for="is_site_on"]',
       'description': 'textarea[name="site_description"]'
 
     })

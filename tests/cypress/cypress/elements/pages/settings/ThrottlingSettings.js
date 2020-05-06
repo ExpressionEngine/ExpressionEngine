@@ -6,9 +6,9 @@ class ThrottlingSettings extends ControlPanel {
 
       this.elements({
         'enable_throttling': 'input[name=enable_throttling]', //visible => false
-        'enable_throttling_toggle': 'a[data-toggle-for=enable_throttling]',
+        'enable_throttling_toggle': '[data-toggle-for=enable_throttling]',
         'banish_masked_ips': 'input[name=banish_masked_ips]', //visible => false
-        'banish_masked_ips_toggle': 'a[data-toggle-for=banish_masked_ips]',
+        'banish_masked_ips_toggle': '[data-toggle-for=banish_masked_ips]',
         'lockout_time': 'input[name=lockout_time]',
         'max_page_loads': 'input[name=max_page_loads]',
         'time_interval': 'input[name=time_interval]',

@@ -6,8 +6,8 @@ class Channel extends ControlPanel {
         this.url = 'admin.php?/cp/channels';
 
         this.selectors = Object.assign(this.selectors, {
-            "save_button": 'form .form-btns-top button[type=submit][value=save]',
-            "save_and_new_button": 'form .form-btns-top button[type=submit][value=save_and_new]',
+            "save_button": 'form .tab-bar__right-buttons .form-btns button[type=submit][value=save]',
+            "save_and_new_button": 'form .tab-bar__right-buttons .form-btns button[type=submit][value=save_and_new]',
 
             "channel_tab": 'ul.tabs a[rel="t-0"]',
             "fields_tab": 'ul.tabs a[rel="t-1"]',
@@ -53,37 +53,37 @@ class Channel extends ControlPanel {
             "search_excerpt": 'div[data-input-value="search_excerpt"] input[type="radio"]',
 
             "channel_html_formatting": 'input[name=channel_html_formatting]',
-            "extra_publish_controls": 'a[data-toggle-for=extra_publish_controls]',
-            "channel_allow_img_urls": 'a[data-toggle-for=channel_allow_img_urls]',
-            "channel_auto_link_urls": 'a[data-toggle-for=channel_auto_link_urls]',
+            "extra_publish_controls": '[data-toggle-for=extra_publish_controls]',
+            "channel_allow_img_urls": '[data-toggle-for=channel_allow_img_urls]',
+            "channel_auto_link_urls": '[data-toggle-for=channel_auto_link_urls]',
 
             "default_status": 'input[name=default_status]',
             "default_author": 'input[name=default_author]',
-            "allow_guest_posts": 'a[data-toggle-for=allow_guest_posts]',
+            "allow_guest_posts": '[data-toggle-for=allow_guest_posts]',
 
-            "enable_versioning": 'a[data-toggle-for=enable_versioning]',
+            "enable_versioning": '[data-toggle-for=enable_versioning]',
             "max_revisions": 'input[name=max_revisions]',
             "clear_versioning_data": 'input[name=clear_versioning_data]',
 
-            "comment_notify_authors": 'a[data-toggle-for=comment_notify_authors]',
-            "channel_notify": 'a[data-toggle-for=channel_notify]',
+            "comment_notify_authors": '[data-toggle-for=comment_notify_authors]',
+            "channel_notify": '[data-toggle-for=channel_notify]',
             "channel_notify_emails": 'input[name=channel_notify_emails]',
-            "comment_notify": 'a[data-toggle-for=comment_notify]',
+            "comment_notify": '[data-toggle-for=comment_notify]',
             "comment_notify_emails": 'input[name=comment_notify_emails]',
 
-            "comment_system_enabled": 'a[data-toggle-for=comment_system_enabled]',
-            "deft_comments": 'a[data-toggle-for=deft_comments]',
-            "comment_require_membership": 'a[data-toggle-for=comment_require_membership]',
-            "comment_require_email": 'a[data-toggle-for=comment_require_email]',
-            "comment_moderate": 'a[data-toggle-for=comment_moderate]',
+            "comment_system_enabled": '[data-toggle-for=comment_system_enabled]',
+            "deft_comments": '[data-toggle-for=deft_comments]',
+            "comment_require_membership": '[data-toggle-for=comment_require_membership]',
+            "comment_require_email": '[data-toggle-for=comment_require_email]',
+            "comment_moderate": '[data-toggle-for=comment_moderate]',
             "comment_max_chars": 'input[name=comment_max_chars]',
             "comment_timelock": 'input[name=comment_timelock]',
             "comment_expiration": 'input[name=comment_expiration]',
             "apply_expiration_to_existing": 'input[name=apply_expiration_to_existing]',
             "comment_text_formatting": 'input[name=comment_text_formatting]',
             "comment_html_formatting": 'input[name=comment_html_formatting]',
-            "comment_allow_img_urls": 'a[data-toggle-for=comment_allow_img_urls]',
-            "comment_auto_link_urls": 'a[data-toggle-for=comment_auto_link_urls]',
+            "comment_allow_img_urls": '[data-toggle-for=comment_allow_img_urls]',
+            "comment_auto_link_urls": '[data-toggle-for=comment_auto_link_urls]',
         })
     }
 

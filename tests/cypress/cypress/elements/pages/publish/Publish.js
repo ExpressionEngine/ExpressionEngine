@@ -8,14 +8,14 @@ class Publish extends ControlPanel {
       this.elements({
         'title': 'input[name=title]',
         'url_title': 'input[name=url_title]',
-        'save': '.form-btns-top button[name=submit][value=save]',
-        'save_and_close': '.form-btns-top button[name=submit][value=save_and_close]',
+        'save': '.tab-bar__right-buttons .form-btns button[name=submit][value=save]',
+        'save_and_close': '.tab-bar__right-buttons .form-btns button[name=submit][value=save_and_close]',
 
         'file_fields': 'div[data-file-field-react]',
         'chosen_files': '.fields-upload-chosen:visible img',
 
-        'tab_links': 'ul.tabs li',
-        'tabs': '.tab-wrap div.tabs'
+        'tab_links': '.tab-wrap div.tab-bar__tabs .tab-bar__tab',
+        'tabs': '.tab-wrap div.tab-bar__tabs'
 
         // section :file_modal, FileModal, '.modal-file'
         // section :forum_tab, ForumTab, 'body'

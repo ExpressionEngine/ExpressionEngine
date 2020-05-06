@@ -32,7 +32,7 @@ Cypress.Commands.add("login", (user) => {
         cy.get('input[name=password]').clear().type(user.password)
     }
 
-    cy.get('input.btn').click()
+    cy.get('input[type=submit]').click()
 })
 
 Cypress.Commands.add("auth", (user) => {

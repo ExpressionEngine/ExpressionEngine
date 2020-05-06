@@ -6,8 +6,8 @@ class TemplateCreate extends ControlPanel {
         this.url = 'admin.php?/cp/design/template/create';
 
         this.elements({
-            "save_button": '.form-btns-top button.btn[value="finish"]',
-            "save_and_edit_button": '.form-btns-top button.btn[value="edit"]',
+            "save_button": '.tab-bar__right-buttons .form-btns button.btn[value="finish"]',
+            "save_and_edit_button": '.tab-bar__right-buttons .form-btns button.btn[value="edit"]',
             "name": 'input[name="template_name"]',
             "type": 'input[name="template_type"]',
             "duplicate_existing_template": 'div[data-input-value="template_id"] input[type="radio"]',
@@ -21,7 +21,7 @@ class TemplateEdit extends ControlPanel {
         this.url = 'admin.php?/cp/design/template/edit';
 
         this.elements({
-            "view_rendered_button": '.form-btns-top a.btn.action',
+            "view_rendered_button": '.tab-bar__right-buttons .form-btns a.btn.action',
             "save_button": '.form-btns button.btn[value="edit"]',
             "save_and_close_button": '.form-btns button.btn[value="finish"]',
 
@@ -41,18 +41,18 @@ class TemplateEdit extends ControlPanel {
             //Settings Tab
             "name": 'input[name="template_name"]',
             "type": 'input[name="template_type"]',
-            "enable_caching": 'a[data-toggle-for="cache"]',
+            "enable_caching": '[data-toggle-for="cache"]',
             "refresh_interval": 'input[name="refresh"]',
-            "allow_php": 'a[data-toggle-for="allow_php"]',
+            "allow_php": '[data-toggle-for="allow_php"]',
             "php_parse_stage": 'input[name="php_parse_location"]',
             "hit_counter": 'input[name="hits"]',
 
             //Access Tab
             "allowed_member_groups": 'div[data-input-value="allowed_member_groups"] input[type="checkbox"]',
             "no_access_redirect": 'div[data-input-value="no_auth_bounce"] input[type="radio"]',
-            "enable_http_auth": 'a[data-toggle-for="enable_http_auth"]',
+            "enable_http_auth": '[data-toggle-for="enable_http_auth"]',
             "template_route": 'input[name="route"]',
-            "require_all_variables": 'a[data-toggle-for="route_required"]',
+            "require_all_variables": '[data-toggle-for="route_required"]',
         })
     }
     load_edit_for_template(id) {

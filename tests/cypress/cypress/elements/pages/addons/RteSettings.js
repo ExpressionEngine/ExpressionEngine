@@ -11,9 +11,9 @@ class RteSettings extends ControlPanel {
 
             // Settings View
             "rte_enabled": 'input[name=rte_enabled]',
-            "rte_enabled_toggle": 'a[data-toggle-for=rte_enabled]',
+            "rte_enabled_toggle": '[data-toggle-for=rte_enabled]',
             "default_tool_set": 'input[name="rte_default_toolset_id"]',
-            "save_settings_button": 'div.form-btns.form-btns-top input.btn[type="submit"]',
+            "save_settings_button": '.tab-bar__right-buttons .form-btns input.btn[type="submit"]',
 
             "create_new_button": 'div.tbl-ctrls form fieldset.tbl-search a.btn.action',
             "tool_sets": 'div.tbl-ctrls form div.tbl-wrap table tr',
@@ -31,8 +31,8 @@ class RteSettings extends ControlPanel {
             // Tool Set View
             "tool_set_name": 'input[name="toolset_name"]',
             "choose_tools": 'div[data-input-value="tools"] input[type="checkbox"]',
-            "tool_set_save_and_close_button": 'div.form-btns.form-btns-top button[value="save_and_close"]',
-            "tool_set_save_button": 'div.form-btns.form-btns-top button[value="save"]'
+            "tool_set_save_and_close_button": '.tab-bar__right-buttons .form-btns button[value="save_and_close"]',
+            "tool_set_save_button": '.tab-bar__right-buttons .form-btns button[value="save"]'
         })
     }
 

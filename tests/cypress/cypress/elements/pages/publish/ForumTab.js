@@ -21,7 +21,7 @@ class ForumTab extends ControlPanel {
     // Create board
     cy.get('.w-12 a[href*="cp/addons/settings/forum/create/board"]').click()
     cy.get('input[name="board_label"]').type('Board')
-    
+
     //cy.get('.w-12 button[value="save_and_close"]:first-child').click()
     this.get('wrap').find('div').find('button').eq(2).click()
     // Create category
@@ -32,7 +32,7 @@ class ForumTab extends ControlPanel {
     // Create forum
     cy.get('.tbl-action a[href*="cp/addons/settings/forum/create/forum/1"]').click()
     cy.get('input[name="forum_name"]').type('Forum')
-    
+
     this.get('wrap').find('div').find('button').eq(2).click()
     //cy.get('.w-12 button[value="save_and_close"]:first-child').click()
   }
@@ -41,10 +41,10 @@ class ForumTab extends ControlPanel {
     cy.get('.ajax-validate > .fieldset-required > .field-control > input').type('title')
     cy.get('textarea').type('body')
     cy.get(':nth-child(5) > .field-control > .fields-select > .field-inputs > :nth-child(3) > input').click()
-    cy.get('.form-btns-top > [value="save_and_close"]').click()
+    cy.get('.tab-bar__right-buttons .form-btns > [value="save_and_close"]').click()
     cy.get('.app-notice__content > :nth-child(2)').contains("The forum")
     cy.get('.app-notice__content > :nth-child(2)').contains(" has been created")
-    
+
 
   }
 

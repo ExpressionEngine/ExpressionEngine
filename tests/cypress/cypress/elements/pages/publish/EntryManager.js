@@ -6,8 +6,8 @@ class EntryManager extends ControlPanel {
     this.url = '/admin.php?/cp/publish/edit&{perpage}&{filter_by_channel}';
 
     this.elements({
-      'entry_rows': '.w-16 .tbl-ctrls form table tbody tr',
-      'entry_checkboxes': '.w-16 .tbl-ctrls form table tbody tr input[type="checkbox"]',
+      'entry_rows': '.ee-main__content .tbl-ctrls form table tbody tr',
+      'entry_checkboxes': '.ee-main__content .tbl-ctrls form table tbody tr input[type="checkbox"]',
       'center_modal': '.app-modal--center'
     })
 

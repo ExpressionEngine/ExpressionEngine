@@ -402,7 +402,7 @@ context('Member Group List', () => {
     {
       page.get('settings_btn').click()
       page.get('wrap').find('input[name="multiple_sites_enabled"]').click()
-      page.get('wrap').find('form[action$="cp/settings/general"] div.form-btns.form-btns-top input[type="submit"]').click()
+      page.get('wrap').find('form[action$="cp/settings/general"] .tab-bar__right-buttons .form-btns input[type="submit"]').click()
       page.get('dev_menu').click()
     }
 
@@ -411,7 +411,7 @@ context('Member Group List', () => {
 
     page.get('wrap').find('input[name="site_label"]').clear().type('Second Site')
     page.get('wrap').find('input[name="site_name"]').clear().type('second_site')
-    page.get('wrap').find('form[action$="cp/msm/create"] div.form-btns.form-btns-top button[value="save_and_close"]').click()
+    page.get('wrap').find('form[action$="cp/msm/create"] .tab-bar__right-buttons .form-btns button[value="save_and_close"]').click()
 
     page.load()
   }

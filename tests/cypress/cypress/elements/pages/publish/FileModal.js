@@ -7,8 +7,8 @@ class FileModal extends ControlPanel {
       'file_modal': '.modal-file',
       'title': '.modal-file h1',
       'upload_button': '.modal-file table .btn.submit',
-      'filters': '.modal-file .filters > ul > li > a.has-sub',
-      'view_filters': '.modal-file .filters > ul > li:last-child ul a',
+      'filters': '.modal-file .filter-bar .filter-bar__item',
+      'view_filters': '.modal-file .filter-bar .filter-bar__item:contains("View as")',
       'files': '.modal-file table tbody td'
     })
   }

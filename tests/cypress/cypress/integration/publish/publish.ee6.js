@@ -39,7 +39,7 @@ context('Publish Page - Create', () => {
         page.get('tab_links').eq(1).click()
         page.get('wrap').find('input[name="comment_expiration_date"]').should('exist')
         page.get('tab_links').eq(3).click()
-        page.get('wrap').find('a[data-toggle-for="allow_comments"]').should('exist')
+        page.get('wrap').find('[data-toggle-for="allow_comments"]').should('exist')
     })
 
     it('does not show comment fields when comments are disabled by system', () => {
@@ -49,7 +49,7 @@ context('Publish Page - Create', () => {
         page.get('tab_links').eq(1).click()
         page.get('wrap').find('input[name="comment_expiration_date"]').should('not.exist')
         page.get('tab_links').eq(3).click()
-        page.get('wrap').find('a[data-toggle-for="allow_comments"]').should('not.exist')
+        page.get('wrap').find('[data-toggle-for="allow_comments"]').should('not.exist')
     })
 
     it('does not shows comment fields when comments are disabled by system and channel allows comments', () => {
@@ -58,7 +58,7 @@ context('Publish Page - Create', () => {
         page.get('tab_links').eq(1).click()
         page.get('wrap').find('input[name="comment_expiration_date"]').should('not.exist')
         page.get('tab_links').eq(3).click()
-        page.get('wrap').find('a[data-toggle-for="allow_comments"]').should('not.exist')
+        page.get('wrap').find('[data-toggle-for="allow_comments"]').should('not.exist')
     })
 
     it('selects default categories for new entries', () => {
@@ -95,11 +95,11 @@ context('Publish Page - Create', () => {
 
           page.get('file_fields').each(function(field, i) {
 
-              let link = field.find("a:contains('Choose Existing')")
+              let link = field.find("button:contains('Choose Existing')")
               cy.get(link).click()
 
-              if (link.hasClass('js-filter-link')) {
-                  let dir_link = link.parent().find("a:contains('About')")
+              if (link.hasClass('has-sub')) {
+                  let dir_link = link.next('.dropdown').find("a:contains('About')")
                   cy.get(dir_link).click()
               }
 
@@ -121,26 +121,25 @@ context('Publish Page - Create', () => {
         })
 
         it('the file field restricts you to the chosen directory', () => {
-          let link = page.get('file_fields').first().find("a:contains('Choose Existing')");
+          let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
           link.click()
 
-          link.parent().find("a:contains('About')").click()
+          link.next('.dropdown').find("a:contains('About')").click()
 
           //page.get('modal').should('be.visible')
           file_modal.get('files').should('be.visible')
           //page.file_modal.wait_for_filters
 
-          file_modal.get('filters').should('have.length', 2)
+          file_modal.get('filters').should('have.length', 3)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
           file_modal.get('upload_button').should('exist')
 
-          file_modal.get('filters').last().click()
-          file_modal.get('view_filters').first().click()
+          file_modal.get('filters').eq(1).find('a').first().click()
 
           //file_modal.wait_for_filters
-          file_modal.get('filters').should('have.length', 2)
+          file_modal.get('filters').should('have.length', 3)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
@@ -149,14 +148,14 @@ context('Publish Page - Create', () => {
 
         it('the file field retains data after being created and edited', () => {
           page.get('file_fields').each(function(field, i) {
-            let link = field.find("a:contains('Choose Existing')")
+            let link = field.find("button:contains('Choose Existing')")
             cy.get(link).click()
 
-            if (link.hasClass('js-filter-link')) {
-              let dir_link = link.parent().find("a:contains('About')")
+            if (link.hasClass('has-sub')) {
+              let dir_link = link.next('.dropdown').find("a:contains('About')")
               cy.get(dir_link).click()
 
-              cy.wait(500)
+              cy.wait(1000)
 
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
@@ -207,23 +206,21 @@ context('Publish Page - Create', () => {
         page.get('title').type("Fluid Field Test the First")
         page.get('url_title').clear().type("fluid-field-test-first")
 
-        fluid_field.get('actions_menu.name').click()
-        fluid_field.get('actions_menu').find('.sub-menu li').then(function($li) {
+        fluid_field.get('actions_menu.fields').then(function($li) {
           let existing_fields = Cypress._.map($li, function(el) {
-              return Cypress.$(el).text();
+              return Cypress.$(el).text().replace('Add ', '').trim();
           })
 
           expect(existing_fields).to.deep.equal(available_fields)
         })
 
-        fluid_field.get('actions_menu.name').click()
       })
 
       function add_content(index, skew = 0) {
 
         fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
           const field_type = data;
-          const field = fluid_field.get('items').eq(index).find('.field-control')
+          const field = fluid_field.get('items').eq(index).find('.fluid__item-field')
 
           switch (field_type) {
             case 'date':
@@ -240,22 +237,26 @@ context('Publish Page - Create', () => {
               field.find('input').clear().type('http://www.example.com/page/' + skew.toString())
               break;
             case 'file':
-              field.find('a:contains("Choose Existing")').click()
+              field.find('button:contains("Choose Existing")').click()
               cy.wait(500)
-              fluid_field.get('items').eq(index).find('a:contains("Choose Existing")').parent().find('a:contains("About")').click()
+              fluid_field.get('items').eq(index).find('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click()
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
               //page.file_modal.wait_for_files
               cy.wait(500)
               file_modal.get('files').eq(0 + skew).click()
               cy.wait(500)
+              page.get('modal').should('not.be.visible')
               //page.wait_until_modal_invisible
               break;
             case 'relationship':
-              field.find('input[type=radio]').eq(0 + skew).check()
+              let rel_link = field.find('.js-dropdown-toggle:contains("Relate Entry")')
+              rel_link.click()
+              rel_link.next('.dropdown.dropdown--open').find('.dropdown__link:visible').eq(0 + skew).click();
+              page.get('title').click()
               break;
             case 'rte':
-              field.find('.WysiHat-editor').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
+              field.find('.WysiHat-editor').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
               break;
             case 'multi_select':
               field.find('input[type=checkbox]').eq(0 + skew).check()
@@ -268,12 +269,12 @@ context('Publish Page - Create', () => {
               let choice = 'Corndog'
               if (skew == 1) { choice = 'Burrito' }
               cy.wait(100)
-              fluid_field.get('items').eq(index).find('.field-control div[data-dropdown-react] .field-drop-choices label:contains("'+choice+'")').click()
+              fluid_field.get('items').eq(index).find('.fluid__item-field div[data-dropdown-react] .select__dropdown-items span:contains("'+choice+'")').click()
               break;
             case 'grid':
               field.find('a[rel="add_row"]').first().click()
-              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(0).clear().type('Lorem' + skew.toString())
-              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(1).clear().type('ipsum' + skew.toString())
+              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).clear().type('Lorem' + skew.toString())
+              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).clear().type('ipsum' + skew.toString())
               break;
             case 'textarea':
               field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
@@ -293,7 +294,7 @@ context('Publish Page - Create', () => {
 
         fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
           const field_type = data;
-          let field = fluid_field.get('items').eq(index).find('.field-control')
+          let field = fluid_field.get('items').eq(index).find('.fluid__item-field')
 
           switch (field_type) {
             case 'date':
@@ -318,7 +319,11 @@ context('Publish Page - Create', () => {
               field.contains('staff_jane')
               break;
             case 'relationship':
-              field.find('input[type=radio]').eq(0 + skew).should('be.checked')
+              let expected_val = 'About the Label';
+              if (skew==1) {
+                expected_val = 'Band Title';
+              }
+              field.contains(expected_val)
               break;
             case 'rte':
               field.find('textarea').contains('Lorem ipsum')// {:visible => false}
@@ -335,10 +340,10 @@ context('Publish Page - Create', () => {
               field.find('div[data-dropdown-react]').contains(choice)
               break;
             case 'grid':
-              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(0).invoke('val').then((text) => {
+              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).invoke('val').then((text) => {
                 expect(text).equal('Lorem' + skew.toString())
               })
-              fluid_field.get('items').eq(index).find('.field-control input:visible').eq(1).invoke('val').then((text) => {
+              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).invoke('val').then((text) => {
                 expect(text).equal('ipsum' + skew.toString())
               })
               break;
@@ -360,10 +365,9 @@ context('Publish Page - Create', () => {
       it('adds a field', () => {
 
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
 
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         page.get('save').click()
@@ -372,7 +376,7 @@ context('Publish Page - Create', () => {
         // Make sure the fields stuck around after save
         cy.log('Make sure the fields stuck around after save')
         available_fields.forEach(function(field, index) {
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
           add_content(index)
         })
 
@@ -388,19 +392,17 @@ context('Publish Page - Create', () => {
         const number_of_fields = available_fields.length
 
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
           add_content(index)
 
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
           add_content((index + number_of_fields), 1)
 
-          fluid_field.get('items').eq(index + number_of_fields).find('h3').contains(field)
+          fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
         })
 
         page.get('save').click()
@@ -408,10 +410,10 @@ context('Publish Page - Create', () => {
 
         // Make sure the fields stuck around after save
         available_fields.forEach(function(field, index) {
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
           check_content(index)
 
-          fluid_field.get('items').eq(index + number_of_fields).find('h3').contains(field)
+          fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
           check_content((index + number_of_fields), 1)
         })
       })
@@ -423,29 +425,28 @@ context('Publish Page - Create', () => {
       it('removes fields', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
           add_content(index)
 
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         fluid_field.get('items').should('have.length', available_fields.length)
 
-        fluid_field.get('items').each(function(el){
-            let link = el.find('.fluid-remove');
-            cy.get(link).click()
+        available_fields.forEach(function(field, index) {
+          let gear = fluid_field.get('items').first().find('.fluid__item-tools').first().find('.js-dropdown-toggle').first()
+          gear.click()
+          gear.next('.dropdown').find('.js-fluid-remove').click()
         })
 
         fluid_field.get('items').should('have.length', 0)
 
         // Second: after saving
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
           add_content(index)
 
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         page.get('save').click()
@@ -453,9 +454,10 @@ context('Publish Page - Create', () => {
 
         fluid_field.get('items').should('have.length', available_fields.length)
 
-        fluid_field.get('items').each(function(el){
-          let link = el.find('.fluid-remove');
-          cy.get(link).click()
+        available_fields.forEach(function(field, index) {
+          let gear = fluid_field.get('items').first().find('.fluid__item-tools').first().find('.js-dropdown-toggle').first()
+          gear.click()
+          gear.next('.dropdown').find('.js-fluid-remove').click()
         })
 
         page.get('save').click()
@@ -466,11 +468,10 @@ context('Publish Page - Create', () => {
 
       it('keeps data when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.name').click()
           fluid_field.get('actions_menu.fields').eq(index).click()
           add_content(index)
 
-          fluid_field.get('items').eq(index).find('h3').contains(field)
+          fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         page.get('title').clear()

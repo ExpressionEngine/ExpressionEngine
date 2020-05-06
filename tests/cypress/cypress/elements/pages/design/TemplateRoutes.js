@@ -14,7 +14,7 @@ class TemplateRoutes extends ControlPanel {
             // "template_choice": 'td:nth-child(2) div[data-input-value*="routes[rows]"] input[type="radio"]',
             // "group": 'td:nth-child(3)',
             // "route": 'td:nth-child(4) input',
-            // "segments_required": 'td:nth-child(5) a[data-toggle-for=required]',
+            // "segments_required": 'td:nth-child(5) [data-toggle-for=required]',
             // "delete": 'td:nth-child(6) a[rel=remove_row]',
 
             "no_results": 'tr.no-results',
@@ -42,12 +42,12 @@ class TemplateRoutes extends ControlPanel {
         this.get('routes').eq(-1).find('td:nth-child(4) input').type(options.route)
 
         if (options.segments_required) {
-            if (route.find('td:nth-child(5) a[data-toggle-for=required]').hasClass('off')) {
-                route.find('td:nth-child(5) a[data-toggle-for=required]').click();
+            if (route.find('td:nth-child(5) [data-toggle-for=required]').hasClass('off')) {
+                route.find('td:nth-child(5) [data-toggle-for=required]').click();
             }
         } else {
-            if (route.find('td:nth-child(5) a[data-toggle-for=required]').hasClass('on')) {
-                route.find('td:nth-child(5) a[data-toggle-for=required]').click();
+            if (route.find('td:nth-child(5) [data-toggle-for=required]').hasClass('on')) {
+                route.find('td:nth-child(5) [data-toggle-for=required]').click();
             }
         }
     }
