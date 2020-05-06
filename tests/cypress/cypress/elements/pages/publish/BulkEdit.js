@@ -6,7 +6,7 @@ class BulkEdit extends ControlPanel {
 
       this.elements({
 
-        'save_all_button': '.app-modal--center .form-btns .btn',
+        'save_all_button': '.app-modal--center .form-btns-top .btn',
         'heading': '.app-modal--center h1',
         'filter_heading': '.app-modal--center [data-bulk-edit-entries-react] div h2',
         'filter_input': '.app-modal--center [data-bulk-edit-entries-react] input[type=text]',

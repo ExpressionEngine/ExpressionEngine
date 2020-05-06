@@ -6,7 +6,7 @@ const page = new Homepage;
 context('Homepage', () => {
 
     before(() => {
-        cy.task('db:seed')
+        //cy.task('db:seed')
     })
 
     beforeEach(() => {
@@ -23,7 +23,7 @@ context('Homepage', () => {
         })
 
         it('does not show flagged comments', function() {
-            page.get('comment_info').contains("flagged as potential spam").should('not.exist')
+            page.get('dashboard').find('.dashboard__item').eq(2).contains("flagged as spam").should('not.exist')
         })
     })
 
@@ -33,7 +33,7 @@ context('Homepage', () => {
         })
 
         it('shows flagged comments', function() {
-            page.get('comment_info').contains("flagged as potential spam")
+            page.get('dashboard').find('.dashboard__item').eq(2).contains("flagged as spam")
         })
     })
 })

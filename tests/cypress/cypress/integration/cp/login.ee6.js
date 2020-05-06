@@ -15,21 +15,21 @@ context('Login Page', () => {
         cy.contains('Password');
         cy.contains('Remind me');
 
-        cy.get('input.btn').should('not.be.disabled');
+        cy.get('input[type=submit]').should('not.be.disabled');
     })
 
     it('rejects when submitting no credentials', function() {
         cy.login({ email: '', password: '' });
 
         cy.contains('The username field is required');
-        cy.get('input.btn').should('not.be.disabled');
+        cy.get('input[type=submit]').should('not.be.disabled');
     })
 
     it('rejects when submitting no password', function() {
         cy.login({ email: 'admin', password: '' });
 
         cy.contains('The password field is required');
-        cy.get('input.btn').should('not.be.disabled');
+        cy.get('input[type=submit]').should('not.be.disabled');
     })
 
     it('logs in when submitting valid credentials', function() {
@@ -42,7 +42,7 @@ context('Login Page', () => {
         cy.login({ email: 'noone', password: 'nowhere' });
 
         cy.contains('That is the wrong username or password');
-        cy.get('input.btn').should('not.be.disabled');
+        cy.get('input[type=submit]').should('not.be.disabled');
     })
 
     it('locks the user out after four login attempts', function() {
@@ -51,7 +51,7 @@ context('Login Page', () => {
         }
 
         cy.contains('You are only permitted to make four login attempts every 1 minute(s)');
-        cy.get('input.btn').contains('Locked').should('be.disabled');
+        cy.get('input[type=submit]').contains('Locked').should('be.disabled');
     })
 
     it('shows the reset password form when link is clicked', function() {

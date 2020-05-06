@@ -8,7 +8,8 @@ class EntryManager extends ControlPanel {
     this.elements({
       'entry_rows': '.ee-main__content .tbl-ctrls form table tbody tr',
       'entry_checkboxes': '.ee-main__content .tbl-ctrls form table tbody tr input[type="checkbox"]',
-      'center_modal': '.app-modal--center'
+      'center_modal': '.app-modal--center',
+      'edit_menu': '.dropdown:contains("View All")'
     })
 
   }

@@ -20,7 +20,7 @@ context('Bulk Edit', () => {
 
   })
 
-  it.skip('should load the bulk edit modal', () => {
+  it('should load the bulk edit modal', () => {
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Getting to Know ExpressionEngine')
     entry_manager.check_entry('Welcome to the Example Site!')
@@ -57,7 +57,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').should('have.length', 0)
   })
 
-  it.skip('should not make categories or comment settings available if entries do not share them', () => {
+  it('should not make categories or comment settings available if entries do not share them', () => {
     cy.server()
 
     entry_manager.check_entry('About the Label')
@@ -92,7 +92,7 @@ context('Bulk Edit', () => {
     })
   })
 
-  it.skip('should filter and manage the selected entries', () => {
+  it('should filter and manage the selected entries', () => {
     cy.server()
 
     entry_manager.check_entry('About the Label')
@@ -136,7 +136,7 @@ context('Bulk Edit', () => {
     entry_manager.get('center_modal').should('not.be.visible')
   })
 
-  it.skip('should manage the fields dropdown based on chosen fields and filter', () => {
+  it('should manage the fields dropdown based on chosen fields and filter', () => {
     entry_manager.check_entry('About the Label')
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
@@ -225,29 +225,29 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').should('exist')
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react]').click()
     cy.wait(100)
-    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click()
+    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').first().click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Expiration date")').click()
     bulk_edit.get('fluid_fields').eq(1).find('input[name=expiration_date]').clear().type('2/14/2018 4:00 PM')
-    bulk_edit.get('fluid_fields').eq(1).click() // Close date picker
+    bulk_edit.get('heading').click() // Close date picker
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Comment expiration date")').click()
     bulk_edit.get('fluid_fields').eq(2).find('input[name=comment_expiration_date]').clear().type('2/14/2018 5:00 PM')
-    bulk_edit.get('fluid_fields').eq(2).click()
+    bulk_edit.get('heading').click() // Close date picker
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Make entry sticky?")').click()
-    bulk_edit.get('fluid_fields').eq(3).find('a.toggle-btn').click()
+    bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Allow comments?")').click()
-    bulk_edit.get('fluid_fields').eq(4).find('a.toggle-btn').click()
+    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
@@ -266,11 +266,11 @@ context('Bulk Edit', () => {
 
     bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 2 entries') })
 
-    bulk_edit.get('fluid_fields').eq(0).find('input[value="closed"]').should('be.checked')
+    bulk_edit.get('fluid_fields').eq(0).find('.select__button-label').contains('Closed')
     bulk_edit.get('fluid_fields').eq(1).find('input[name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
     bulk_edit.get('fluid_fields').eq(2).find('input[name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
-    bulk_edit.get('fluid_fields').eq(3).find('a.toggle-btn').should('have.class', 'on')
-    bulk_edit.get('fluid_fields').eq(4).find('a.toggle-btn').should('have.class', 'on')
+    bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').should('have.class', 'on')
+    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').should('have.class', 'on')
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]:visible').should('be.checked')
     bulk_edit.get('fluid_fields').eq(6).find('input[value="1"]:visible').should('not.be.checked')
     bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]:visible').should('be.checked')
@@ -292,7 +292,7 @@ context('Bulk Edit', () => {
       publish.get('wrap').find('input[value="1"]:visible').should('not.be.checked')
       publish.get('wrap').find('input[value="2"]:visible').should('be.checked')
       publish.get('tab_links').eq(3).click() // Options tab
-      publish.get('wrap').find('input[value="closed"]:visible').should('be.checked')
+      publish.get('wrap').find('[data-input-value="status"] .select__button-label').contains('Closed')
       publish.get('wrap').find('[data-toggle-for="sticky"]').should('have.class', 'on')
       publish.get('wrap').find('[data-toggle-for="allow_comments"]').should('have.class', 'on')
     })

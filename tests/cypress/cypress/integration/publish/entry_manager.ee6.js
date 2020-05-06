@@ -17,7 +17,7 @@ context('Entry Manager', () => {
     cy.hasNoErrors()*/
   })
 
-  it('displays properly when max_entries hit', () => {
+  it.skip('displays properly when max_entries hit', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -30,7 +30,7 @@ context('Entry Manager', () => {
 
   })
 
-  it('offers a create option for channels with max_entries not yet reached', () => {
+  it.skip('offers a create option for channels with max_entries not yet reached', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
 
       const channel = JSON.parse(channel_json)
@@ -43,15 +43,15 @@ context('Entry Manager', () => {
     })
   })
 
-  it('create menu does not include channels when max_entries is hit', () => {
+  it.skip('create menu does not include channels when max_entries is hit', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
       cy.createEntries({'n': 3, 'channel': channel.channel_id})
       cy.visit(page.url)
 
-      page.get('nav').find('.nav-create .nav-has-sub').click()
-      page.get('nav').find('.nav-create .nav-sub-menu a').each(function(link, i) {
+      page.get('nav').find('a:contains("Entries")').trigger('mouseover')
+      page.get('edit_menu').find('a').each(function(link, i) {
         cy.get(link).invoke('attr', 'href').then((href) => {
           expect(href).to.not.contain('admin.php?/cp/publish/create/' + channel.channel_id)
         })
@@ -59,15 +59,15 @@ context('Entry Manager', () => {
     })
   })
 
-  it('edit menu goes straight to publish for max_entries 1 = 1', () => {
+  it.skip('edit menu goes straight to publish for max_entries 1 = 1', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
       cy.createEntries({'n': 1, 'channel': channel.channel_id})
       cy.visit(page.url)
 
-      page.get('nav').find('.nav-edit .nav-has-sub').click()
-      page.get('nav').find('.nav-edit .nav-sub-menu a:contains("'+channel.channel_title+'")').each(function(link, i) {
+      page.get('nav').find('a:contains("Entries")').trigger('mouseover')
+      page.get('edit_menu').find('a:contains("'+channel.channel_title+'")').each(function(link, i) {
         cy.get(link).invoke('attr', 'href').then((href) => {
           expect(href).to.contain('admin.php?/cp/publish/edit/entry')
         })
@@ -75,7 +75,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it('creates entries', () => {
+  it.skip('creates entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -97,7 +97,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it('loads a page with 100 entries', () => {
+  it.skip('loads a page with 100 entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -124,13 +124,13 @@ context('Entry Manager', () => {
     page.get('entry_rows').should('have.length', 10);
 
     page.get('entry_checkboxes').first().check()
-    page.get('bulk_action').select('Remove')
+    page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 9);
-    page.get('alert').contains('The following entries were removed')
+    page.get('alert').contains('The following entries were deleted')
   })
 
   it('deletes all entries', () => {
@@ -146,14 +146,14 @@ context('Entry Manager', () => {
       cy.get(el).check()
     })
 
-    page.get('bulk_action').select('Remove')
+    page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 1)
     page.get('entry_rows').first().contains('No Entries found.')
-    page.get('alert').contains('The following entries were removed')
+    page.get('alert').contains('The following entries were deleted')
   })
 
   it('deletes 100 entries', () => {
@@ -169,13 +169,13 @@ context('Entry Manager', () => {
     page.get('entry_checkboxes').each(function(el){
       cy.get(el).check()
     })
-    page.get('bulk_action').select('Remove')
+    page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
     page.get('modal_submit_button').click()
 
     page.get('entry_rows').should('have.length', 10);
-    page.get('alert').contains('The following entries were removed')
+    page.get('alert').contains('The following entries were deleted')
     page.get('alert').contains('and 96 others...')
   })
 

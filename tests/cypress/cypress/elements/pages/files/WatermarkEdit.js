@@ -15,12 +15,12 @@ class WatermarkEdit extends FileManagerSection {
         'wm_vrt_offset': 'input[name=wm_vrt_offset]',
 
         // Text options
-        'wm_use_font': 'a.toggle-btn[data-toggle-for="wm_use_font"]',
+        'wm_use_font': '.toggle-btn[data-toggle-for="wm_use_font"]',
         'wm_text': 'input[name=wm_text]',
         'wm_font': 'input[name=wm_font]',
         'wm_font_size': 'input[name=wm_font_size]',
         'wm_font_color': 'input[name=wm_font_color]',
-        'wm_use_drop_shadow': 'a.toggle-btn[data-toggle-for="wm_use_drop_shadow"]',
+        'wm_use_drop_shadow': '.toggle-btn[data-toggle-for="wm_use_drop_shadow"]',
         'wm_shadow_distance': 'input[name=wm_shadow_distance]',
         'wm_shadow_color': 'input[name=wm_shadow_color]',
 
