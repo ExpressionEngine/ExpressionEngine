@@ -6,5 +6,14 @@
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
     "watchForFileChanges": false,
-    "testFiles": "**/*.ee6.js"
+    "testFiles": "**/*.ee6.js",
+    "env": {
+        "USER_EMAIL": "admin",
+        "USER_PASSWORD": "password",
+        "DB_HOST": "localhost",
+        "DB_USER": "root",
+        "DB_PASSWORD": "root",
+        "DB_DATABASE": "ee-test",
+        "DB_DUMP": "database_6.0.0.sql"
+    }
 }
