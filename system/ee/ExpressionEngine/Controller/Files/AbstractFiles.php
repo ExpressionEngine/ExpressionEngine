@@ -7,16 +7,16 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Files;
+namespace ExpressionEngine\Controller\Files;
 
 use CP_Controller;
 
-use EllisLab\ExpressionEngine\Model\File\UploadDestination;
-use EllisLab\ExpressionEngine\Model\File\File;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
-use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Model\File\UploadDestination;
+use ExpressionEngine\Model\File\File;
+use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Content\FieldFacade;
+use ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
  * Abstract Files Controller

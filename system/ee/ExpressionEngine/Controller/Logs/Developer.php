@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Logs;
+namespace ExpressionEngine\Controller\Logs;
 
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
+use ExpressionEngine\Service\CP\Filter\FilterFactory;
+use ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * Logs\Developer Controller

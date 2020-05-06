@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\FilePicker\Service\FilePicker;
+namespace ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 
 use Cp;
-use EllisLab\ExpressionEngine\Service\URL\URLFactory;
-use EllisLab\ExpressionEngine\Service\Modal\ModalCollection;
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\URL\URLFactory;
+use ExpressionEngine\Service\Modal\ModalCollection;
+use ExpressionEngine\Service\View\View;
 
 /**
  * FilePicker Factory

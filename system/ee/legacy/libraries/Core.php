@@ -52,12 +52,12 @@ class EE_Core
         }
 
         // some path constants to simplify things
-        define('PATH_PRO_ADDONS', SYSPATH . 'ee/EllisLab/Addons/pro/levelups/');
-        define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
-        define('PATH_MOD', SYSPATH . 'ee/EllisLab/Addons/');
-        define('PATH_PI', SYSPATH . 'ee/EllisLab/Addons/');
-        define('PATH_EXT', SYSPATH . 'ee/EllisLab/Addons/');
-        define('PATH_FT', SYSPATH . 'ee/EllisLab/Addons/');
+        define('PATH_PRO_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/pro/levelups/');
+        define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
+        define('PATH_MOD', SYSPATH . 'ee/ExpressionEngine/Addons/');
+        define('PATH_PI', SYSPATH . 'ee/ExpressionEngine/Addons/');
+        define('PATH_EXT', SYSPATH . 'ee/ExpressionEngine/Addons/');
+        define('PATH_FT', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_RTE', APPPATH . 'rte_tools/');
         define('PATH_THIRD', SYSPATH . 'user/addons/');
         define('PATH_CACHE', SYSPATH . 'user/cache/');
@@ -102,7 +102,7 @@ class EE_Core
         }
 
         // boot the addons
-        ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+        ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
         ee('App')->setupAddons(PATH_THIRD);
 
         //is this pro version?

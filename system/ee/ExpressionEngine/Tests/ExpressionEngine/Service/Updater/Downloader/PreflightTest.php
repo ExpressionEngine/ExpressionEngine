@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Tests\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\Downloader\Preflight;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\Updater\Downloader\Preflight;
+use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -11,9 +11,9 @@ class PreflightTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
-		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
-		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+		$this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
+		$this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
 		$this->theme_paths = ['/some/theme/path', '/some/theme/path2'];
 
 		$this->logger->shouldReceive('log'); // Logger's gonna log
@@ -67,7 +67,7 @@ class PreflightTest extends TestCase {
 		$this->filesystem->shouldReceive('getDirectoryContents')
 			->with(SYSPATH.'ee/')
 			->andReturn([
-				SYSPATH.'ee/EllisLab/',
+				SYSPATH.'ee/ExpressionEngine/',
 				SYSPATH.'ee/legacy/'
 			]);
 
@@ -102,7 +102,7 @@ class PreflightTest extends TestCase {
 			->andReturn($theme_paths);
 
 		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/EllisLab/')
+			->with(SYSPATH.'ee/ExpressionEngine/')
 			->andReturn(TRUE);
 
 		$this->filesystem->shouldReceive('isWritable')

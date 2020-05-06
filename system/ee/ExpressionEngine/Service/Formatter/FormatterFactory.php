@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Formatter;
+namespace ExpressionEngine\Service\Formatter;
 
 use EE_Lang;
 use EE_Session;
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Provider;
 
 /**
  * Formatter Factory
@@ -42,7 +42,7 @@ class FormatterFactory {
 	/**
 	 * Constructor
 	 *
-	 * @param object EllisLab\ExpressionEngine\Core\Provider
+	 * @param object ExpressionEngine\Core\Provider
 	 * @param integer bitwise-defined options
 	 * @param object EE_Lang
 	 */

@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Search',
 	'description'    => '',
 	'version'        => '2.2.2',
-	'namespace'      => 'EllisLab\Addons\Search',
+	'namespace'      => 'ExpressionEngine\Addons\Search',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE
 );

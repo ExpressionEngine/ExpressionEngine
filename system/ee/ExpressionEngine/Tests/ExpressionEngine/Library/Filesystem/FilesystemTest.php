@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Filesystem;
+namespace ExpressionEngine\Tests\Library\Filesystem;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
 
 class FilesystemTest extends TestCase {

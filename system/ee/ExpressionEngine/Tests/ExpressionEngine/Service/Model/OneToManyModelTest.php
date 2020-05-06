@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Tests\Service\Model;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Model\Association;
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Model\Association;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Collection;
 use PHPUnit\Framework\TestCase;
 
 class OneToManyModelTest extends TestCase {
@@ -23,8 +23,8 @@ class OneToManyModelTest extends TestCase {
 		$this->parentClass = __NAMESPACE__.'\OneToManyParent';
 		$this->childClass = __NAMESPACE__.'\OneToManyChild';
 
-		$this->has_many_relation = m::mock('EllisLab\ExpressionEngine\Service\Model\Relation\HasMany');
-		$this->belongs_to_relation = m::mock('EllisLab\ExpressionEngine\Service\Model\Relation\BelongsTo');
+		$this->has_many_relation = m::mock('ExpressionEngine\Service\Model\Relation\HasMany');
+		$this->belongs_to_relation = m::mock('ExpressionEngine\Service\Model\Relation\BelongsTo');
 	}
 
 	public function tearDown()

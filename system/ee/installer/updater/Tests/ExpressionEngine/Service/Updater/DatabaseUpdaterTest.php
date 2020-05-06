@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Tests\Service\Updater;
 
-use EllisLab\ExpressionEngine\Updater\Service\Updater\DatabaseUpdater;
-use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
+use ExpressionEngine\Updater\Service\Updater\DatabaseUpdater;
+use ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class DatabaseUpdaterTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
 
 		$this->filesystem->shouldReceive('getDirectoryContents')->with(
 			SYSPATH . 'ee/installer/updates/'

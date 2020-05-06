@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
+namespace ExpressionEngine\Tests\Service\Dependency;
 
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
+use ExpressionEngine\Service\Dependency\InjectionContainer;
+use ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 use PHPUnit\Framework\TestCase;
 
 class InjectionBindingDecoratorTest extends TestCase {
@@ -42,7 +42,7 @@ class InjectionBindingDecoratorTest extends TestCase {
 	public function testBindReturnsADecoratorInstance()
 	{
 		$di = $this->di->bind('Bird', 'Raven');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
+		$this->assertInstanceOf('ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
 	}
 
 	public function testBindingAClosure()

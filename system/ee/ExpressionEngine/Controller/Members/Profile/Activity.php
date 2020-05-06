@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
+namespace ExpressionEngine\Controller\Members\Profile;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 

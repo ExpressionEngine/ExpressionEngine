@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Database\Backup;
+namespace ExpressionEngine\Service\Database\Backup;
 
 /**
  * Supporting query class for database backup
@@ -51,7 +51,7 @@ class Query {
 	 *
 	 * @param	Database\Query	$query	Database query object
 	 */
-	public function __construct(\EllisLab\ExpressionEngine\Service\Database\Query $query)
+	public function __construct(\ExpressionEngine\Service\Database\Query $query)
 	{
 		$query->dbprefix = '';
 		$this->query = $query;

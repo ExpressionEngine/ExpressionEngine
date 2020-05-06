@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Database\DBConfig;
+use ExpressionEngine\Service\Database\DBConfig;
 
 /**
  * Loads and provides access to the requirements checker located in the
@@ -30,7 +30,7 @@ class RequirementsCheckerLoader {
 	public function __construct($filesystem)
 	{
 		$this->filesystem = $filesystem;
-		$this->path = SYSPATH . '/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php';
+		$this->path = SYSPATH . '/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php';
 	}
 
 	/**

@@ -231,7 +231,7 @@ class Email {
 	 * Tell a friend form
 	 *
 	 * {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
-	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@ellislab.com'}
+	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='support@expressionengine.com'}
 	 * {member_email}, {member_name}, {current_time format="%Y %d %m"}
 	 */
 	public function tell_a_friend()

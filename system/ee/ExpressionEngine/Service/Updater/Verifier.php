@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Updater file verifier

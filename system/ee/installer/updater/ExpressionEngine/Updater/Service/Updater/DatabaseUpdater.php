@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
+namespace ExpressionEngine\Updater\Service\Updater;
 
-use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Updater\Service\Updater\SteppableTrait;
+use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
+use ExpressionEngine\Updater\Service\Updater\SteppableTrait;
 
 /**
  * Database updater for one-click updater
@@ -185,11 +185,11 @@ class DatabaseUpdater {
 	 * Given a base file name, returns the namespaced class name for the Updater class
 	 *
 	 * @param	string	$filename	Base file name, e.g. 'ud_4_00_00.php'
-	 * @return	string	Class name, e.g. '\EllisLab\ExpressionEngine\Updater\Version_4_0_0\Updater'
+	 * @return	string	Class name, e.g. '\ExpressionEngine\Updater\Version_4_0_0\Updater'
 	 */
 	protected function getUpdaterClassForFilename($filename)
 	{
-		return '\EllisLab\ExpressionEngine\Updater\Version_'
+		return '\ExpressionEngine\Updater\Version_'
 		 	. str_replace('.', '_', $this->getVersionForFilename($filename))
 			 . '\Updater';
 	}

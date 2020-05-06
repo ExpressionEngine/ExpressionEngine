@@ -648,7 +648,7 @@ class EE_Session {
 		// Assign Sites, Channel, Template, and Module Access Privs
 		if (REQ == 'CP')
 		{
-			$permission = new EllisLab\ExpressionEngine\Service\Permission\Permission(
+			$permission = new ExpressionEngine\Service\Permission\Permission(
 				ee('Model'),
 				$this->all_userdata(),
 				$this->member_model->getPermissions(),

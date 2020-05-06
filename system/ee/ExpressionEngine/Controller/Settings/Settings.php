@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Settings;
+namespace ExpressionEngine\Controller\Settings;
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP;
+use ExpressionEngine\Library\CP;
 
 /**
  * Settings Controller

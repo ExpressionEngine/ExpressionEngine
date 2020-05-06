@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Modal;
+namespace ExpressionEngine\Service\Modal;
 
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\View\View;
 
 /**
  * Modal Collection

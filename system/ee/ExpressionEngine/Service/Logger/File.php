@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Logger;
+namespace ExpressionEngine\Service\Logger;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * Generic class to append line items to a file

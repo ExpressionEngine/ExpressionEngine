@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Service\Model;
 
-use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
+use ExpressionEngine\Service\Model\Relation\Relation;
 
 /**
  * Model Service Relation Graph
@@ -25,12 +25,12 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 class RelationGraph {
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Model\Registry
+	 * @var ExpressionEngine\Service\Model\Registry
 	 */
 	private $registry;
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Service\Model\Datastore
+	 * @var ExpressionEngine\Service\Model\Datastore
 	 */
 	private $datastore;
 
@@ -45,8 +45,8 @@ class RelationGraph {
 	private $relations = array();
 
 	/**
-	 * @param $datastore EllisLab\ExpressionEngine\Service\Model\Datastore
-	 * @param $registry EllisLab\ExpressionEngine\Service\Model\Registry
+	 * @param $datastore ExpressionEngine\Service\Model\Datastore
+	 * @param $registry ExpressionEngine\Service\Model\Registry
 	 * @param Array $foreign_models Map of one sided model dependencies (e.g. [addon:model => [ee:model1, ee:model2])
 	 */
 	public function __construct(DataStore $datastore, Registry $registry, array $foreign_models)

@@ -8,14 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Design;
+namespace ExpressionEngine\Controller\Design;
 
 use \EE_Route;
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Template\Template as TemplateModel;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  *Design\Template Controller

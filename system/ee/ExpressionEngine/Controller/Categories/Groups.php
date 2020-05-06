@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Categories;
+namespace ExpressionEngine\Controller\Categories;
 
-use EllisLab\ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategoriesController;
+use ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategoriesController;
 
 /**
  * Category Groups Controller

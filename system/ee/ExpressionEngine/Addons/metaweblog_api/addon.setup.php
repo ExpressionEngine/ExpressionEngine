@@ -1,11 +1,11 @@
 <?php
 
 return array(
-	'author'      => 'EllisLab',
-	'author_url'  => 'https://ellislab.com/',
+	'author'      => 'ExpressionEngine',
+	'author_url'  => 'https://expressionengine.com/',
 	'name'        => 'Metaweblog_api',
 	'description' => 'Post and edit entries using a Metaweblog API-compatible program',
 	'version'     => '2.3.0',
-	'namespace'   => 'EllisLab\Addons\MetaweblogApi',
+	'namespace'   => 'ExpressionEngine\Addons\MetaweblogApi',
 	'settings_exist' => TRUE,
 );

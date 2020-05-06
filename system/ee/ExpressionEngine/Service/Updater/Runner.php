@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Updater\SteppableTrait;
+use ExpressionEngine\Service\Updater\Logger;
+use ExpressionEngine\Service\Updater\SteppableTrait;
 
 /**
  * Handles the first half of an ExpressionEngine upgrade: downloading, verifying,

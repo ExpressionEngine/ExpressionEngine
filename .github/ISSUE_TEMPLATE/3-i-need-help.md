@@ -10,6 +10,6 @@ The GitHub issue tracker is for bug reports and feature requests **only**. Suppo
 - ExpressionEngine Slack: https://expressionengine.com/community#slack
 - ExpressionEngine StackExchange: https://expressionengine.stackexchange.com/
 - Twitter: Tiny questions, using the #eecms hashtag
-- First-party support from EllisLab: https://expressionengine.com/support
+- First-party support from Packet Tide: https://expressionengine.com/support
 
 Thank you! 🙏

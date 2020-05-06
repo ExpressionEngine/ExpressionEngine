@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
+namespace ExpressionEngine\Tests\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\SteppableTrait;
+use ExpressionEngine\Service\Updater\SteppableTrait;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 

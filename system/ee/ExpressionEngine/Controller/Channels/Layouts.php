@@ -8,14 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Channels;
+namespace ExpressionEngine\Controller\Channels;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Model\Channel\Display\DefaultChannelLayout;
-use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Model\Channel\Channel;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Model\Channel\Display\DefaultChannelLayout;
+use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use ExpressionEngine\Model\Channel\Channel;
+use ExpressionEngine\Library\Data\Collection;
 
 /**
  * Channels\Layouts Controller

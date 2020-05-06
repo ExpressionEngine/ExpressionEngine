@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Core;
+namespace ExpressionEngine\Core;
 
 use Closure;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
+use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Dependency\ServiceProvider;
+use ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 
 /**
  * Core Provider

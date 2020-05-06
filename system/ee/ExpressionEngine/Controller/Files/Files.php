@@ -8,16 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Files;
+namespace ExpressionEngine\Controller\Files;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\File\UploadDestination;
-use EllisLab\ExpressionEngine\Service\File\ViewType;
+use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Model\File\UploadDestination;
+use ExpressionEngine\Service\File\ViewType;
 
 /**
  * Files Controller

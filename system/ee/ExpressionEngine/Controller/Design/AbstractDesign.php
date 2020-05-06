@@ -8,17 +8,17 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Design;
+namespace ExpressionEngine\Controller\Design;
 
 use CP_Controller;
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
-use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
-use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Model\Template\TemplateRoute;
+use ExpressionEngine\Service\CP\Filter\Filter;
+use ExpressionEngine\Service\Filter\FilterFactory;
+use ExpressionEngine\Service\CP\Filter\FilterRunner;
+use ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
 
 /**
  * Abstract Design Controller

@@ -1,4 +1,4 @@
-<?php use EllisLab\ExpressionEngine\Library\CP\Table; ?>
+<?php use ExpressionEngine\Library\CP\Table; ?>
 
 <?php /* Table */ if (!$grid_input): ?>
 

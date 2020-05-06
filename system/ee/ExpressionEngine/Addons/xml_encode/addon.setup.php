@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'      => 'EllisLab',
-	'author_url'  => 'https://ellislab.com/',
+	'author'      => 'ExpressionEngine',
+	'author_url'  => 'https://expressionengine.com/',
 	'name'        => 'XML Encode',
 	'description' => 'XML Encoding plugin',
 	'version'     => '2.0.0',
-	'namespace'   => 'EllisLab\Addons\XmlEncode',
+	'namespace'   => 'ExpressionEngine\Addons\XmlEncode',
 	'settings_exist' => FALSE,
 	'plugin.typography' => TRUE
 );

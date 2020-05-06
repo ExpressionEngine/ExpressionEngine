@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel\Gateway;
+namespace ExpressionEngine\Model\Channel\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway;
+use ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Channel Title Gateway

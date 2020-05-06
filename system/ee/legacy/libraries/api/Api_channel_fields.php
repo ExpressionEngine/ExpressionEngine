@@ -1597,7 +1597,7 @@ class Api_channel_fields extends Api {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseVariableProperties()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::parseVariableProperties()
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{

@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel\Display;
+namespace ExpressionEngine\Model\Channel\Display;
 
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
+use ExpressionEngine\Model\Content\Display\DefaultLayout;
+use ExpressionEngine\Model\Content\Display\LayoutDisplay;
+use ExpressionEngine\Model\Content\Display\LayoutTab;
 
 /**
  * Default Channel Layout

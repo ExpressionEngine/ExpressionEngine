@@ -16,7 +16,7 @@ class Spam_ext {
 	/**
 	 * Add the Spam Menu
 	 *
-	 * @param object $menu EllisLab\ExpressionEngine\Service\CustomMenu\Menu
+	 * @param object $menu ExpressionEngine\Service\CustomMenu\Menu
 	 */
 	public function addSpamMenu($menu)
 	{

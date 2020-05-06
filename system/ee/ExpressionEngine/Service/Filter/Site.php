@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Filter;
+namespace ExpressionEngine\Service\Filter;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * Site Filter

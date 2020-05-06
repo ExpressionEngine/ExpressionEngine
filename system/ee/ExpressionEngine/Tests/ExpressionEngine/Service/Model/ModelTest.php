@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Tests\Service\Model;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase {
@@ -121,8 +121,8 @@ class ModelTest extends TestCase {
 
 	public function testSaveInsert()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
-		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
+		$fe = m::mock('ExpressionEngine\Service\Model\Facade');
+		$qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
 
@@ -142,8 +142,8 @@ class ModelTest extends TestCase {
 
 	public function testSaveUpdate()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
-		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
+		$fe = m::mock('ExpressionEngine\Service\Model\Facade');
+		$qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
 
@@ -171,8 +171,8 @@ class ModelTest extends TestCase {
 
 	public function testDelete()
 	{
-		$fe = m::mock('EllisLab\ExpressionEngine\Service\Model\Facade');
-		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
+		$fe = m::mock('ExpressionEngine\Service\Model\Facade');
+		$qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
 		$fe->shouldReceive('get')->andReturn($qb);
 		$qb->shouldReceive('filter')->with('id', 5);

@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\LivePreview;
+namespace ExpressionEngine\Service\LivePreview;
 
 /**
  * LivePreview Service
@@ -70,7 +70,7 @@ class LivePreview {
 	{
 		$this->session_delegate->set_cache($this->cache_class, $this->key, $data);
   }
-  
+
   /**
    * generate and display the live preview
    */

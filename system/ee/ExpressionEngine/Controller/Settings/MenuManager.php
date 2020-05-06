@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Settings;
+namespace ExpressionEngine\Controller\Settings;
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\Menu\MenuSet;
+use ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Model\Menu\MenuSet;
 
 /**
  * Menu Manager Controller

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Category\Gateway;
+namespace ExpressionEngine\Model\Category\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Content\VariableColumnGateway;
+use ExpressionEngine\Model\Content\VariableColumnGateway;
 
 /**
  * Category Field Data Table

@@ -8,55 +8,55 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Library;
-use EllisLab\ExpressionEngine\Library\Filesystem;
-use EllisLab\ExpressionEngine\Library\Curl;
-use EllisLab\ExpressionEngine\Service\Addon;
-use EllisLab\ExpressionEngine\Service\Alert;
-use EllisLab\ExpressionEngine\Service\Category;
-use EllisLab\ExpressionEngine\Service\ChannelSet;
-use EllisLab\ExpressionEngine\Service\Config;
-use EllisLab\ExpressionEngine\Service\Consent;
-use EllisLab\ExpressionEngine\Service\Cookie;
-use EllisLab\ExpressionEngine\Service\CustomMenu;
-use EllisLab\ExpressionEngine\Service\Database;
-use EllisLab\ExpressionEngine\Service\Encrypt;
-use EllisLab\ExpressionEngine\Service\EntryListing;
-use EllisLab\ExpressionEngine\Service\Event;
-use EllisLab\ExpressionEngine\Service\File;
-use EllisLab\ExpressionEngine\Service\Filter;
-use EllisLab\ExpressionEngine\Service\Formatter;
-use EllisLab\ExpressionEngine\Service\IpAddress;
-use EllisLab\ExpressionEngine\Service\JumpMenu;
-use EllisLab\ExpressionEngine\Service\License;
-use EllisLab\ExpressionEngine\Service\LivePreview;
-use EllisLab\ExpressionEngine\Service\Logger;
-use EllisLab\ExpressionEngine\Service\Member;
-use EllisLab\ExpressionEngine\Service\Memory;
-use EllisLab\ExpressionEngine\Service\Modal;
-use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Service\Permission;
-use EllisLab\ExpressionEngine\Service\Profiler;
-use EllisLab\ExpressionEngine\Service\Session;
-use EllisLab\ExpressionEngine\Service\Sidebar;
-use EllisLab\ExpressionEngine\Service\Theme;
-use EllisLab\ExpressionEngine\Service\Thumbnail;
-use EllisLab\ExpressionEngine\Service\URL;
-use EllisLab\ExpressionEngine\Service\Updater;
-use EllisLab\ExpressionEngine\Service\Validation;
-use EllisLab\ExpressionEngine\Service\Template;
-use EllisLab\ExpressionEngine\Service\View;
-use EllisLab\Addons\Spam\Service\Spam;
-use EllisLab\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Library;
+use ExpressionEngine\Library\Filesystem;
+use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Service\Addon;
+use ExpressionEngine\Service\Alert;
+use ExpressionEngine\Service\Category;
+use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\Config;
+use ExpressionEngine\Service\Consent;
+use ExpressionEngine\Service\Cookie;
+use ExpressionEngine\Service\CustomMenu;
+use ExpressionEngine\Service\Database;
+use ExpressionEngine\Service\Encrypt;
+use ExpressionEngine\Service\EntryListing;
+use ExpressionEngine\Service\Event;
+use ExpressionEngine\Service\File;
+use ExpressionEngine\Service\Filter;
+use ExpressionEngine\Service\Formatter;
+use ExpressionEngine\Service\IpAddress;
+use ExpressionEngine\Service\JumpMenu;
+use ExpressionEngine\Service\License;
+use ExpressionEngine\Service\LivePreview;
+use ExpressionEngine\Service\Logger;
+use ExpressionEngine\Service\Member;
+use ExpressionEngine\Service\Memory;
+use ExpressionEngine\Service\Modal;
+use ExpressionEngine\Service\Model;
+use ExpressionEngine\Service\Permission;
+use ExpressionEngine\Service\Profiler;
+use ExpressionEngine\Service\Session;
+use ExpressionEngine\Service\Sidebar;
+use ExpressionEngine\Service\Theme;
+use ExpressionEngine\Service\Thumbnail;
+use ExpressionEngine\Service\URL;
+use ExpressionEngine\Service\Updater;
+use ExpressionEngine\Service\Validation;
+use ExpressionEngine\Service\Template;
+use ExpressionEngine\Service\View;
+use ExpressionEngine\Addons\Spam\Service\Spam;
+use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
 $setup = [
 
-	'author' => 'EllisLab',
+	'author' => 'ExpressionEngine',
 	'name' => 'ExpressionEngine',
 	'description' => "The world's most flexible content management system.",
 
-	'namespace' => 'EllisLab\ExpressionEngine',
+	'namespace' => 'ExpressionEngine',
 
 	'services' => array(
 
@@ -483,7 +483,7 @@ $setup = [
 
 		'License' => function($ee)
 		{
-			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key_path = SYSPATH.'ee/ExpressionEngine/ExpressionEngine.pub';
 			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
 
 			return new License\LicenseFactory($default_key);
@@ -551,7 +551,7 @@ $setup = [
 	// models exposed on the model service
 	'models' => array(
 
-		# EllisLab\ExpressionEngine\Model..
+		# ExpressionEngine\Model..
 
 			// ..\Addon
 			'Action' => 'Model\Addon\Action',
@@ -691,11 +691,11 @@ $setup = [
 	],
 ];
 
-if (is_dir(SYSPATH . 'ee/EllisLab/Addons/pro/')) {
+if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {
 	foreach($setup['models'] as $model => $namespace) {
-		$pro_file = SYSPATH . 'ee/EllisLab/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+		$pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
 		if (file_exists($pro_file)) {
-			$setup['models'][$model] =  "\EllisLab\Addons\Pro\\".$namespace;
+			$setup['models'][$model] =  "\ExpressionEngine\Addons\Pro\\".$namespace;
 		}
 	}
 }

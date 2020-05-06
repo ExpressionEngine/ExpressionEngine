@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Controllers\Utilities;
+namespace ExpressionEngine\Tests\Controllers\Utilities;
 
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ class CommunicateTest extends TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Utilities\Communicate') as $method)
+		foreach (get_class_methods('ExpressionEngine\Controller\Utilities\Communicate') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

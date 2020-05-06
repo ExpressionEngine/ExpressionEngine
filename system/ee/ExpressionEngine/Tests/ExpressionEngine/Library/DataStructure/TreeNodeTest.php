@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
+namespace ExpressionEngine\Tests\Library\DataStructure\Tree;
 
-use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;
+use ExpressionEngine\Library\DataStructure\Tree\TreeNode;
 use PHPUnit\Framework\TestCase;
 
 class TreeNodeTest extends TestCase {

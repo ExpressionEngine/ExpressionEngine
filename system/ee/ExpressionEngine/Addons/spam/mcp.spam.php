@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
-use EllisLab\Addons\Spam\Service\SpamModerationInterface;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Data\Collection as CoreCollection;
+use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Spam Module control panel
@@ -834,7 +834,7 @@ class Spam_mcp {
 
 			foreach ($collection->vectorizers as $i => $vectorizer)
 			{
-				if ($vectorizer instanceof EllisLab\Addons\Spam\Library\Vectorizers\Tfidf)
+				if ($vectorizer instanceof ExpressionEngine\Addons\Spam\Library\Vectorizers\Tfidf)
 				{
 					$vocab = array_keys($vectorizer->vocabulary);
 

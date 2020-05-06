@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Event;
+namespace ExpressionEngine\Service\Event;
 
-use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
+use ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
 
 use Closure;
 

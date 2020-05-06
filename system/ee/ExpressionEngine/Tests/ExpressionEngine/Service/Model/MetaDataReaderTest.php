@@ -2,12 +2,12 @@
 
 // This file contains multiple namespaces as part of testing
 // that the gateway is loaded from .\gateway\<class>
-namespace EllisLab\Tests\ExpressionEngine\Service\Model {
+namespace ExpressionEngine\Tests\Service\Model {
 
 	use Mockery as m;
-	use EllisLab\ExpressionEngine\Service\Model\Model;
-	use EllisLab\ExpressionEngine\Service\Model\Gateway;
-	use EllisLab\ExpressionEngine\Service\Model\MetaDataReader;
+	use ExpressionEngine\Service\Model\Model;
+	use ExpressionEngine\Service\Model\Gateway;
+	use ExpressionEngine\Service\Model\MetaDataReader;
 	use PHPUnit\Framework\TestCase;
 
 	class MetaDataReaderTest extends TestCase {
@@ -108,9 +108,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model {
 	}
 }
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Model\Gateway {
+namespace ExpressionEngine\Tests\Service\Model\Gateway {
 
-	use EllisLab\ExpressionEngine\Service\Model\Gateway;
+	use ExpressionEngine\Service\Model\Gateway;
 
 	class MetaDataTestStubGateway extends Gateway {
 

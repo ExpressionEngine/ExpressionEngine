@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Database;
+namespace ExpressionEngine\Service\Database;
 
 require_once BASEPATH."database/DB_driver.php";
 require_once BASEPATH."database/DB_active_rec.php";

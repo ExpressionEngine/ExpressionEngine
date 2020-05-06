@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Database\Backup;
+namespace ExpressionEngine\Tests\Service\Database\Backup;
 
-use EllisLab\ExpressionEngine\Service\Database\Backup\Query;
+use ExpressionEngine\Service\Database\Backup\Query;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -10,8 +10,8 @@ class QueryTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->db_query = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Query');
-		$this->db_query2 = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Query');
+		$this->db_query = Mockery::mock('ExpressionEngine\Service\Database\Query');
+		$this->db_query2 = Mockery::mock('ExpressionEngine\Service\Database\Query');
 
 		$this->query = new Query($this->db_query);
 	}

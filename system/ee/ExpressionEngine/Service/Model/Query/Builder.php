@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Query;
+namespace ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Service\Model\DataStore;
-use EllisLab\ExpressionEngine\Service\Model\Query\Result;
+use ExpressionEngine\Service\Model\DataStore;
+use ExpressionEngine\Service\Model\Query\Result;
 
 /**
  * Query Builder

@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Service\Model;
 
 use Closure;
 use InvalidArgumentException;
 
-use EllisLab\ExpressionEngine\Service\Model\Association\Association;
-use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
+use ExpressionEngine\Service\Model\Association\Association;
+use ExpressionEngine\Library\Data\Collection as CoreCollection;
 
 /**
  * Model Service Collection

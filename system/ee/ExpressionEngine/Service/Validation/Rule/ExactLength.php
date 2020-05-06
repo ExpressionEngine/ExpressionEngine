@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
+namespace ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
+use ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
  * Exact Length Validation Rule

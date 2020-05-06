@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Profiler;
+namespace ExpressionEngine\Tests\Service\Profiler;
 
-use EllisLab\ExpressionEngine\Service\Profiler\Profiler;
+use ExpressionEngine\Service\Profiler\Profiler;
 use PHPUnit\Framework\TestCase;
 
 class ProfilerTest extends TestCase {

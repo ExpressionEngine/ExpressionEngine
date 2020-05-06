@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Profiler;
+namespace ExpressionEngine\Service\Profiler;
 
-use EllisLab\ExpressionEngine\Service\View\View;
-use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
+use ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\Formatter\FormatterFactory;
 
 /**
  * Profiler Section Interface
@@ -30,7 +30,7 @@ abstract class ProfilerSection {
 	protected $data = array();
 
 	/**
-	 * @var object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 * @var object $fmt_factory ExpressionEngine\Service\Formatter\FormatterFactory
 	 **/
 	protected $fmt_factory;
 
@@ -50,7 +50,7 @@ abstract class ProfilerSection {
 	 * Constructor
 	 *
 	 * @param string $section_name the section's name, should map to a localization key
-	 * @param object $fmt_factory EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory
+	 * @param object $fmt_factory ExpressionEngine\Service\Formatter\FormatterFactory
 	 **/
 	public function __construct($section_name, FormatterFactory $fmt_factory)
 	{

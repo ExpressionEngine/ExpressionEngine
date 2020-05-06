@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Tests\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\Downloader\Downloader;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\Updater\Downloader\Downloader;
+use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -11,11 +11,11 @@ class DownloaderTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->license = Mockery::mock('EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense');
-		$this->curl = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\RequestFactory');
-		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
-		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
-		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
+		$this->license = Mockery::mock('ExpressionEngine\Service\License\ExpressionEngineLicense');
+		$this->curl = Mockery::mock('ExpressionEngine\Library\Curl\RequestFactory');
+		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+		$this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
+		$this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
 
 		$this->logger->shouldReceive('log'); // Logger's gonna log
 		$this->filesystem->shouldReceive('mkDir'); // For update path creation
@@ -35,7 +35,7 @@ class DownloaderTest extends TestCase {
 
 	public function testDownloadPackage()
 	{
-		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
+		$request = Mockery::mock('ExpressionEngine\Library\Curl\PostRequest');
 
 		$this->license->shouldReceive('getRawLicense')->andReturn('1234');
 		$this->config->shouldReceive('get')->with('app_version')->andReturn('4.0.0');
@@ -87,7 +87,7 @@ class DownloaderTest extends TestCase {
 
 	public function testDownloadPackageExceptions()
 	{
-		$request = Mockery::mock('EllisLab\ExpressionEngine\Library\Curl\PostRequest');
+		$request = Mockery::mock('ExpressionEngine\Library\Curl\PostRequest');
 
 		$this->license->shouldReceive('getRawLicense')->andReturn('1234');
 		$this->config->shouldReceive('get')->with('app_version')->andReturn('4.0.0');

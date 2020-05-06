@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Content\Display;
+namespace ExpressionEngine\Model\Content\Display;
 
-use EllisLab\ExpressionEngine\Service\Validation\Result;
-use EllisLab\ExpressionEngine\Service\Alert\Alert;
+use ExpressionEngine\Service\Validation\Result;
+use ExpressionEngine\Service\Alert\Alert;
 
 /**
  * Display Layout Tab

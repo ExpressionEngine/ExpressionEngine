@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Template\Annotation;
+namespace ExpressionEngine\Tests\Library\Template\Annotation;
 
-use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotation;
+use ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotation;
 use PHPUnit\Framework\TestCase;
 
 class RuntimeTest extends TestCase {

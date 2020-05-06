@@ -1,12 +1,12 @@
 <?php
 
 return [
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Color Picker',
 	'description'    => 'A simple color picker fieldtype',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\ColorPicker',
+	'namespace'      => 'ExpressionEngine\Addons\ColorPicker',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => array(

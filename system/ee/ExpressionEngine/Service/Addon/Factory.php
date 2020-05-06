@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Addon;
+namespace ExpressionEngine\Service\Addon;
 
-use EllisLab\ExpressionEngine\Core\Application;
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Application;
+use ExpressionEngine\Core\Provider;
 
 /**
  * Addon Service Factory

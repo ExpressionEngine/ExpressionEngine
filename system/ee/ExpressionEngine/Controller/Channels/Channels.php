@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Channels;
+namespace ExpressionEngine\Controller\Channels;
 
-use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use ExpressionEngine\Library\CP;
+use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
  * Channels Controller

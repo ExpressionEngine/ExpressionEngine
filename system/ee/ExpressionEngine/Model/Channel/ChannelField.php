@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel;
+namespace ExpressionEngine\Model\Channel;
 
-use EllisLab\ExpressionEngine\Model\Content\FieldModel;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Model\Content\FieldModel;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Field Model

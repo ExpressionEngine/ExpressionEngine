@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\CP;
+namespace ExpressionEngine\Tests\Library\CP;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use ExpressionEngine\Library\CP\Pagination;
 use PHPUnit\Framework\TestCase;
 
 class PaginationTest extends TestCase {
@@ -75,7 +75,7 @@ class PaginationTest extends TestCase {
 
 	public function badCpLinksDataProvider()
 	{
-		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
+		$url = new \ExpressionEngine\Library\CP\URL('foo/bar');
 		$obj = new \stdClass;
 
 		return array(
@@ -96,7 +96,7 @@ class PaginationTest extends TestCase {
 	 */
 	// public function testNothingToPaginate()
 	// {
-	// 	$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
+	// 	$url = new \ExpressionEngine\Library\CP\URL('foo/bar');
 	// }
 
 	/**
@@ -114,7 +114,7 @@ class PaginationTest extends TestCase {
 
 	public function cpLinksDataProvider()
 	{
-		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
+		$url = new \ExpressionEngine\Library\CP\URL('foo/bar');
 
 		$return = array();
 

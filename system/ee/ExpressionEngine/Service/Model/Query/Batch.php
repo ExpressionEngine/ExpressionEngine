@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model\Query;
+namespace ExpressionEngine\Service\Model\Query;
 
 use Closure;
 
@@ -33,7 +33,7 @@ class Batch {
 	protected $batch_size = 100;
 
 	/**
-	 * EllisLab\ExpressionEngine\Service\Model\Query\Builder
+	 * ExpressionEngine\Service\Model\Query\Builder
 	 */
 	protected $builder = NULL;
 

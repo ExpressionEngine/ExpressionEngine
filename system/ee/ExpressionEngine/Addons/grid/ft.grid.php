@@ -220,7 +220,7 @@ class Grid_ft extends EE_Fieldtype {
 		}
 
 		// Channel Form can throw us a model object instead of a results row
-		if ($this->row instanceof \EllisLab\ExpressionEngine\Model\Channel\ChannelEntry)
+		if ($this->row instanceof \ExpressionEngine\Model\Channel\ChannelEntry)
 		{
 			$this->row = $this->row->getModChannelResultsArray();
 		}

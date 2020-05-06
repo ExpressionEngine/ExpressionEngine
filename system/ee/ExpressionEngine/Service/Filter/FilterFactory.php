@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Filter;
+namespace ExpressionEngine\Service\Filter;
 
 
-use EllisLab\ExpressionEngine\Service\Filter;
-use EllisLab\ExpressionEngine\Service\View\ViewFactory;
-use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Service\Filter;
+use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Service\Dependency\ServiceProvider;
+use ExpressionEngine\Library\CP\URL;
 
 /**
  * FilterFactory

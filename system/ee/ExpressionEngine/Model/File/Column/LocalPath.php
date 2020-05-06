@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\File\Column;
+namespace ExpressionEngine\Model\File\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Service\Model\Column\SerializedType;
+use ExpressionEngine\Library\Data\Collection;
 
 /**
  * Local Path Column
@@ -49,7 +49,7 @@ class LocalPath extends SerializedType {
 		{
 			$files = array();
 			$directory = ee('Model')->get('UploadDestination')->fields('id')->filter('server_path', $this->path)->first();
-			$mime = new \EllisLab\ExpressionEngine\Library\Mime\MimeType();
+			$mime = new \ExpressionEngine\Library\Mime\MimeType();
 			$exclude = array('index.html');
 
 			if ($dh = opendir($path))

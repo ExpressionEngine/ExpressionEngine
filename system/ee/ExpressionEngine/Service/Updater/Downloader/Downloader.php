@@ -8,15 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Updater\Downloader;
+namespace ExpressionEngine\Service\Updater\Downloader;
 
-use EllisLab\ExpressionEngine\Service\Updater\Downloader\UpdaterPaths;
-use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
-use EllisLab\ExpressionEngine\Service\License\ExpressionEngineLicense;
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Library\Curl\RequestFactory;
-use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Config\File;
+use ExpressionEngine\Service\Updater\Downloader\UpdaterPaths;
+use ExpressionEngine\Service\Updater\UpdaterException;
+use ExpressionEngine\Service\License\ExpressionEngineLicense;
+use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Curl\RequestFactory;
+use ExpressionEngine\Service\Updater\Logger;
+use ExpressionEngine\Service\Config\File;
 
 /**
  * Updater file downloader
@@ -141,7 +141,7 @@ class Downloader {
 		$verified = openssl_verify(
 			$hash,
 			$signature,
-			openssl_get_publickey('file://'.SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLabUpdate.pub'),
+			openssl_get_publickey('file://'.SYSPATH.'ee/ExpressionEngine/ExpressionEngineUpdate.pub'),
 			OPENSSL_ALGO_SHA384
 		);
 

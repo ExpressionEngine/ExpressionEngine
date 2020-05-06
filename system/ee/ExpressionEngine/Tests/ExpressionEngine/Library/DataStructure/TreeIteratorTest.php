@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
+namespace ExpressionEngine\Tests\Library\DataStructure\Tree;
 
 use PHPUnit\Framework\TestCase;
 

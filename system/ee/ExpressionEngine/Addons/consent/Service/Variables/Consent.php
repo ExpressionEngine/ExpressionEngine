@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Consent\Service\Variables;
+namespace ExpressionEngine\Addons\Consent\Service\Variables;
 
-use EllisLab\ExpressionEngine\Service\Template\Variables;
+use ExpressionEngine\Service\Template\Variables;
 
 /**
  * Consent Request Variables

@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Controllers\Files;
+namespace ExpressionEngine\Tests\Controllers\Files;
 
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ class FileTest extends TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Files\File') as $method)
+		foreach (get_class_methods('ExpressionEngine\Controller\Files\File') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

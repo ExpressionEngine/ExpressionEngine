@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\License;
+namespace ExpressionEngine\Service\License;
 
 use Exception;
 use InvalidArgumentException;
@@ -73,7 +73,7 @@ class License {
 
 		if (empty($this->pubkey))
 		{
-			$this->errors['missing_pubkey'] = "EllisLab.pub is missing";
+			$this->errors['missing_pubkey'] = "ExpressionEngine.pub is missing";
 		}
 	}
 

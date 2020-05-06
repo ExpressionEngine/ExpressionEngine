@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Channel;
+namespace ExpressionEngine\Model\Channel;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\Display\LayoutDisplay;
+use ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Model\Content\Display\LayoutTab;
 
 /**
  * Channel Layout Model

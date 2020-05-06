@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\CP;
+namespace ExpressionEngine\Tests\Library\CP;
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Library\CP\URL;
 use PHPUnit\Framework\TestCase;
 
 class URLTest extends TestCase {

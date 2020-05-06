@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Core;
+namespace ExpressionEngine\Core;
 
 /**
  * Core Installer
@@ -22,11 +22,11 @@ class Installer extends Core {
 		define('APPPATH', SYSPATH.'ee/installer/');
 		define('EE_APPPATH', BASEPATH);
 
-		define('PATH_ADDONS', SYSPATH .'ee/EllisLab/Addons/');
-		define('PATH_MOD', SYSPATH .'ee/EllisLab/Addons/');
-		define('PATH_PI', SYSPATH .'ee/EllisLab/Addons/');
-		define('PATH_EXT', SYSPATH .'ee/EllisLab/Addons/');
-		define('PATH_FT', SYSPATH .'ee/EllisLab/Addons/');
+		define('PATH_ADDONS', SYSPATH .'ee/ExpressionEngine/Addons/');
+		define('PATH_MOD', SYSPATH .'ee/ExpressionEngine/Addons/');
+		define('PATH_PI', SYSPATH .'ee/ExpressionEngine/Addons/');
+		define('PATH_EXT', SYSPATH .'ee/ExpressionEngine/Addons/');
+		define('PATH_FT', SYSPATH .'ee/ExpressionEngine/Addons/');
 		define('PATH_RTE', EE_APPPATH.'rte_tools/');
 		define('INSTALLER', TRUE);
 

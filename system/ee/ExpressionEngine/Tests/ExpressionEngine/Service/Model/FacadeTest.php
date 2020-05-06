@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Tests\Service\Model;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Model\Facade;
+use ExpressionEngine\Service\Model\Facade;
 use PHPUnit\Framework\TestCase;
 
 class FacadeTest extends TestCase {
@@ -23,8 +23,8 @@ class FacadeTest extends TestCase {
 
 	public function testGet()
 	{
-		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
-		$qb = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
+		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
+		$qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
 		$facade = new Facade($store);
 
@@ -39,8 +39,8 @@ class FacadeTest extends TestCase {
 	public function testMakeWithString()
 	{
 
-		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
+		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
+		$result = m::mock('ExpressionEngine\Service\Model\Model');
 
 		$facade = new Facade($store);
 
@@ -53,8 +53,8 @@ class FacadeTest extends TestCase {
 
 	public function testMakeWithExisting()
 	{
-		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
+		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
+		$result = m::mock('ExpressionEngine\Service\Model\Model');
 
 		$facade = new Facade($store);
 
@@ -68,8 +68,8 @@ class FacadeTest extends TestCase {
 
 	public function testMakeWithData()
 	{
-		$store = m::mock('EllisLab\ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('EllisLab\ExpressionEngine\Service\Model\Model');
+		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
+		$result = m::mock('ExpressionEngine\Service\Model\Model');
 
 		$facade = new Facade($store);
 		$data = array('foo' => 'bar');

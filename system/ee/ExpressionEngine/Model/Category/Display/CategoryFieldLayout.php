@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Category\Display;
+namespace ExpressionEngine\Model\Category\Display;
 
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
+use ExpressionEngine\Model\Content\Display\DefaultLayout;
 
 /**
  * Category Field Layout

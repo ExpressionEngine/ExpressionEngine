@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Profiler\Section;
+namespace ExpressionEngine\Service\Profiler\Section;
 
-use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
-use EllisLab\ExpressionEngine\Service\View\View;
+use ExpressionEngine\Service\Profiler\ProfilerSection;
+use ExpressionEngine\Service\View\View;
 
 /**
  * Database Profiler Section

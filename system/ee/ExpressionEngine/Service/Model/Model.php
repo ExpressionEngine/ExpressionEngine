@@ -8,18 +8,18 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Model;
+namespace ExpressionEngine\Service\Model;
 
 use Closure;
 use OverflowException;
 
-use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Library\Data\SerializableEntity;
-use EllisLab\ExpressionEngine\Service\Model\Association\Association;
-use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
-use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
-use EllisLab\ExpressionEngine\Service\Event\Subscriber;
+use ExpressionEngine\Library\Data\Entity;
+use ExpressionEngine\Library\Data\SerializableEntity;
+use ExpressionEngine\Service\Model\Association\Association;
+use ExpressionEngine\Service\Model\Column\StaticType;
+use ExpressionEngine\Service\Validation\Validator;
+use ExpressionEngine\Service\Validation\ValidationAware;
+use ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * Model Service
@@ -76,31 +76,31 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 * @var Type names and their corresponding classes
 	 */
 	protected static $_type_classes = array(
-		'bool' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
-		'boolean' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+		'bool' => 'ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+		'boolean' => 'ExpressionEngine\Service\Model\Column\Scalar\Boolean',
 
-		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
-		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
+		'float' => 'ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
+		'double' => 'ExpressionEngine\Service\Model\Column\Scalar\FloatNumber',
 
-		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
-		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+		'int' => 'ExpressionEngine\Service\Model\Column\Scalar\Integer',
+		'integer' => 'ExpressionEngine\Service\Model\Column\Scalar\Integer',
 
-		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\StringLiteral',
+		'string' => 'ExpressionEngine\Service\Model\Column\Scalar\StringLiteral',
 
-		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
-		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+		'yesNo' => 'ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+		'boolString' => 'ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 
-		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\ColumnObject\Timestamp',
+		'timestamp' => 'ExpressionEngine\Service\Model\Column\ColumnObject\Timestamp',
 
-		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
-		'base64Array' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
-		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
+		'base64' => 'ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Array' => 'ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
+		'base64Serialized' => 'ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
 
-		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+		'json' => 'ExpressionEngine\Service\Model\Column\Serialized\Json',
 
-		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
-		'pipeDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\PipeDelimited',
-		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
+		'commaDelimited' => 'ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
+		'pipeDelimited' => 'ExpressionEngine\Service\Model\Column\Serialized\PipeDelimited',
+		'serialized' => 'ExpressionEngine\Service\Model\Column\Serialized\Native',
 	);
 
 	/**
@@ -117,7 +117,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
+		'ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
 	/**
@@ -606,7 +606,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		foreach ($forwarded as $event => $hook)
 		{
 
-			if(!$this->hookShouldTrigger($hook)) continue; 
+			if(!$this->hookShouldTrigger($hook)) continue;
 
 			$this->on($event, function() use ($trigger, $hook, $that)
 			{
@@ -629,11 +629,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$process = true;
 
 		if($hook == 'after_channel_entry_save') {
-			
+
 			if($this->_has_saved) $process = false;
 
 			$this->_has_saved = true;
-			
+
 		}
 
 		return $process;

@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\Addons\Comment;
+namespace ExpressionEngine\Addons\Comment;
 
-use EllisLab\Addons\Comment\Service\Notifications;
-use EllisLab\Addons\Spam\Service\SpamModerationInterface;
+use ExpressionEngine\Addons\Comment\Service\Notifications;
+use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Moderate Spam for the Comment module
@@ -14,7 +14,7 @@ class Comment_spam implements SpamModerationInterface {
 	 * Approve Trapped Spam
 	 * Posts the comment and sends relevant notifications
 	 *
-	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  object $comment ExpressionEngine\Model\Comment
 	 * @param  string $comment_path URL to the comment
 	 * @return void
 	 */
@@ -46,7 +46,7 @@ class Comment_spam implements SpamModerationInterface {
 	/**
 	 * Reject Trapped Spam
 	 *
-	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  object $comment ExpressionEngine\Model\Comment
 	 * @param  string $comment_path URL to the comment
 	 * @return void
 	 */

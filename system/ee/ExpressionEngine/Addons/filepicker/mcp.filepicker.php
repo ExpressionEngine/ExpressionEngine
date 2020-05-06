@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Model\File\UploadDestination;
-use EllisLab\Addons\FilePicker\FilePicker as Picker;
-use EllisLab\ExpressionEngine\Service\File\ViewType;
+use ExpressionEngine\Model\File\UploadDestination;
+use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
+use ExpressionEngine\Service\File\ViewType;
 
 /**
  * File Picker Module control panel

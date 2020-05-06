@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\Filter;
+namespace ExpressionEngine\Service\Filter;
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
-use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * Username Filter
@@ -173,7 +173,7 @@ class Username extends Filter {
 	 * This renders the filter into HTML.
 	 *
 	 * @uses ViewFactory::make to create a View instance
-	 * @uses \EllisLab\ExpressionEngine\Service\View\View::render to generate HTML
+	 * @uses \ExpressionEngine\Service\View\View::render to generate HTML
 	 *
 	 * @param ViewFactory $view A view factory responsible for making a view
 	 * @param URL $url A URL object for use in generating URLs for the filter

@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\File;
+namespace ExpressionEngine\Service\File;
 
-use EllisLab\ExpressionEngine\Model\File\File as FileModel;
-use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
-use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Model\File\File as FileModel;
+use ExpressionEngine\Model\Content\FieldFacade;
+use ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * File Service Upload

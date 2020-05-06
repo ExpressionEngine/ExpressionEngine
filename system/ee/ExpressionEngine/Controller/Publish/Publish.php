@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish;
+namespace ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
-use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
-use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
  * Publish Controller
@@ -229,7 +229,7 @@ class Publish extends AbstractPublishController {
 			'form_url' => ee('CP/URL')->getCurrentUrl(),
 			'form_attributes' => $form_attributes,
 			'form_title' => lang('new_entry'),
-			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
+			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
 			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),

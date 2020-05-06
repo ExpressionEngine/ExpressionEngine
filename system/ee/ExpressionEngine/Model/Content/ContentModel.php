@@ -8,13 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Content;
+namespace ExpressionEngine\Model\Content;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\VariableColumnModel;
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
-use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
-use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\VariableColumnModel;
+use ExpressionEngine\Model\Content\Display\DefaultLayout;
+use ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 /**
  * create: new ChannelEntry()->getForm();

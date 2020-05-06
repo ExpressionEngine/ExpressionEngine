@@ -1,14 +1,14 @@
 <?php
 
-use EllisLab\Addons\FluidField\Service\Tag;
+use ExpressionEngine\Addons\FluidField\Service\Tag;
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'Fluid',
 	'description'    => 'Fluid Fields',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\FluidField',
+	'namespace'      => 'ExpressionEngine\Addons\FluidField',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 

@@ -1074,7 +1074,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// https://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+			// https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
 			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
@@ -1493,7 +1493,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// https://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+			// https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
 			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';

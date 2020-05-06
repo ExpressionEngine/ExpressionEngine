@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Addons\Consent;
+namespace ExpressionEngine\Addons\Consent;
 
-use EllisLab\Addons\Consent\Service\Notifications;
-use EllisLab\Addons\Consent\Service\Variables\Alert as AlertVars;
-use EllisLab\Addons\Consent\Service\Variables\Consent as ConsentVars;
+use ExpressionEngine\Addons\Consent\Service\Notifications;
+use ExpressionEngine\Addons\Consent\Service\Variables\Alert as AlertVars;
+use ExpressionEngine\Addons\Consent\Service\Variables\Consent as ConsentVars;
 
 /**
  * Consent Module

@@ -9,14 +9,14 @@
     "license": "proprietary",
     "authors": [
         {
-            "name": "EllisLab Dev Team",
+            "name": "ExpressionEngine Dev Team",
             "email": "developers@ellislab.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "EllisLab\\Tests\\": "",
-            "EllisLab\\ExpressionEngine\\": "../ExpressionEngine"
+            "ExpressionEngine\\Tests\\": "",
+            "ExpressionEngine\\ExpressionEngine\\": "../ExpressionEngine"
         }
     }
 }

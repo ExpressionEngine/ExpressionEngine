@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\View;
+namespace ExpressionEngine\Service\View;
 
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Provider;
 
 /**
  * ViewFactory
@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Core\Provider;
 class ViewFactory {
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Core\Provider
+	 * @var ExpressionEngine\Core\Provider
 	 */
 	protected $provider;
 
@@ -36,7 +36,7 @@ class ViewFactory {
 	 * This will make and return a Service\View object
 	 *
 	 * @param str $path The path to the view template file (ex: '_shared/form')
-	 * @return obj A EllisLab\ExpressionEngine\Service\View\View object
+	 * @return obj A ExpressionEngine\Service\View\View object
 	 */
 	public function make($path)
 	{
@@ -55,7 +55,7 @@ class ViewFactory {
 	* This will make and return a Service\View\StringView object
 	*
 	* @param str $string The contents of the unrendered view
-	* @return object EllisLab\ExpressionEngine\Service\View\StringView
+	* @return object ExpressionEngine\Service\View\StringView
 	*/
 	public function makeFromString($string)
 	{

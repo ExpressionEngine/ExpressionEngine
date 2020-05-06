@@ -7,9 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Utilities;
+namespace ExpressionEngine\Controller\Utilities;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Reindex Controller

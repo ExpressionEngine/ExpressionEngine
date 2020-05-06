@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'         => 'EllisLab',
-	'author_url'     => 'https://ellislab.com/',
+	'author'         => 'ExpressionEngine',
+	'author_url'     => 'https://expressionengine.com/',
 	'name'           => 'File',
 	'description'    => '',
 	'version'        => '1.1.0',
-	'namespace'      => 'EllisLab\Addons\File',
+	'namespace'      => 'ExpressionEngine\Addons\File',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 	'fieldtypes'     => array(

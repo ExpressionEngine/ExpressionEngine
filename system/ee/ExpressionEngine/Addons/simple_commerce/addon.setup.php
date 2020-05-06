@@ -1,12 +1,12 @@
 <?php
 
 return array(
-	'author'      => 'EllisLab',
-	'author_url'  => 'https://ellislab.com/',
+	'author'      => 'ExpressionEngine',
+	'author_url'  => 'https://expressionengine.com/',
 	'name'        => 'Simple Commerce',
 	'description' => 'Easily integrate EE with PayPal',
 	'version'     => '2.2.1',
-	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
+	'namespace'   => 'ExpressionEngine\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,
 
 	'models' => array(

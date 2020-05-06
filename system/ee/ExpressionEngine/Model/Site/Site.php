@@ -7,9 +7,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Site;
+namespace ExpressionEngine\Model\Site;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 /**
  * ExpressionEngine Site Table
@@ -26,10 +26,10 @@ class Site extends Model {
 	protected static $_hook_id = 'site';
 
 	protected static $_type_classes = array(
-		'ChannelPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\ChannelPreferences',
-		'MemberPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MemberPreferences',
-		'SystemPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\SystemPreferences',
-		'TemplatePreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\TemplatePreferences',
+		'ChannelPreferences' => 'ExpressionEngine\Model\Site\Column\ChannelPreferences',
+		'MemberPreferences' => 'ExpressionEngine\Model\Site\Column\MemberPreferences',
+		'SystemPreferences' => 'ExpressionEngine\Model\Site\Column\SystemPreferences',
+		'TemplatePreferences' => 'ExpressionEngine\Model\Site\Column\TemplatePreferences',
 	);
 
 	protected static $_typed_columns = array(

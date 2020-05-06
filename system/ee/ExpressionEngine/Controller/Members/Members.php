@@ -8,12 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Members;
+namespace ExpressionEngine\Controller\Members;
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Library\CP;
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Model\Query\Builder;
 
 /**
  * Members Controller

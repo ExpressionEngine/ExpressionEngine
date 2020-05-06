@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Model\Member;
+namespace ExpressionEngine\Model\Member;
 
-use EllisLab\ExpressionEngine\Model\Content\FieldModel;
+use ExpressionEngine\Model\Content\FieldModel;
 
 /**
  * Member Field Model

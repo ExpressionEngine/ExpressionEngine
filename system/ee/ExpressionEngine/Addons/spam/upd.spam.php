@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Service\Addon\Installer;
+use ExpressionEngine\Service\Addon\Installer;
 
 /**
  * Spam Module update class

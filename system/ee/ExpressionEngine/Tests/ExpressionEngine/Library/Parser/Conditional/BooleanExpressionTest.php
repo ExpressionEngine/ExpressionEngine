@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
+namespace ExpressionEngine\Tests\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\BooleanExpression;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
+use ExpressionEngine\Library\Parser\Conditional\BooleanExpression;
+use ExpressionEngine\Library\Parser\Conditional\Token;
 use PHPUnit\Framework\TestCase;
 
 class BooleanExpressionTest extends TestCase {

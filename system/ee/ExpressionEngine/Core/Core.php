@@ -8,11 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Core;
+namespace ExpressionEngine\Core;
 
-use EllisLab\ExpressionEngine\Legacy\App as LegacyApp;
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
-use EllisLab\ExpressionEngine\Error\FileNotFound;
+use ExpressionEngine\Legacy\App as LegacyApp;
+use ExpressionEngine\Service\Dependency\InjectionContainer;
+use ExpressionEngine\Error\FileNotFound;
 
 /**
  * Core Abstract
@@ -193,7 +193,7 @@ abstract class Core {
 		);
 
 		// This allows for routes of 'cp/channels/layout/1' to end up calling
-		// \EllisLab\ExpressionEngine\Controller\Channels\Layout::layout(1)
+		// \ExpressionEngine\Controller\Channels\Layout::layout(1)
 		if ( ! in_array($method, $controller_methods)
 			&& in_array($RTR->fetch_class(), $controller_methods))
 		{
@@ -278,7 +278,7 @@ abstract class Core {
 		}
 
 		return array(
-			'class' => 'EllisLab\ExpressionEngine\Controller\Error\FileNotFound',
+			'class' => 'ExpressionEngine\Controller\Error\FileNotFound',
 			'method' => 'index',
 			'segments' => array(ee()->uri->uri_string().$qs)
 		);
@@ -306,7 +306,7 @@ abstract class Core {
 		$application  = new Application($autoloader, $dependencies, $providers);
 
 		$provider = $application->addProvider(
-			SYSPATH.'ee/EllisLab/ExpressionEngine',
+			SYSPATH.'ee/ExpressionEngine',
 			'app.setup.php',
 			'ee'
 		);

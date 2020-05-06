@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Service\Encrypt;
+namespace ExpressionEngine\Tests\Service\Encrypt;
 
-use EllisLab\ExpressionEngine\Service\Encrypt;
+use ExpressionEngine\Service\Encrypt;
 use PHPUnit\Framework\TestCase;
 
 class EncryptTest extends TestCase {
@@ -20,7 +20,7 @@ class EncryptTest extends TestCase {
 	public function testEncodeWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt($key);
 		$encoded = $encrypt->encode($text);
@@ -32,7 +32,7 @@ class EncryptTest extends TestCase {
 	public function testEncodeWithKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encoded = $encrypt->encode($text, $key);
@@ -44,7 +44,7 @@ class EncryptTest extends TestCase {
 	public function testDecodeWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt($key);
 		$encoded = $encrypt->encode($text);
@@ -54,7 +54,7 @@ class EncryptTest extends TestCase {
 	public function testDecodeWithKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encoded = $encrypt->encode($text, $key);
@@ -64,7 +64,7 @@ class EncryptTest extends TestCase {
 	public function testEncryptWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt($key);
 		$this->assertTrue($encrypt->encrypt($text) != $text);
@@ -73,7 +73,7 @@ class EncryptTest extends TestCase {
 	public function testEncryptWithKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$this->assertTrue($encrypt->encrypt($text, $key) != $text);
@@ -82,7 +82,7 @@ class EncryptTest extends TestCase {
 	public function testDecryptWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt($key);
 		$encrypted = $encrypt->encrypt($text);
@@ -92,7 +92,7 @@ class EncryptTest extends TestCase {
 	public function testDecryptWithKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encrypted = $encrypt->encrypt($text, $key);
@@ -102,7 +102,7 @@ class EncryptTest extends TestCase {
 	public function testDecryptEncodedDataWithDefaultKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt($key);
 		$encoded = $encrypt->encode($text);
@@ -112,7 +112,7 @@ class EncryptTest extends TestCase {
 	public function testDecryptEncodedDataWithKey()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 		$encoded = $encrypt->encode($text, $key);
@@ -122,7 +122,7 @@ class EncryptTest extends TestCase {
 	public function testKeys()
 	{
 		$text = "ExpressionEngine";
-		$key = "EllisLab";
+		$key = "ExpressionEngine";
 
 		$encrypt = new Encrypt\Encrypt("SomeDefaultKey");
 

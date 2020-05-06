@@ -8,10 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\Tests\ExpressionEngine\Core;
+namespace ExpressionEngine\Tests\Core;
 
-use EllisLab\AutoloaderTest as TestAlias;
-use EllisLab\ExpressionEngine\Core\Autoloader as Autoloader;
+use ExpressionEngine\AutoloaderTest as TestAlias;
+use ExpressionEngine\Core\Autoloader as Autoloader;
 use PHPUnit\Framework\TestCase;
 
 class AutoloaderTest extends TestCase {
@@ -22,14 +22,14 @@ class AutoloaderTest extends TestCase {
 	{
 		$this->autoloader = new Autoloader();
 
-		// The testsuite autoloader technically handles the full EllisLab
+		// The testsuite autoloader technically handles the full ExpressionEngine
 		// namespace, but we can take advantage of its simplicity and the fact
 		// that it fails silently.
 		// By missmatching the prefix and path name we can guarantee a silent
 		// failure on the testsuite loader, thereby isolating the test to the
 		// main autoloader.
 
-		$this->autoloader->addPrefix('EllisLab\AutoloaderTest', __DIR__.'/AutoloaderFixture');
+		$this->autoloader->addPrefix('ExpressionEngine\AutoloaderTest', __DIR__.'/AutoloaderFixture');
 	}
 
 	protected function tearDown()
@@ -39,20 +39,20 @@ class AutoloaderTest extends TestCase {
 
 	public function testLoadClass()
 	{
-		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileOne');
+		$this->autoloader->loadClass('ExpressionEngine\AutoloaderTest\TestFileOne');
 		$this->assertTrue(class_exists('\TestFileOne'), 'loadClass(): file without namespacing');
 
-		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileTwo');
-		$this->assertTrue(class_exists('\EllisLab\AutoloaderTest\TestFileTwo'), 'class file with namespacing');
+		$this->autoloader->loadClass('ExpressionEngine\AutoloaderTest\TestFileTwo');
+		$this->assertTrue(class_exists('\ExpressionEngine\AutoloaderTest\TestFileTwo'), 'class file with namespacing');
 	}
 
 	public function testRegister()
 	{
 		$this->autoloader->register();
-		$test = new \EllisLab\AutoloaderTest\TestFileThree();
+		$test = new \ExpressionEngine\AutoloaderTest\TestFileThree();
 		$this->autoloader->unregister();
 
-		$this->assertInstanceOf('EllisLab\AutoloaderTest\TestFileThree', $test);
+		$this->assertInstanceOf('ExpressionEngine\AutoloaderTest\TestFileThree', $test);
 	}
 
 	public function testLoadClassHandlesAutomaticallyResolvedAlias()
@@ -61,7 +61,7 @@ class AutoloaderTest extends TestCase {
 		$test = new TestAlias\TestFileFour();
 		$this->autoloader->unregister();
 
-		$this->assertInstanceOf('EllisLab\AutoloaderTest\TestFileFour', $test);
+		$this->assertInstanceOf('ExpressionEngine\AutoloaderTest\TestFileFour', $test);
 	}
 
 	public function testSingleton()

@@ -7,7 +7,7 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Service\Session;
+namespace ExpressionEngine\Service\Session;
 
 /**
  * Session service

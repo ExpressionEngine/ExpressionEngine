@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\View;
+namespace ExpressionEngine\Service\View;
 
-use EllisLab\ExpressionEngine\Core\Provider;
+use ExpressionEngine\Core\Provider;
 
 /**
  * View
@@ -23,7 +23,7 @@ class View {
 	protected $path;
 
 	/**
-	 * @var EllisLab\ExpressionEngine\Core\Provider
+	 * @var ExpressionEngine\Core\Provider
 	 */
 	protected $provider;
 

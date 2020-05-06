@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Service\ChannelSet;
+namespace ExpressionEngine\Service\ChannelSet;
 
-use EllisLab\ExpressionEngine\Service\File\Directory;
+use ExpressionEngine\Service\File\Directory;
 
 /**
  * Channel Set Service Factory
