@@ -41,8 +41,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /**
  * EE Jump Menu
  */
-var jumpContainer = (typeof(window.top.Cypress) !== 'undefined') ? window : window.top;
-
+var jumpContainer = typeof window.top.Cypress !== 'undefined' ? window : window.top;
 EE.cp.JumpMenu = {
   typingAjaxDelay: 400,
   // Internal Variables
