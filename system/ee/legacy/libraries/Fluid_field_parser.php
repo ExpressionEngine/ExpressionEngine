@@ -9,8 +9,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\Addons\FluidField\Model\FluidField;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Addons\FluidField\Model\FluidField;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Fluid Field Parser

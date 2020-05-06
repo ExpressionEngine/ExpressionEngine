@@ -221,7 +221,7 @@ class Wizard extends CI_Controller
         $this->month = gmdate('m', $this->now);
         $this->day   = gmdate('d', $this->now);
 
-        ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+        ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
     }
 
     /**
@@ -339,7 +339,7 @@ class Wizard extends CI_Controller
         }
 
         // Try to include the RequirementsChecker class and check server requirements
-        require_once(APPPATH . 'updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+        require_once(APPPATH . 'updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
 
         $this->requirements = new RequirementsChecker($db);
 
@@ -1122,7 +1122,7 @@ class Wizard extends CI_Controller
         if (class_exists('Updater')) {
             $UD = new Updater;
         } else {
-            $class = '\EllisLab\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
+            $class = '\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
             $UD = new $class;
         }
 

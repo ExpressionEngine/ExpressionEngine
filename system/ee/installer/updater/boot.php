@@ -4,7 +4,7 @@
 date_default_timezone_set('UTC');
 
 // Load full EE as bootstrap if we're running database updates
-if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
+if (file_exists(SYSPATH.'ee/ExpressionEngine/Boot/boot.php') &&
 	isset($_GET['step']) &&
 	(strpos($_GET['step'], 'backupDatabase') === 0 OR
 		strpos($_GET['step'], 'updateDatabase') === 0 OR
@@ -13,7 +13,7 @@ if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
 		strpos($_GET['step'], 'selfDestruct') === 0))
 {
 	define('BOOT_ONLY', TRUE);
-	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
 }
 else
 {
@@ -26,12 +26,12 @@ else
 		define('DIR_READ_MODE', 0755);
 		define('DIR_WRITE_MODE', 0777);
 
-		require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+		require __DIR__.'/ExpressionEngine/Updater/Boot/boot.common.php';
 	}
 }
 
 // add EE constants
-$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
 
 foreach ($constants as $k => $v) {
 	if ( ! defined($k)) {
@@ -45,10 +45,10 @@ foreach ($constants as $k => $v) {
  * ------------------------------------------------------
  */
 
-	require SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php';
+	require SYSPATH.'ee/updater/ExpressionEngine/Updater/Core/Autoloader.php';
 
-	EllisLab\ExpressionEngine\Updater\Core\Autoloader::getInstance()
-		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
+	ExpressionEngine\Updater\Core\Autoloader::getInstance()
+		->addPrefix('ExpressionEngine', SYSPATH.'ee/updater/ExpressionEngine/')
 		->register();
 
 /*
@@ -87,7 +87,7 @@ foreach ($constants as $k => $v) {
 
 	function routeRequest($directory, $controller, $method = '')
 	{
-		$class = 'EllisLab\ExpressionEngine\Updater\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
+		$class = 'ExpressionEngine\Updater\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
 
 		if (class_exists($class))
 		{

@@ -66,7 +66,7 @@ $lang = array(
 
 'update_training' => 'Update Training',
 
-'update_training_desc' => 'This will download up-to-date training data from EllisLab and update your database.',
+'update_training_desc' => 'This will download up-to-date training data from ExpressionEngine and update your database.',
 
 'updating_parameters' => 'Updating Parameters',
 

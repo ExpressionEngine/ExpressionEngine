@@ -19,7 +19,7 @@
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
  *
- * https://ellislab.com/expressionengine/user-guide/installation/best_practices.html
+ * https://expressionengine.com/expressionengine/user-guide/installation/best_practices.html
  *
  */
 	$system_path = './system';
@@ -165,12 +165,12 @@
  * And away we go...
  *
  */
-	if ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
+	if ( ! file_exists(SYSPATH.'ee/ExpressionEngine/Boot/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
 
-	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	require_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
 
 // EOF

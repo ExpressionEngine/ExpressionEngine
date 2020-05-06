@@ -25,7 +25,7 @@ function cp_url($path, $qs = '')
 	ee()->load->library('logger');
 	ee()->logger->deprecated('3.0', 'ee(\'CP/URL\', \''.$path.'\')');
 
-	$url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+	$url = new \ExpressionEngine\Library\CP\URL(
 		$path,
 		ee()->session->session_id(),
 		$qs,

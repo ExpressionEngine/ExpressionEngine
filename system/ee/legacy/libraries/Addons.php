@@ -348,7 +348,7 @@ class EE_Addons {
 
 		foreach ($modules as $module)
 		{
-			$path = SYSPATH.'ee/EllisLab/Addons/'.$module.'/';
+			$path = SYSPATH.'ee/ExpressionEngine/Addons/'.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{

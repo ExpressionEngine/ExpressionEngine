@@ -53,7 +53,7 @@ class EE_Exceptions {
 	{
 		if (defined('REQ') && constant('REQ') == 'CP')
 		{
-			throw new \EllisLab\ExpressionEngine\Error\FileNotFound();
+			throw new \ExpressionEngine\Error\FileNotFound();
 		}
 
 		$heading = "404 Page Not Found";

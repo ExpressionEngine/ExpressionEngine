@@ -14,7 +14,7 @@
 abstract class EE_Fieldtype {
 
 	// bring in the :modifier methods
-	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+	use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
 	// Old identifiers for backwards compatibility.
 	// @deprecated

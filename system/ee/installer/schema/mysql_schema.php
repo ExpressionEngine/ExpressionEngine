@@ -1703,10 +1703,10 @@ class EE_Schema {
 
 		foreach($default_fts as $name)
 		{
-			$addon_setup_path = SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			$addon_setup_path = SYSPATH.'/ee/ExpressionEngine/Addons/'.$name.'/addon.setup.php';
 			if (file_exists($addon_setup_path))
 			{
-				$fieldtype = require SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+				$fieldtype = require SYSPATH.'/ee/ExpressionEngine/Addons/'.$name.'/addon.setup.php';
 			}
 			else
 			{
