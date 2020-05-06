@@ -100,6 +100,15 @@ jobs:
 
         needs: prepare-cypress
 
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                php: [7.1]
+                os: [ubuntu-latest]
+
+        name: P${{ matrix.php }} - ${{ matrix.os }}
+
         steps:
             - name: Run Cypress Tests
               working-directory: tests/cypress
@@ -115,6 +124,15 @@ jobs:
     cypress-cp:
 
         needs: prepare-cypress
+
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                php: [7.1]
+                os: [ubuntu-latest]
+
+        name: P${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
             - name: Run Cypress Tests
