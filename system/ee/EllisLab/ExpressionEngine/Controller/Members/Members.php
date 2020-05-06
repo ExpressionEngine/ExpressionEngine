@@ -915,7 +915,7 @@ class Members extends CP_Controller {
 
 			$username_display .= '<br><span class="meta-info">'.$email.'</span>';
 
-			$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png');
+			$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
 
 			$username_display = "
 			<div class=\"d-flex align-items-center\">

@@ -19,7 +19,7 @@
 		}
 		?>
 	</head>
-	<body id="top">
+	<body data-ee-version="<?=APP_VER?>" id="top">
 		<script>
 		var currentTheme = localStorage.getItem('theme');
 

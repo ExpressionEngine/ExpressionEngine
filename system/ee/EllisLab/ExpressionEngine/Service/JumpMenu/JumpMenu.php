@@ -57,6 +57,14 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'members/create',
                 'permission' => 'can_create_members'
             ),
+            'createMemberField' => array(
+                'icon' => 'fa-plus',
+                'command' => 'create new member field',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/fields/create',
+                'permission' => 'admin_roles'
+            ),
             'createMemberRole' => array(
                 'icon' => 'fa-plus',
                 'command' => 'create new publish member role group',
@@ -179,7 +187,7 @@ class JumpMenu extends AbstractJumpMenu
             'myProfile' => array(
                 'icon' => 'fa-user',
                 'command' => 'profile',
-                'dynamic' => true,
+                'dynamic' => false,
                 'addon' => false,
                 'target' => 'members/profile'
             ),
@@ -206,6 +214,14 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'fields',
                 'permission' => ['can_create_channel_fields', 'can_edit_channel_fields']
+            ),
+            'editChannelField' => array(
+                'icon' => 'fa-pencil-alt',
+                'command' => 'edit channel custom field',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'channels/field',
+                'permission' => 'can_edit_channel_fields'
             ),
             'createChannel' => array(
                 'icon' => 'fa-plus',

@@ -641,69 +641,33 @@ class Edit extends AbstractPublishController {
 		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('entries_removed_desc'))
+			->addToBody(lang('entries_deleted_desc'))
 			->addToBody($entry_names)
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
 	}
 
-	private function removeAllEntries($entry_ids)
+	private function removeEntries($entry_ids, $self_only = true)
 	{
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if ( ! $this->is_admin)
-		{
-			if (empty($this->assigned_channel_ids))
-			{
+		if (!$this->is_admin) {
+			if (empty($this->assigned_channel_ids)) {
 				show_error(lang('no_channels'));
 			}
 
-			$channel_ids = [];
-
-			foreach ($this->assigned_channel_ids as $channel_id)
-			{
-				if (ee('Permission')->can('delete_all_entries_channel_id_' . $channel_id))
-				{
-					$channel_ids[] = $channel_id;
-				}
-			}
-
-			// No permission to delete all entries
-			if (empty($channel_ids))
-			{
-				return [];
-			}
-
-			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
-		}
-
-		$entry_names = $entries->all()->pluck('title');
-
-		$entries->delete();
-
-		return $entry_names;
-	}
-
-	private function removeSelfEntries($entry_ids)
-	{
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('author_id', ee()->session->userdata('member_id'));
-
-		if ( ! $this->is_admin)
-		{
-			if (empty($this->assigned_channel_ids))
-			{
-				show_error(lang('no_channels'));
+			if ($self_only == true) {
+				$entries->filter('author_id', ee()->session->userdata('member_id'));
 			}
 
 			$channel_ids = [];
+			$permission = ($self_only == true) ? 'delete_self_entries' : 'delete_all_entries';
 
 			foreach ($this->assigned_channel_ids as $channel_id)
 			{
-				if (ee('Permission')->can('delete_self_entries_channel_id_' . $channel_id))
+				if (ee('Permission')->can($permission . '_channel_id_' . $channel_id))
 				{
 					$channel_ids[] = $channel_id;
 				}
@@ -718,40 +682,42 @@ class Edit extends AbstractPublishController {
 			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 		}
 
-		$entry_names = $entries->all()->pluck('title');
+		$all_entries = $entries->all();
+		if (!empty($all_entries)) {
+			$entry_names = $all_entries->pluck('title');
+			$entry_ids = $all_entries->pluck('entry_id');
 
-		// Remove pages URIs
-		$site_id = ee()->config->item('site_id');
-		$site_pages = ee()->config->item('site_pages');
+			// Remove pages URIs
+			$site_id = ee()->config->item('site_id');
+			$site_pages = ee()->config->item('site_pages');
 
-		if ($site_pages !== FALSE && $entries && count($site_pages[$site_id]) > 0)
-		{
+			if ($site_pages !== FALSE && count($site_pages[$site_id]) > 0) {
+				foreach ($all_entries as $entry){
+					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
 
-			foreach ($entries->all() as $entry)
-			{
+					ee()->config->set_item('site_pages', $site_pages);
 
-				unset($site_pages[$site_id]['uris'][$entry->entry_id]);
-				unset($site_pages[$site_id]['templates'][$entry->entry_id]);
-
-				ee()->config->set_item('site_pages', $site_pages);
-
-				$entry->Site->site_pages = $site_pages;
-				$entry->Site->save();
-
+					$entry->Site->site_pages = $site_pages;
+					$entry->Site->save();
+				}
 			}
-
 		}
 
 		$entries->delete();
 
-		ee('CP/Alert')->makeInline('entries-form')
-			->asSuccess()
-			->withTitle(lang('success'))
-			->addToBody(lang('entries_deleted_desc'))
-			->addToBody($entry_names)
-			->defer();
+		return $entry_names;
+	}
 
-		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
+
+	private function removeAllEntries($entry_ids)
+	{
+		return $this->removeEntries($entry_ids);
+	}
+
+	private function removeSelfEntries($entry_ids)
+	{
+		return $this->removeEntries($entry_ids, true);
 	}
 }
 

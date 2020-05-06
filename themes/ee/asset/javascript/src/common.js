@@ -248,7 +248,22 @@ $(document).ready(function(){
 	// -------------------------------------------------------------------
 
 	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
-	var updateMainSidebar = _.debounce(function() {
+	function debounce(func, wait = 0, immediate = false) {
+		var timeout;
+		return function() {
+			var context = this, args = arguments;
+			var later = function() {
+				timeout = null;
+				if (!immediate) func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) func.apply(context, args);
+		}
+	}
+
+	var updateMainSidebar = debounce(function() {
 		if (window.innerWidth < 1000) {
 			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
 			$('.main-nav__mobile-menu').removeClass('hidden');
@@ -371,7 +386,7 @@ $(document).ready(function(){
 		}
 	})
 
-	var updateFilterBars = _.debounce(function() {
+	var updateFilterBars = debounce(function() {
 		var collapse = false
 
 		if (window.innerWidth < 1000) {

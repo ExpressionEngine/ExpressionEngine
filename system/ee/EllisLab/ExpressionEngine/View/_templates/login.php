@@ -6,7 +6,7 @@
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 	</head>
-	<body>
+	<body data-ee-version="<?=APP_VER?>">
 		<section class="login-container">
 			<section class="login">
 

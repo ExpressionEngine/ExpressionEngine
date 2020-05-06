@@ -66,7 +66,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 				foreach($recent_members as $member):
 					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
-					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png');
+					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
 				?>
 				<li>
 					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
@@ -108,7 +108,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<div class="d-flex">
 					<div>
 						<p class="meta-info">
-							<a href="admin.php?/cp/members"><?=$comment->name?></a>
+							<a href="<?=ee('CP/URL')->make('cp/members')?>"><?=$comment->name?></a>
 							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
 						</p>
 						<p><?=ellipsize($comment->comment, 150)?></p>
