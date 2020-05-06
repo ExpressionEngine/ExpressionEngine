@@ -85,17 +85,6 @@ jobs:
               working-directory: tests/cypress
               run: npm install
 
-            - name: Run Cypress Tests
-              working-directory: tests/cypress
-              run:  npm run cypress:run
-
-            - name: Archive screenshots
-              uses: actions/upload-artifact@v1
-              if: failure()
-              with:
-                name: cypress-files
-                path: tests/cypress/cypress/screenshots/
-
     cypress-publish:
 
         needs: prepare-cypress
