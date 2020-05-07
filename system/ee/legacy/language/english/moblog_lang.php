@@ -1,2 +1,2 @@
 <?php
-require SYSPATH . 'ee/EllisLab/Addons/moblog/language/english/moblog_lang.php';
+require SYSPATH . 'ee/ExpressionEngine/Addons/moblog/language/english/moblog_lang.php';

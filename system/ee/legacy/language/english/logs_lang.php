@@ -74,7 +74,7 @@ $lang = array(
 
 'deprecated_meaning' => '<p>One of two things has happened:</p>
 <ol>
- <li>The system has detected native code or an add-on that is using outdated code that may stop working or cause issues with the system. This means an add-on in your installation is accessing a part of ExpressionEngine\'s core code which EllisLab plans to remove in the future in order to improve the quality of the product.</li>
+ <li>The system has detected native code or an add-on that is using outdated code that may stop working or cause issues with the system. This means an add-on in your installation is accessing a part of ExpressionEngine\'s core code which Packet Tide plans to remove in the future in order to improve the quality of the product.</li>
  <li>A warning or message was raised by native code or an add-on for the Super Admin to view.</li>
 </ol>
 <p>To remedy this notice, you may need to do any of the following:</p>

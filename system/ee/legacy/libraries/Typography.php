@@ -9,7 +9,7 @@
  */
 
 use Michelf\MarkdownExtra;
-use  EllisLab\ExpressionEngine\Core\Autoloader;
+use  ExpressionEngine\Core\Autoloader;
 
 /**
  * Core Typography

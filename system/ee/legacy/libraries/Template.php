@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Service\Template;
+use ExpressionEngine\Service\Template;
 
 /**
  * Template Parser
@@ -4455,7 +4455,7 @@ class EE_Template {
 	{
 		if ( ! isset($this->annotations))
 		{
-			$this->annotations = new \EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime();
+			$this->annotations = new \ExpressionEngine\Library\Template\Annotation\Runtime();
 			$this->annotations->useSharedStore();
 		}
 

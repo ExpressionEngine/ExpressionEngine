@@ -30,7 +30,7 @@ define('CLI_VERBOSE', isset($args['v']) or isset($args['verbose']));
 // Load up ExpressionEngine
 if (! isset($args['no-bootstrap']) && !
     (in_array('upgrade', $args) && isset($args['rollback']))) {
-    $bootstrap = SYSPATH . 'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+    $bootstrap = SYSPATH . 'ee/ExpressionEngine/Boot/boot.php';
     if (file_exists($bootstrap)) {
         define('BOOT_ONLY', true);
         require_once $bootstrap;

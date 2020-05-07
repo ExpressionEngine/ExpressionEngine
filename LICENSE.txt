@@ -281,7 +281,7 @@ The following subcomponents are licensed under the MIT License:
         Copyright (c) 2010 Scott Williams
 
         Modified el-wysihat code:
-        Copyright (C) 2012 EllisLab Corp.
+        Copyright (C) 2012 Packet Tide, LLC
 
     The Selection and Range components use code heavily inspired by:
 

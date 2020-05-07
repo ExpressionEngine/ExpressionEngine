@@ -1137,7 +1137,7 @@ class Filemanager {
 	 *
 	 * Deprecated in 4.1.0
 	 *
-	 * @see EllisLab\ExpressionEngine\Service\Memory\Memory::setMemoryForImageManipulation()
+	 * @see ExpressionEngine\Service\Memory\Memory::setMemoryForImageManipulation()
 	 */
 	function set_image_memory($filename)
 	{

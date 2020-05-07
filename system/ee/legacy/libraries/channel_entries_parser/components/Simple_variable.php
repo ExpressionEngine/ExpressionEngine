@@ -14,7 +14,7 @@
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 	// bring in the :modifier methods
-	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+	use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
 	/**
 	 * There are always simple variables. Let me tell you ...
@@ -88,7 +88,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			{
 				if (!isset($ft->disable_frontedit) || $ft->disable_frontedit!=true)
 				{
-					$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
+					$frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
 					$tagdata = str_replace(
 						LD.$key.RD,
 						$frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $key).LD.$key.RD,
