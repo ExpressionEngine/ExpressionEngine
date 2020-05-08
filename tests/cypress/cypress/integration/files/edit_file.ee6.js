@@ -23,9 +23,9 @@ context('File Manager / Edit File', () => {
     cy.hasNoErrors()
 
     // Check that the heder data is intact
-    page.get('manager_title').invoke('text').then((text) => {
-      expect(text.trim()).equal('File Manager')
-    })		
+    page.get('page_title').invoke('text').then((text) => {
+      expect(text.trim()).equal('Files')
+    })
     page.get('title_toolbar').should('exist')
 		page.get('download_all').should('exist')
 
@@ -34,12 +34,14 @@ context('File Manager / Edit File', () => {
     page.get('upload_directories_header').contains('Upload Directories')
     page.get('new_directory_button').should('exist')
     page.get('watermarks_header').contains('Watermarks')
-    page.get('new_watermark_button').should('exist')
+    //page.get('new_watermark_button').should('exist')
 
-    page.get('breadcrumb').should('exist')
-    page.get('breadcrumb').contains("File Manager")
-    page.get('breadcrumb').contains("Meta Data")
-    page.get('heading').contains("Meta Data")
+    //page.get('breadcrumb').should('exist')
+    //page.get('breadcrumb').contains("File Manager")
+    //page.get('breadcrumb').contains("Meta Data")
+    page.get('modal').should('be.visible')
+    page.get('modal_heading').contains("Meta Data")
+    page.get('preview_image').should('exist')
     page.get('title_input').should('exist')
     page.get('description_input').should('exist')
     page.get('credit_input').should('exist')
@@ -54,12 +56,12 @@ context('File Manager / Edit File', () => {
     //FileUtils.chmod_R 0777, @upload_dir
   })
 
-  it('shows the Edit Meta Data form', () => {
-		page.get('title_input').invoke('val').then((text) => { 
-      page.get('breadcrumb').contains(text)		
-      page.get('heading').contains(text)		
+  /*it('shows the Edit Meta Data form', () => {
+		page.get('title_input').invoke('val').then((text) => {
+      page.get('breadcrumb').contains(text)
+      page.get('heading').contains(text)
 		})
-  })
+  })*/
 
   it('can edit the title', () => {
     page.get('title_input').clear().type("Rspec was here")
@@ -97,13 +99,11 @@ context('File Manager / Edit File', () => {
   })
 
   it('can navigate back to the filemanger', () => {
-    page.get('breadcrumb').contains("File Manager").click()
-    cy.hasNoErrors()
 
-    //filemanager.displayed?
-    filemanager.get('heading').invoke('text').then((text) => {
-			expect(text.trim()).equal('All Files')
-		})
+    page.get('modal').find('.m-close').click()
+    page.get('page_heading').should('be.visible')
+    page.get('modal').should('not.be.visible')
+    cy.hasNoErrors()
   })
 
 })

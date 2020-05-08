@@ -20,6 +20,7 @@ class ControlPanel {
             "page_title": '.ee-main .main-nav h1',
             "wrap": 'section.ee-wrapper .ee-main',
             "nav": 'section.ee-wrapper .ee-sidebar',
+            "page_heading": ".ee-main__content .title-bar .title-bar__title",
 
             // Tables
             "select_all": 'th.check-ctrl input',
@@ -29,8 +30,8 @@ class ControlPanel {
             "action_submit_button": 'form fieldset.bulk-action-bar button',
 
             // Pagination
-            "pagination": 'div.paginate',
-            "pages": 'div.paginate ul li a',
+            "pagination": 'ul.pagination',
+            "pages": 'ul.pagination a.pagination__link',
 
             // Alert
             "alert": 'div.app-notice',
@@ -40,7 +41,7 @@ class ControlPanel {
 
             // Modals
             "modal": 'div.modal:visible',
-            "modal_title": 'div.modal:visible h1',
+            "modal_title": 'div.modal:visible h2',
             "modal_submit_button": 'div.modal:visible input.btn',
 
             // Grid

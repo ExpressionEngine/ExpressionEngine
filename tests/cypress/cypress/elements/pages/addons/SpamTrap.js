@@ -17,24 +17,24 @@ class SpamTrap extends ControlPanel {
 			'perpage_manual_filter': 'input[name="perpage"]',
 
 			// Main box's table elements
-			'spam_trap': 'div.box form div.tbl-wrap table tr',
-			'selected_spam': 'div.box form div.tbl-wrap table tr.selected',
+			'spam_trap': '.ee-main__content form .table-responsive table tr',
+			'selected_spam': '.ee-main__content form .table-responsive table tr.selected',
 
-			'content_header': 'div.box form div.tbl-wrap table tr th:first-child',
-			'date_header': 'div.box form div.tbl-wrap table tr th:nth-child(2)',
-			'ip_header': 'div.box form div.tbl-wrap table tr th:nth-child(3)',
-			'type_header': 'div.box form div.tbl-wrap table tr th:nth-child(4)',
-			'manage_header': 'div.box form div.tbl-wrap table tr th:nth-child(4)',
-			'checkbox_header': 'div.box form div.tbl-wrap table tr th:nth-child(5)',
-			'check_all': 'div.box form div.tbl-wrap table tr th:nth-child(5) input',
+			'content_header': '.ee-main__content form .table-responsive table tr th:first-child',
+			'date_header': '.ee-main__content form .table-responsive table tr th:nth-child(2)',
+			'ip_header': '.ee-main__content form .table-responsive table tr th:nth-child(3)',
+			'type_header': '.ee-main__content form .table-responsive table tr th:nth-child(4)',
+			'manage_header': '.ee-main__content form .table-responsive table tr th:nth-child(4)',
+			'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(5)',
+			'check_all': '.ee-main__content form .table-responsive table tr th:nth-child(5) input',
 
-			'content': 'div.box form div.tbl-wrap table tr td:first-child',
-			'date': 'div.box form div.tbl-wrap table tr td:nth-child(2)',
-			'ip_addresses': 'div.box form div.tbl-wrap table tr td:nth-child(3)',
-			'manage_actions': 'div.box form div.tbl-wrap table tr td:nth-child(4)',
+			'content': '.ee-main__content form .table-responsive table tr td:first-child',
+			'date': '.ee-main__content form .table-responsive table tr td:nth-child(2)',
+			'ip_addresses': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
+			'manage_actions': '.ee-main__content form .table-responsive table tr td:nth-child(4)',
 
-			'bulk_action': 'form fieldset.tbl-bulk-act select[name="bulk_action"]',
-			'action_submit_button': 'form fieldset.tbl-bulk-act button.submit',
+			'bulk_action': 'form fieldset.bulk-action-bar select[name="bulk_action"]',
+			'action_submit_button': 'form fieldset.bulk-action-bar button',
 
 			'no_results': 'tr.no-results',
 

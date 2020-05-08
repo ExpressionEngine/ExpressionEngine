@@ -11,7 +11,7 @@ define('FIXTURE', TRUE);
 define('SELF', 'index.php');
 
 define('BOOT_ONLY', TRUE);
-include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
 
 ee()->load->library('session');
 ee()->load->library('functions');

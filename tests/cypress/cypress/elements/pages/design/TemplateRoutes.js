@@ -19,8 +19,8 @@ class TemplateRoutes extends ControlPanel {
 
             "no_results": 'tr.no-results',
 
-            "new_route_button": 'table tr.tbl-action td a.btn.action',
-            "update_button": 'fieldset.tbl-bulk-act input[type=submit]',
+            "new_route_button": '.grid-field .tbl-action a.btn.action',
+            "update_button": '.container .form-btns input[type=submit]',
 
 
         })
@@ -37,17 +37,17 @@ class TemplateRoutes extends ControlPanel {
 
         this.get('new_route_button').click()
         let route = this.$('routes').eq(-1)
-        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .field-drop-selected').click()
-        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .field-drop-choices label').contains(options.template).click({ force: true })
-        this.get('routes').eq(-1).find('td:nth-child(4) input').type(options.route)
+        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__button').click()
+        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__dropdown .select__dropdown-item').contains(options.template).click({ force: true })
+        this.get('routes').eq(-1).find('td:nth-child(3) input').type(options.route)
 
         if (options.segments_required) {
-            if (route.find('td:nth-child(5) [data-toggle-for=required]').hasClass('off')) {
-                route.find('td:nth-child(5) [data-toggle-for=required]').click();
+            if (route.find('td:nth-child(4) [data-toggle-for=required]').hasClass('off')) {
+                route.find('td:nth-child(4) [data-toggle-for=required]').click();
             }
         } else {
-            if (route.find('td:nth-child(5) [data-toggle-for=required]').hasClass('on')) {
-                route.find('td:nth-child(5) [data-toggle-for=required]').click();
+            if (route.find('td:nth-child(4) [data-toggle-for=required]').hasClass('on')) {
+                route.find('td:nth-child(4) [data-toggle-for=required]').click();
             }
         }
     }

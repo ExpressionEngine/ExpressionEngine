@@ -104,7 +104,7 @@ context('System Templates', () => {
     describe('Forums', function() {
         before(function() {
             cy.authVisit('/admin.php?/cp/addons')
-            cy.get('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click()
+            cy.get('a[data-post-url*="cp/addons/install/forum"]').click()
         })
 
         context('Forums without Templates', function() {

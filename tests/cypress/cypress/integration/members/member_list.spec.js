@@ -41,7 +41,7 @@ context('Member List', () => {
     page.get('usernames').first().invoke('text').then((member_name) => {
       page.get('members').first().find('input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')
-      page.get('bulk_action').select("Remove")
+      page.get('bulk_action').select("Delete")
       page.get('action_submit_button').click()
 
       page.get('modal').should('be.visible')

@@ -30,7 +30,7 @@ context('Templates', () => {
 
         it('can create a new template', function() {
             createPage.get('name').clear().type('cypress-test')
-            createPage.get('save_button').click()
+            createPage.get('save_button').first().click()
 
             cy.hasNoErrors()
 
@@ -40,14 +40,14 @@ context('Templates', () => {
 
         it('can show the edit form after save', function() {
             createPage.get('name').clear().type('cypress-test-two')
-            createPage.get('save_and_edit_button').click()
+            createPage.get('save_and_edit_button').first().click()
 
             cy.hasNoErrors()
         })
 
         it('new templates have sensible defaults', function() {
             createPage.get('name').clear().type('cypress-test-three')
-            createPage.get('save_and_edit_button').click()
+            createPage.get('save_and_edit_button').first().click()
 
             cy.hasNoErrors()
 
@@ -80,7 +80,7 @@ context('Templates', () => {
         it('can duplicate an existing template', function() {
             createPage.get('name').clear().type('cypress-test-four')
             createPage.get('duplicate_existing_template').check('11')
-            createPage.get('save_and_edit_button').click()
+            createPage.get('save_and_edit_button').first().click()
 
             cy.hasNoErrors()
 
@@ -149,7 +149,7 @@ context('Templates', () => {
             editPage.get('template_route').clear().type('et/phone/home')
             editPage.get('require_all_variables').click()
 
-            editPage.get('save_button').click()
+            editPage.get('save_button').first().click()
 
             cy.hasNoErrors()
 
@@ -173,7 +173,7 @@ context('Templates', () => {
         })
 
         it('stays on the edit page with the "save" button', function() {
-            editPage.get('save_button').click()
+            editPage.get('save_button').first().click()
 
             cy.hasNoErrors()
 
@@ -200,7 +200,7 @@ context('Templates', () => {
         })
 
         it('returns to the template manager with the "save & close" button', function() {
-            editPage.get('save_and_close_button').click()
+            editPage.get('save_and_close_button').first().click()
 
             cy.hasNoErrors()
         })

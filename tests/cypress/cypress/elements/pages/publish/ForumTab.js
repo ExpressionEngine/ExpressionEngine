@@ -15,11 +15,11 @@ class ForumTab extends ControlPanel {
   // Install forum, create a board, category, and forum
   install_forum() {
     cy.authVisit('/admin.php?/cp/addons')
-    cy.get('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click()
-    cy.get('ul.toolbar a[href*="cp/addons/settings/forum"]').click()
+    cy.get('a[data-post-url*="cp/addons/install/forum"]').click()
+    cy.get('a[href*="cp/addons/settings/forum"]').click()
 
     // Create board
-    cy.get('.w-12 a[href*="cp/addons/settings/forum/create/board"]').click()
+    cy.get('a[href*="cp/addons/settings/forum/create/board"]').click()
     cy.get('input[name="board_label"]').type('Board')
 
     //cy.get('.w-12 button[value="save_and_close"]:first-child').click()

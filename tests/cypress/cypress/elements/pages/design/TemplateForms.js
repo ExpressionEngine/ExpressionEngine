@@ -6,8 +6,8 @@ class TemplateCreate extends ControlPanel {
         this.url = 'admin.php?/cp/design/template/create';
 
         this.elements({
-            "save_button": '.tab-bar__right-buttons .form-btns button.btn[value="finish"]',
-            "save_and_edit_button": '.tab-bar__right-buttons .form-btns button.btn[value="edit"]',
+            "save_button": '.form-btns button.btn[value="finish"]',
+            "save_and_edit_button": '.form-btns button.btn[value="edit"]',
             "name": 'input[name="template_name"]',
             "type": 'input[name="template_type"]',
             "duplicate_existing_template": 'div[data-input-value="template_id"] input[type="radio"]',
@@ -21,15 +21,15 @@ class TemplateEdit extends ControlPanel {
         this.url = 'admin.php?/cp/design/template/edit';
 
         this.elements({
-            "view_rendered_button": '.tab-bar__right-buttons .form-btns a.btn.action',
+            "view_rendered_button": '.form-btns .button--action',
             "save_button": '.form-btns button.btn[value="edit"]',
             "save_and_close_button": '.form-btns button.btn[value="finish"]',
 
             //Tabs
-            "edit_tab": 'ul.tabs a[rel="t-0"]',
-            "notes_tab": 'ul.tabs a[rel="t-1"]',
-            "settings_tab": 'ul.tabs a[rel="t-2"]',
-            "access_tab": 'ul.tabs a[rel="t-3"]',
+            "edit_tab": '.tab-bar__tabs [rel="t-0"]',
+            "notes_tab": '.tab-bar__tabs [rel="t-1"]',
+            "settings_tab": '.tab-bar__tabs [rel="t-2"]',
+            "access_tab": '.tab-bar__tabs [rel="t-3"]',
 
             //Edit Tab
             "codemirror": '.CodeMirror',
@@ -48,7 +48,7 @@ class TemplateEdit extends ControlPanel {
             "hit_counter": 'input[name="hits"]',
 
             //Access Tab
-            "allowed_member_groups": 'div[data-input-value="allowed_member_groups"] input[type="checkbox"]',
+            "allowed_member_groups": 'div[data-input-value="allowed_roles"] input[type="checkbox"]',
             "no_access_redirect": 'div[data-input-value="no_auth_bounce"] input[type="radio"]',
             "enable_http_auth": '[data-toggle-for="enable_http_auth"]',
             "template_route": 'input[name="route"]',

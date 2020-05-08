@@ -63,7 +63,7 @@ context('Site Manager', () => {
 
 
 
-      page.get('bulk_action').select('Remove')
+      page.get('bulk_action').select('Delete')
       page.get('action_submit_button').click()
 
       page.get('modal_submit_button').should('be.visible')

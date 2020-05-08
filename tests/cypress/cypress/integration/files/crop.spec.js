@@ -1,9 +1,8 @@
 /// <reference types="Cypress" />
 
-import CategoryGroup from '../../elements/pages/channel/CategoryGroup';
-// page = CropFile.new
-// @return = FileManager.new
-const page = new CategoryGroup;
+import CropFile from '../../elements/pages/files/CropFile';
+
+const page = new CropFile;
 const { _, $ } = Cypress
 const uploadDirectory = '../../images/about/'
 
@@ -11,20 +10,20 @@ context('File Manager / Crop File', () => {
 
     before(function() {
         cy.task('db:seed')
-        cy.task('filesystem:delete', '/tmp/about')
+        cy.task('filesystem:delete',  Cypress.env("TEMP_DIR")+'/about')
             // Create backups of these folders so we can restore them after each test
-        cy.task('filesystem:create', '/tmp/about')
-        cy.task('filesystem:copy', { from: `${uploadDirectory}*`, to: '/tmp/about' })
-            // system('cp -r ' + upload_dir + '/* /tmp/about')
+        cy.task('filesystem:create',  Cypress.env("TEMP_DIR")+'/about')
+        cy.task('filesystem:copy', { from: `${uploadDirectory}*`, to:  Cypress.env("TEMP_DIR")+'/about' })
+    })
+
+    after(function() {
+        cy.task('filesystem:delete', Cypress.env("TEMP_DIR")+'/about')
     })
 
     beforeEach(function() {
-        cy.task('filesystem:delete', uploadDirectory)
-        cy.task('filesystem:create', uploadDirectory)
-        cy.task('filesystem:copy', { from: '/tmp/about', to: `${uploadDirectory}*` })
-        cy.exec(`chmod -R 777 ${uploadDirectory}`)
 
-        cy.authVisit(page.url);
+        cy.auth();
+        const file_name = page.load()
 
         // page = CropFile.new
         // @return = FileManager.new
@@ -38,13 +37,20 @@ context('File Manager / Crop File', () => {
         // Check that we do not have a sidebar
         page.get('sidebar').should('not.exist')
 
-        page.get('breadcrumb').should('exist')
-        page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
+        //page.get('breadcrumb').should('exist')
+        //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
         page.get('heading').contains('Crop, Rotate & Resize "' + file_name + '"')
 
         page.get('crop_tab').should('exist')
         page.get('rotate_tab').should('exist')
         page.get('resize_tab').should('exist')
+    })
+
+    afterEach(function() {
+        cy.task('filesystem:delete', `${uploadDirectory}`)
+        cy.task('filesystem:create', `${uploadDirectory}`);
+        cy.task('filesystem:copy', { from: Cypress.env("TEMP_DIR")+'/about/*', to: `${uploadDirectory}*` })
+        //FileUtils.chmod_R 0777, @upload_dir
     })
 
 

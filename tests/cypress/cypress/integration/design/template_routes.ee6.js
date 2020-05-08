@@ -34,19 +34,19 @@ context('Template Routes', () => {
         page.hasAlert()
         page.get('alert').contains('Template Routes Saved')
         page.get('routes').its('length').should('eq', 1)
-        page.get('routes').eq(0).find('td:nth-child(2)').contains('index')
-        page.get('routes').eq(0).find('td:nth-child(3)').contains('about')
-        page.get('routes').eq(0).find('td:nth-child(4) input').should('have.value', 'foo/bar')
-        page.get('routes').eq(0).find('td:nth-child(5) [data-toggle-for=required]').should('have.class', 'off')
+        page.get('routes').eq(0).find('td:nth-child(1)').contains('index')
+        page.get('routes').eq(0).find('td:nth-child(2)').contains('about')
+        page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'foo/bar')
+        page.get('routes').eq(0).find('td:nth-child(4) [data-toggle-for=required]').should('have.class', 'off')
     })
 
     it('can edit a route', function() {
 
-        page.get('routes').eq(0).find('td:nth-child(4) input').clear().type('cypress/edited')
+        page.get('routes').eq(0).find('td:nth-child(3) input').clear().type('cypress/edited')
 
         page.get('update_button').click()
 
-        page.get('routes').eq(0).find('td:nth-child(4) input').should('have.value', 'cypress/edited')
+        page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'cypress/edited')
     })
 
     it('can reorder routes', function() {
@@ -58,17 +58,17 @@ context('Template Routes', () => {
 
             page.get('routes').its('length').should('eq', 2)
 
-            let first = page.$('routes').eq(0).find('td:nth-child(4) input').val()
-            let second = page.$('routes').eq(1).find('td:nth-child(4) input').val()
+            let first = page.$('routes').eq(0).find('td:nth-child(3) input').val()
+            let second = page.$('routes').eq(1).find('td:nth-child(3) input').val()
 
-            page.get('routes').eq(0).find('.reorder').then(function(target) {
-                page.get('routes').eq(1).find('.reorder').dragTo(target)
+            page.get('routes').eq(0).find('.js-grid-reorder-handle').then(function(target) {
+                page.get('routes').eq(1).find('.js-grid-reorder-handle').dragTo(target)
             })
 
             page.get('update_button').click()
 
-            page.get('routes').eq(0).find('td:nth-child(4) input').should('have.value', second)
-            page.get('routes').eq(1).find('td:nth-child(4) input').should('have.value', first)
+            page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', second)
+            page.get('routes').eq(1).find('td:nth-child(3) input').should('have.value', first)
         })
     })
 
@@ -78,9 +78,9 @@ context('Template Routes', () => {
 
         page.get('routes').its('length').should('eq', 2)
 
-        page.get('routes').eq(0).find('td:nth-child(6) a[rel=remove_row]').click()
+        page.get('routes').eq(0).find('td:nth-child(5) a[rel=remove_row]').click()
         page.get('update_button').click()
         page.get('routes').its('length').should('eq', 1)
-        page.get('routes').eq(0).find('td:nth-child(4) input').should('have.value', 'cypress/edited')
+        page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'cypress/edited')
     })
 })

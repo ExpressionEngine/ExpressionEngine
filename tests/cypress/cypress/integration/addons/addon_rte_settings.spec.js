@@ -113,7 +113,7 @@ context('RTE Settings', () => {
 
             // Header at 0, first "real" row is 1
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Remove")
+            page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
 
             page.get('modal_title').contains("Confirm Removal")
@@ -124,7 +124,7 @@ context('RTE Settings', () => {
 
         it('displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
             page.get('checkbox_header').find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Remove")
+            page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
 
             page.get('modal_title').contains("Confirm Removal")
@@ -137,7 +137,7 @@ context('RTE Settings', () => {
 
             // This populates the modal with a hidden input so we can modify it later
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Remove")
+            page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
 
             let tool_set_id = page.$('tool_sets').eq(2).find('input[type="checkbox"]').val()
@@ -221,7 +221,7 @@ context('RTE Settings', () => {
 
         it('can remove a tool set', function() {
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Remove")
+            page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
             page.get('modal_submit_button').click() // Submits a form
             cy.hasNoErrors()
@@ -236,7 +236,7 @@ context('RTE Settings', () => {
             page.get('checkbox_header').find('input[type="checkbox"]').check()
 
             // Uncheck the Default tool set
-            page.get('bulk_action').select("Remove")
+            page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
             page.get('modal_submit_button').click() // Submits a form
             cy.hasNoErrors()

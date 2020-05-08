@@ -276,7 +276,7 @@ context('Member Group List', () => {
     it('deletes all member group records when deleting a member group', () => {
       page.load()
       page.get('list.groups').last().find('input[type="checkbox"]').click()
-      page.get('list.batch_actions').select('Remove')
+      page.get('list.batch_actions').select('Delete')
       page.get('list.batch_submit').click()
 
       cy.wait(1000)

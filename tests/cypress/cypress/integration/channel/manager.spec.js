@@ -36,7 +36,7 @@ context('Channel Manager', () => {
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
 
-            page.get('bulk_action').select('Remove')
+            page.get('bulk_action').select('Delete')
             page.get('action_submit_button').click()
 
             page.get('modal').contains('Channel: ' + channels[1])
@@ -56,7 +56,7 @@ context('Channel Manager', () => {
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
 
-            page.get('bulk_action').select('Remove')
+            page.get('bulk_action').select('Delete')
             page.get('action_submit_button').click()
 
             if (channels.length <= 5) {

@@ -23,7 +23,7 @@ context('Template Partials', () => {
     })
 
     it('can filter by keyword', function() {
-        page.get('keyword_search').clear().type('global').type('{enter}')
+        page.get('keyword_search').first().clear().type('global').type('{enter}')
 
         cy.hasNoErrors()
 
@@ -35,8 +35,8 @@ context('Template Partials', () => {
 
         cy.hasNoErrors()
 
-        page.get('page_title').contains('Search Results')
-        page.get('page_title').contains('{global_stylesheets}')
+        page.get('page_heading').contains('Search Results')
+        page.get('page_heading').contains('{global_stylesheets}')
         page.get('partials').its('length').should('eq', 9)
     })
 
@@ -57,7 +57,7 @@ context('Template Partials', () => {
         page.hasErrors()
     })
 
-    it.skip('can create a new partial', function() {
+    it('can create a new partial', function() {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
         page.get('create_new_button').click()
@@ -72,7 +72,7 @@ context('Template Partials', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').click()
+        form.get('save_button').first().click()
 
         cy.hasNoErrors()
 
@@ -88,7 +88,7 @@ context('Template Partials', () => {
         page.get('bulk_action').should('exist')
         page.get('action_submit_button').should('exist')
 
-        page.get('bulk_action').select('Remove')
+        page.get('bulk_action').select('Delete')
         page.get('action_submit_button').click()
 
         page.get('modal_submit_button').click()

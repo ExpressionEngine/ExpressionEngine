@@ -22,8 +22,8 @@ class CommunicateSent extends ControlPanel {
       'dates': 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)',
       'total_sents': 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)',
 
-      'bulk_action': 'form fieldset.tbl-bulk-act select[name="bulk_action"]',
-      'action_submit_button': 'form fieldset.tbl-bulk-act button.submit'
+      'bulk_action': 'form fieldset.bulk-action-bar select[name="bulk_action"]',
+      'action_submit_button': 'form fieldset.bulk-action-bar button'
     })
 
   }
@@ -42,7 +42,7 @@ class CommunicateSent extends ControlPanel {
     message= null,
     total_sent= null
     )
-  
+
   {
       let command = "cd fixtures && php emailCache.php"
 

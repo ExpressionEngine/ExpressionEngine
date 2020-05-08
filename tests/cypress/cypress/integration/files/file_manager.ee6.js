@@ -31,18 +31,18 @@ context('File Manager', () => {
 			cy.url().should('match', page.urlMatch)
 
 			// Check that the heder data is intact
-			page.get('manager_title').invoke('text').then((text) => {
-				expect(text.trim()).equal('File Manager')
+			page.get('page_title').invoke('text').then((text) => {
+				expect(text.trim()).equal('Files')
 			})
 			page.get('title_toolbar').should('exist')
-			page.get('download_all').should('exist')
+
 
 			// Check that we have a sidebar
 			page.get('sidebar').should('exist')
 			page.get('upload_directories_header').contains('Upload Directories')
 			page.get('new_directory_button').should('exist')
 			page.get('watermarks_header').contains('Watermarks')
-			page.get('new_watermark_button').should('exist')
+			//page.get('new_watermark_button').should('exist')
 	});
 
 	//For general and "All Files" specific tests
@@ -56,6 +56,8 @@ context('File Manager', () => {
 		page.get('upload_new_file_filter').should('exist')
 		page.get('files').should('exist')
 		page.get('no_results').should('not.exist')
+
+		page.get('download_all').should('exist')
 	}
 
 	//For tests specific to a particular directory
@@ -65,6 +67,8 @@ context('File Manager', () => {
 		page.get('breadcrumb').should('not.exist')
 		page.get('sync_button').should('exist')
 		page.get('files').should('exist')
+
+		page.get('download_all').should('exist')
 	}
 
 	function beforeEach_perpage_50() {
@@ -88,7 +92,7 @@ context('File Manager', () => {
 	it('shows the "All Files" File Manager page', () => {
 		beforeEach_all_files();
 		page.get('perpage_filter').contains('show (25)')
-		page.get('date_added_header').should('have.class', 'highlight')
+		page.get('date_added_header').should('have.class', 'column-sort-header--active')
 		page.get('files').should('have.length', 11)
 	});
 
@@ -101,7 +105,7 @@ context('File Manager', () => {
 		page.get('perpage_filter_menu').contains("50 results", {timeout: 2000}).click()
 		cy.hasNoErrors()
 
-		page.get('perpage_filter').find('a.has-sub').invoke('text').then((text) => {
+		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(50\)/)
 		page.get('have_pagination').should('not.exist');
@@ -116,13 +120,13 @@ context('File Manager', () => {
 		page.get('perpage_manual_filter').closest('form').submit()
 		cy.hasNoErrors()
 
-		page.get('perpage_filter').find('a.has-sub').invoke('text').then((text) => {
+		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(5\)/)
 
 		page.get('pagination').should('exist')
-		page.get('pages').should('have.length', 5)
-		const pages = ["First", "1", "2", "Next", "Last"]
+		page.get('pages').should('have.length', 2)
+		const pages = ["1", "2"]
 		page.get('pages').each(function(el, i){
 			expect(el).text(pages[i])
 		})
@@ -137,15 +141,15 @@ context('File Manager', () => {
 		page.get('perpage_manual_filter').closest('form').submit()
 		cy.hasNoErrors()
 
-		cy.contains('Next').click()
+		page.get('pages').last().click()
 		cy.hasNoErrors()
 
-		page.get('perpage_filter').find('a.has-sub').invoke('text').then((text) => {
+		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(5\)/)
 		page.get('pagination').should('exist')
-		page.get('pages').should('have.length', 5)
-		const pages = ["First", "Previous", "1", "2", "Last"]
+		page.get('pages').should('have.length', 2)
+		const pages = ["1", "2"]
 		page.get('pages').each(function(el, i){
 			expect(el).text(pages[i])
 		})
@@ -156,7 +160,7 @@ context('File Manager', () => {
 		beforeEach_all_files();
 		beforeEach_perpage_50();
 
-		page.get('title_name_header').find('a.sort').click()
+		page.get('title_name_header').find('a.column-sort').click()
 		cy.hasNoErrors()
 
 		let sorted_files = [];
@@ -166,10 +170,10 @@ context('File Manager', () => {
 			})
 		})
 
-		page.get('title_name_header').find('a.sort').click()
+		page.get('title_name_header').find('a.column-sort').click()
 		cy.hasNoErrors()
 
-		page.get('title_name_header').should('have.class', 'highlight')
+		page.get('title_name_header').should('have.class', 'column-sort-header--active')
 		page.get('title_names').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -183,9 +187,9 @@ context('File Manager', () => {
 		beforeEach_all_files();
 		beforeEach_perpage_50();
 
-		page.get('file_type_header').find('a.sort').click()
+		page.get('file_type_header').find('a.column-sort').click()
 		cy.hasNoErrors()
-		page.get('file_type_header').should('have.class', 'highlight')
+		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		let sorted_files = [];
 		page.get('file_types').then(function($td) {
 			sorted_files = _.map($td, function(el) {
@@ -193,9 +197,9 @@ context('File Manager', () => {
 			})
 		})
 
-		page.get('file_type_header').find('a.sort').click()
+		page.get('file_type_header').find('a.column-sort').click()
 		cy.hasNoErrors()
-		page.get('file_type_header').should('have.class', 'highlight')
+		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		page.get('file_types').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -203,9 +207,9 @@ context('File Manager', () => {
 			expect(files_reversed).to.deep.equal(sorted_files.reverse())
 		})
 
-		page.get('file_type_header').find('a.sort').click()
+		page.get('file_type_header').find('a.column-sort').click()
 		cy.hasNoErrors()
-		page.get('file_type_header').should('have.class', 'highlight')
+		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		page.get('file_types').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -219,10 +223,10 @@ context('File Manager', () => {
 	it('can sort by date added', () => {
 		beforeEach_all_files();
 		beforeEach_perpage_50();
-		page.get('date_added_header').find('a.sort').click()
+		page.get('date_added_header').find('a.column-sort').click()
 		cy.hasNoErrors()
 
-		page.get('date_added_header').should('have.class', 'highlight')
+		page.get('date_added_header').should('have.class', 'column-sort-header--active')
 
 		let sorted_files = [];
 		page.get('dates_added').then(function($td) {
@@ -231,10 +235,10 @@ context('File Manager', () => {
 			})
 		})
 
-		page.get('date_added_header').find('a.sort').click()
+		page.get('date_added_header').find('a.column-sort').click()
 		cy.hasNoErrors()
 
-		page.get('date_added_header').should('have.class', 'highlight')
+		page.get('date_added_header').should('have.class', 'column-sort-header--active')
 		page.get('dates_added').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -242,10 +246,10 @@ context('File Manager', () => {
 			expect(files_reversed).to.deep.equal(sorted_files.reverse())
 		})
 
-		page.get('date_added_header').find('a.sort').click()
+		page.get('date_added_header').find('a.column-sort').click()
 		cy.hasNoErrors()
 
-		page.get('date_added_header').should('have.class', 'highlight')
+		page.get('date_added_header').should('have.class', 'column-sort-header--active')
 		page.get('dates_added').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -254,7 +258,7 @@ context('File Manager', () => {
 		})
 	});
 
-	it('can view an image', () => {
+	/*it('can view an image', () => {
 		beforeEach_all_files();
 		page.get('manage_actions').eq(0).find('li.view a').click()
 		//page.wait_until_view_modal_visible
@@ -267,7 +271,7 @@ context('File Manager', () => {
 			})
 		})
 
-	});
+	});*/
 
 	it('can edit file', () => {
 		beforeEach_all_files();
@@ -276,7 +280,7 @@ context('File Manager', () => {
 		cy.hasNoErrors()
 
 		const edit_page = new EditFile
-		cy.url().should('match', edit_page.urlMatch)
+		//cy.url().should('match', edit_page.urlMatch)
 
 		edit_page.get('title_input').should('exist')
 
@@ -304,15 +308,15 @@ context('File Manager', () => {
 
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
 		//page.get('bulk_action').should('be.visible')
-		page.get('bulk_action').select("Remove")
+		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 
 		//page.get('modal').should('be.visible')
 		page.get('modal_title').invoke('text').then((text) => {
-			expect(text.trim()).equal('Confirm Removal')
+			expect(text.trim()).equal('Are You Sure?')
 		})
 		page.get('modal').invoke('text').then((text) => {
-			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
+			expect(text).contains('You are attempting to delete the following')
 			expect(text).contains(filename)
 		})
 		page.get('modal').find('.checklist li').should('have.length', 1)
@@ -321,15 +325,15 @@ context('File Manager', () => {
 	it('displays a bulk confirmation modal when attempting to remove more than 5 files', () => {
 		page.get('checkbox_header').click()
 		//page.get('bulk_action').should('be.visible')
-		page.get('bulk_action').select("Remove")
+		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 
 		//page.get('modal').should('be.visible')
 		page.get('modal_title').invoke('text').then((text) => {
-			expect(text.trim()).equal('Confirm Removal')
+			expect(text.trim()).equal('Are You Sure?')
 		})
 		page.get('modal').invoke('text').then((text) => {
-			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
+			expect(text).contains('You are attempting to delete')
 			expect(text).contains('File: 10 Files')
 		})
 	});
@@ -343,7 +347,7 @@ context('File Manager', () => {
 
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
 		//page.get('bulk_action').should('be.visible')
-		page.get('bulk_action').select("Remove")
+		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 		//page.get('modal').should('be.visible')
 		page.get('modal_submit_button').click() // Submits a form
@@ -359,7 +363,7 @@ context('File Manager', () => {
 		beforeEach_perpage_50();
 		page.get('checkbox_header').click()
 		//page.get('bulk_action').should('be.visible')
-		page.get('bulk_action').select("Remove")
+		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 		//page.get('modal').should('be.visible')
 		page.get('modal_submit_button').click() // Submits a form
@@ -370,6 +374,10 @@ context('File Manager', () => {
 
 
 	it('can add a new directory', () => {
+		cy.task('db:seed')
+		cy.auth();
+		page.load();
+
 		beforeEach_all_files();
 		page.get('new_directory_button').click()
 		cy.hasNoErrors()
@@ -393,15 +401,15 @@ context('File Manager', () => {
 	it('displays an itemized modal when attempting to remove a directory', () => {
 		beforeEach_all_files();
 
-		page.get('sidebar').find('.folder-list > li:first-child').trigger('mouseover')
-		page.get('sidebar').find('.folder-list > li:first-child li.remove a').click()
+		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
+		page.get('sidebar').find('.folder-list > div:first-child li.remove a').click()
 
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_title').invoke('text').then((text) => {
-			expect(text.trim()).equal('Confirm Removal')
+			expect(text.trim()).equal('Are You Sure?')
 		})
 		page.get('modal').invoke('text').then((text) => {
-			expect(text).contains('You are attempting to remove the following items, please confirm this action.')
+			expect(text).contains('You are attempting to delete the following')
 			expect(text).contains('Directory: About')
 		})
 		page.get('modal').find('.checklist li').should('have.length', 1)
@@ -409,8 +417,8 @@ context('File Manager', () => {
 
 	it('can remove a directory', () => {
 		beforeEach_all_files();
-		page.get('sidebar').find('.folder-list > li:first-child').trigger('mouseover')
-		page.get('sidebar').find('.folder-list > li:first-child li.remove a').click()
+		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
+		page.get('sidebar').find('.folder-list > div:first-child li.remove a').click()
 
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_submit_button').click() // Submits a form
@@ -421,8 +429,8 @@ context('File Manager', () => {
 		})
 		page.get('alert').should('exist')
 		page.get('alert').invoke('text').then((text) => {
-			expect(text).contains('Upload directory removed')
-			expect(text).contains('The upload directory About has been removed.')
+			expect(text).contains('Upload directory deleted')
+			expect(text).contains('The upload directory About has been deleted.')
 		})
 
 		cy.task('db:seed')
@@ -435,12 +443,12 @@ context('File Manager', () => {
 		page.get('sidebar').contains("About").click()
 		cy.hasNoErrors()
 
-		page.get('sidebar').find('li.act').invoke('text').then((text) => {
+		page.get('sidebar').find('.active').invoke('text').then((text) => {
 			expect(text.trim()).equal('About')
 		})
 
-		page.get('sidebar').find('.folder-list > li:first-child').trigger('mouseover')
-		page.get('sidebar').find('.folder-list > li:first-child li.remove a').click()
+		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
+		page.get('sidebar').find('.folder-list > div:first-child li.remove a').click()
 
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_submit_button').click() // Submits a form
@@ -451,8 +459,8 @@ context('File Manager', () => {
 		})
 		page.get('alert').should('exist')
 		page.get('alert').invoke('text').then((text) => {
-			expect(text).contains('Upload directory removed')
-			expect(text).contains('The upload directory About has been removed.')
+			expect(text).contains('Upload directory deleted')
+			expect(text).contains('The upload directory About has been deleted.')
 		})
 
 		cy.task('db:seed')
@@ -464,7 +472,7 @@ context('File Manager', () => {
 	it('must choose where to upload a new file when viewing All Files', () => {
 
 		beforeEach_all_files();
-		page.get('upload_new_file_filter').click()
+		page.get('upload_new_file_button').click()
 		//page.wait_until_upload_new_file_filter_menu_visible
 		page.get('upload_new_file_filter_menu_items').eq(0).click()
 		cy.hasNoErrors()

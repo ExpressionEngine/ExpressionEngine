@@ -11,7 +11,7 @@ class SiteManager extends ControlPanel {
       'title': '.section-header__title',
       'add_site_button': '.section-header__controls a.btn.action',
 
-      'sites': '.tbl-wrap table tbody tr',
+      'sites': '.table-responsive table tbody tr',
       'sites.id': 'td:first-child',
       'sites.name': 'td:nth-child(2)',
       'sites.short_name': 'td:nth-child(3)',

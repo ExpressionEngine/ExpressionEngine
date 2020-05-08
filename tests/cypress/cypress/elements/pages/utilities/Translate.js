@@ -17,8 +17,8 @@ class Translate extends ControlPanel {
       'no_results': 'form table tr.no-results',
       'rows': 'form table tr',
 
-      'bulk_action': 'form fieldset.tbl-bulk-act select[name="bulk_action"]',
-      'action_submit_button': 'form fieldset.tbl-bulk-act input.submit'
+      'bulk_action': 'form fieldset.bulk-action-bar select[name="bulk_action"]',
+      'action_submit_button': 'form fieldset.bulk-action-bar input.submit'
     })
   }
 

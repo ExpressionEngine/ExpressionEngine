@@ -50,7 +50,7 @@ context.skip('Statuses', () => {
 
     it('should delete a status', function() {
         page.get('statuses').eq(2).find('input[type="checkbox"]').check()
-        page.get('bulk_action').select('Remove')
+        page.get('bulk_action').select('Delete')
         page.get('action_submit_button').click()
 
         page.get('modal').contains('Status: ' + statuses[2])
@@ -71,7 +71,7 @@ context.skip('Statuses', () => {
 
     it('should bulk delete statuses, except the default statuses', function() {
         page.get('select_all').click()
-        page.get('bulk_action').select('Remove')
+        page.get('bulk_action').select('Delete')
         page.get('action_submit_button').click()
 
         // Minus two for default statuses

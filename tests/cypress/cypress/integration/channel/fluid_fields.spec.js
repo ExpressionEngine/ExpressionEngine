@@ -130,7 +130,7 @@ context('Fluid Fields', () => {
         list.get('bulk_action').should('exist')
         list.get('action_submit_button').should('exist')
 
-        list.get('bulk_action').select('Remove')
+        list.get('bulk_action').select('Delete')
         list.get('action_submit_button').click()
 
         list.get('modal_submit_button').click()

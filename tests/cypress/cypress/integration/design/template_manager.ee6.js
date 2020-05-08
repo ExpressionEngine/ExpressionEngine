@@ -31,14 +31,14 @@ context('Template Manager', () => {
             cy.hasNoErrors()
 
             form.get('name').clear().type('cypress-test')
-            form.get('save_button').click()
+            form.get('save_button').first().click()
 
             cy.hasNoErrors()
 
             page.hasAlert()
             page.get('alert').contains('Template Group Created')
             page.get('alert').contains('cypress-test')
-            page.get('page_title').contains('Templates in cypress-test')
+            page.get('page_heading').contains('Templates in cypress-test')
             page.get('templates').its('length').should('eq', 1)
             page.get('templates').eq(0).find('td:first-child').contains('index')
         })
@@ -51,14 +51,14 @@ context('Template Manager', () => {
 
             form.get('name').clear().type('cypress-test-two')
             form.get('duplicate_existing_group').check('1') // about
-            form.get('save_button').click()
+            form.get('save_button').first().click()
 
             cy.hasNoErrors()
 
             page.hasAlert()
             page.get('alert').contains('Template Group Created')
             page.get('alert').contains('cypress-test-two')
-            page.get('page_title').contains('Templates in cypress-test-two')
+            page.get('page_heading').contains('Templates in cypress-test-two')
             page.get('templates').its('length').should('eq', 3)
 
             page.get('templates').eq(0).find('td:first-child').contains('404')
@@ -73,14 +73,14 @@ context('Template Manager', () => {
             cy.hasNoErrors()
 
             form.get('name').clear().type('cypress-test-three')
-            form.get('save_button').click()
+            form.get('save_button').first().click()
 
             cy.hasNoErrors()
 
             page.hasAlert()
             page.get('alert').contains('Template Group Updated')
             page.get('alert').contains('cypress-test-three')
-            page.get('page_title').contains('Templates in cypress-test-three')
+            page.get('page_heading').contains('Templates in cypress-test-three')
             page.get('templates').its('length').should('eq', 3)
 
             page.get('templates').eq(0).find('td:first-child').contains('404')
@@ -110,19 +110,19 @@ context('Template Manager', () => {
             cy.hasNoErrors()
 
             page.hasAlert()
-            page.get('alert').contains('Template Group Removed')
+            page.get('alert').contains('Template group deleted')
             page.get('alert').contains('cypress-test')
             page.get('template_groups').its('length').should('eq', 5)
         })
 
         it('can change the template group view', function() {
-            page.get('page_title').contains('Templates in news')
+            page.get('page_heading').contains('Templates in news')
             page.get('templates').its('length').should('eq', 6)
             page.get('template_groups').eq(0).find('a[href*="cp/design/manager"]').click()
 
             cy.hasNoErrors()
 
-            page.get('page_title').contains('Templates in about')
+            page.get('page_heading').contains('Templates in about')
             page.get('templates').its('length').should('eq', 3)
 
             page.get('templates').eq(0).find('td:first-child').contains('404')
@@ -141,7 +141,7 @@ context('Template Manager', () => {
 
             let form = new TemplateGroupEdit
             form.get('is_site_default').click()
-            form.get('save_button').click()
+            form.get('save_button').first().click()
 
             cy.hasNoErrors()
 
@@ -156,7 +156,9 @@ context('Template Manager', () => {
 
         it('can view a template', function() {
             let template_group = page.$('active_template_group').text().trim()
-            let template = page.$('templates').eq(0).find('td:first-child').text().trim()
+            cy.log(template_group)
+            let template = page.$('templates').eq(0).find('td:first-child a').text().trim()
+            cy.log(template)
 
             cy.visit(page.$('templates').eq(0).find('td:nth-child(3) .toolbar .view a').attr('href'))
 
@@ -177,7 +179,7 @@ context('Template Manager', () => {
             form.get('php_parse_stage').check('i')
             form.get('hit_counter').clear().type('10')
 
-            cy.get('.modal form .tab-bar__right-buttons .form-btns input.btn[type="submit"]').click()
+            cy.get('.modal:visible form .form-btns input.btn[type="submit"]').first().click()
 
             page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 
@@ -201,7 +203,7 @@ context('Template Manager', () => {
             form.hasErrors()
         })
 
-        it.skip('can export some templates', function() {
+        it('can export some templates', function() {
             // "need to handle download via POST"
         })
 
@@ -211,7 +213,7 @@ context('Template Manager', () => {
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
 
-            page.get('bulk_action').select('Remove')
+            page.get('bulk_action').select('Delete')
             page.get('action_submit_button').click()
 
             page.get('modal_submit_button').click()
@@ -238,12 +240,11 @@ context('Template Manager', () => {
     it('can search templates', function() {
         cy.hasNoErrors()
 
-        page.get('phrase_search').type('Recent News')
-        page.get('search_submit_button').click()
+        page.get('phrase_search').type('Recent News').type('{enter}')
 
         cy.hasNoErrors()
 
-        page.get('page_title').contains("Search Results")
+        page.get('page_heading').contains("Search Results")
         page.get('templates').its('length').should('eq', 4)
     })
 

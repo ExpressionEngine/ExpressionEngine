@@ -23,7 +23,7 @@ context('Template Variables', () => {
     })
 
     it('can filter by keyword', function() {
-        page.get('keyword_search').type('html').type('{enter}')
+        page.get('keyword_search').first().type('html').type('{enter}')
 
         cy.hasNoErrors()
 
@@ -35,8 +35,8 @@ context('Template Variables', () => {
 
         cy.hasNoErrors()
 
-        page.get('page_title').contains('Search Results')
-        page.get('page_title').contains('{html_head}')
+        page.get('page_heading').contains('Search Results')
+        page.get('page_heading').contains('{html_head}')
         page.get('variables').its('length').should('eq', 9) // Yeah, not technically 'variables' but the selectors work
     })
 
@@ -55,7 +55,7 @@ context('Template Variables', () => {
         page.hasErrors()
     })
 
-    it.skip('can create a new variable', function() {
+    it('can create a new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
 
         page.get('create_new_button').click()
@@ -70,7 +70,7 @@ context('Template Variables', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').click()
+        form.get('save_button').first().click()
 
         cy.hasNoErrors()
 
@@ -85,7 +85,7 @@ context('Template Variables', () => {
         page.get('bulk_action').should('exist')
         page.get('action_submit_button').should('exist')
 
-        page.get('bulk_action').select('Remove')
+        page.get('bulk_action').select('Delete')
         page.get('action_submit_button').click()
 
         page.get('modal_submit_button').click()
