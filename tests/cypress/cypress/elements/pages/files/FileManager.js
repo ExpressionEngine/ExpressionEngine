@@ -8,7 +8,7 @@ class FileManager extends FileManagerSection {
 
         this.elements({
 					// Main box elements
-					'heading': '.ee-main__content .title-bar .title-bar__title',
+					'heading': '.ee-main .title-bar .title-bar__title',
 					'sync_button': 'a.icon--sync',
 
 					'perpage_filter': 'div.filter-bar>.filter-bar__item:nth-child(3)',

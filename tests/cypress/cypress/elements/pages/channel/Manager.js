@@ -6,8 +6,8 @@ class ChannelManager extends ControlPanel {
         this.url = 'admin.php?/cp/channels';
 
         this.elements({
-            "channels": '.tbl-list > li .main > a',
-            "channels_checkboxes": '.tbl-list > li input[type="checkbox"]',
+            "channels": '.list-group > li a.list-item__content',
+            "channels_checkboxes": '.list-group > li input[type="checkbox"]',
             "select_all": '.ctrl-all input',
             "import": 'a[rel=import-channel]',
         })

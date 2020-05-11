@@ -35,12 +35,12 @@ context('Statistics', () => {
 
 	  //Works
 	  it('can show by source', () =>{
-	  	//cy.get('all').find('a.sort').eq(0).click()
+	  	//cy.get('all').find('a.column-sort').eq(0).click()
 	  	cy.get('table').find('thead').find('tr').find('th').eq(0).find('a').click()
 
 	  	//@page.content_table.find('th.highlight').text.should eq 'Source'
 	  	page.get('content_table').find('th.highlight').contains('Source')
-	  	
+
 	  	cy.get('table').find('tbody').find('tr').eq(2).contains("Channel Entries")
 	    cy.get('table').find('tbody').find('tr').eq(1).contains("Members")
 	    cy.get('table').find('tbody').find('tr').eq(0).contains("Sites")
@@ -54,7 +54,7 @@ context('Statistics', () => {
 	  })
 
 	  it('can show by count', () =>{
-	  	//cy.get('all').find('a.sort').eq(0).click()
+	  	//cy.get('all').find('a.column-sort').eq(0).click()
 	  	cy.get('table').find('thead').find('tr').find('th').eq(1).find('a').click()
 
 	  	//@page.content_table.find('th.highlight').text.should eq 'Source'
@@ -74,7 +74,7 @@ context('Statistics', () => {
 
 	  it.skip('reports accurate record count after adding a member', () =>{
 	  	page.add_member(username, 'johndoe') //TODO Block, ask Bryan what is add_member?
-	  	
+
 	  	cy.get('table').find('thead').should('have.length', 1)
 	    cy.get('table').find('tbody').find('tr').should('have.length', 3)
 	    cy.get('table').find('tbody').find('tr').eq(0).contains("Channel Entries")

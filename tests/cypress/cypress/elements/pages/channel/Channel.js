@@ -6,14 +6,14 @@ class Channel extends ControlPanel {
         this.url = 'admin.php?/cp/channels';
 
         this.selectors = Object.assign(this.selectors, {
-            "save_button": 'form .tab-bar__right-buttons .form-btns button[type=submit][value=save]',
-            "save_and_new_button": 'form .tab-bar__right-buttons .form-btns button[type=submit][value=save_and_new]',
+            "save_button": 'form .form-btns-top button[type=submit][value=save]',
+            "save_and_new_button": 'form .form-btns-top button[type=submit][value=save_and_new]',
 
-            "channel_tab": 'ul.tabs a[rel="t-0"]',
-            "fields_tab": 'ul.tabs a[rel="t-1"]',
-            "categories_tab": 'ul.tabs a[rel="t-2"]',
-            "statuses_tab": 'ul.tabs a[rel="t-3"]',
-            "settings_tab": 'ul.tabs a[rel="t-4"]',
+            "channel_tab": '.tab-bar__tabs [rel="t-0"]',
+            "fields_tab": '.tab-bar__tabs [rel="t-1"]',
+            "categories_tab": '.tab-bar__tabs [rel="t-2"]',
+            "statuses_tab": '.tab-bar__tabs [rel="t-3"]',
+            "settings_tab": '.tab-bar__tabs [rel="t-4"]',
 
             // Channel Tab
             "channel_title": 'input[name=channel_title]',
@@ -89,7 +89,7 @@ class Channel extends ControlPanel {
 
     load_edit_for_channel(number) {
         cy.visit(this.url)
-        cy.get('ul.tbl-list li:nth-child(' + number + ') li.edit a').click()
+        cy.get('ul.list-group li:nth-child(' + number + ') a.list-item__content').first().click()
     }
 }
 

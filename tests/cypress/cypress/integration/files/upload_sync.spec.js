@@ -66,7 +66,7 @@ context('Upload Sync', () => {
   })
 
 
-  it.skip('shows the Upload Directory Sync page', () => {
+  it('shows the Upload Directory Sync page', () => {
     page.get('progress_bar').should('exist')
     page.get('sizes').should('not.exist') // No image manipulations yet
   })
@@ -126,7 +126,7 @@ context('Upload Sync', () => {
 
 
 
-  it.skip('should apply image manipulations to new files', () => {
+  it('should apply image manipulations to new files', () => {
     // First we need to create the manipulations
     new_upload.create_manipulation()
 

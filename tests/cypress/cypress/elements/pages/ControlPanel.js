@@ -20,14 +20,14 @@ class ControlPanel {
             "page_title": '.ee-main .main-nav h1',
             "wrap": 'section.ee-wrapper .ee-main',
             "nav": 'section.ee-wrapper .ee-sidebar',
-            "page_heading": ".ee-main__content .title-bar .title-bar__title",
+            "page_heading": ".ee-main .title-bar .title-bar__title",
 
             // Tables
             "select_all": 'th.check-ctrl input',
             "sort_col": 'table th.column-sort-header--active',
             "sort_links": 'table a.column-sort',
             "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-            "action_submit_button": 'form fieldset.bulk-action-bar button',
+            "action_submit_button": 'form fieldset.bulk-action-bar [type=submit]',
 
             // Pagination
             "pagination": 'ul.pagination',
@@ -45,8 +45,8 @@ class ControlPanel {
             "modal_submit_button": 'div.modal:visible input.btn',
 
             // Grid
-            "grid_add_no_results": 'tr.no-results a[rel="add_row"]',
-            "grid_add": 'ul.toolbar li.add a',
+            "grid_add_no_results": 'tr.no-results [rel="add_row"]',
+            "grid_add": '.grid-field__footer [rel="add_row"]',
 
             // Breadcrumb
             "breadcrumb": 'ul.breadcrumb',

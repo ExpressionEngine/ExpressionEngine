@@ -15,14 +15,14 @@ class ChannelManager extends ControlPanel {
 
     load() {
         // self.open_dev_menu
-        cy.contains('Channel Manager').click()
+        cy.contains('Channels').click()
         cy.contains('Status Groups').click()
         cy.contains('Create New').click()
     }
 
     load_view_for_status_group(number) {
         // self.open_dev_menu
-        cy.contains('Channel Manager').click()
+        cy.contains('Channels').click()
         cy.contains('Status Groups').click()
 
         find('tbody tr:nth-child(' + number + ') li.txt-only a').click()

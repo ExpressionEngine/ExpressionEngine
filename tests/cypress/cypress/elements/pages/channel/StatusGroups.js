@@ -5,7 +5,7 @@ class StatusGroups < ControlPanelPage
 
   load
     self.open_dev_menu
-    click_link 'Channel Manager'
+    click_link 'Channels'
     click_link 'Status Groups'
   }
 }

@@ -208,7 +208,7 @@ context('Channel Settings', () => {
         cy.hasNoErrors()
         cy.contains('Channel Updated')
 
-        cy.get('.tabs li').contains('Settings').click()
+        cy.get('.tab-bar__tabs .tab-bar__tab').contains('Settings').click()
 
         page.get('channel_description').contains('Some description')
         page.get('channel_lang').filter('[value="en"]').should('be.checked')

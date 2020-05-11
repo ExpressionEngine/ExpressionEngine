@@ -7,16 +7,16 @@ class ChannelLayoutForm extends ControlPanel {
 
         this.selectors = Object.assign(this.selectors, {
             "heading": 'div.col.w-16 div.form-standard h1',
-            "add_tab_button": 'a.add-tab',
+            "add_tab_button": '[rel=modal-add-new-tab]',
 
-            "tabs": 'ul.tabs li a',
-            "publish_tab": 'ul.tabs a[rel="t-0"]',
-            "date_tab": 'ul.tabs a[rel="t-1"]',
-            "hide_date_tab": 'ul.tabs a[rel="t-1"] + span',
-            "categories_tab": 'ul.tabs a[rel="t-2"]',
-            "hide_categories_tab": 'ul.tabs a[rel="t-2"] + span',
-            "options_tab": 'ul.tabs a[rel="t-3"]',
-            "hide_options_tab": 'ul.tabs a[rel="t-3"] + span',
+            "tabs": '.tab-bar__tabs .tab-bar__tab',
+            "publish_tab": '.tab-bar__tabs [rel="t-0"]',
+            "date_tab": '.tab-bar__tabs [rel="t-1"]',
+            "hide_date_tab": '.tab-bar__tabs [rel="t-1"] i',
+            "categories_tab": '.tab-bar__tabs [rel="t-2"]',
+            "hide_categories_tab": '.tab-bar__tabs [rel="t-2"] i',
+            "options_tab": '.tab-bar__tabs [rel="t-3"]',
+            "hide_options_tab": '.tab-bar__tabs [rel="t-3"] i',
             "fields": 'div.tab .layout-item',
 
             // sections : fields, 'div.tab .layout-item' do
@@ -30,8 +30,8 @@ class ChannelLayoutForm extends ControlPanel {
 
             // Layout Options
             "layout_name": 'form input[name=layout_name]',
-            "member_groups": 'form input[name="member_groups[]"]',
-            "submit_button": '.tab-bar__right-buttons .form-btns button[value="save_and_close"]',
+            "member_groups": 'form input[name="roles[]"]',
+            "submit_button": '.form-btns-top [value="save_and_close"]',
 
             "add_tab_modal": 'div.modal-add-new-tab',
             "add_tab_modal_tab_name": 'div.modal-add-new-tab input[name="tab_name"]',

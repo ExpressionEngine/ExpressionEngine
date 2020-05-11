@@ -12,7 +12,7 @@ class Stats extends ControlPanel {
 			  "sources": 'div.box form table tr td:first-child',
 			  "counts": 'div.box form table tr td:nth-child(2)',
 			  "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-			  "action_submit_button": 'form fieldset.bulk-action-bar input.submit'
+			  "action_submit_button": 'form fieldset.bulk-action-bar button'
         })
     }
 

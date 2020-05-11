@@ -26,8 +26,8 @@ class UploadEdit extends FileManagerSection {
 
     load_edit_for_dir(number) {
       cy.contains('Files').click()
-      cy.get('div.sidebar .folder-list > li:nth-child('+number.toString()+')').trigger('mouseover')
-      cy.get('div.sidebar .folder-list > li:nth-child('+number.toString()+')  li.edit a').click()
+      cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')').trigger('mouseover')
+      cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')  li.edit a').click()
     }
 
     create_manipulation() {

@@ -7,7 +7,7 @@ class ChannelFields extends ControlPanel {
 
         this.selectors = Object.assign(this.selectors, {
             "create_new": '.section-header a.btn.action',
-            "fields": '.tbl-list > li',
+            "fields": '.list-group > li',
             "fields_edit": '.tbl-list > li .main > a',
             "fields_checkboxes": '.tbl-list > li input[type="checkbox"]',
         })

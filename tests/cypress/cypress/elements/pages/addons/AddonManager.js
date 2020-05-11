@@ -4,10 +4,13 @@ class AddonManager extends ControlPanel {
     constructor() {
         super()
         this.url = 'admin.php?/cp/addons';
-        let first_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16 div.box:first-child ';
+        let first_party_prefix = 'body .ee-main__content .tab-open ';
         let third_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16 div.box:nth-child(2) ';
         this.selectors = Object.assign(this.selectors, {
-            "title": '.section-header__title',
+            "title": '.main-nav__title',
+
+            "uninstalled_addons": first_party_prefix + '.add-on-card--uninstalled',
+            "addons": first_party_prefix + '.add-on-card',
 
             // First Party Add- Ons
             "first_party_section": first_party_prefix,
@@ -15,7 +18,7 @@ class AddonManager extends ControlPanel {
             "first_party_status_filter": first_party_prefix + 'div.filters ul li:first-child',
             "first_party_status_filter_menu": first_party_prefix + 'div.filters ul li:first-child div.sub-menu ul',
             "first_party_no_results": first_party_prefix + 'tr.no-results',
-            "first_party_addons": first_party_prefix + 'form div.table-responsive table tbody tr',
+            "first_party_addons": first_party_prefix + ' .add-on-card-list',
             "first_party_addon_name_header": first_party_prefix + 'form div.tbl-wrap table thead tr th:first-child',
             "first_party_version_header": first_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(2)',
             "first_party_manage_header": first_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(3)',

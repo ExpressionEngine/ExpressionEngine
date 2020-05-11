@@ -6,7 +6,7 @@ class UploadSync extends FileManagerSection {
 
     this.elements({
       'progress_bar': '.progress-bar .progress',
-      'sync_button': 'div.form-standard form .tab-bar__right-buttons .form-btns input.btn',
+      'sync_button': 'div.form-standard form .form-btns-top input.btn',
       'sizes': 'input[name="sizes[]"]'
     });
   }
@@ -15,7 +15,7 @@ class UploadSync extends FileManagerSection {
   load_sync_for_dir(number) {
     cy.contains('Files').click()
 
-    cy.get('div.sidebar .folder-list > li:nth-child('+number.toString()+') > a').click()
+    cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+') > a').click()
     cy.get('a.icon--sync').click()
   }
 

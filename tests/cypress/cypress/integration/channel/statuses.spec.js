@@ -4,7 +4,7 @@ import Statuses from '../../elements/pages/channel/Statuses';
 const page = new Statuses;
 const { _, $ } = Cypress
 
-context.skip('Statuses', () => {
+context('Statuses', () => {
 
     before(function() {
         cy.task('db:seed')

@@ -2,11 +2,11 @@ class ChannelLayouts < ChannelMangerPage
   set_url_matcher /channel\/layout/
 
   # Main box elements
-  element :heading, '.ee-main__content .title-bar .title-bar__title'
+  element :heading, '.ee-main .title-bar .title-bar__title'
   element :create_new_button, 'div.col.w-12 div.box form fieldset.tbl-search.right a.action'
 
-  element :perpage_filter, '.ee-main__content .title-bar .title-bar__title + div.filters ul li:first-child'
-  element :perpage_filter_menu, '.ee-main__content .title-bar .title-bar__title + div.filters ul li:first-child div.sub-menu ul'
+  element :perpage_filter, '.ee-main .title-bar .title-bar__title + div.filters ul li:first-child'
+  element :perpage_filter_menu, '.ee-main .title-bar .title-bar__title + div.filters ul li:first-child div.sub-menu ul'
   element :perpage_manual_filter, 'input[name="perpage"]'
 
   # Main box's table elements
@@ -29,7 +29,7 @@ class ChannelLayouts < ChannelMangerPage
 
   load_layouts_for_channel(number)
     self.open_dev_menu
-    click_link 'Channel Manager'
+    click_link 'Channels'
 
     find('tbody tr:nth-child('+number.to_s+') li.layout a').click
   }

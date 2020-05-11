@@ -7,7 +7,7 @@ class EditFile extends FileManagerSection {
 
       this.elements({
         // Main box elements
-        'heading': 'div.form-standard form .tab-bar__right-buttons .form-btns h1',
+        'heading': '.ee-main .title-bar .title-bar__title',
         'crop_button': 'div.form-standard form .tab-bar__right-buttons .form-btns h1 a.action',
 
         //Modal

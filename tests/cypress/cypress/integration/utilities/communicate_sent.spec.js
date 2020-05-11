@@ -46,7 +46,7 @@ context('Communicate > Sent', () => {
     load_page
 
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Subject'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
     page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -58,10 +58,10 @@ context('Communicate > Sent', () => {
     }
     subjects.reverse!
     load_page
-    page.subject_header.find('a.sort').click()
+    page.subject_header.find('a.column-sort').click()
     cy.hasNoErrors()
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Subject'
-    page.find('th.highlight').should have_css 'a.sort.desc'
+    page.find('th.highlight').should have_css 'a.column-sort.desc'
     page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -75,10 +75,10 @@ context('Communicate > Sent', () => {
     }
     dates.reverse!
     load_page
-    page.date_header.find('a.sort').click()
+    page.date_header.find('a.column-sort').click()
     cy.hasNoErrors()
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Date'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
     page.dates.map {|date| date.text}.should == dates[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -91,13 +91,13 @@ context('Communicate > Sent', () => {
       page.generate_data(timestamp: my_date.to_i, count: 1)
     }
     load_page
-    page.date_header.find('a.sort').click() // To sort by date
+    page.date_header.find('a.column-sort').click() // To sort by date
     cy.hasNoErrors()
-    page.date_header.find('a.sort').click() // DESC sort
+    page.date_header.find('a.column-sort').click() // DESC sort
     cy.hasNoErrors()
 
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Date'
-    page.find('th.highlight').should have_css 'a.sort.desc'
+    page.find('th.highlight').should have_css 'a.column-sort.desc'
     page.dates.map {|date| date.text}.should == dates[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -108,10 +108,10 @@ context('Communicate > Sent', () => {
       page.generate_data(total_sent: n, count: 1)
     }
     load_page
-    page.total_sent_header.find('a.sort').click()
+    page.total_sent_header.find('a.column-sort').click()
     cy.hasNoErrors()
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
     page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -123,12 +123,12 @@ context('Communicate > Sent', () => {
     }
     sent.reverse!
     load_page
-    page.total_sent_header.find('a.sort').click() // To sort by total sent
+    page.total_sent_header.find('a.column-sort').click() // To sort by total sent
     cy.hasNoErrors()
-    page.total_sent_header.find('a.sort').click() // DESC sort
+    page.total_sent_header.find('a.column-sort').click() // DESC sort
     cy.hasNoErrors()
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
-    page.find('th.highlight').should have_css 'a.sort.desc'
+    page.find('th.highlight').should have_css 'a.column-sort.desc'
     page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     page.should have(21).rows // +1 for the header
   }
@@ -254,13 +254,13 @@ context('Communicate > Sent', () => {
     }
     sent.sort!
     load_page
-    page.total_sent_header.find('a.sort').click()
+    page.total_sent_header.find('a.column-sort').click()
     cy.hasNoErrors()
     page.phrase_search.set phrase
     page.search_submit_button.click()
     cy.hasNoErrors()
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
     page.should_not have_no_results
     page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 20 results for "' + phrase + '"'
     page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(phrase
@@ -311,14 +311,14 @@ context('Communicate > Sent', () => {
     page.generate_data
     load_page
 
-    page.total_sent_header.find('a.sort').click()
+    page.total_sent_header.find('a.column-sort').click()
     cy.hasNoErrors()
 
       click_link "Next"
     cy.hasNoErrors()
 
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
   }
 
   it('maintains search while paging', () => {
@@ -353,7 +353,7 @@ context('Communicate > Sent', () => {
     page.search_submit_button.click()
     cy.hasNoErrors()
 
-    page.total_sent_header.find('a.sort').click()
+    page.total_sent_header.find('a.column-sort').click()
     cy.hasNoErrors()
 
       click_link "Next"
@@ -365,7 +365,7 @@ context('Communicate > Sent', () => {
     page.get('wrap').contains(data
     page.should_not have_text "Albatross"
     page.find('th.highlight').invoke('text').then((text) => { expect(text).to.be.equal('Total Sent'
-    page.find('th.highlight').should have_css 'a.sort.asc'
+    page.find('th.highlight').should have_css 'a.column-sort.asc'
   }
 
   it('resets the page on a new sort', () => {
@@ -383,7 +383,7 @@ context('Communicate > Sent', () => {
       page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
     page.pagination.find('a.act').invoke('text').then((text) => { expect(text).to.be.equal('2'
 
-    page.total_sent_header.find('a.sort').click()
+    page.total_sent_header.find('a.column-sort').click()
     cy.hasNoErrors()
 
       page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]

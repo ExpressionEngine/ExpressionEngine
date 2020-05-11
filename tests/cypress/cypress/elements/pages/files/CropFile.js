@@ -7,11 +7,11 @@ class CropFile extends FileManagerSection {
 
       this.elements({
         // Main box elements
-        'heading': 'div.form-standard form .tab-bar__right-buttons .form-btns h1',
-        'crop_tab': 'ul.tabs a[rel="t-0"]',
-        'rotate_tab': 'ul.tabs a[rel="t-1"]',
-        'resize_tab': 'ul.tabs a[rel="t-2"]',
-        'save': 'div.form-standard form .tab-bar__right-buttons .form-btns button',
+        'heading': '.ee-main .title-bar .title-bar__title',
+        'crop_tab': '.tab-bar__tabs [rel="t-0"]',
+        'rotate_tab': '.tab-bar__tabs [rel="t-1"]',
+        'resize_tab': '.tab-bar__tabs [rel="t-2"]',
+        'save': '.ee-main__content form .form-btns.form-btns-top button',
 
         // Crop Form
         'crop_width_input': 'form div.t-0 input[name="crop_width"]',
@@ -36,11 +36,13 @@ class CropFile extends FileManagerSection {
     load() {
       cy.contains('Files').click()
       cy.get('.sidebar__link').contains('About').click()
-      let filename = '';
-      cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:first-child em').invoke('text').then((text) => {
-        filename = text.trim()
+      let filename = cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:first-child em').invoke('text').then((text) => {
+        console.log(text.trim())
+        return text.trim()
       })
       cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
+
+      console.log(filename)
 
       return filename
     }

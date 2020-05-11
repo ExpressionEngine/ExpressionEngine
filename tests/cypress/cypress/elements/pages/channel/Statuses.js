@@ -12,7 +12,7 @@ class Statuses extends ControlPanel {
     }
     load_view_for_status_group(number) {
         // self.open_dev_menu
-        cy.contains('Channel Manager').click()
+        cy.contains('Channels').click()
         cy.contains('Status Groups').click()
 
         cy.get('tbody tr:nth-child(' + number + ') li.txt-only a').click()

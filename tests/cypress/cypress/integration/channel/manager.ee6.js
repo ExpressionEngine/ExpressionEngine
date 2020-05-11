@@ -4,7 +4,7 @@ import ChannelManager from '../../elements/pages/channel/Manager';
 const page = new ChannelManager;
 const { _, $ } = Cypress
 
-context('Channel Manager', () => {
+context('Channels', () => {
 
     before(function() {
         cy.task('db:seed')
@@ -14,15 +14,15 @@ context('Channel Manager', () => {
         cy.authVisit(page.url);
     })
 
-    it('shows the Channel Manager page', function() {
-        cy.contains('Channel Manager')
+    it('shows the Channels page', function() {
+        cy.contains('Channels')
     })
 
 
     it('should list the channels', function() {
         page.getChannelTitles().then(function(results) {
             let channels = [...page.$('channels').map(function(index, el) {
-                return $(el).text().trim();
+                return $(el).find('.list-item__title').text().trim();
             })];
             expect(channels).to.deep.equal(results)
             page.get('channels').its('length').should('eq', results.length)
@@ -69,8 +69,8 @@ context('Channel Manager', () => {
             cy.hasNoErrors()
 
             page.hasAlert('success')
-            page.get('alert').contains('Channels removed')
-            page.get('alert').contains(channels.length + ' channels were removed.')
+            page.get('alert').contains('Channels deleted')
+            page.get('alert').contains(channels.length + ' channels were deleted.')
 
             cy.contains('No Channels found')
         })

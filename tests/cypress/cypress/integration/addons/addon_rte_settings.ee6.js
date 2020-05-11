@@ -28,7 +28,7 @@ context('RTE Settings', () => {
             page.get('breadcrumb').find('a').click()
             cy.hasNoErrors()
 
-            cy.title().should('include', 'Add-On Manager')
+            cy.title().should('include', 'Add-Ons')
         })
 
         it('can disable & enable the rich text editor', function() {
@@ -113,7 +113,7 @@ context('RTE Settings', () => {
 
             // Header at 0, first "real" row is 1
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
+            page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
 
             page.get('modal_title').contains("Confirm Removal")
@@ -124,7 +124,7 @@ context('RTE Settings', () => {
 
         it('displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
             page.get('checkbox_header').find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
+            page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
 
             page.get('modal_title').contains("Confirm Removal")
@@ -137,7 +137,7 @@ context('RTE Settings', () => {
 
             // This populates the modal with a hidden input so we can modify it later
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
+            page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
 
             let tool_set_id = page.$('tool_sets').eq(2).find('input[type="checkbox"]').val()
@@ -154,10 +154,10 @@ context('RTE Settings', () => {
         it('can reverse sort tool sets by name', function() {
             let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
-            page.get('tool_set_name_header').find('a.sort').click().then(function() {
+            page.get('tool_set_name_header').find('a.column-sort').click().then(function() {
                 cy.hasNoErrors()
 
-                page.get('tool_set_name_header').should('have.class', 'highlight')
+                page.get('tool_set_name_header').should('have.class', 'column-sort-header--active')
                 let toolsetsReversed = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
                 expect(toolsetsReversed).to.deep.equal(toolsets.reverse())
@@ -176,21 +176,21 @@ context('RTE Settings', () => {
                 cy.hasNoErrors()
 
                 // Confirm the right items disabled
-                let statuses = [...page.$('statuses').map(function(index, el) { return $(el).text(); })];
+                let statuses = [...page.$('statuses').map(function(index, el) { return $(el).contents().filter(function(){ return this.nodeType == 3; }).text(); })];
                 expect(statuses).to.deep.equal(beforeSorting)
 
                 // Sort a-z
-                page.get('status_header').find('a.sort').click().then(function() {
+                page.get('status_header').find('a.column-sort').click().then(function() {
                     cy.hasNoErrors()
 
-                    statuses = [...page.$('statuses').map(function(index, el) { return $(el).text(); })];
+                    statuses = [...page.$('statuses').map(function(index, el) { return $(el).contents().filter(function(){ return this.nodeType == 3; }).text(); })];
                     expect(statuses).to.deep.equal(aToZ)
 
                     // Sort z-a
-                    page.get('status_header').find('a.sort').click().then(function() {
+                    page.get('status_header').find('a.column-sort').click().then(function() {
                         cy.hasNoErrors()
 
-                        statuses = [...page.$('statuses').map(function(index, el) { return $(el).text(); })];
+                        statuses = [...page.$('statuses').map(function(index, el) { return $(el).contents().filter(function(){ return this.nodeType == 3; }).text(); })];
                         expect(statuses).to.deep.equal(zToA)
                     })
                 })
@@ -221,7 +221,7 @@ context('RTE Settings', () => {
 
         it('can remove a tool set', function() {
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
+            page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
             page.get('modal_submit_button').click() // Submits a form
             cy.hasNoErrors()
@@ -236,7 +236,7 @@ context('RTE Settings', () => {
             page.get('checkbox_header').find('input[type="checkbox"]').check()
 
             // Uncheck the Default tool set
-            page.get('bulk_action').select("Delete")
+            page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
             page.get('modal_submit_button').click() // Submits a form
             cy.hasNoErrors()
