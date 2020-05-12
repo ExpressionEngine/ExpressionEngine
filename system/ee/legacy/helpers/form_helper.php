@@ -37,7 +37,7 @@ if (REQ == 'CP')
 
 		$action = ee()->uri->reformat($action);
 
-		$form = '<form action="'.$action.'"';
+		$form = '<form enctype="multipart/form-data" action="'.$action.'"';
 
 		if (is_array($attributes))
 		{
@@ -87,7 +87,7 @@ else
 
 		$action = ( strpos($action, '://') === FALSE) ? ee()->config->site_url($action) : $action;
 
-		$form = '<form action="'.$action.'"';
+		$form = '<form enctype="multipart/form-data" action="'.$action.'"';
 
 		$form .= _attributes_to_string($attributes, TRUE);
 
