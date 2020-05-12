@@ -7,10 +7,6 @@ const { _, $ } = Cypress
 
 
 context('Debug Extensions', () => {
-	// it('', () =>{
-		
-
-	// })
 
 	before(function() {
         cy.task('db:seed')
@@ -33,8 +29,8 @@ context('Debug Extensions', () => {
 
 	it.only('should list tables present in the install', () =>{
 		cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_actions')
-		cy.get('.checklist > :nth-child(1)').contains('Total Records')
-		
+		cy.get('.typography > :nth-child(1)').contains('Total Records')
+
 		page.get_tables().then(function(groups){
 			let tables = [...page.$('tables').map(function(index, el){
 				return $(el).text();
@@ -54,7 +50,7 @@ context('Debug Extensions', () => {
 	})
 
 	it('should sort the table' ,() =>{
-		page.get('table').find('th.highlight').contains('Table Name')
+		page.get('table').find('th.column-sort-header--active').contains('Table Name')
 		page.get('sort_links').eq(0).click()
 
 		page.get_tables().then(function(groups){
@@ -65,7 +61,7 @@ context('Debug Extensions', () => {
 		page.get('tables').its('length').should('eq', groups.length)
 	    });
 		cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_upload_prefs')
-		page.get('table').find('th.highlight').contains('Table Name')
+		page.get('table').find('th.column-sort-header--active').contains('Table Name')
 	})
 
 	it('should search the table names', () => {

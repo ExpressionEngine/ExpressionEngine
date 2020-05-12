@@ -6,10 +6,10 @@ class ChannelFields extends ControlPanel {
         this.url = 'admin.php?/cp/fields';
 
         this.selectors = Object.assign(this.selectors, {
-            "create_new": '.section-header a.btn.action',
-            "fields": '.list-group > li',
-            "fields_edit": '.tbl-list > li .main > a',
-            "fields_checkboxes": '.tbl-list > li input[type="checkbox"]',
+            "create_new": '.main-nav__toolbar a.button--action',
+            "fields": '.list-group > .list-item',
+            "fields_edit": '.list-group > .list-item > a.list-item__content',
+            "fields_checkboxes": '.list-group > .list-item input[type="checkbox"]',
         })
     }
 

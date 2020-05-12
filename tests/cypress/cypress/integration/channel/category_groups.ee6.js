@@ -15,13 +15,13 @@ context('Category Groups', () => {
     })
 
     it('shows the Category Groups page', function() {
-        cy.contains('Category Manager')
+        cy.contains('Categories')
     })
 
     it('should list the category groups', function() {
         page.groupNamesWithCatCount().then(function(groups) {
             let groupNames = [...page.$('group_names').map(function(index, el) {
-                return $(el).text();
+                return $(el).contents().filter(function(){ return this.nodeType == 3; }).text().trim();
             })];
             expect(groupNames).to.deep.equal(groups.map(function(group) { return group.name; }))
             page.get('group_names').its('length').should('eq', groups.length)
@@ -36,7 +36,7 @@ context('Category Groups', () => {
             cy.hasNoErrors()
 
             page.hasAlert('success')
-            page.get('alert').contains('Category group removed')
+            page.get('alert').contains('Category group deleted')
             page.get('group_names').its('length').should('eq', groups.length - 1)
         })
     })

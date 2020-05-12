@@ -21,7 +21,7 @@ context('Pages Settings', () => {
     // Install Pages
     addon_manager.load()
     cy.hasNoErrors()
-    addon_manager.get('first_party_addons').filter(':contains("Pages")').find('li.txt-only a.add').click()
+    addon_manager.get('first_party_addons').find('.add-on-card:contains("Pages") a').click()
   })
 
   beforeEach(function() {

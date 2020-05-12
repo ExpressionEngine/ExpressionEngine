@@ -22,7 +22,7 @@ class ContentDesign extends ControlPanel {
 
   load() {
     this.get('settings_btn').click()
-    this.get('wrap').find('div.sidebar a:contains("Content & Design")').click()
+    this.get('wrap').find('div.sidebar h2:contains("Content & Design")').next('a').click()
   }
 }
 export default ContentDesign;

@@ -7,17 +7,16 @@ class DebugExtensions extends ControlPanel {
 
 
         this.selectors = Object.assign(this.selectors, {
-        	  "heading" : 'div.w-12 div.box h1',
-        	  "no_results" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr.no-results',
-			  "addon_name_header" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:first-child',
-			  "status_header" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(2)',
-			  "manage_header" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(3)',
-			  "checkbox_header" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(4)',
-			  "addons" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr',
-			  "addon_names" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:first-child',
-			  "statuses" : 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)',
-			  "bulk_action" : 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-			  "action_submit_button" : 'form fieldset.bulk-action-bar button'
+        	  "heading" : '.ee-main .title-bar .title-bar__title',
+        	  "no_results" : 'form div.table-responsive table tr.no-results',
+			  "addon_name_header" : 'form div.table-responsive table tr th:first-child',
+			  "status_header" : 'form div.table-responsive table tr th:nth-child(2)',
+			  "manage_header" : 'form div.table-responsive table tr th:nth-child(3)',
+			  "checkbox_header" : 'form div.table-responsive table tr th:nth-child(4)',
+			  "addons" : 'form div.table-responsive table tr',
+			  "addon_names" : 'form div.table-responsive table tr td:first-child',
+			  "statuses" : 'form div.table-responsive table tr td:nth-child(2)',
+			  "bulk_action" : 'form fieldset.bulk-action-bar select[name="bulk_action"]'
         })
 
     }

@@ -12,7 +12,7 @@ class MemberSettings extends ControlPanel {
         'require_terms_of_service': 'input[name=require_terms_of_service]',//visible => false
         'allow_member_localization_toggle': '[data-toggle-for=allow_member_localization]',
         'allow_member_localization': 'input[name=allow_member_localization]',//visible => false
-        'default_member_group': 'input[name=default_member_group]',
+        'default_primary_role': 'input[name=default_primary_role]',
         'member_theme': 'input[name=member_theme]',
         'memberlist_order_by': 'input[name=memberlist_order_by]',
         'memberlist_sort_order': 'input[name=memberlist_sort_order]',
@@ -26,7 +26,7 @@ class MemberSettings extends ControlPanel {
 
   load() {
     this.get('settings_btn').click()
-    this.get('wrap').find('div.sidebar a:contains("Members")').click()
+    this.get('wrap').find('div.sidebar a:contains("Member Settings")').click()
   }
 }
 export default MemberSettings;

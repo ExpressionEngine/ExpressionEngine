@@ -49,14 +49,14 @@ context('Site Manager', () => {
 
     it('can add a site', () => {
       page.get('sites').should('have.length', 2)
-      page.get('sites').eq(1).find('td:first-child').should('have.text', '2')
-      page.get('sites').eq(1).find('td:nth-child(2)').should('have.text', 'Rspec Site ' + counter)
-      page.get('sites').eq(1).find('td:nth-child(3)').should('have.text', '{rspec_site_'+counter+'}')
-      page.get('sites').eq(1).find('td:nth-child(4)').invoke('text').then((text) => { expect(text.toUpperCase()).to.be.equal('ONLINE') })
+      page.get('sites').eq(1).find('td:first-child').contains('2')
+      page.get('sites').eq(1).find('td:nth-child(2)').contains('Rspec Site ' + counter)
+      page.get('sites').eq(1).find('td:nth-child(3)').contains('{rspec_site_'+counter+'}')
+      page.get('sites').eq(1).find('td:nth-child(4) .status-tag').contains('Online')
     })
 
     it('can delete a site', () => {
-      page.get('sites').eq(1).find('td:nth-child(6) input').click()
+      page.get('sites').eq(1).find('td:nth-child(5) input').click()
 
       page.get('bulk_action').should('exist')
       page.get('action_submit_button').should('exist')
@@ -77,12 +77,12 @@ context('Site Manager', () => {
     })
 
     it('can switch sites', () => {
-      page.get('global_menu').find('.nav-sites a.nav-has-sub').click()
-      page.get('global_menu').find('a[href*="cp/msm/switch_to/'+counter+'"]').click()
+      page.get('global_menu').click()
+      page.get('dropdown').find('a[href*="cp/msm/switch_to/'+counter+'"]').click()
 
       cy.hasNoErrors()
 
-      page.get('global_menu').find('.nav-sites a.nav-has-sub').should('have.text', 'Rspec Site ' + counter)
+      page.get('global_menu').should('have.text', 'Rspec Site ' + counter)
     })
   })
 })

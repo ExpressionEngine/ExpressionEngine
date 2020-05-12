@@ -8,7 +8,7 @@ class SpamTrap extends ControlPanel {
 
 		this.elements({
 
-			'keyword_search': 'div.filters input[name=filter_by_keyword]',
+			'keyword_search': 'div.filter-bar input[name=filter_by_keyword]',
 
 			// Main box elements
 			'heading': '.align-right div.col.w-16 div.box form h1',
@@ -45,9 +45,8 @@ class SpamTrap extends ControlPanel {
 	}
 
 	load() {
-		this.open_dev_menu()
 		this.get('main_menu').find('a:contains("Add-Ons")').click()
-		this.get('wrap').find('div.tbl-wrap table tr a:contains("Spam")').click()
+		this.get('wrap').find('.add-on-card:contains("Spam")').first().click()
 	}
 }
 export default SpamTrap;

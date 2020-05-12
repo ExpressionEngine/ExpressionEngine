@@ -26,16 +26,6 @@ context('Avatar Settings', () => {
 
   it('should load current settings into form fields', () => {
 
-    cy.eeConfig({item: 'enable_avatars'}) .then((config) => {
-      page.get('enable_avatars').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
-    })
-    cy.eeConfig({item: 'allow_avatar_uploads'}) .then((config) => {
-      page.get('allow_avatar_uploads').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
-    })
     cy.eeConfig({item: 'avatar_url'}) .then((config) => {
       page.get('avatar_url').invoke('val').then((val) => {
         expect(val).to.be.equal(config)
@@ -163,16 +153,6 @@ context('Avatar Settings', () => {
 
   it('should save and load the settings', () => {
 
-    let enable_avatars, allow_avatar_uploads
-    cy.eeConfig({item: 'enable_avatars'}) .then((config) => {
-      enable_avatars = config
-    })
-    cy.eeConfig({item: 'allow_avatar_uploads'}) .then((config) => {
-      allow_avatar_uploads = config
-    })
-
-    page.get('enable_avatars_toggle').click()
-    page.get('allow_avatar_uploads_toggle').click()
     page.get('avatar_url').clear().type('http://hello')
     page.get('avatar_path').clear().type(upload_path)
     page.get('avatar_max_width').clear().type('100')
@@ -181,12 +161,6 @@ context('Avatar Settings', () => {
     page.submit()
 
     page.get('wrap').contains('Preferences updated')
-    page.get('enable_avatars').invoke('val').then((val) => {
-      expect(val).not.to.be.equal(enable_avatars)
-    })
-    page.get('allow_avatar_uploads').invoke('val').then((val) => {
-      expect(val).not.to.be.equal(allow_avatar_uploads)
-    })
     page.get('avatar_url').invoke('val').then((val) => { expect(val).to.be.equal('http://hello') })
     page.get('avatar_path').invoke('val').then((val) => { expect(val).to.be.equal(upload_path.replace(/\\/g, '/')) })
     page.get('avatar_max_width').invoke('val').then((val) => { expect(val).to.be.equal('100') })

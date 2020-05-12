@@ -12,14 +12,14 @@ context('Debug Extensions', () => {
 
 	 	//Works!
 	  it('shows the Manage Add-on Extensions page', () => {
-	    page.get('addon_name_header').should('have.class', 'highlight')
+	    page.get('addon_name_header').should('have.class', 'column-sort-header--active')
 	    cy.get('table').find('thead').should('have.length', 1)
 	    cy.get('table').find('tbody').should('have.length', 1)
 	  })
 
 	  //Works!
 	  it('can disable and enable an extension', () => {
- 	  	
+
 	 	  	page.get('statuses').find('span').contains("Enabled")
 	 	  	page.get('checkbox_header').find('input[type="checkbox"]').check()
 	 	  	page.get('bulk_action').select("Disable")

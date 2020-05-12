@@ -17,8 +17,7 @@ context('Spam Module', () => {
     it('can install from addon manager', () => {
       cy.auth();
       addon_manager.load()
-      const spam_row = addon_manager.get('wrap').find('div.tbl-wrap table tr:contains("Spam")')
-      spam_row.find('a:contains("Install")').click()
+      const spam_row = addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
 
       cy.hasNoErrors()
     })
@@ -36,7 +35,7 @@ context('Spam Module', () => {
       page.load()
 
       //page.displayed?
-      page.get('heading').contains('All SPAM')
+      page.get('page_heading').contains('All SPAM')
       page.get('keyword_search').should('exist')
     })
 
@@ -45,7 +44,7 @@ context('Spam Module', () => {
       page.get('keyword_search').type('{enter}')
       cy.hasNoErrors()
 
-      page.get('heading').contains('we found 5 results for "about"')
+      page.get('page_heading').contains('Found 5 results for "about"')
       page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal('about') })
       page.get('wrap').contains('about')
     })

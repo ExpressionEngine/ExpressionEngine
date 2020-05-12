@@ -6,13 +6,12 @@ class Stats extends ControlPanel {
         this.url = 'admin.php?/cp/utilities/stats';
 
         this.selectors = Object.assign(this.selectors, {
-        	  "heading": 'div.box form h1',
-			  "content_table": 'div.box form table',
-			  "rows": 'div.box form table tr',
-			  "sources": 'div.box form table tr td:first-child',
-			  "counts": 'div.box form table tr td:nth-child(2)',
-			  "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-			  "action_submit_button": 'form fieldset.bulk-action-bar button'
+        	  "heading": '.ee-main .title-bar .title-bar__title',
+			  "content_table": 'div.container form table',
+			  "rows": 'div.container form table tr',
+			  "sources": 'div.container form table tr td:first-child',
+			  "counts": 'div.container form table tr td:nth-child(2)',
+			  "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]'
         })
     }
 

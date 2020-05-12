@@ -6,9 +6,8 @@ class CategoryGroup extends ControlPanel {
         this.url = 'admin.php?/cp/categories';
 
         this.selectors = Object.assign(this.selectors, {
-            "table_list": '.tbl-list-wrap',
-            "category_groups": '.folder-list li',
-            "group_names": '.folder-list > li > a',
+            "category_groups": '.folder-list div',
+            "group_names": '.folder-list > div > a',
         })
     }
 

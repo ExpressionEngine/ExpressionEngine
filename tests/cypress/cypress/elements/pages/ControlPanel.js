@@ -5,15 +5,15 @@ const { _, $ } = Cypress
 class ControlPanel {
     constructor() {
         this.selectors = {
-            "main_menu": "div.nav-main-wrap",
-            "global_menu": "div.nav-global-wrap",
+            "main_menu": "div.ee-sidebar__items",
+            "global_menu": "div.ee-sidebar .ee-sidebar__title",
 
-            'dev_menu': '.nav-main-develop .nav-tools .nav-has-sub',
+            'dev_menu': '.ee-sidebar .js-toggle-developer-menu',
             'members_btn': '.nav-main-author .nav-members',
 
             "submit_buttons": '.form-btns .btn',
             "fieldset_errors": '.fieldset-invalid',
-            "settings_btn": '.nav-main-develop a.nav-settings',
+            "settings_btn": '.ee-sidebar__item[title="Settings"]',
             "error_messages": 'em.ee-form-error-message',
 
             // Main Section
@@ -59,6 +59,8 @@ class ControlPanel {
             "tabs": 'div.tab-wrap .tab-bar__tab',
 
             "developer_menu": 'a[title="Developer Tools"]',
+
+            "dropdown": ".dropdown:visible"
         }
 
         // Common error language

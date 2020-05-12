@@ -47,7 +47,7 @@ class SecuritySettings extends ControlPanel {
 
   load() {
     this.get('settings_btn').click()
-    this.get('wrap').find('div.sidebar a:contains("Security & Privacy")').click()
+    this.get('wrap').find('div.sidebar h2:contains("Security & Privacy")').next('a').click()
   }
 }
 export default SecuritySettings;

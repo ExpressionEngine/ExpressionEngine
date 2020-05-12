@@ -8,9 +8,9 @@ class SiteForm extends ControlPanel {
 
       'settings_icon': '.section-header__options a.icon--settings',
       'title': '.section-header__title',
-      'add_site_button': '.section-header__controls a.btn.action',
+      'add_site_button': '.main-nav__toolbar a.button--action',
 
-      'save_button': '.tab-bar__right-buttons .form-btns button[value="save_and_close"]',
+      'save_button': 'form .form-btns-top button[type=submit][value="save_and_close"]',
       'name': 'input[name="site_label"]',
       'short_name': 'input[name="site_name"]',
       'online': '[data-toggle-for="is_site_on"]',
