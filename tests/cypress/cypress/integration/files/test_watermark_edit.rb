@@ -20,7 +20,7 @@ context('Watermark Create/Edit', () => {
     page.hasErrors()
 //should_have_form_errors(page)
     page.get('alert_error').should('be.visible')
-    page.hasError(page.wm_name, $required_error)
+    page.hasError(page.wm_name, page.messages.validation.required)
 
     // AJAX validation
     // Required name
@@ -28,7 +28,7 @@ context('Watermark Create/Edit', () => {
     page.wm_name.clear()
     page.wm_name.blur()
     page.hasErrorsCount(1)
-    page.hasError(page.wm_name, $required_error)
+    page.hasError(page.wm_name, page.messages.validation.required)
     page.hasErrors()
 //should_have_form_errors(page)
 
@@ -36,7 +36,7 @@ context('Watermark Create/Edit', () => {
     page.wm_text.clear()
     page.wm_text.blur()
     page.hasErrorsCount(2)
-    page.hasError(page.wm_text, $required_error)
+    page.hasError(page.wm_text, page.messages.validation.required)
     page.hasErrors()
 //should_have_form_errors(page)
 

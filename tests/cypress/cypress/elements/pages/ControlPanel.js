@@ -9,7 +9,7 @@ class ControlPanel {
             "global_menu": "div.ee-sidebar .ee-sidebar__title",
 
             'dev_menu': '.ee-sidebar .js-toggle-developer-menu',
-            'members_btn': '.nav-main-author .nav-members',
+            'members_btn': '.ee-sidebar__item:contains("Members")',
 
             "submit_buttons": '.form-btns .btn',
             "fieldset_errors": '.fieldset-invalid',
@@ -127,6 +127,10 @@ class ControlPanel {
 
     submit() {
         this.get('submit_buttons').first().click()
+    }
+
+    modal_submit() {
+        cy.get('.app-modal:visible').find('[type="submit"][value="save"]').first().click()
     }
 
     open_dev_menu() {

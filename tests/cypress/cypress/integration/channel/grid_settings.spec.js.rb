@@ -71,7 +71,7 @@ context('Grid Field Settings', () => {
     cy.hasNoErrors()
     page.submit
     column = GridSettings::column(1)
-    page.hasError(column.label, $required_error)
+    page.hasError(column.label, page.messages.validation.required)
     cy.hasNoErrors()
 
     // No column label and duplicate column label
@@ -90,7 +90,7 @@ context('Grid Field Settings', () => {
     column.name.click()
     column.label.click()
     page.hasErrorsCount(3)
-    page.hasError(column.name, $required_error)
+    page.hasError(column.name, page.messages.validation.required)
   }
 
   it('should only duplicate columns once', () => {
@@ -128,7 +128,7 @@ context('Grid Field Settings', () => {
     column.name.clear()
     page.submit
     column = GridSettings::column(1)
-    page.hasError(column.name, $required_error)
+    page.hasError(column.name, page.messages.validation.required)
     cy.hasNoErrors()
 
     // Put back the column name for validation

@@ -26,7 +26,7 @@ class SystemTemplates extends ControlPanel {
             visit '/admin.php?/cp/addons'
             find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
 
-            self.open_dev_menu
+            this.open_dev_menu()
             click_link 'Templates'
             find('.edit a[href*="cp/design/' + group + '"]').click
         }*/

@@ -1,6 +1,7 @@
 /// <reference types="Cypress" />
 
 import MemberGroups from '../../elements/pages/members/MemberGroups';
+import SiteForm from '../../elements/pages/site/SiteForm';
 
 const page = new MemberGroups
 
@@ -27,7 +28,7 @@ context('Member Group List', () => {
     page.get('keyword_search').clear().type("Super Admin")
     page.get('keyword_search').type('{enter}')
 
-    page.get('heading').contains('we found 1 results for "Super Admin"')
+    page.get('page_heading').contains('we found 1 results for "Super Admin"')
     page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal("Super Admin")})
     page.get('wrap').contains('Super Admin')
     page.get('list.groups').should('have.length', 1)
@@ -38,7 +39,7 @@ context('Member Group List', () => {
     page.get('keyword_search').type(our_action)
     page.get('keyword_search').type('{enter}')
 
-    page.get('heading').contains('we found 0 results for "' + our_action + '"')
+    page.get('page_heading').contains('we found 0 results for "' + our_action + '"')
     page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal(our_action)})
     page.get('wrap').contains(our_action)
 
@@ -400,18 +401,14 @@ context('Member Group List', () => {
     //unless page.has_content?('Site Manager')
     if (Cypress.$('.nav-sub-menu a:contains("Site Manager")').length ==0)
     {
-      page.get('settings_btn').click()
-      page.get('wrap').find('input[name="multiple_sites_enabled"]').click()
-      page.get('wrap').find('form[action$="cp/settings/general"] .tab-bar__right-buttons .form-btns input[type="submit"]').click()
-      page.get('dev_menu').click()
+      cy.eeConfig({ item: 'multiple_sites_enabled', value: 'y' })
     }
 
-    page.get('nav').find('a:contains("Site Manager")').click()
-    page.get('wrap').find('a[href$="cp/msm/create"]').click()
-
-    page.get('wrap').find('input[name="site_label"]').clear().type('Second Site')
-    page.get('wrap').find('input[name="site_name"]').clear().type('second_site')
-    page.get('wrap').find('form[action$="cp/msm/create"] .tab-bar__right-buttons .form-btns button[value="save_and_close"]').click()
+    const form = new SiteForm
+    form.add_site({
+      name: 'Second Site',
+      short_name: 'second_site'
+    })
 
     page.load()
   }

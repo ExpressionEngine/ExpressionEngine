@@ -6,7 +6,7 @@ const page = new ImportConverter;
 context('Import File Converter', () => {
 
 	// it('', () => {
-		  
+
 	// })
 
 	before(function() {
@@ -20,21 +20,21 @@ context('Import File Converter', () => {
 
 	after(function() {
 			cy.task('filesystem:delete', Cypress.env("TEMP_DIR")+'/about')
-			
+
 	})
 
 	beforeEach(function() {
 		cy.auth();
 	    page.load()
 	    cy.hasNoErrors()
-	   
+
 	})
 
 	it('shows the Import File Converter page', () => {
 		page.get('wrap').contains('Import File Converter')
 		page.get('wrap').contains('Member file')
 		page.get('delimiter')
-		page.get('enclosing_char')	  
+		page.get('enclosing_char')
 	})
 	//works will pause each time tab.txt needs to be loaded in
 	it('should validate the form', () => {
@@ -52,10 +52,10 @@ context('Import File Converter', () => {
 		page.get('delimiter_special').type('"')
 		//Submit here
 		cy.pause()
-		page.get('wrap').find('input').eq(1).click() 
+		page.get('wrap').find('input').eq(1).click()
 		page.get('wrap').contains('You must have at least 3 fields')
 		/* Attention! rb file says that this ^^^ should work but it doesnt and it doesnt
-		 doesn't seem like it should work either.  Delimiter " 
+		 doesn't seem like it should work either.  Delimiter "
 		 is not in the tab txt file anywhere !*/
 		cy.pause()
 		page.get('wrap').find('input[value=other]').click()
@@ -95,9 +95,9 @@ context('Import File Converter', () => {
         let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
 		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
 		let assign_fields_title = 'Import File Converter - Assign Fields'
-		
+
 		cy.pause()
-		page.submit() // using comma 
+		page.submit() // using comma
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
@@ -115,7 +115,7 @@ context('Import File Converter', () => {
 		page.get('wrap').find('input[value=tab]').click()
 		page.submit()
 		page.get('wrap').contains(assign_fields_title)
-	  
+
 	})
 
 	it('should validate the way files are delimited Comma', () => {
@@ -123,7 +123,7 @@ context('Import File Converter', () => {
         let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
 		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
 		let assign_fields_title = 'Import File Converter - Assign Fields'
-		
+
 		cy.pause()
 		page.get('wrap').find('input[value=pipe]').click()
 		page.submit()
@@ -141,9 +141,9 @@ context('Import File Converter', () => {
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
-		page.submit() // using comma 
+		page.submit() // using comma
 		page.get('wrap').contains(assign_fields_title)
-	  
+
 	})
 
 	it('should validate the way files are delimited Pipe', () => {
@@ -151,7 +151,7 @@ context('Import File Converter', () => {
         let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
 		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
 		let assign_fields_title = 'Import File Converter - Assign Fields'
-		
+
 		cy.pause()
 		page.get('wrap').find('input[value=other]').click()
 		page.get('delimiter_special').type('*')
@@ -164,14 +164,14 @@ context('Import File Converter', () => {
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
-		page.submit() // using comma 
+		page.submit() // using comma
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
 		page.get('wrap').find('input[value=pipe]').click()
 		page.submit()
 		page.get('wrap').contains(assign_fields_title)
-	  
+
 	})
 
 	it('should validate the way files are delimited Other', () => {
@@ -185,7 +185,7 @@ context('Import File Converter', () => {
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
-		page.submit() // using comma 
+		page.submit() // using comma
 		page.get('wrap').contains(min_field_error)
 
 		cy.pause()
@@ -198,7 +198,7 @@ context('Import File Converter', () => {
 		page.get('delimiter_special').type('*')
 		page.submit()
 		page.get('wrap').contains(assign_fields_title)
-	  
+
 	})
 
 

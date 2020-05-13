@@ -73,7 +73,7 @@ context('Cache Manager', () => {
 
 		page.get('query_form').type("SELECT * FROM exp_channels")
 		page.submit()
-		
+
 	})
 //Works
 	it('should show MySQL errors', () =>{
@@ -93,7 +93,7 @@ context('Cache Manager', () => {
 		page.get('wrap').find('div').contains("Total Results: 2")
 		results.get('rows').its('length').should('eq',2)
 		//results.get('pages').its('length').should('eq',0)?
-		
+
 		results.get('table').contains('channel_id')
 		results.get('table').contains('site_id')
 		results.get('table').contains('channel_name')

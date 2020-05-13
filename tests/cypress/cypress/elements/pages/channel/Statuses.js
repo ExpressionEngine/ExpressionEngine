@@ -6,21 +6,22 @@ class Statuses extends ControlPanel {
         this.url = 'admin.php?/cp/channels';
 
         this.elements({
-            "statuses": 'table tbody tr',
-            "status_names": 'table tr td:nth-child(3)',
+            "statuses": '[data-input-value="statuses"] .checkbox-label',
+            "status_names": '[data-input-value="statuses"] .checkbox-label .status-tag',
         })
     }
     load_view_for_status_group(number) {
-        // self.open_dev_menu
+        this.open_dev_menu()
         cy.contains('Channels').click()
-        cy.contains('Status Groups').click()
-
-        cy.get('tbody tr:nth-child(' + number + ') li.txt-only a').click()
+        cy.get('ul.list-group li:nth-child(' + number + ') a.list-item__content').first().click()
+        cy.get('.js-tab-button:contains("Statuses")').click()
     }
 
     get_statuses_for_group(group) {
-        return cy.task('db:query', 'SELECT status FROM exp_statuses WHERE group_id = ' + group + ' ORDER BY status_order ASC').then(function([rows, fields]) {
-            return rows[0];
+        return cy.task('db:query', 'SELECT status FROM exp_statuses LEFT JOIN exp_channels_statuses ON exp_channels_statuses.status_id=exp_statuses.status_id WHERE channel_id = ' + group + ' ORDER BY status_order ASC').then(function([rows, fields]) {
+            return rows.map(function(row) {
+                return row.status.toLowerCase();
+            });
         })
     }
 }

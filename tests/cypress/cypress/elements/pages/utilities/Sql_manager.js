@@ -3,7 +3,7 @@ import ControlPanel from '../ControlPanel'
 class SqlManager extends ControlPanel {
     constructor() {
         super()
-        
+
 
         this.selectors = Object.assign(this.selectors, {
 		  "table": 'table',
@@ -12,7 +12,7 @@ class SqlManager extends ControlPanel {
 		  "search_field": 'input[name=search]',
 		  "search_btn": 'input[name=search_form]',
 		  "op_select": 'select[name=table_action]',
-		  "op_submit": '.tbl-bulk-act input[type=submit]'
+		  "op_submit": '.bulk-action-bar [type=submit]'
         })
 
     }
@@ -31,7 +31,7 @@ class SqlManager extends ControlPanel {
 
     }
 
-   
+
 
 
 }

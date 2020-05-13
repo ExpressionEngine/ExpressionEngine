@@ -17,7 +17,7 @@ class SearchAndReplace extends ControlPanel {
   load() {
     this.open_dev_menu()
     this.get('main_menu').find('a:contains("Utilities")').click()
-    this.get('wrap').find('ul').eq(4).find('li').eq(2).click()
+    this.get('wrap').find('a:contains("Search and Replace")').click()
   }
 
 

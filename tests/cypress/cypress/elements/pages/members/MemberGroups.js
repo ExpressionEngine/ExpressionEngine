@@ -8,13 +8,13 @@ class MemberGroups extends ControlPanel {
 
         'heading': 'div.col.w-12 form h1',
         'keyword_search': 'input[name=filter_by_keyword]',
-        'new_group': '.sidebar h2 a[href$="cp/members/groups/create"]',
+        'new_group': '.main-nav__toolbar a[href$="cp/members/roles/create"]',
         'perpage_filter': 'div.filters a[data-filter-label^="show"]',
 
         'list.batch_actions': 'select[name=bulk_action]',
         'list.batch_submit': '.tbl-bulk-act button',
-        'list.groups_table': 'table',
-        'list.groups': 'form table tbody tr',
+        'list.groups_table': '.list-group',
+        'list.groups': '.list-group .list-item',
         'list.no_results': 'tr.no-results',
 
         'edit.submit': '.tab-bar__right-buttons .form-btns input[type=submit]',
@@ -151,7 +151,7 @@ class MemberGroups extends ControlPanel {
 
   load() {
     this.get('members_btn').click()
-    this.get('wrap').find('a:contains("Member Groups")').click()
+    this.get('wrap').find('a:contains("Member Roles")').click()
   }
 }
 export default MemberGroups;

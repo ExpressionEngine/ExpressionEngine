@@ -23,7 +23,7 @@ class MemberManagerSection extends ControlPanel {
 			'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(6)',
 
 			'ids': '.ee-main__content form .table-responsive table tr td:first-child',
-			'usernames': '.ee-main__content form .table-responsive table tr td:nth-child(2) > a',
+			'usernames': '.ee-main__content form .table-responsive table tr td:nth-child(2) div > a',
 			'emails': '.ee-main__content form .table-responsive table tr td:nth-child(2) span.meta-info a',
 			'dates': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
 			'member_groups': '.ee-main__content form .table-responsive table tr td:nth-child(4)',

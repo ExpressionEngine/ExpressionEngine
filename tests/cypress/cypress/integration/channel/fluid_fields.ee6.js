@@ -66,7 +66,7 @@ context('Fluid Fields', () => {
         // page.submit()
 
         // list.get('alert').contains('The field Fluid Field Body has been')
-        cy.get('.tbl-row .main a').contains('Fluid Field Body').click()
+        cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
             // confirm our state
         page.get('fields').find("[value='1']").should('not.be.checked')
         page.get('fields').find("[value='2']").should('be.checked')
@@ -99,7 +99,7 @@ context('Fluid Fields', () => {
 
         // list.get('alert').contains('The field Fluid Field Body has been')
 
-        cy.get('.tbl-row .main a').contains('Fluid Field Body').click()
+        cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
             // confirm our state
         page.get('fields').find("[value='1']").should('be.checked')
         page.get('fields').find("[value='2']").should('be.checked')

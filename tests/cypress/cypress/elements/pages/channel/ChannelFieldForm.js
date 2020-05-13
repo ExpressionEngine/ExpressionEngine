@@ -20,15 +20,7 @@ class ChannelFieldForm extends ControlPanel {
     load_edit_for_custom_field(name) {
         cy.visit('/admin.php?/cp/fields')
 
-        cy.get('.tbl-row').each(function(row) {
-                let link = $(row).find('.main > a');
-                // console.log({ row, link })
-                // $(row).find('.main > a').contains(name).click()
-                if (link.text() == name) {
-                    return cy.wrap(link).click();
-                }
-            })
-            // find('tbody tr:nth-child(' + number.to_s + ') li.edit a').click
+        cy.get('.tbl-ctrls .list-item .list-item__content:contains("' + name + '")').click();
     }
 
     // Create's a field given certain configuration options

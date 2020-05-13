@@ -28,7 +28,7 @@ class ChannelLayouts < ChannelMangerPage
   element :remove_layout_modal_submit_button, 'div.modal-confirm-remove .form-ctrls input.btn'
 
   load_layouts_for_channel(number)
-    self.open_dev_menu
+    this.open_dev_menu()
     click_link 'Channels'
 
     find('tbody tr:nth-child('+number.to_s+') li.layout a').click

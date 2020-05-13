@@ -22,7 +22,7 @@ context('Member List', () => {
     page.get('keyword_search').clear().type('banned1{enter}')
     cy.hasNoErrors()
 
-    page.get('heading').contains('we found 1 results for "banned1"')
+    //page.get('heading').contains('we found 1 results for "banned1"')
     page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal('banned1')})
     page.get('wrap').contains('banned1')
     page.get('members').should('have.length', 1)
@@ -31,7 +31,7 @@ context('Member List', () => {
   it('shows no results on a failed search', () => {
     page.get('keyword_search').clear().type('Bigfoot{enter}')
 
-    page.get('heading').contains('we found 0 results for "Bigfoot"')
+    //page.get('heading').contains('we found 0 results for "Bigfoot"')
     page.get('keyword_search').invoke('val').then((val) => { expect(val).to.be.equal('Bigfoot')})
     page.get('no_results').should('exist')
     page.get('pagination').should('not.exist')
@@ -45,8 +45,8 @@ context('Member List', () => {
       page.get('action_submit_button').click()
 
       page.get('modal').should('be.visible')
-      page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Confirm Removal")})
-      page.get('modal').contains("You are attempting to remove the following items, please confirm this action.")
+      page.get('modal_title').invoke('text').then((text) => { expect(text).to.be.equal("Are You Sure?")})
+      page.get('modal').contains("You are attempting to delete the following items")
       page.get('modal').contains(member_name)
       page.get('modal').find('.checklist li').should('have.length', 1)
     })
