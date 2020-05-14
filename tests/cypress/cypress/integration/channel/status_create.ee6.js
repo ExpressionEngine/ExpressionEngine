@@ -134,14 +134,14 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('mousedown')
         page.get('status_access').click()
         page.submit()
-        page.get('submit_buttons').should('not.have.class', 'work')
 
         cy.hasNoErrors()
 
         //cy.contains('Status Created')
-        page.get('status_names').its('length').should('eq', 3)
-
-        page.load_edit_for_status(3)
+        cy.visit(page.url);
+        page.load_view_for_status_group(1)
+        page.get('status_names').its('length').should('eq', 4)
+        page.load_edit_for_status(4)
         cy.hasNoErrors()
 
         cy.contains('Edit Status')
@@ -156,11 +156,11 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('change')
         page.get('status_access').click()
         page.submit()
-        page.get('submit_buttons').should('not.have.class', 'work')
         cy.hasNoErrors()
 
-        cy.contains('Status Updated')
+        //cy.contains('Status Updated')
 
+        cy.authVisit(page.url);
         page.load_view_for_status_group(1)
         page.load_edit_for_status(4)
 

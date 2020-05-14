@@ -161,7 +161,7 @@ class ControlPanel {
     }
 
     hasErrors() {
-        this.get('submit_buttons').filter(':visible').first().should('be.disabled')
+        this.get('submit_buttons').filter('[type=submit]').first().should('be.disabled')
         this.get('fieldset_errors').should('exist')
     }
 
