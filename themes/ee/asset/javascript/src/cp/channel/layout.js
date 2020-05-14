@@ -138,7 +138,7 @@ $(document).ready(function () {
 	$('.tab-on, .tab-off').on('click', function(e) {
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = tabs.find('.tab-bar__tab').index(tab);
-		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
+		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
 
 		if (EE.publish_layout[index].visible && tabContents.has('.field-option-required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
