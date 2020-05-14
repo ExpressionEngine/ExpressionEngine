@@ -757,7 +757,7 @@ $lang = array(
 
 'share_analytics' => 'Share analytics with the ExpressionEngine Development Team?',
 
-'share_analytics_desc' => 'EllisLab asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
+'share_analytics_desc' => 'ExpressionEngine asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
 
 'un_min_len' => 'Minimum username length',
 

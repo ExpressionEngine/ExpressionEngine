@@ -1624,7 +1624,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
 	 */
 	public function assign_variables($str = '', $slash = '/')
 	{
@@ -1639,7 +1639,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
 	 */
 	public function full_tag($str, $chunk='', $open='', $close='')
 	{
@@ -1681,7 +1681,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
 	 */
 	public function fetch_date_variables($datestr)
 	{
@@ -1693,7 +1693,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
@@ -1781,7 +1781,7 @@ class EE_Functions {
 
 		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
-		$runner = \EllisLab\ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
+		$runner = \ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
 
 		if ($bool_safety === TRUE)
 		{
@@ -1807,7 +1807,7 @@ class EE_Functions {
 		{
 			return $runner->processConditionals($str, $vars);
 		}
-		catch (\EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
+		catch (\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
 		{
 			$thrower = str_replace(
 				array('\\', 'Conditional', 'Exception'),
