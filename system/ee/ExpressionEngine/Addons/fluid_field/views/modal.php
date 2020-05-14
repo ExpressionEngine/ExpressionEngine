@@ -6,7 +6,7 @@
 				<div class="form-standard">
 					<?=form_open('', 'class="settings"', (isset($hidden)) ? $hidden : array())?>
 						<div class="form-btns form-btns-top">
-							<h1><?=lang('confirm_removal')?></h1>
+							<h2><?=lang('confirm_removal')?></h2>
 						</div>
 						<?=ee('CP/Alert')
 							->makeInline()

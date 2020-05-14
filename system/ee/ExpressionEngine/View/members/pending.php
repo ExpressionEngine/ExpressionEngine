@@ -48,7 +48,7 @@
 				<div class="form-standard">
 					<?=form_open($form_url, '', array('bulk_action' => 'decline'))?>
 						<div class="form-btns form-btns-top">
-							<h1><?=lang('confirm_decline')?></h1>
+							<h2><?=lang('confirm_decline')?></h2>
 						</div>
 						<?=ee('CP/Alert')
 							->makeInline()
