@@ -228,7 +228,7 @@ $(document).ready(function () {
 	tabs.on('click', '.tab-remove', function(e) {
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = $('.tab-bar .tab-bar__tab').index(tab);
-		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
+		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
 
 		if (tabContents.find('.layout-item-wrapper').html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
