@@ -1,6 +1,6 @@
 class StatusGroupCreate < ControlPanelPage
 
-  element :group_name, 'input[name=group_name]'
+  element :group_name, 'input[type!=hidden][name=group_name]'
 
   load
     this.open_dev_menu()

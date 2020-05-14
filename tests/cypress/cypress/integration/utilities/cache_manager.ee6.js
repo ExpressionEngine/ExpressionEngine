@@ -15,7 +15,7 @@ context('Cache Manager', () => {
   it('shows the Cache Manager page', () => {
     page.get('wrap').contains('Cache Manager')
     page.get('wrap').contains('Caches to clear')
-    page.get('wrap').find('input[name=cache_type][value=all]').should('be.checked')
+    page.get('wrap').find('input[type!=hidden][name=cache_type][value=all]').should('be.checked')
     page.get('wrap').should('not.contain', 'An error occurred')
   })
 

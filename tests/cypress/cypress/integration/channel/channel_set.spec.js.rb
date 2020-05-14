@@ -39,7 +39,7 @@ context('Channel Sets', () => {
             def import_channel_set(name, method: 'success')
                 // page.import.click()
                 // Capybara-webkit isn't happy about the file field being hidden
-            page.execute_script('$("input[name=set_file]").parent().show()')
+            page.execute_script('$("input[type!=hidden][name=set_file]").parent().show()')
             page.attach_file(
                 'set_file',
                 File.expand_path("./channel_sets/#{name}.zip"),
@@ -581,14 +581,14 @@ context('Channel Sets', () => {
             do
                 import_channel_set 'simple-duplicate', method: 'issue_duplicate'
 
-            page.find('input[name="ee:Channel[news][channel_title]"]').clear().type('Event'
-            page.find('input[name="ee:Channel[news][channel_name]"]').clear().type('event'
-            page.find('input[name="ee:ChannelField[news_body][field_name]"]').clear().type('event_body'
-            page.find('input[name="ee:ChannelField[news_extended][field_name]"]').clear().type('event_extended'
-            page.find('input[name="ee:ChannelField[news_image][field_name]"]').clear().type('event_image'
-            page.find('input[name="ee:ChannelField[news_image][field_name]"]').blur()
-            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').clear().type('Event'
-            page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').blur()
+            page.find('input[type!=hidden][name="ee:Channel[news][channel_title]"]').clear().type('Event'
+            page.find('input[type!=hidden][name="ee:Channel[news][channel_name]"]').clear().type('event'
+            page.find('input[type!=hidden][name="ee:ChannelField[news_body][field_name]"]').clear().type('event_body'
+            page.find('input[type!=hidden][name="ee:ChannelField[news_extended][field_name]"]').clear().type('event_extended'
+            page.find('input[type!=hidden][name="ee:ChannelField[news_image][field_name]"]').clear().type('event_image'
+            page.find('input[type!=hidden][name="ee:ChannelField[news_image][field_name]"]').blur()
+            page.find('input[type!=hidden][name="ee:ChannelFieldGroup[News][group_name]"]').clear().type('Event'
+            page.find('input[type!=hidden][name="ee:ChannelFieldGroup[News][group_name]"]').blur()
             page.submit
 
             check_success
@@ -677,9 +677,9 @@ context('Channel Sets', () => {
             do
                 import_channel_set 'channel-with-fluid-field', method: 'issue_duplicate'
 
-            page.find('input[name="ee:UploadDestination[Images][server_path]"]').clear().type('{base_path}/images/uploads'
-            page.find('input[name="ee:UploadDestination[Images][url]"]').clear().type('/images/uploads'
-            page.find('input[name="ee:UploadDestination[Images][url]"]').blur()
+            page.find('input[type!=hidden][name="ee:UploadDestination[Images][server_path]"]').clear().type('{base_path}/images/uploads'
+            page.find('input[type!=hidden][name="ee:UploadDestination[Images][url]"]').clear().type('/images/uploads'
+            page.find('input[type!=hidden][name="ee:UploadDestination[Images][url]"]').blur()
             page.submit
 
             check_success
@@ -876,10 +876,10 @@ context('Channel Sets', () => {
             do
                 import_channel_set 'file-specified-directory', method: 'issue_duplicate'
 
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').clear().type('Uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').clear().type('{base_path}/images/uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').clear().type('/images/uploads'
-            page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').blur()
+            page.find('input[type!=hidden][name="ee:UploadDestination[Main Upload Directory][name]"]').clear().type('Uploads'
+            page.find('input[type!=hidden][name="ee:UploadDestination[Main Upload Directory][server_path]"]').clear().type('{base_path}/images/uploads'
+            page.find('input[type!=hidden][name="ee:UploadDestination[Main Upload Directory][url]"]').clear().type('/images/uploads'
+            page.find('input[type!=hidden][name="ee:UploadDestination[Main Upload Directory][url]"]').blur()
             page.submit
 
             check_success

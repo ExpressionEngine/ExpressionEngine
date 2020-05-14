@@ -230,13 +230,13 @@ context('Bulk Edit', () => {
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Expiration date")').click()
-    bulk_edit.get('fluid_fields').eq(1).find('input[name=expiration_date]').clear().type('2/14/2018 4:00 PM')
+    bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').clear().type('2/14/2018 4:00 PM')
     bulk_edit.get('heading').click() // Close date picker
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Comment expiration date")').click()
-    bulk_edit.get('fluid_fields').eq(2).find('input[name=comment_expiration_date]').clear().type('2/14/2018 5:00 PM')
+    bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').clear().type('2/14/2018 5:00 PM')
     bulk_edit.get('heading').click() // Close date picker
 
     //bulk_edit.get('add_field').click()
@@ -267,8 +267,8 @@ context('Bulk Edit', () => {
     bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 2 entries') })
 
     bulk_edit.get('fluid_fields').eq(0).find('.select__button-label').contains('Closed')
-    bulk_edit.get('fluid_fields').eq(1).find('input[name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
-    bulk_edit.get('fluid_fields').eq(2).find('input[name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
+    bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
+    bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
     bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').should('have.class', 'on')
     bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').should('have.class', 'on')
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]:visible').should('be.checked')
@@ -286,8 +286,8 @@ context('Bulk Edit', () => {
 
       const publish = new Publish
       publish.get('tab_links').eq(1).click() // Date tab
-      publish.get('wrap').find('input[name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
-      publish.get('wrap').find('input[name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
+      publish.get('wrap').find('input[type!=hidden][name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
+      publish.get('wrap').find('input[type!=hidden][name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
       publish.get('tab_links').eq(2).click() // Categories tab
       publish.get('wrap').find('input[value="1"]:visible').should('not.be.checked')
       publish.get('wrap').find('input[value="2"]:visible').should('be.checked')

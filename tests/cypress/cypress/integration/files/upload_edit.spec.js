@@ -442,7 +442,7 @@ context('Upload Destination Create/Edit', () => {
     })
 
     //page.get('allowed_types').is('[value=all]').should('be.checked')
-    page.get('wrap').find('input[name=allowed_types][value=all]').should('be.checked')
+    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=all]').should('be.checked')
 
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
@@ -495,7 +495,7 @@ context('Upload Destination Create/Edit', () => {
       expect(text).equal(upload_path + '/')
     })
     //page.get('allowed_types').is('[value=all]').should('be.checked')
-    page.get('wrap').find('input[name=allowed_types][value=all]').should('be.checked')
+    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=all]').should('be.checked')
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
     })
@@ -576,7 +576,7 @@ context('Upload Destination Create/Edit', () => {
       expect(text).equal(upload_path + '/')
     })
     //page.get('allowed_types').is('[value=img]').should('be.checked')
-    page.get('wrap').find('input[name=allowed_types][value=img]').should('be.checked')
+    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=img]').should('be.checked')
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
     })

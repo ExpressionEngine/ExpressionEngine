@@ -5,12 +5,12 @@ class ChannelMangerPage extends ControlPanel {
         super()
         //this.url = 'NA';
 
-        this.selectors = Object.assign(this.selectors, {      	
+        this.selectors = Object.assign(this.selectors, {
 			  // Title/header box elements
 			  "manager_title" : 'div.box.full.mb form h1',
 			  "title_toolbar" : 'div.box.full.mb form h1 ul.toolbar',
 			  "channel_manager_settings" : 'div.box.full.mb form h1 ul.toolbar li.settings',
-			  "phrase_search" : 'fieldset.tbl-search input[name=search]',
+			  "phrase_search" : 'fieldset.tbl-search input[type!=hidden][name=search]',
 			  "search_submit_button" : 'fieldset.tbl-search input.submit',
 			  // Sidebar elements
 			  "sidebar_channels" : 'div.sidebar h2:first-child a:first-child',

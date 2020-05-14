@@ -10,7 +10,7 @@ class Translate extends ControlPanel {
 
       'heading': 'div.w-12 form h1',
 
-      'phrase_search': 'form fieldset.tbl-search input[name=search]',
+      'phrase_search': 'form fieldset.tbl-search input[type!=hidden][name=search]',
       'search_submit_button': 'form fieldset.tbl-search input.submit',
 
       'table': 'form table',

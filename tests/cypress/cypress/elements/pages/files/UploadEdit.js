@@ -6,17 +6,17 @@ class UploadEdit extends FileManagerSection {
       this.urlMatch = /files\/file\/edit/;
 
       this.elements({
-        'name': 'input[name=name]',
-        'url': 'input[name=url]',
-        'server_path': 'input[name=server_path]',
-        'allowed_types': 'input[name=allowed_types]',
-        'max_size': 'input[name=max_size]',
-        'max_width': 'input[name=max_width]',
-        'max_height': 'input[name=max_height]',
+        'name': 'input[type!=hidden][name=name]',
+        'url': 'input[type!=hidden][name=url]',
+        'server_path': 'input[type!=hidden][name=server_path]',
+        'allowed_types': 'input[type!=hidden][name=allowed_types]',
+        'max_size': 'input[type!=hidden][name=max_size]',
+        'max_width': 'input[type!=hidden][name=max_width]',
+        'max_height': 'input[type!=hidden][name=max_height]',
         'image_manipulations': '#image_manipulations',
         'grid_rows': '#image_manipulations tr:visible',
-        'upload_member_groups': 'input[name="upload_member_groups[]"]',
-        'cat_group': 'input[name="cat_group[]"]'
+        'upload_member_groups': 'input[type!=hidden][name="upload_member_groups[]"]',
+        'cat_group': 'input[type!=hidden][name="cat_group[]"]'
       })
     }
     load() {

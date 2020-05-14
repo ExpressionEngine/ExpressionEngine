@@ -5,17 +5,17 @@ class UrlsSettings extends ControlPanel {
       super()
 
       this.elements({
-        'base_url': 'input[name=base_url]',
-        'base_path': 'input[name=base_path]',
-        'site_index': 'input[name=site_index]',
-        'site_url': 'input[name=site_url]',
-        'cp_url': 'input[name=cp_url]',
-        'theme_folder_url': 'input[name=theme_folder_url]',
-        'theme_folder_path': 'input[name=theme_folder_path]',
-        'profile_trigger': 'input[name=profile_trigger]',
-        'category_segment_trigger': 'input[name=reserved_category_word]',
-        'use_category_name': 'input[name=use_category_name]',
-        'url_title_separator': 'input[name=word_separator]'
+        'base_url': 'input[type!=hidden][name=base_url]',
+        'base_path': 'input[type!=hidden][name=base_path]',
+        'site_index': 'input[type!=hidden][name=site_index]',
+        'site_url': 'input[type!=hidden][name=site_url]',
+        'cp_url': 'input[type!=hidden][name=cp_url]',
+        'theme_folder_url': 'input[type!=hidden][name=theme_folder_url]',
+        'theme_folder_path': 'input[type!=hidden][name=theme_folder_path]',
+        'profile_trigger': 'input[type!=hidden][name=profile_trigger]',
+        'category_segment_trigger': 'input[type!=hidden][name=reserved_category_word]',
+        'use_category_name': 'input[type!=hidden][name=use_category_name]',
+        'url_title_separator': 'input[type!=hidden][name=word_separator]'
       })
   }
 

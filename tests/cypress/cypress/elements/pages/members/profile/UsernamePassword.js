@@ -10,11 +10,11 @@ class UsernamePassword extends ProfileForm {
         'profile_form': 'form[action*="cp/members/profile"]',
         'profile_form_submit': 'form[action*="cp/members/profile"] .tab-bar__right-buttons .form-btns input[type=submit]',
 
-        'username': 'input[name=username]:visible',
-        'screen_name': 'input[name=screen_name]:visible',
-        'password': 'input[name=password]:visible',
-        'confirm_password': 'input[name=confirm_password]:visible',
-        'current_password': 'input[name=verify_password]:visible'
+        'username': 'input[type!=hidden][name=username]:visible',
+        'screen_name': 'input[type!=hidden][name=screen_name]:visible',
+        'password': 'input[type!=hidden][name=password]:visible',
+        'confirm_password': 'input[type!=hidden][name=confirm_password]:visible',
+        'current_password': 'input[type!=hidden][name=verify_password]:visible'
 
       })
   }

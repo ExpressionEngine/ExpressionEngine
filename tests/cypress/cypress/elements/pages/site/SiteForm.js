@@ -11,8 +11,8 @@ class SiteForm extends ControlPanel {
       'add_site_button': '.main-nav__toolbar a.button--action',
 
       'save_button': 'form .form-btns-top button[type=submit][value="save_and_close"]',
-      'name': 'input[name="site_label"]',
-      'short_name': 'input[name="site_name"]',
+      'name': 'input[type!=hidden][name="site_label"]',
+      'short_name': 'input[type!=hidden][name="site_name"]',
       'online': '[data-toggle-for="is_site_on"]',
       'description': 'textarea[name="site_description"]'
 

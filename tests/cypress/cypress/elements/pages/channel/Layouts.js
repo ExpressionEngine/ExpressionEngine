@@ -7,7 +7,7 @@ class ChannelLayouts < ChannelMangerPage
 
   element :perpage_filter, '.ee-main .title-bar .title-bar__title + div.filters ul li:first-child'
   element :perpage_filter_menu, '.ee-main .title-bar .title-bar__title + div.filters ul li:first-child div.sub-menu ul'
-  element :perpage_manual_filter, 'input[name="perpage"]'
+  element :perpage_manual_filter, 'input[type!=hidden][name="perpage"]'
 
   # Main box's table elements
   element :name_header, '.ee-main__content form .table-responsive table tr th:first-child'

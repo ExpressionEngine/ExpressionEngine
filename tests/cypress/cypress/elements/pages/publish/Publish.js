@@ -6,8 +6,8 @@ class Publish extends ControlPanel {
       this.url = '/admin.php?/cp/publish/create/{channel_id}';
 
       this.elements({
-        'title': 'input[name=title]',
-        'url_title': 'input[name=url_title]',
+        'title': 'input[type!=hidden][name=title]',
+        'url_title': 'input[type!=hidden][name=url_title]',
         'save': '.tab-bar__right-buttons .form-btns button[name=submit][value=save]',
         'save_and_close': '.tab-bar__right-buttons .form-btns button[name=submit][value=save_and_close]',
 

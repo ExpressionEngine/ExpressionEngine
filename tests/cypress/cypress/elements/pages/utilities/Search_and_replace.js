@@ -9,7 +9,7 @@ class SearchAndReplace extends ControlPanel {
 			  "search_term" : 'textarea[name=search_term]',
 			  "replace_term" : 'textarea[name=replace_term]',
 			  "replace_where" : 'select[name=replace_where]',
-			  "password_auth" : 'input[name=password_auth]'
+			  "password_auth" : 'input[type!=hidden][name=password_auth]'
         })
     }
 

@@ -39,7 +39,7 @@ context('Ban Settings', () => {
     })
     cy.eeConfig({item: 'ban_action_options'}) .then((config) => {
       if (config!='') {
-        page.get('ban_action_options').find('input[name=ban_action][value='+config+']').should('be.checked')
+        page.get('ban_action_options').find('input[type!=hidden][name=ban_action][value='+config+']').should('be.checked')
       }
     })
     cy.eeConfig({item: 'ban_message'}) .then((config) => {
@@ -93,7 +93,7 @@ context('Ban Settings', () => {
     page.get('banned_emails').clear().type('Dummy Emails')
     page.get('banned_usernames').clear().type('Dummy Usernames')
     page.get('banned_screen_names').clear().type('Dummy Screen Names')
-    page.get('wrap').find('input[name=ban_action][value=message]').check()
+    page.get('wrap').find('input[type!=hidden][name=ban_action][value=message]').check()
     page.get('ban_message').clear().type('Dummy Message')
     page.get('ban_destination').clear().type('Dummy Destination')
     page.submit()
@@ -104,7 +104,7 @@ context('Ban Settings', () => {
     page.get('banned_emails').invoke('text').then((val) => { expect(val.trim()).to.be.equal("Dummy Emails")})
     page.get('banned_usernames').invoke('text').then((val) => { expect(val.trim()).to.be.equal("Dummy Usernames")})
     page.get('banned_screen_names').invoke('text').then((val) => { expect(val.trim()).to.be.equal("Dummy Screen Names")})
-    page.get('wrap').find('input[name=ban_action][value=message]').should('be.checked')
+    page.get('wrap').find('input[type!=hidden][name=ban_action][value=message]').should('be.checked')
     page.get('ban_message').invoke('text').then((val) => { expect(val.trim()).to.be.equal("Dummy Message")})
     page.get('ban_destination').invoke('val').then((val) => { expect(val.trim()).to.be.equal("Dummy Destination")})
   })

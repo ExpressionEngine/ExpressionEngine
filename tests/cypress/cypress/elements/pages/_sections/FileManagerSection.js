@@ -9,7 +9,7 @@ class FileManagerSection extends ControlPanel {
 			'manager_title': '.title-bar .title-bar__title',
 			'title_toolbar': '.main-nav__toolbar .button--action',
 			'download_all': 'a.icon--export',
-			// phrase_search, 'fieldset.tbl-search input[name=search]',
+			// phrase_search, 'fieldset.tbl-search input[type!=hidden][name=search]',
 			// search_submit_button, 'fieldset.tbl-search input.submit',
 			'upload_new_file_button': '.main-nav__toolbar .js-dropdown-toggle',
 			'upload_new_file_filter': '.main-nav__toolbar .dropdown',

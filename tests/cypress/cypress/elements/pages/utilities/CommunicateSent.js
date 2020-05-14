@@ -9,7 +9,7 @@ class CommunicateSent extends ControlPanel {
 
       'heading': 'div.w-12 form h1',
 
-      'phrase_search': 'input[name=search]',
+      'phrase_search': 'input[type!=hidden][name=search]',
       'search_submit_button': 'form fieldset.tbl-search input.submit',
 
       'email_table': 'div.box div.tbl-ctrls form div.tbl-wrap table',

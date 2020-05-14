@@ -8,13 +8,13 @@ class SpamTrap extends ControlPanel {
 
 		this.elements({
 
-			'keyword_search': 'div.filter-bar input[name=filter_by_keyword]',
+			'keyword_search': 'div.filter-bar input[type!=hidden][name=filter_by_keyword]',
 
 			// Main box elements
 			'heading': '.align-right div.col.w-16 div.box form h1',
 			'perpage_filter': 'div.col.w-16 div.box form h1 + div.filters ul li:first-child',
 			'perpage_filter_menu': 'div.col.w-16 div.box form h1 + div.filters ul li:first-child div.sub-menu ul',
-			'perpage_manual_filter': 'input[name="perpage"]',
+			'perpage_manual_filter': 'input[type!=hidden][name="perpage"]',
 
 			// Main box's table elements
 			'spam_trap': '.ee-main__content form .table-responsive table tr',

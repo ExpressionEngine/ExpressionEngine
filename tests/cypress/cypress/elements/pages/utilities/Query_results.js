@@ -6,7 +6,7 @@ class QueryResults extends ControlPanel {
         //this.url = ;
 
         this.selectors = Object.assign(this.selectors, {
-        	  "search_field" : 'input[name=search]',
+        	  "search_field" : 'input[type!=hidden][name=search]',
 			  "search_btn": 'input[type=submit]',
 			  "table" :'table',
 			  "rows": 'div.box form table tbody tr',

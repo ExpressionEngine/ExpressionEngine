@@ -6,10 +6,10 @@ class ChannelManager extends ControlPanel {
         this.url = 'admin.php?/cp/channels';
 
         this.elements({
-            "status": 'input[name=status]',
-            "highlight": 'input[name=highlight]',
+            "status": 'input[type!=hidden][name=status]',
+            "highlight": 'input[type!=hidden][name=highlight]',
             "color_panel": 'div.colorpicker__panel',
-            "status_access": 'input[name="status_access[]"]',
+            "status_access": 'input[type!=hidden][name="status_access[]"]',
 
             "submit_buttons": ".app-modal:visible .form-btns .btn",
             "status_names": '[data-input-value="statuses"] .checkbox-label .status-tag',

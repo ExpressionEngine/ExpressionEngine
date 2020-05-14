@@ -11,8 +11,8 @@ class ChannelFieldForm extends ControlPanel {
             "field_type": 'div[data-input-value="field_type"]',
             "field_type_input": 'input[name=field_type]',
             "field_type_choices": 'div[data-input-value="field_type"] .field-drop-choices label',
-            "field_label": 'input[name=field_label]',
-            "field_name": 'input[name=field_name]',
+            "field_label": 'input[type!=hidden][name=field_label]',
+            "field_name": 'input[type!=hidden][name=field_name]',
             "form": 'form[action*="admin.php?/cp/fields"]'
         })
     }
@@ -56,8 +56,8 @@ class ChannelFieldForm extends ControlPanel {
                 cy.get(`input[type='radio'][name='${field}'][value='${value}']`).click()
             } else if ($(`input[type='checkbox'][name='${field}']`).length) {
                 cy.get(`input[type='checkbox'][name='${field}'][value='${value}']`).click()
-            } else if ($(`input[name='${field}']`).length) {
-                cy.get(`input[name='${field}']`).type(value)
+            } else if ($(`input[type!=hidden][name='${field}']`).length) {
+                cy.get(`input[type!=hidden][name='${field}']`).type(value)
             } else if ($(`textarea[name='${field}']`).length) {
                 cy.get(`textarea[name='${field}']`).type(value)
             } else if ($(`select[name='${field}']`).length) {

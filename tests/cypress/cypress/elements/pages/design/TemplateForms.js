@@ -8,8 +8,8 @@ class TemplateCreate extends ControlPanel {
         this.elements({
             "save_button": '.form-btns button.btn[value="finish"]',
             "save_and_edit_button": '.form-btns button.btn[value="edit"]',
-            "name": 'input[name="template_name"]',
-            "type": 'input[name="template_type"]',
+            "name": 'input[type!=hidden][name="template_name"]',
+            "type": 'input[type!=hidden][name="template_type"]',
             "duplicate_existing_template": 'div[data-input-value="template_id"] input[type="radio"]',
         })
     }
@@ -39,19 +39,19 @@ class TemplateEdit extends ControlPanel {
             "template_notes": 'textarea[name="template_notes"]',
 
             //Settings Tab
-            "name": 'input[name="template_name"]',
-            "type": 'input[name="template_type"]',
+            "name": 'input[type!=hidden][name="template_name"]',
+            "type": 'input[type!=hidden][name="template_type"]',
             "enable_caching": '[data-toggle-for="cache"]',
-            "refresh_interval": 'input[name="refresh"]',
+            "refresh_interval": 'input[type!=hidden][name="refresh"]',
             "allow_php": '[data-toggle-for="allow_php"]',
-            "php_parse_stage": 'input[name="php_parse_location"]',
-            "hit_counter": 'input[name="hits"]',
+            "php_parse_stage": 'input[type!=hidden][name="php_parse_location"]',
+            "hit_counter": 'input[type!=hidden][name="hits"]',
 
             //Access Tab
             "allowed_member_groups": 'div[data-input-value="allowed_roles"] input[type="checkbox"]',
             "no_access_redirect": 'div[data-input-value="no_auth_bounce"] input[type="radio"]',
             "enable_http_auth": '[data-toggle-for="enable_http_auth"]',
-            "template_route": 'input[name="route"]',
+            "template_route": 'input[type!=hidden][name="route"]',
             "require_all_variables": '[data-toggle-for="route_required"]',
         })
     }

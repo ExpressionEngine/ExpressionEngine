@@ -12,11 +12,11 @@ context('Channel Layouts: Create/Edit', () => {
     })
 
     beforeEach(function() {
-        cy.authVisit.skip(page.url);
+        cy.authVisit(page.url);
         page.load()
     })
 
-    it.skip('display the Create Form Layout view', function() {
+    it('display the Create Form Layout view', function() {
         page.get('breadcrumb').should('exist')
         page.get('page_title').should('exist')
         page.get('add_tab_button').should('exist')
@@ -34,7 +34,7 @@ context('Channel Layouts: Create/Edit', () => {
             cy.task('db:seed')
         })
 
-        it.skip('should still be hidden with an invalid form', function() {
+        it('should still be hidden with an invalid form', function() {
             // Confirm the icon is for hiding
             page.get('hide_options_tab').should('have.class', 'tab-on')
 
@@ -51,7 +51,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('hide_options_tab').should('have.class', 'tab-off')
         })
 
-        it.skip('should be hidden when saved', function() {
+        it('should be hidden when saved', function() {
             // Confirm the icon is for hiding
             page.get('hide_options_tab').should('have.class', 'tab-on')
 
@@ -66,7 +66,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('submit_button').click()
             cy.hasNoErrors()
 
-            page.edit.skip(1)
+            page.edit(1)
             cy.hasNoErrors()
             page.get('hide_options_tab').should('have.class', 'tab-off')
         })
@@ -81,7 +81,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('options_tab').click()
         })
 
-        it.skip('should still be hidden with an invalid form', function() {
+        it('should still be hidden with an invalid form', function() {
 
             // Confirm the tool is for hiding
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
@@ -96,7 +96,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('be.checked')
         })
 
-        it.skip('should be hidden when saved', function() {
+        it('should be hidden when saved', function() {
 
             // Confirm the tool is for hiding
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
@@ -106,7 +106,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('submit_button').click()
             cy.hasNoErrors()
 
-            page.edit.skip(1)
+            page.edit(1)
             cy.hasNoErrors()
             page.get('options_tab').click()
 
@@ -114,7 +114,7 @@ context('Channel Layouts: Create/Edit', () => {
         })
     })
 
-    it.skip('can move a field out of the Options tab', function() {
+    it('can move a field out of the Options tab', function() {
         page.get('options_tab').click().then(function() {
             let field_text = page.$('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text()
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('publish_tab'))
@@ -124,7 +124,7 @@ context('Channel Layouts: Create/Edit', () => {
         })
     })
 
-    it.skip('can add a new tab', function() {
+    it('can add a new tab', function() {
         let new_tab_name = "New Tab"
 
         let tabCount = page.$('tabs').length
@@ -139,13 +139,13 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('submit_button').click()
         cy.hasNoErrors()
 
-        page.edit.skip(1)
+        page.edit(1)
         cy.hasNoErrors()
 
         page.get('tab_bar').contains(new_tab_name)
     })
 
-    it.skip('can move a field to a new tab', function() {
+    it('can move a field to a new tab', function() {
         let new_tab_name = "New Tab"
 
         let tabCount = page.$('tabs').length
@@ -164,7 +164,7 @@ context('Channel Layouts: Create/Edit', () => {
         })
     })
 
-    it('cannot remove a tab with fields in it', function() {
+    it.only('cannot remove a tab with fields in it', function() {
         let new_tab_name = "New Tab"
 
         let tabCount = page.$('tabs').length
@@ -173,17 +173,20 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('add_tab_modal_submit_button').click().then(function() {
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
+        })
 
-            let field_text = page.$('fields').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text().trim()
-
+        page.get('fields').eq(0).find('label.layout-item__title').eq(0).invoke('text').then((field_text) => {
+            cy.log(field_text);
+            console.log(field_text)
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('tabs').eq(-1))
             page.get('tabs').eq(-1).should('have.class', 'active')
             page.get('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contains(field_text)
-
-            cy.get('.tab-bar__tabs .tab-bar__tab').eq(-1).find('.tab-remove').trigger('click', { force: true })
-            page.hasAlert()
-            page.get('alert').contains('Cannot Remove Tab')
         })
+
+        cy.get('.tab-bar__tabs .tab-bar__tab').eq(-1).find('.tab-remove').trigger('click', { force: true })
+        page.hasAlert()
+        page.get('alert').contains('Cannot Remove Tab')
+
     })
 
     it('cannot hide a tab with a required field', function() {
@@ -210,7 +213,7 @@ context('Channel Layouts: Create/Edit', () => {
     })
 
     // This was a bug in 3.0
-    it.skip('can create two layouts for the same channel', function() {
+    it('can create two layouts for the same channel', function() {
         page.get('layout_name').clear().type('Default')
         page.get('submit_button').click()
         cy.hasNoErrors()
@@ -224,18 +227,18 @@ context('Channel Layouts: Create/Edit', () => {
             cy.task('db:seed')
         })
         beforeEach(function() {
-            cy.visit.skip('/admin.php?/cp/channels/edit/1')
+            cy.visit('/admin.php?/cp/channels/edit/1')
             let channel = new Channel
             channel.get('categories_tab').click()
             channel.get('cat_group').each(function(cat) {
                 cy.wrap(cat).uncheck()
             })
-            channel.submit.skip()
+            channel.submit()
             page.load()
         })
 
         describe('Hiding the Options Tab', function() {
-            it.skip('should still be hidden with an invalid form', function() {
+            it('should still be hidden with an invalid form', function() {
                 // Confirm the icon is for hiding
                 page.get('hide_options_tab').should('have.class', 'tab-on')
 
@@ -252,7 +255,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('hide_options_tab').should('have.class', 'tab-off')
             })
 
-            it.skip('should be hidden when saved', function() {
+            it('should be hidden when saved', function() {
                 // Confirm the icon is for hiding
                 page.get('hide_options_tab').should('have.class', 'tab-on')
 
@@ -265,7 +268,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('submit_button').click()
                 cy.hasNoErrors()
 
-                page.edit.skip(1)
+                page.edit(1)
                 cy.hasNoErrors()
 
                 page.get('hide_options_tab').should('have.class', 'tab-off')
@@ -280,7 +283,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('options_tab').click()
             })
 
-            it.skip('should still be hidden with an invalid form', function() {
+            it('should still be hidden with an invalid form', function() {
                 // Confirm the tool is for hiding
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
@@ -294,7 +297,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('be.checked')
             })
 
-            it.skip('should be hidden when saved', function() {
+            it('should be hidden when saved', function() {
                 page.get('member_groups').eq(0).check()
                     // Confirm the tool is for hiding
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
@@ -304,7 +307,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('submit_button').click().then(function() {
                     cy.hasNoErrors()
 
-                    page.edit.skip(1)
+                    page.edit(1)
                     cy.hasNoErrors()
                     page.get('options_tab').click()
 
@@ -313,11 +316,11 @@ context('Channel Layouts: Create/Edit', () => {
             })
         })
 
-        it.skip('can move a field out of the Options tab', function() {})
+        it('can move a field out of the Options tab', function() {})
     })
 
     // Bug #21220
-    it.skip('can move Entry Date to a new tab and retain the "required" class', function() {
+    it('can move Entry Date to a new tab and retain the "required" class', function() {
         page.get('date_tab').click()
 
         // Confirm we have the right field

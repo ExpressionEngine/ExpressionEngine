@@ -8,7 +8,7 @@ class TemplatePartialForm extends ControlPanel {
         this.elements({
             "save_button": '.form-standard .form-btns .btn',
 
-            "name": 'input[name="snippet_name"]',
+            "name": 'input[type!=hidden][name="snippet_name"]',
             "contents": '.CodeMirror',
             "contents_editor": '.CodeMirror textarea',
             "contents_textarea": 'textarea[name="snippet_contents"]',

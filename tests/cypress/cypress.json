@@ -5,6 +5,7 @@
     "taskTimeout": 120000,
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
+    "animationDistanceThreshold": 20,
     "watchForFileChanges": false,
     "testFiles": "**/*.ee6.js",
     "env": {

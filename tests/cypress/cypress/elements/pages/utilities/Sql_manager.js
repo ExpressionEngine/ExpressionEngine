@@ -9,8 +9,8 @@ class SqlManager extends ControlPanel {
 		  "table": 'table',
 		  "tables": 'table tr td:first-child',
 		  "manage_links": 'td li.view a',
-		  "search_field": 'input[name=search]',
-		  "search_btn": 'input[name=search_form]',
+		  "search_field": 'input[type!=hidden][name=search]',
+		  "search_btn": 'input[type!=hidden][name=search_form]',
 		  "op_select": 'select[name=table_action]',
 		  "op_submit": '.bulk-action-bar [type=submit]'
         })

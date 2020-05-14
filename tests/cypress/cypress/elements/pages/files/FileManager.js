@@ -13,7 +13,7 @@ class FileManager extends FileManagerSection {
 
 					'perpage_filter': 'div.filter-bar>.filter-bar__item:nth-child(3)',
 					'perpage_filter_menu': 'div.filter-bar>.filter-bar__item:nth-child(3) .dropdown',
-					'perpage_manual_filter': 'input[name="perpage"]',
+					'perpage_manual_filter': 'input[type!=hidden][name="perpage"]',
 
 					// Main box's table elements
 					'files': '.ee-main__content form .table-responsive table tr',

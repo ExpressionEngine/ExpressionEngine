@@ -21,7 +21,7 @@ context('RTE Settings', () => {
 
         it('shows the RTE Settings page', function() {
             page.get('rte_enabled').should('have.value', 'y')
-            page.get('default_tool_set').eq(1)
+            page.get('default_tool_set').eq(1).should('be.checked')
         })
 
         it('can navigate back to the add-on manager via the breadcrumb', function() {
@@ -140,8 +140,11 @@ context('RTE Settings', () => {
             page.get('bulk_action').select("Remove")
             page.get('action_submit_button').click()
 
-            let tool_set_id = page.$('tool_sets').eq(2).find('input[type="checkbox"]').val()
-            cy.get('input[name="selection[]"]').invoke('attr', 'value', tool_set_id)
+            cy.get('input[name="selection[]"]').then(elem => {
+                page.get('default_tool_set').filter(':checked').first().invoke('val').then((val) => {
+                    elem.val(val)
+                });
+            });
 
             page.get('modal_submit_button').click() // Submits a form
             cy.hasNoErrors()

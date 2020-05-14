@@ -12,7 +12,7 @@ class BansMembers extends MemberManagerSection {
         'ban_action': 'div[data-input-value="ban_action"]',
         'ban_action_options': 'div[data-input-value="ban_action"] input[type="radio"]',
         'ban_message': 'textarea[name=ban_message]',
-        'ban_destination': 'input[name=ban_destination]'
+        'ban_destination': 'input[type!=hidden][name=ban_destination]'
       })
     }
 

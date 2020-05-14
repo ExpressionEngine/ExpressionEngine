@@ -7,7 +7,7 @@ class MemberManagerSection extends ControlPanel {
 		this.selectors = Object.assign(this.selectors, {
 			// Title/header box elements
 			'heading': '.ee-main .title-bar .title-bar__title',
-			'keyword_search': 'input[name=filter_by_keyword]',
+			'keyword_search': 'input[type!=hidden][name=filter_by_keyword]',
 
 			'member_actions': 'select[name=bulk_action]',
 			'member_table': 'table',

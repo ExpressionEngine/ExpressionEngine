@@ -5,18 +5,18 @@ class GeneralSettings extends ControlPanel {
       super()
 
       this.elements({
-        'site_name': 'input[name=site_name]',
-        'site_short_name': 'input[name=site_short_name]',
-        'is_system_on': 'input[name=is_system_on]',//: :visible => false
+        'site_name': 'input[type!=hidden][name=site_name]',
+        'site_short_name': 'input[type!=hidden][name=site_short_name]',
+        'is_system_on': 'input[type!=hidden][name=is_system_on]',//: :visible => false
         'is_system_on_toggle': '[data-toggle-for=is_system_on]',
-        'new_version_check': 'input[name=new_version_check]',
+        'new_version_check': 'input[type!=hidden][name=new_version_check]',
         'check_version_btn': 'a[data-for=version-check]',//: :visible => false
-        'language': 'input[name=deft_lang]',
+        'language': 'input[type!=hidden][name=deft_lang]',
         'tz_country': 'select[name=tz_country]',
         'timezone': 'select[name=default_site_timezone]',
-        'date_format': 'input[name=date_format]',
-        'time_format': 'input[name=time_format]',
-        'include_seconds': 'input[name=include_seconds]',//: :visible => false
+        'date_format': 'input[type!=hidden][name=date_format]',
+        'time_format': 'input[type!=hidden][name=time_format]',
+        'include_seconds': 'input[type!=hidden][name=include_seconds]',//: :visible => false
         'include_seconds_toggle': '[data-toggle-for=include_seconds]'
       })
   }

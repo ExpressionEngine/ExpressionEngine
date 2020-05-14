@@ -7,7 +7,7 @@ class TemplateVariableForm extends ControlPanel {
 
         this.elements({
             "save_button": '.form-standard .form-btns .btn',
-            "name": 'input[name="variable_name"]',
+            "name": 'input[type!=hidden][name="variable_name"]',
             "contents": '.CodeMirror',
             "contents_editor": '.CodeMirror textarea',
             "contents_textarea": 'textarea[name="variable_contents"]',

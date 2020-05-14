@@ -7,10 +7,10 @@ class ImportConverter extends ControlPanel {
 
         this.selectors = Object.assign(this.selectors, {
 
-        	  "file_location" :'input[name=member_file]',
-			  "delimiter": 'input[name=delimiter]',
-			  "delimiter_special" :'input[name=delimiter_special]',
-			  "enclosing_char": 'input[name=enclosure]',
+        	  "file_location" :'input[type!=hidden][name=member_file]',
+			  "delimiter": 'input[type!=hidden][name=delimiter]',
+			  "delimiter_special" :'input[type!=hidden][name=delimiter_special]',
+			  "enclosing_char": 'input[type!=hidden][name=enclosure]',
 			  // Assign fields page
 			  "field1" :'select[name=field_0]',
 			  "field2" :'select[name=field_1]',
