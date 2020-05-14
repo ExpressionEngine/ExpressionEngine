@@ -30,7 +30,7 @@
 					<option value="REPAIR"><?=lang('repair')?></option>
 					<option value="OPTIMIZE"><?=lang('optimize')?></option>
 				</select>
-				<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
+				<input class="button button--primary" name="bulk_action" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>
