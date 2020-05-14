@@ -58,7 +58,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'status' => 'required|unique',
+		'status' => 'required|unique|xss',
 		'highlight' => 'required|hexColor'
 	);
 
@@ -96,10 +96,6 @@ class Status extends Model {
 		if (empty($status_order)) {
 			$count = $this->getModelFacade()->get('Status')->count();
 			$this->setProperty('status_order', $count + 1);
-		}
-
-		if (empty($this->Roles)) {
-			$this->Roles = $this->getModelFacade()->get('Role')->filter('role_id', 'NOT IN', array(1,2,3,4))->all();
 		}
 
 	}
