@@ -27,8 +27,9 @@ class Sql extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if (($action = ee()->input->post('table_action')) && ! ee()->input->post('search_form'))
+		if (ee()->input->post('bulk_action'))
 		{
+			$action = ee()->input->post('table_action');
 			$tables = ee()->input->post('table');
 
 			// Must select an action

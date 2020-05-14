@@ -114,7 +114,9 @@ class Status extends AbstractChannelsController {
 			$vars['cp_page_title'] = lang('create_status');
 			$vars['base_url'] = ee('CP/URL')->make('channels/status/create');
 			$status = ee('Model')->make('Status');
-			$status->Roles = ee('Model')->get('Role')->all();
+			if (empty($_POST)) {
+				$status->Roles = ee('Model')->get('Role')->all();
+			}
 		}
 		else
 		{
