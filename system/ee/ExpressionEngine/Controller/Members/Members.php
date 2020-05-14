@@ -188,6 +188,12 @@ class Members extends CP_Controller {
 		$members = ee('Model')->get('Member')
 			->filter('role_id', 4);
 
+		$vars = array(
+			'can_edit' => ee('Permission')->can('edit_members'),
+			'can_delete' => ee('Permission')->can('delete_members'),
+			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
+		);
+
 		$filters = $this->makeAndApplyFilters($members, FALSE);
 		$vars['filters'] = $filters->render($this->base_url);
 
@@ -234,9 +240,6 @@ class Members extends CP_Controller {
 				]
 			];
 		}
-
-		$vars['can_edit'] = ee('Permission')->can('edit_members');
-		$vars['can_delete'] = ee('Permission')->can('delete_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
