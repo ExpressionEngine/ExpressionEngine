@@ -54,6 +54,11 @@ function (_React$Component) {
       }));
     }
   }, {
+    key: "handleRemoveAll",
+    value: function handleRemoveAll() {
+      this.props.itemsChanged([]);
+    }
+  }, {
     key: "handleSearch",
     value: function handleSearch(searchTerm) {
       this.props.filterChange('search', searchTerm);
@@ -95,9 +100,12 @@ function (_React$Component) {
         });
       })), React.createElement("div", {
         className: "meta-info"
-      }, lang.showing, " ", limitedItems.length, " ", lang.of, " ", totalItems, " \u2014 ", React.createElement("a", {
+      }, lang.showing, " ", limitedItems.length, " ", lang.of, " ", totalItems, " \u2014", React.createElement("a", {
         href: true,
-        className: "danger-link"
+        className: "danger-link",
+        onClick: function onClick(e) {
+          return _this.handleRemoveAll();
+        }
       }, React.createElement("i", {
         className: "fas fa-sm fa-times"
       }), " ", lang.clearAll)));
