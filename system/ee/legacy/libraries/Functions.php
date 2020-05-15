@@ -1234,6 +1234,10 @@ class EE_Functions {
 	public function add_form_security_hash($str)
 	{
 		// Add security hash. Need to replace the legacy XID one as well.
+		if (!defined('CSRF_TOKEN')) {
+			ee()->load->library('csrf');
+			define('CSRF_TOKEN', ee()->csrf->get_user_token());
+		}
 		$str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
 		$str = str_replace('{XID_HASH}', CSRF_TOKEN, $str);
 
