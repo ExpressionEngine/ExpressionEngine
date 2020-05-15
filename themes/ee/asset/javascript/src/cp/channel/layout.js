@@ -74,7 +74,7 @@ $(document).ready(function () {
 				$('<div class="js-layout-item"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-item-wrapper'));
 
 				if ($(ui.draggable).has('.field-option-required')) {
-					var tab = $(this).closest('li');
+					var tab = $(this).closest('.tab-bar__tab');
 					if ($(tab).find('.tab-off').length > 0) {
 						$(tab).find('.tab-off').trigger('click');
 					}
