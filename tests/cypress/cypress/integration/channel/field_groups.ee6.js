@@ -49,12 +49,15 @@ context('Field Groups', () => {
 
 
     it('deletes a field group', function() {
-        page.get('field_groups').eq(0).find('li.remove a').click()
-        page.get('modal').contains('Field Group: ')
-        page.get('modal_submit_button').click()
-        cy.hasNoErrors()
+        page.get('field_groups').its('length').then((length) => {
 
-        page.hasAlert('success')
-        page.get('field_groups').its('length').should('eq', 2)
+            page.get('field_groups').eq(0).find('li.remove a').click()
+            page.get('modal').contains('Field Group: ')
+            page.get('modal_submit_button').click()
+            cy.hasNoErrors()
+
+            page.hasAlert('success')
+            page.get('field_groups').its('length').should('eq', length-1)
+        })
     })
 })

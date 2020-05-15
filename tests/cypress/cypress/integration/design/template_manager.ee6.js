@@ -1,8 +1,10 @@
 /// <reference types="Cypress" />
 
 import TemplateManager from '../../elements/pages/design/TemplateManager';
-import { TemplateGroupCreate, TemplateGroupEdit } from '../../elements/pages/design/TemplateGroupForms';
-import { TemplateCreate, TemplateEdit } from '../../elements/pages/design/TemplateForms';
+import TemplateGroupCreate from '../../elements/pages/design/TemplateGroupCreate';
+import TemplateGroupEdit from '../../elements/pages/design/TemplateGroupEdit';
+import TemplateCreate from '../../elements/pages/design/TemplateCreate';
+import TemplateEdit from '../../elements/pages/design/TemplateEdit';
 const page = new TemplateManager;
 const { _, $ } = Cypress
 
@@ -102,17 +104,18 @@ context('Template Manager', () => {
         })
 
         it('remove a template group', function() {
-            page.get('template_groups').its('length').should('eq', 6)
-            page.get('template_groups').eq(4).find('.toolbar .remove a').click()
+            page.get('template_groups').its('length').then((length) => {
+                page.get('template_groups').eq(4).find('.toolbar .remove a').click()
 
-            page.get('modal_submit_button').click()
+                page.get('modal_submit_button').click()
 
-            cy.hasNoErrors()
+                cy.hasNoErrors()
 
-            page.hasAlert()
-            page.get('alert').contains('Template group deleted')
-            page.get('alert').contains('cypress-test')
-            page.get('template_groups').its('length').should('eq', 5)
+                page.hasAlert()
+                page.get('alert').contains('Template group deleted')
+                page.get('alert').contains('cypress-test')
+                page.get('template_groups').its('length').should('eq', length-1)
+            })
         })
 
         it('can change the template group view', function() {

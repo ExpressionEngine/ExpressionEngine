@@ -59,7 +59,7 @@ context('File Manager / Crop File', () => {
     })
 
 
-    it.skip('shows the crop form by default', function() {
+    it('shows the crop form by default', function() {
         page.get('crop_width_input').should('exist')
         page.get('crop_height_input').should('exist')
         page.get('crop_x_input').should('exist')
@@ -67,7 +67,7 @@ context('File Manager / Crop File', () => {
         page.get('crop_image_preview').should('exist')
     })
 
-    it.skip('requires crop width when cropping', function() {
+    it('requires crop width when cropping', function() {
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -82,7 +82,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('requires crop height when cropping', function() {
+    it('requires crop height when cropping', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -97,7 +97,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('requires crop x when cropping', function() {
+    it('requires crop x when cropping', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_height_input').clear().type(5)
         page.get('crop_y_input').clear().type(0)
@@ -112,7 +112,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('requires crop y when cropping', function() {
+    it('requires crop y when cropping', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
@@ -127,7 +127,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop width is a number', function() {
+    it('validates that crop width is a number', function() {
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -142,7 +142,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop height is a number', function() {
+    it('validates that crop height is a number', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -157,7 +157,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop x is a number', function() {
+    it('validates that crop x is a number', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_height_input').clear().type(5)
         page.get('crop_y_input').clear().type(0)
@@ -172,7 +172,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop y is a number', function() {
+    it('validates that crop y is a number', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
@@ -187,7 +187,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop width is greater than zero', function() {
+    it('validates that crop width is greater than zero', function() {
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -202,7 +202,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('validates that crop height is greater than zero', function() {
+    it('validates that crop height is greater than zero', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
         page.get('crop_y_input').clear().type(0)
@@ -217,7 +217,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
 
-    it.skip('can crop an image', function() {
+    it('can crop an image', function() {
         page.get('crop_width_input').clear().type(5)
         page.get('crop_height_input').clear().type(5)
         page.get('crop_x_input').clear().type(0)
@@ -230,7 +230,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Crop Success")
     })
 
-    it.skip('can display the rotate form', function() {
+    it('can display the rotate form', function() {
         page.get('rotate_tab').click()
         cy.get('div.tab.t-1.tab-open').should('exist')
     })
@@ -247,7 +247,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to rotate the file, please review and fix errors below.")
     })**/
 
-    it.skip('can rotate right', function() {
+    it('can rotate right', function() {
         page.get('rotate_tab').click()
         page.get('rotate_right').click()
         page.get('save').click()
@@ -258,7 +258,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Rotate Success")
     })
 
-    it.skip('can rotate left', function() {
+    it('can rotate left', function() {
         page.get('rotate_tab').click()
         page.get('rotate_left').click()
         page.get('save').click()
@@ -269,7 +269,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Rotate Success")
     })
 
-    it.skip('can flip vertically', function() {
+    it('can flip vertically', function() {
         page.get('rotate_tab').click()
         page.get('flip_vertical').click()
         page.get('save').click()
@@ -280,7 +280,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Rotate Success")
     })
 
-    it.skip('can flip horizontally', function() {
+    it('can flip horizontally', function() {
         page.get('rotate_tab').click()
         page.get('flip_horizontal').click()
         page.get('save').click()
@@ -291,12 +291,12 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Rotate Success")
     })
 
-    it.skip('can display the resize form', function() {
+    it('can display the resize form', function() {
         page.get('resize_tab').click()
         cy.get('div.tab.t-2.tab-open').should('exist')
     })
 
-    it.skip('width is optional when resizing', function() {
+    it('width is optional when resizing', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input').clear()
         page.get('resize_height_input').clear().type(5)
@@ -308,7 +308,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Resize Success")
     })
 
-    it.skip('height is optional when resizing', function() {
+    it('height is optional when resizing', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input').clear().type(5)
         page.get('resize_height_input').clear()
@@ -320,7 +320,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Resize Success")
     })
 
-    it.skip('validates that resize width is a number', function() {
+    it('validates that resize width is a number', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input').clear().type('a')
         page.get('resize_height_input').clear().type(5)
@@ -333,7 +333,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to resize the file, please review and fix errors below.")
     })
 
-    it.skip('validates that resize height is a number', function() {
+    it('validates that resize height is a number', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input').clear().type(5)
         page.get('resize_height_input').clear().type('a')
@@ -346,7 +346,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("We were unable to resize the file, please review and fix errors below.")
     })
 
-    it.skip('can resize an image', function() {
+    it('can resize an image', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input').clear().type(5)
         page.get('resize_height_input').clear().type(5)
@@ -358,7 +358,7 @@ context('File Manager / Crop File', () => {
         page.get('alert').contains("File Resize Success")
     })
 
-    it.skip('can navigate back to the filemanger', function() {
+    it('can navigate back to the filemanger', function() {
         cy.get('.ee-main a:contains("Files")').click()
         cy.hasNoErrors()
 
@@ -374,7 +374,7 @@ context('File Manager / Crop File', () => {
         // edit_file.displayed?
     })*/
 
-    it.skip('shows an error if the file has no write permissions', function() {
+    it('shows an error if the file has no write permissions', function() {
 
         if (Cypress.platform === 'win32')
         {

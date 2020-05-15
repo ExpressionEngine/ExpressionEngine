@@ -164,7 +164,7 @@ context('Channel Layouts: Create/Edit', () => {
         })
     })
 
-    it.only('cannot remove a tab with fields in it', function() {
+    it('cannot remove a tab with fields in it', function() {
         let new_tab_name = "New Tab"
 
         let tabCount = page.$('tabs').length

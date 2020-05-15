@@ -1,5 +1,6 @@
 import ControlPanel from '../ControlPanel'
-const FieldGroupForm = require('./FieldGroupForm')
+import FieldGroupForm from './FieldGroupForm'
+const form = new FieldGroupForm
 
 class FieldGroups extends ControlPanel {
     constructor() {
@@ -15,7 +16,6 @@ class FieldGroups extends ControlPanel {
     }
 
     save_field_group(name) {
-        let form = new FieldGroupForm
         form.get('name').clear().type(name)
         form.get('submit').first().click()
     }

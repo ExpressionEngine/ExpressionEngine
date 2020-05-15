@@ -2,7 +2,8 @@
 
 import TemplateManager from '../../elements/pages/design/TemplateManager';
 // import { TemplateGroupCreate, TemplateGroupEdit } from '../../elements/pages/design/TemplateGroupForms';
-import { TemplateCreate, TemplateEdit } from '../../elements/pages/design/TemplateForms';
+import TemplateCreate from '../../elements/pages/design/TemplateCreate';
+import TemplateEdit from '../../elements/pages/design/TemplateEdit';
 const page = new TemplateManager
 const editPage = new TemplateEdit
 const createPage = new TemplateCreate
@@ -34,8 +35,7 @@ context('Templates', () => {
 
             cy.hasNoErrors()
 
-            let manager = new TemplateManager
-            manager.get('templates').its('length').should('eq', 7)
+            page.get('templates').its('length').should('eq', 7)
         })
 
         it('can show the edit form after save', function() {
@@ -51,30 +51,28 @@ context('Templates', () => {
 
             cy.hasNoErrors()
 
-            let form = new TemplateEdit
+            editPage.get('settings_tab').click()
+            editPage.get('name').should('have.value', 'cypress-test-three')
+            editPage.get('type').filter(':checked').should('have.value', 'webpage')
+            editPage.get('enable_caching').should('have.class', "off")
+            editPage.get('refresh_interval').should('have.value', '0')
+            editPage.get('allow_php').should('have.class', "off")
+            editPage.get('php_parse_stage').filter(':checked').should('have.value', 'o')
+            editPage.get('hit_counter').should('have.value', '0')
 
-            form.get('settings_tab').click()
-            form.get('name').should('have.value', 'cypress-test-three')
-            form.get('type').filter(':checked').should('have.value', 'webpage')
-            form.get('enable_caching').should('have.class', "off")
-            form.get('refresh_interval').should('have.value', '0')
-            form.get('allow_php').should('have.class', "off")
-            form.get('php_parse_stage').filter(':checked').should('have.value', 'o')
-            form.get('hit_counter').should('have.value', '0')
-
-            form.get('access_tab').click()
+            editPage.get('access_tab').click()
                 // Says "radio" but works with checkboxes
-            form.get('allowed_member_groups').filter(':checked').eq(0).should('have.value', '2')
-            form.get('allowed_member_groups').filter(':checked').eq(1).should('have.value', '3')
-            form.get('allowed_member_groups').filter(':checked').eq(2).should('have.value', '4')
-            form.get('allowed_member_groups').filter(':checked').eq(3).should('have.value', '5')
-            form.get('no_access_redirect').each(function(el, i) {
+            editPage.get('allowed_member_groups').filter(':checked').eq(0).should('have.value', '2')
+            editPage.get('allowed_member_groups').filter(':checked').eq(1).should('have.value', '3')
+            editPage.get('allowed_member_groups').filter(':checked').eq(2).should('have.value', '4')
+            editPage.get('allowed_member_groups').filter(':checked').eq(3).should('have.value', '5')
+            editPage.get('no_access_redirect').each(function(el, i) {
                 // Only "None" should be selected
                 cy.wrap(el).should((i == 0) ? 'be.checked' : 'not.be.checked')
             })
-            form.get('enable_http_auth').should('have.class', "off")
-            form.get('template_route').should('have.value', '')
-            form.get('require_all_variables').should('have.class', "off")
+            editPage.get('enable_http_auth').should('have.class', "off")
+            editPage.get('template_route').should('have.value', '')
+            editPage.get('require_all_variables').should('have.class', "off")
         })
 
         it('can duplicate an existing template', function() {
@@ -84,8 +82,7 @@ context('Templates', () => {
 
             cy.hasNoErrors()
 
-            let form = new TemplateEdit
-            form.get('template_data').contains("News Archives")
+            editPage.get('template_data').contains("News Archives")
         })
 
         it('should validate the form', function() {
