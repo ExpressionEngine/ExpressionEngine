@@ -206,6 +206,8 @@ context('Channel Layouts: Create/Edit', () => {
         // Confirm the icon is for showing
         page.get('hide_options_tab').should('have.class', 'tab-off')
 
+        page.get('publish_tab').click()
+
         page.get('fields').filter(':visible').eq(0).find('.field-option-required').should('exist')
 
         page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('options_tab'))
