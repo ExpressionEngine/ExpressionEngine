@@ -10,23 +10,48 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-			<?php if ($can_edit || $can_delete): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<?php if ($can_delete): ?>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-entry"><?=lang('delete')?></option>
-				<?php endif ?>
-				<?php if ($can_edit): ?>
-					<option value="edit" data-confirm-trigger="selected" rel="modal-edit"><?=lang('edit')?></option>
-					<option value="bulk-edit" data-confirm-trigger="selected" rel="modal-bulk-edit"><?=lang('bulk_edit')?></option>
-					<option value="add-categories" data-confirm-trigger="selected" rel="modal-bulk-edit"><?=lang('add_categories')?></option>
-					<option value="remove-categories" data-confirm-trigger="selected" rel="modal-bulk-edit"><?=lang('remove_categories')?></option>
-				<?php endif ?>
-			</select>
-			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
-		</fieldset>
-			<?php endif; ?>
+			<?php if ($can_edit || $can_delete) {
+				$options = [
+					[
+						'value' => "",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					]
+				];
+				if ($can_delete) {
+					$options[] = [
+						'value' => "remove",
+						'text' => lang('delete'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-entry"'
+					];
+				}
+				if ($can_edit) {
+					$options[] = [
+						'value' => "edit",
+						'text' => lang('edit'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-edit"'
+					];
+					$options[] = [
+						'value' => "bulk-edit",
+						'text' => lang('bulk_edit'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-bulk-edit"'
+					];
+					$options[] = [
+						'value' => "add-categories",
+						'text' => lang('add_categories'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-bulk-edit"'
+					];
+					$options[] = [
+						'value' => "remove-categories",
+						'text' => lang('remove_categories'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-bulk-edit"'
+					];
+				}
+				$this->embed('ee:_shared/form/bulk-action-bar', [
+					'options' => $options,
+					'modal' => true
+				]);
+			}
+			?>
 		<?php endif; ?>
 	<?=form_close()?>
 </div>

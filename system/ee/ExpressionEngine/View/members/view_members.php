@@ -17,13 +17,21 @@
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data']) && $can_delete_members): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
-			</select>
-			<button class="button button--primary" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/confirm')?>"><?=lang('submit')?></button>
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "remove",
+					'text' => lang('delete'),
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+				]
+			],
+			'modal' => true,
+			'ajax_url' => ee('CP/URL')->make('/members/confirm')
+		]); ?>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>

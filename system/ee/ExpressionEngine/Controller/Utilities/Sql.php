@@ -27,9 +27,9 @@ class Sql extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if (ee()->input->post('bulk_action'))
+		if (ee()->input->post('bulk_action_submit'))
 		{
-			$action = ee()->input->post('table_action');
+			$action = ee()->input->post('bulk_action');
 			$tables = ee()->input->post('table');
 
 			// Must select an action
@@ -124,7 +124,7 @@ class Sql extends Utilities {
 	 */
 	public function opResults()
 	{
-		$action = ee()->input->post('table_action');
+		$action = ee()->input->post('bulk_action');
 		$tables = ee()->input->post('table');
 
 		// This page can be invoked from a GET request due various ways to

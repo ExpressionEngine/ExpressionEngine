@@ -16,16 +16,29 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<?php if ($show_bulk_delete): ?>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-template"><?=lang('delete')?></option>
-				<?php endif; ?>
-				<option value="export"><?=lang('export_templates')?></option>
-			</select>
-			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
-		</fieldset>
+			<?php
+				$options = [
+					[
+						'value' => "",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					]
+				];
+				if ($show_bulk_delete) {
+					$options[] = [
+						'value' => "remove",
+						'text' => lang('delete'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-template"'
+					];
+				}
+				$options[] = [
+					'value' => "export",
+					'text' => lang('export_templates')
+				];
+				$this->embed('ee:_shared/form/bulk-action-bar', [
+					'options' => $options,
+					'modal' => true
+				]);
+			?>
 		<?php endif; ?>
 	<?=form_close()?>
 
