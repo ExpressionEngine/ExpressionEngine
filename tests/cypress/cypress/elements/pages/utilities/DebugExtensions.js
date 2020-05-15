@@ -15,8 +15,7 @@ class DebugExtensions extends ControlPanel {
 			  "checkbox_header" : 'form div.table-responsive table tr th:nth-child(4)',
 			  "addons" : 'form div.table-responsive table tr',
 			  "addon_names" : 'form div.table-responsive table tr td:first-child',
-			  "statuses" : 'form div.table-responsive table tr td:nth-child(2)',
-			  "bulk_action" : 'form fieldset.bulk-action-bar select[name="bulk_action"]'
+			  "statuses" : 'form div.table-responsive table tr td:nth-child(2)'
         })
 
     }

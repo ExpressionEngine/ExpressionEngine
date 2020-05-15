@@ -30,9 +30,6 @@ class FileManager extends FileManagerSection {
 					'dates_added': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
 					'manage_actions': '.ee-main__content form .table-responsive table tr td:nth-child(4)',
 
-					'bulk_action': 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-					'action_submit_button': 'form fieldset.bulk-action-bar button',
-
 					'no_results': 'tr.no-results',
 
 					'view_modal': 'div.modal-view-file',

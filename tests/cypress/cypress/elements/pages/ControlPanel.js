@@ -27,7 +27,7 @@ class ControlPanel {
             "sort_col": 'table th.column-sort-header--active',
             "sort_links": 'table a.column-sort',
             "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-            "action_submit_button": 'form fieldset.bulk-action-bar [type=submit]',
+            "action_submit_button": 'form fieldset.bulk-action-bar button',
 
             // Pagination
             "pagination": 'ul.pagination',

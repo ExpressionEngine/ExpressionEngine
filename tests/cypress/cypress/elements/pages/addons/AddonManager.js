@@ -27,7 +27,7 @@ class AddonManager extends ControlPanel {
             "first_party_versions": first_party_prefix + 'form div.table-responsive table tbody tr td:nth-child(2)',
             "first_party_pagination": first_party_prefix + 'div.paginate',
             "first_party_pages": first_party_prefix + 'div.paginate ul li a',
-            "first_party_bulk_action": first_party_prefix + 'form fieldset.bulk-action-bar select[name="bulk_action"]',
+            "first_party_bulk_action": first_party_prefix + ' select[name="bulk_action"]',
             "first_party_action_submit_button": first_party_prefix + 'form fieldset.bulk-action-bar button',
 
             // Third Party Add - Ons

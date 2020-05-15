@@ -21,9 +21,6 @@ class CommunicateSent extends ControlPanel {
       'subjects': 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:first-child',
       'dates': 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)',
       'total_sents': 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)',
-
-      'bulk_action': 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-      'action_submit_button': 'form fieldset.bulk-action-bar button'
     })
 
   }

@@ -25,9 +25,6 @@ class RteSettings extends ControlPanel {
             "tool_set_names": 'div.tbl-ctrls form div.table-responsive table tr td:first-child a',
             "statuses": 'div.tbl-ctrls form div.table-responsive table tr td:nth-child(2)',
 
-            "bulk_action": 'form fieldset.bulk-action-bar select[name="bulk_action"]',
-            "action_submit_button": 'form fieldset.bulk-action-bar [type=submit]',
-
             // Tool Set View
             "tool_set_name": 'input[type!=hidden][name="toolset_name"]',
             "choose_tools": 'div[data-input-value="tools"] .field-inputs input[type="checkbox"]',
