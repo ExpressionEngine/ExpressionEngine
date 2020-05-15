@@ -7,13 +7,20 @@
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-			</select>
-			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "remove",
+					'text' => lang('delete'),
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+				]
+			],
+			'modal' => true
+		]); ?>
 		<?php endif; ?>
 	<?=form_close();?>
 

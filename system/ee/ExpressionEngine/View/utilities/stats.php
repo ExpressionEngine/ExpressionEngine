@@ -9,11 +9,17 @@
 
 		<?php $this->embed('ee:_shared/table', $table); ?>
 
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="sync"><?=lang('sync')?></option>
-			</select>
-			<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "sync",
+					'text' => lang('sync')
+				]
+			]
+		]); ?>
+
 	<?=form_close()?>

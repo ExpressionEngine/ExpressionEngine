@@ -16,22 +16,40 @@
 		<?=$pagination?>
 
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-			<?php if ($can_delete || $can_moderate): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<?php if ($can_delete): ?>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-comment"><?=lang('delete')?></option>
-				<?php endif; ?>
-				<?php if ($can_moderate): ?>
-				<option value="open"><?=lang('set_to_open')?></option>
-				<option value="closed"><?=lang('set_to_closed')?></option>
-				<option value="pending"><?=lang('set_to_pending')?></option>
-				<?php endif; ?>
-			</select>
-			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
-		</fieldset>
-			<?php endif; ?>
+			<?php if ($can_delete || $can_moderate) {
+				$options = [
+					[
+						'value' => "",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					]
+				];
+				if ($can_delete) {
+					$options[] = [
+						'value' => "remove",
+						'text' => lang('delete'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-comment"'
+					];
+				}
+				if ($can_moderate) {
+					$options[] = [
+						'value' => "open",
+						'text' => lang('set_to_open')
+					];
+					$options[] = [
+						'value' => "closed",
+						'text' => lang('set_to_closed')
+					];
+					$options[] = [
+						'value' => "pending",
+						'text' => lang('set_to_pending')
+					];
+				}
+				$this->embed('ee:_shared/form/bulk-action-bar', [
+					'options' => $options,
+					'modal' => true
+				]);
+			}
+			?>
 		<?php endif; ?>
 	<?=form_close()?>
 
