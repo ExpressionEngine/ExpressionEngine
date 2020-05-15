@@ -22,7 +22,7 @@
 				[
 					'value' => "remove",
 					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
 				]
 			],
 			'modal' => true
