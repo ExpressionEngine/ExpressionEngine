@@ -203,7 +203,7 @@ context('Template Manager', () => {
             form.get('name').trigger('blur')
 
             page.hasError(form.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
-            form.hasErrors()
+            cy.get('.modal:visible form .form-btns .btn').first().first().should('be.disabled')
         })
 
         it('can export some templates', function() {

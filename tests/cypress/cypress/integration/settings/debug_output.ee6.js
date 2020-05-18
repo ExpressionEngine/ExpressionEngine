@@ -20,7 +20,7 @@ context('Debugging & Output Settings', () => {
 
     // This is ridiculous -- testing *each* radio button's status
     cy.eeConfig({item: 'debug'}) .then((config) => {
-      page.get('debug').filter('[value='+config+']').should('be.checked')
+      page.get('debug').filter('[value='+parseInt(config)+']').should('be.checked')
     })
     cy.eeConfig({item: 'show_profiler'}) .then((config) => {
       page.get('show_profiler').invoke('val').then((val) => {

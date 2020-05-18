@@ -17,7 +17,7 @@ context('Entry Manager', () => {
     cy.hasNoErrors()*/
   })
 
-  it.skip('displays properly when max_entries hit', () => {
+  it('displays properly when max_entries hit', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -30,7 +30,7 @@ context('Entry Manager', () => {
 
   })
 
-  it.skip('offers a create option for channels with max_entries not yet reached', () => {
+  it('offers a create option for channels with max_entries not yet reached', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
 
       const channel = JSON.parse(channel_json)
@@ -43,7 +43,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it.skip('create menu does not include channels when max_entries is hit', () => {
+  it('create menu does not include channels when max_entries is hit', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -59,7 +59,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it.skip('edit menu goes straight to publish for max_entries 1 = 1', () => {
+  it('edit menu goes straight to publish for max_entries 1 = 1', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -75,7 +75,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it.skip('creates entries', () => {
+  it('creates entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -97,7 +97,7 @@ context('Entry Manager', () => {
     })
   })
 
-  it.skip('loads a page with 100 entries', () => {
+  it('loads a page with 100 entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)

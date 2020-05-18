@@ -75,8 +75,10 @@ context('Member Settings', () => {
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('mbr_notification_emails'), emails_error)
+  })
 
-    // AJAX validation
+  it('AJAX form validation', () => {
+    const emails_error = 'This field must contain all valid email addresses.'
     page.load()
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
     page.get('mbr_notification_emails').blur()

@@ -5,9 +5,9 @@ class AvatarSettings extends ControlPanel {
       super()
 
       this.elements({
-        'enable_avatars': 'input[type!=hidden][name=enable_avatars]', //visible => false
+        'enable_avatars': 'input[name=enable_avatars]', //visible => false
         'enable_avatars_toggle': '[data-toggle-for=enable_avatars]',
-        'allow_avatar_uploads': 'input[type!=hidden][name=allow_avatar_uploads]', //visible => false
+        'allow_avatar_uploads': 'input[name=allow_avatar_uploads]', //visible => false
         'allow_avatar_uploads_toggle': '[data-toggle-for=allow_avatar_uploads]',
         'avatar_url': 'input[type!=hidden][name=avatar_url]',
         'avatar_path': 'input[type!=hidden][name=avatar_path]',

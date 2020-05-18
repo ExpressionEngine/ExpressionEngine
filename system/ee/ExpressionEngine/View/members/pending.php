@@ -41,7 +41,7 @@
 			if ($can_delete) {
 				$options[] = [
 					'value' => "decline",
-					'text' => lang('delete'),
+					'text' => lang('decline'),
 					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
 				];
 			}
