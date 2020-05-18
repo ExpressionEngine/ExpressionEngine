@@ -27,7 +27,7 @@
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
 				'options' => [
 					[
-						'value' => "",
+						'value' => "none",
 						'text' => '-- ' . lang('with_selected') . ' --'
 					],
 					[
