@@ -24,13 +24,21 @@
 			</div>
 
 			<?php $this->embed('_shared/table', $table); ?>
-			<fieldset class="bulk-action-bar hidden">
-				<select name="table_action">
-					<option value="none">-- <?=lang('with_selected')?> --</option>
-					<option value="REPAIR"><?=lang('repair')?></option>
-					<option value="OPTIMIZE"><?=lang('optimize')?></option>
-				</select>
-				<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
-			</fieldset>
+			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+				'options' => [
+					[
+						'value' => "none",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					],
+					[
+						'value' => "REPAIR",
+						'text' => lang('repair')
+					],
+					[
+						'value' => "OPTIMIZE",
+						'text' => lang('optimize')
+					]
+				]
+			]); ?>
 		</form>
 	</div>

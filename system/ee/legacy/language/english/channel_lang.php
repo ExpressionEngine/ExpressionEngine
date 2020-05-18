@@ -120,7 +120,7 @@ $lang = array(
 
 'layout' => 'Layout',
 
-'layout_member_groups' => 'Member group(s)?',
+'layout_roles' => 'Member role(s)?',
 
 'layout_options' => 'Layout Options',
 
@@ -134,7 +134,7 @@ $lang = array(
 
 'member_group' => 'Member group',
 
-'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
+'roles_desc' => 'Choose the member role(s) to apply this layout to.',
 
 'new_layout' => 'New Layout',
 

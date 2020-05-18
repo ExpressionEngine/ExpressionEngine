@@ -982,7 +982,6 @@ class Template extends AbstractDesignController {
 
 		$roles = ee('Model')->get('Role')
 			->filter('role_id', '!=', 1)
-			->order('name')
 			->all()
 			->getDictionary('role_id', 'name');
 

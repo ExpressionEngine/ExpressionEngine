@@ -58,7 +58,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'status' => 'required|unique',
+		'status' => 'required|unique|xss',
 		'highlight' => 'required|hexColor'
 	);
 
@@ -87,16 +87,17 @@ class Status extends Model {
 
 	/**
 	 * New statuses get appended
+	 * roles assigned
 	 */
 	public function onBeforeInsert()
 	{
 		$status_order = $this->getProperty('status_order');
 
-		if (empty($status_order))
-		{
+		if (empty($status_order)) {
 			$count = $this->getModelFacade()->get('Status')->count();
 			$this->setProperty('status_order', $count + 1);
 		}
+
 	}
 
 	/**

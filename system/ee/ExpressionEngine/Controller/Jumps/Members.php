@@ -124,11 +124,11 @@ class Members extends Jumps {
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				$fields->filter('m_field_name', 'LIKE', '%' . $keyword . '%');
+				$fields->filter('m_field_label', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
-		return $fields->order('m_field_name', 'ASC')->limit(11)->all();
+		return $fields->order('m_field_label', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMemberRoles($searchString = false)

@@ -386,12 +386,10 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		elseif ($key == $prefix."avatar_url")
 		{
-			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_url = '';
 
-			if ($data['avatar_filename'] == '') {
-				$avatar_url .= 'default/default-avatar.png';
-			} else {
-				$avatar_url .= $data['avatar_filename'];
+			if ($data['avatar_filename'] != '') {
+				$avatar_url = ee()->config->slash_item('avatar_url') . $data['avatar_filename'];
 			}
 
 			$tagdata = str_replace(LD.$key.RD, $avatar_url, $tagdata);

@@ -1,4 +1,4 @@
-<div <?php if (isset($addon['settings_url'])) : ?>data-card-link="<?= $addon['settings_url'] ?>"<?php endif; ?> class="add-on-card <?php if (isset($addon['settings_url'])) : ?>add-on-card--clickable<?php endif; ?> <?php if (!$addon['installed']) : ?>add-on-card--uninstalled<?php endif; ?>">
+<div <?php if (isset($addon['settings_url'])) : ?>data-card-link="<?= $addon['settings_url'] ?>"<?php endif; ?> class="add-on-card <?php if (isset($addon['settings_url']) && $addon['installed']) : ?>add-on-card--clickable<?php endif; ?> <?php if (!$addon['installed']) : ?>add-on-card--uninstalled<?php endif; ?>">
 	<div class="add-on-card__icon">
 		<div class="add-on-card__image">
 			<img src="<?= (!empty($addon['icon_url']) ? $addon['icon_url'] : URL_THEMES . 'asset/img/default-addon-on-icon.png') ?>" alt="<?= $addon['name'] ?>">

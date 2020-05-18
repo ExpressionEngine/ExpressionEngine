@@ -60,6 +60,9 @@ if ($count <= $too_many
 	}
 	?>
 	<div class="fields-select <?=$class?>" data-input-value="<?=$field_name?>">
+		<?php if ($multi) : ?>
+		<input type="hidden" name="<?=$field_name?>" />
+		<?php endif; ?>
 		<?php if ( ! isset($scalar) && $multi) $field_name .= '[]'; ?>
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):

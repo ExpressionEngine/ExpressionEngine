@@ -19,21 +19,37 @@
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data']) && ($can_edit || $can_delete)): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<?php if ($can_edit): ?>
-				<option value="approve"><?=lang('approve')?></option>
-				<?php if ($resend_available): ?>
-				<option value="resend"><?=lang('resend')?></option>
-				<?php endif; ?>
-				<?php endif; ?>
-				<?php if ($can_delete): ?>
-				<option value="decline" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('decline')?></option>
-				<?php endif; ?>
-			</select>
-			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
-		</fieldset>
+		<?php
+			$options = [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				]
+			];
+			if ($can_edit) {
+				$options[] = [
+					'value' => "approve",
+					'text' => lang('approve')
+				];
+				if ($resend_available) {
+					$options[] = [
+						'value' => "resend",
+						'text' => lang('resend')
+					];
+				}
+			}
+			if ($can_delete) {
+				$options[] = [
+					'value' => "decline",
+					'text' => lang('decline'),
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+				];
+			}
+			$this->embed('ee:_shared/form/bulk-action-bar', [
+				'options' => $options,
+				'modal' => true
+			]);
+		?>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>
@@ -48,7 +64,7 @@
 				<div class="form-standard">
 					<?=form_open($form_url, '', array('bulk_action' => 'decline'))?>
 						<div class="form-btns form-btns-top">
-							<h1><?=lang('confirm_decline')?></h1>
+							<h2><?=lang('confirm_decline')?></h2>
 						</div>
 						<?=ee('CP/Alert')
 							->makeInline()

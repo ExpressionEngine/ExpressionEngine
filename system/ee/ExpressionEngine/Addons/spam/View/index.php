@@ -15,14 +15,24 @@
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data'])): ?>
-		<fieldset class="bulk-action-bar">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('mark_selected')?> --</option>
-				<option value="remove" rel="modal-confirm-remove"><?=lang('deny_spam')?></option>
-				<option value="approve" class="yes" rel="modal-confirm-remove"><?=lang('approve_spam')?></option>
-			</select>
-			<button class="button button--primary"><?=lang('submit')?></button>
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "remove",
+					'text' => lang('deny_spam'),
+					'attrs' => ' rel="modal-confirm-remove"'
+				],
+				[
+					'value' => "approve",
+					'text' => lang('approve_spam'),
+					'attrs' => ' class="yes" rel="modal-confirm-remove"'
+				]
+			]
+		]); ?>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>
