@@ -6,7 +6,7 @@ const results = new QueryResults;
 const { _, $ } = Cypress
 
 
-context('Debug Extensions', () => {
+context('SQL manager', () => {
 
 	before(function() {
         cy.task('db:seed')
@@ -73,8 +73,8 @@ context('Debug Extensions', () => {
 		page.get('tables').its('length').should('eq', groups.length)
 	    });
 	    page.get('search_field').clear()
-	    page.get('search_field').type('access').type('{enter}')
-	    cy.get('h2 > i').contains('we found 3 results for "access"')
+	    page.get('search_field').type('data').type('{enter}')
+	    cy.get('h2 > i').contains('Found 6 results for "data"')
     })
 
     it('should sort search results', () =>{
@@ -87,11 +87,11 @@ context('Debug Extensions', () => {
 	    });
 
 	    page.get('search_field').clear()
-	    page.get('search_field').type('access').type('{enter}')
-	    cy.get('h2 > i').contains('we found 3 results for "access"')
-	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_status_no_access')
+	    page.get('search_field').type('data').type('{enter}')
+	    cy.get('h2 > i').contains('Found 6 results for "data"')
+	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_category_field_data')
 	    page.get('sort_links').eq(0).click()
-	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_upload_no_access')
+	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_message_data')
 	})
 
 	it('should validate the table operations submission', () =>{
@@ -150,7 +150,7 @@ context('Debug Extensions', () => {
 
 	    page.get('search_field').clear()
 	    page.get('search_field').type('category')
-	    page.get('search_btn').click()
+	    page.get('search_field').type('{enter}')
 	     cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_category_posts')
 
 	})

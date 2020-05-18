@@ -322,8 +322,8 @@ context('File Manager / Crop File', () => {
 
     it('validates that resize width is a number', function() {
         page.get('resize_tab').click()
-        page.get('resize_width_input').clear().type('a')
         page.get('resize_height_input').clear().type(5)
+        page.get('resize_width_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 

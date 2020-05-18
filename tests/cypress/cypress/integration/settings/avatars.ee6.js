@@ -68,6 +68,7 @@ context('Avatar Settings', () => {
     page.load()
     page.get('avatar_path').clear().type('sdfsdfsd')
     page.get('avatar_path').blur()
+    cy.wait(500);
     page.hasErrorsCount(1)
     page.hasError(page.get('avatar_path'), page.messages.validation.invalid_path)
     page.hasErrors()
@@ -75,10 +76,12 @@ context('Avatar Settings', () => {
 
     page.get('avatar_path').clear().type(upload_path)
     page.get('avatar_path').blur()
+    cy.wait(500);
     page.hasErrorsCount(0)
 
     page.get('avatar_path').clear().type('/')
     page.get('avatar_path').blur()
+    cy.wait(500);
     page.hasErrorsCount(1)
     page.hasError(page.get('avatar_path'), page.messages.validation.not_writable)
     page.hasErrors()
@@ -86,6 +89,7 @@ context('Avatar Settings', () => {
 
     page.get('avatar_max_width').clear().type('dfsd')
     page.get('avatar_max_width').blur()
+    cy.wait(500);
     page.hasErrorsCount(2)
     page.hasError(page.get('avatar_max_width'), page.messages.validation.integer_error)
     page.hasErrors()
@@ -93,6 +97,7 @@ context('Avatar Settings', () => {
 
     page.get('avatar_max_height').clear().type('dsfsd')
     page.get('avatar_max_height').blur()
+    cy.wait(500);
     page.hasErrorsCount(3)
     page.hasError(page.get('avatar_max_height'), page.messages.validation.integer_error)
     page.hasErrors()
@@ -108,6 +113,7 @@ context('Avatar Settings', () => {
     // Fix everything
     page.get('avatar_path').clear().type(upload_path)
     page.get('avatar_path').blur()
+    cy.wait(500);
     page.hasErrorsCount(3)
     page.hasNoError(page.get('avatar_path'))
     page.hasErrors()
@@ -115,6 +121,7 @@ context('Avatar Settings', () => {
 
     page.get('avatar_max_width').clear().type('100')
     page.get('avatar_max_width').blur()
+    cy.wait(500);
     page.hasErrorsCount(2)
     page.hasNoError(page.get('avatar_max_width'))
     page.hasErrors()
@@ -122,6 +129,7 @@ context('Avatar Settings', () => {
 
     page.get('avatar_max_height').clear().type('100')
     page.get('avatar_max_height').blur()
+    cy.wait(500);
     page.hasErrorsCount(1)
     page.hasNoError(page.get('avatar_max_height'))
     page.hasErrors()
@@ -129,6 +137,7 @@ context('Avatar Settings', () => {
 
     page.get('avatar_max_kb').clear().type('100')
     page.get('avatar_max_kb').blur()
+    cy.wait(500);
     page.hasErrorsCount(0)
     page.hasNoError(page.get('avatar_max_kb'))
     //should_have_no_form_errors(page)

@@ -111,8 +111,8 @@ context('Status Create/Edit', () => {
     it('should repopulate the form on validation error', function() {
         page.load_create_for_status_group(1)
 
-        page.get('status').clear().type('Open')
         page.get('status_access').eq(0).click()
+        page.get('status').clear().type('Open')
         page.submit()
         page.get('submit_buttons').should('not.have.class', 'work')
 

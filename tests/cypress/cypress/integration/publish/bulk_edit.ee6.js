@@ -9,6 +9,10 @@ const entry_manager = new EntryManager;
 
 context('Bulk Edit', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
+
   beforeEach(function(){
     cy.auth();
 
@@ -209,7 +213,6 @@ context('Bulk Edit', () => {
 
   it('should change all the things on the selected entries', () => {
     cy.server()
-    cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
 
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Getting to Know ExpressionEngine')
@@ -260,9 +263,10 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]').click()
 
     // Make sure fields retain values after removing an entry!
+    cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
     bulk_edit.get('selected_entries').eq(0).find('a').click()
-    cy.wait('@ajax')
-    cy.wait(1000) //wait 1 sec
+    //cy.wait('@ajax')
+    cy.wait(5000) // ajax does not work here for some reason - possibly Cypress bug
 
     bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 2 entries') })
 
