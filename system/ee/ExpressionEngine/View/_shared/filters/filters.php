@@ -1,5 +1,5 @@
 <?php if ( ! empty($filters) && is_array($filters)): ?>
-<div class="filter-bar">
+<div class="filter-bar filter-bar--collapsed filter-bar--collapsible">
 	<?php foreach ($filters as $filter): ?>
 		<div class="filter-bar__item <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
 			<?=$filter['html']?>

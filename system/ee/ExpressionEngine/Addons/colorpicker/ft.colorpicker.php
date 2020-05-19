@@ -8,13 +8,13 @@
  */
 
 use Mexitek\PHPColors\Color;
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 
+class Colorpicker_ft extends EE_Fieldtype implements ColumnInterface {
 
-class Colorpicker_ft extends EE_Fieldtype {
+	var $info = [];
 
-		var $info = [];
-		
-		public $disable_frontedit = TRUE;
+	public $disable_frontedit = true;
 
     var $default_settings = [
 		'allowed_colors' 			=> 'any',

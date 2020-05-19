@@ -20,6 +20,7 @@ class Table {
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
+	const COL_SMALL = 6;
 
 	public $config = array();
 	protected $columns = array();
@@ -207,6 +208,7 @@ class Table {
 		// Default settings for columns
 		$defaults = array(
 			'label'		=> NULL,
+			'name'      => NULL,
 			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
@@ -247,6 +249,11 @@ class Table {
 			if ( ! isset($settings['label']) && ! is_int($label))
 			{
 				$settings['label'] = $label;
+			}
+
+			if ( ! isset($settings['name']))
+			{
+				$settings['name'] = $label;
 			}
 
 			$this->columns[] = $settings;

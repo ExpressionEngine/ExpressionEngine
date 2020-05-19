@@ -8,10 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 /**
  * Toggle Fieldtype
  */
-class Toggle_ft extends EE_Fieldtype {
+class Toggle_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array();
 
@@ -107,14 +109,8 @@ class Toggle_ft extends EE_Fieldtype {
 
 		$data = (is_null($data) OR $data === '') ? $this->settings['field_default_value'] : $data;
 
-		if (REQ == 'CP' || REQ == 'ACTION')
+		if (REQ == 'CP')
 		{
-			ee()->cp->add_js_script([
-				'file' => [
-					'common'
-				]
-			]);
-			
 			return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
 				'field_name' => $this->field_name,
 				'value'      => $data,

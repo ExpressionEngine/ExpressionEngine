@@ -70,7 +70,7 @@ $setup = [
 			return new CustomMenu\Menu;
 		},
 
-		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE)
+		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE, $include_column_filter = FALSE, $view_id = NULL)
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
@@ -79,7 +79,9 @@ $setup = [
 				ee()->localize->now,
 				$search_value,
 				$search_in,
-				$include_author_filter
+				$include_author_filter,
+				$include_column_filter,
+				$view_id
 			);
 		},
 
@@ -663,6 +665,10 @@ $setup = [
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',
+
+			// ..\EntryManager
+			'EntryManagerView'       => 'Model\EntryManager\View',
+			'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
 	),
 
 	'cookies.necessary' => [

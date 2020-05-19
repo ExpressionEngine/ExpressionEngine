@@ -9,11 +9,12 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 
 /**
  * File Fieldtype
  */
-class File_ft extends EE_Fieldtype {
+class File_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'File',

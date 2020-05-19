@@ -8,12 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Radio Fieldtype
  */
-class Radio_ft extends OptionFieldtype {
+class Radio_ft extends OptionFieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Radio Buttons',

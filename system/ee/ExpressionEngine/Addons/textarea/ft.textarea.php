@@ -8,12 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Addons\FilePicker\FilePicker;
+use Addons\FilePicker\FilePicker;
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 
 /**
  * Textarea Fieldtype
  */
-class Textarea_ft extends EE_Fieldtype {
+class Textarea_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Textarea',

@@ -15,6 +15,7 @@ use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use Mexitek\PHPColors\Color;
+use ExpressionEngine\Library\CP\EntryManager;
 
 /**
  * Publish/Edit Controller
@@ -64,11 +65,27 @@ class Edit extends AbstractPublishController {
 
 		$base_url = ee('CP/URL')->make('publish/edit');
 
+		// Get the selected view
+		$view = ee()->input->get('view') ?: '';
+
+		$base_url->setQueryStringVariable('view', $view);
+		$selected_view = $view ? ee('Model')->get('EntryManagerView', $view)->first() : null;
+
+		$available_views = ee('Model')->get('EntryManagerView')->all();
+
+		$vars['selected_view']   = $selected_view;
+		$vars['available_views'] = $available_views;
+
+		// Create the entry listing object which handles getting the entries
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
 			ee()->input->get_post('search_in') ?: 'titles',
-			ee('Permission')->hasAny($this->permissions['others'])
+			ee('Permission')->hasAny($this->permissions['others']),
+			true, // Include column filter,
+			ee()->input->get_post('view') ?: ''
 		);
+
+		$entry_listing->addFilter('EntryManagerViews', $view);
 
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
@@ -94,44 +111,42 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
+		// Create the table that displays the entries
 		$table = ee('CP/Table', array(
 			'sort_dir' => 'desc',
 			'sort_col' => 'column_entry_date',
 		));
 
-		$columns = array(
-			'column_entry_id',
-			'column_title' => array(
-				'encode' => FALSE
-			)
-		);
-
-		$show_comments_column = (
-			ee()->config->item('enable_comments') == 'y' OR
-			ee('Model')->get('Comment')
-				->filter('site_id', ee()->config->item('site_id'))
-				->count() > 0);
-
-		if ($show_comments_column)
+		if (ee()->input->get_post('columns'))
 		{
-			$columns = array_merge($columns, array(
-				'column_comment_total' => array(
-					'encode' => FALSE
-				)
-			));
+			$default_columns = ee()->input->get_post('columns');
+		}
+		elseif ($selected_view)
+		{
+			$default_columns = $selected_view->Columns->pluck('identifier');
+		}
+		else
+		{
+			$default_columns = [
+				'entry_id',
+				'title',
+				'entry_date',
+				'author',
+				'status'
+			];
 		}
 
-		$columns = array_merge($columns, array(
-			'column_entry_date',
-			'column_status' => [
-				'encode' => FALSE
-			],
-			array(
-				'type'	=> Table::COL_CHECKBOX
-			)
-		));
+		$default_columns[] = 'checkbox';
 
-		$table->setColumns($columns);
+		$columns = array_map(function($identifier) {
+			return EntryManager\ColumnFactory::getColumn($identifier);
+		}, $default_columns);
+
+		$columns = array_filter($columns);
+		$column_renderer = new EntryManager\ColumnRenderer($columns);
+
+		$table->setColumns($column_renderer->getTableColumnsConfig());
+
 		if($vars['channels_exist'])
 		{
 			$table->setNoResultsText(lang('no_entries_exist'));
@@ -284,11 +299,6 @@ class Edit extends AbstractPublishController {
 				)
 			);
 
-			if ($show_comments_column)
-			{
-				array_splice($column, 2, 0, array($comments));
-			}
-
 			$attrs = array();
 
 			if ($entry_id && $entry->entry_id == $entry_id)
@@ -296,17 +306,17 @@ class Edit extends AbstractPublishController {
 				$attrs = array('class' => 'selected');
 			}
 
-			if ($autosaves)
+			if ($entry->Autosaves->count())
 			{
 				$attrs = array('class' => 'auto-saved');
 			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,
-				'columns'	=> $column
+				'columns'	=> $column_renderer->getRenderedTableRowForEntry($entry)
 			);
-
 		}
+
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
@@ -348,7 +358,11 @@ class Edit extends AbstractPublishController {
 				'of'                    => lang('of'),
 				'clearAll'              => lang('clear_all'),
 				'removeFromSelection'   => lang('remove_from_selection'),
-			]
+			],
+			'viewManager.createUrl' => ee('CP/URL')->make('publish/views/create')->compile(),
+			'viewManager.editUrl'   => ee('CP/URL')->make('publish/views/edit/###')->compile(),
+			'viewManager.cloneUrl'  => ee('CP/URL')->make('publish/views/clone/###')->compile(),
+			'viewManager.removeUrl' => ee('CP/URL')->make('publish/views/remove/###')->compile()
 		]);
 
 		ee()->cp->add_js_script(array(
@@ -402,6 +416,12 @@ class Edit extends AbstractPublishController {
 			$vars['can_edit']   = (empty($edit_perms)) ? FALSE : ee('Permission')->hasAny($edit_perms);
 			$vars['can_delete'] = (empty($del_perms)) ? FALSE : ee('Permission')->hasAny($del_perms);
 		}
+
+		ee()->cp->add_js_script([
+			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
+			'ui' => 'sortable'
+		]);
 
 		if (AJAX_REQUEST)
 		{

@@ -8,10 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 /**
  * Date Fieldtype
  */
-class Date_ft extends EE_Fieldtype {
+class Date_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Date',

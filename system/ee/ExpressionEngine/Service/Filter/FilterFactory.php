@@ -241,6 +241,16 @@ class FilterFactory {
 	}
 
 	/**
+	 * This will instantiate and return a default Columns filter
+	 *
+	 * @return Filter\Columns a Columns Filter object
+	 */
+	protected function createDefaultColumns($columns, $channel = FALSE, $view_id = FALSE)
+	{
+		return new Filter\Columns($columns, $channel, $view_id);
+	}
+
+	/**
 	 * This will instantiate and return a default Site filter
 	 *
 	 * @todo Use the $container to make Config->item
@@ -323,6 +333,16 @@ class FilterFactory {
 	protected function createDefaultViewType($options = [], $default = 'table')
 	{
 		return new Filter\ViewType($options, $default);
+	}
+
+	/**
+	 * This will instantiate and return a default EntryManagerViews filter
+	 *
+	 * @return Filter\EntryManagerViews a EntryManagerViews Filter object
+	 */
+	protected function createDefaultEntryManagerViews($view_id = null)
+	{
+		return new Filter\EntryManagerViews($view_id);
 	}
 }
 

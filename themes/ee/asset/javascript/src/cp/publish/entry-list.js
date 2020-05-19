@@ -10,8 +10,7 @@
 $(document).ready(function () {
 
 	var replaceData = function(data) {
-		$('.wrap .col-group:nth-child(2) .box').html(data.html);
-		$.fuzzyFilter();
+		$('#edit-table').html(data.html);
 
 		$('input[name="search"]').closest('form').attr('action', data.url);
 
@@ -59,4 +58,66 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
+	// ==================================
+	// column filter custom view selector
+	// ==================================
+
+	$('.filter-bar #columns_view_choose').on('change', function() {
+		var view = $(this).val();
+
+		$('#columns_view_new, #columns_view_options').hide();
+
+		if (view === 'NEW') {
+			$('#columns_view_new').show();
+		} else if (view !== '') {
+			$('#columns_view_options').show();
+		}
+	});
+
+	$('#columns_view_switch').on('click', function() {
+		var view = $('#columns_view_choose').val();
+
+		if (view !== '') {
+			window.location.href = view;
+		}
+	});
+
+	// $('body').on('change', 'div[rev=toggle-columns] input[name="columns[]"]', function(e) {
+	// 	var form = $(this).closest('form')
+	// 	$.ajax({
+	// 		url: form.attr('actions'),
+	// 		data: form.serialize(),
+	// 		type: 'GET',
+	// 		dataType: 'json',
+	// 		success: replaceData
+	// 	})
+	// })
+
+	$('body').on('click', '.filter-item__link--save', function(e) {
+
+		e.preventDefault();
+		var url;
+
+		if (typeof($(this).attr('href'))!='undefined' && $(this).attr('href')!='' && $(this).attr('href')!='#') {
+			url = $(this).attr('href');
+		} else if ($('#columns_view_choose').val()=='NEW') {
+			url = EE.viewManager.createUrl + '&' + $(this).closest('form').find('input[name="columns[]"]').serialize()
+		} else {
+			url = EE.viewManager.editUrl.replace('###', $('#columns_view_choose option:selected').data('id'))
+		}
+
+		EE.cp.ModalForm.openForm({
+			url: url,
+			createUrl: EE.viewManager.createUrl,
+			load: function (modal) {
+				SelectField.renderFields(modal)
+			},
+			success: function(result) {
+				if (result.redirect) {
+					window.location = result.redirect
+				}
+				console.log(result)
+			}
+		})
+	})
 });

@@ -8,12 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Select Fieldtype
  */
-class Select_ft extends OptionFieldtype {
+class Select_ft extends OptionFieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Select Dropdown',

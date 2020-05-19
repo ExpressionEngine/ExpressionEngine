@@ -397,15 +397,15 @@ $(document).ready(function(){
 
 		$('.js-filters-collapsable').each(function() {
 			collapseFilterBar(this, collapse)
-			$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
+			$(this).find('.filter-bar').toggleClass('filter-bar--collapsable', collapse)
 		})
 	})
 
 	// Update the filter bars on page load, and when the window width changes
-	window.addEventListener('resize', function () { updateFilterBars() })
-	updateFilterBars()
+	// window.addEventListener('resize', function () { updateFilterBars() })
+	// updateFilterBars()
 
-	// Tabs and Scrolls
+	// Tabs
 	// -------------------------------------------------------------------
 
 		//Load initial tab, if requested
@@ -870,6 +870,13 @@ $(document).ready(function(){
 
 			e.preventDefault();
 		});
+
+		$('body').on('click', '.js-toggle-link', function(e) {
+			e.preventDefault()
+
+			var rel = $(this).attr('rel')
+			$('div[rev='+rel+']').toggle()
+		})
 
 	// =============
 	// filter-bar

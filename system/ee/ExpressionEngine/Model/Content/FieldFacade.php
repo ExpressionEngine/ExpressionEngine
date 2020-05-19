@@ -357,6 +357,31 @@ class FieldFacade {
 		return $ft;
 	}
 
+	public function implementsInterface($interface)
+	{
+		$fieldtype = $this->getNativeField();
+		$interfaces = class_implements(get_class($fieldtype));
+
+		return isset($interfaces[$interface]);
+	}
+
+	/**
+	 * Forward methods to implementers of EntryManager\ColumnInterface
+	 */
+	public function getTableColumnLabel()
+	{
+		return $this->getNativeField()->getTableColumnLabel();
+	}
+
+	public function getTableColumnConfig()
+	{
+		return $this->getNativeField()->getTableColumnConfig();
+	}
+
+	public function renderTableCell($data)
+	{
+		return $this->getNativeField()->renderTableCell($data);
+	}
 
 	public function initField()
 	{
