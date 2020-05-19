@@ -10,13 +10,21 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<? if (isset($pagination)) echo $pagination; ?>
 		<?php if ($table['total_rows'] > 0): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="disable"><?=lang('disable')?></option>
-				<option value="enable"><?=lang('enable')?></option>
-			</select>
-			<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "disable",
+					'text' => lang('disable')
+				],
+				[
+					'value' => "enable",
+					'text' => lang('enable')
+				]
+			]
+		]); ?>
 		<?php endif; ?>
 	<?=form_close()?>

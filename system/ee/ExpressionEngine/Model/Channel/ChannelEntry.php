@@ -1171,13 +1171,13 @@ class ChannelEntry extends ContentModel {
 		}
 
 		$member = ee()->session->getMember();
-		$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
+		if (!empty($member)) {
+			$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
 
-		foreach ($all_statuses as $status)
-		{
-			if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses))
-			{
-				$status_options[] = $status->getSelectOptionComponent();
+			foreach ($all_statuses as $status) {
+				if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses)) {
+					$status_options[] = $status->getSelectOptionComponent();
+				}
 			}
 		}
 

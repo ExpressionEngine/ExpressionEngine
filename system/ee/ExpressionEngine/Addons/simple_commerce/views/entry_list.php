@@ -5,12 +5,17 @@
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="bulk-action-bar hidden">
-			<select name="bulk_action">
-				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="add_item"><?=lang('add_item')?></option>
-			</select>
-			<button class="button button--primary"><?=lang('submit')?></button>
-		</fieldset>
+		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "add_item",
+					'text' => lang('add_item')
+				]
+			]
+		]); ?>
 		<?php endif; ?>
 	<?=form_close()?>

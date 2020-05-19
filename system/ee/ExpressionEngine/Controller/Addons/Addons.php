@@ -894,10 +894,12 @@ class Addons extends CP_Controller {
 		//   3. Add <mark> around h4's (params and variables)
 		//   4. Pull out header tree for sidebar nav (h1 and h2 only)
 
+		/*
 		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
 		{
 			$readme = str_replace(array("<h{$i}>", "</h{$i}>"), array("<h{$j}>", "</h{$j}>"), $readme);
 		}
+		*/
 
 		$pre_tags = array('<pre><code>', '</code></pre>', '<h4>', '</h4>');
 		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
@@ -909,7 +911,7 @@ class Addons extends CP_Controller {
 		// 	[1] => 1
 		// 	[2] => full tag
 		// ]
-		preg_match_all('|<h([12])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
+		preg_match_all('|<h([23])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
 
 		$nav = array();
 		$child = array();
@@ -922,9 +924,9 @@ class Addons extends CP_Controller {
 			// hence preg_replace() with a limit instead of str_replace()
 			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
 
-			if ($match[1] == 1)
+			if ($match[1] == 2)
 			{
-				// append any children (h2's) if they exist
+				// append any children (h3's) if they exist
 				if ( ! empty($child))
 				{
 					$nav[] = $child;
@@ -947,7 +949,11 @@ class Addons extends CP_Controller {
 		}
 
 		// Register our menu and header
-		ee()->menu->register_left_nav($nav);
+		ee()->view->left_nav = ee()->load->view(
+			'_shared/left_nav',
+			array('nav' => $nav),
+			TRUE
+		);
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
 			'form_url' => ee('CP/URL')->make('addons'),
@@ -1771,7 +1777,7 @@ class Addons extends CP_Controller {
 		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
-		$FT->settings = $fieldtype['settings'];
+		$FT->settings = isset($fieldtype['settings']) ? $fieldtype['settings'] : [];
 
 		$fieldtype_settings = ee()->api_channel_fields->apply('display_global_settings');
 

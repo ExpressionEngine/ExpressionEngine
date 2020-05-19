@@ -13,15 +13,28 @@
 
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
-			<fieldset class="bulk-action-bar hidden">
-				<select name="bulk_action">
-					<option value="">-- <?=lang('with_selected')?> --</option>
-					<option value="enable"><?=lang('enable')?></option>
-					<option value="disable"><?=lang('disable')?></option>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-				</select>
-				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-			</fieldset>
+			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+			'options' => [
+				[
+					'value' => "",
+					'text' => '-- ' . lang('with_selected') . ' --'
+				],
+				[
+					'value' => "enable",
+					'text' => lang('enable')
+				],
+				[
+					'value' => "disable",
+					'text' => lang('disable')
+				],
+				[
+					'value' => "remove",
+					'text' => lang('delete'),
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+				]
+			],
+			'modal' => true
+		]); ?>
 		<?=form_close();?>
 	</div>
 </div>

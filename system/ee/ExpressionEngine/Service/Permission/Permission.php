@@ -225,24 +225,26 @@ class Permission {
 	 * @param string $which any number of permission names
 	 * @return bool TRUE if the permission is in the userdata or the permission key exists; FALSE otherwise
 	 */
-	protected function check($which)
-	{
+	protected function check($which) {
 		//legacy permission support
-		if (in_array($which, ['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries', 'can_delete_self_entries', 'can_delete_all_entries', 'can_assign_post_authors']))
-		{
-			$assigned_channels = ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
-			foreach ($assigned_channels as $channel_id)
-			{
-				$check = $this->check($which.'_channel_id_'.$channel_id);
-				if ($check) return $check;
+		if (in_array($which, ['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries', 'can_delete_self_entries', 'can_delete_all_entries', 'can_assign_post_authors'])) {
+			$member = ee()->session->getMember();
+			if (!empty($member)) {
+				$assigned_channels = $member->getAssignedChannels()->pluck('channel_id');
+				foreach ($assigned_channels as $channel_id)
+				{
+					$check = $this->check($which . '_channel_id_' . $channel_id);
+					if ($check) {
+						return $check;
+					}
+				}
 			}
-			return FALSE;
+			return false;
 		}
 
 		$k = $this->getUserdatum($which);
 
-		if ($k === TRUE OR $k == 'y')
-		{
+		if ($k === TRUE OR $k == 'y') {
 			return TRUE;
 		}
 

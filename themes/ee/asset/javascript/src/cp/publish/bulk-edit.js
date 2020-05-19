@@ -136,6 +136,7 @@ EE.cp.BulkEdit = {
 		this._enableOrDisableButtons()
 
 		SelectField.renderFields(this.formContainer)
+		Dropdown.renderFields(this.formContainer)
 		EE.cp.datePicker.bind($('input[rel="date-picker"]'))
 
 		this.formContainer.find('.fluid-field-templates :input')
@@ -197,6 +198,7 @@ EE.cp.BulkEdit = {
 			// TODO: Once we have generic callback for fieldtypes to instantiate
 			// their stuff in a future version, use that here instead
 			SelectField.renderFields(fieldContainer)
+			Dropdown.renderFields(fieldContainer)
 			EE.cp.datePicker.bind($('input[rel="date-picker"]'))
 		})
 	},

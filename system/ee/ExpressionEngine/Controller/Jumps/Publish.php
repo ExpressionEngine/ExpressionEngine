@@ -38,7 +38,7 @@ class Publish extends Jumps
 
 	public function create()
 	{
-		$channels = $this->loadChannels(ee()->input->post('searchString'));
+		$channels = $this->loadChannels(ee()->input->post('searchString'), true);
 
 		$response = array();
 
@@ -106,7 +106,7 @@ class Publish extends Jumps
 		$this->sendResponse($response);
 	}
 
-	private function loadChannels($searchString = false)
+	private function loadChannels($searchString = false, $can_create = false)
 	{
 		$channels = ee('Model')->get('Channel')
 			->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
@@ -120,7 +120,17 @@ class Publish extends Jumps
 			}
 		}
 
-		return $channels->order('channel_title', 'ASC')->limit(11)->all();
+		$channels = $channels->order('channel_title', 'ASC')->limit(11)->all();
+
+		if ($can_create) {
+			foreach ($channels as $i => $channel) {
+				if ($channel->max_entries != 0 && $channel->max_entries <= $channel->total_entries) {
+					unset($channels[$i]);
+				}
+			}
+		}
+
+		return $channels;
 	}
 
 	private function loadEntries($searchString = false)

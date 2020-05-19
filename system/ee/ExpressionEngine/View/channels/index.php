@@ -6,15 +6,25 @@
 
 			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
-			<fieldset class="bulk-action-bar hidden">
-				<select name="bulk_action">
-					<option>-- <?=lang('with_selected')?> --</option>
-					<?php if (ee('Permission')->can('delete_channels')): ?>
-						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
-					<?php endif ?>
-				</select>
-				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-			</fieldset>
+			<?php
+			if (ee('Permission')->can('delete_channels')) {
+				$options = [
+					[
+						'value' => "",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					]
+				];
+				$options[] = [
+					'value' => "remove",
+					'text' => lang('delete'),
+					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+				];
+				$this->embed('ee:_shared/form/bulk-action-bar', [
+					'options' => $options,
+					'modal' => true
+				]);
+			}
+			?>
 		</form>
 	</div>
 

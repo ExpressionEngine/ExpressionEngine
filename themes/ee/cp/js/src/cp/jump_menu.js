@@ -40,7 +40,7 @@
 /**
  * EE Jump Menu
  */
-const jumpContainer = window.top;
+const jumpContainer = (typeof(window.top.Cypress) !== 'undefined') ? window : window.top;
 
 EE.cp.JumpMenu = {
 	typingAjaxDelay: 400,
@@ -60,7 +60,7 @@ EE.cp.JumpMenu = {
 		if (navigator.appVersion.indexOf("Mac") != -1) {
 			EE.cp.JumpMenu.shortcut = '⌘';
 		}
-		
+
 		jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
 
 		jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);

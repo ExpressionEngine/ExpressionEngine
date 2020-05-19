@@ -193,6 +193,7 @@ class Roles extends AbstractRolesController {
 
 		$errors = NULL;
 		$role = ee('Model')->make('Role');
+		$role->AssignedStatuses = ee('Model')->get('Status')->all();
 
 		if ($group_id)
 		{

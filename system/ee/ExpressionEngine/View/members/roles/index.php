@@ -16,13 +16,20 @@
 			<?php if (isset($pagination)) echo $pagination; ?>
 
 			<?php if (!isset($disable_action) || empty($disable_action)) : ?>
-			<fieldset class="bulk-action-bar hidden">
-				<select name="bulk_action">
-					<option>-- <?=lang('with_selected')?> --</option>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
-				</select>
-				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-			</fieldset>
+			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+				'options' => [
+					[
+						'value' => "",
+						'text' => '-- ' . lang('with_selected') . ' --'
+					],
+					[
+						'value' => "remove",
+						'text' => lang('delete'),
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+					]
+				],
+				'modal' => true
+			]); ?>
 			<?php endif; ?>
 		</form>
 	</div>

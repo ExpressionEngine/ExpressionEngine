@@ -74,7 +74,7 @@ $(document).ready(function () {
 				$('<div class="js-layout-item"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-item-wrapper'));
 
 				if ($(ui.draggable).has('.field-option-required')) {
-					var tab = $(this).closest('li');
+					var tab = $(this).closest('.tab-bar__tab');
 					if ($(tab).find('.tab-off').length > 0) {
 						$(tab).find('.tab-off').trigger('click');
 					}
@@ -138,7 +138,7 @@ $(document).ready(function () {
 	$('.tab-on, .tab-off').on('click', function(e) {
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = tabs.find('.tab-bar__tab').index(tab);
-		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
+		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
 
 		if (EE.publish_layout[index].visible && tabContents.has('.field-option-required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
@@ -228,7 +228,7 @@ $(document).ready(function () {
 	tabs.on('click', '.tab-remove', function(e) {
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = $('.tab-bar .tab-bar__tab').index(tab);
-		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
+		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
 
 		if (tabContents.find('.layout-item-wrapper').html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));

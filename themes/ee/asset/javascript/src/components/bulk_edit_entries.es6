@@ -34,6 +34,10 @@ class BulkEditEntries extends React.Component {
     )
   }
 
+  handleRemoveAll () {
+    this.props.itemsChanged([])
+  }
+
   handleSearch (searchTerm) {
     this.props.filterChange('search', searchTerm)
   }
@@ -65,7 +69,9 @@ class BulkEditEntries extends React.Component {
             />
           )}
         </ul>
-        <div className="meta-info">{lang.showing} {limitedItems.length} {lang.of} {totalItems} &mdash; <a href className="danger-link"><i className="fas fa-sm fa-times"></i> {lang.clearAll}</a></div>
+        <div className="meta-info">
+          {lang.showing} {limitedItems.length} {lang.of} {totalItems} &mdash; <a href className="danger-link" onClick={(e) => this.handleRemoveAll()}><i className="fas fa-sm fa-times"></i> {lang.clearAll}</a>
+        </div>
       </div>
     )
   }
