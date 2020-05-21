@@ -29,6 +29,27 @@ class Views extends CP_Controller {
 		}
 	}
 
+	public function saveDefault() {
+
+		$query = ee('Model')->get('EntryManagerView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->filter('channel_id', (int) ee()->input->get('channel_id'));
+		$view = $query->first();
+		if (empty($view)) {
+			$view = ee('Model')->make('EntryManagerView');
+		}
+
+		$view->member_id = ee()->session->userdata('member_id');
+		$view->channel_id = (int) ee()->input->get('channel_id');
+		$view->columns = json_encode(ee()->input->post('columns'));
+
+		if ($view->save()) {
+			ee()->output->send_ajax_response('success');
+		} else {
+			ee()->output->send_ajax_response(array('error' => 'could_not_save_view'));
+		}
+	}
+
 	public function create()
 	{
 		$view = ee('Model')->make('EntryManagerView');

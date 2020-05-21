@@ -17,6 +17,13 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class ChannelName extends Column
 {
+	public function __construct($identifier) {
+		parent::__construct($identifier);
+		$this->fields = ['Channel.channel_title'];
+		$this->models = ['Channel'];
+		$this->sort_field = 'channel_id';
+	}
+
 	public function getTableColumnLabel()
 	{
 		return 'channel';

@@ -245,7 +245,7 @@ class FilterFactory {
 	 *
 	 * @return Filter\Columns a Columns Filter object
 	 */
-	protected function createDefaultColumns($columns, $channel = FALSE, $view_id = FALSE)
+	protected function createDefaultColumns($columns, $channel = null, $view_id = null)
 	{
 		return new Filter\Columns($columns, $channel, $view_id);
 	}

@@ -19,9 +19,20 @@ abstract class Column implements EntryManager\ColumnInterface
 {
 	protected $identifier;
 
+	protected $models = [];
+
+	protected $fields = [];
+
+	protected $sort_field;
+
 	public function __construct($identifier)
 	{
 		$this->identifier = $identifier;
+		$this->sort_field = $identifier;
+	}
+
+	public function getSortField() {
+		return $this->sort_field;
 	}
 
 	public function getTableColumnIdentifier()
@@ -41,15 +52,15 @@ abstract class Column implements EntryManager\ColumnInterface
 
 	protected function canEdit($entry)
 	{
-		return (ee()->cp->allowed_group('can_edit_other_entries')
-				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
-					$entry->author_id == ee()->session->userdata('member_id')));
+		return (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
+			|| (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
+				$entry->author_id == ee()->session->userdata('member_id')));
 	}
 
 	protected function canDelete($entry)
 	{
-		return (ee()->cp->allowed_group('can_delete_all_entries')
-				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
+		return (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
+				|| (ee('Permission')->can('delete_self_entries_channel_id_' . $entry->channel_id) &&
 					$entry->author_id == ee()->session->userdata('member_id')));
 	}
 }

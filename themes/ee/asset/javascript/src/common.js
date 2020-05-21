@@ -360,8 +360,8 @@ $(document).ready(function(){
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 
-	$('.js-filters-collapsable').each(function() {
-		var button = '<div class="title-bar__filter-toggle-button js-filter-bar-toggle">'
+	$('.js-filters-collapsible').each(function() {
+		var button = '<div class="title-bar__filter-toggle-button js-filter-bar-toggle" style="display: none">'
 		+ '<button type="button" class="filter-bar__button"><i class="fas fa-sm fa-filter"></i> Filters</button>'
 		+ '</div>'
 
@@ -375,7 +375,7 @@ $(document).ready(function(){
 	}
 
 	$('.js-filter-bar-toggle button',).on('click', function(e) {
-		var container = $(this).closest('.js-filters-collapsable')
+		var container = $(this).closest('.js-filters-collapsible')
 
 		var filterBar = $('.filter-bar', container)
 
@@ -395,15 +395,15 @@ $(document).ready(function(){
 
 		$('.js-filter-bar-toggle').toggle(collapse)
 
-		$('.js-filters-collapsable').each(function() {
+		$('.js-filters-collapsible').each(function() {
 			collapseFilterBar(this, collapse)
-			$(this).find('.filter-bar').toggleClass('filter-bar--collapsable', collapse)
+			//$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
 		})
 	})
 
 	// Update the filter bars on page load, and when the window width changes
-	// window.addEventListener('resize', function () { updateFilterBars() })
-	// updateFilterBars()
+	window.addEventListener('resize', function () { updateFilterBars() })
+	updateFilterBars()
 
 	// Tabs
 	// -------------------------------------------------------------------

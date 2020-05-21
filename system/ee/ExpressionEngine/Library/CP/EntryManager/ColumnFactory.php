@@ -23,7 +23,8 @@ class ColumnFactory
 		'status'          => Columns\Status::class,
 		'entry_date'      => Columns\EntryDate::class,
 		'expiration_date' => Columns\ExpirationDate::class,
-		'channel_name'    => Columns\ChannelName::class,
+		'channel'         => Columns\ChannelName::class,
+		'comments'        => Columns\Comments::class,
 		'checkbox'        => Columns\Checkbox::class
 	];
 

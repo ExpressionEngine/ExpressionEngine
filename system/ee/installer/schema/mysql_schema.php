@@ -1432,29 +1432,11 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_entry_manager_views` (
 			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`channel_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
 			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
 			PRIMARY KEY (`view_id`)
 		);";
-
-		$Q[] = "CREATE TABLE `exp_entry_manager_views_columns` (
-			`column_view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`view_id` int(10) unsigned NOT NULL,
-			`identifier` varchar(128) NOT NULL DEFAULT '',
-			`order` int(10) unsigned NOT NULL,
-			PRIMARY KEY (`column_view_id`)
-		)";
-
-		$Q[] = "CREATE TABLE `exp_entry_manager_views_roles` (
-			`view_id` int(10) unsigned NOT NULL,
-			`role_id` int(10) unsigned NOT NULL,
-			PRIMARY KEY (`view_id`,`role_id`)
-		)";
-
-		$Q[] = "CREATE TABLE `exp_entry_manager_views_channels` (
-			`view_id` int(10) unsigned NOT NULL,
-			`channel_id` int(10) unsigned NOT NULL,
-			PRIMARY KEY (`view_id`,`channel_id`)
-		)";
 
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";

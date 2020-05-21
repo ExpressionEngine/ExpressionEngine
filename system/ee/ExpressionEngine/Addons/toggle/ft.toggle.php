@@ -264,6 +264,25 @@ class Toggle_ft extends EE_Fieldtype implements ColumnInterface {
 	{
 		return TRUE;
 	}
+
+	public function renderTableCell($data) {
+		switch (true) {
+			case ($data==='y'):
+				$out = lang('yes');
+				break;
+			case ($data==='n'):
+				$out = lang('no');
+				break;
+			case ($data===1):
+				$out = lang('on');
+				break;
+			case ($data===0):
+			default:
+				$out = lang('off');
+				break;
+		}
+		return $out;
+	}
 }
 
 // EOF

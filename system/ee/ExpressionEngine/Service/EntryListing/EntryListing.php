@@ -58,9 +58,9 @@ class EntryListing {
 	protected $allowed_channels;
 
 	/**
-	 * @var boolean $include_author_filter Whether this user can edit others' entries
+	 * @var array $extra_filters More filters to include
 	 */
-	protected $include_author_filter;
+	protected $extra_filters;
 
 	/**
 	 * @var boolean $include_views_filter Whether to include the views selector on the entry manager
@@ -117,7 +117,7 @@ class EntryListing {
 	 * @param string $search_value Search criteria to filter entries by
 	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE, $include_column_filter = FALSE, $view_id = NULL)
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $view_id = NULL, $extra_filters = [])
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
@@ -125,8 +125,7 @@ class EntryListing {
 		$this->now = $now;
 		$this->search_value = $search_value;
 		$this->search_in = $search_in;
-		$this->include_author_filter = $include_author_filter;
-		$this->include_column_filter = $include_column_filter;
+		$this->extra_filters = $extra_filters;
 		$this->view_id = $view_id;
 
 		$this->setupFilters();
@@ -212,14 +211,12 @@ class EntryListing {
 				$this->search_in
 			);
 
-			if ($this->include_author_filter)
-			{
+			if (in_array('Author', $this->extra_filters)) {
 				$this->author_filter = $this->createAuthorFilter($channel);
 				$this->filters->add($this->author_filter);
 			}
 
-			if ($this->include_column_filter)
-			{
+			if (in_array('Columns', $this->extra_filters)) {
 				$this->filters->add('Columns', $this->createColumnFilter($channel), $channel, $this->view_id);
 			}
 	}
@@ -239,8 +236,29 @@ class EntryListing {
 	protected function setupEntries()
 	{
 		$entries = ee('Model')->get('ChannelEntry')
-			->with('Channel', 'Author')
+			->with('Autosaves', 'Channel')
+			->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status')
 			->filter('site_id', $this->site_id);
+
+		if (in_array('Columns', $this->extra_filters)) {
+			$columns = array_map(function($identifier) {
+				return EntryManager\ColumnFactory::getColumn($identifier);
+			}, json_decode($this->filters->values()['columns']));
+			foreach ($columns as $column) {
+				if (!empty($column->models)) {
+					foreach ($column->models as $with) {
+						$entries->with($with);
+					}
+				}
+				if (!empty($column->fields)) {
+					foreach ($column->fields as $field) {
+						$entries->fields($field);
+					}
+				} else {
+					$entries->fields($column->getTableColumnIdentifier());
+				}
+			}
+		}
 
 		// We need to filter by Channel first (if necessary) as that will
 		// impact the entry count for the perpage filter
@@ -350,8 +368,6 @@ class EntryListing {
 				$entries->filter('entry_date', '>=', $this->now - $filter_values['filter_by_date']);
 			}
 		}
-
-		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
 	}

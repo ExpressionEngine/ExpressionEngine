@@ -24,11 +24,11 @@ class Comments extends Column
 
 	public function renderTableCell($entry)
 	{
-		if ($entry->comment_total > 0 && ee()->cp->allowed_group('can_moderate_comments'))
+		if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments'))
 		{
 			return '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 		}
 
-		return '(' . $entry->comment_total . ')';
+		return '(' . (int) $entry->comment_total . ')';
 	}
 }

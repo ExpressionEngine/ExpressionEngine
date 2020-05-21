@@ -22,58 +22,34 @@ class View extends Model {
 
 	protected static $_typed_columns = [
 		'view_id' => 'int',
+		'member_id' => 'int',
 		'channel_id' => 'int',
-		'name'    => 'string'
+		'name'    => 'string',
+		'colums'    => 'serialized'
 	];
 
 	protected static $_relationships = [
-		'Columns' => [
-			'type'  => 'hasMany',
-			'model' => 'EntryManagerViewColumn'
-		],
-		'Roles' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'Role',
-			'pivot' => array(
-				'table' => 'entry_manager_views_roles'
-			),
-			'weak' => TRUE
+		'Members' => array(
+			'type' => 'belongsTo',
+			'model' => 'Member'
 		),
 		'Channels' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'Channel',
-			'pivot' => array(
-				'table' => 'entry_manager_views_channels'
-			),
-			'weak' => TRUE
+			'type' => 'belongsTo',
+			'model' => 'Channel'
 		),
 	];
 
 	protected static $_validation_rules = [
-		'channel_id' => 'required',
-		'name' => 'required|unique'
+		'member_id' => 'required'
 	];
 
-	protected static $_events = array(
-		'beforeSave'
-	);
 
 	protected $view_id;
+	protected $member_id;
 	protected $channel_id;
 	protected $name;
+	protected $columns;
 
-	public function onBeforeSave()
-	{
-		foreach (array('channel_url', 'channel_lang') as $column)
-		{
-			$value = $this->getProperty($column);
-
-			if (empty($value))
-			{
-				$this->setProperty($column, '');
-			}
-		}
-	}
 }
 
 // EOF

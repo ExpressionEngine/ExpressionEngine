@@ -17,6 +17,13 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class Author extends Column
 {
+	public function __construct($identifier) {
+		parent::__construct($identifier);
+		$this->fields = ['author_id', 'Author.screen_name', 'Author.username'];
+		$this->models = ['Author'];
+		$this->sort_field = 'author_id';
+	}
+
 	public function getTableColumnLabel()
 	{
 		return 'author';

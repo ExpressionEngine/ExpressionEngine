@@ -9,10 +9,13 @@
 
 $(document).ready(function () {
 
+	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	var replaceData = function(data) {
 		$('#edit-table').html(data.html);
 
-		$('input[name="search"]').closest('form').attr('action', data.url);
+		$('#edit-table').parent('form').attr('action', data.url);
+
+		saveDefaultUrl = data.viewManager_saveDefaultUrl;
 
 		if (jQuery().toggle_all) {
 			$('table').toggle_all();
@@ -35,7 +38,7 @@ $(document).ready(function () {
 	});
 
 	// Typing into the search form
-	$('input[name="search"]').on('interact', _.debounce(function() {
+	$('body').on('keyup', 'input[name="search"]', _.debounce(function() {
 		if (location.protocol === 'https:' &&
 			navigator.userAgent.indexOf('Safari') > -1) {
 			return;
@@ -44,7 +47,7 @@ $(document).ready(function () {
 	}, 150));
 
 	// Selecting a channel filter
-	$('body').on('click', 'form > .filters .sub-menu a, .filters .filter-clear a, .paginate ul li a', function(event) {
+	$('body').on('click', 'form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
 		var search = $('input[name="search"]').serialize();
 
@@ -61,6 +64,46 @@ $(document).ready(function () {
 	// ==================================
 	// column filter custom view selector
 	// ==================================
+
+	var saveViewRequest = null;
+	var loadViewRequest = null;
+	$('body').on('change', '.filter-bar div[rev="toggle-columns"] input', function(e){
+		e.preventDefault();
+		if (saveViewRequest) {
+			saveViewRequest.abort();
+		}
+		if (loadViewRequest) {
+			loadViewRequest.abort();
+		}
+
+		var columns = [];
+		$('.filter-bar div[rev="toggle-columns"] input').each(function(el){
+			if ($(this).is(':checked')) {
+				columns.push($(this).val());
+			}
+		})
+
+		var _form = $(this).closest('form');
+		var _data = $('input[name!="columns[]"]', _form).serialize();
+
+		console.log(saveDefaultUrl);
+
+		saveViewRequest = $.ajax({
+			url: saveDefaultUrl,
+			data: _form.serialize(),
+			type: 'POST',
+			dataType: 'json',
+			success: function() {
+				loadViewRequest = $.ajax({
+					url: _form.attr('action'),
+					data: _data,
+					type: 'POST',
+					dataType: 'json',
+					success: replaceData
+				});
+			}
+		});
+	})
 
 	$('.filter-bar #columns_view_choose').on('change', function() {
 		var view = $(this).val();

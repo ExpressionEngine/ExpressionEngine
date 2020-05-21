@@ -18,17 +18,48 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Columns extends Filter {
 
-	public function __construct($columns, $channel = FALSE, $view_id = FALSE)
+	public $view_id = null;
+	public $channel_id = null;
+
+	public function __construct(array $columns = array(), $channel = null, $view_id = null)
 	{
-		$this->name = 'view';
+		$this->name = 'columns';
 		$this->label = lang('columns_filter');
-		$this->available_columns = $columns;
+		$this->options = $columns;
 		$this->view_id = $view_id;
 
 		if (! empty($channel))
 		{
 			$this->channel_id = $channel->channel_id;
 		}
+
+		$this->default_value = json_encode(['entry_id', 'title', 'entry_date', 'author', 'status']);
+	}
+
+	// get columns from view
+	public function value()
+	{
+		$value = '';
+
+		//if we had channel switched and no saved view, make sure to fallback to default
+		if (ee()->input->post('filter_by_channel')!='') {
+			$value = parent::value();
+		}
+
+		$query = ee('Model')->get('EntryManagerView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->filter('channel_id', (int) ee()->input->get_post('filter_by_channel'));
+		$view = $query->first();
+
+		if (!empty($view)) {
+			$value = $view->columns;
+		}
+
+		if (empty($value)) {
+			$value = $this->default_value;
+		}
+
+		return $value;
 	}
 
 	/**
@@ -36,36 +67,11 @@ class Columns extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
-		$available_views_result = ee('Model')->get('EntryManagerView')->filter('channel_id', (! empty($this->channel_id) ? $this->channel_id : 0))->all();
-
-		$available_views = [];
-
-		foreach ($available_views_result as $available_view) {
-			$item_url = clone $url;
-			$item_url->setQueryStringVariable('view', $available_view->view_id);
-
-			$available_views[] = [
-				'view_id' => $available_view->view_id,
-				'name' => htmlentities($available_view->name, ENT_QUOTES, 'UTF-8'),
-				'url' => $item_url->compile(),
-			];
-		}
-
-		$selected_view = $this->view_id ? ee('Model')->get('EntryManagerView', $this->view_id)->first() : NULL;
-		$selected_columns = [];
-
-		if (! empty($selected_view))
-		{
-			$selected_columns = $selected_view->Columns->pluck('identifier');
-		}
-
 		$filter = array(
 			'label'			=> $this->label,
 			'value'			=> '',
-			'available_columns' => $this->available_columns,
-			'selected_columns' => $selected_columns,
-			'available_views' => $available_views,
-			'selected_view' => $this->view_id
+			'available_columns' => $this->options,
+			'selected_columns' => json_decode($this->value())
 		);
 
 		return $view->make('_shared/filters/columns')->render($filter);

@@ -349,6 +349,13 @@ class Date_ft extends EE_Fieldtype implements ColumnInterface {
 	{
 		return TRUE;
 	}
+
+	public function renderTableCell($data) {
+		if ($data==0) {
+			return '';
+		}
+		return ee()->localize->human_time($data);
+	}
 }
 
 // END Date_ft class
