@@ -25,6 +25,7 @@ class ColumnFactory
 		'expiration_date' => Columns\ExpirationDate::class,
 		'channel'         => Columns\ChannelName::class,
 		'comments'        => Columns\Comments::class,
+		'categories'      => Columns\Categories::class,
 		'checkbox'        => Columns\Checkbox::class
 	];
 

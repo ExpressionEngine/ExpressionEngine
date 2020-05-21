@@ -372,6 +372,20 @@ class Textarea_ft extends EE_Fieldtype implements ColumnInterface {
 	{
 		return TRUE;
 	}
+
+	public function getTableColumnConfig() {
+		return [
+			'encode'	=> false
+		];
+	}
+
+	public function renderTableCell($data) {
+		$out = strip_tags($this->replace_tag($data));
+		if (strlen($out) > 50) {
+			$out .= '&hellip;';
+		}
+		return $out;
+	}
 }
 
 // END Textarea_ft class

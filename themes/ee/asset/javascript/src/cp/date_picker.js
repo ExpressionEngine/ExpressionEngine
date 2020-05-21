@@ -214,7 +214,6 @@ EE.cp.datePicker = {
 				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
-					console.log('fafa');
 
 
 					var d = new Date();

@@ -11,9 +11,7 @@ $(document).ready(function () {
 
 	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	var replaceData = function(data) {
-		$('#edit-table').html(data.html);
-
-		$('#edit-table').parent('form').attr('action', data.url);
+		$('.ee-main__content > .container').html(data.html);
 
 		saveDefaultUrl = data.viewManager_saveDefaultUrl;
 
@@ -25,7 +23,7 @@ $(document).ready(function () {
 	}
 
 	// Submitting the search form
-	$('input[name="search"]').closest('form').on('submit', function(event) {
+	$('body').on('submit', '.ee-main__content > .container > .tbl-ctrls > form', function(event) {
 		$.ajax({
 			url: $(this).attr('action'),
 			data: $(this).serialize(),
@@ -85,8 +83,6 @@ $(document).ready(function () {
 
 		var _form = $(this).closest('form');
 		var _data = $('input[name!="columns[]"]', _form).serialize();
-
-		console.log(saveDefaultUrl);
 
 		saveViewRequest = $.ajax({
 			url: saveDefaultUrl,
@@ -159,7 +155,6 @@ $(document).ready(function () {
 				if (result.redirect) {
 					window.location = result.redirect
 				}
-				console.log(result)
 			}
 		})
 	})

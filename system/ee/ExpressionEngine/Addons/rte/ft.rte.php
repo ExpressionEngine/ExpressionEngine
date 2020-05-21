@@ -8,10 +8,12 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 /**
  * Rich Text Fieldtype
  */
-class Rte_ft extends EE_Fieldtype {
+class Rte_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Rich Text Editor',
@@ -162,6 +164,20 @@ class Rte_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function getTableColumnConfig() {
+		return [
+			'encode'	=> false
+		];
+	}
+
+	public function renderTableCell($data) {
+		$out = strip_tags($this->replace_tag($data));
+		if (strlen($out) > 50) {
+			$out .= '&hellip;';
+		}
+		return $out;
 	}
 }
 

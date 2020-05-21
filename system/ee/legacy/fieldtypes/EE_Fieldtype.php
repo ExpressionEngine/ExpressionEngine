@@ -175,7 +175,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function row($key, $default = NULL)
 	{
-		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+		return (isset($this->row) && array_key_exists($key, $this->row)) ? $this->row[$key] : $default;
 	}
 
 	/**

@@ -56,6 +56,8 @@ $lang = array(
 
 'column_comment_total' => 'Comments',
 
+'column_categories' => 'Categories',
+
 'column_entry_date' => 'Date',
 
 'column_entry_id' => 'ID#',

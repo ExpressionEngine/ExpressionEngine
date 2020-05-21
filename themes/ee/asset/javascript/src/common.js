@@ -360,21 +360,13 @@ $(document).ready(function(){
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 
-	$('.js-filters-collapsible').each(function() {
-		var button = '<div class="title-bar__filter-toggle-button js-filter-bar-toggle" style="display: none">'
-		+ '<button type="button" class="filter-bar__button"><i class="fas fa-sm fa-filter"></i> Filters</button>'
-		+ '</div>'
-
-		$(button).insertAfter($(this).find('.title-bar__title'))
-	})
-
 	function collapseFilterBar(container, collapse) {
 		$(container).find('.filter-bar').toggleClass('filter-bar--collapsed', collapse)
 
 		$('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
 	}
 
-	$('.js-filter-bar-toggle button',).on('click', function(e) {
+	$('body').on('click', '.js-filter-bar-toggle button', function(e) {
 		var container = $(this).closest('.js-filters-collapsible')
 
 		var filterBar = $('.filter-bar', container)
