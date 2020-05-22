@@ -42,12 +42,12 @@ interface ColumnInterface
 	 * configuration items
 	 *
 	 * @return array CP/Table service individual column config,
-	 * 	single-dimensional, associative array
+	 * single-dimensional, associative array
 	 */
 	public function getTableColumnConfig();
 
 	/**
-	 * Implements EntryManager\ColumnInterface
+	 * Renders table cell for Entry Manager
 	 *
 	 * @return string
 	 */
@@ -55,13 +55,13 @@ interface ColumnInterface
 
 	/**
 	 * @return array names of extra columns
-	 * 	that need to be eager loaded with entries query
+	 * that need to be eager loaded with entries query
 	 */
 	public function getEntryManagerColumnModels();
 
 	/**
 	 * @return array names of extra fields
-	 * 	that need to be fetched with entries query
+	 * that need to be fetched with entries query
 	 * (from eager loaded model)
 	 */
 	public function getEntryManagerColumnFields();

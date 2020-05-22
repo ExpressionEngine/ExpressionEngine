@@ -17,11 +17,16 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class Author extends Column
 {
-	public function __construct($identifier) {
-		parent::__construct($identifier);
-		$this->fields = ['author_id', 'Author.screen_name', 'Author.username'];
-		$this->models = ['Author'];
-		$this->sort_field = 'author_id';
+	public function getEntryManagerColumnModels() {
+		return ['Author'];
+	}
+
+	public function getEntryManagerColumnFields() {
+		return ['author_id', 'Author.screen_name', 'Author.username'];
+	}
+
+	public function getEntryManagerColumnSortField() {
+		return 'author_id';
 	}
 
 	public function getTableColumnLabel()

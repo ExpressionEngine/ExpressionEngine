@@ -247,12 +247,16 @@ class EntryListing {
 			foreach ($columns as $column) {
 				if (!empty($column->getEntryManagerColumnModels())) {
 					foreach ($column->getEntryManagerColumnModels() as $with) {
-						$entries->with($with);
+						if (!empty($with)) {
+							$entries->with($with);
+						}
 					}
 				}
 				if (!empty($column->getEntryManagerColumnFields())) {
 					foreach ($column->getEntryManagerColumnFields() as $field) {
-						$entries->fields($field);
+						if (!empty($field)) {
+							$entries->fields($field);
+						}
 					}
 				} else {
 					$entries->fields($column->getTableColumnIdentifier());

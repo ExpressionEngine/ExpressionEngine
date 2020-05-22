@@ -19,10 +19,12 @@ use Mexitek\PHPColors\Color;
  */
 class Categories extends Column
 {
-	public function __construct($identifier) {
-		parent::__construct($identifier);
-		$this->fields = ['Categories.cat_name'];
-		$this->models = ['Categories'];
+	public function getEntryManagerColumnModels() {
+		return ['Categories'];
+	}
+
+	public function getEntryManagerColumnFields() {
+		return ['Categories.cat_name'];
 	}
 
 	public function getTableColumnLabel()

@@ -19,28 +19,21 @@ abstract class Column implements EntryManager\ColumnInterface
 {
 	protected $identifier;
 
-	protected $models = [];
-
-	protected $fields = [];
-
-	protected $sort_field;
-
 	public function __construct($identifier)
 	{
 		$this->identifier = $identifier;
-		$this->sort_field = $identifier;
 	}
 
 	public function getEntryManagerColumnModels() {
-		return $this->models;
+		return [];
 	}
 
 	public function getEntryManagerColumnFields() {
-		return $this->fields;
+		return [];
 	}
 
 	public function getEntryManagerColumnSortField() {
-		return $this->sort_field;
+		return $this->identifier;
 	}
 
 	public function getTableColumnIdentifier()
