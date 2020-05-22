@@ -22,7 +22,7 @@ class UrlTitle extends Column
 		return 'url_title';
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		return $entry->url_title;
 	}

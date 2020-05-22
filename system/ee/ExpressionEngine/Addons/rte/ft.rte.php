@@ -172,7 +172,7 @@ class Rte_ft extends EE_Fieldtype implements ColumnInterface {
 		];
 	}
 
-	public function renderTableCell($data) {
+	public function renderTableCell($data, $field_id, $entry) {
 		$out = strip_tags($this->replace_tag($data));
 		if (strlen($out) > 50) {
 			$out .= '&hellip;';

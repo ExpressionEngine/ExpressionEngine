@@ -1152,7 +1152,7 @@ abstract class EE_Fieldtype {
 	/**
 	 * Implements EntryManager\ColumnInterface
 	 */
-	public function renderTableCell($data)
+	public function renderTableCell($data, $field_id, $entry)
 	{
 		return $data;
 	}
@@ -1163,6 +1163,18 @@ abstract class EE_Fieldtype {
 	public function getTableColumnConfig()
 	{
 		return [];
+	}
+
+	public function getEntryManagerColumnModels() {
+		return [];
+	}
+
+	public function getEntryManagerColumnFields() {
+		return [];
+	}
+
+	public function getEntryManagerColumnSortField() {
+		return '';
 	}
 }
 // END EE_Fieldtype class

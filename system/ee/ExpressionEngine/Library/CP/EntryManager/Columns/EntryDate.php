@@ -22,7 +22,7 @@ class EntryDate extends Column
 		return 'column_entry_date';
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		return ee()->localize->human_time($entry->entry_date);
 	}

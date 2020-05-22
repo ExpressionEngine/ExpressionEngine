@@ -37,7 +37,7 @@ class Categories extends Column
 		];
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		$categories = $entry->Categories->getDictionary('cat_id', 'cat_name');
 

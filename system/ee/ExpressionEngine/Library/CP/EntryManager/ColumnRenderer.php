@@ -56,7 +56,7 @@ class ColumnRenderer {
 	public function getRenderedTableRowForEntry($entry)
 	{
 		return array_map(function($column) use ($entry) {
-			return $column->renderTableCell($entry);
+			return $column->renderTableCell(null, null, $entry);
 		}, $this->columns);
 	}
 }

@@ -51,5 +51,25 @@ interface ColumnInterface
 	 *
 	 * @return string
 	 */
-	public function renderTableCell($data);
+	public function renderTableCell($custom_field_data, $custom_field_id, $entry);
+
+	/**
+	 * @return array names of extra columns
+	 * 	that need to be eager loaded with entries query
+	 */
+	public function getEntryManagerColumnModels();
+
+	/**
+	 * @return array names of extra fields
+	 * 	that need to be fetched with entries query
+	 * (from eager loaded model)
+	 */
+	public function getEntryManagerColumnFields();
+
+	/**
+	 * Get name of database field to sort by
+	 * (if different than column identifier)
+	 * @return string
+	 */
+	public function getEntryManagerColumnSortField();
 }

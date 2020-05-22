@@ -342,7 +342,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface {
 		return TRUE;
 	}
 
-	public function renderTableCell($data) {
+	public function renderTableCell($data, $field_id, $entry) {
 		return $this->replace_tag($data);
 	}
 }

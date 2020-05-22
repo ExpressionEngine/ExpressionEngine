@@ -31,7 +31,15 @@ abstract class Column implements EntryManager\ColumnInterface
 		$this->sort_field = $identifier;
 	}
 
-	public function getSortField() {
+	public function getEntryManagerColumnModels() {
+		return $this->models;
+	}
+
+	public function getEntryManagerColumnFields() {
+		return $this->fields;
+	}
+
+	public function getEntryManagerColumnSortField() {
 		return $this->sort_field;
 	}
 
@@ -40,9 +48,9 @@ abstract class Column implements EntryManager\ColumnInterface
 		return $this->identifier;
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
-		return $this->renderCell($entry);
+		return '';
 	}
 
 	public function getTableColumnConfig()

@@ -350,7 +350,7 @@ class Date_ft extends EE_Fieldtype implements ColumnInterface {
 		return TRUE;
 	}
 
-	public function renderTableCell($data) {
+	public function renderTableCell($data, $field_id, $entry) {
 		if ($data==0) {
 			return '';
 		}

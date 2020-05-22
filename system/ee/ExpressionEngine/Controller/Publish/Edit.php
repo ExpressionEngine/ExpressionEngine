@@ -173,7 +173,7 @@ class Edit extends AbstractPublishController {
 				break;
 			}
 		}
-		$sort_field = $columns[$sort_col]->getSortField();
+		$sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
 		$entries->order($sort_field, $table->sort_dir)
 			->limit($filter_values['perpage'])
 			->offset($offset);

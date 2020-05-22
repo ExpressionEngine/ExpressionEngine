@@ -245,13 +245,13 @@ class EntryListing {
 				return EntryManager\ColumnFactory::getColumn($identifier);
 			}, json_decode($this->filters->values()['columns']));
 			foreach ($columns as $column) {
-				if (!empty($column->models)) {
-					foreach ($column->models as $with) {
+				if (!empty($column->getEntryManagerColumnModels())) {
+					foreach ($column->getEntryManagerColumnModels() as $with) {
 						$entries->with($with);
 					}
 				}
-				if (!empty($column->fields)) {
-					foreach ($column->fields as $field) {
+				if (!empty($column->getEntryManagerColumnFields())) {
+					foreach ($column->getEntryManagerColumnFields() as $field) {
 						$entries->fields($field);
 					}
 				} else {

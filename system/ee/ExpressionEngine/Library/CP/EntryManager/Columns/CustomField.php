@@ -38,11 +38,26 @@ class CustomField extends Column
 		return $this->getField()->getTableColumnConfig();
 	}
 
-	public function renderTableCell($entry)
+	public function getEntryManagerColumnModels()
+	{
+		return $this->getField()->getEntryManagerColumnModels();
+	}
+
+	public function getEntryManagerColumnFields()
+	{
+		return $this->getField()->getEntryManagerColumnFields();
+	}
+
+	public function getEntryManagerColumnSortField()
+	{
+		return $this->getField()->getEntryManagerColumnSortField();
+	}
+
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		if ($field = $this->getFieldForEntry($entry))
 		{
-			return $field->renderTableCell($field->getData());
+			return $field->renderTableCell($field->getData(), $field->getId(), $entry);
 		}
 
 		return '';

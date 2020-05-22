@@ -378,9 +378,24 @@ class FieldFacade {
 		return $this->getNativeField()->getTableColumnConfig();
 	}
 
-	public function renderTableCell($data)
+	public function getEntryManagerColumnModels()
 	{
-		return $this->getNativeField()->renderTableCell($data);
+		return $this->getNativeField()->getEntryManagerColumnModels();
+	}
+
+	public function getEntryManagerColumnFields()
+	{
+		return $this->getNativeField()->getEntryManagerColumnFields();
+	}
+
+	public function getEntryManagerColumnSortField()
+	{
+		return $this->getNativeField()->getEntryManagerColumnSortField();
+	}
+
+	public function renderTableCell($data, $field_id, $entry)
+	{
+		return $this->getNativeField()->renderTableCell($data, $field_id, $entry);
 	}
 
 	public function initField()

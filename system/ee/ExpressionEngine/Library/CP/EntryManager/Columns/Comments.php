@@ -22,7 +22,7 @@ class Comments extends Column
 		return 'comments';
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments'))
 		{

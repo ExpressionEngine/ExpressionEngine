@@ -30,7 +30,7 @@ class EntryId extends Column
 		];
 	}
 
-	public function renderTableCell($entry)
+	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
 	{
 		return $entry->entry_id;
 	}

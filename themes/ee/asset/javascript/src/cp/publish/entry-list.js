@@ -90,13 +90,23 @@ $(document).ready(function () {
 			type: 'POST',
 			dataType: 'json',
 			success: function() {
+				saveViewRequest = null;
 				loadViewRequest = $.ajax({
 					url: _form.attr('action'),
 					data: _data,
 					type: 'POST',
 					dataType: 'json',
-					success: replaceData
+					success: function(data) {
+						loadViewRequest = null;
+						replaceData(data);
+					},
+					error: function(e) {
+						//do nothing
+					}
 				});
+			},
+			error: function(e) {
+				//do nothing
 			}
 		});
 	})
