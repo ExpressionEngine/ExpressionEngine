@@ -42,7 +42,7 @@ jobs:
                   coverage: none
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
 
             - name: Setup Permissions
               run: |
