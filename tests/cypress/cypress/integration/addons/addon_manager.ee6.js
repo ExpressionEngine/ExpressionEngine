@@ -77,6 +77,7 @@ context('Add-On Manager', () => {
 
             /*page.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
             cy.hasNoErrors()*/
+            page.get('modal_submit_button').click()
 
             // The filter should not change
             page.hasAlert()
