@@ -662,7 +662,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(55, 1, 'memberlist_sort_order', 'desc'),
 	(56, 1, 'memberlist_row_limit', '20'),
 	(57, 1, 'site_index', 'index.php'),
-	(58, 1, 'site_url', 'http://private60.test/'),
+	(58, 1, 'site_url', 'http://localhost:8888/'),
 	(59, 1, 'theme_folder_url', '{base_url}/themes/'),
 	(60, 1, 'webmaster_email', 'kevin.cupp@gmail.com'),
 	(61, 1, 'webmaster_name', ''),
@@ -762,7 +762,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(155, 0, 'cache_driver', 'dummy'),
 	(156, 0, 'debug', '1'),
 	(157, 0, 'is_system_on', 'y'),
-	(158, 1, 'base_url', 'http://private60.test/'),
+	(158, 1, 'base_url', 'http://localhost:8888/'),
 	(159, 1, 'base_path', 'C:/OSPanel/domains/private60.ee'),
 	(160, 1, 'cp_url', '{base_url}admin.php');
 /*!40000 ALTER TABLE `exp_config` ENABLE KEYS */;

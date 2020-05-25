@@ -9,6 +9,8 @@ define('SYSPATH', $project_base);
 define('DEBUG', 1);
 define('FIXTURE', TRUE);
 define('SELF', 'index.php');
+define('EESELF', 'index.php');
+define('FCPATH', __DIR__.'/');
 
 define('BOOT_ONLY', TRUE);
 include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
