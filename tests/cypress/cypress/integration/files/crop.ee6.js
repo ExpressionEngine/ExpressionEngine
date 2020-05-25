@@ -382,7 +382,10 @@ context('File Manager / Crop File', () => {
         }
         else
         {
-            cy.exec(`chmod 444 ${uploadDirectory}*.{gif,jpg,png}`)
+            cy.exec(`chmod 444 ${uploadDirectory}*.gif`)
+            cy.exec(`chmod 444 ${uploadDirectory}*.jpg`)
+            cy.exec(`chmod 444 ${uploadDirectory}*.png`)
+            cy.reload()
                 // page.load
             cy.hasNoErrors()
 
