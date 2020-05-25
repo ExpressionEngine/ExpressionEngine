@@ -32,6 +32,7 @@ class Snippet extends FileSyncedModel {
 
 	protected static $_events = array(
 		'afterSave',
+		'afterDelete'
 	);
 
 	protected $snippet_id;
