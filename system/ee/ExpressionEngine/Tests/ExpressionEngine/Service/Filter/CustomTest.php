@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Tests\Service;
+namespace ExpressionEngine\Tests\Service\Filter;
 
 use ExpressionEngine\Service\Filter\Custom;
 use Mockery as m;
@@ -22,10 +22,12 @@ class CustomTest extends TestCase {
 		'9.1' => 'Floating'
 	);
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		unset($_POST['filter_by_custom']);
 		unset($_GET['filter_by_custom']);
+
+		m::close();
 	}
 
 	public function testDefault()
@@ -40,6 +42,7 @@ class CustomTest extends TestCase {
 		$vf->shouldReceive('make->render');
 		$url->shouldReceive('setQueryStringVariable', 'compile');
 		$filter->render($vf, $url);
+
 	}
 
 	public function testPOST()

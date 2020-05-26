@@ -22,7 +22,7 @@ define('EESELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 
-$constants = require '../ExpressionEngine/Config/constants.php';
+$constants = require '../Config/constants.php';
 
 foreach ($constants as $name => $val)
 {

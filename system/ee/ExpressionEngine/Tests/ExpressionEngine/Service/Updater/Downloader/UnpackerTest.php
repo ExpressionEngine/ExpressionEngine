@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class UnpackerTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->zip_archive = Mockery::mock('ZipArchive');
@@ -23,7 +23,7 @@ class UnpackerTest extends TestCase {
 		$this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->filesystem = NULL;
 		$this->zip_archive = NULL;
@@ -31,6 +31,8 @@ class UnpackerTest extends TestCase {
 		$this->logger = NULL;
 		$this->requirements = NULL;
 		$this->unpacker = NULL;
+
+		Mockery::close();
 	}
 
 	public function testUnzipPackage()

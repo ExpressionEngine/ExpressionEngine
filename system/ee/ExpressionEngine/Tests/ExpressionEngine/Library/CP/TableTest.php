@@ -17,7 +17,7 @@ class TableTest extends TestCase {
 
 	private $table;
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		unset($this->table);
 	}
@@ -152,6 +152,7 @@ class TableTest extends TestCase {
 			'autosort'          => FALSE,
 			'autosearch'        => FALSE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'	=> true,
 			'attrs'             => array()
 		);
 
@@ -413,6 +414,7 @@ class TableTest extends TestCase {
 			'autosort'          => TRUE,
 			'autosearch'        => FALSE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'	=> true,
 			'attrs'             => array(),
 			'data'              => array(
 				array(
@@ -526,6 +528,7 @@ class TableTest extends TestCase {
 			'autosort'          => TRUE,
 			'autosearch'        => TRUE,
 			'checkbox_header'   => FALSE,
+			'show_add_button'	=> true,
 			'attrs'             => array('data-test' => 'test'),
 			'data'              => array(
 				array(
@@ -1588,14 +1591,16 @@ class TableTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException InvalidArgumentException
 	 * @dataProvider badTableDataProvider
 	 */
 	public function testsTableThrowsException($config, $data, $columns, $description)
 	{
+		$this->expectException(\InvalidArgumentException::class);
+
 		$this->table = new Table($config);
 		$this->table->setColumns($columns);
 		$this->table->setData($data);
+
 	}
 
 	public function badTableDataProvider()

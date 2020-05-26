@@ -17,12 +17,12 @@ require_once SYSPATH.'ee/ExpressionEngine/Boot/boot.common.php';
 
 class XSSTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->xss = new XSS();
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->xss = NULL;
 	}

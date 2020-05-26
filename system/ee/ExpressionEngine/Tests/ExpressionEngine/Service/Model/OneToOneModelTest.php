@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 class OneToOneModelTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->parentClass = __NAMESPACE__.'\OneToOneParent';
 		$this->childClass = __NAMESPACE__.'\OneToOneChild';
@@ -27,10 +27,12 @@ class OneToOneModelTest extends TestCase {
 		$this->belongs_to_relation = m::mock('ExpressionEngine\Service\Model\Relation\BelongsTo');
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->has_one_relation = NULL;
 		$this->belongs_to_relation = NULL;
+
+		m::close();
 	}
 
 	public function testFillParentWithChild()
@@ -97,6 +99,7 @@ class OneToOneModelTest extends TestCase {
 
 		// it's a fill, so nothing should be marked as dirty
 		$this->assertEquals(array(), $child->getDirty());
+
 	}
 
 	public function testSetParentWithChild()
@@ -132,6 +135,7 @@ class OneToOneModelTest extends TestCase {
 
 		// setting should mark the foreign key as dirty
 		$this->assertEquals(array('parent_id' => 5), $child->getDirty());
+
 	}
 
 	public function testSetChildWithParent()
@@ -167,6 +171,7 @@ class OneToOneModelTest extends TestCase {
 
 		// setting should mark the foreign key as dirty
 		$this->assertEquals(array('parent_id' => 5), $child->getDirty());
+
 	}
 
 	public function testSetParentWithChildShouldDisassociateExisting()
@@ -216,6 +221,7 @@ class OneToOneModelTest extends TestCase {
 
 		$this->assertEquals(array(), $child->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $new_child->getDirty());
+
 	}
 
 	public function testSetChildWithParentShouldDisassociateExisting()
@@ -268,6 +274,7 @@ class OneToOneModelTest extends TestCase {
 
 		$this->assertEquals(array(), $child->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $new_child->getDirty());
+
 	}
 
 	public function testMoveChildToDifferentParent()
@@ -314,6 +321,7 @@ class OneToOneModelTest extends TestCase {
 		$this->assertEquals($new_parent, $child->SetParent);
 		$this->assertSame($child, $new_parent->SetChild);
 		$this->assertEquals(array('parent_id' => 10), $child->getDirty());
+
 	}
 
 	public function testSetParentWithChildToNull()
@@ -349,6 +357,7 @@ class OneToOneModelTest extends TestCase {
 		$this->assertSame(NULL, $child->SetParent);
 
 		$this->assertEquals(array('parent_id' => NULL), $child->getDirty());
+
 	}
 
 	public function testSetParentWithChildAndBackToNull()
@@ -385,6 +394,7 @@ class OneToOneModelTest extends TestCase {
 		$this->assertSame(NULL, $child->SetParent);
 
 		$this->assertEquals(array(), $child->getDirty());
+
 	}
 
 	public function testSetChildWithParentToNull()
@@ -420,6 +430,7 @@ class OneToOneModelTest extends TestCase {
 		$this->assertSame(NULL, $child->SetParent);
 
 		$this->assertEquals(array('parent_id' => NULL), $child->getDirty());
+
 	}
 
 	public function testSetChildWithParentAndBackToNull()
@@ -456,6 +467,7 @@ class OneToOneModelTest extends TestCase {
 		$this->assertSame(NULL, $child->SetParent);
 
 		$this->assertEquals(array(), $child->getDirty());
+
 	}
 
 	public function testSetChildOnUnsavedParentAndPropagateIdOn()
@@ -486,6 +498,7 @@ class OneToOneModelTest extends TestCase {
 
 		$this->assertEquals(5, $child->parent_id);
 		$this->assertEquals(array('parent_id' => 5), $child->getDirty());
+
 	}
 
 	protected function addAssociation($model, $relation, $inverse = NULL)

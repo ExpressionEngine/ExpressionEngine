@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Tests\Service;
+namespace ExpressionEngine\Tests\Service\Filter;
 
 use ExpressionEngine\Service\Filter\Site;
 use Mockery as m;
@@ -22,10 +22,12 @@ class SiteTest extends TestCase {
 		'2' => "Site 2"
 	);
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		unset($_POST['filter_by_site']);
 		unset($_GET['filter_by_site']);
+
+		m::close();
 	}
 
 	public function testDefault()
@@ -41,6 +43,7 @@ class SiteTest extends TestCase {
 		// $url->shouldReceive('setQueryStringVariable', 'compile');
 
 		$this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+
 	}
 
 	public function testValidConstructors()
@@ -55,11 +58,11 @@ class SiteTest extends TestCase {
 
 	/**
 	 * @dataProvider invalidConstructorProvider
-	 * @expectedException PHPUnit_Framework_Error
 	 */
 	public function testInvalidConstructors($array)
 	{
-		$this->setExpectedException($exception);
+		$this->expectException('TypeError');
+
 		new Site($array);
 	}
 
@@ -87,6 +90,7 @@ class SiteTest extends TestCase {
 		$filter = new Site();
 		$filter->disableMSM();
 		$this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+
 	}
 
 	public function testSetMSMEnabledTrue()
@@ -97,10 +101,11 @@ class SiteTest extends TestCase {
 		$filter = new Site();
 		$filter->enableMSM();
 
-		$vf->shouldReceive('make->render');
+		$vf->shouldReceive('make->rener');
 		$url->shouldReceive('setQueryStringVariable', 'compile');
 
 		$filter->render($vf, $url);
+
 	}
 
 	public function testPOST()

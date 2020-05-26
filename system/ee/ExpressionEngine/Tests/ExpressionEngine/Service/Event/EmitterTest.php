@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 
 class EmitterTest extends TestCase {
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		m::close();
 	}

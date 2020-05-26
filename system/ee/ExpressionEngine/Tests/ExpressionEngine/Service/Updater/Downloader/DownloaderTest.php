@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class DownloaderTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->license = Mockery::mock('ExpressionEngine\Service\License\ExpressionEngineLicense');
 		$this->curl = Mockery::mock('ExpressionEngine\Library\Curl\RequestFactory');
@@ -23,7 +23,7 @@ class DownloaderTest extends TestCase {
 		$this->downloader = new Downloader($this->license, $this->curl, $this->filesystem, $this->logger, $this->config);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->license = NULL;
 		$this->curl = NULL;
@@ -31,6 +31,8 @@ class DownloaderTest extends TestCase {
 		$this->logger = NULL;
 		$this->config = NULL;
 		$this->downloader = NULL;
+
+		Mockery::close();
 	}
 
 	public function testDownloadPackage()

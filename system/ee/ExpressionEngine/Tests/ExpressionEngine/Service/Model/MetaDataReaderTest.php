@@ -12,13 +12,13 @@ namespace ExpressionEngine\Tests\Service\Model {
 
 	class MetaDataReaderTest extends TestCase {
 
-		public function setUp()
+		public function setUp() : void
 		{
 			$this->model_class = __NAMESPACE__.'\\MetaDataModelStub';
 			$this->reader = new MetaDataReader('Stub', $this->model_class);
 		}
 
-		public function tearDown()
+		public function tearDown() : void
 		{
 			$this->reader = NULL;
 			m::close();
