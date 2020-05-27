@@ -9,7 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class FileUpdaterTest extends TestCase {
 
-	public function setUp()
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
 		$this->verifier = Mockery::mock('ExpressionEngine\Updater\Service\Updater\Verifier');
