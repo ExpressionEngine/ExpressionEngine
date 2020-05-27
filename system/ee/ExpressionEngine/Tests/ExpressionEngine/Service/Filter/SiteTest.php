@@ -17,6 +17,8 @@ use PHPUnit\Framework\TestCase;
 
 class SiteTest extends TestCase {
 
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
 	protected $sites = array(
 		'1' => "Main",
 		'2' => "Site 2"
@@ -98,11 +100,11 @@ class SiteTest extends TestCase {
 		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
 		$url = m::mock('ExpressionEngine\Library\CP\URL');
 
-		$filter = new Site();
+		$filter = new Site(['one', 'two']);
 		$filter->enableMSM();
 
-		$vf->shouldReceive('make->rener');
-		$url->shouldReceive('setQueryStringVariable', 'compile');
+		$vf->shouldReceive('make->render')->atLeast()->once();
+		$url->shouldReceive('setQueryStringVariable', 'compile')->atLeast()->once();
 
 		$filter->render($vf, $url);
 

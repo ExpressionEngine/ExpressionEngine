@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class DownloaderTest extends TestCase {
 
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
 	public function setUp() : void
 	{
 		$this->license = Mockery::mock('ExpressionEngine\Service\License\ExpressionEngineLicense');

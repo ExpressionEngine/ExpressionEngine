@@ -73,7 +73,7 @@ namespace ExpressionEngine\Tests\Service\Model {
 
 		public function testGetRelationships()
 		{
-
+			$this->markTestSkipped('Not implemented.');
 		}
 	}
 

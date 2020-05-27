@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class UnpackerTest extends TestCase {
 
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
 	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
@@ -71,20 +73,20 @@ class UnpackerTest extends TestCase {
 
 	public function testVerifyExtractedPackage()
 	{
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/')->atLeast()->once();
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine')->atLeast()->once();
 
-		$this->verifier->shouldReceive('verifyPath')->with(PATH_CACHE.'ee_update/ExpressionEngine', PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
+		$this->verifier->shouldReceive('verifyPath')->with(PATH_CACHE.'ee_update/ExpressionEngine', PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest')->atLeast()->once();
 
 		$this->unpacker->verifyExtractedPackage();
 	}
 
 	public function testCheckRequirements()
 	{
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/')->atLeast()->once();
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine')->atLeast()->once();
 
-		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php')->atLeast()->once();
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$this->unpacker->checkRequirements();

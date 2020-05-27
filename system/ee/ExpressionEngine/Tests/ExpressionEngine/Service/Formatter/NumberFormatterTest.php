@@ -231,17 +231,8 @@ class NumberFormatterTest extends TestCase {
 
 	public function testSpelloutNoIntl()
 	{
-		try
-		{
-			$number = (string) $this->format(11234813, 0)->spellout();
-		}
-		catch (\Exception  $e)
-		{
-			return;
-		}
-
-		$this->fail('Exception was not raised');
-
+		$this->expectException(\Exception::class);
+		$number = (string) $this->format(11234813, 0)->spellout();
 	}
 
 	public function spelloutProvider()
