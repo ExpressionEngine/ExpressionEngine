@@ -518,6 +518,19 @@ class Roles extends AbstractRolesController {
 			$role->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $template_group_ids)->all();
 		}
 
+		// template_access
+		$template_ids = [];
+		foreach (ee('Request')->post('assigned_templates') as $value)
+		{
+			if (is_numeric($value)) {
+				$template_ids[] = $value;
+			}
+		}
+
+		if (!empty($template_ids)) {
+			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
+		}
+
 		// Permissions
 		$permissions = $this->getPermissions();
 
@@ -588,7 +601,7 @@ class Roles extends AbstractRolesController {
 			'role'        => $this->renderRoleTab($role, $errors),
 			'site_access' => $this->renderSiteAccessTab($role, $errors),
 			'cp_access'   => $this->renderCPAccessTab($role, $errors),
-			// 'fields'         => '',
+			'template_access'   => $this->renderTemplateAccessTab($role, $errors),
 		];
 	}
 
@@ -653,7 +666,12 @@ class Roles extends AbstractRolesController {
 					'role_groups' => [
 						'type' => 'checkbox',
 						'choices' => $role_groups,
-						'value' => $role->RoleGroups->pluck('group_id')
+						'value' => $role->RoleGroups->pluck('group_id'),
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('role_groups')),
+							'link_text' => lang('add_new'),
+							'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+						]
 					]
 				]
 			]
@@ -1328,6 +1346,69 @@ class Roles extends AbstractRolesController {
 
 		return $html;
 	}
+
+	private function renderTemplateAccessTab(Role $role, $errors)
+	{
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->fields('group_id', 'group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$template_access = [
+			'choices' => [],
+			'values' => []
+		];
+		foreach ($template_groups as $id => $name)
+		{
+			$templates = ee('Model')->get('Template')
+				->fields('template_id', 'template_name')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', $id)
+				->all()
+				->getDictionary('template_id', 'template_name');
+			$template_access['choices']['template_group_' . $id] = [
+				'label' => $name,
+				'children' => $templates
+			];
+		}
+
+		if ($role && !empty($role->getId())) {
+			$assigned_templates = $role->AssignedTemplates;
+		} else {
+			$assigned_templates = ee('Model')->get('Template')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
+		}
+
+		foreach ($assigned_templates as $template)
+		{
+			$template_access['values'][] = $template->getId();
+		}
+
+
+		$section = [
+			[
+				'title' => 'assigned_templates',
+				'desc' => 'assigned_templates_desc',
+				'fields' => [
+					'assigned_templates' => [
+						'type' => 'checkbox',
+						'nested' => TRUE,
+						'auto_select_parents' => TRUE,
+						'choices' => $template_access['choices'],
+						'value' => $template_access['values'],
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+
+	}
+
 
 	private function getChannelAccess($channels, Role $role = NULL)
 	{

@@ -726,6 +726,12 @@ $lang = array(
 
 'super_admin_edit_note' => 'Note: You can only edit the name and description for the Super Admin group',
 
+'template_access' => 'Template Access',
+
+'assigned_templates' => 'Allowed Templates',
+
+'assigned_templates_desc' => 'Members with this role are allowed to access selected templates.',
+
 'template_manager' => 'Templates',
 
 'tools_utilities' => 'Utilities',
