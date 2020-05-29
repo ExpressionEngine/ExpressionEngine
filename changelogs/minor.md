@@ -4,6 +4,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+   - Fixed a bug (#91, #417) where link button was not working and formatting not displayed in RTE field on frontend.
+
 Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
