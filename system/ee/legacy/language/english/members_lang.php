@@ -240,6 +240,8 @@ $lang = array(
 
 'member_fields_deleted_desc' => 'The following Member Fields have been deleted:',
 
+'invalid_role_id' => 'You must select a valid member role.',
+
 'primary_role' => 'Primary Role',
 
 'primary_role_desc' => 'Assign the primary role for this user.',

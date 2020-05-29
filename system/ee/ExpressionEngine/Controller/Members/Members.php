@@ -1630,10 +1630,13 @@ class Members extends CP_Controller {
 
 	private function renderRolesTab($errors)
 	{
-		$roles = ee('Model')->get('Role')
+		$allowed_roles = ee('Model')->get('Role')
 			->fields('role_id', 'name')
-			->order('name')
-			->all()
+			->order('name');
+		if ( ! ee('Permission')->isSuperAdmin()) {
+			$allowed_roles->filter('is_locked', 'n');
+		}
+		$roles = $allowed_roles->all()
 			->getDictionary('role_id', 'name');
 
 		$role_groups = ee('Model')->get('RoleGroup')
@@ -1664,7 +1667,12 @@ class Members extends CP_Controller {
 					'fields' => [
 						'role_groups' => [
 							'type' => 'checkbox',
-							'choices' => $role_groups
+							'choices' => $role_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('role_groups')),
+								'link_text' => lang('add_new'),
+								'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+							]
 						]
 					]
 				],
