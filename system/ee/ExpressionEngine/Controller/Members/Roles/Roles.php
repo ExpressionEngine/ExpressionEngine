@@ -1093,7 +1093,7 @@ class Roles extends AbstractRolesController {
 					],
 				]
 			],
-			'members' => [
+			lang('members') => [
 				'group' => 'can_access_cp',
 				'settings' => [
 					[
@@ -1126,7 +1126,7 @@ class Roles extends AbstractRolesController {
 						]
 					],
 					[
-						'title' => 'members',
+						'title' => lang('members'),
 						'desc' => 'allowed_actions_desc',
 						'group' => 'can_access_members',
 						'caution' => TRUE,

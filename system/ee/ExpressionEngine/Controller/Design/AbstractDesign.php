@@ -633,7 +633,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		foreach ($this->assigned_template_groups as $group_id)
 		{
-			if (ee('Permission')->can('can_delete_templates_template_group_id_' . $group_id))
+			if (ee('Permission')->can('delete_templates_template_group_id_' . $group_id))
 			{
 				$authorized = TRUE;
 				$group_ids[] = $group_id;

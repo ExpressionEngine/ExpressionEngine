@@ -63,7 +63,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		if (ee('Permission')->can('can_admin_roles'))
+		if (ee('Permission')->can('admin_roles'))
 		{
 			$sidebar->addHeader(lang('member_settings'));
 
@@ -873,7 +873,7 @@ class Members extends CP_Controller {
 		{
 			$can_edit_member = FALSE;
 
-			if (ee('Permission')->can('can_edit_members'))
+			if (ee('Permission')->can('edit_members'))
 			{
 				if (ee('Permission')->isSuperAdmin())
 				{

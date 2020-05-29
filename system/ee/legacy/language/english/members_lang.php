@@ -794,7 +794,7 @@ $lang = array(
 
 'create_member_field' => 'Create Member Field',
 
-'create_roles' => 'Create new groups',
+'create_roles' => 'Create new roles',
 
 'create_members' => 'Create new members',
 
@@ -822,7 +822,7 @@ $lang = array(
 
 'delete_files' => 'Delete files',
 
-'delete_roles' => 'Delete groups',
+'delete_roles' => 'Delete roles',
 
 'delete_profile_field_confirmation' => 'Are you sure you want to permanently delete this Member Profile Field?',
 
@@ -848,7 +848,7 @@ $lang = array(
 
 'edit_member_field' => 'Edit Field',
 
-'edit_roles' => 'Edit groups',
+'edit_roles' => 'Edit roles',
 
 'edit_members' => 'Edit members',
 
