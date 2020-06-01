@@ -871,18 +871,13 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
-			$can_edit_member = FALSE;
-
-			if (ee('Permission')->can('edit_members'))
+			if (!ee('Permission')->isSuperAdmin())
 			{
-				if (ee('Permission')->isSuperAdmin())
-				{
-					$can_edit_member = (bool) (ee()->session->userdata('group_id') == 1);
-				}
-				else
-				{
-					$can_edit_member = TRUE;
-				}
+				$can_operate_member = (bool) ($member->PrimaryRole->id != 1);
+			}
+			else
+			{
+				$can_operate_member = TRUE;
 			}
 
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
@@ -909,7 +904,7 @@ class Members extends CP_Controller {
 
 			$email = "<a class=\"text-muted\" href='" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if ($can_edit_member) {
+			if (ee('Permission')->can('edit_members') && $can_operate_member) {
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
 			else {
@@ -948,7 +943,7 @@ class Members extends CP_Controller {
 					'data' => array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
-					'disabled' => ! $can_edit_member
+					'disabled' => !$can_operate_member || ($member->member_id == ee()->session->userdata('member_id'))
 				);
 			}
 
