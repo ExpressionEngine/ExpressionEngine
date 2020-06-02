@@ -51,10 +51,37 @@ class Roles extends Profile {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$role_groups = ee('Model')->get('RoleGroup')
-			->order('name', 'asc')
-			->all()
-			->getDictionary('group_id', 'name');
+		$additional_roles_section = [];
+		if (ee('Permission')->isSuperAdmin()) {
+			$additional_roles_section[] = [
+				'title' => 'role_groups',
+				'desc' => 'role_groups_desc',
+				'fields' => [
+					'role_groups' => [
+						'type' => 'checkbox',
+						'choices' => ee('Model')->get('RoleGroup')->order('name', 'asc')->all()->getDictionary('group_id', 'name'),
+						'value' => $this->member->RoleGroups->pluck('group_id'),
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('role_groups'))
+						]
+					]
+				]
+			];
+		}
+		$additional_roles_section[] = [
+			'title' => 'roles',
+			'desc' => 'roles_desc',
+			'fields' => [
+				'roles' => [
+					'type' => 'checkbox',
+					'choices' => $roles,
+					'value' => $this->member->Roles->pluck('role_id'),
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('roles'))
+					]
+				]
+			]
+		];
 
 		$vars['sections'] = [
 			[
@@ -84,36 +111,7 @@ class Roles extends Profile {
 					]
 				]
 			],
-			'additional_roles' => [
-				[
-					'title' => 'role_groups',
-					'desc' => 'role_groups_desc',
-					'fields' => [
-						'role_groups' => [
-							'type' => 'checkbox',
-							'choices' => $role_groups,
-							'value' => $this->member->RoleGroups->pluck('group_id'),
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('role_groups'))
-							]
-						]
-					]
-				],
-				[
-					'title' => 'roles',
-					'desc' => 'roles_desc',
-					'fields' => [
-						'roles' => [
-							'type' => 'checkbox',
-							'choices' => $roles,
-							'value' => $this->member->Roles->pluck('role_id'),
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('roles'))
-							]
-						]
-					]
-				]
-			]
+			'additional_roles' => $additional_roles_section
 		];
 
 		$rules = [
@@ -159,8 +157,10 @@ class Roles extends Profile {
 		{
 			$this->member->role_id = ee('Request')->post('role_id');
 
-			$groups = ee('Request')->post('role_groups');
-			$this->member->RoleGroups = ($groups) ? ee('Model')->get('RoleGroup', $groups)->all() : NULL;
+			if (ee('Permission')->isSuperAdmin()) {
+				$groups = ee('Request')->post('role_groups');
+				$this->member->RoleGroups = ($groups) ? ee('Model')->get('RoleGroup', $groups)->all() : NULL;
+			}
 
 			$roles = ee('Request')->post('roles');
 			$this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : NULL;

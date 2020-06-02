@@ -873,7 +873,7 @@ class Members extends CP_Controller {
 		{
 			if (!ee('Permission')->isSuperAdmin())
 			{
-				$can_operate_member = (bool) ($member->PrimaryRole->id != 1);
+				$can_operate_member = (bool) ($member->PrimaryRole->getId() != 1);
 			}
 			else
 			{
