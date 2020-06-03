@@ -30,7 +30,7 @@ class Checkbox extends Column
 		];
 	}
 
-	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
+	public function renderTableCell($data, $field_id, $entry)
 	{
 		$title = ee('Format')->make('Text', $entry->title)->convertToEntities();
 

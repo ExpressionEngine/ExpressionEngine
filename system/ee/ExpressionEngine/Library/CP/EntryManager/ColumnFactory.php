@@ -83,7 +83,7 @@ class ColumnFactory
 	 */
 	private static function getStandardColumns()
 	{
-		return array_map(function($identifier, $column) {
+		return array_map(function ($identifier, $column) {
 			return self::getColumn($identifier);
 		}, array_keys(self::$standard_columns), self::$standard_columns);
 	}
@@ -96,34 +96,37 @@ class ColumnFactory
 	private static function getChannelFieldColumns($channel = FALSE)
 	{
 		// Grab all the applicable fields based on the channel if there is one.
-		if (! empty($channel))
-		{
-			$customFields = $channel->getAllCustomFields();
+		$cache_key = '/EntryManager/ChannelFieldColumns/' . (!empty($channel) ? $channel->getId() : 0);
+		$columns = ee()->cache->get($cache_key);
+		if (empty($columns)) {
+			if (! empty($channel)) {
+				$customFields = $channel->getAllCustomFields();
 
-			return $customFields->filter(function ($field) {
-					return in_array(
-						$field->field_type,
-						self::getCompatibleFieldtypes()
-					);
-				})
-				->map(function ($field) {
-					return self::getColumn('field_id_' . $field->getId(), $field);
-				});
+				$columns = $customFields->filter(function ($field) {
+						return in_array(
+							$field->field_type,
+							self::getCompatibleFieldtypes()
+						);
+					})
+					->map(function ($field) {
+						return self::getColumn('field_id_' . $field->getId(), $field);
+					});
+			} else {
+				$columns = ee('Model')->get('ChannelField')
+					->all()
+					->filter(function ($field) {
+						return in_array(
+							$field->field_type,
+							self::getCompatibleFieldtypes()
+						);
+					})
+					->map(function ($field) {
+						return self::getColumn('field_id_' . $field->getId(), $field);
+					});
+			}
+			ee()->cache->save($cache_key, $columns);
 		}
-		else
-		{
-			return ee('Model')->get('ChannelField')
-				->all()
-				->filter(function ($field) {
-					return in_array(
-						$field->field_type,
-						self::getCompatibleFieldtypes()
-					);
-				})
-				->map(function ($field) {
-					return self::getColumn('field_id_' . $field->getId(), $field);
-				});
-		}
+		return $columns;
 	}
 
 	/**
@@ -154,22 +157,49 @@ class ColumnFactory
 	private static function getCompatibleFieldtypes()
 	{
 		static $fieldtypes;
+		if (empty($fieldtypes)) {
+			$cache_key = '/EntryManager/CompatibleFieldtypes';
+			$fieldtypes = ee()->cache->get($cache_key);
+			if (empty($fieldtypes)) {
+				$fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+				ee()->legacy_api->instantiate('channel_fields');
+				$fieldtypes = array_filter($fieldtypes, function($fieldtype) {
+					ee()->api_channel_fields->include_handler($fieldtype);
+					return self::isEntryManagerCompatibleFieldtype(self::getClassNameForFieldtype($fieldtype));
+				});
+				ee()->cache->save($cache_key, $fieldtypes);
+			}
+		}
+		return $fieldtypes;
+	}
 
-		if ($fieldtypes)
-		{
-			return $fieldtypes;
+	/**
+	 * Returns whether or not a given class supports Entry Manager columns
+	 * this can be either:
+	 * * implements ColumnInterface
+	 * * has entry_manager_compatible variable set to true
+	 * * extends EE_Fieldtype and has no array data
+	 *
+	 * @param string Full class name
+	 * @return boolean
+	 */
+	private static function isEntryManagerCompatibleFieldtype($class)
+	{
+		if (self::implementsInterface($class)) {
+			return true;
 		}
 
-		$fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
-
-		ee()->legacy_api->instantiate('channel_fields');
-
-		$fieldtypes = array_filter($fieldtypes, function($fieldtype) {
-			ee()->api_channel_fields->include_handler($fieldtype);
-			return self::implementsInterface(self::getClassNameForFieldtype($fieldtype));
-		});
-
-		return $fieldtypes;
+		$reflection = new \ReflectionClass($class);
+		$instance = $reflection->newInstanceWithoutConstructor();
+		if (isset($instance->entry_manager_compatible)) {
+			return (bool) $instance->entry_manager_compatible;
+		}
+		if (is_subclass_of($class, 'EE_Fieldtype')) {
+			if (isset($instance->has_array_data)) {
+				return (bool) !$instance->has_array_data;
+			}
+		}
+		return false;
 	}
 
 	/**

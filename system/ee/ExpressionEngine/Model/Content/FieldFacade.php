@@ -395,7 +395,9 @@ class FieldFacade {
 
 	public function renderTableCell($data, $field_id, $entry)
 	{
-		return $this->getNativeField()->renderTableCell($data, $field_id, $entry);
+		$ft = $this->getNativeField();
+		$ft->settings = $this->getItem('field_settings');
+		return $ft->renderTableCell($data, $field_id, $entry);
 	}
 
 	public function initField()

@@ -50,16 +50,22 @@ class CustomField extends Column
 
 	public function getEntryManagerColumnSortField()
 	{
-		return $this->getField()->getEntryManagerColumnSortField();
+		$custom_sorter = $this->getField()->getEntryManagerColumnSortField();
+		return !empty($custom_sorter) ? $custom_sorter : $this->identifier;
 	}
 
-	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
+	public function renderTableCell($data, $field_id, $entry)
 	{
-		if ($field = $this->getFieldForEntry($entry))
-		{
+		$field_name = $entry->getCustomFieldPrefix() . $this->field->getId();
+
+		$field = $this->getField();
+
+		if ($field) {
+			$field->setContentId($entry->getId());
+			$field->setData($entry->$field_name);
+
 			return $field->renderTableCell($field->getData(), $field->getId(), $entry);
 		}
-
 		return '';
 	}
 
@@ -76,20 +82,4 @@ class CustomField extends Column
 		return $field;
 	}
 
-	/**
-	 * Gets a FieldFacade object initialized with entry data and details, but a
-	 * lighter-weight method that going through getCustomField()
-	 *
-	 * @return FieldFacade
-	 */
-	private function getFieldForEntry($entry)
-	{
-		$field_name = $entry->getCustomFieldPrefix() . $this->field->getId();
-
-		$field = $this->getField();
-		$field->setContentId($entry->getId());
-		$field->setData($entry->$field_name);
-
-		return $field;
-	}
 }

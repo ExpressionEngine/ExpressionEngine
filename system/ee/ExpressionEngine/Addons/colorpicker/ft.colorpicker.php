@@ -8,9 +8,8 @@
  */
 
 use Mexitek\PHPColors\Color;
-use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 
-class Colorpicker_ft extends EE_Fieldtype implements ColumnInterface {
+class Colorpicker_ft extends EE_Fieldtype {
 
 	var $info = [];
 

@@ -51,7 +51,7 @@ interface ColumnInterface
 	 *
 	 * @return string
 	 */
-	public function renderTableCell($custom_field_data, $custom_field_id, $entry);
+	public function renderTableCell($data, $field_id, $entry);
 
 	/**
 	 * @return array names of extra columns

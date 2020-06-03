@@ -14,7 +14,7 @@ use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 /**
  * Textarea Fieldtype
  */
-class Textarea_ft extends EE_Fieldtype implements ColumnInterface {
+class Textarea_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Textarea',
@@ -377,14 +377,6 @@ class Textarea_ft extends EE_Fieldtype implements ColumnInterface {
 		return [
 			'encode'	=> false
 		];
-	}
-
-	public function renderTableCell($data, $field_id, $entry) {
-		$out = strip_tags($this->replace_tag($data));
-		if (strlen($out) > 50) {
-			$out .= '&hellip;';
-		}
-		return $out;
 	}
 }
 

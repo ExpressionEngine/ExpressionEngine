@@ -8,12 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
-
 /**
  * Rich Text Fieldtype
  */
-class Rte_ft extends EE_Fieldtype implements ColumnInterface {
+class Rte_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Rich Text Editor',

@@ -65,6 +65,8 @@ $(document).ready(function () {
 
 	var saveViewRequest = null;
 	var loadViewRequest = null;
+	var viewColumns = [];
+	var viewColumnsChanged = false;
 	$('body').on('change', '.filter-bar div[rev="toggle-columns"] input', function(e){
 		e.preventDefault();
 		if (saveViewRequest) {
@@ -74,42 +76,69 @@ $(document).ready(function () {
 			loadViewRequest.abort();
 		}
 
-		var columns = [];
 		$('.filter-bar div[rev="toggle-columns"] input').each(function(el){
+			viewColumnsChanged = true;
 			if ($(this).is(':checked')) {
-				columns.push($(this).val());
-			}
-		})
-
-		var _form = $(this).closest('form');
-		var _data = $('input[name!="columns[]"]', _form).serialize();
-
-		saveViewRequest = $.ajax({
-			url: saveDefaultUrl,
-			data: _form.serialize(),
-			type: 'POST',
-			dataType: 'json',
-			success: function() {
-				saveViewRequest = null;
-				loadViewRequest = $.ajax({
-					url: _form.attr('action'),
-					data: _data,
-					type: 'POST',
-					dataType: 'json',
-					success: function(data) {
-						loadViewRequest = null;
-						replaceData(data);
-					},
-					error: function(e) {
-						//do nothing
-					}
-				});
-			},
-			error: function(e) {
-				//do nothing
+				viewColumns.push($(this).val());
 			}
 		});
-	})
+	});
+
+	$('body').on('click', function(e){
+		if ( $(e.target).closest('.filter-bar div[rev="toggle-columns"]').length === 0) {
+			e.preventDefault();
+			saveView();
+		}
+	});
+
+	//the above does not 'catch' button click, thus we need this extra
+	$('body').on('click', '.js-dropdown-toggle', function(e){
+		e.preventDefault();
+		saveView();
+	});
+
+	function saveView() {
+		if (viewColumnsChanged) {
+			if (saveViewRequest) {
+				saveViewRequest.abort();
+			}
+			if (loadViewRequest) {
+				loadViewRequest.abort();
+			}
+
+			var _form = $('.filter-bar div[rev="toggle-columns"]').closest('form');
+			var _data = $('input[name!="columns[]"]', _form).serialize();
+
+			saveViewRequest = $.ajax({
+				url: saveDefaultUrl,
+				data: _form.serialize(),
+				type: 'POST',
+				dataType: 'json',
+				success: function() {
+					viewColumnsChanged = false;
+					saveViewRequest = null;
+					loadViewRequest = $.ajax({
+						url: _form.attr('action'),
+						data: _data,
+						type: 'POST',
+						dataType: 'json',
+						success: function(data) {
+							loadViewRequest = null;
+							replaceData(data);
+						},
+						error: function(e) {
+							//do nothing
+						}
+					});
+				},
+				error: function(e) {
+					//do nothing
+				}
+			});
+		}
+	}
+
+
 
 	$('.filter-bar #columns_view_choose').on('change', function() {
 		var view = $(this).val();

@@ -9,12 +9,11 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
-use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 
 /**
  * Text Fieldtype
  */
-class Text_ft extends EE_Fieldtype implements ColumnInterface {
+class Text_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Text Input',

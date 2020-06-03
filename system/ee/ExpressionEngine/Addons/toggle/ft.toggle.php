@@ -8,12 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
-
 /**
  * Toggle Fieldtype
  */
-class Toggle_ft extends EE_Fieldtype implements ColumnInterface {
+class Toggle_ft extends EE_Fieldtype {
 
 	var $info = array();
 

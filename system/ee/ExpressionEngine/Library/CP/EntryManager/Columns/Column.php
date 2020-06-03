@@ -41,7 +41,7 @@ abstract class Column implements EntryManager\ColumnInterface
 		return $this->identifier;
 	}
 
-	public function renderTableCell($custom_field_data = null, $custom_field_id = null, $entry)
+	public function renderTableCell($data, $field_id, $entry)
 	{
 		return '';
 	}
