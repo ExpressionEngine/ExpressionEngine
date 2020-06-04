@@ -86,14 +86,12 @@ $(document).ready(function () {
 
 	$('body').on('click', function(e){
 		if ( $(e.target).closest('.filter-bar div[rev="toggle-columns"]').length === 0) {
-			e.preventDefault();
 			saveView();
 		}
 	});
 
 	//the above does not 'catch' button click, thus we need this extra
 	$('body').on('click', '.js-dropdown-toggle', function(e){
-		e.preventDefault();
 		saveView();
 	});
 

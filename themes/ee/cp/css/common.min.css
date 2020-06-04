@@ -7853,7 +7853,8 @@ body.iframe .title-bar {
     height: 100%;
     padding: 5px 20px;
     color: var(--ee-text-primary);
-    white-space: nowrap; }
+    white-space: nowrap;
+    overflow-x: hidden; }
     .dropdown__item a:not(.dropdown__item-button):hover {
       color: var(--ee-text-primary); }
     .dropdown__item a:not(.dropdown__item-button) .fas, .dropdown__item a:not(.dropdown__item-button) tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__item a:not(.dropdown__item-button) td:not(.reorder-col):first-child:before, .dropdown__item a:not(.dropdown__item-button) .column-sort::after, .dropdown__item a:not(.dropdown__item-button) .app-notice__icon::before, .dropdown__item a:not(.dropdown__item-button) .app-notice__dismiss::before, .dropdown__item a:not(.dropdown__item-button) .m-close:before, .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
