@@ -67,10 +67,18 @@ class Columns extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		//selected options go first in chosen order
+		$options = [];
+		$selected = json_decode($this->value());
+		foreach ($selected as $key) {
+			$options[$key] = $this->options[$key];
+			unset($this->options[$key]);
+		}
+		$options = array_merge($options, $this->options);
 		$filter = array(
 			'label'			=> $this->label,
 			'value'			=> '',
-			'available_columns' => $this->options,
+			'available_columns' => $options,
 			'selected_columns' => json_decode($this->value())
 		);
 

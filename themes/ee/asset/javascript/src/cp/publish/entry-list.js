@@ -136,6 +136,21 @@ $(document).ready(function () {
 		}
 	}
 
+	// Make the columns sortable
+	$('.filter-bar div[rev="toggle-columns"]').sortable({
+		containment: false,
+		handle: '.dropdown-reorder', // Set drag handle to the top box
+		items: '.dropdown__item',			// Only allow these to be sortable
+		sort: function(){},	// Custom sort handler
+		cancel: '.no-drag',
+		start: function (event, ui) {
+			viewColumnsChanged = true;
+		},
+		stop: function (event, ui) {
+			saveView();
+		}
+	});
+
 
 
 	$('.filter-bar #columns_view_choose').on('change', function() {
