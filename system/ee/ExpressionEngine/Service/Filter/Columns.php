@@ -71,8 +71,10 @@ class Columns extends Filter {
 		$options = [];
 		$selected = json_decode($this->value());
 		foreach ($selected as $key) {
-			$options[$key] = $this->options[$key];
-			unset($this->options[$key]);
+			if (isset($this->options[$key])) {
+				$options[$key] = $this->options[$key];
+				unset($this->options[$key]);
+			}
 		}
 		$options = array_merge($options, $this->options);
 		$filter = array(
