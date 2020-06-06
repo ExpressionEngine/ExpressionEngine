@@ -423,30 +423,61 @@ class EE_Functions {
 		// Load the form helper
 		ee()->load->helper('form');
 
+        // Load the default values for parameters that can be provided via $data array variable
+        // NB. secure and hidden_fields are not legit HTML form tags, and so excluded from pass_thru 
 		$deft = array(
 			'hidden_fields'	=> array(),
 			'action'		=> '',
-			'id'			=> '',
+            'id'			=> '',
+            'name'          => '',
 			'class'			=> '',
 			'secure'		=> TRUE,
 			'enctype' 		=> '',
 			'onsubmit'		=> '',
-		);
+        );
 
-
+        // Set values for 'missing' default keys in $data to their default values
 		foreach ($deft as $key => $val)
 		{
 			if ( ! isset($data[$key]))
 			{
 				$data[$key] = $val;
 			}
-		}
+        }
+        
+        // If name, id, onsubmit or class attributes are *not set* in the data passed to function by calling function
+        // but *are* specified in tagparams then grab those values now
 
+        if ($data['name'] == '' && ! empty(ee()->TMPL->fetch_param('name')))
+        {
+            $data['name'] = ee()->TMPL->fetch_param('name');
+        }
+
+        if ($data['id'] == '' && ! empty(ee()->TMPL->fetch_param('id')))
+        {
+            $data['id'] = ee()->TMPL->fetch_param('id');
+        }
+
+        if ($data['onsubmit'] == '' && ! empty(ee()->TMPL->fetch_param('onsubmit')))
+        {
+            $data['onsubmit'] = ee()->TMPL->fetch_param('onsubmit');
+        }
+
+        // if class is set in the data passed into function combine with content of any class parameter found in tagparams
+        // is there anything specified in tagparams?
+        if (! empty(ee()->TMPL->fetch_param('class')))
+        { 
+            // append the content of the class parameter to any value we already been passed by the calling function
+            // only add a space before the class content if there is already something in $data['class'] 
+            $data['class'] .= ($data['class'] == '' ? ee()->TMPL->fetch_param('class') : ' '.ee()->TMPL->fetch_param('class'));
+        }
+
+        // If not specified, put site_id value into hidden_fields array
 		if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['site_id']))
 		{
 			$data['hidden_fields']['site_id'] = ee()->config->item('site_id');
-		}
-
+        }
+        
 		// -------------------------------------------
 		// 'form_declaration_modify_data' hook.
 		//  - Modify the $data parameters before they are processed
@@ -471,33 +502,79 @@ class EE_Functions {
 		}
 		//
 		// -------------------------------------------
-
-
-		if ($data['action'] == '')
-		{
-			$data['action'] = $this->fetch_site_index();
-		}
-
-		if ($data['onsubmit'] != '')
-		{
-			$data['onsubmit'] = 'onsubmit="'.trim($data['onsubmit']).'"';
-		}
-
-		if (substr($data['action'], -1) == '?')
-		{
-			$data['action'] = substr($data['action'], 0, -1);
-		}
-
+        
+        
+        // Work through the parameters in $data and take action as required (except class which we do after pass_thru processing)
 		$data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" '	: '';
 		$data['id']		= ($data['id'] != '') 							? 'id="'.$data['id'].'" ' 		: '';
-		$data['class']	= ($data['class'] != '')						? 'class="'.$data['class'].'" '	: '';
+        $data['class']	= ($data['class'] != '')                        ? 'class="'.$data['class'].'" '	: '';
 
+        
 		if ($data['enctype'] == 'multi' OR strtolower($data['enctype']) == 'multipart/form-data')
 		{
-			$data['enctype'] = 'enctype="multipart/form-data" ';
+            $data['enctype'] = ' enctype="multipart/form-data" ';
 		}
+        
+		if ($data['action'] == '')
+		{
+            $data['action'] = $this->fetch_site_index();
+		}
+        
+		if (substr($data['action'], -1) == '?')
+		{
+            $data['action'] = substr($data['action'], 0, -1);
+		}
+        
+		if ($data['onsubmit'] != '')
+		{
+            $data['onsubmit'] = ' onsubmit="'.trim($data['onsubmit']).'"';
+        }
+        
+        // Next section is for the 'pass-through' functionality
 
-		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
+        $_tagparams = array();
+        $_pass_thru = '';
+        $valid_html_attributes = array();
+                
+        // $valid_html_attributes is an array of valid HTML attributes that might be specified in a FORM tag (this list has all $deft values removed, and does not include
+        // data-* or aria-* as these are processed differently).  The list taken from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form on 5/june/20
+
+        $valid_html_attributes = explode('|','accept|accept-charset|accesskey|autocapitalize|autocomplete|contenteditable|contextmenu|dir|draggable|dropzone|exportparts|hidden|inputmode|is|itemid|itemprop|itemref|itemscope|itemtype|lang|method|novalidate|onabort|onautocomplete|onautocompleteerror|onblur|oncancel|oncanplay|oncanplaythrough|onchange|onclick|onclose|oncontextmenu|oncuechange|ondblclick|ondrag|ondragend|ondragenter|ondragexit|ondragleave|ondragover|ondragstart|ondrop|ondurationchange|onemptied|onended|onerror|onfocus|oninput|oninvalid|onkeydown|onkeypress|onkeyup|onload|onloadeddata|onloadedmetadata|onloadstart|onmousedown|onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onmousewheel|onpause|onplay|onplaying|onprogress|onratechange|onreset|onresize|onscroll|onseeked|onseeking|onselect|onshow|onsort|onstalled|onsubmit|onsuspend|ontimeupdate|ontoggle|onvolumechange|onwaiting|part|rel|slot|spellcheck|style|tabindex|target|title|translate|role');
+        
+        // Cannot think of any circumstance where tagparams is not empty, but just in case... 
+        if ( ! empty(ee()->TMPL->tagparams))
+        {
+            $_tagparams = ee()->TMPL->tagparams;
+            
+            foreach ($_tagparams as $key => $val) {
+            
+                // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
+                // or if the parameter is not in the list of approved attributes
+                // or if the parameter begins with either aria- or data-
+                if ((! array_key_exists($key, $deft) && in_array($key, $valid_html_attributes)) || (preg_match("/^data-|^aria-/",$key))) {
+        
+                    // Append the key to end of the $_pass_thru variable
+                    // only add a leading space if the variable already has some content
+                    $_pass_thru .= ($_pass_thru == '' ? $key : ' '.$key);
+
+                    // If the attribute has a value set then append this to the key just added within an ="" construct
+                    if (strlen($val) > 0) {
+                        $_pass_thru .= '="'.$val.'"';
+                    }
+                }                
+            }
+        }
+
+        // Construct the opening form tag - including appending any pass_thru parameters
+        $form  = '<form '   .$data['id']
+                            .$data['class']
+                            .$data['name']
+                            .'method="post" action="'
+                            .$data['action'].'"'
+                            .$data['onsubmit']
+                            .$data['enctype']
+                            .($_pass_thru == '' ? '' : ' '.$_pass_thru)
+                            .">\n";
 
 		if ($data['secure'] == TRUE)
 		{
