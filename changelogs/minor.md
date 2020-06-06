@@ -4,13 +4,10 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-- Fixed a bug where checking for updates might produce an error.
-- Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
+- Added new feature to allow HTML Form attributes to be specified as parameters in the EE tag creating the form
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
-
+   - Added new feature to allow HTML Form attributes to be specified as parameters in the EE tag creating the form (address [issue #441](https://github.com/ExpressionEngine/ExpressionEngine/issues/441))
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
