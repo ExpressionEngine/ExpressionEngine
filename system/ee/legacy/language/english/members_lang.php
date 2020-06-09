@@ -242,6 +242,8 @@ $lang = array(
 
 'invalid_role_id' => 'You must select a valid member role.',
 
+'invalid_new_primary_role' => 'New primary role is not valid.',
+
 'primary_role' => 'Primary Role',
 
 'primary_role_desc' => 'Assign the primary role for this user.',
