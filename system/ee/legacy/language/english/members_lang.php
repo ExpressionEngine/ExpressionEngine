@@ -208,9 +208,9 @@ $lang = array(
 
 'member_approved_success_desc' => 'The member <b>%s</b> has been approved.',
 
-'member_assignment_none' => 'None, members with this role will be deleted',
+'member_assignment_none' => 'None, members with this Primary Role will be deleted',
 
-'member_assignment_warning' => 'Members are currently assigned to some of these groups. What role should they be re-assigned to?',
+'member_assignment_warning' => 'There are members that have some of these roles assigned as Primary Role. What Primary Role should they be re-assigned to?',
 
 'member_cfg' => 'Role Settings',
 

@@ -143,7 +143,8 @@ class Roles extends AbstractRolesController {
 					'value' => $role->getId(),
 					'data' => [
 						'confirm' => lang('role') . ': <b>' . ee('Format')->make('Text', $role->name)->convertToEntities() . '</b>'
-					]
+					],
+					'disabled' => in_array($role->getId(), [1, 2, 3, 4, ee()->config->item('default_primary_role')])
 				] : NULL
 			];
 		}
@@ -1789,6 +1790,7 @@ class Roles extends AbstractRolesController {
 			$role_ids = array($role_ids);
 		}
 
+		//TODO - this needs to be moved to model
 		//not all roles can be removed
 		$need_to_stay = [];
 		$restricted = [1, 2, 3, 4, ee()->config->item('default_primary_role')];
@@ -1812,12 +1814,25 @@ class Roles extends AbstractRolesController {
 
 		}
 
+		$replacement_role_id = ee()->input->post('replacement');
+		if ($replacement_role_id == 'delete') {
+			$replacement_role_id = NULL;
+		}
+
 		if (!empty($role_ids)) {
+			foreach ($role_ids as $role_id) {
+				if ($replacement_role_id) {
+					// Query bulder for speed
+					ee('db')->where('role_id', $role_id)->update('exp_members', ['role_id' => $replacement_role_id]);
+				} else {
+					ee('Model')->get('Member')->filter('role_id', $role_id)->delete();
+				}
+			}
+
 			$roles = ee('Model')->get('Role', $role_ids)->all();
-
 			$role_names = $roles->pluck('name');
-
 			$roles->delete();
+
 			ee('CP/Alert')->makeInline('roles')
 				->asSuccess()
 				->withTitle(lang('success'))
@@ -1825,11 +1840,41 @@ class Roles extends AbstractRolesController {
 				->addToBody($role_names)
 				->defer();
 
-			foreach ($role_names as $role_name)
-			{
+			foreach ($role_names as $role_name) {
 				ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
 			}
 		}
+	}
+
+	/**
+	 * Delete member role confirm
+	 *
+	 * Warning message shown when you try to delete a role
+	 *
+	 * @return	mixed
+	 */
+	public function confirm()
+	{
+		//  Only super admins can delete member groups
+		if ( ! ee('Permission')->can('delete_member_roles')) {
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$roles = ee()->input->post('selection');
+
+		$vars['roles'] = ee('Model')->get('Role', $roles)
+			->all()
+			->filter(function($role) {
+				return ee('Model')->get('Member')->filter('role_id', $role->getId())->count() > 0;
+			});
+
+		$vars['new_roles'] = ['delete' => lang('member_assignment_none')];
+		$vars['new_roles'] += ee('Model')->get('Role')
+			->filter('role_id', 'NOT IN', $roles)
+			->all()
+			->getDictionary('role_id', 'name');
+
+		ee()->cp->render('members/delete_member_group_conf', $vars);
 	}
 }
 
