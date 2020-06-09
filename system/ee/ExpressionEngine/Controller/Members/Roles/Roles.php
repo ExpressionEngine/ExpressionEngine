@@ -521,19 +521,13 @@ class Roles extends AbstractRolesController {
 
 		// template_access
 		$template_ids = [];
-		$template_group_ids = [];
 		foreach (ee('Request')->post('assigned_templates') as $value) {
 			if (is_numeric($value)) {
 				$template_ids[] = $value;
-			} elseif (strpos($value, 'template_group_')===0) {
-				$template_group_ids = str_replace('template_group_', '', $value);
 			}
 		}
 		if (!empty($template_ids)) {
 			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
-		}
-		if (!empty($template_group_ids)) {
-			$role->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $template_group_ids)->all();
 		}
 
 

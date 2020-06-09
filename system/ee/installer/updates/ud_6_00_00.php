@@ -535,7 +535,7 @@ class Updater {
 						$insert[] = [
 							'role_id'   => $group->group_id,
 							'site_id'    => $group->site_id,
-							'permission' => $permission . '_channel_id_' . $row->channel_id;
+							'permission' => $permission . '_channel_id_' . $row->channel_id
 						];
 					}
 				}
@@ -547,13 +547,13 @@ class Updater {
 						$insert[] = [
 							'role_id'   => $group->group_id,
 							'site_id'    => $group->site_id,
-							'permission' => $permission . '_channel_id_' . $row->group_id;
+							'permission' => $permission . '_channel_id_' . $row->group_id
 						];
 						if ($permission == 'can_create_new_templates') {
 							$insert[] = [
 								'role_id'   => $group->group_id,
 								'site_id'    => $group->site_id,
-								'permission' => 'manage_settings_template_channel_id_' . $row->group_id;
+								'permission' => 'manage_settings_template_channel_id_' . $row->group_id
 							];
 						}
 					}
