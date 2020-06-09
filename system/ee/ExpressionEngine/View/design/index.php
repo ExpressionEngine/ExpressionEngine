@@ -8,7 +8,7 @@
 			<?php if (isset($filters)) echo $filters; ?>
 			<div class="title-bar__extra-tools">
 				<?php if($show_new_template_button): ?>
-				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?= lang('create_new_template') ?></a>
+				<a class="button button--primary button--small" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?= lang('create_new_template') ?></a>
 			<?php endif; ?>
 			</div>
 		</div>

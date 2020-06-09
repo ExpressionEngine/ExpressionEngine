@@ -212,7 +212,7 @@ class File_field {
 		$fp_edit
 			->setHtml('<i class="fas fa-pen"></i>')
 			->setAttribute('title', lang('edit'))
-			->setAttribute('class', 'file-field-filepicker button button--secondary-alt');
+			->setAttribute('class', 'file-field-filepicker button button--default');
 
 		$file = $this->getFileModelForFieldData($data);
 

@@ -60,13 +60,15 @@ class Buttons extends Settings {
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
 					'title' => lang($button->tag_name),
+          'class' => 'button button--default button--small',
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => strtolower(lang('edit'))
+					'title' => strtolower(lang('edit')),
+          'class' => 'button button--default button--small'
 				)
 			));
 

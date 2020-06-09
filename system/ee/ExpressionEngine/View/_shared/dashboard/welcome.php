@@ -309,8 +309,8 @@
 		<div class="zoomIn choices">
 			<p><em>How would you like to proceed?</em></p>
 			<p>
-				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="btn button--action" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?>
-				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="btn button--action" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="button button--primary" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="button button--primary" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?>
 			</p>
 		</div>
 		<?=form_close()?>

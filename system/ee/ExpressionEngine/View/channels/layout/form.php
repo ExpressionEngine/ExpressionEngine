@@ -39,7 +39,7 @@
 			<?php endforeach; ?>
 			</div>
 
-			<a class="tab-bar__right-button button button--small button--action m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
+			<a class="tab-bar__right-button button button--small button--primary m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 		</div>
 			<input type="hidden" name="field_layout" value='<?=json_encode($channel_layout->field_layout)?>'>
 

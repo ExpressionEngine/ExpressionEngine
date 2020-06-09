@@ -17,6 +17,8 @@ $lang = array(
 
 'debugging_output' => 'Debugging & Output',
 
+'general' => 'General',
+
 'general_settings' => 'General Settings',
 
 'settings' => 'Settings',

@@ -19,7 +19,7 @@
 		}
 		?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" id="top">
+	<body id="top">
 		<script>
 		var currentTheme = localStorage.getItem('theme');
 
@@ -44,11 +44,17 @@ $current_page = ee()->uri->segment(2);
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
 			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) : ?>
-			<div class="ee-sidebar<?php if (!isset($ee_cp_viewmode) || $ee_cp_viewmode!='classic') : ?> hidden<?php endif; ?>">
-				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
-				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i> <?=ee()->config->item('site_name')?></span><span class="ee-sidebar__title-down-arrow"><i class="fas fa-angle-down"></i></span></a>
+			<div class="ee-sidebar">
 
-				<div class="dropdown dropdown--accent">
+				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
+				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center">
+          <?=ee()->config->item('site_name')?>
+          <span class="ee-sidebar__title-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+          </span>
+        </a>
+
+				<div class="dropdown">
 					<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
 					<div class="dropdown__divider"></div>
 					<div class="dropdown__header"><?=lang('sites')?></div>
@@ -58,9 +64,13 @@ $current_page = ee()->uri->segment(2);
 					<?php endforeach ?>
 				</div>
 				<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>"><i class="fas fa-cog"></i> <?=lang('name_your_site')?></a>
+					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>">
+            <?=lang('name_your_site')?>
+          </a>
 				<?php else: ?>
-					<a class="ee-sidebar__title" href="<?=ee()->config->item('site_url')?>" rel="external" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i> <?=ee()->config->item('site_name')?></span></a>
+					<a class="ee-sidebar__title" href="<?=ee()->config->item('site_url')?>" rel="external">
+            <?=ee()->config->item('site_name')?>
+          </a>
 				<?php endif ?>
 
 				<div class="ee-sidebar__items">
@@ -73,17 +83,15 @@ $current_page = ee()->uri->segment(2);
 							<?php endif; ?> -->
 						<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
-						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries')) : ?>
+						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
 						<a data-dropdown-use-root="true" data-dropdown-pos="right-start" href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item js-dropdown-hover <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('menu_entries') ?></a>
-						<div class="dropdown dropdown--accent js-filterable" style="margin-left: -12px;">
-							<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link">View All</a>
-							<?php foreach ($cp_main_menu['channels']['all'] as $channel_name => $link): ?>
+						<div class="dropdown js-filterable">
+							<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
+							<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 								<div class="dropdown__item">
-									<a href="<?=(isset($cp_main_menu['channels']['edit'][$channel_name]) ? $cp_main_menu['channels']['edit'][$channel_name] : '#')?>">
-									<?=$channel_name?>
-									</a>
+									<a href="<?=$link?>"><?=$channel_name?></a>
 									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
-									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--primary button--small"><i class="fas fa-plus"></i></a>
+									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--secondary button--small"><i class="fas fa-plus"></i></a>
 									<?php endif; ?>
 								</div>
 							<?php endforeach ?>
@@ -114,12 +122,12 @@ $current_page = ee()->uri->segment(2);
 						<nav class="nav-custom">
 							<?php foreach ($custom->getItems() as $item) : ?>
 							<?php if ($item->isSubmenu()) : ?>
-								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#"><?= lang($item->title) ?></a>
+								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href=""><?= lang($item->title) ?></a>
 								<div class="dropdown">
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
 										<div class="search-input">
-											<input class="search-input__input" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+											<input class="search-input__input input--small" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
 										</div>
 									</form>
 										<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>
@@ -193,59 +201,4 @@ $current_page = ee()->uri->segment(2);
 			</div>
 			<?php endif; ?>
 			<div class="ee-main">
-
-        <div class="ee-main-header">
-
-          <a href="" class="sidebar-toggle" title="Toggle Sidebar"><i class="fas fa-angle-left"></i></a>
-
-          <?php if (count($cp_breadcrumbs)): ?>
-            <div class="breadcrumb-wrapper">
-              <ul class="breadcrumb">
-        				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
-        					<li><a href="<?=$link?>"><?=$title?></a></li>
-        				<?php endforeach ?>
-        			</ul>
-            </div>
-      		<?php endif ?>
-
-          <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
-            <i class="fas fa-bullseye fa-fw icon-start"></i>
-            <input type="text" class="input--jump input--rounded" placeholder="Jump to...">
-            <span class="input-shortcut">⌘J</span>
-          </div>
-
-          <div class="main-header__account">
-            <button type="button" data-dropdown-offset="0px, 4px" data-dropdown-pos="bottom-end" class="main-nav__account-icon main-header__account-icon js-dropdown-toggle">
-      				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
-      			</button>
-            <div class="dropdown dropdown--accent account-menu">
-      				<div class="account-menu__header">
-      					<div class="account-menu__header-title">
-      						<h2><?=$cp_screen_name?></h2>
-      						<span><?=$cp_member_primary_role_title?></span>
-      					</div>
-
-      				</div>
-
-      				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><i class="fas fa-user fa-fw"></i> <?=lang('my_profile')?></a>
-      				<a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><i class="fas fa-sign-out-alt fa-fw"></i> <?=lang('log_out')?></a>
-
-      				<div class="dropdown__divider"></div>
-
-      				<a class="dropdown__link js-jump-menu-trigger" href=""><i class="fas fa-bullseye fa-fw"></i> <?= lang('jump_menu_item') ?> <span class="dropdown__link-shortcut"><span class="jump-trigger"></span>J</span></a>
-      				<a class="dropdown__link js-dark-theme-toggle" href=""><i class="fas fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
-
-      				<div class="dropdown__divider"></div>
-
-      				<h3 class="dropdown__header"><?=lang('quick_links')?></h3>
-      				<?php foreach($cp_quicklinks as $link): ?>
-      				<a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
-      				<?php endforeach ?>
-      				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="fas fa-plus fa-sm"></i>  <?=lang('new_link')?></a>
-      			</div>
-          </div>
-
-
-        </div>
-
 <?php

@@ -433,11 +433,11 @@ else: ?>
 						<td class="grid-field__column--tools">
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
-								<button type="button" class="button button--small button--secondary-alt">
+								<button type="button" class="button button--small button--default">
 									<a href class="grid-field__column-tool cursor-move js-grid-reorder-handle"><i class="fas fa-fw fa-arrows-alt"></i></a>
 								</button>
 								<?php endif ?>
-								<button type="button" class="button button--small button--secondary-alt">
+								<button type="button" class="button button--small button--default">
 									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
 								</button>
 							</div>
@@ -460,7 +460,7 @@ else: ?>
 			</div>
 			<?php endif; ?>
 			<?php if ($show_add_button) : ?>
-			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
+			<button type="button" rel="add_row" class="button button--default button--small js-grid-add-row"><?=lang('add_row')?></button>
 			<?php endif; ?>
 		</div>
 	</div>

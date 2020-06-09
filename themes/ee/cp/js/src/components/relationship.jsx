@@ -194,7 +194,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-fw fa-trash-alt"></i></button>
+                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fas fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -215,7 +215,7 @@ class Relationship extends React.Component {
                 }
 
                 <div style={{display: showAddButton ? 'block' : 'none' }}>
-				<button type="button" className="js-dropdown-toggle button button--secondary-alt"><i class="fas fa-plus icon-left"></i> {EE.relationship.lang.relateEntry}</button>
+				<button type="button" className="js-dropdown-toggle button button--default"><i class="fas fa-plus icon-left"></i> {EE.relationship.lang.relateEntry}</button>
                     <div className="dropdown js-dropdown-auto-focus-input">
                         <div className="dropdown__search d-flex">
                             <div className="filter-bar flex-grow">

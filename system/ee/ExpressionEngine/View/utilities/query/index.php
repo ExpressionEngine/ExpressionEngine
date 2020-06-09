@@ -32,12 +32,12 @@
 
 				<div class="field-instruct">
 					<div class="button-group">
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SELECT * FROM `exp_` WHERE 1');">SELECT *</button>
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('INSERT INTO `exp_` (``) VALUES ()');">INSERT</button>
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('UPDATE `exp_` SET ``=\'\' WHERE 1');">UPDATE</button>
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW VARIABLES');">SHOW VARIABLES</button>
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW STATUS');">SHOW STATUS</button>
-						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW PROCESSLIST');">SHOW PROCESSLIST</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('SELECT * FROM `exp_` WHERE 1');">SELECT *</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('INSERT INTO `exp_` (``) VALUES ()');">INSERT</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('UPDATE `exp_` SET ``=\'\' WHERE 1');">UPDATE</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('SHOW VARIABLES');">SHOW VARIABLES</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('SHOW STATUS');">SHOW STATUS</button>
+						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('SHOW PROCESSLIST');">SHOW PROCESSLIST</button>
 					</div>
 				</div>
 			</div>

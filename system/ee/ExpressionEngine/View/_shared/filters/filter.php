@@ -1,4 +1,4 @@
-<button type="button" class="has-sub filter-bar__button js-dropdown-toggle" data-filter-label="<?=strtolower(lang($label))?>">
+<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
@@ -16,7 +16,7 @@
 			<?php if ($has_list_filter): ?>
 			data-fuzzy-filter="true"
 			<?php endif; ?>
-			class="search-input__input"
+			class="search-input__input input--small"
 		>
 		</div>
 	</div>

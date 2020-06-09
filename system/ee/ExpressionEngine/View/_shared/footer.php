@@ -32,12 +32,12 @@
 				</div>
 				<div class="app-about__status app-about__status--update hidden">
 					<?=lang('out_of_date_upgrade')?>
-					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
 					<div class="app-about__status-version"></div>
 				</div>
 				<div class="app-about__status app-about__status--update-vital hidden">
 					<?=lang('out_of_date_recommended')?>
-					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
 					<div class="app-about__status-version"></div>
 				</div>
 			<?php endif ?>
@@ -94,9 +94,7 @@
 				</fieldset>
 
 				<div class="dialog__buttons">
-					<div class="button-group">
 						<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-					</div>
 				</div>
 			</div>
 			<?=form_close()?>
@@ -117,8 +115,8 @@
 				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
 
 				<div class="jump-menu__footer">
-					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: &nbsp;&nbsp; <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
-					<span class="jump-menu__close"><?=lang('close')?> <span class="key">ESC</span></span>
+					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
+					<span class="jump-menu__close"><?=lang('close')?>: <span class="key">ESC</span></span>
 				</div>
 			</div>
 		</div>

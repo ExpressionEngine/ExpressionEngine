@@ -1,6 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
-	<?=form_open($table['base_url'])?>
+<div class="panel">
+  <?=form_open($table['base_url'])?>
 		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/groups/create')?>"><?=lang('create_new')?></a>
@@ -28,6 +29,7 @@
 		]); ?>
 		<?php endif; ?>
 	</form>
+</div>
 
 
 <?php

@@ -250,7 +250,7 @@ function (_React$Component) {
           onClick: function onClick() {
             return _this3.deselect(item.value);
           },
-          className: "button button--small button--secondary-alt"
+          className: "button button--small button--default"
         }, React.createElement("i", {
           "class": "fas fa-fw fa-trash-alt"
         })))));
@@ -270,7 +270,7 @@ function (_React$Component) {
         }
       }, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--secondary-alt"
+        className: "js-dropdown-toggle button button--default"
       }, React.createElement("i", {
         "class": "fas fa-plus icon-left"
       }), " ", EE.relationship.lang.relateEntry), React.createElement("div", {

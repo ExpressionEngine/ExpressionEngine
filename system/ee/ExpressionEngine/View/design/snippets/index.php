@@ -7,7 +7,7 @@
 			<h2 class="title-bar__title"><?=$cp_heading?></h2>
 			<?php if (isset($filters)) echo $filters; ?>
 			<div class="title-bar__extra-tools">
-				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('design/snippets/create')?>"><?=lang('create_new')?></a>
+				<a class="button button--primary button--small" href="<?=ee('CP/URL')->make('design/snippets/create')?>"><?=lang('create_new')?></a>
 			</div>
 		</div>
 

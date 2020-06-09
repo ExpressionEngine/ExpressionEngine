@@ -8,7 +8,7 @@
 			</h2>
 			<?php if (isset($filters)) echo $filters; ?>
 			<div class="title-bar__extra-tools">
-				<a class="button button--small button--action" href="<?=$new?>"><?= lang('create_new') ?></a>
+				<a class="button button--small button--primary" href="<?=$new?>"><?= lang('create_new') ?></a>
 			</div>
 		</div>
 

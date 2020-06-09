@@ -8,13 +8,15 @@
 		<?=$text?>
 	</a>
 	<?php if ($edit || $remove): ?>
-	<ul class="toolbar">
+	<div class="button-toolbar toolbar">
+    <div class="button-group button-group-xsmall">
 		<?php if ($edit): ?>
-		<li class="edit"><a href="<?=$edit_url?>" title="<?=lang('edit')?>"></a></li>
+		<a href="<?=$edit_url?>" title="<?=lang('edit')?>" class="edit button button--default"></a>
 		<?php endif; ?>
 		<?php if ($remove): ?>
-		<li class="remove"><a class="m-link" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"></a></li>
+		<a class="remove m-link button button--default" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"></a>
 		<?php endif; ?>
-	</ul>
+	</div>
 	<?php endif; ?>
+</div>
 </div>

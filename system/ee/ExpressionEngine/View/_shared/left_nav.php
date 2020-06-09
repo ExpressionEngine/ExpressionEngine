@@ -53,7 +53,7 @@
 					} ?>
 					<a <?=$attr?>><?=lang($key)?></a>
 					<?php if (isset($button)): ?>
-						<a class="btn action" href="<?=$button['href']?>"><?=lang($button['text'])?></a>
+						<a class="button button--secondary button--small" href="<?=$button['href']?>"><?=lang($button['text'])?></a>
 					<?php endif ?>
 				<?php endif; ?>
 			</h2>

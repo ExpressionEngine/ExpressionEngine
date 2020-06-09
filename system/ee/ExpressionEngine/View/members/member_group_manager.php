@@ -8,7 +8,7 @@
 		<?php if (isset($filters)) echo $filters; ?>
 		<div class="title-bar__extra-tools">
 			<?php if (ee()->cp->allowed_group('can_create_member_groups')): ?>
-				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('members/groups/create')?>"><?= lang('create_new') ?></a>
+				<a class="button button--primary button--small" href="<?=ee('CP/URL')->make('members/groups/create')?>"><?= lang('create_new') ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

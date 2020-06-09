@@ -47,7 +47,10 @@ class Settings extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addItem(lang('general_settings'), ee('CP/URL')->make('settings/general'));
+    $list = $sidebar->addHeader(lang('general'))
+			->addBasicList();
+
+    $sidebar->addItem(lang('general_settings'), ee('CP/URL')->make('settings/general'));
 		$sidebar->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
 		if (ee('Permission')->can('access_comm'))

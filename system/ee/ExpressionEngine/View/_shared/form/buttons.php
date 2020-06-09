@@ -1,7 +1,7 @@
 <?php if (isset($buttons)): ?>
 	<?php foreach ($buttons as $button): ?>
 		<?php
-			$class = 'btn';
+			$class = 'button button--primary';
 
 			$disabled = '';
 			$button_text = lang($button['text']);
@@ -10,7 +10,7 @@
 			if ((ee()->has('form_validation') && ee()->form_validation->errors_exist())
 				OR (isset($errors) && $errors->isNotValid()))
 			{
-				$class = 'btn disable';
+				$class = 'button disable';
 				$disabled = 'disabled="disabled"';
 				$button_text = lang('btn_fix_errors');
 			}

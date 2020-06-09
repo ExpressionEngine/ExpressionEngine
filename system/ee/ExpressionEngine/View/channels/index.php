@@ -1,6 +1,7 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-	<div class="tbl-ctrls">
+<div class="panel">
+  <div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -27,6 +28,7 @@
 			?>
 		</form>
 	</div>
+</div>
 
 <?php
 

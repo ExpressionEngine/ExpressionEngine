@@ -1,9 +1,17 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-	<div class="tbl-ctrls">
+<div class="panel">
+  <div class="tbl-ctrls">
 		<?=form_open($base_url)?>
-			<h1><?=$cp_page_title?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+    <div class="panel-heading">
+      <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+          <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+        </div>
+      </div>
+    </div>
+
 			<?php $this->embed('_shared/table-list', ['data' => $fields]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
@@ -22,6 +30,7 @@
 			]); ?>
 		</form>
 	</div>
+</div>
 
 <?php
 
