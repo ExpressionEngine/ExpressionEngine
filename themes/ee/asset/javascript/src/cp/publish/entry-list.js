@@ -11,6 +11,7 @@ $(document).ready(function () {
 
 	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	var replaceData = function(data) {
+		console.log('data loaded');
 		$('.ee-main__content > .container').html(data.html);
 
 		saveDefaultUrl = data.viewManager_saveDefaultUrl;
@@ -53,7 +54,10 @@ $(document).ready(function () {
 			url: $(this).attr('href') + '&' + search,
 			type: 'GET',
 			dataType: 'json',
-			success: replaceData
+			success: function(data) {
+				replaceData(data);
+				sortableColumns();
+			}
 		});
 
 		event.preventDefault();
@@ -137,19 +141,22 @@ $(document).ready(function () {
 	}
 
 	// Make the columns sortable
-	$('.filter-bar div[rev="toggle-columns"]').sortable({
-		containment: false,
-		handle: '.dropdown-reorder', // Set drag handle to the top box
-		items: '.dropdown__item',			// Only allow these to be sortable
-		sort: function(){},	// Custom sort handler
-		cancel: '.no-drag',
-		start: function (event, ui) {
-			viewColumnsChanged = true;
-		},
-		stop: function (event, ui) {
-			saveView();
-		}
-	});
+	function sortableColumns() {
+		console.log('sortable.');
+		$('.filter-bar div[rev="toggle-columns"]').sortable({
+			containment: false,
+			handle: '.dropdown-reorder', // Set drag handle to the top box
+			items: '.dropdown__item',			// Only allow these to be sortable
+			sort: function(){},	// Custom sort handler
+			cancel: '.no-drag',
+			start: function (event, ui) {
+				viewColumnsChanged = true;
+			},
+			stop: function (event, ui) {
+				//saveView();
+			}
+		});
+	}
 
 
 
@@ -210,4 +217,6 @@ $(document).ready(function () {
 			}
 		})
 	})
+
+	sortableColumns();
 });

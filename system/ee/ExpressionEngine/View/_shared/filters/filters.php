@@ -1,5 +1,5 @@
 <?php if ( ! empty($filters) && is_array($filters)): ?>
-<div class="title-bar__filter-toggle-button js-filter-bar-toggle" style="display: none">'
+<div class="title-bar__filter-toggle-button js-filter-bar-toggle" style="display: none">
 	<button type="button" class="filter-bar__button"><i class="fas fa-sm fa-filter"></i> <?=lang('filters')?></button>
 </div>
 <div class="filter-bar filter-bar--collapsible">
