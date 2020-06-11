@@ -535,11 +535,13 @@ class EE_Functions {
         $_tagparams = array();
         $_pass_thru = '';
         $valid_html_attributes = array();
-                
-        // $valid_html_attributes is an array of valid HTML attributes that might be specified in a FORM tag (this list has all $deft values removed, and does not include
-        // data-* or aria-* as these are processed differently).  The list taken from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form on 5/june/20
 
-        $valid_html_attributes = explode('|','accept|accept-charset|accesskey|autocapitalize|autocomplete|contenteditable|contextmenu|dir|draggable|dropzone|exportparts|hidden|inputmode|is|itemid|itemprop|itemref|itemscope|itemtype|lang|method|novalidate|onabort|onautocomplete|onautocompleteerror|onblur|oncancel|oncanplay|oncanplaythrough|onchange|onclick|onclose|oncontextmenu|oncuechange|ondblclick|ondrag|ondragend|ondragenter|ondragexit|ondragleave|ondragover|ondragstart|ondrop|ondurationchange|onemptied|onended|onerror|onfocus|oninput|oninvalid|onkeydown|onkeypress|onkeyup|onload|onloadeddata|onloadedmetadata|onloadstart|onmousedown|onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onmousewheel|onpause|onplay|onplaying|onprogress|onratechange|onreset|onresize|onscroll|onseeked|onseeking|onselect|onshow|onsort|onstalled|onsubmit|onsuspend|ontimeupdate|ontoggle|onvolumechange|onwaiting|part|rel|slot|spellcheck|style|tabindex|target|title|translate|role');
+        /**
+         * Valid HTML Form attributes are determined based on the list in
+         * on the config/valid_html_form_attributes.php file .
+         */
+
+        $valid_html_attributes = ee()->config->loadFile('valid_html_form_attributes');
         
         // Cannot think of any circumstance where tagparams is not empty, but just in case... 
         if ( ! empty(ee()->TMPL->tagparams))
