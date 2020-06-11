@@ -58,8 +58,7 @@ class EE_Throttling {
 
  	function throttle_ip_check()
  	{
-		if (ee()->config->item('banish_masked_ips') == 'y' AND ee()->input->ip_address() == '0.0.0.0' OR ee()->input->ip_address() == '')
-		{
+		if (ee()->config->item('banish_masked_ips') == 'y' && ee()->input->ip_address() == EE_Input::DEFAULT_IP_ADDRESS || ee()->input->ip_address() == '') {
 			$this->banish();
 		}
   	}

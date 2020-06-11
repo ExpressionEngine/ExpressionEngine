@@ -10,6 +10,8 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
+use EE_Input;
+
 /**
  * Member Import Controller
  */
@@ -685,7 +687,7 @@ class MemberImport extends Utilities {
 		$this->default_fields['date_format']		= $this->input->post('date_format') ?: NULL;
 		$this->default_fields['time_format']		= $this->input->post('time_format') ?: NULL;
 		$this->default_fields['include_seconds']	= $this->input->post('include_seconds') ?: NULL;
-		$this->default_fields['ip_address']			= '0.0.0.0';
+		$this->default_fields['ip_address']			= EE_Input::DEFAULT_IP_ADDRESS;
 		$this->default_fields['join_date']			= $this->localize->now;
 
 		//  Rev it up, no turning back!

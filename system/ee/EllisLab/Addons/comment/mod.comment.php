@@ -2,6 +2,7 @@
 
 namespace EllisLab\Addons\Comment;
 
+use EE_Input;
 use EllisLab\Addons\Comment\Service\Notifications;
 use EllisLab\Addons\Comment\Service\Variables\Comment as CommentVars;
 
@@ -1582,7 +1583,7 @@ class Comment {
 
 		if (ee()->config->item('require_ip_for_posting') == 'y')
 		{
-			if (ee()->input->ip_address() == '0.0.0.0' OR ee()->session->userdata['user_agent'] == "")
+			if (ee()->input->ip_address() == EE_Input::DEFAULT_IP_ADDRESS OR ee()->session->userdata['user_agent'] == "")
 			{
 				return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 			}
