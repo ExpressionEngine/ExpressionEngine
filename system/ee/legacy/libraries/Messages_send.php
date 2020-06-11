@@ -387,7 +387,7 @@ class EE_Messages_send extends EE_Messages {
 		/** ----------------------------------------*/
 		if (ee()->config->item('require_ip_for_posting') == 'y')
 		{
-			if (ee()->input->ip_address() == '0.0.0.0' OR ee()->session->userdata['user_agent'] == '')
+			if (ee()->input->ip_address() == EE_Input::DEFAULT_IP_ADDRESS OR ee()->session->userdata['user_agent'] == '')
 			{
 				return $this->_error_page();
 			}

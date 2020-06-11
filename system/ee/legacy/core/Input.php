@@ -13,6 +13,8 @@
  */
 class EE_Input {
 
+	const DEFAULT_IP_ADDRESS = '0.0.0.0';
+
 	var $SID = ''; // Session ID extracted from the URI segments
 
 	var $ip_address				= FALSE;
@@ -374,55 +376,56 @@ class EE_Input {
 	*/
 	function ip_address()
 	{
-		if ($this->ip_address !== FALSE)
-		{
+		if ($this->ip_address !== false) {
 			return $this->ip_address;
 		}
 
-		if (REQ == 'CLI')
-		{
-			return '0.0.0.0';
+		if (REQ === 'CLI') {
+			return self::DEFAULT_IP_ADDRESS;
 		}
 
+		$possibleHeaders = [
+			'HTTP_CF_CONNECTING_IP', // Cloudflare IP forwarding
+			'HTTP_X_FORWARDED',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_CLIENT_IP',
+			'HTTP_X_CLIENT_IP',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+		];
+
 		$proxy_ips = config_item('proxy_ips');
-		if ( ! empty($proxy_ips))
-		{
+		$this->ip_address = $_SERVER['REMOTE_ADDR'];
+
+		if (!empty($proxy_ips)) {
 			$proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
-			foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header)
-			{
-				if (($spoof = $this->server($header)) !== FALSE)
-				{
+
+			foreach ($possibleHeaders as $header) {
+				if (($spoof = $this->server($header)) !== false) {
 					// Some proxies typically list the whole chain of IP
 					// addresses through which the client has reached us.
 					// e.g. client_ip, proxy_ip1, proxy_ip2, etc.
-					if (strpos($spoof, ',') !== FALSE)
-					{
+					if (strpos($spoof, ',') !== false) {
 						$spoof = explode(',', $spoof, 2);
 						$spoof = $spoof[0];
 					}
 
-					if ( ! $this->valid_ip($spoof))
-					{
+					if (!$this->valid_ip($spoof)) {
 						$spoof = FALSE;
-					}
-					else
-					{
+					} else {
 						break;
 					}
 				}
 			}
 
-			$this->ip_address = ($spoof !== FALSE && in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, TRUE))
-				? $spoof : $_SERVER['REMOTE_ADDR'];
-		}
-		else
-		{
-			$this->ip_address = $_SERVER['REMOTE_ADDR'];
+			if ($spoof !== false && in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, true)) {
+				$this->ip_address = $spoof;
+			}
 		}
 
-		if ( ! $this->valid_ip($this->ip_address))
-		{
-			$this->ip_address = '0.0.0.0';
+		if (!$this->valid_ip($this->ip_address)) {
+			$this->ip_address = self::DEFAULT_IP_ADDRESS;
 		}
 
 		return $this->ip_address;
@@ -829,7 +832,7 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					
+
 					global ${$global};
 
 					$$global = NULL;
@@ -842,7 +845,7 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						
+
 						global ${$key};
 
 						$$key = NULL;
