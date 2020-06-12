@@ -315,6 +315,8 @@ $lang = array(
 
 'search_in_filter' => 'search in',
 
+'columns_filter' => 'Columns',
+
 'perpage_filter' => 'show',
 
 'date_filter' => 'date',
@@ -705,7 +707,7 @@ $lang = array(
 
 'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
+'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/cp/utilities/reindex.html">user guide</a> for more details.',
 
 /* Permissions */
 
@@ -731,11 +733,11 @@ $lang = array(
 
 /* Dashboard Widgets */
 
-'save_dashboard_layout'	=> 'Save layout',
+'save_dashboard_layout' => 'Save layout',
 
-'edit_dashboard_layout'	=> 'Edit layout',
+'edit_dashboard_layout' => 'Edit layout',
 
-'dashboard_layout_saved'	=> 'Layout saved',
+'dashboard_layout_saved' => 'Layout saved',
 
 'dashboard_layout_save_error' => 'Could not save layout',
 
