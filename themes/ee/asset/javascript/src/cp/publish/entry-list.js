@@ -127,6 +127,7 @@ $(document).ready(function () {
 						success: function(data) {
 							loadViewRequest = null;
 							replaceData(data);
+							sortableColumns();
 						},
 						error: function(e) {
 							//do nothing

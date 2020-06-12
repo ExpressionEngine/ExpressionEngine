@@ -33,7 +33,7 @@ class Columns extends Filter {
 			$this->channel_id = $channel->channel_id;
 		}
 
-		$this->default_value = json_encode(['entry_id', 'title', 'entry_date', 'author', 'status']);
+		$this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status'];
 	}
 
 	// get columns from view
@@ -69,7 +69,10 @@ class Columns extends Filter {
 	{
 		//selected options go first in chosen order
 		$options = [];
-		$selected = json_decode($this->value());
+		$selected = $this->value();
+		if (!is_array($selected)) {
+			$selected = json_decode($selected);
+		}
 		foreach ($selected as $key) {
 			if (isset($this->options[$key])) {
 				$options[$key] = $this->options[$key];
@@ -81,7 +84,7 @@ class Columns extends Filter {
 			'label'			=> $this->label,
 			'value'			=> '',
 			'available_columns' => $options,
-			'selected_columns' => json_decode($this->value())
+			'selected_columns' => $selected
 		);
 
 		return $view->make('_shared/filters/columns')->render($filter);

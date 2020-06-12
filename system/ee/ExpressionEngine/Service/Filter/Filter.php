@@ -102,10 +102,6 @@ abstract class Filter {
 			$value = $this->isValid() ? $value : NULL;
 		}
 
-		if (is_array($value)) {
-			$value = json_encode($value);
-		}
-
 		return is_null($value) ? NULL : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
 	}
 
