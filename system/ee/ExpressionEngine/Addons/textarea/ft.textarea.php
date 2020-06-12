@@ -8,8 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use Addons\FilePicker\FilePicker;
-use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+use ExpressionEngine\Addons\FilePicker\FilePicker;
 
 /**
  * Textarea Fieldtype
