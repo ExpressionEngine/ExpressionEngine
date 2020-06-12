@@ -243,7 +243,7 @@ class EntryListing {
 		if (in_array('Columns', $this->extra_filters)) {
 			$columns = array_map(function($identifier) {
 				return EntryManager\ColumnFactory::getColumn($identifier);
-			}, json_decode($this->filters->values()['columns']));
+			}, $this->filters->values()['columns']);
 			foreach ($columns as $column) {
 				if (!empty($column)) {
 					if (!empty($column->getEntryManagerColumnModels())) {

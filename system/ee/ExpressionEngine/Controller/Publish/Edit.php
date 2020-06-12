@@ -85,7 +85,7 @@ class Edit extends AbstractPublishController {
 		$channel_id = $entry_listing->channel_filter->value();
 
 		//which columns should we show
-		$selected_columns = json_decode($filter_values['columns']);
+		$selected_columns = $filter_values['columns'];
 		$selected_columns[] = 'checkbox';
 
 		$columns = [];

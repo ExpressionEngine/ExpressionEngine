@@ -50,6 +50,14 @@ class View extends Model {
 	protected $name;
 	protected $columns;
 
+	public function getColumns()
+	{
+		if (!is_array($this->columns)) {
+			return json_decode($this->columns);
+		}
+		return $this->columns;
+	}
+
 }
 
 // EOF

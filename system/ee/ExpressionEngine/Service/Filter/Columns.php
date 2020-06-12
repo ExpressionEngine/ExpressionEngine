@@ -52,7 +52,7 @@ class Columns extends Filter {
 		$view = $query->first();
 
 		if (!empty($view)) {
-			$value = $view->columns;
+			$value = $view->getColumns();
 		}
 
 		if (empty($value)) {
