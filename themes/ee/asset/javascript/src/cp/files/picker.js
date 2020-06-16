@@ -25,6 +25,10 @@
 					source: options.source
 				};
 				options.callback(data, picker);
+				modal.trigger({
+					type:'filepicker:pick',
+					selection: data
+				});
 			};
 
 		if (options.iframe) {

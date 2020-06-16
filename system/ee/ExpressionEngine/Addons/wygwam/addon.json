@@ -1,0 +1,16 @@
+{
+    "name": "Wygwam",
+    "shortname": "wygwam",
+    "version": "6.0.0",
+    "foundation_version": "4.4.2",
+    "description": "Wysiwyg editor powered by CKEditor",
+    "license": "EEHarbor",
+    "namespace": "EEHarbor\\Wygwam",
+    "require": {
+        "php": ">=5.3.*",
+        "expressionengine/core": ">=2.11"
+    },
+    "resources": {
+        "themes": true
+    }
+}
