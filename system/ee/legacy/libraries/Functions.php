@@ -533,8 +533,9 @@ class EE_Functions {
         // Next section is for the 'pass-through' functionality
 
         $_tagparams = array();
-        $_pass_thru = '';
+        $_pass_thru = array();
         $valid_html_attributes = array();
+        $_pass_thru_string = '';
 
         /**
          * Valid HTML Form attributes are determined based on the list in
@@ -556,16 +557,13 @@ class EE_Functions {
                 if ((! array_key_exists($key, $deft) && in_array($key, $valid_html_attributes)) || (preg_match("/^data-|^aria-/",$key))) {
         
                     // Append the key to end of the $_pass_thru variable
-                    // only add a leading space if the variable already has some content
-                    $_pass_thru .= ($_pass_thru == '' ? $key : ' '.$key);
-
-                    // If the attribute has a value set then append this to the key just added within an ="" construct
-                    if (strlen($val) > 0) {
-                        $_pass_thru .= '="'.$val.'"';
-                    }
+                    // If the attribute has a value set then add this value to the key enclosed within an ="" construct
+                    $_pass_thru[$key] = (strlen($val) > 0 ? '="'.$val.'"' : '');
                 }                
             }
         }
+        // Build pass-through attribute string
+        foreach ($_pass_thru as $key => $val) {$_pass_thru_string .= " ".$key.(strlen($val) > 0 ? $val : '');};
 
         // Construct the opening form tag - including appending any pass_thru parameters
         $form  = '<form '   .$data['id']
@@ -575,7 +573,7 @@ class EE_Functions {
                             .$data['action'].'"'
                             .$data['onsubmit']
                             .$data['enctype']
-                            .($_pass_thru == '' ? '' : ' '.$_pass_thru)
+                            .$_pass_thru_string
                             .">\n";
 
 		if ($data['secure'] == TRUE)
