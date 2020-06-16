@@ -554,7 +554,7 @@ class EE_Functions {
                 // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
                 // or if the parameter is not in the list of approved attributes
                 // or if the parameter begins with either aria- or data-
-                if ((! array_key_exists($key, $deft) && in_array($key, $valid_html_attributes)) || (preg_match("/^data-|^aria-/",$key))) {
+                if ((! array_key_exists($key, $deft)) && (! empty($valid_html_attributes) && in_array($key, $valid_html_attributes)) || (preg_match("/^data-|^aria-/",$key))) {
         
                     // Append the key to end of the $_pass_thru variable
                     // If the attribute has a value set then add this value to the key enclosed within an ="" construct
