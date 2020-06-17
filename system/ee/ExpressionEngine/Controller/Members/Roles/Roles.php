@@ -1103,7 +1103,7 @@ class Roles extends AbstractRolesController {
 					],
 				]
 			],
-			lang('members') => [
+			'members' => [
 				'group' => 'can_access_cp',
 				'settings' => [
 					[

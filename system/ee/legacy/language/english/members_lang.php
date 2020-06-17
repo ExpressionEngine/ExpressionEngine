@@ -934,7 +934,7 @@ $lang = array(
 
 'message_sent_to' => 'Message Sent to:',
 
-'must_be_superadmin_to_delete_one' => 'You must be a Super Admin to delete a Super Admin',
+'must_be_superadmin_to_delete_one' => 'You must be a Super Admin to delete a member with this role',
 
 'no_cached_email' => 'No <b>cached email messages</b> found.',
 
