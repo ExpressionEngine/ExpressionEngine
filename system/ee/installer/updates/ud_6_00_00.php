@@ -48,7 +48,8 @@ class Updater {
 				'addWidgetsTable',
 				'addDashboardLayoutsTable',
 				'addLayoutWidgetsTable',
-				'addAddonIcons'
+				'addAddonIcons',
+				'addStickyChannelPreference'
 			]
 		);
 
@@ -1076,6 +1077,22 @@ class Updater {
 		{
 			ee()->db->insert('actions', $row_data);
 		}
+	}
+
+	private function addStickyChannelPreference() {
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'sticky_enabled' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n'
+				)
+			)
+		);
+
+		ee()->db->update('channels', ['sticky_enabled' => 'y']);
 	}
 
 }

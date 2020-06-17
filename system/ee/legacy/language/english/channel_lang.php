@@ -292,6 +292,10 @@ $lang = array(
 
 'convert_urls_emails_to_links_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
 
+'enable_sticky' => 'Enable Sticky entries?',
+
+'enable_sticky_desc' => 'When enabled, entries can be marked as sticky and have preference in sorted listings.',
+
 'default_category' => 'Category',
 
 'default_category_desc' => 'Category assigned to all <b>new</b> entries in this channel.',
