@@ -103,6 +103,7 @@ class Members extends CP_Controller {
 		$vars['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
+		$this->base_url->addQueryStringVariables($filter_values);
 
 		$page = ((int) ee('Request')->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
