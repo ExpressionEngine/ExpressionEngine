@@ -19,8 +19,7 @@ class Groups extends AbstractRolesController {
 
 	public function create()
 	{
-		if ( ! ee('Permission')->can('create_roles'))
-		{
+		if (!ee('Permission')->isSuperAdmin()) {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
@@ -125,8 +124,7 @@ class Groups extends AbstractRolesController {
 
 	public function edit($id)
 	{
-		if ( ! ee('Permission')->can('edit_roles'))
-		{
+		if (!ee('Permission')->isSuperAdmin()) {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
@@ -274,8 +272,7 @@ class Groups extends AbstractRolesController {
 
 	public function remove()
 	{
-		if ( ! ee('Permission')->can('delete_roles'))
-		{
+		if (!ee('Permission')->isSuperAdmin()) {
 			show_error(lang('unauthorized_access'), 403);
 		}
 

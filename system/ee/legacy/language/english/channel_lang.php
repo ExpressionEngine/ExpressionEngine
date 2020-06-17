@@ -602,7 +602,7 @@ $lang = array(
 
 'channel_roles' => 'Allowed Roles',
 
-'channel_roles_desc' => 'Users in these roles can perform each selected action in this channel.',
+'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
 
 'edit_in_full_form'	=> 'Edit in full form'
 

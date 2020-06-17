@@ -106,7 +106,7 @@ class Design extends AbstractDesignController {
 
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
 
-		$vars['show_new_template_button'] = ee('Permission')->can('can_create_templates_template_group_id_' . $group->getId());
+		$vars['show_new_template_button'] = ee('Permission')->can('create_templates_template_group_id_' . $group->getId());
 		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates_template_group_id_' . $group->getId());
 		$vars['group_id'] = $group->group_name;
 

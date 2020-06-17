@@ -428,10 +428,6 @@ class Updater {
 			'can_edit_categories',
 			'can_delete_categories',
 			'can_view_other_entries',
-			'can_edit_other_entries',
-			'can_assign_post_authors',
-			'can_delete_self_entries',
-			'can_delete_all_entries',
 			'can_view_other_comments',
 			'can_edit_own_comments',
 			'can_delete_own_comments',
@@ -449,8 +445,6 @@ class Updater {
 			'can_send_private_messages',
 			'can_attach_in_private_messages',
 			'can_send_bulletins',
-			'can_create_entries',
-			'can_edit_self_entries',
 			'can_upload_new_files',
 			'can_edit_files',
 			'can_delete_files',
@@ -475,9 +469,6 @@ class Updater {
 			'can_edit_member_groups',
 			'can_create_members',
 			'can_edit_members',
-			'can_create_new_templates',
-			'can_edit_templates',
-			'can_delete_templates',
 			'can_create_template_groups',
 			'can_edit_template_groups',
 			'can_delete_template_groups',
@@ -495,6 +486,22 @@ class Updater {
 			'can_manage_consents'
 		];
 
+		$entry_permissions = [
+			'can_create_entries',
+			'can_edit_self_entries',
+			'can_delete_self_entries',
+			'can_edit_other_entries',
+			'can_delete_all_entries',
+			'can_assign_post_authors'
+		];
+
+		$template_permissions = [
+			'can_create_new_templates',
+			'can_edit_templates',
+			'can_delete_templates'
+			//'manage_settings_template'
+		];
+
 		$rename = [
 			'can_admin_mbr_groups'     => 'can_admin_roles',
 			'can_email_member_groups'  => 'can_email_roles',
@@ -503,21 +510,53 @@ class Updater {
 			'can_edit_member_groups'   => 'can_edit_roles',
 		];
 
+		$channels = ee()->db->get('channels');
+
+		$template_groups = ee()->db->get('template_groups');
+
 		$groups = ee()->db->get('member_groups');
 
-		foreach ($groups->result() as $group)
-		{
-			foreach ($permissions as $permission)
-			{
+		foreach ($groups->result() as $group) {
+			foreach ($permissions as $permission) {
 				// Since we assume "no" we only need to store "yes"
-				if ($group->$permission == 'y')
-				{
+				if ($group->$permission == 'y') {
 					$permission = (array_key_exists($permission, $rename)) ? $rename[$permission] : $permission;
 					$insert[] = [
 						'role_id'   => $group->group_id,
 						'site_id'    => $group->site_id,
 						'permission' => $permission
 					];
+				}
+			}
+			foreach ($entry_permissions as $permission) {
+				// Since we assume "no" we only need to store "yes"
+				if ($group->$permission == 'y') {
+					foreach ($channels->result() as $row) {
+						$insert[] = [
+							'role_id'   => $group->group_id,
+							'site_id'    => $group->site_id,
+							'permission' => $permission . '_channel_id_' . $row->channel_id
+						];
+					}
+				}
+			}
+			foreach ($template_permissions as $permission) {
+				// Since we assume "no" we only need to store "yes"
+				if ($group->$permission == 'y') {
+					foreach ($template_groups->result() as $row) {
+						$insert[] = [
+							'role_id'   => $group->group_id,
+							'site_id'    => $group->site_id,
+							'permission' => $permission . '_channel_id_' . $row->group_id
+						];
+						if ($permission == 'can_create_new_templates') {
+							$insert[] = [
+								'role_id'   => $group->group_id,
+								'site_id'    => $group->site_id,
+								'permission' => 'manage_settings_template_channel_id_' . $row->group_id
+							];
+						}
+					}
 				}
 			}
 		}
