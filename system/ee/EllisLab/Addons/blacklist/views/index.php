@@ -88,7 +88,7 @@
 				</fieldset>
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit('btn_save_list', $save_btn_text_working)?>
-				<a class="btn" href="<?=ee('CP/URL')->make('addons/settings/blacklist/ee_whitelist')?>"><?=lang('btn_download_whitelist')?></a>
+				<a class="btn" href="<?=ee('CP/URL')->make('addons/settings/blacklist/ee_whitelist', ['token' => CSRF_TOKEN])?>"><?=lang('btn_download_whitelist')?></a>
 			</fieldset>
 			</div>
 		<?=form_close();?>
