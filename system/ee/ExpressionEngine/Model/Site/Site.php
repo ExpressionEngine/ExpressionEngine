@@ -150,7 +150,7 @@ class Site extends Model {
 	}
 
 	public function onAfterInsert()
-    {
+	{
 		$this->setDefaultPreferences('system');
 		$this->setDefaultPreferences('channel');
 		$this->setDefaultPreferences('template');
@@ -164,8 +164,8 @@ class Site extends Model {
 	}
 
 	public function onAfterSave()
-    {
-		ee()->cache->delete('/site_pages/');
+	{
+		ee()->cache->delete('/site_pages/', \Cache::GLOBAL_SCOPE);
 	}
 
 	/**
