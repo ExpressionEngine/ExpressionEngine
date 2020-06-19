@@ -231,11 +231,10 @@ class EE_Xmlrpc {
 			}
 			elseif(is_array($value['0']) && ($value['1'] == 'struct' OR $value['1'] == 'array'))
 			{
-
-				foreach ($value[0] as $k) {
-
+				foreach ($value['0'] as $key => $val)
+				{
+					$k = (is_array($val)) ? $key : $val;
 					$value['0'][$k] = $this->values_parsing($value['0'][$k], TRUE);
-
 				}
 
 				$temp = new XML_RPC_Values($value['0'], $value['1']);
@@ -484,15 +483,14 @@ class XML_RPC_Response
 	{
 		if ($array !== FALSE && is_array($array))
 		{
-
-			foreach ($array as $key) {
-				if (is_array($array[$key]))
+			foreach ($array as $name => $key) {
+				if (is_array($key))
 				{
-					$array[$key] = $this->decode($array[$key]);
+					$array[$name] = $this->decode($key);
 				}
 				else
 				{
-					$array[$key] = ($this->xss_clean) ? ee('Security/XSS')->clean($array[$key]) : $array[$key];
+					$array[$name] = ($this->xss_clean) ? ee('Security/XSS')->clean($key) : $key;
 				}
 			}
 
@@ -1384,8 +1382,7 @@ class XML_RPC_Values extends EE_Xmlrpc
 	function scalarval()
 	{
 		reset($this->me);
-
-		return is_array($this->me) ? $this->me[0] : false;
+		return is_array($this->me) ? array_values($this->me)[0] : false;
 	}
 
 
