@@ -1,6 +1,6 @@
 <?php if ( ! empty($toolbar_items)): ?>
 <div class="button-toolbar toolbar">
-  <div class="button-group button-group-small">
+  <div class="button-group button-group-xsmall">
     	<?php foreach ($toolbar_items as $type => $attributes):
     		if (isset($attributes['type']))
     		{

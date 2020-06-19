@@ -25,7 +25,7 @@
 				<div class="title-bar__extra-tools">
 				<?php if ( ! $write): ?>
 					<div class="search-input">
-						<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+						<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 					</div>
 				<?php endif ?>
 				</div>

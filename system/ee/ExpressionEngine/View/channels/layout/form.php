@@ -1,10 +1,14 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
+<div class="panel">
 <div class="form-standard has-tabs publish" data-publish>
 	<?=form_open($form_url, 'class="ajax-validate"')?>
-	<div class="form-btns form-btns-top">
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
-	</div>
+  <div class="panel-heading">
+    <div class="form-btns form-btns-top">
+  		<?php $this->embed('ee:_shared/form/buttons'); ?>
+  	</div>
+  </div>
+  <div class="panel-body">
 	<div class="tab-wrap">
 		<?=ee('CP/Alert')->get('layout-form')?>
 
@@ -39,7 +43,7 @@
 			<?php endforeach; ?>
 			</div>
 
-			<a class="tab-bar__right-button button button--small button--primary m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
+			<a class="tab-bar__right-button button button--xsmall button--default m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 		</div>
 			<input type="hidden" name="field_layout" value='<?=json_encode($channel_layout->field_layout)?>'>
 
@@ -67,13 +71,19 @@
 			<?php endforeach; ?>
 				</div>
 			</div>
-			<?php endforeach; ?>
 
-			<div class="form-btns">
+			<?php endforeach; ?>
+  </div>
+  </div>
+      <div class="panel-footer">
+      <div class="form-btns">
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			</div>
+      </div>
 		</form>
-	</div>
+
+
+</div>
 </div>
 
 <?php ee('CP/Modal')->startModal('add-new-tab'); ?>

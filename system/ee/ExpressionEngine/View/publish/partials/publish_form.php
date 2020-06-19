@@ -1,3 +1,5 @@
+<div class="panel">
+  <div class="panel-body">
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
@@ -27,9 +29,10 @@
 			</div>
 
 			<div class="tab-bar__right-buttons">
-				<div class="button-group form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
+				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
+
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<?php if ( ! $tab->isVisible()) continue; ?>
@@ -96,7 +99,10 @@
 				</div>
 			</fieldset>
 		</div>
-	</div>
+  </div>
+
 	</form>
+</div>
+</div>
 </div>
 <?=ee('CP/Alert')->getStandard()?>

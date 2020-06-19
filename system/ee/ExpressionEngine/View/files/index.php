@@ -4,6 +4,7 @@
   <div class="tbl-ctrls">
   	<?=form_open($form_url)?>
     <div class="panel-heading">
+      <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
 
@@ -12,9 +13,10 @@
     			<?php if (isset($filters)) echo $filters; ?>
     		</div>
       </div>
+
     </div>
 
-      <div class="app-notice-wrap with-alert-margin"><?=ee('CP/Alert')->getAllInlines()?></div>
+
       <?php $this->embed('_shared/table', $table); ?>
   		<?=$pagination?>
   		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

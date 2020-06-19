@@ -3,29 +3,31 @@
 <div class="panel">
   <div class="tbl-ctrls">
 		<?=form_open($base_url)?>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+      <div class="panel-body">
+        <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
-			<?php if (isset($pagination)) echo $pagination; ?>
-			<?php
-			if (ee('Permission')->can('delete_channels')) {
-				$options = [
-					[
-						'value' => "",
-						'text' => '-- ' . lang('with_selected') . ' --'
-					]
-				];
-				$options[] = [
-					'value' => "remove",
-					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-				];
-				$this->embed('ee:_shared/form/bulk-action-bar', [
-					'options' => $options,
-					'modal' => true
-				]);
-			}
-			?>
+  			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
+  			<?php if (isset($pagination)) echo $pagination; ?>
+  			<?php
+  			if (ee('Permission')->can('delete_channels')) {
+  				$options = [
+  					[
+  						'value' => "",
+  						'text' => '-- ' . lang('with_selected') . ' --'
+  					]
+  				];
+  				$options[] = [
+  					'value' => "remove",
+  					'text' => lang('delete'),
+  					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+  				];
+  				$this->embed('ee:_shared/form/bulk-action-bar', [
+  					'options' => $options,
+  					'modal' => true
+  				]);
+  			}
+  			?>
+      </div>
 		</form>
 	</div>
 </div>

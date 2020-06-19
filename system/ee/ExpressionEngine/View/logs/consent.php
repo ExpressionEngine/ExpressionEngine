@@ -1,12 +1,16 @@
 <?php $this->extend('_templates/default-nav') ?>
-
+<div class="panel">
 <div class="tbl-ctrls">
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+  <div class="panel-heading">
+  <h3><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
+
 
 	<?=form_open($form_url)?>
 		<?php if (isset($filters)) echo $filters; ?>
 	</form>
+</div>
+<div class="panel-body">
+  <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 	<section>
 		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_consent_logs_found')?></p>
@@ -33,4 +37,6 @@
 			<?=$pagination?>
 		<?php endif; ?>
 	</section>
+</div>
+</div>
 </div>

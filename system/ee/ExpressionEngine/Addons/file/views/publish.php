@@ -18,7 +18,7 @@
 	</div>
 	<div class="list-item__content-right">
 		<div class="fields-upload-tools">
-			<div class="button-group">
+			<div class="button-group button-group-small">
 				<?=$fp_edit?>
 				<a href="" class="remove button button--default" title="<?=lang('remove')?>"><i class="fa fa-times"></i></a>
 			</div>

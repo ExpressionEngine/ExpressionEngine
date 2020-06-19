@@ -104,7 +104,7 @@ $lang = array(
 
 'nav_homepage' => 'CP Home',
 
-'nav_overview' => 'Dashboard',
+'nav_overview' => 'Overview',
 
 'nav_settings' => 'Settings',
 

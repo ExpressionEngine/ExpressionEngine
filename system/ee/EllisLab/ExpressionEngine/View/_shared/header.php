@@ -48,7 +48,7 @@ $current_page = ee()->uri->segment(2);
 
 				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
 				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center">
-          <?=ee()->config->item('site_name')?>
+          <span class="ee-sidebar__site-name"><?=ee()->config->item('site_name')?></span>
           <span class="ee-sidebar__title-down-arrow">
             <i class="fas fa-chevron-down"></i>
           </span>
@@ -65,11 +65,11 @@ $current_page = ee()->uri->segment(2);
 				</div>
 				<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
 					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>">
-            <?=lang('name_your_site')?>
+            <span class="ee-sidebar__collapsed-hidden"> <?=lang('name_your_site')?> </span>
           </a>
 				<?php else: ?>
 					<a class="ee-sidebar__title" href="<?=ee()->config->item('site_url')?>" rel="external">
-            <?=ee()->config->item('site_name')?>
+            <span class="ee-sidebar__collapsed-hidden"><?=ee()->config->item('site_name')?></span>
           </a>
 				<?php endif ?>
 
@@ -81,7 +81,7 @@ $current_page = ee()->uri->segment(2);
 							<a class="nav-home" href="<?=$cp_homepage_url?>" title="<?=lang('nav_homepage')?>"><i class="icon-home"></i><span class="nav-txt-collapse"><?=lang('nav_homepage')?></span></a>
 							<a class="nav-overview" href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>"><i class="icon-dashboard"></i><span class="nav-txt-collapse"><?=lang('nav_overview')?></span></a>
 							<?php endif; ?> -->
-						<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
+						<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <span class="ee-sidebar__collapsed-hidden"><?=lang('nav_overview')?></span></a>
 
 						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
 						<a data-dropdown-use-root="true" data-dropdown-pos="right-start" href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item js-dropdown-hover <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('menu_entries') ?></a>
@@ -91,7 +91,7 @@ $current_page = ee()->uri->segment(2);
 								<div class="dropdown__item">
 									<a href="<?=$link?>"><?=$channel_name?></a>
 									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
-									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--secondary button--small"><i class="fas fa-plus"></i></a>
+									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--link button--xsmall"><i class="fas fa-plus"></i></a>
 									<?php endif; ?>
 								</div>
 							<?php endforeach ?>
