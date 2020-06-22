@@ -302,7 +302,7 @@ function (_React$Component) {
         className: "filter-bar__item"
       }, props.channels.length == 1 && React.createElement("button", {
         type: "button",
-        className: "button button--primary",
+        className: "button button--primary button--small",
         onClick: function onClick() {
           return _this3.openPublishFormForChannel(_this3.props.channels[0]);
         }
