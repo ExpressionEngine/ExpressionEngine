@@ -23,49 +23,6 @@ class TeepeeHelper
     private static $_sitePages;
     private static $_pageData;
 
-    private static $_toolbarButtonGroups;
-    private static $_toolbarButtonLabelOverrides;
-
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Returns toolbar button groupings, based on CKEditor's default "Full" toolbar.
-     *
-     * @return array $groups
-     */
-    public static function toolbarButtonGroups()
-    {
-        if (!isset(static::$_toolbarButtonGroups)) {
-            static::$_toolbarButtonGroups = array(
-                array('undo', 'redo'),
-                array('bold', 'italic', 'underline', 'strikethrough'),
-                array('subscript', 'superscript'),
-                array('removeFormat'),
-                array('numberedList', 'bulletedList'),
-                array('outdent', 'indent'),
-                array('alignment'),
-                array('blockquote'),
-                array('link'),
-                array('filemanager', 'insertTable', 'horizontalLine', 'specialCharacters', 'mediaEmbed'),
-                array('readMore'),
-                array('heading'),
-                array('fontColor', 'fontBackgroundColor')
-            );
-
-            // -------------------------------------------
-            //  'teepee_tb_groups' hook
-            //   - Allow extensions to modify the available toolbar groups
-            //
-            if (ee()->extensions->active_hook('teepee_tb_groups')) {
-                static::$_toolbarButtonGroups = ee()->extensions->call('teepee_tb_groups', static::$_toolbarButtonGroups);
-            }
-            //
-            // -------------------------------------------
-        }
-
-        return static::$_toolbarButtonGroups;
-    }
 
     // --------------------------------------------------------------------
 
@@ -190,86 +147,6 @@ class TeepeeHelper
     // --------------------------------------------------------------------
 
     /**
-     * Converts flat array of buttons into multi-dimensional
-     * array of tool groups and their buttons.
-     *
-     * @param array $buttons
-     * @param bool  $includeMissing should missing buttons be included
-     *
-     * @return array $result
-     */
-    public static function createToolbar($buttons, $includeMissing = false)
-    {
-        $toolbar = array();
-
-        //remap old Wygwam (CKEditor 4) buttons
-        /*foreach ($buttons as $i=>$button) {
-            $button = self::_convertButton($button);
-            if (empty($button)) {
-                unset($buttons[$i]);
-            } else {
-                $buttons[$i] = $button;
-            }
-        }*/
-
-        // group buttons by toolgroup
-        $toolbarButtonGroups = static::toolbarButtonGroups();
-
-        foreach ($toolbarButtonGroups as $groupIndex => &$group) {
-            $groupSelectionIndex = null;
-            $missing = array();
-            foreach ($group as $buttonIndex => &$button) {
-                //$button = self::_convertButton($button);
-                if (empty($button)) continue;
-                // selected?
-                if (($buttonSelectionIndex = array_search($button, $buttons)) !== false) {
-
-                    if ($groupSelectionIndex === null) {
-                        $groupSelectionIndex = $buttonSelectionIndex;
-                    }
-
-                    if (! isset($toolbar[$groupSelectionIndex])) {
-                        $toolbar[$groupSelectionIndex] = array();
-                    }
-
-                    $toolbar[$groupSelectionIndex]['b'.$buttonIndex] = $button;
-                } elseif ($includeMissing) {
-                    $missing['b'.$buttonIndex] = '!'.$button;
-                }
-            }
-
-            if ($groupSelectionIndex !== null) {
-                if ($includeMissing) {
-                    $toolbar[$groupSelectionIndex] = array_merge($missing, $toolbar[$groupSelectionIndex]);
-                }
-
-                ksort($toolbar[$groupSelectionIndex]);
-                $toolbar[$groupSelectionIndex] = array_values($toolbar[$groupSelectionIndex]);
-            }
-        }
-
-        // sort by keys and remove them
-        ksort($toolbar);
-        $result = array();
-
-        foreach ($toolbar as $toolGroup) {
-            if (!empty($toolGroup)) {
-                $result = array_merge($result, $toolGroup);
-                $result[] = '|';
-            }
-        }
-
-        array_pop($result);
-
-        $toolbarObject = new \stdClass();
-        $toolbarObject->items = $result;
-
-        return $toolbarObject;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
      * Includes the necessary CSS and JS files to get Teepee fields working.
      */
     public static function includeFieldResources()
@@ -336,7 +213,9 @@ class TeepeeHelper
 
         // toolbar
         if (is_array($config['toolbar'])) {
-            $config['toolbar'] = static::createToolbar($config['toolbar']);
+            $toolbarObject = new \stdClass();
+            $toolbarObject->items = $config['toolbar'];
+            $config['toolbar'] = $toolbarObject;
             $config['image'] = new \stdClass();
             $config['image']->toolbar = [
                 'imageTextAlternative',
