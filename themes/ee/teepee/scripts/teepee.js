@@ -157,15 +157,11 @@ window.Teepee;
 })(jQuery);
 
 var teepee_pages_loading = null;
-var searched = [];
-
 function getPages( queryText ) {
-    // As an example of an asynchronous action, return a promise
-    // that resolves after a 100ms timeout.
-    // This can be a server request or any sort of delayed action.
     if (teepee_pages_loading) {
         teepee_pages_loading.abort();
     }
+    //we only make request if the previous one had some results
     return new Promise( resolve => {
         var data = {search: queryText};
         teepee_pages_loading = $.ajax({
@@ -181,7 +177,7 @@ function getPages( queryText ) {
                     // Return 10 items max - needed for generic queries when the list may contain hundreds of elements.
                     .slice( 0, 10 );
                 teepee_pages_loading = null;
-                searched.push(queryText);
+                itemsToDisplay.push({'id': '@' + queryText.replace(" ", "-"), 'text': '\uFEFF@' + queryText, 'href': null});
                 resolve( itemsToDisplay );
             },
             error: function(e) {

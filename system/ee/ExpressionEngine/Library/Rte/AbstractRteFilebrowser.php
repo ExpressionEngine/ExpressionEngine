@@ -34,6 +34,17 @@ abstract class AbstractRteFilebrowser implements RteFilebrowserInterface
 	public function replaceTags($data)
 	{
 		return $data;
+    }
+
+    /**
+     * Function which will replace inserted URLs with special values, if those are needed for storage
+     *
+     * @param String $data Field data
+     * @return String $data Field data
+     */
+    public function replaceUrls($data)
+	{
+		return $data;
 	}
 
     /**

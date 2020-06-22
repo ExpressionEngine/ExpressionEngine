@@ -123,7 +123,7 @@ class Teepee_ft extends EE_Fieldtype
         $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
 
         if (strpos($id, '_new_') === false) {
-            ee()->javascript->output('new Teepee("'.$id.'", "'.$configHandle.'", '.$defer.');');
+            ee()->cp->add_to_foot('<script type="text/javascript">new Teepee("'.$id.'", "'.$configHandle.'", '.$defer.');</script>');
         }
 
         // pass the data through form_prep() if this is Channel Form
@@ -280,10 +280,10 @@ class Teepee_ft extends EE_Fieldtype
         $data = str_replace('&quot;', '"', $data);
 
         // Convert file URLs to tags
-        TeepeeHelper::replaceFileUrls($html);
+        TeepeeHelper::replaceFileUrls($data);
 
         // Convert page URLs to tags
-        TeepeeHelper::replacePageUrls($html);
+        TeepeeHelper::replacePageUrls($data);
 
         if (ee()->extensions->active_hook('teepee_before_save')) {
             $data = ee()->extensions->call('teepee_before_save', $this, $data);

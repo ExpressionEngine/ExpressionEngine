@@ -280,8 +280,8 @@ class TeepeeHelper
             ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'teepee/styles/teepee.css' . '" />');
 
             $action_id = ee()->db->select('action_id')
-				->where('class', 'Teepee')
-				->where('method', 'pages_autocomplete')
+                ->where('class', 'Teepee')
+                ->where('method', 'pages_autocomplete')
                 ->get('actions');
 
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
@@ -357,15 +357,9 @@ class TeepeeHelper
         }
 
         if (!empty(ee()->config->item('site_pages'))) {
-            $config['mention'] = new \stdClass();
-            $pagesFeed = new \stdClass();
-            $pagesFeed->marker = '@';
-            $pagesFeed->feed = 'getPages()';
-            $pagesFeed->itemRenderer = 'formatPageLinks()';
-            $pagesFeed->minimumCharacters = 3;
-            $config['mention']->feeds = [
-                $pagesFeed
-            ];
+            ee()->cp->add_to_foot('<script type="text/javascript">
+                EE.Teepee.configs.' . $configHandle . '.mention = {"feeds": [{"marker": "@", "feed": getPages, "itemRenderer": formatPageLinks, "minimumCharacters": 3}]};
+            </script>');
         }
 
         // -------------------------------------------
@@ -378,14 +372,14 @@ class TeepeeHelper
         $fileBrowserOptions = array_unique([ee()->config->item('teepee_file_browser'), 'filepicker']);
         foreach ($fileBrowserOptions as $fileBrowserName) {
             $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
-			if ( $fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
                 $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
                     $fileBrowser->addJs($uploadDir);
                     break;
                 }
-			}
+            }
         }
 
         // -------------------------------------------
@@ -472,6 +466,25 @@ class TeepeeHelper
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
                     $data = $fileBrowser->replaceTags($data);
+                }
+            }
+        }
+    }
+
+    /**
+     * Replaces {anything_X} tags with their parsed values.
+     *
+     * @param string &$data
+     */
+    public static function replaceExtraUrls(&$data)
+    {
+        $addons = ee('Addon')->all();
+        foreach ($addons as $fileBrowserAddon) {
+            if ( $fileBrowserAddon !== null && $fileBrowserAddon->hasRteFilebrowser()) {
+                $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
+                $fileBrowser = new $fqcn();
+                if ($fileBrowser instanceof RteFilebrowserInterface) {
+                    $data = $fileBrowser->replaceUrls($data);
                 }
             }
         }
@@ -644,61 +657,61 @@ class TeepeeHelper
         }
 
         $cache_key = '/site_pages/rte_'.$site_id;
-		if (!empty($search)) {
-			$cache_key .= '_' . urlencode($search);
-		}
-		$pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
+        if (!empty($search)) {
+            $cache_key .= '_' . urlencode($search);
+        }
+        $pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
 
-		if ($pages === FALSE) {
+        if ($pages === FALSE) {
 
-			$break = false;
-			/**
-			 * `teepee_autocomplete_pages` extension hook
-			 * allows addons to modify (narrow down) the list of pages that can be inserted
-			 * Expects array of following structure:
-			 * $pages[] = (object) [
-			 *			'id' => '@unique-identifier',
-			 *			'text' => 'main displayed text (e.g. entry title)',
-			 *			'extra' => 'extra info displayed (e.g. channel name)',
+            $break = false;
+            /**
+             * `teepee_autocomplete_pages` extension hook
+             * allows addons to modify (narrow down) the list of pages that can be inserted
+             * Expects array of following structure:
+             * $pages[] = (object) [
+             *			'id' => '@unique-identifier',
+             *			'text' => 'main displayed text (e.g. entry title)',
+             *			'extra' => 'extra info displayed (e.g. channel name)',
              *			'href' => 'link to the page',
              *          'entry_id' => entry ID,
              *          'uri' => page URI
-			 *		];
-			 */
-			if (ee()->extensions->active_hook('teepee_autocomplete_pages') === true) {
-				$pages = ee()->extensions->call('teepee_autocomplete_pages', $this, $pages, $search, $site_id);
-				if (ee()->extensions->end_script === true) {
-					$break = true;
-				}
-			}
+             *		];
+             */
+            if (ee()->extensions->active_hook('teepee_autocomplete_pages') === true) {
+                $pages = ee()->extensions->call('teepee_autocomplete_pages', $this, $pages, $search, $site_id);
+                if (ee()->extensions->end_script === true) {
+                    $break = true;
+                }
+            }
 
-			if (!$break) {
+            if (!$break) {
                 $site = ee('Model')->get('Site', $site_id)->first();
                 $site_pages = $site->site_pages;
-				$entry_ids = array_keys($site_pages[$site_id]['uris']);
-				$channels = ee('Model')->get('Channel')
-					->fields('channel_id', 'channel_title')
-					->all()
-					->getDictionary('channel_id', 'channel_title');
-				$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-					->fields('entry_id', 'title', 'url_title', 'channel_id')
-					->all();
-				$titles = $entries->getDictionary('entry_id', 'title');
-				$channel_ids = $entries->getDictionary('entry_id', 'channel_id');
-				foreach($site_pages[$site_id]['uris'] as $entry_id => $uri) {
-					if (isset($titles[$entry_id])) {
-						$pages[] = (object) [
-							'id' => '@' . $entry_id,
-							'text' => $titles[$entry_id],
-							'extra' => $channels[$channel_ids[$entry_id]],
+                $entry_ids = array_keys($site_pages[$site_id]['uris']);
+                $channels = ee('Model')->get('Channel')
+                    ->fields('channel_id', 'channel_title')
+                    ->all()
+                    ->getDictionary('channel_id', 'channel_title');
+                $entries = ee('Model')->get('ChannelEntry', $entry_ids)
+                    ->fields('entry_id', 'title', 'url_title', 'channel_id')
+                    ->all();
+                $titles = $entries->getDictionary('entry_id', 'title');
+                $channel_ids = $entries->getDictionary('entry_id', 'channel_id');
+                foreach($site_pages[$site_id]['uris'] as $entry_id => $uri) {
+                    if (isset($titles[$entry_id])) {
+                        $pages[] = (object) [
+                            'id' => '@' . $entry_id,
+                            'text' => $titles[$entry_id],
+                            'extra' => $channels[$channel_ids[$entry_id]],
                             'href' => '{page_' . $entry_id . '}',
                             'entry_id' => $entry_id,
                             'uri' => $uri
-						];
-					}
-				}
-			}
-			ee()->cache->save($cache_key, $pages, 0, \Cache::GLOBAL_SCOPE);
+                        ];
+                    }
+                }
+            }
+            ee()->cache->save($cache_key, $pages, 0, \Cache::GLOBAL_SCOPE);
         }
 
         return $pages;

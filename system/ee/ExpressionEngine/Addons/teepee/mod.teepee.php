@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Addons\Teepee\TeepeeHelper;
+
 /**
  * Teepee Module
  */
@@ -15,9 +17,7 @@ class Teepee {
 
 	public function pages_autocomplete()
 	{
-
 		$search = ee()->input->get('search');
-
 		$modified = ee()->input->get('t');
 		if ($modified == 0) {
 			$modified = ee()->localize->now;

@@ -33,6 +33,14 @@ interface RteFilebrowserInterface {
     public function replaceTags($data);
 
     /**
+     * Function which will replace inserted URLs with special values, if those are needed for storage
+     *
+     * @param String $data Field data
+     * @return String $data Field data
+     */
+    public function replaceUrls($data);
+
+    /**
      * Return array of upload destinations available
      * [
      *  [destination_id => destination_label]
