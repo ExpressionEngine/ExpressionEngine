@@ -10,5 +10,3 @@ iframe.teepee:hover { opacity: 1; -ms-filter:"progid:DXImageTransform.Microsoft.
 .ck.ck-reset_all .ck-mentions .mention-extra {
 	color: #666;
 }
-
-.content_elements_icon_teepee { background: url('../images/ce_icon.png'); background-size: 16px; }

@@ -56,7 +56,6 @@ window.Teepee;
             var iDoc = this.$iframe[0].contentWindow.document,
                 html = '<html>'
                      +   '<head>'
-                     +     '<link rel="stylesheet" type="text/css" href="'+css+'" />'
                      +     '<style type="text/css">* { cursor: pointer !important; }</style>'
                      +   '</head>'
                      +   '<body>'

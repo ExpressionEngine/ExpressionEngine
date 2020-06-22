@@ -96,8 +96,6 @@ class Teepee_mcp
         $data = array();
         $toolset_id = ee()->session->flashdata('toolset_id');
 
-        $default_toolset_id = ee()->config->item('rte_default_toolset_id');
-
         foreach ($toolsets as $t) {
             $toolset_name = htmlentities($t->toolset_name, ENT_QUOTES, 'UTF-8');
             $toolset_opts[$t->toolset_id] = $toolset_name;
@@ -111,7 +109,7 @@ class Teepee_mcp
             );
 
             $toolset_name = '<a href="' . $url->compile() . '">' . $toolset_name . '</a>';
-            if ($default_toolset_id == $t->toolset_id) {
+            if ($prefs['teepee_default_toolset_id'] == $t->toolset_id) {
                 $toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
                 $checkbox['disabled'] = 'disabled';
             }
@@ -276,7 +274,11 @@ class Teepee_mcp
         //  Advanced Settings
         // -------------------------------------------
 
-        $fullToolset = TeepeeHelper::defaultToolbars()['Full'];
+        $fullToolbar = TeepeeHelper::defaultToolbars()['Full'];
+        $fullToolset = array();
+        foreach ($fullToolbar as $tool) {
+            $fullToolset[$tool] = lang($tool);
+        }
 
         $sections = array(
             'teepee_basic_settings' => array(

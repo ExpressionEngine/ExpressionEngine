@@ -68,28 +68,6 @@ class Teepee_ft extends EE_Fieldtype
         return array('field_options' => $this->_fieldSettings($settings));
     }
 
-
-    /**
-     * Display Matrix cell settings.
-     *
-     * @param  $settings
-     *
-     * @return array $formFields Ready to be used in the EE Shared Form View
-     */
-    public function display_cell_settings($settings)
-    {
-        $settings = $this->display_settings($settings);
-
-
-        $html = '';
-        foreach ($settings as $name => $setting) {
-            $html .= ee('View')->make('ee:_shared/form/section')
-                ->render(array('name' => $name, 'settings' => $setting));
-        }
-
-        return $html;
-    }
-
     // --------------------------------------------------------------------
 
     /**
@@ -121,20 +99,6 @@ class Teepee_ft extends EE_Fieldtype
      * @return array $settings
      */
     public function grid_save_settings($settings)
-    {
-        $settings = $settings['teepee'];
-
-        return $settings;
-    }
-
-    /**
-     * Save Matrix cell settings.
-     *
-     * @param @settings
-     *
-     * @return array $settings
-     */
-    public function save_cell_settings($settings)
     {
         $settings = $settings['teepee'];
 
@@ -245,60 +209,6 @@ class Teepee_ft extends EE_Fieldtype
             'value' => $data,
 			'rows' => 10,
 			'data-config' => $configHandle
-		);
-        return form_textarea($field);
-    }
-
-    /**
-     * Display the field for Matrix
-     *
-     * @param mixed $data field data
-     *
-     * @return string $field
-     */
-    public function display_cell($data)
-    {
-        TeepeeHelper::includeFieldResources();
-        $configHandle = TeepeeHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
-
-        // get the cache
-        if (! isset(ee()->session->cache['teepee'])) {
-            ee()->session->cache['teepee'] = array();
-        }
-        $cache =& ee()->session->cache['teepee'];
-
-        if (! isset($cache['displayed_cols'])) {
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'teepee/scripts/matrix2.js"></script>');
-            $cache['displayed_cols'] = array();
-        }
-
-        if (! isset($cache['displayed_cols'][$this->settings['col_id']])) {
-            $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
-
-            ee()->javascript->output('Teepee.matrixColConfigs.col_id_' . $this->settings['col_id'] . ' = ["' . $configHandle . '", ' . $defer . '];');
-
-            $cache['displayed_cols'][$this->settings['col_id']] = true;
-        }
-
-        // convert file tags to URLs
-        TeepeeHelper::replaceFileTags($data);
-
-        // convert asset tags to URLs
-         TeepeeHelper::replaceExtraTags($data);
-
-        // convert site page tags to URLs
-        TeepeeHelper::replacePageTags($data);
-
-        if (ee()->extensions->active_hook('teepee_before_display')) {
-            $data = ee()->extensions->call('teepee_before_display', $this, $data);
-        }
-
-        ee()->load->helper('form');
-
-		$field = array(
-            'name' => $this->cell_name,
-            'value' => $data,
-			'rows' => 10
 		);
         return form_textarea($field);
     }

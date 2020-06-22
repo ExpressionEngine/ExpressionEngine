@@ -261,8 +261,6 @@ class TeepeeHelper
 
         array_pop($result);
 
-        $result = static::defaultToolbars()['Full'];
-
         $toolbarObject = new \stdClass();
         $toolbarObject->items = $result;
 
@@ -394,7 +392,7 @@ class TeepeeHelper
         //  JSONify Config and Return
         // -------------------------------------------
         ee()->javascript->set_global([
-            'Teepee.configs' => [$configHandle => $config],
+            'Teepee.configs.' . $configHandle => $config
         ]);
 
         static::$_includedConfigs[] = $configHandle;
