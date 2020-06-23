@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -13,24 +14,25 @@ use ExpressionEngine\Addons\Teepee\TeepeeHelper;
 /**
  * Teepee Module
  */
-class Teepee {
+class Teepee
+{
 
-	public function pages_autocomplete()
-	{
-		$search = ee()->input->get('search');
-		$modified = ee()->input->get('t');
-		if ($modified == 0) {
-			$modified = ee()->localize->now;
-		}
+    public function pages_autocomplete()
+    {
+        $search = ee()->input->get('search');
+        $modified = ee()->input->get('t');
+        if ($modified == 0) {
+            $modified = ee()->localize->now;
+        }
 
-		ee()->output->set_status_header(200);
-		@header("Cache-Control: max-age=172800, must-revalidate");
-		@header('Vary: Accept-Encoding');
-		@header('Last-Modified: '.ee()->localize->format_date('%D, %d %M %Y %H:%i:%s', $modified, false).' GMT');
-		@header('Expires: '.ee()->localize->format_date('%D, %d %M %Y %H:%i:%s', ee()->localize->now + 172800, false).' GMT');
+        ee()->output->set_status_header(200);
+        @header("Cache-Control: max-age=172800, must-revalidate");
+        @header('Vary: Accept-Encoding');
+        @header('Last-Modified: ' . ee()->localize->format_date('%D, %d %M %Y %H:%i:%s', $modified, false) . ' GMT');
+        @header('Expires: ' . ee()->localize->format_date('%D, %d %M %Y %H:%i:%s', ee()->localize->now + 172800, false) . ' GMT');
 
-		$pages = TeepeeHelper::getSitePages($search);
+        $pages = TeepeeHelper::getSitePages($search);
 
-		ee()->output->send_ajax_response($pages);
-	}
+        ee()->output->send_ajax_response($pages);
+    }
 }

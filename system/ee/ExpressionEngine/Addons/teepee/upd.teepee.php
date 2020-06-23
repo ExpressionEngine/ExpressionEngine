@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -22,7 +23,7 @@ class Teepee_upd extends Installer
     public $has_cp_backend = 'y';
     public $has_publish_fields = 'n';
 
-	public function __construct()
+    public function __construct()
     {
         parent::__construct();
     }

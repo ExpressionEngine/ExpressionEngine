@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -123,7 +124,7 @@ class Teepee_ft extends EE_Fieldtype
         $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
 
         if (strpos($id, '_new_') === false) {
-            ee()->cp->add_to_foot('<script type="text/javascript">new Teepee("'.$id.'", "'.$configHandle.'", '.$defer.');</script>');
+            ee()->cp->add_to_foot('<script type="text/javascript">new Teepee("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
         }
 
         // pass the data through form_prep() if this is Channel Form
@@ -146,15 +147,15 @@ class Teepee_ft extends EE_Fieldtype
 
         ee()->load->helper('form');
 
-		$field = array(
+        $field = array(
             'name' => $this->field_name,
             'value' => $data,
-			'id' => $id,
-			'rows' => 10,
-			'data-config' => $configHandle,
+            'id' => $id,
+            'rows' => 10,
+            'data-config' => $configHandle,
             'class' => 'teepee-textarea',
             'data-defer' => ($defer ? 'y' : 'n')
-		);
+        );
         return form_textarea($field);
     }
 
@@ -204,12 +205,12 @@ class Teepee_ft extends EE_Fieldtype
 
         ee()->load->helper('form');
 
-		$field = array(
+        $field = array(
             'name' => $this->field_name,
             'value' => $data,
-			'rows' => 10,
-			'data-config' => $configHandle
-		);
+            'rows' => 10,
+            'data-config' => $configHandle
+        );
         return form_textarea($field);
     }
 
@@ -357,10 +358,8 @@ class Teepee_ft extends EE_Fieldtype
         // return images only?
         if (isset($params['images_only']) && $params['images_only'] == 'yes') {
             $data = $this->_parseImages($data, $params, $tagdata);
-        }
-
-        // Text only?
-        elseif (isset($params['text_only']) && $params['text_only'] == 'yes') {
+        } elseif (isset($params['text_only']) && $params['text_only'] == 'yes') {
+            // Text only?
             // Strip out the HTML tags
             $data = preg_replace('/<[^<]+?>/', '', $data);
         } else {
@@ -544,7 +543,7 @@ class Teepee_ft extends EE_Fieldtype
         $images = array();
 
         if ($tagdata) {
-            $p = !empty($params['var_prefix']) ? rtrim($params['var_prefix'], ':').':' : '';
+            $p = !empty($params['var_prefix']) ? rtrim($params['var_prefix'], ':') . ':' : '';
         }
 
         // find all the image tags
@@ -558,36 +557,36 @@ class Teepee_ft extends EE_Fieldtype
                 preg_match_all('/\s([\w-]+)=([\'"])([^\2]*?)\2/', $img_match[1], $attr_matches, PREG_SET_ORDER);
 
                 foreach ($attr_matches as $attr_match) {
-                    $img[$p.$attr_match[1]] = $attr_match[3];
+                    $img[$p . $attr_match[1]] = $attr_match[3];
                 }
 
                 // ignore image if it doesn't have a source
-                if (empty($img[$p.'src'])) {
+                if (empty($img[$p . 'src'])) {
                     continue;
                 }
 
                 // find all the styles
-                if (! empty($img[$p.'style'])) {
-                    $styles = array_filter(explode(';', trim($img[$p.'style'])));
+                if (! empty($img[$p . 'style'])) {
+                    $styles = array_filter(explode(';', trim($img[$p . 'style'])));
 
                     foreach ($styles as $style) {
                         $style = explode(':', $style, 2);
-                        $img[$p.'style:'.trim($style[0])] = trim($style[1]);
+                        $img[$p . 'style:' . trim($style[0])] = trim($style[1]);
                     }
                 }
 
                 // use the width and height styles if they're set
-                if (! empty($img[$p.'style:width']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p.'style:width'], $width_match)) {
-                    $img[$p.'width'] = $width_match[1];
+                if (! empty($img[$p . 'style:width']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p . 'style:width'], $width_match)) {
+                    $img[$p . 'width'] = $width_match[1];
                     if ($width_match[2] == '%') {
-                        $img[$p.'width'] .= '%';
+                        $img[$p . 'width'] .= '%';
                     }
                 }
 
-                if (! empty($img[$p.'style:height']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p.'style:height'], $height_match)) {
-                    $img[$p.'height'] = $height_match[1];
+                if (! empty($img[$p . 'style:height']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p . 'style:height'], $height_match)) {
+                    $img[$p . 'height'] = $height_match[1];
                     if ($height_match[2] == '%') {
-                        $img[$p.'height'] .= '%';
+                        $img[$p . 'height'] .= '%';
                     }
                 }
 
@@ -604,7 +603,7 @@ class Teepee_ft extends EE_Fieldtype
 
         if ($tagdata) {
             // get the absolute number of files before we run the filters
-            $constants[$p.'absolute_total_images'] = (!empty($images) ? count($images) : 0);
+            $constants[$p . 'absolute_total_images'] = (!empty($images) ? count($images) : 0);
         }
 
         // offset and limit params
@@ -622,7 +621,7 @@ class Teepee_ft extends EE_Fieldtype
 
         if ($tagdata) {
             // get the filtered number of files
-            $constants[$p.'total_images'] = (!empty($images) ? count($images) : 0);
+            $constants[$p . 'total_images'] = (!empty($images) ? count($images) : 0);
 
             // parse {total_images} and {absolute_total_images} first, since they'll never change
             $tagdata = ee()->TMPL->parse_variables_row($tagdata, $constants);

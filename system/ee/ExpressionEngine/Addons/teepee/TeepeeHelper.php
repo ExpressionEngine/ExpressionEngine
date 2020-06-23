@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -188,12 +189,10 @@ class TeepeeHelper
         //  Editor Config
         // -------------------------------------------
 
-        if ($toolset = ee('Model')->get('teepee:Toolset')->filter('toolset_id', $configId)->first()
-        ) {
+        if ($toolset = ee('Model')->get('teepee:Toolset')->filter('toolset_id', $configId)->first()) {
             $configHandle = preg_replace('/[^a-z0-9]/i', '_', $toolset->toolset_name) . $configId;
             $config = array_merge($baseConfig, $toolset->settings);
-        } elseif ($toolset = ee('Model')->get('teepee:Toolset')->filter('toolset_id', ee()->config->item('teepee_default_toolset_id'))->first()
-        ) {
+        } elseif ($toolset = ee('Model')->get('teepee:Toolset')->filter('toolset_id', ee()->config->item('teepee_default_toolset_id'))->first()) {
             $configHandle = preg_replace('/[^a-z0-9]/i', '_', $toolset->toolset_name) . ee()->config->item('teepee_default_toolset_id');
             $config = array_merge($baseConfig, $toolset->settings);
         } else {
@@ -299,7 +298,7 @@ class TeepeeHelper
                 if ($url == '/') {
                     continue;
                 }
-                $tags[] = LD.'filedir_'.$id.RD;
+                $tags[] = LD . 'filedir_' . $id . RD;
                 $urls[] = $url;
             }
 
@@ -340,7 +339,7 @@ class TeepeeHelper
     {
         $addons = ee('Addon')->all();
         foreach ($addons as $fileBrowserAddon) {
-            if ( $fileBrowserAddon !== null && $fileBrowserAddon->hasRteFilebrowser()) {
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->hasRteFilebrowser()) {
                 $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
@@ -359,7 +358,7 @@ class TeepeeHelper
     {
         $addons = ee('Addon')->all();
         foreach ($addons as $fileBrowserAddon) {
-            if ( $fileBrowserAddon !== null && $fileBrowserAddon->hasRteFilebrowser()) {
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->hasRteFilebrowser()) {
                 $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
@@ -388,7 +387,7 @@ class TeepeeHelper
             $pageData = static::getSitePages('', $site_id);
 
             foreach ($pageData as $page) {
-                $tags[] = LD.'page_'.$page->entry_id.RD;
+                $tags[] = LD . 'page_' . $page->entry_id . RD;
                 $urls[] = $page->uri;
             }
 
@@ -405,17 +404,17 @@ class TeepeeHelper
      */
     public static function replacePageTags(&$data)
     {
-        if (strpos($data, LD.'page_') !== false) {
+        if (strpos($data, LD . 'page_') !== false) {
             $tags = static::_getPageTags();
 
             foreach ($tags[0] as $key => $pageTag) {
-                $pattern = '/(?!&quot;|\")('.preg_quote($pageTag).')(&quot;|\"|\/)?/u';
+                $pattern = '/(?!&quot;|\")(' . preg_quote($pageTag) . ')(&quot;|\"|\/)?/u';
                 preg_match_all($pattern, $data, $matches);
 
                 if ($matches && count($matches[0]) > 0) {
                     // $matches[2] should either be &quot;, ", / or empty
                     foreach ($matches[2] as $innerKey => $match) {
-                        $search = '/('.preg_quote($matches[1][$innerKey]).')/uU';
+                        $search = '/(' . preg_quote($matches[1][$innerKey]) . ')/uU';
                         $replace = $tags[1][$key];
 
                         // If there is not a trailing quote or slash, we're going to add one.
@@ -441,7 +440,7 @@ class TeepeeHelper
 
         foreach ($tags[1] as $key => $pageUrl) {
             $pageUrl = str_replace('/', '\/', preg_quote(rtrim($pageUrl, '/')));
-            $search = '/(?!\")('.$pageUrl.')\/?(?=\")/uU';
+            $search = '/(?!\")(' . $pageUrl . ')\/?(?=\")/uU';
             $data = preg_replace($search, $tags[0][$key], $data);
         }
     }
@@ -466,7 +465,7 @@ class TeepeeHelper
 
                 $query = ee()->db->query('SELECT entry_id, channel_id, title, url_title, status
                                         FROM exp_channel_titles
-                                        WHERE entry_id IN ('.implode(',', $pageIds).')
+                                        WHERE entry_id IN (' . implode(',', $pageIds) . ')
                                         ORDER BY entry_id DESC');
 
                 // index entries by entry_id
@@ -481,7 +480,7 @@ class TeepeeHelper
 
                 // Check if the trailing slash setting in Structure is turned on.
                 if (static::isStructureInstalled()) {
-                    $slash_result = ee()->db->get_where('structure_settings', array('var'=>'add_trailing_slash'), 1)->row();
+                    $slash_result = ee()->db->get_where('structure_settings', array('var' => 'add_trailing_slash'), 1)->row();
                     if ($slash_result && $slash_result->var_value == 'y') {
                         $add_trailing_slash = true;
                     }
@@ -514,7 +513,6 @@ class TeepeeHelper
                     );
                 }
             }
-
         }
 
         return static::$_pageData;
@@ -535,30 +533,29 @@ class TeepeeHelper
             $site_id = ee()->config->item('site_id');
         }
 
-        $cache_key = '/site_pages/rte_'.$site_id;
+        $cache_key = '/site_pages/rte_' . $site_id;
         if (!empty($search)) {
             $cache_key .= '_' . urlencode($search);
         }
         $pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
 
-        if ($pages === FALSE) {
-
+        if ($pages === false) {
             $break = false;
             /**
              * `teepee_autocomplete_pages` extension hook
              * allows addons to modify (narrow down) the list of pages that can be inserted
              * Expects array of following structure:
              * $pages[] = (object) [
-             *			'id' => '@unique-identifier',
-             *			'text' => 'main displayed text (e.g. entry title)',
-             *			'extra' => 'extra info displayed (e.g. channel name)',
-             *			'href' => 'link to the page',
+             *          'id' => '@unique-identifier',
+             *          'text' => 'main displayed text (e.g. entry title)',
+             *          'extra' => 'extra info displayed (e.g. channel name)',
+             *          'href' => 'link to the page',
              *          'entry_id' => entry ID,
              *          'uri' => page URI
-             *		];
+             *      ];
              */
             if (ee()->extensions->active_hook('teepee_autocomplete_pages') === true) {
-                $pages = ee()->extensions->call('teepee_autocomplete_pages', $this, $pages, $search, $site_id);
+                $pages = ee()->extensions->call('teepee_autocomplete_pages', $pages, $search, $site_id);
                 if (ee()->extensions->end_script === true) {
                     $break = true;
                 }
@@ -577,7 +574,7 @@ class TeepeeHelper
                     ->all();
                 $titles = $entries->getDictionary('entry_id', 'title');
                 $channel_ids = $entries->getDictionary('entry_id', 'channel_id');
-                foreach($site_pages[$site_id]['uris'] as $entry_id => $uri) {
+                foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
                     if (isset($titles[$entry_id])) {
                         $pages[] = (object) [
                             'id' => '@' . $entry_id,
@@ -595,7 +592,4 @@ class TeepeeHelper
 
         return $pages;
     }
-
-
-
 }

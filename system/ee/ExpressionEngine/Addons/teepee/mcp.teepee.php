@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -33,8 +34,8 @@ class Teepee_mcp
     /**
      * Homepage
      *
-     * @access	public
-     * @return	string The page
+     * @access public
+     * @return string The page
      */
     public function index()
     {
@@ -53,7 +54,6 @@ class Teepee_mcp
         $prefs = [];
 
         if (ee('Request')->isPost()) {
-
             $rules = array(
                 'teepee_default_toolset_id' => 'required|enum[' . implode(',', $toolset_ids) . ']',
                 'teepee_file_browser' => 'required|enum[' . implode(',', array_keys($file_browser_choices)) . ']'
@@ -103,7 +103,7 @@ class Teepee_mcp
             $checkbox = array(
                 'name' => 'selection[]',
                 'value' => $t->toolset_id,
-                'data'	=> array(
+                'data' => array(
                     'confirm' => lang('toolset') . ': <b>' . $toolset_name . '</b>'
                 )
             );
@@ -137,8 +137,8 @@ class Teepee_mcp
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $toolset
+                'attrs' => $attrs,
+                'columns' => $toolset
             );
         }
 
@@ -178,17 +178,17 @@ class Teepee_mcp
             )
         );
 
-        $table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+        $table = ee('CP/Table', array('autosort' => true, 'autosearch' => false, 'limit' => 20));
         $table->setColumns(
             array(
                 'tool_set' => array(
-                    'encode' => FALSE
+                    'encode' => false
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -221,7 +221,8 @@ class Teepee_mcp
 
         $defaultConfigSettings = TeepeeHelper::defaultConfigSettings();
 
-        if (($toolset_id = $request->get('toolset_id'))
+        if (
+            ($toolset_id = $request->get('toolset_id'))
             && ($config = ee('Model')->get('teepee:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
             /**
@@ -232,10 +233,10 @@ class Teepee_mcp
             // Clone a config?
             if ($request->get('clone') == 'y') {
                 $config->toolset_id = '';
-                $config->toolset_name .= ' '.lang('teepee_clone');
+                $config->toolset_name .= ' ' . lang('teepee_clone');
                 $headingTitle = lang('teepee_create_config');
             } else {
-                $headingTitle = lang('teepee_edit_config').' - '.$config->toolset_name;
+                $headingTitle = lang('teepee_edit_config') . ' - ' . $config->toolset_name;
             }
         } else {
             $config = ee('Model')->make('teepee:Toolset', array(
@@ -258,7 +259,7 @@ class Teepee_mcp
         $fileBrowserOptions = array_unique([ee()->config->item('teepee_file_browser'), 'filepicker']);
         foreach ($fileBrowserOptions as $fileBrowserName) {
             $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
-            if ( $fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
                 $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
@@ -313,11 +314,11 @@ class Teepee_mcp
                     'wide'    => true,
                     'fields'  => array(
                         'settings[toolbar]' => array(
-							'type' => 'checkbox',
-							'choices' => $fullToolset,
-							'value' => $config->settings['toolbar'],
-							'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
-						)
+                            'type' => 'checkbox',
+                            'choices' => $fullToolset,
+                            'value' => $config->settings['toolbar'],
+                            'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
+                        )
                     )
                         ),
                 array(
@@ -428,7 +429,4 @@ class Teepee_mcp
 
         ee()->functions->redirect($this->base_url);
     }
-
-    // --------------------------------------------------------------------
-
 }
