@@ -120,8 +120,6 @@ class Member_settings extends Member {
 			$not_in[] = 2;
 		}
 
-		ee()->load->model('member_model');
-
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
 			->with(['PrimaryRole' => 'RoleSettings'])
 			->filter('role_id', 'NOT IN', $not_in)
@@ -932,7 +930,6 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function update_profile()
 	{
-		ee()->load->model('member_model');
 
 		/** -------------------------------------
 		/**  Safety....
