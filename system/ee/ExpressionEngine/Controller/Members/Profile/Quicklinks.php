@@ -24,7 +24,8 @@ class Quicklinks extends Settings {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->quicklinks = $this->member->getQuicklinks();
+		ee()->load->model('member_model');
+		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}

@@ -503,10 +503,11 @@ class Simple_commerce_mcp {
 		{
 			// Member group choices
 			$member_groups = array(0 => lang('no_change'));
-			$member_groups += ee('Model')->get('Role')
-				->order('name')
+			$member_groups += ee('Model')->get('MemberGroup')
+				->filter('site_id', ee()->config->item('site_id'))
+				->order('group_title')
 				->all()
-				->getDictionary('role_id', 'name');
+				->getDictionary('group_id', 'group_title');
 		}
 
 		return array(

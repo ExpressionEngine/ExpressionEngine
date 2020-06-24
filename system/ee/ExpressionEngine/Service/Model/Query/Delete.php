@@ -92,6 +92,11 @@ class Delete extends Query {
 					$fetch_query->fields("{$alias}.{$to_pk}");
 				}
 
+				if ($model == 'MemberGroup' || $model == 'ee:MemberGroup')
+				{
+					$fetch_query->fields("{$alias}.site_id");
+				}
+
 				$delete_models = $fetch_query->all();
 
 				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
@@ -366,13 +371,13 @@ class Delete extends Query {
 
 		return function($query) use ($relation, $withs)
 		{
-			if (($relation->getSourceModel() == 'Role' || $relation->getSourceModel() == 'ee:Role') &&
+			if (($relation->getSourceModel() == 'MemberGroup' || $relation->getSourceModel() == 'ee:MemberGroup') &&
 				($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member'))
 			{
 				return array();
 			}
 
-			if (($relation->getTargetModel() == 'Role' || $relation->getTargetModel() == 'ee:Role') &&
+			if (($relation->getTargetModel() == 'MemberGroup' || $relation->getTargetModel() == 'ee:MemberGroup') &&
 				($relation->getPivot() != array()))
 			{
 				return array();

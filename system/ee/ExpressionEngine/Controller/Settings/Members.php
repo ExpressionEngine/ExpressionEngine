@@ -37,6 +37,7 @@ class Members extends Settings {
 			->all()
 			->getDictionary('role_id', 'name');
 
+		ee()->load->model('member_model');
 		$themes = ee('Theme')->listThemes('member');
 
 		$member_themes = array();

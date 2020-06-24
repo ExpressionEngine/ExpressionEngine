@@ -937,36 +937,6 @@ class Member extends ContentModel {
 	}
 
 	/**
-	 * Get quick links for this member
-	 *
-	 * @return Array CP quick link
-	 */
-	public function getQuicklinks()
-	{
-		$quick_links = $this->quick_links;
-
-		$i = 1;
-
-		$quicklinks = array();
-
-		if ( ! empty($quick_links))
-		{
-			foreach (explode("\n", $quick_links) as $row)
-			{
-				$x = explode('|', $row);
-
-				$quicklinks[$i]['title'] = (isset($x['0'])) ? $x['0'] : '';
-				$quicklinks[$i]['link'] = (isset($x['1'])) ? $x['1'] : '';
-				$quicklinks[$i]['order'] = (isset($x['2'])) ? $x['2'] : '';
-
-				$i++;
-			}
-		}
-
-		return $quicklinks;
-	}
-
-	/**
 	 * Anonymize a member record in order to comply with a GDPR Right to Erasure request
 	 */
 	public function anonymize()

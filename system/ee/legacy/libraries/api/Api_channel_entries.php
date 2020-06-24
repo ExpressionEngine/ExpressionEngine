@@ -783,8 +783,18 @@ class Api_channel_entries extends Api {
 				}
 				else
 				{
-					$authors = ee('Member')->getAuthors();
-					$allowed_authors = array_keys($authors);
+					$allowed_authors = array();
+
+					ee()->load->model('member_model');
+					$query = ee()->member_model->get_authors();
+
+					if ($query->num_rows() > 0)
+					{
+						foreach($query->result_array() as $row)
+						{
+							$allowed_authors[] = $row['member_id'];
+						}
+					}
 
 					if ( ! in_array($data['author_id'], $allowed_authors))
 					{
@@ -1374,11 +1384,13 @@ class Api_channel_entries extends Api {
 		// for old author and new author
 		if ( ! $this->autosave && $old_author != $meta['author_id'])
 		{
-			$old_author_member = ee('Model')->get('Member', $old_author)->first();
-			$old_author_member->updateAuthorStats();
-
-			$new_author_member = ee('Model')->get('Member', $meta['author_id'])->first();
-			$new_author_member->updateAuthorStats();
+			ee()->load->model('member_model');
+			ee()->member_model->update_member_entry_stats(
+				array(
+					$old_author,
+					$meta['author_id']
+				)
+			);
 		}
 
 		// Remove any autosaved data

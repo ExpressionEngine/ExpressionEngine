@@ -39,9 +39,10 @@ class Member_group_model extends CI_Model
 	 */
 	private function _group_title_exists($site_id, $group_id, $group_title)
 	{
-		$this->db->from('roles')
-					->where('name', $group_title)
-					->where('role_id !=', $group_id);
+		$this->db->from('member_groups')
+					->where('group_title', $group_title)
+					->where('site_id', $site_id)
+					->where('group_id !=', $group_id);
 
 		if ($this->db->count_all_results())
 		{
@@ -313,8 +314,6 @@ class Member_group_model extends CI_Model
 	 */
 	public function parse_add_form(array $post, $form_site_id, $clone_id, $group_title)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
 		// This is less than optimal, but it allows us to use
 		// that foreach loop for both multi-site manager and
 		// single site.
@@ -411,8 +410,6 @@ class Member_group_model extends CI_Model
 	 */
 	public function parse_edit_form(array $post, $group_id, $site_id, $clone_id, $group_title)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
 		if($this->_group_title_exists($site_id, $group_id, $group_title))
 		{
  			show_error(lang('group_title_exists'));
@@ -499,17 +496,6 @@ class Member_group_model extends CI_Model
 	 */
 	public function get(array $where_conditions=array(), array $fields=array('group_id', 'site_id', 'group_title'))
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0', "ee('Model')->get('Role')");
-		if ($key = array_search('group_id', $fields)) {
-			$fields[$key] = 'role_id AS group_id';
-		}
-		if ($key = array_search('site_id', $fields)) {
-			unset($fields[$key]);
-		}
-		if ($key = array_search('group_title', $fields)) {
-			$fields[$key] = 'name AS group_title';
-		}
 		$this->db->select(implode(',', $fields));
 
 		foreach($where_conditions as $field=>$value)
@@ -524,7 +510,7 @@ class Member_group_model extends CI_Model
 			}
 		}
 
-		return $this->db->get('exp_roles');
+		return $this->db->get('exp_member_groups');
 	}
 
 	/**
@@ -536,9 +522,7 @@ class Member_group_model extends CI_Model
 	 */
 	public function create(array $data)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0', "ee('Model')->make('Role')");
-		$this->db->insert('exp_roles', $data);
+		$this->db->insert('exp_member_groups', $data);
 	}
 
 	/**
@@ -555,10 +539,8 @@ class Member_group_model extends CI_Model
 	 */
 	public function update_all_sites($group_id, array $data)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
-		$this->db->where('role_id', $group_id);
-		$this->db->update('exp_roles', $data);
+		$this->db->where('group_id', $group_id);
+		$this->db->update('exp_member_groups', $data);
 		return $this->db->affected_rows();
 	}
 
@@ -573,10 +555,9 @@ class Member_group_model extends CI_Model
 	 */
 	public function update($group_id, $site_id, array $data)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0', "ee('Model')->get('Role', \$role_id)->save()");
-		$this->db->where('role_id', $group_id);
-		$this->db->update('exp_roles', $data);
+		$this->db->where('group_id', $group_id)
+			->where('site_id', $site_id);
+		$this->db->update('exp_member_groups', $data);
 		return $this->db->affected_rows();
 	}
 
@@ -589,11 +570,9 @@ class Member_group_model extends CI_Model
 	 */
 	public function delete_channel_permissions($group_id, array $channel_ids)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
-		$this->db->where('role_id', $group_id);
+		$this->db->where('group_id', $group_id);
 		$this->db->where_in('channel_id', $channel_ids);
-		$this->db->delete('channel_member_roles');
+		$this->db->delete('channel_member_groups');
 	}
 
 	/**
@@ -605,11 +584,9 @@ class Member_group_model extends CI_Model
 	 */
 	public function delete_template_permissions($group_id, array $template_ids)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
-		$this->db->where('role_id', $group_id);
+		$this->db->where('group_id', $group_id);
 		$this->db->where_in('template_group_id', $template_ids);
-		$this->db->delete('templates_roles');
+		$this->db->delete('template_member_groups');
 	}
 
 	/**
@@ -623,9 +600,7 @@ class Member_group_model extends CI_Model
 	 */
 	public function delete_module_permissions($group_id, array $module_ids)
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('6.0.0');
-		$this->db->where('role_id', $group_id);
+		$this->db->where('group_id', $group_id);
 		$this->db->where_in('module_id', $module_ids);
 		$this->db->delete('module_member_roles');
 	}

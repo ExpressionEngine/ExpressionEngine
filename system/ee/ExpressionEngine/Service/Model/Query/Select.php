@@ -290,7 +290,7 @@ class Select extends Query {
 		{
 			if ($meta_field_data['field_model'] == 'MemberField' && ! empty(ee()->session))
 			{
-				$fields = ee()->session->cache('ExpressionEngine::MemberFieldModel', 'getCustomFields');
+				$fields = ee()->session->cache('ExpressionEngine::MemberGroupModel', 'getCustomFields');
 
 				// might be empty, so need to be specific
 				if ( ! is_array($fields))
@@ -299,7 +299,7 @@ class Select extends Query {
 					$fields = ee('Model')->get($meta_field_data['field_model'])
 						->all()
 						->asArray();
-					ee()->session->set_cache('ExpressionEngine::MemberFieldModel', 'getCustomFields', $fields);
+					ee()->session->set_cache('ExpressionEngine::MemberGroupModel', 'getCustomFields', $fields);
 				}
 
 				// filter just for non-legacy fields

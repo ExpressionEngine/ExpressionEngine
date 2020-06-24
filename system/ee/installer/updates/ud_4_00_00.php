@@ -243,6 +243,7 @@ class Updater {
 
 	private function moveMemberFields()
 	{
+		ee()->load->model('member_model');
 
 		// Do we need a preflight
 

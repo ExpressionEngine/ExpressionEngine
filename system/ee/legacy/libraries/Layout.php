@@ -40,9 +40,8 @@ class Layout {
 
 	function delete_channel_layouts($channel_id)
 	{
-		ee('Model')->get('ChannelLayout')
-			->filter('channel_id', $channel_id)
-			->delete();
+		ee()->load->model('member_model');
+		ee()->member_model->delete_group_layout('', $channel_id);
 	}
 
 	function edit_layout_fields($field_info, $channel_id)

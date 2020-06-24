@@ -40,7 +40,7 @@ class Members {
 		}
 
 		// Load the member model!
-		$member = ee('Model')->get('Member', $id)->first();
+		ee()->load->model('member_model');
 
 		switch ($type)
 		{
@@ -90,7 +90,9 @@ class Members {
 		{
 			if ($type == 'avatar')
 			{
-				if ($member->avatar_filename == '')
+				$query = ee()->member_model->get_member_data($id, array('avatar_filename'));
+
+				if ($query->row('avatar_filename')	== '')
 				{
 					if (REQ == 'CP')
 					{
@@ -101,8 +103,7 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 
-				$member->set(array('avatar_filename' => ''));
-				$member->save();
+				ee()->member_model->update_member($id, array('avatar_filename' => ''));
 
 				if (strncmp($query->row('avatar_filename'), 'default/', 8) !== 0)
 				{
@@ -111,7 +112,9 @@ class Members {
 			}
 			elseif ($type == 'photo')
 			{
-				if ($member->photo_filename == '')
+				$query = ee()->member_model->get_member_data($id, array('photo_filename'));
+
+				if ($query->row('photo_filename')  == '')
 				{
 					if (REQ == 'CP')
 					{
@@ -121,14 +124,15 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 
-				$member->set(array('photo_filename' => ''));
-				$member->save();
+				ee()->member_model->update_member($id, array('photo_filename' => ''));
 
 				@unlink(ee()->config->slash_item('photo_path').$query->row('photo_filename') );
 			}
 			else
 			{
-				if ($member->sig_img_filename == '')
+				$query = ee()->member_model->get_member_data($id, array('sig_img_filename'));
+
+				if ($query->row('sig_img_filename')	 == '')
 				{
 					if (REQ == 'CP')
 					{
@@ -138,8 +142,7 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 
-				$member->set(array('sig_img_filename' => ''));
-				$member->save();
+				ee()->member_model->update_member($id, array('sig_img_filename' => ''));
 
 				@unlink(ee()->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
 			}
@@ -300,7 +303,8 @@ class Members {
 		// Do they currently have an avatar or photo?
 		if ($type == 'avatar')
 		{
-			$old_filename = $member->avatar_filename;
+			$query = ee()->member_model->get_member_data($id, array('avatar_filename'));
+			$old_filename = ($query->row('avatar_filename')	 == '') ? '' : $query->row('avatar_filename') ;
 
 			if (strpos($old_filename, '/') !== FALSE)
 			{
@@ -310,11 +314,13 @@ class Members {
 		}
 		elseif ($type == 'photo')
 		{
-			$old_filename = $member->photo_filename;
+			$query = ee()->member_model->get_member_data($id, array('photo_filename'));
+			$old_filename = ($query->row('photo_filename')	== '') ? '' : $query->row('photo_filename') ;
 		}
 		else
 		{
-			$old_filename = $member->sig_img_filename;
+			$query = ee()->member_model->get_member_data($id, array('sig_img_filename'));
+			$old_filename = ($query->row('sig_img_filename')  == '') ? '' : $query->row('sig_img_filename') ;
 		}
 
 		// Upload the image
@@ -392,8 +398,7 @@ class Members {
 			);
 		}
 
-		$member->set($data);
-		$member->save();
+		ee()->member_model->update_member($id, $data);
 
 		return array('success', $edit_image, $updated);
 	}
