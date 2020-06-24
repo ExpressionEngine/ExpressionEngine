@@ -228,6 +228,62 @@ context('Entry filtering', () => {
 			entry.get('Entries').should('have.length',1)
 		})
 
+		it('can Search in Content but not title',() => {
+			//Real quick add in a text field to one of our channels
+			cy.visit('http://localhost:8888/admin.php?/cp/fields')
+			cy.get('a').contains('New Field').click()
+			cy.get('input[name="field_label"]').type('Simple Text')
+			cy.get('button').contains('Save').click()
+			cy.get('p').contains('has been created')
+
+			cy.visit('http://localhost:8888/admin.php?/cp/channels')
+			cy.get('div').contains('Discover').click()
+			cy.get('button').contains('Fields').click()
+			cy.get('div').contains('Simple Text').click()
+			cy.get('button').contains('Save').click()
+
+			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.get('a').contains('Discover Entry').click()
+			cy.get('input[maxlength="256"]').type('The Quick Brown fox...')
+			cy.get('button').contains('Save').click()
+
+			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			
+			
+			entry.get('SearchIn').click()
+			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
+			cy.wait(900)
+			entry.get('SearchBar').type('The Quick Brown{enter}')
+			entry.get('Entries').should('have.length',1)
+			cy.get('a').contains('Discover Entry').should('exist')
+
+			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			entry.get('SearchIn').click()
+			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
+			cy.wait(900)
+			entry.get('SearchBar').type('Discover{enter}')
+			cy.wait(900)
+			entry.get('Entries').should('have.length',0)
+
+
+		})
+
+		it('search by content and title', () => {
+			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			entry.get('SearchIn').click()
+			cy.wait(900)
+			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
+			cy.wait(900)
+			entry.get('SearchBar').type('The Quick Brown{enter}')
+			entry.get('Entries').should('have.length',1)
+			cy.get('a').contains('Discover Entry').should('exist')
+			entry.get('SearchBar').clear()
+			entry.get('SearchBar').type('Discover{enter}')
+			entry.get('Entries').should('have.length',1)
+			cy.get('a').contains('Discover Entry').should('exist')
+
+		})
+
 		it('cleans for reruns', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			cy.get('input[title="select all"]').click()
@@ -245,9 +301,17 @@ context('Entry filtering', () => {
 			cy.get('input[data-confirm="Member: <b>user2</b>"]').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
-			cy.wait(500)
+			cy.wait(800)
 			cy.get('input[name="verify_password"]').type('password')
 			cy.get('input[value="Confirm and Delete"]').click()
+
+			cy.visit('http://localhost:8888/admin.php?/cp/fields')
+			cy.get('.ctrl-all').click()
+			cy.get('select').select('Delete')
+			cy.get('button[value="submit"]').click()
+			cy.wait(800)
+			cy.get('input[value="Confirm and Delete"]').eq(1).click()
+
 		})
 
 })
