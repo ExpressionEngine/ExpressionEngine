@@ -286,6 +286,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_quicklinks($member_id = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member', \$member_id)->first()->getQuicklinks()");
+
 		$quicklinks_query = $this->get_member_data($member_id, array('quick_links'))->row('quick_links');
 
 		$i = 1;
