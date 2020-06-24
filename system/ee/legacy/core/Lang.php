@@ -158,7 +158,7 @@ class EE_Lang {
 		}
 
 		$this->is_loaded[] = $langfile;
-		$this->language = array_merge($lang, $this->language);
+		$this->language = array_merge($this->language, $lang);
 		unset($lang);
 
 		log_message('debug', 'Language file loaded: language/'.$idiom.'/'.$langfile);
