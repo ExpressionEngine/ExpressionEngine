@@ -103,10 +103,11 @@ context('Entry filtering', () => {
 
 			entry.get('StatusSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
-			cy.wait(500)
+			
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Blog
 			entry.get('Entries').should('have.length',0)
+			cy.wait(500)
 
 			entry.get('StatusSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click(); //Closed
@@ -117,7 +118,7 @@ context('Entry filtering', () => {
 			entry.get('Entries').should('have.length',0)
 
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(3)').click();//Contact
+			cy.get('.dropdown--open .dropdown__link:nth-child(3)').click();//Discover
 			entry.get('Entries').should('have.length',0)
 		})
 
@@ -281,6 +282,43 @@ context('Entry filtering', () => {
 			entry.get('SearchBar').type('Discover{enter}')
 			entry.get('Entries').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
+
+		})
+
+		it('can sort by amount of entries and paginates correctly', () =>{
+			var i;
+			for(i = 0 ; i < 25 ; i++){
+				let title = "Blog " + i;
+				cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
+			  	cy.get('a').contains('Blog').click()
+			  	cy.get('input[name="title"]').type(title)
+			  	cy.get('button').contains('Save').eq(0).click()
+			  	cy.get('p').contains('has been created')
+			}
+
+			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.get(':nth-child(2) > .pagination__link').should('exist')
+			entry.get('Entries').should('have.length',25)
+			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+			cy.get('a').contains('All 29 entries').click()
+			cy.get(':nth-child(2) > .pagination__link').should('not.exist')
+			entry.get('Entries').should('have.length',29)
+
+			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+			cy.get('a').contains('25 results').click()
+			entry.get('Entries').should('have.length',25)
+			cy.get(':nth-child(2) > .pagination__link').should('exist')
+			cy.get(':nth-child(2) > .pagination__link').click()
+			entry.get('Entries').should('have.length',4)
+
+			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+			cy.get('a').contains('All 29 entries').click()
+			entry.get('Entries').should('have.length',29)
+			entry.get('ChannelSort').click()
+			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Blog
+			entry.get('Entries').should('have.length',27)
+			cy.get(':nth-child(2) > .pagination__link').should('not.exist')
 
 		})
 
