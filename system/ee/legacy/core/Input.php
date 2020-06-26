@@ -208,11 +208,37 @@ class EE_Input {
 			$data['httponly'] = ( ! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
 		}
 
-		//  Turn httponly into a true boolean.
-		$data['httponly'] = ($data['httponly'] == 'y' ? TRUE : FALSE);
+		// Turn httponly into a true boolean.
+		$data['httponly'] = get_bool_from_string($data['httponly']);
 
 		// Deal with secure cookies.
-		$data['secure_cookie'] = (bool_config_item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = bool_config_item('cookie_secure');
+
+		// SameSite explained: https://web.dev/samesite-cookies-explained/
+		// Allow default setting for all site cookies, then allow for overrides when this method is called.
+		// Cookies without a SameSite attribute will be treated as SameSite=Lax.
+		$sameSiteConfigValue = ee()->config->item('cookie_samesite');
+
+		if ($sameSiteConfigValue) {
+			// Don't allow invalid values
+			if (!in_array($sameSiteConfigValue, ['Lax', 'None', 'Strict'])) {
+				$sameSiteConfigValue = 'Lax';
+			}
+
+			// Cookies with SameSite=None must also specify Secure, meaning they require a secure context.
+			if ($sameSiteConfigValue === 'None') {
+				$data['secure_cookie'] = true;
+			}
+		}
+
+		// Allow calls to set cookies set a specific value, but if not set, default to global config value if it exists, or Lax.
+		if (!isset($data['samesite'])) {
+			$data['samesite'] = $sameSiteConfigValue ?: 'Lax';
+		}
+
+		if ($data['samesite'] === 'None') {
+			$data['secure_cookie'] = true;
+		}
 
 		if ($data['secure_cookie'])
 		{
@@ -233,9 +259,14 @@ class EE_Input {
 		/*
 		/* -------------------------------------------*/
 
-
-		return setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'],
-			$data['path'], $data['domain'], $data['secure_cookie'], $data['httponly']);
+		return setcookie($data['prefix'].$data['name'], $data['value'], [
+			'expires' => $data['expire'],
+			'path' => $data['path'],
+			'domain' => $data['domain'],
+			'secure' => $data['secure_cookie'],
+			'httponly' => $data['httponly'],
+			'samesite' => $data['samesite'],
+		]);
 	}
 
 	/**
@@ -829,11 +860,9 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					
 					global ${$global};
 
 					$$global = NULL;
-
 				}
 			}
 			else
@@ -842,11 +871,9 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						
 						global ${$key};
 
 						$$key = NULL;
-
 					}
 				}
 			}
