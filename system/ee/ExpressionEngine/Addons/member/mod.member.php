@@ -827,6 +827,26 @@ class Member {
 	}
 
 	/**
+	 * Upload Avatar
+	 */
+	public function upload_avatar()
+	{
+		if ( ! class_exists('Member_images'))
+		{
+			require PATH_ADDONS.'member/mod.member_images.php';
+		}
+
+		$MI = new Member_images();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MI->{$key} = $value;
+		}
+
+		return $MI->upload_avatar();
+	}
+
+	/**
 	 * Photo Edit Form
 	 */
 	public function edit_photo()
@@ -2457,7 +2477,7 @@ class Member {
 	/**
 	 * Custom Member Profile Data
 	 */
-	function custom_profile_data()
+	function custom_profile_data($typography = true)
 	{
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
@@ -2472,6 +2492,12 @@ class Member {
 		}
 
 		$results = $member->getValues() + ['group_title' => $member->PrimaryRole->name, 'primary_role_name' => $member->PrimaryRole->name];
+		unset($results['password']);
+		unset($results['unique_id']);
+		unset($results['crypt_key']);
+		unset($results['authcode']);
+		unset($results['salt']);
+
 		$default_fields = $results;
 
 		// Is there an avatar?
@@ -2652,7 +2678,7 @@ class Member {
 				}
 
 				//  {email}
-				if ($key == "email")
+				if ($key == "email" && $typography)
 				{
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}

@@ -49,7 +49,8 @@ class Updater {
 				'addDashboardLayoutsTable',
 				'addLayoutWidgetsTable',
 				'addAddonIcons',
-				'addStickyChannelPreference'
+				'addStickyChannelPreference',
+				'addMemberModuleActions'
 			]
 		);
 
@@ -1093,6 +1094,17 @@ class Updater {
 		);
 
 		ee()->db->update('channels', ['sticky_enabled' => 'y']);
+	}
+
+	private function addMemberModuleActions()
+	{
+		$actions = ['send_username', 'update_profile', 'upload_avatar'];
+		foreach ($actions as $action) {
+			ee('Model')->make('Action', [
+				'class' => 'Member',
+				'method' => $action
+			])->save();
+		}
 	}
 
 }

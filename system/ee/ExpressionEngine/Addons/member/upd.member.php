@@ -50,6 +50,15 @@ class Member_upd
         ],
         [
             'method' => 'member_delete'
+        ],
+        [
+            'method' => 'send_username'
+        ],
+        [
+            'method' => 'update_profile'
+        ],
+        [
+            'method' => 'upload_avatar'
         ]
     ];
 

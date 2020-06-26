@@ -481,8 +481,8 @@ class Member_settings extends Member
 			/** ----------------------------------------
 			/**  Format URLs
 			/** ----------------------------------------*/
-// need exception
-/*
+			// need exception
+			/*
 
 
 			if ($key == 'url')
@@ -493,7 +493,7 @@ class Member_settings extends Member
 				}
 			}
 
-*/
+			*/
 
 			/** ----------------------------------------
 			/**  "last_visit"
@@ -895,7 +895,7 @@ class Member_settings extends Member
 
 		$query = ee()->db->query($sql);
 
-//		$result_row = $result->row_array()
+		//		$result_row = $result->row_array()
 
 		$this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
@@ -941,6 +941,23 @@ class Member_settings extends Member
 		/**  Build the output data
 		/** ----------------------------------------*/
 
+		//if we used templates tags, parse fields
+		if (! empty($tagdata)) {
+			$template = $this->custom_profile_data(false);
+
+			//and add some more variables
+			$template = ee()->TMPL->swap_var_single(
+				'timezone_menu',
+				ee()->localize->timezone_menu(ee()->session->userdata('timezone'), 'timezone'),
+				$template
+			);
+			$template = ee()->TMPL->swap_var_single(
+				'language_menu',
+				$this->get_language_listing(ee()->session->get_language()),
+				$template
+			);
+		}
+
 		if (! empty($custom_profile_fields_diff))
 		{
 			$custom_profile_fields_start = strpos($template, LD . 'custom_profile_fields' . RD);
@@ -952,6 +969,16 @@ class Member_settings extends Member
 		else
 		{
 			$template = str_replace(LD."custom_profile_fields".RD, $r, $template);
+		}
+
+		//if we run EE template parser, do some things differently
+		if (! empty($tagdata)) {
+			return ee()->functions->form_declaration(array(
+				'hidden_fields' => array(
+					'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+					'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+				)
+			)) . $template . '</form>';
 		}
 
 		return  $this->_var_swap(
@@ -1016,7 +1043,6 @@ class Member_settings extends Member
 		 $errors = array();
 
 		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-		//$member->set($data);
 
 		 if ($query->num_rows() > 0)
 		 {
@@ -1054,11 +1080,114 @@ class Member_settings extends Member
 
 		unset($_POST['HTTP_REFERER']);
 
+		//if this request initiated from regular EE template, we'll process some additional stuff here
+		 if (REQ === 'ACTION') {
+
+			//email update
+			if (ee()->input->post('email')!='' && ee()->input->post('email') != $member->email) {
+				$validator = ee('Validation')->make();
+				$validator->setRule('current_password', 'authenticated');
+
+				$member->email = ee()->input->post('email');
+			}
+
+			//preferences
+			$checkboxes = ['accept_admin_email', 'accept_user_email', 'notify_by_default', 'notify_of_pm', 'accept_messages', 'display_signatures', 'parse_smileys', 'site_default'];
+			foreach ($checkboxes as $checkbox) {
+				if (in_array(ee()->input->post($checkbox), ['y', 'n'])) {
+					$member->{$checkbox} = ee()->input->post($checkbox);
+				}
+			}
+
+			//localization settings
+			if (ee()->config->item('allow_member_localization') == 'y')
+			{
+				if (!empty($_POST['language'])) {
+					$language_pack_names = array_keys(ee()->lang->language_pack_names());
+					if ( ! in_array($data['language'], $language_pack_names))
+					{
+						return ee()->output->show_user_error('general', array(lang('invalid_action')));
+					}
+					$member->language = ee()->security->sanitize_filename($_POST['language']);
+				}
+				if (!empty($_POST['timezone'])) {
+					foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key)
+					{
+						if (ee()->input->post('site_default') == 'y')
+						{
+							$member->{$key} = NULL;
+						}
+						else
+						{
+							$member->{$key} = ee()->input->post($key);
+						}
+					}
+				}
+			}
+
+			//notepad
+			if (ee()->input->post('notepad')!='') {
+				$member->notepad = ee()->input->post('notepad');
+			}
+
+			// username & password
+			$need_validation = false;
+			if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username')!='')
+			{
+				$member->username = ee()->input->post('username');
+				$need_validation = true;
+			}
+
+			if (ee()->input->post('screen_name') != '')
+			{
+				$need_validation = true;
+				$member->screen_name = ee()->input->post('screen_name');
+			}
+
+			// set password, and confirmation if needed
+			if (ee()->input->post('password'))
+			{
+				$need_validation = true;
+				$member->password = ee()->input->post('password');
+			}
+
+			if (!isset($validator) && $need_validation) {
+				$validator = ee('Validation')->make();
+				$validator->setRule('current_password', 'authenticated');
+			}
+
+			if (ee()->input->post('password'))
+			{
+				$validator->setRule('password_confirm', 'matches[password]');
+			}
+
+		}
+
 		$result = $member->validate();
+
+		if (ee()->input->post('password')) {
+			$password_confirm = $validator->validate($_POST);
+
+			// Add password confirmation failure to main result object
+			if ($password_confirm->failed())
+			{
+				$rules = $password_confirm->getFailed();
+				foreach ($rules as $field => $rule)
+				{
+					$result->addFailed($field, $rule[0]);
+				}
+			}
+		}
 
 		if ($result->failed())
 		{
 			return ee()->output->show_user_error('general', $result->renderErrors());
+		}
+
+		// if the password was set, need to hash it before saving and kill all other sessions
+		if (ee()->input->post('password'))
+		{
+			$member->hashAndUpdatePassword($member->password);
 		}
 
 		$member->save();
