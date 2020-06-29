@@ -6,7 +6,7 @@
 
 
 	<div class="title-bar">
-		hello<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
+		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
 
 		<div class="title-bar__extra-tools">
 			<div class="search-input">

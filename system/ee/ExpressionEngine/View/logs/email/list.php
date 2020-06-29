@@ -1,15 +1,16 @@
 <?php $this->extend('_templates/default-nav') ?>
-
+<div class="panel">
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
+<div class="panel-heading">
 	<div class="title-bar">
-		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
 		<?php if (isset($filters)) echo $filters; ?>
 	</div>
-
-	<section>
+</div>
+<div class="panel-body">
+  <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_email_logs_found')?></p>
 		<?php else: ?>
@@ -33,15 +34,16 @@
 			</div>
 
 			<?=$pagination?>
-
-			<fieldset class="bulk-action-bar">
+    </div>
+    <div class="panel-footer">
+			<div class="form-btns">
 				<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_email_logs')?></button>
-			</fieldset>
+			</div>
+    </div>
 		<?php endif; ?>
-	</section>
 <?=form_close()?>
 </div>
-
+</div>
 <?php
 // Individual confirm delete modals
 foreach($logs as $log)
