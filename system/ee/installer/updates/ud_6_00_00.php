@@ -48,7 +48,8 @@ class Updater {
 				'addWidgetsTable',
 				'addDashboardLayoutsTable',
 				'addLayoutWidgetsTable',
-				'addAddonIcons'
+				'addAddonIcons',
+				'migrateRte'
 			]
 		);
 
@@ -1036,6 +1037,44 @@ class Updater {
 		if ($count == 0)
 		{
 			ee()->db->insert('actions', $row_data);
+		}
+	}
+
+	private function migrateRte()
+	{
+		if (file_exists(PATH_ADDONS . 'rte/ft.rte.php')) {
+			ee()->db->where(['name' => 'rte']);
+			$installed = ee()->db->count_all_results('fieldtypes');
+			if ($installed) {
+				require_once PATH_ADDONS . 'artee/upd.artee.php';
+				$artee_upd = new \Artee_upd();
+				$artee_upd->install();
+
+				//migrate fields
+				ee()->db->where('field_type', 'rte');
+				ee()->db->update('channel_fields', ['field_type' => 'artee']);
+
+				ee()->db->where('col_type', 'rte');
+				ee()->db->update('grid_columns', ['col_type' => 'artee']);
+
+				//remove RTE
+				ee()->db->where(['name' => 'rte']);
+				ee()->db->delete('fieldtypes');
+
+				ee()->db->where(['module_name' => 'Rte']);
+				ee()->db->delete('modules');
+
+				ee()->db->where(['class' => 'Rte']);
+				ee()->db->delete('actions');
+
+				ee()->db->where(['class' => 'Rte_ext']);
+				ee()->db->delete('extensions');
+
+				ee()->smartforge->drop_table('rte_toolsets');
+				ee()->smartforge->drop_table('rte_tools');
+
+
+			}
 		}
 	}
 

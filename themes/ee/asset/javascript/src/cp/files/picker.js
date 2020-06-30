@@ -25,10 +25,7 @@
 					source: options.source
 				};
 				options.callback(data, picker);
-				modal.trigger({
-					type:'filepicker:pick',
-					selection: data
-				});
+				window.document.dispatchEvent(new CustomEvent('filepicker:pick', { detail: data }));
 			};
 
 		if (options.iframe) {
