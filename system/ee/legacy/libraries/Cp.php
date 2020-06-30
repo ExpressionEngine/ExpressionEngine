@@ -556,7 +556,7 @@ class Cp {
 		$mtimes = array();
 
 		if ($include_common) {
-			ee()->cp->add_js_script([
+			$this->add_js_script([
 				'file' => [
 					'common'
 				]

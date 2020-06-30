@@ -1,12 +1,12 @@
 <?php
 /**
-* This source file is part of the open source project
-* ExpressionEngine (https://expressionengine.com)
-*
-* @link      https://expressionengine.com/
-* @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://packettide.com)
-* @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
-*/
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Updater\Version_6_0_0;
 
@@ -27,6 +27,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
+				'addEntryManagerTables',
 				'addRoles',
 				'addRoleGroups',
 				'addAndPopulatePermissionsTable',
@@ -34,7 +35,7 @@ class Updater {
 				'reassignModulesToRoles',
 				'reassignTemplateGroupsToRoles',
 				'flipPolarityOnStatusRoleAccess',
-				'flipPolarityOnTepmlateRoleAccess',
+				'flipPolarityOnTemplateRoleAccess',
 				'flipPolarityOnUploadRoleAccess',
 				'renameMemberGroupTable',
 				'convertMembersGroupToPrimaryRole',
@@ -154,6 +155,48 @@ class Updater {
 		}
 	}
 
+	private function addEntryManagerTables()
+	{
+		if ( ! ee()->db->table_exists('entry_manager_views'))
+		{
+			ee()->dbforge->add_field(
+				[
+					'view_id' => [
+						'type'           => 'int',
+						'constraint'     => 10,
+						'unsigned'       => TRUE,
+						'null'           => FALSE,
+						'auto_increment' => TRUE
+					],
+					'channel_id' => [
+						'type'           => 'int',
+						'constraint'     => 6,
+						'unsigned'       => TRUE,
+						'null'           => FALSE,
+					],
+					'member_id' => [
+						'type'           => 'int',
+						'constraint'     => 10,
+						'unsigned'       => TRUE,
+						'null'           => FALSE,
+					],
+					'name' => [
+						'type'       => 'varchar',
+						'constraint' => 128,
+						'null'       => FALSE,
+						'default'    => '',
+					],
+					'columns' => [
+						'type'       => 'text',
+						'null'       => FALSE
+					]
+				]
+			);
+			ee()->dbforge->add_key('view_id', TRUE);
+			ee()->smartforge->create_table('entry_manager_views');
+		}
+	}
+
 	private function removeDefaultAvatars()
 	{
 		ee('Model')->get('UploadDestination')
@@ -166,7 +209,7 @@ class Updater {
 
 		// Remove avatar member preference
 		ee()->dbforge->drop_column('members', 'display_avatars');
-  }
+	}
 
 	private function removeJqueryAddon()
 	{
@@ -699,7 +742,7 @@ class Updater {
 		ee()->smartforge->drop_table('status_no_access');
 	}
 
-	private function flipPolarityOnTepmlateRoleAccess()
+	private function flipPolarityOnTemplateRoleAccess()
 	{
 		if (ee()->db->table_exists('templates_roles'))
 		{

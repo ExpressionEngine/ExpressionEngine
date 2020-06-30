@@ -357,6 +357,48 @@ class FieldFacade {
 		return $ft;
 	}
 
+	public function implementsInterface($interface)
+	{
+		$fieldtype = $this->getNativeField();
+		$interfaces = class_implements(get_class($fieldtype));
+
+		return isset($interfaces[$interface]);
+	}
+
+	/**
+	 * Forward methods to implementers of EntryManager\ColumnInterface
+	 */
+	public function getTableColumnLabel()
+	{
+		return $this->getNativeField()->getTableColumnLabel();
+	}
+
+	public function getTableColumnConfig()
+	{
+		return $this->getNativeField()->getTableColumnConfig();
+	}
+
+	public function getEntryManagerColumnModels()
+	{
+		return $this->getNativeField()->getEntryManagerColumnModels();
+	}
+
+	public function getEntryManagerColumnFields()
+	{
+		return $this->getNativeField()->getEntryManagerColumnFields();
+	}
+
+	public function getEntryManagerColumnSortField()
+	{
+		return $this->getNativeField()->getEntryManagerColumnSortField();
+	}
+
+	public function renderTableCell($data, $field_id, $entry)
+	{
+		$ft = $this->getNativeField();
+		$ft->settings = $this->getItem('field_settings');
+		return $ft->renderTableCell($data, $field_id, $entry);
+	}
 
 	public function initField()
 	{

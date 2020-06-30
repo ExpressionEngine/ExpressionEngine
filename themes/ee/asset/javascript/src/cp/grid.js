@@ -198,7 +198,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		var rowsCount = this._getRows().size(),
 			neededRows = 0;
 
-		if (typeof(this.settings)!=='undefined') 
+		if (typeof(this.settings)!=='undefined')
 		{
 			this.settings.grid_min_rows - rowsCount;
 		}
@@ -863,7 +863,6 @@ Grid.Settings.prototype = {
 
 				if ($(this).prop('checked')) {
 					new_input.attr('checked', 'checked');
-					console.log(new_input);
 				}
 			}
 			// Handle textareas

@@ -128,7 +128,6 @@ EE.cp.Modal = {
 		$('.form-btns .btn', modal)
 			.removeClass('work')
 			.each(function(index, button) {
-				console.log(button)
 				if ($(button).data('submit-text')) {
 					$(button).attr('value', $(button).data('submit-text'))
 				}
