@@ -433,15 +433,16 @@ class Member_images extends Member {
 		$height	= $vals['1'];
 
 		// Update DB
-		ee()->load->model('member_model');
-		ee()->member_model->update_member(
-			ee()->session->userdata('member_id'),
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$member->set(
 			array(
 				'avatar_filename' => $avatar,
 				'avatar_width' => $width,
 				'avatar_height' => $height
 			)
 		);
+		$member->validate();
+		$member->save();
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
