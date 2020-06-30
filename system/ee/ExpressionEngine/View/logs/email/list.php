@@ -19,8 +19,8 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
-					<div>
+					<a href="" class="m-link button button--default float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
+					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
 						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
 						<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>

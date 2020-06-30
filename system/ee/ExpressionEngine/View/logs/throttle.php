@@ -22,9 +22,9 @@
 
 				<div class="list-item">
 					<div class="list-item__content">
-						<a href="" class="m-link float-right button button--danger button--small" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
+						<a href="" class="m-link float-right button button--default button--small" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
 
-						<div><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
+						<div style="margin-bottom: 20px;"><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
 
 						<div class="list-item__body">
 							<pre><code><?=lang('front_end_requests')?>: <?=$log->hits?></pre></code>

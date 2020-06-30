@@ -1,24 +1,25 @@
+<div class="panel">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
-		<fieldset class="tbl-search right">
-			<div class="filters">
-				<ul>
-					<li>
-						<a class="has-sub" href=""><?=lang('create_new')?></a>
-						<div class="sub-menu">
-							<ul class="channels-pages-create">
+    <div class="panel-heading">
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+      		<h3 class="title-bar__title"><?=lang('all_pages')?></h3>
+          <div class="title-bar__extra-tools">
+						<a class="button button--primary js-dropdown-toggle has-sub" href=""><?=lang('create_new')?></a>
+						<div class="dropdown">
+							<div class="channels-pages-create">
 								<?php
 								$menus = ee()->menu->generate_menu();
 								foreach ($menus['channels']['create'] as $channel_name => $link):
 								?>
-									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<div class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>" class="dropdown__link"><?=$channel_name?></a></div>
 								<?php endforeach ?>
-							</ul>
+							</div>
 						</div>
-					</li>
-				</ul>
-			</div>
-		</fieldset>
-		<h1><?=lang('all_pages')?></h1>
+          </div>
+        </div>
+      </div>
+    </div>
 
 		<?=ee('CP/Alert')->get('pages-form')?>
 
@@ -41,6 +42,7 @@
 		]); ?>
 		<?php endif; ?>
 	<?=form_close();?>
+</div>
 
 <?php
 $modal_vars = array(

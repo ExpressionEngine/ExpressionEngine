@@ -89,7 +89,7 @@ function (_React$Component) {
 
       if (this.props.manageable) {
         return React.createElement("div", null, selectItem, this.props.addLabel && React.createElement("a", {
-          className: "btn action submit",
+          className: "button button--primary submit",
           rel: "add_new",
           href: "#"
         }, this.props.addLabel), React.createElement(ToggleTools, {

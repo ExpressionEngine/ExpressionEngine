@@ -1,4 +1,4 @@
-<div class="box sidebar legacy-sidebar">
+<div class="box sidebar">
 	<?php
 	// Grab the first and last items from the menu to determine
 	// which items we need to put 'first' and 'last' classes on

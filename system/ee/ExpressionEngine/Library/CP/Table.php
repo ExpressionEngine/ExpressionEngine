@@ -463,7 +463,7 @@ class Table {
 	 */
 	public function addActionButton($url, $text, $class = "submit")
 	{
-		$class = 'btn action ' . $class;
+		$class = 'button button--primary ' . $class;
 
 		$this->action_buttons[] = array(
 			'url' => $url,

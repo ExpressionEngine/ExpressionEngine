@@ -14,7 +14,7 @@
 
 	<?php if (!$addon['installed']) : ?>
 	<div class="add-on-card__button">
-		<a href="" data-post-url="<?= $addon['install_url'] ?>" class="button button--primary"><?= lang('install') ?></a>
+		<a href="" data-post-url="<?= $addon['install_url'] ?>" class="button button--primary button--small"><?= lang('install') ?></a>
 	</div>
 	<?php else: ?>
 

@@ -36,7 +36,7 @@
 			</tr>
 			<?php if ( ! empty($upload) && is_numeric($dir)): ?>
 				<tr class="tbl-action">
-					<td colspan="5" class="solo"><a class="btn action" href="<?=$upload?>"><?=lang('upload_new_file')?></a></td>
+					<td colspan="5" class="solo"><a class="button button--primary" href="<?=$upload?>"><?=lang('upload_new_file')?></a></td>
 				</tr>
 			<?php endif ?>
 		</table>

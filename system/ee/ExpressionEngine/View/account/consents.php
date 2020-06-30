@@ -55,8 +55,8 @@
 					echo $contents;
 					?>
 					<?=form_open($form_url, [], ['selection[]' => $request->getId()])?>
-					<button class="btn action" name="bulk_action" value="opt_in"><?=lang('accept')?></button>
-					<button class="btn draft" name="bulk_action" value="opt_out"><?=lang('decline')?></button>
+					<button class="button button--primary" name="bulk_action" value="opt_in"><?=lang('accept')?></button>
+					<button class="button button--secondary" name="bulk_action" value="opt_out"><?=lang('decline')?></button>
 					<?=form_close()?>
 				</div>
 			</div>

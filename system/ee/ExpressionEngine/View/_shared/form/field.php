@@ -203,7 +203,7 @@ case 'slider': ?>
 <?php break;
 
 case 'action_button': ?>
-	<a class="btn tn action <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+	<a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
 
 case 'html':

@@ -20,7 +20,7 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<div>
+					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->log_date->getTimestamp())?>,
 						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->Member->username?></a>
 					</div>
