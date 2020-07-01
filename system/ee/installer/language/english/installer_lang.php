@@ -96,6 +96,7 @@ $lang = array(
 'unreadable_schema'                  => 'Unable to locate the following folder: system/ee/installer/schema/ Please upload all components before proceeding.',
 'unreadable_dbdriver'                => 'Unable to locate the database schema file in the following folder: sytem/ee/installer/schema/ Please upload all components before proceeding.',
 'improper_grants'                    => 'Error: Unable to perform the SQL queries. Please make sure your SQL account has the proper GRANT privileges: CREATE, DROP, ALTER, INSERT, and DELETE',
+'addon_install_error'                => 'Could not install first-party addons',
 'update_error'                       => 'An unexpected error occurred while performing the update',
 'update_step_error'                  => 'An unexpected error occured while performing the update. Could not find update step: %x',
 'install_detected_msg'               => 'ExpressionEngine appears to already be installed on your database, even though your config file is blank. If you are attempting to <b><i>update</i></b> ExpressionEngine from a previous version restore your config file first, then run this installation wizard again.',

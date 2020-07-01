@@ -20,13 +20,20 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
     {
         // load the file browser
         // pass in the uploadDir to limit the directory to the one choosen
-        $fp = new FilePicker();
-        $fp->inject(ee()->view);
+        $modal_vars = array('name'=> 'modal-file', 'contents' => '');
+		$modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
+		ee('CP/Modal')->addModal('modal-file', $modal);
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/files/picker'
+			),
+		));
         ee()->javascript->set_global([
-            'Artee.fpUrl' => ee('CP/FilePicker')->make($uploadDir)->getUrl()->compile(),
+            'Rte.fpUrl' => ee('CP/FilePicker')->make($uploadDir)->getUrl()->compile(),
         ]);
-        ee()->javascript->output("window.Artee_browseImages = function(sourceElement, params) {
-            Artee.loadEEFileBrowser(sourceElement, params, '" . $uploadDir . "', 'image');
+        ee()->javascript->output("window.Rte_browseImages = function(sourceElement, params) {
+            Rte.loadEEFileBrowser(sourceElement, params, '" . $uploadDir . "', 'image');
         }");
     }
 

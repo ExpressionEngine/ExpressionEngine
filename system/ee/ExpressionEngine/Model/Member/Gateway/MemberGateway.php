@@ -82,8 +82,6 @@ class MemberGateway extends Gateway {
 	protected $quick_tabs;
 	protected $show_sidebar;
 	protected $pmember_id;
-	protected $rte_enabled;
-	protected $rte_toolset_id;
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;

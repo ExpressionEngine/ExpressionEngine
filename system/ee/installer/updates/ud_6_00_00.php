@@ -1042,40 +1042,22 @@ class Updater {
 
 	private function migrateRte()
 	{
-		if (file_exists(PATH_ADDONS . 'rte/ft.rte.php')) {
-			ee()->db->where(['name' => 'rte']);
-			$installed = ee()->db->count_all_results('fieldtypes');
-			if ($installed) {
-				require_once PATH_ADDONS . 'artee/upd.artee.php';
-				$artee_upd = new \Artee_upd();
-				$artee_upd->install();
+		ee()->smartforge->drop_table('rte_toolsets');
+		ee()->smartforge->drop_table('rte_tools');
 
-				//migrate fields
-				ee()->db->where('field_type', 'rte');
-				ee()->db->update('channel_fields', ['field_type' => 'artee']);
+		require_once PATH_ADDONS . 'rte/upd.rte.php';
+		$Rte_upd = new \Rte_upd();
+		$Rte_upd->install_rte_toolsets_table();
 
-				ee()->db->where('col_type', 'rte');
-				ee()->db->update('grid_columns', ['col_type' => 'artee']);
+		$row_data = array(
+			'class' => 'Rte',
+			'method' => 'pages_autocomplete'
+		);
+		ee()->db->insert('actions', $row_data);
 
-				//remove RTE
-				ee()->db->where(['name' => 'rte']);
-				ee()->db->delete('fieldtypes');
+		ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
 
-				ee()->db->where(['module_name' => 'Rte']);
-				ee()->db->delete('modules');
-
-				ee()->db->where(['class' => 'Rte']);
-				ee()->db->delete('actions');
-
-				ee()->db->where(['class' => 'Rte_ext']);
-				ee()->db->delete('extensions');
-
-				ee()->smartforge->drop_table('rte_toolsets');
-				ee()->smartforge->drop_table('rte_tools');
-
-
-			}
-		}
+		ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
 	}
 
 }

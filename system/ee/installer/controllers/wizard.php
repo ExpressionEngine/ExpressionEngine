@@ -844,6 +844,11 @@ class Wizard extends CI_Controller
             return false;
         }
 
+        if (! $this->install_first_party_addons()) {
+            $this->set_output('error', array('error' => lang('addon_install_error')));
+            return false;
+        }
+
         // Write the config file
         // it's important to do this first so that our site prefs and config file
         // visible for module and accessory installers
@@ -1831,6 +1836,19 @@ class Wizard extends CI_Controller
                 $this->load->remove_package_path($path);
             }
         }
+    }
+
+    /**
+     * Install (un-installable) first-party addons
+     *
+     * @return Bool
+     */
+    private function install_first_party_addons()
+    {
+        require_once PATH_ADDONS . 'rte/upd.rte.php';
+		$Rte_upd = new \Rte_upd();
+        $Rte_upd->install();
+        return true;
     }
 
     /**

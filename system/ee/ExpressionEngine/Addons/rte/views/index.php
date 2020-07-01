@@ -1,6 +1,7 @@
 <div class="mb">
 	<?php $this->embed('ee:_shared/form')?>
 </div>
+<br />
 <div class="snap table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
@@ -12,20 +13,12 @@
 			<?=ee('CP/Alert')->get('toolsets-form')?>
 
 			<?php $this->embed('ee:_shared/table', $table); ?>
-			<?=$pagination?>
+
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
 			'options' => [
 				[
 					'value' => "",
 					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "enable",
-					'text' => lang('enable')
-				],
-				[
-					'value' => "disable",
-					'text' => lang('disable')
 				],
 				[
 					'value' => "remove",
@@ -42,7 +35,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('addons/settings/rte/update_toolsets'),
+	'form_url'	=> ee('CP/URL')->make('addons/settings/rte/delete_toolset'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
