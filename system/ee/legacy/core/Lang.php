@@ -13,8 +13,9 @@
  */
 class EE_Lang {
 
-	var $language	= array();
-	var $is_loaded	= array();
+	private $language	= array();
+	private $addon_language	= array();
+	private $is_loaded	= array();
 
 
 	/**
@@ -70,6 +71,9 @@ class EE_Lang {
 	 */
 	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
+		//which scope should we load to? default is EE
+		$scope = 'ee';
+
 		// Clean up langfile
 		$langfile = str_replace('.php', '', $langfile);
 
@@ -114,17 +118,24 @@ class EE_Lang {
 		}
 
 		// if it's in an alternate location, such as a package, check there first
+		$alt_files = [];
 		if ($alt_path != '')
 		{
 			// Temporary! Rename your language files!
 			$third_party_old = 'lang.'.str_replace('_lang.', '.', $langfile);
 
-			array_unshift($paths, $alt_path.'language/english/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/english/'.$langfile);
-			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
-			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
+			$alt_files = [
+				$alt_path.'language/english/'.$third_party_old,
+				$alt_path.'language/english/'.$langfile,
+				$alt_path.'language/'.$deft_lang.'/'.$third_party_old,
+				$alt_path.'language/'.$idiom.'/'.$third_party_old,
+				$alt_path.'language/'.$deft_lang.'/'.$langfile,
+				$alt_path.'language/'.$idiom.'/'.$langfile
+			];
+
+			foreach ($alt_files as $file) {
+				array_unshift($paths, $file);
+			}
 		}
 
 		// if idiom and deft_lang are the same, don't check those paths twice
@@ -137,6 +148,9 @@ class EE_Lang {
 			if (file_exists($path) && include $path)
 			{
 				$success = TRUE;
+				if (in_array($path, $alt_files)) {
+					$scope = 'addon';
+				}
 				break;
 			}
 		}
@@ -158,8 +172,22 @@ class EE_Lang {
 		}
 
 		$this->is_loaded[] = $langfile;
-		$this->language = array_merge($this->language, $lang);
+
+		switch ($scope) {
+			case 'addon':
+				$this->addon_language = array_merge($this->language, $lang);
+				break;
+			case 'ee':
+			default:
+				$this->language = array_merge($this->language, $lang);
+				break;
+		}
 		unset($lang);
+
+		if (isset($ee_lang)) {
+			$this->language = array_merge($this->language, $ee_lang);
+			unset($ee_lang);
+		}
 
 		log_message('debug', 'Language file loaded: language/'.$idiom.'/'.$langfile);
 		return TRUE;
@@ -177,7 +205,13 @@ class EE_Lang {
 	{
 		if ($which != '')
 		{
-			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];
+			if (isset($this->language[$which])) {
+				$line = $this->language[$which];
+			} elseif (isset($this->addon_language[$which])) {
+				$line = $this->addon_language[$which];
+			} else {
+				$line = $which;
+			}
 
 			if ($label != '')
 			{
