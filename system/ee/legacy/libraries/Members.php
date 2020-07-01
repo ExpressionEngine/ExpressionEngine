@@ -160,6 +160,10 @@ class Members {
 							)
 						);
 			}
+			else if (REQ == 'ACTION')
+			{
+				return true;
+			}
 		}
 
 		// Do the have the GD library?
