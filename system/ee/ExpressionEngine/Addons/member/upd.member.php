@@ -14,7 +14,7 @@ use ExpressionEngine\Service\Addon\Installer;
 /**
  * Member Management update class
  */
-class Member_upd
+class Member_upd extends Installer
 {
 
     public $actions = [
