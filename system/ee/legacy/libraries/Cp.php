@@ -72,8 +72,6 @@ class Cp {
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
-		ee()->load->model('member_model'); // for screen_name, quicklinks
-
 		ee()->lang->loadfile($langfile, '', FALSE);
 
 		// Meta-refresh tag
@@ -117,7 +115,7 @@ class Cp {
 			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
-			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
+			'cp_quicklinks'			=> $this->_get_quicklinks($member->getQuicklinks()),
 
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE,	// for conditional use in view files
@@ -558,7 +556,7 @@ class Cp {
 		$mtimes = array();
 
 		if ($include_common) {
-			ee()->cp->add_js_script([
+			$this->add_js_script([
 				'file' => [
 					'common'
 				]
@@ -755,26 +753,6 @@ class Cp {
 	 */
 	private function _get_quicklinks($quick_links)
 	{
-		$i = 1;
-
-		$quicklinks = array();
-
-		if ( ! empty($quick_links))
-		{
-			foreach (explode("\n", $quick_links) as $row)
-			{
-				$x = explode('|', $row);
-
-				$quicklinks[$i]['title'] = (isset($x[0])) ? $x[0] : '';
-				$quicklinks[$i]['link'] = (isset($x[1])) ? $x[1] : '';
-				$quicklinks[$i]['order'] = (isset($x[2])) ? $x[2] : '';
-
-				$i++;
-			}
-		}
-
-		$quick_links = $quicklinks;
-
 		$len = strlen(ee()->config->item('cp_url'));
 
 		$link = array();

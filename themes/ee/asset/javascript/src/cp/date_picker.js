@@ -214,7 +214,6 @@ EE.cp.datePicker = {
 				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
-					console.log('fafa');
 
 
 					var d = new Date();
@@ -439,7 +438,7 @@ $(document).ready(function () {
 	EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
 
 	// Date fields inside a Grid need to be bound when a new row is added
-	if (Grid !== undefined)
+	if (typeof Grid !== 'undefined')
 	{
 		Grid.bind('date', 'display', function(cell)
 		{

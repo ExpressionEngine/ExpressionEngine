@@ -113,7 +113,7 @@ class MenuManager extends Settings {
 				$checkbox['disabled'] = "disabled";
 			}
 
-			$assigned = $set->RoleSettings->filter('role_id', 'IN', ee('Permission')->rolesThatCan('access_cp'))->pluck('role_id');
+			$assigned = ee('Model')->get('Role', $set->RoleSettings->pluck('role_id'))->all()->pluck('name');
 
 			$columns = array(
 				$main_link,

@@ -90,7 +90,7 @@ class Settings extends Profile {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
-		if (! $avatar_directory->exists())
+		if (empty($avatar_directory) || !$avatar_directory->exists())
 		{
 			$vars['sections']['avatar_settings'] = [
 				array(

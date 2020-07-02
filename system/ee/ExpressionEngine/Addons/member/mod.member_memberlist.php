@@ -258,24 +258,65 @@ class Member_memberlist extends Member {
 	/** ----------------------------------------*/
 	function memberlist()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
 		/** ----------------------------------------
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
 		if ( ! ee('Permission')->can('view_profiles'))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')), '', $return_error_link);
+		}
+
+		// Find out where our memberlist page actually is (for doing search results).
+		$result_page = ee()->TMPL->fetch_param('result_page');
+
+		// If the action is relative, make sure it has a leading slash so we don't append it to the current url.
+		if (!empty($result_page) && substr($result_page, 0, 4) !== 'http' && substr($result_page, 0, 1) !== '/')
+		{
+			$result_page = '/' . $result_page;
 		}
 
 		/** ----------------------------------------
 		/**  Grab the templates
 		/** ----------------------------------------*/
 
-		$template = $this->_load_element('memberlist');
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('memberlist');
+		}
+
 		$vars = ee('Variables/Parser')->extractVariables($template);
 		$var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
-		$memberlist_rows = $this->_load_element('memberlist_rows');
+		// Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
+		if (strpos($template, '{/member_rows}') !== FALSE)
+		{
+			$member_rows_tag_length = strlen(LD . 'member_rows' . RD);
+
+			// Find the starting and ending position of our subtag and calculate the difference so we can grab it.
+			$member_rows_start = strpos($template, LD . 'member_rows' . RD) + $member_rows_tag_length;
+			$member_rows_end = strpos($template, LD . '/member_rows' . RD);
+			$member_rows_diff = $member_rows_end - $member_rows_start;
+
+			$memberlist_rows = substr($template, $member_rows_start, $member_rows_diff);
+		}
+		else
+		{
+			$memberlist_rows = $this->_load_element('memberlist_rows');
+		}
+
 		$mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
@@ -381,7 +422,7 @@ class Member_memberlist extends Member {
 		}
 
 		$path = '';
-		if (preg_match('#/G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches))
+		if (preg_match('#/?G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches))
 		{
 			$group_id   = $matches[1];
 			$order_by   = $matches[2];
@@ -493,44 +534,12 @@ class Member_memberlist extends Member {
 		/**  Build Pagination
 		/** -----------------------------*/
 
-		// Check to see if the old style pagination exists
-		// @deprecated 2.8
-		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
-		{
-			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
-			ee()->load->library('logger');
-			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your Member List template.', TRUE, 604800);
-			$config['last_link'] = ee()->lang->line('last');
-			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
-			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
-			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
-
-			// Allows $config['cur_page'] to override
-			$config['uri_segment'] = 0;
-
-			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
-			{
-				$config['first_tag_open'] = '<td><div class="paginate">';
-				$config['first_tag_close'] = '</div></td>';
-				$config['last_tag_open'] = '<td><div class="paginate">';
-				$config['last_tag_close'] = '</div></td>';
-				$config['next_tag_open'] = '<td><div class="paginate">';
-				$config['next_tag_close'] = '</div></td>';
-				$config['prev_tag_open'] = '<td><div class="paginate">';
-				$config['prev_tag_close'] = '</div></td>';
-				$config['cur_tag_open'] = '<td><div class="paginateCur">';
-				$config['cur_tag_close'] = '</div></td>';
-				$config['num_tag_close'] = '</div></td>';
-			}
-
-			ee()->pagination->initialize($config);
-		}
-
 		// Start running pagination
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$pagination->basepath = $this->_member_path('memberlist').$path;
+		$pagination->basepath = (! empty($result_page) ? $result_page : $this->_member_path('memberlist')) . $path;
+
 		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
@@ -670,18 +679,11 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------*/
 					if (preg_match("/^if\s+avatar.*/i", $val['0']))
 					{
-						if (ee()->config->item('enable_avatars') == 'y' AND ee()->session->userdata('display_avatars') == 'y' )
-						{
-							$avatar_path	= $member->getAvatarUrl();
-							$avatar_width	= $row['avatar_width'];
-							$avatar_height	= $row['avatar_height'];
+						$avatar_path	= $member->getAvatarUrl();
+						$avatar_width	= $row['avatar_width'];
+						$avatar_height	= $row['avatar_height'];
 
-							$temp = $this->_allow_if('avatar', $temp);
-						}
-						else
-						{
-							$temp = $this->_deny_if('avatar', $temp);
-						}
+						$temp = $this->_allow_if('avatar', $temp);
 					}
 
 				}
@@ -694,6 +696,7 @@ class Member_memberlist extends Member {
 
 				$name_replacement = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
 				$temp = $this->_var_swap_single('name', $name_replacement, $temp);
+				$temp = $this->_var_swap_single('member_id', $row['member_id'], $temp);
 
 				/** ----------------------------------------
 				/**  1:1 variables
@@ -951,19 +954,53 @@ class Member_memberlist extends Member {
 			$template = $pagination->render($template);
 		}
 
-		if ($this->is_search === TRUE)
+		// If we are using our own template code, get the result page from the tag params, otherwise, use the default member templates.
+		if (! empty($tagdata))
 		{
+			if ($this->is_search === TRUE)
+			{
+				if (! empty($result_page))
+				{
+					$result_page = $result_page . $search_path;
+				}
+				else
+				{
+					$result_page = $this->_member_path('member_search/' . $search_path);
+				}
+			}
+			else
+			{
+				if (! empty($result_page))
+				{
+					$result_page = $result_page . '/' . (($first_letter != '') ? $first_letter.'/' : $search_path);
+				}
+				else
+				{
+					$result_page = $this->_member_path('member_search/' . (($first_letter != '') ? $first_letter.'/' : $search_path));
+				}
+			}
+
 			$form_open = ee()->functions->form_declaration(array(
 				'method' => 'post',
-				'action' => $this->_member_path('member_search'.$search_path)
+				'action' => $result_page
 			));
 		}
 		else
 		{
-			$form_open = ee()->functions->form_declaration(array(
-				'method' => 'post',
-				'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
-			));
+			if ($this->is_search === TRUE)
+			{
+				$form_open = ee()->functions->form_declaration(array(
+					'method' => 'post',
+					'action' => $this->_member_path('member_search'.$search_path)
+				));
+			}
+			else
+			{
+				$form_open = ee()->functions->form_declaration(array(
+					'method' => 'post',
+					'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
+				));
+			}
 		}
 
 		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
@@ -971,8 +1008,21 @@ class Member_memberlist extends Member {
 			'method' => 'post',
 			'action' => $this->_member_path('do_member_search')
 		));
+
 		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
-		$template = str_replace(LD."member_rows".RD, $str, $template);
+
+		if (! empty($member_rows_diff))
+		{
+			$member_rows_start = strpos($template, LD . 'member_rows' . RD);
+			$member_rows_end = strpos($template, LD . '/member_rows' . RD) + $member_rows_tag_length + 1;
+			$member_rows_diff = $member_rows_end - $member_rows_start;
+
+			$template = substr_replace($template, $str, $member_rows_start, $member_rows_diff);
+		}
+		else
+		{
+			$template = str_replace(LD."member_rows".RD, $str, $template);
+		}
 
 		return	$template;
 	}
@@ -1024,10 +1074,12 @@ class Member_memberlist extends Member {
 
 	function do_member_search()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
 		/** ----------------------------------------
 		/**  Fetch the search language file
 		/** ----------------------------------------*/
-
 		ee()->lang->loadfile('search');
 
 		/** ----------------------------------------
@@ -1131,18 +1183,18 @@ class Member_memberlist extends Member {
 		if ($custom_fields === FALSE)
 		{
 			$sql = "SELECT m.member_id FROM exp_members m
-					WHERE m.group_id NOT IN ('3', '4'{$xsql}) ";
+					WHERE m.role_id NOT IN ('3', '4'{$xsql}) ";
 		}
 		else
 		{
 			$sql = "SELECT m.member_id FROM exp_members m, exp_member_data md
 					WHERE m.member_id = md.member_id
-					AND m.group_id NOT IN ('3', '4'{$xsql}) ";
+					AND m.role_id NOT IN ('3', '4'{$xsql}) ";
 		}
 
 		if (isset($_POST['search_group_id']) && $_POST['search_group_id'] != '0')
 		{
-			$sql .= "AND m.group_id = '".ee()->db->escape_str($_POST['search_group_id'])."'";
+			$sql .= "AND m.role_id = '".ee()->db->escape_str($_POST['search_group_id'])."'";
 		}
 
 		foreach($search_array as $search)
@@ -1194,7 +1246,16 @@ class Member_memberlist extends Member {
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
 
-		return ee()->functions->redirect(reduce_double_slashes($this->_member_path('member_search/'.$hash)));
+		if (! empty($protected['result_page']))
+		{
+			$result_page = $protected['result_page'] . '/' . $hash;
+		}
+		else
+		{
+			$result_page = $this->_member_path('member_search/' . $hash);
+		}
+
+		return ee()->functions->redirect(reduce_double_slashes($result_page));
 	}
 }
 // END CLASS

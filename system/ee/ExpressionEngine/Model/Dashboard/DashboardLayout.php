@@ -176,7 +176,7 @@ class DashboardLayout extends Model {
 		$vars['can_create_channels'] = ee('Permission')->can('create_channels');
 		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
-		$vars['can_create_entries'] = ee('Permission')->can('can_create_entries');
+		$vars['can_create_entries'] = ee('Permission')->can('create_entries');
 
 		return ee('View')->make('_shared/dashboard/dashboard')->render($vars);
 	}

@@ -208,9 +208,9 @@ $lang = array(
 
 'member_approved_success_desc' => 'The member <b>%s</b> has been approved.',
 
-'member_assignment_none' => 'None, members with this role will be deleted',
+'member_assignment_none' => 'None, members with this Primary Role will be deleted',
 
-'member_assignment_warning' => 'Members are currently assigned to some of these groups. What role should they be re-assigned to?',
+'member_assignment_warning' => 'There are members that have some of these roles assigned as Primary Role. What Primary Role should they be re-assigned to?',
 
 'member_cfg' => 'Role Settings',
 
@@ -239,6 +239,10 @@ $lang = array(
 'member_field_saved_desc' => 'Member Field has been saved successfully.',
 
 'member_fields_deleted_desc' => 'The following Member Fields have been deleted:',
+
+'invalid_role_id' => 'You must select a valid member role.',
+
+'invalid_new_primary_role' => 'New primary role is not valid.',
 
 'primary_role' => 'Primary Role',
 
@@ -726,6 +730,12 @@ $lang = array(
 
 'super_admin_edit_note' => 'Note: You can only edit the name and description for the Super Admin group',
 
+'template_access' => 'Template Access',
+
+'assigned_templates' => 'Allowed Templates',
+
+'assigned_templates_desc' => 'Members with this role are allowed to access selected templates.',
+
 'template_manager' => 'Templates',
 
 'tools_utilities' => 'Utilities',
@@ -786,7 +796,7 @@ $lang = array(
 
 'create_member_field' => 'Create Member Field',
 
-'create_roles' => 'Create new groups',
+'create_roles' => 'Create new roles',
 
 'create_members' => 'Create new members',
 
@@ -814,7 +824,7 @@ $lang = array(
 
 'delete_files' => 'Delete files',
 
-'delete_roles' => 'Delete groups',
+'delete_roles' => 'Delete roles',
 
 'delete_profile_field_confirmation' => 'Are you sure you want to permanently delete this Member Profile Field?',
 
@@ -840,7 +850,7 @@ $lang = array(
 
 'edit_member_field' => 'Edit Field',
 
-'edit_roles' => 'Edit groups',
+'edit_roles' => 'Edit roles',
 
 'edit_members' => 'Edit members',
 
@@ -924,7 +934,7 @@ $lang = array(
 
 'message_sent_to' => 'Message Sent to:',
 
-'must_be_superadmin_to_delete_one' => 'You must be a Super Admin to delete a Super Admin',
+'must_be_superadmin_to_delete_one' => 'You must be a Super Admin to delete a member with this role',
 
 'no_cached_email' => 'No <b>cached email messages</b> found.',
 

@@ -120,7 +120,7 @@ class Bookmarks extends Settings {
 			'cp_page_title' => lang('create_bookmarklet')
 		);
 
-		$id = count($this->bookmarks) ?: 1;
+		$id = count($this->bookmarks) ?: 0;
 
 		if ( ! empty($_POST))
 		{

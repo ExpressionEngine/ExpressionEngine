@@ -119,11 +119,6 @@ class Update extends Query {
 		if ( ! $object->isNew())
 		{
 			$query->where($gateway->getPrimaryKey(), $object->getId());
-
-			if ($object->getName() == 'ee:MemberGroup')
-			{
-				$query->where('site_id', $object->site_id);
-			}
 		}
 
 		$query->update($gateway->getTableName());
