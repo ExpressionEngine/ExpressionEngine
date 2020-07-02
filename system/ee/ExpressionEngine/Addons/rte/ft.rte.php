@@ -461,7 +461,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function accepts_content_type($name)
     {
-        return in_array($name, array('channel', 'grid', 'fluid_field'));
+        return true;
     }
 
     // --------------------------------------------------------------------
