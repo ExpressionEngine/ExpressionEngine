@@ -9,11 +9,13 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * File Fieldtype
  */
-class File_ft extends EE_Fieldtype {
+class File_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'File',
@@ -752,6 +754,19 @@ JSC;
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function getTableColumnConfig()
+	{
+		return [
+			'encode'	=> false
+		];
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		$field_data = $this->pre_process($data);
+		$out = '<a href="' . $this->replace_tag($field_data) . '" target="_blank">'.$field_data['title'].'</a>';
+		return $out;
 	}
 }
 

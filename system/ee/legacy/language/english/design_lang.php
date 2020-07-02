@@ -240,7 +240,7 @@ $lang = array(
 
 'template_roles' => 'Allowed roles',
 
-'template_roles_desc' => 'Users in these roles can perform each selected action in this template group.',
+'template_roles_desc' => 'Members in these roles can perform each selected action in this template group.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 

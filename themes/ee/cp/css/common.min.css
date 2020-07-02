@@ -7785,7 +7785,8 @@ body.iframe .title-bar {
   line-height: 30px;
   padding: 0 20px;
   font-size: 0.92em;
-  color: var(--ee-text-primary); }
+  color: var(--ee-text-primary);
+  white-space: nowrap; }
   .dropdown__link a {
     color: var(--ee-text-primary); }
   .dropdown__link:hover, .dropdown__link:focus {
@@ -7851,7 +7852,9 @@ body.iframe .title-bar {
     display: block;
     height: 100%;
     padding: 5px 20px;
-    color: var(--ee-text-primary); }
+    color: var(--ee-text-primary);
+    white-space: nowrap;
+    overflow-x: hidden; }
     .dropdown__item a:not(.dropdown__item-button):hover {
       color: var(--ee-text-primary); }
     .dropdown__item a:not(.dropdown__item-button) .fas, .dropdown__item a:not(.dropdown__item-button) tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__item a:not(.dropdown__item-button) td:not(.reorder-col):first-child:before, .dropdown__item a:not(.dropdown__item-button) .column-sort::after, .dropdown__item a:not(.dropdown__item-button) .app-notice__icon::before, .dropdown__item a:not(.dropdown__item-button) .app-notice__dismiss::before, .dropdown__item a:not(.dropdown__item-button) .m-close:before, .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
@@ -7863,6 +7866,14 @@ body.iframe .title-bar {
     .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) [class*='fields-grid-tool-']:before {
       margin-right: 5px;
       color: var(--ee-text-secondary); }
+    .dropdown__item a:not(.dropdown__item-button).dropdown-reorder {
+      cursor: move; }
+      .dropdown__item a:not(.dropdown__item-button).dropdown-reorder:before {
+        padding-right: 10px;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        content: "\f0c9";
+        color: var(--ee-text-secondary); }
 
 .dropdown__item-button {
   font-size: 0.8em !important;
@@ -10044,7 +10055,9 @@ tr.no-results {
   margin: 10px 0 0 4px;
   font-size: 0.9em; }
   .pagination__item .filter-bar {
-    margin-top: -12px; }
+    margin-top: -12px;
+    border: 0;
+    background: none; }
 
 .pagination__item--right {
   margin-left: 20px; }

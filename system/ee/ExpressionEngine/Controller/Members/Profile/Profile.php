@@ -65,7 +65,6 @@ class Profile extends CP_Controller {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
 		$this->generateSidebar();

@@ -32,6 +32,7 @@ class Snippet extends FileSyncedModel {
 
 	protected static $_events = array(
 		'afterSave',
+		'afterDelete'
 	);
 
 	protected $snippet_id;
@@ -260,6 +261,10 @@ class Snippet extends FileSyncedModel {
 	 */
 	private function getNewSnippetsFromFiles($path, $site_id, $existing)
 	{
+		if (ee()->config->item('save_tmpl_files') != 'y') {
+			return [];
+		}
+
 		$fs = new Filesystem;
 		$snippets = [];
 
@@ -306,6 +311,12 @@ class Snippet extends FileSyncedModel {
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterDelete()
+	{
+		parent::onAfterDelete();
 		ee()->functions->clear_caching('all');
 	}
 }

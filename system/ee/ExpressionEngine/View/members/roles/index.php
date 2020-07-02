@@ -25,10 +25,11 @@
 					[
 						'value' => "remove",
 						'text' => lang('delete'),
-						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete" '
 					]
 				],
-				'modal' => true
+				'modal' => true,
+				'ajax_url' => ee('CP/URL')->make('/members/roles/confirm')
 			]); ?>
 			<?php endif; ?>
 		</form>

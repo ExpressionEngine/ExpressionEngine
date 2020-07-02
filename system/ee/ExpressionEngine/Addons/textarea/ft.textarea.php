@@ -371,6 +371,12 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
+
+	public function getTableColumnConfig() {
+		return [
+			'encode'	=> false
+		];
+	}
 }
 
 // END Textarea_ft class

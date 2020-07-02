@@ -20,7 +20,7 @@
 <?php else: ?>
 	<table cellspacing="0" <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 		<thead>
-			<tr>
+			<tr class="app-listing__row app-listing__row--head">
 				<?php
 				// Don't do reordering logic if the table is empty
 				$reorder = $reorder && ! empty($data);
@@ -35,12 +35,12 @@
 					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
 					$label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
-						<th class="check-ctrl">
+						<th class="app-listing__header text--center">
 							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input type="checkbox" title="select all">
+									<input class="input--no-mrg" type="checkbox" title="select all">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
@@ -117,6 +117,15 @@
 				<?php endif ?>
 				<?php
 				foreach ($rows as $row):
+					if (isset($row['attrs']['class']))
+					{
+						$row['attrs']['class'] .= ' app-listing__row';
+					}
+					else
+					{
+						$row['attrs']['class'] = 'app-listing__row';
+					}
+
 					// The last row preceding an action row should have a class of 'last'
 					if (( ! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit))
 					{
@@ -147,14 +156,15 @@
 								<td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
-								<td>
+								<td class="app-listing__cell">
 									<div class="toolbar-wrap">
 										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
 									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-								<td>
+								<td class="app-listing__cell app-listing__cell--input text--center">
 									<input
+										class="input--no-mrg"
 										name="<?=form_prep($column['name'])?>"
 										value="<?=form_prep($column['value'])?>"
 										<?php if (isset($column['data'])):?>
@@ -236,7 +246,7 @@ else: ?>
 	<div class="grid-field" id="<?=$grid_field_name?>">
 
 	<div class="table-responsive">
-	<table class="grid-field__table">
+	<table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 	<?php if (empty($columns) && empty($data)): ?>
 		<p class="no-results">
 			<?=lang($no_results['text'])?>
