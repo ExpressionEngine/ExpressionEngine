@@ -16,7 +16,7 @@
         "@4tw/cypress-drag-drop": "^1.3.1"
     },
     "dependencies": {
-        "cypress": "https://cdn.cypress.io/beta/npm/4.6.0/appveyor-develop-6960f7cd78c9d730ed2d595faf5dc0a06d524270-32797947/cypress.tgz",
+        "cypress": "4.9.0",
         "cypress-xpath": "^1.4.0",
         "del": "^5.1.0",
         "fs-extra": "^9.0.0",
