@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<members>
+	<member
+		<username>brettb</username>
+		<screen_name>Brett Bretterson</screen_name>
+		<password type="md5">653132ffd94b986bf2bb806b3c67d190</password>
+		<email>brett@example.com</email>
+	</member>
+</members>
