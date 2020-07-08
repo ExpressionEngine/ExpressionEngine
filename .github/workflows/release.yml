@@ -21,8 +21,12 @@ jobs:
           path: build-tools
           ref: npm-update # Remove once testing is complete
 
-      - name: Install asdf
-        uses: asdf-vm/actions/install@v1
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v1
+
+      - name: Install asdf dependencies
+        working-directory: build-tools
+        run: asdf install
 
       - name: Install build tool dependencies
         working-directory: build-tools
