@@ -63,6 +63,12 @@ jobs:
           name: EEDocs${{ env.VERSION }}
           path: build-tools/builds/EEDocs${{ env.VERSION }}.zip
 
+      - name: Archive Signature
+        uses: actions/upload-artifact@v2
+        with:
+          name: Signature.txt
+          path: build-tools/builds/Signature.txt
+
       - name: Directory Listing on Failure
         if: failure()
         run: |
