@@ -47,7 +47,6 @@ jobs:
       - name: Archive Build files
         uses: actions/upload-artifact@v1
         with:
-          name: dist-${{ env.VERSION }}
           path: build-tools/builds/ExpressionEngine${{ env.VERSION }}.zip
 
       - name: Directory Listing on Failure
