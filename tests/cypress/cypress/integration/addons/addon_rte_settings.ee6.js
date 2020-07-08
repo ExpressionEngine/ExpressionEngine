@@ -142,7 +142,7 @@ context('RTE Settings', () => {
             page.get('action_submit_button').click()
 
             cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('input[value="Confirm, and Remove"]').eq(0).filter(':checked').first().invoke('val').then((val) => {
+                cy.get('input[value="Confirm, and Remove"]').filter(':checked').first().invoke('val').then((val) => {
                     elem.val(val)
                 });
             });
@@ -210,8 +210,8 @@ context('RTE Settings', () => {
         })
 
         it('can edit a tool set', function() {
-            page.get('tool_sets').eq(1).click()
-            cy.hasNoErrors()
+            //page.get('tool_sets').eq(1).click() || instead of trying to click on this just go directly
+            cy.visit('http://localhost:8888/admin.php?/cp/addons/settings/rte/edit_toolset&toolset_id=1')
 
             page.get('tool_set_name').clear().type('Cypress Edited')
             page.get('tool_set_save_button').click()
@@ -230,7 +230,7 @@ context('RTE Settings', () => {
 
 
             //page.get('modal_submit_button').click() // Submits a form || deprecated
-            cy.get('input[value="Confirm, and Remove"]').eq(0).click() //try this instead.
+            cy.get('input[value="Confirm, and Remove"]').click() //try this instead.
 
             cy.hasNoErrors()
 
@@ -249,7 +249,7 @@ context('RTE Settings', () => {
             
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
-            cy.get('input[value="Confirm, and Remove"]').eq(0).click()
+            cy.get('input[value="Confirm, and Remove"]').click()
 
 
             cy.hasNoErrors()

@@ -13,7 +13,7 @@ class RteSettings extends ControlPanel {
             "rte_enabled": 'input[name=rte_enabled]',
             "rte_enabled_toggle": '[data-toggle-for=rte_enabled]',
             "default_tool_set": 'input[type!=hidden][name="rte_default_toolset_id"]',
-            "save_settings_button": '.ee-main__content .form-btns-top input.btn[type="submit"]',
+            "save_settings_button": 'input[value="Save Settings"]',
 
             "create_new_button": 'div.tbl-ctrls form fieldset.tbl-search a.btn.action',
             "tool_sets": 'div.tbl-ctrls form div.table-responsive table tr',
@@ -37,7 +37,7 @@ class RteSettings extends ControlPanel {
         this.get('breadcrumb').contains('Add-Ons')
         //this.get('breadcrumb').contains('Rich Text Editor Configuration')
 
-        this.get('headings').eq(0).contains('Rich Text Editor Configuration')
+        this.get('headings').eq(0).contains('Rich Text Editor')
         this.get('headings').eq(1).contains('Available Tool Sets')
 
         this.get('rte_enabled').should('exist')
