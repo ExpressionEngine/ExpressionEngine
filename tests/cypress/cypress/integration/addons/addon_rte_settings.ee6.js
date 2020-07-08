@@ -230,7 +230,7 @@ context('RTE Settings', () => {
 
 
             //page.get('modal_submit_button').click() // Submits a form || deprecated
-            cy.get('input[value="Confirm, and Remove"]').eq(0).click() //try this instead.
+            cy.get('input[type="submit"][value="Confirm, and Remove"]').eq(0).click({ force: true }) //try this instead.
 
             cy.hasNoErrors()
 
@@ -249,8 +249,7 @@ context('RTE Settings', () => {
             
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
-            cy.get('input[value="Confirm, and Remove"]').eq(0).click()
-
+            cy.get('input[type="submit"][value="Confirm, and Remove"]').eq(0).click({ force: true }) //try this instead.
 
             cy.hasNoErrors()
 
