@@ -27,6 +27,7 @@ jobs:
       - name: Install asdf dependencies
         working-directory: build-tools
         run: |
+          bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
           asdf plugin add nodejs
           asdf install
 
