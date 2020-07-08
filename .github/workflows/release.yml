@@ -46,12 +46,8 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: gulp app --local --head --skip-lint --version=$VERSION
 
-      - name: Compress Build Files
-        working-directory: build-tools/builds
-        run: zip -r dist.zip ExpressionEngine$VERSION
-
       - name: Archive Build files
         uses: actions/upload-artifact@v1
         with:
           name: dist-$VERSION
-          path: build-tools/builds/dist.zip
+          path: build-tools/builds/ExpressionEngine$VERSION.zip
