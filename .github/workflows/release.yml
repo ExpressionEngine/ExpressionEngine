@@ -51,3 +51,7 @@ jobs:
         with:
           name: dist-$VERSION
           path: build-tools/builds/ExpressionEngine$VERSION.zip
+      
+      - name: Directory Listing on Failure
+        if: failure()
+        run: ls -latr
