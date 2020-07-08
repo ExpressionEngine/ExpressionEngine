@@ -49,7 +49,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ~/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{ env.VERSION }}
+        run: gulp app --local --head --skip-lint --version=${{ env.VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
