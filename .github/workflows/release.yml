@@ -21,6 +21,13 @@ jobs:
           path: build-tools
           ref: npm-update # Remove once testing is complete
 
+      - name: Checkout docs
+        uses: actions/checkout@v2
+        with:
+          repository: ExpressionEngine/ExpressionEngine-User-Guide
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: '$HOME/ExpressionEngine-User-Guide'
+
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
 
@@ -41,13 +48,20 @@ jobs:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: ${{ github.workspace }}
-        run: gulp app --local --head --skip-lint --version=${{ env.VERSION }}
+          DOCS_REPO_PATH: '$HOME/ExpressionEngine-User-Guide'
+        run: gulp default --local --head --skip-lint --version=${{ env.VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
         with:
+          name: ExpressionEngine${{ env.VERSION }}
           path: build-tools/builds/ExpressionEngine${{ env.VERSION }}.zip
+
+      - name: Archive Doc files
+        uses: actions/upload-artifact@v2
+        with:
+          name: EEDocs${{ env.VERSION }}
+          path: build-tools/builds/EEDocs${{ env.VERSION }}.zip
 
       - name: Directory Listing on Failure
         if: failure()
