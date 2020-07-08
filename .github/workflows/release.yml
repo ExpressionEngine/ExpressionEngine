@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    env:
+      VERSION: 5.100.100 # This will be the tag ref later
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout build tools
+        uses: actions/checkout@v2
+        with:
+          repository: EllisLab/ExpressionEngine-Build
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: build-tools
+          ref: npm-update # Remove once testing is complete
+
+      - name: Install asdf
+        uses: asdf-vm/actions/install@v1
+
+      - name: Install build tool dependencies
+        working-directory: build-tools
+        run: npm install
+
+      - name: Setup build config
+        working-directory: build-tools
+        run: mv local_config.github.json local_config.json
+
+      - name: Run build process
+        working-directory: build-tools
+        env:
+          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: gulp app --local --head --skip-lint --version=$VERSION
+
+      - name: Compress Build Files
+        working-directory: build-tools/builds
+        run: zip -r dist.zip ExpressionEngine$VERSION
+
+      - name: Archive Build files
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist-$VERSION
+          path: build-tools/builds/dist.zip
