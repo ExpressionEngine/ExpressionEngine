@@ -35,15 +35,13 @@ jobs:
         working-directory: build-tools
         run: npm install
 
-      - name: Setup build config
-        working-directory: build-tools
-        run: mv local_config.github.json local_config.json
-
       - name: Run build process
         working-directory: build-tools
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          APP_REPO_PATH: $GITHUB_WORKSPACE
+          DOCS_REPO_PATH: $GITHUB_WORKSPACE
         run: gulp app --local --head --skip-lint --version=$VERSION
 
       - name: Archive Build files
