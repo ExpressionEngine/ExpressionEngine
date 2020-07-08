@@ -37,8 +37,8 @@ class RteSettings extends ControlPanel {
         this.get('breadcrumb').contains('Add-Ons')
         //this.get('breadcrumb').contains('Rich Text Editor Configuration')
 
-        this.get('headings').eq(0).contains('Rich Text Editor')
-        this.get('headings').eq(1).contains('Available Tool Sets')
+        cy.get('h1').contains('Rich Text Editor')
+        cy.get('h1').contains('Available Tool Sets')
 
         this.get('rte_enabled').should('exist')
         this.get('rte_enabled_toggle').should('exist')

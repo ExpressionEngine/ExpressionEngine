@@ -33,13 +33,13 @@ context('RTE Settings', () => {
 
         it('can disable & enable the rich text editor', function() {
             page.get('rte_enabled_toggle').click()
-            page.get('save_settings_button').click()
+            page.get('save_settings_button').eq(0).click()
             cy.hasNoErrors()
 
             page.get('rte_enabled').should('have.value', 'n')
 
             page.get('rte_enabled_toggle').click()
-            page.get('save_settings_button').click()
+            page.get('save_settings_button').eq(0).click()
             cy.hasNoErrors()
 
             page.get('rte_enabled').should('have.value', 'y')
@@ -47,7 +47,7 @@ context('RTE Settings', () => {
 
         it('only accepts "y" or "n" for enabled setting', function() {
             page.get('rte_enabled').invoke('attr', 'value', '1')
-            page.get('save_settings_button').click()
+            page.get('save_settings_button').eq(0).click()
 
             cy.hasNoErrors()
 
@@ -63,7 +63,7 @@ context('RTE Settings', () => {
         it('cannot set a default tool set to an nonexistent tool set', function() {
             page.get('default_tool_set').eq(0).invoke('attr', 'value', '99999')
             page.get('default_tool_set').eq(0).check()
-            page.get('save_settings_button').click()
+            page.get('save_settings_button').eq(0).click()
             cy.hasNoErrors()
 
             page.hasAlert('error')
@@ -203,7 +203,7 @@ context('RTE Settings', () => {
 
         it('can change the default tool set', function() {
             page.get('default_tool_set').eq(3).check()
-            page.get('save_settings_button').click()
+            page.get('save_settings_button').eq(0).click()
             cy.hasNoErrors()
 
             page.get('default_tool_set').eq(3).should('be.checked')
@@ -230,7 +230,7 @@ context('RTE Settings', () => {
 
 
             //page.get('modal_submit_button').click() // Submits a form || deprecated
-            cy.get('input[value="Confirm, and Remove"]').click() //try this instead.
+            cy.get('input[value="Confirm, and Remove"]').eq(0).click() //try this instead.
 
             cy.hasNoErrors()
 
@@ -249,7 +249,7 @@ context('RTE Settings', () => {
             
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
-            cy.get('input[value="Confirm, and Remove"]').click()
+            cy.get('input[value="Confirm, and Remove"]').eq(0).click()
 
 
             cy.hasNoErrors()
