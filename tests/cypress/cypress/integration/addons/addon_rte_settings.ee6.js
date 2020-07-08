@@ -48,6 +48,7 @@ context('RTE Settings', () => {
         it('only accepts "y" or "n" for enabled setting', function() {
             page.get('rte_enabled').invoke('attr', 'value', '1')
             page.get('save_settings_button').click()
+
             cy.hasNoErrors()
 
             page.hasAlert('error')
@@ -141,7 +142,7 @@ context('RTE Settings', () => {
             page.get('action_submit_button').click()
 
             cy.get('input[name="selection[]"]').then(elem => {
-                page.get('default_tool_set').filter(':checked').first().invoke('val').then((val) => {
+                cy.get('input[value="Confirm, and Remove"]').eq(0).filter(':checked').first().invoke('val').then((val) => {
                     elem.val(val)
                 });
             });
@@ -209,7 +210,7 @@ context('RTE Settings', () => {
         })
 
         it('can edit a tool set', function() {
-            page.get('tool_sets').eq(1).find('li.edit a').click()
+            page.get('tool_sets').eq(1).click()
             cy.hasNoErrors()
 
             page.get('tool_set_name').clear().type('Cypress Edited')
@@ -226,7 +227,11 @@ context('RTE Settings', () => {
             page.get('tool_sets').eq(1).find('input[type="checkbox"]').check()
             page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
-            page.get('modal_submit_button').click() // Submits a form
+
+
+            //page.get('modal_submit_button').click() // Submits a form || deprecated
+            cy.get('input[value="Confirm, and Remove"]').eq(0).click() //try this instead.
+
             cy.hasNoErrors()
 
             page.hasAlert('success')
@@ -241,7 +246,12 @@ context('RTE Settings', () => {
             // Uncheck the Default tool set
             page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
-            page.get('modal_submit_button').click() // Submits a form
+            
+
+            //page.get('modal_submit_button').click() // Submits a form new cp does not use this
+            cy.get('input[value="Confirm, and Remove"]').eq(0).click()
+
+
             cy.hasNoErrors()
 
             page.hasAlert('success')
