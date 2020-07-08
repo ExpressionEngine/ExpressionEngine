@@ -5,6 +5,7 @@ on:
     branches:
       - release/6.0.0
       - testing/ee6
+      - design/6.0.0/cp
   pull_request:
 
 jobs:
