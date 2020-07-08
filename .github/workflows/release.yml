@@ -45,9 +45,8 @@ jobs:
         run: gulp app --local --head --skip-lint --version=${{ env.VERSION }}
 
       - name: Archive Build files
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
-          name: ExpressionEngine${{ env.VERSION }}.zip
           path: build-tools/builds/ExpressionEngine${{ env.VERSION }}.zip
 
       - name: Directory Listing on Failure
