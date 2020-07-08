@@ -42,12 +42,12 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ${{ github.workspace }}
-        run: gulp app --local --head --skip-lint --version=$VERSION
+        run: gulp app --local --head --skip-lint --version=${{ env.VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v1
         with:
-          name: dist-$VERSION
+          name: dist-${{ env.VERSION }}
           path: build-tools/builds/ExpressionEngine${{ env.VERSION }}.zip
 
       - name: Directory Listing on Failure
