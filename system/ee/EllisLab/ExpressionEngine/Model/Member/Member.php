@@ -501,6 +501,11 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		// open, non-expired entries only
 		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
