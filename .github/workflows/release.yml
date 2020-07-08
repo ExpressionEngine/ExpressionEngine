@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Signature.txt
-          path: build-tools/builds/Signature.txt
+          path: build-tools/builds/signature.txt
 
       - name: Directory Listing on Failure
         if: failure()
