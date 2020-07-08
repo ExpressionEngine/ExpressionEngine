@@ -8,7 +8,7 @@ jobs:
     name: Build Release
     runs-on: ubuntu-latest
     env:
-      VERSION: 5.100.100 # This will be the tag ref later
+      VERSION: 5.3.2 # This will be the tag ref later
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
         with:
           name: dist-$VERSION
           path: build-tools/builds/ExpressionEngine$VERSION.zip
-      
+
       - name: Directory Listing on Failure
         if: failure()
         run: ls -latr
