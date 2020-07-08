@@ -40,8 +40,8 @@ jobs:
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: $GITHUB_WORKSPACE
-          DOCS_REPO_PATH: $GITHUB_WORKSPACE
+          APP_REPO_PATH: ${{ GITHUB_WORKSPACE }}
+          DOCS_REPO_PATH: ${{ GITHUB_WORKSPACE }}
         run: gulp app --local --head --skip-lint --version=$VERSION
 
       - name: Archive Build files
