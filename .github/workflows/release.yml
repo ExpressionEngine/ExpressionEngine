@@ -26,7 +26,7 @@ jobs:
         with:
           repository: ExpressionEngine/ExpressionEngine-User-Guide
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: '$HOME/ExpressionEngine-User-Guide'
+          path: ~/ExpressionEngine-User-Guide
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -48,7 +48,7 @@ jobs:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: '$HOME/ExpressionEngine-User-Guide'
+          DOCS_REPO_PATH: ~/ExpressionEngine-User-Guide
         run: gulp default --local --head --skip-lint --version=${{ env.VERSION }}
 
       - name: Archive Build files
