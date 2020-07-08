@@ -65,4 +65,7 @@ jobs:
 
       - name: Directory Listing on Failure
         if: failure()
-        run: ls -latr
+        run: |
+          ls -latr
+          ls -latr build-tools
+          ls -latr build-tools/builds
