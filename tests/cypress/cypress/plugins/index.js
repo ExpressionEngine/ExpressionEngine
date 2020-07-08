@@ -25,9 +25,14 @@ module.exports = (on, config) => {
     const Filesystem = require('./filesystem.js');
     const fs = new Filesystem;
 
+    const baseUrl = config.env.CYPRESS_BASE_URL || null;
+    if (baseUrl) {
+        config.baseUrl = baseUrl;
+    }
+
     on('task', {
         'db:seed': () => {
-            return db.seed('database.sql')
+            return db.seed(config.env.DB_DUMP)
         }
     })
 
@@ -115,4 +120,6 @@ module.exports = (on, config) => {
             return db.seed('channel_sets/relationships-specified-channels.sql')
         }
     })
+
+    return config;
 }

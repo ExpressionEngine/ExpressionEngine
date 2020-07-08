@@ -56,7 +56,7 @@ for ($i=0; $i < $number; $i++) {
 
   # First, get a random member who can add this stuff, use the Super Admin group
   $members = ee('Model')->get('Member')
-    ->filter('group_id', 1)
+    ->filter('role_id', 1)
     ->all()
     ->getDictionary('member_id', 'member_id');
   $member =  ee('Model')->get('Member', array_rand($members))->first();

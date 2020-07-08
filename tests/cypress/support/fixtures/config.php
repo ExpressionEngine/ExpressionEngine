@@ -28,7 +28,7 @@ $item = array_shift($argv);
 
 if (empty($argv))
 {
-	$value = ee()->config->item($item);
+	$value = ee()->config->item($item, '', true);
 	if (empty($value))
 	{
 		exit('');

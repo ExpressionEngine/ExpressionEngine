@@ -99,7 +99,7 @@ class NumberFormatterTest extends TestCase {
 			[112358.13, 'AUD', 'de_DE', '112.358,13 AU$', 0b00000001],
 			[112358.13, 'RUR', 'ru', '112 358,13 р.', 0b00000001],
 			[112358.13, 'UAH', 'uk', '112 358,13 ₴', 0b00000001],
-			[112358.13, 'UAH', 'en', (defined('INTL_ICU_VERSION') && version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH112,358.13' : '₴1,234,567.89'), 0b00000001],
+			[112358.13, 'UAH', 'en', (defined('INTL_ICU_VERSION') && version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH 112,358.13' : '₴1,234,567.89'), 0b00000001],
 			['fake', NULL, NULL, '$0.00', 0b00000001],
 
 			// no intl extension

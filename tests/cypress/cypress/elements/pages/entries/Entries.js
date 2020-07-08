@@ -31,9 +31,7 @@ import ControlPanel from '../ControlPanel'
 
 			   "Clear" : 'a[class="filter-bar__button filter-bar__button--clear"]',
 			   "NumberSort" : 'button[data-filter-label="show"]',
-			   "Entries" : 'tbody',
-
-			   "SelectAll" : 'input[title = "select all"]'
+			   "Entries" : 'tr[class="app-listing__row"]'
 			   
 
 
