@@ -259,6 +259,18 @@ class EE_Input {
 		/*
 		/* -------------------------------------------*/
 
+		if (PHP_VERSION_ID < 70300) {
+			// Older versions of PHP do not support an array as the 3rd parameter,
+			// thus the SameSite setting must be hacked in with the path option.
+			return setcookie($data['prefix'].$data['name'], $data['value'],
+				$data['expire'],
+				$data['path'] . '; SameSite=' . $data['samesite'],
+				$data['domain'],
+				$data['secure_cookie'],
+				$data['httponly']
+			);
+		}
+
 		return setcookie($data['prefix'].$data['name'], $data['value'], [
 			'expires' => $data['expire'],
 			'path' => $data['path'],
