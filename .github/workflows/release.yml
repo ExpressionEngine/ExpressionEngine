@@ -54,20 +54,8 @@ jobs:
       - name: Archive Build files
         uses: actions/upload-artifact@v2
         with:
-          name: ExpressionEngine${{ env.VERSION }}
-          path: build-tools/builds/ExpressionEngine${{ env.VERSION }}.zip
-
-      - name: Archive Doc files
-        uses: actions/upload-artifact@v2
-        with:
-          name: EEDocs${{ env.VERSION }}
-          path: build-tools/builds/EEDocs${{ env.VERSION }}.zip
-
-      - name: Archive Signature
-        uses: actions/upload-artifact@v2
-        with:
-          name: Signature
-          path: build-tools/builds/signature.txt
+          name: EE${{ env.VERSION }}
+          path: build-tools/builds
 
       - name: Directory Listing on Failure
         if: failure()
