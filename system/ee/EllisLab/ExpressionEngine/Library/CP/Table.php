@@ -674,6 +674,8 @@ class Table {
 	{
 		if ($base_url != NULL)
 		{
+			$base_url = clone $base_url;
+
 			if ($this->config['search'] === FALSE)
 			{
 				$this->config['search'] = '';
