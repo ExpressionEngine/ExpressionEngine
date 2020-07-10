@@ -32,19 +32,6 @@ class Advisor
             $messages[] = sprintf(lang('debug_tools_found_missing_fieldtypes'), $missing_fieldtype_count);
         }
 
-        $categoryAdvisor = new \EllisLab\ExpressionEngine\Library\Advisor\CategoryAdvisor();
-        $broken_category_count = $categoryAdvisor->getBrokenCategoryCount();
-        if ($broken_category_count > 0) {
-            $messages[] = sprintf(lang('debug_tools_corrupt_categories_found'), $broken_category_count);
-        }
-
-        $layoutAdvisor = new \EllisLab\ExpressionEngine\Library\Advisor\ChannelLayoutAdvisor();
-        $duplicate_tabs_count = $layoutAdvisor->getDuplicateTabCount();
-        if ($duplicate_tabs_count > 0) {
-            $messages[] = sprintf(lang('debug_tools_duplicate_layout_tabs_found'), $duplicate_tabs_count);
-        }
-
-
         return $messages;
     }
 

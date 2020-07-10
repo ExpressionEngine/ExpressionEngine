@@ -49,12 +49,6 @@ class DebugTools extends Utilities
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
-        $categoryAdvisor = new Advisor\CategoryAdvisor();
-        $vars['broken_category_count'] = $categoryAdvisor->getBrokenCategoryCount();
-
-        $layoutAdvisor = new Advisor\ChannelLayoutAdvisor();
-        $vars['duplicate_tabs_count'] = $layoutAdvisor->getDuplicateTabCount();
-
         return ee()->cp->render('utilities/debug-tools/index', $vars);
     }
 
@@ -119,19 +113,6 @@ class DebugTools extends Utilities
             ->render($base_url);
 
         return ee()->cp->render('utilities/debug-tools/show_tags', $vars);
-    }
-
-    public function categoryFix()
-    {
-        if ($this->advisor->fixBrokenCategories()) {
-            ee('CP/Alert')->makeBanner('debug-tools')
-                ->asSuccess()
-                ->withTitle(lang('success'))
-                ->addToBody(lang('debug_tools_categories_fixed'))
-                ->defer();
-        }
-
-        return ee()->functions->redirect(ee('CP/URL', 'utilities/debug-tools'));
     }
 
     public function debugFieldtypes()
