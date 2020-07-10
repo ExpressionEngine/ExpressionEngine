@@ -71,7 +71,9 @@ class ChannelFieldForm extends ControlPanel {
         // yield self
         // if block_given ?
 
-        this.get('form').find('.btn[value="save"]').first().click()
+        //this.get('form').find('.btn[value="save"]').first().click() || Dont use for Andy
+        cy.get('button[value="save"]').eq(0).click()
+
             // Should have some kind of alert
         this.hasAlert()
     }

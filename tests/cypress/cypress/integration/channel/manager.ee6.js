@@ -40,7 +40,8 @@ context('Channels', () => {
             page.get('action_submit_button').click()
 
             page.get('modal').contains('Channel: ' + channels[1])
-            page.get('modal_submit_button').click()
+            //page.get('modal_submit_button').click() AJ
+            page.get('delete').click()
             cy.hasNoErrors()
 
             page.hasAlert('success')
@@ -65,7 +66,10 @@ context('Channels', () => {
                 })
             }
 
-            page.get('modal_submit_button').click()
+            //page.get('modal_submit_button').click() //AJ
+            page.get('delete').click()
+
+
             cy.hasNoErrors()
 
             page.hasAlert('success')

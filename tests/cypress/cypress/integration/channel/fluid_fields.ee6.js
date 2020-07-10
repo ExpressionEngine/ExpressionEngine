@@ -66,7 +66,11 @@ context('Fluid Fields', () => {
         // page.submit()
 
         // list.get('alert').contains('The field Fluid Field Body has been')
-        cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
+        //cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
+        cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
+        cy.get('.tbl-ctrls .list-item .list-item__content').first().click()  
+
+
             // confirm our state
         page.get('fields').find("[value='1']").should('not.be.checked')
         page.get('fields').find("[value='2']").should('be.checked')
@@ -99,8 +103,11 @@ context('Fluid Fields', () => {
 
         // list.get('alert').contains('The field Fluid Field Body has been')
 
-        cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
+       // cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
             // confirm our state
+        cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
+        cy.get('.tbl-ctrls .list-item .list-item__content').first().click()
+
         page.get('fields').find("[value='1']").should('be.checked')
         page.get('fields').find("[value='2']").should('be.checked')
         page.get('fields').find("[value='3']").should('be.checked')
@@ -125,7 +132,7 @@ context('Fluid Fields', () => {
 
     it('deletes a fluid field', function() {
 
-        list.get('fields_checkboxes').eq(7).click()
+        list.get('fields_checkboxes').eq(6).click()
 
         list.get('bulk_action').should('exist')
         list.get('action_submit_button').should('exist')

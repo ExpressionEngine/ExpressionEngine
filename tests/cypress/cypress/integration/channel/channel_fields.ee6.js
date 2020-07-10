@@ -34,8 +34,8 @@ context('Channel Fields', () => {
 
         it('saves a field', function() {
             page.get('fields_edit').eq(1).click()
-            form.get('form').find('.btn[value="save"]').first().click()
-
+            //form.get('form').find('.btn[value="save"]').first().click()
+            cy.get('button[value="save"]').eq(0).click()
             page.hasAlert('success')
         })
 
@@ -58,7 +58,7 @@ context('Channel Fields', () => {
         page.get('bulk_action').select('Delete')
         page.get('action_submit_button').click()
 
-        page.get('modal_submit_button').click()
+        page.get('new_modal_submit_button').click()
 
         page.hasAlert('success')
         page.get('fields').its('length').should('eq', 6)

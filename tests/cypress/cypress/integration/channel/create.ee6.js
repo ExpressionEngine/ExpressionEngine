@@ -22,7 +22,8 @@ context('Channel Create/Edit', () => {
     })
 
     it('should validate regular fields', function() {
-        page.submit()
+        //page.submit()
+        page.get('save_button').first().click()
 
         cy.hasNoErrors()
         page.hasErrors()
@@ -64,7 +65,7 @@ context('Channel Create/Edit', () => {
     it('should reject XSS', function() {
         page.get('channel_title').type(page.messages.xss_vector).blur()
         page.hasError(page.get('channel_title'), page.messages.validation.xss)
-        page.hasErrors()
+        page.hasLocalErrors()
     })
 
     it('should repopulate the form on validation error', function() {
@@ -86,7 +87,9 @@ context('Channel Create/Edit', () => {
         // Sabbotage the channel name and submit
         page.get('channel_tab').click()
         page.get('channel_name').clear().type('test test')
-        page.submit()
+
+        // page.submit()
+        page.get('save_button').first().click()
 
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_name'), this.channel_name_error)
@@ -118,7 +121,8 @@ context('Channel Create/Edit', () => {
         page.get('cat_group').eq(0).click()
         page.get('cat_group').eq(1).click()
 
-        page.submit()
+       // page.submit()
+        page.get('save_button').first().click()
         cy.hasNoErrors()
 
         cy.contains('Channel Created')
@@ -157,7 +161,8 @@ context('Channel Create/Edit', () => {
             page.get('channel_name').should('have.value', oldChannelName)
         })
 
-        page.submit()
+        // page.submit()
+
         cy.hasNoErrors()
 
         cy.contains('Channel Updated')
@@ -169,7 +174,8 @@ context('Channel Create/Edit', () => {
         page.load_edit_for_channel(1)
         cy.hasNoErrors()
 
-        page.submit()
+        // page.submit()
+        page.get('save_button').first().click()
     })
 
     it('should duplicate an existing channel', function() {

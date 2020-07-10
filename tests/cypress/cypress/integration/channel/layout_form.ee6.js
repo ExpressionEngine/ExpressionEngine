@@ -137,6 +137,7 @@ context('Channel Layouts: Create/Edit', () => {
 
         page.get('layout_name').clear().type('Default')
         page.get('submit_button').click()
+        cy.wait(300) //AJ
         cy.hasNoErrors()
 
         page.edit(1)
@@ -268,6 +269,7 @@ context('Channel Layouts: Create/Edit', () => {
 
                 page.get('layout_name').clear().type('Default')
                 page.get('submit_button').click()
+                cy.wait(300) //AJ
                 cy.hasNoErrors()
 
                 page.edit(1)
@@ -318,7 +320,7 @@ context('Channel Layouts: Create/Edit', () => {
             })
         })
 
-        it('can move a field out of the Options tab', function() {})
+        
     })
 
     // Bug #21220

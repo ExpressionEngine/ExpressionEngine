@@ -91,6 +91,10 @@ class Channel extends ControlPanel {
         cy.visit(this.url)
         cy.get('ul.list-group li:nth-child(' + number + ') a.list-item__content').first().click()
     }
+
+    hasLocalErrors() {
+        this.get('save_button').filter('[type=submit]').first().should('be.disabled')
+    }
 }
 
 export default Channel;

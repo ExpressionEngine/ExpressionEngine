@@ -16,13 +16,13 @@ context('Field Groups', () => {
 
     it('has two field groups', function() {
         page.get('field_groups').its('length').should('eq', 2)
-        page.get('field_groups_edit').its('length').should('eq', 2)
-        page.get('field_groups_fields').its('length').should('eq', 2)
     })
 
 
     it('creates a field group', function() {
         page.get('create_new').click()
+
+
         page.save_field_group('Test Group 1')
 
         cy.visit(page.url)
@@ -51,7 +51,8 @@ context('Field Groups', () => {
     it('deletes a field group', function() {
         page.get('field_groups').its('length').then((length) => {
 
-            page.get('field_groups').eq(0).find('li.remove a').click()
+            //page.get('field_groups').eq(0).find('li.remove a').click()
+            page.get('field_groups').eq(0).find('a[href title="Remove"]').click()
             page.get('modal').contains('Field Group: ')
             page.get('modal_submit_button').click()
             cy.hasNoErrors()

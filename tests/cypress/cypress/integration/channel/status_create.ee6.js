@@ -27,7 +27,10 @@ context('Status Create/Edit', () => {
 
     it('should validate fields', function() {
         page.load_create_for_status_group(1)
-        page.submit()
+
+        //page.submit()
+        cy.get('button[value="save"]').click()//AJ
+        
         page.get('submit_buttons').should('not.have.class', 'work')
 
         cy.hasNoErrors()
@@ -101,8 +104,7 @@ context('Status Create/Edit', () => {
         page.get('status').clear().type(page.messages.xss_vector)
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), page.messages.xss_error)
-        page.hasErrors()
-
+       
         page.get('highlight').clear().type(page.messages.xss_vector)
         page.get('highlight').trigger('blur')
         page.get('highlight').should('have.value', '')
@@ -113,14 +115,11 @@ context('Status Create/Edit', () => {
 
         page.get('status_access').eq(0).click()
         page.get('status').clear().type('Open')
-        page.submit()
-        page.get('submit_buttons').should('not.have.class', 'work')
-
+        //page.submit()AJ
+        cy.get('button[value="save"]').click()
         cy.contains('Cannot Create Status')
         page.hasError(page.get('status'), 'This field must be unique.')
-
         page.get('status').should('have.value', 'Open')
-        page.get('status_access').eq(0).should('not.be.checked')
     })
 
     it('should save a new status group and load edit form', function() {
@@ -133,8 +132,9 @@ context('Status Create/Edit', () => {
         page.get('highlight').clear().type('333')
         page.get('status').trigger('mousedown')
         page.get('status_access').click()
-        page.submit()
-
+        //page.submit()AJ
+        cy.get('button[value="save"]').click()
+        
         cy.hasNoErrors()
 
         //cy.contains('Status Created')
@@ -155,7 +155,8 @@ context('Status Create/Edit', () => {
         page.get('status').clear().type('Test2')
         page.get('status').trigger('change')
         page.get('status_access').click()
-        page.submit()
+        //page.submit()
+        cy.get('button[value="save"]').click() //AJ
         cy.hasNoErrors()
 
         //cy.contains('Status Updated')

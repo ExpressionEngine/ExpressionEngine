@@ -149,7 +149,9 @@ context('Channel Settings', () => {
 
         cy.hasNoErrors()
 
-        page.submit()
+        //page.submit() AJ
+        cy.get('button[value="save"]').eq(0).click()
+        
         cy.contains('Channel Updated')
     })
 

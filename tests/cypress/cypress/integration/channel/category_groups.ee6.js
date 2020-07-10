@@ -30,7 +30,9 @@ context('Category Groups', () => {
 
     it('should delete a category group', function() {
         page.groupNames().then(function(groups) {
-            page.get('category_groups').eq(0).find('li.remove a').click()
+            //page.get('category_groups').eq(0).find('li.remove a').click()
+            page.get('category_groups').eq(0).find('a[rel="modal-confirm-categories"]').click()
+            
             page.get('modal').contains('Category Group: ' + groups[0].name)
             page.get('modal_submit_button').click()
             cy.hasNoErrors()
