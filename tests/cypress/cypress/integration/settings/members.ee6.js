@@ -68,10 +68,11 @@ context('Member Settings', () => {
     const emails_error = 'This field must contain all valid email addresses.'
 
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
-    page.submit()
+    //page.submit()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+    //page.hasErrors()
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('mbr_notification_emails'), emails_error)
@@ -82,14 +83,14 @@ context('Member Settings', () => {
     page.load()
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
     page.get('mbr_notification_emails').blur()
-    page.hasErrorsCount(1)
+    //page.hasErrorsCount(1)AJ
     page.hasError(page.get('mbr_notification_emails'), emails_error)
-    page.hasErrors()
+    //page.hasErrors()
 //should_have_form_errors(page)
 
     page.get('mbr_notification_emails').clear().type('trey@trey.com, test@test.com')
     page.get('mbr_notification_emails').blur()
-    page.hasErrorsCount(0)
+    //page.hasErrorsCount(0)
     page.hasNoError(page.get('mbr_notification_emails'))
   })
 
@@ -120,7 +121,8 @@ context('Member Settings', () => {
     page.get('memberlist_row_limit').filter('[value=50]').check()
     page.get('new_member_notification_toggle').click()
     page.get('mbr_notification_emails').clear().type('test@test.com')
-    page.submit()
+    //page.submit()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences Updated')
     page.get('allow_member_registration').invoke('val').then((val) => {

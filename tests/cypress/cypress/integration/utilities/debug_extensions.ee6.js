@@ -36,10 +36,12 @@ context('Debug Extensions', () => {
 
  	  })
 
-	  //Works!
+	  
 	  it('can navigate to a manual page', () =>{
 
-	  		cy.get('ul.toolbar li.manual a').click
+	  		//cy.get('ul.toolbar li.manual a').click AJ
+	  		cy.get('a[title="Manual"]').click()
+	  		cy.hasNoErrors()
 
 	  })
 

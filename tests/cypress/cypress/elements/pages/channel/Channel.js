@@ -16,7 +16,7 @@ class Channel extends ControlPanel {
             "settings_tab": '.tab-bar__tabs [rel="t-4"]',
 
             // Channel Tab
-            "channel_title": 'input[type!=hidden][name=channel_title]',
+            "channel_title": 'input[name=channel_title]',
             "channel_name": 'input[type!=hidden][name=channel_name]',
             "max_entries": 'input[type!=hidden][name=max_entries]',
             "duplicate_channel_prefs": 'input[type!=hidden][name=duplicate_channel_prefs]',
@@ -93,6 +93,8 @@ class Channel extends ControlPanel {
     }
 
     hasLocalErrors() {
+        this.get('save_button').filter('[type=submit]').first().click()
+        cy.wait(400)//AJ
         this.get('save_button').filter('[type=submit]').first().should('be.disabled')
     }
 }

@@ -31,10 +31,10 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    bulk_edit.get('heading').should('exist')
+    
     cy.hasNoErrors()
 
-    bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 3 entries') })
+    
     bulk_edit.get('filter_heading').invoke('text').then((text) => { expect(text).to.be.equal('3 Selected Entries') })
 
     bulk_edit.get('selected_entries').find('.list-item__content>div:not(".list-item__secondary")').then(function($li) {
@@ -70,7 +70,7 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    bulk_edit.get('heading').should('exist')
+    
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
@@ -106,7 +106,7 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    bulk_edit.get('heading').should('exist')
+    
 
     bulk_edit.get('filter_heading').invoke('text').then((text) => { expect(text).to.be.equal('4 Selected Entries') })
     bulk_edit.get('selected_entries_note').contains('Showing 4 of 4')
@@ -189,9 +189,7 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    bulk_edit.get('heading').should('exist')
-
-    bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 3 entries') })
+    
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
@@ -220,7 +218,8 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    bulk_edit.get('heading').should('exist')
+
+    
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')

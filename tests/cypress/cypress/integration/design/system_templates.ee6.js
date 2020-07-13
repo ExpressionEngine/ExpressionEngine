@@ -28,8 +28,11 @@ context('System Templates', () => {
         })
 
         it('displays the edit form', function() {
-            page.get('templates').eq(0).find('td:nth-child(2) .edit a').click()
-            page.get('form.template_contents').should('not.have.value', '')
+            page.get('templates').eq(0).click()
+            cy.get('a').contains('Site Offline').should('exist')
+            cy.get('a').contains('User Messages').should('exist')
+
+            
         })
     })
 
@@ -43,7 +46,7 @@ context('System Templates', () => {
         })
 
         it('displays the edit form', function() {
-            page.get('templates').eq(1).find('td:nth-child(2) .edit a').click()
+            page.get('templates').eq(1).click()
             page.get('form.template_contents').should('not.have.value', '')
         })
     })
@@ -75,7 +78,7 @@ context('System Templates', () => {
         })
 
         it('displays the edit form', function() {
-            page.get('templates').eq(1).find('td:nth-child(2) .edit a').click()
+            page.get('templates').eq(1).click()
             page.get('form.template_contents').should('not.have.value', '')
         })
     })
@@ -95,7 +98,7 @@ context('System Templates', () => {
         })
 
         it('displays the edit form', function() {
-            page.get('templates').eq(1).find('td:nth-child(2) .edit a').click()
+            page.get('templates').eq(1).click()
 
             page.get('form.template_contents').should('not.have.value', '')
         })
@@ -132,7 +135,7 @@ context('System Templates', () => {
             })
 
             it('displays the edit form', function() {
-                page.get('templates').eq(1).find('td:nth-child(2) .edit a').click()
+                page.get('templates').eq(1).click()
                 page.get('form.template_contents').should('not.have.value', '')
             })
         })
@@ -152,7 +155,7 @@ context('System Templates', () => {
             })
 
             it('displays the edit form', function() {
-                page.get('templates').eq(1).find('td:nth-child(2) .edit a').click()
+                page.get('templates').eq(1).click()
                 page.get('form.template_contents').should('not.have.value', '')
             })
         })

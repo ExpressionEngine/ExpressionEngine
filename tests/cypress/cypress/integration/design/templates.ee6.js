@@ -31,7 +31,8 @@ context('Templates', () => {
 
         it('can create a new template', function() {
             createPage.get('name').clear().type('cypress-test')
-            createPage.get('save_button').first().click()
+            //createPage.get('save_button').first().click()
+            cy.get('button').contains('Save Template').first().click()
 
             cy.hasNoErrors()
 
@@ -40,14 +41,16 @@ context('Templates', () => {
 
         it('can show the edit form after save', function() {
             createPage.get('name').clear().type('cypress-test-two')
-            createPage.get('save_and_edit_button').first().click()
+            //createPage.get('save_and_edit_button').first().click()
+            cy.get('button').contains('Save Template').first().click()
 
             cy.hasNoErrors()
         })
 
         it('new templates have sensible defaults', function() {
             createPage.get('name').clear().type('cypress-test-three')
-            createPage.get('save_and_edit_button').first().click()
+            //createPage.get('save_and_edit_button').first().click()
+            cy.get('button').contains('Save Template').first().click()
 
             cy.hasNoErrors()
 
@@ -78,7 +81,9 @@ context('Templates', () => {
         it('can duplicate an existing template', function() {
             createPage.get('name').clear().type('cypress-test-four')
             createPage.get('duplicate_existing_template').check('11')
-            createPage.get('save_and_edit_button').first().click()
+
+            //createPage.get('save_and_edit_button').first().click() AJ
+            cy.get('button').contains('Save Template').first().click()
 
             cy.hasNoErrors()
 
@@ -90,7 +95,7 @@ context('Templates', () => {
             createPage.get('name').trigger('blur')
 
             createPage.hasError(createPage.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
-            createPage.hasErrors()
+            
         })
 
     })
@@ -146,7 +151,8 @@ context('Templates', () => {
             editPage.get('template_route').clear().type('et/phone/home')
             editPage.get('require_all_variables').click()
 
-            editPage.get('save_button').first().click()
+            //editPage.get('save_button').first().click()
+            cy.get('button').contains('Save').first().click()
 
             cy.hasNoErrors()
 
@@ -197,7 +203,8 @@ context('Templates', () => {
         })
 
         it('returns to the template manager with the "save & close" button', function() {
-            editPage.get('save_and_close_button').first().click()
+            //editPage.get('save_and_close_button').first().click()
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
         })

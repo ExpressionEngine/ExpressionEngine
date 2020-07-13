@@ -68,7 +68,8 @@ context('Pending Member List', () => {
       page.get('bulk_action').select("Decline")
       page.get('action_submit_button').click()
       page.get('modal').should('be.visible')
-      page.get('modal_submit_button').click() // Submits a form
+      //page.get('modal_submit_button').click() // Submits a form AJ
+      cy.get('input[value="Confirm, and Decline"]').click()
       cy.hasNoErrors()
 
       page.get('alert').should('be.visible')

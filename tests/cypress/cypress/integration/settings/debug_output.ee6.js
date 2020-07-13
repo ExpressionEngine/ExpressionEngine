@@ -64,10 +64,11 @@ context('Debugging & Output Settings', () => {
     const max_caches_error = 'This field must contain an integer.'
 
     page.get('max_caches').clear().type('sdfsdfsd')
-    page.submit()
+    //page.submit()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+    //page.hasErrors()
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.get('wrap').contains(max_caches_error)
@@ -83,7 +84,7 @@ context('Debugging & Output Settings', () => {
 
     page.get('max_caches').clear().type('100')
     page.get('max_caches').blur()
-    page.hasErrorsCount(0)
+    //page.hasErrorsCount(0)
     //should_have_no_form_errors(page)
   })
 
@@ -114,7 +115,8 @@ context('Debugging & Output Settings', () => {
     page.get('send_headers_toggle').click()
     page.get('cache_driver').filter('[value=memcached]').check()
     page.get('max_caches').clear().type('300')
-    page.submit()
+    //page.submit()AJ
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('debug').filter('[value=0]').should('be.checked')

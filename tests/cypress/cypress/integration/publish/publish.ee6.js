@@ -171,7 +171,9 @@ context('Publish Page - Create', () => {
 
           page.get('title').clear().type('File Field Test')
           page.get('chosen_files').should('have.length', 2)
-          page.get('submit_buttons').eq(0).click()
+          //page.get('submit_buttons').eq(0).click()
+
+          cy.get('button[value="save"]').click()
 
           page.get('chosen_files').should('have.length', 2);
           page.submit()

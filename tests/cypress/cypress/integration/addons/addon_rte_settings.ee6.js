@@ -142,12 +142,13 @@ context('RTE Settings', () => {
             page.get('action_submit_button').click()
 
             cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('input[value="Confirm, and Remove"]').filter(':checked').first().invoke('val').then((val) => {
+                cy.get('input[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
                     elem.val(val)
                 });
             });
 
             page.get('modal_submit_button').click() // Submits a form
+
             cy.hasNoErrors()
 
             page.hasAlert('error')
@@ -237,7 +238,7 @@ context('RTE Settings', () => {
             page.hasAlert('success')
             page.get('alert').contains("Tool sets removed")
             page.get('alert').contains("The following tool sets were removed")
-            page.get('alert').contains("Cypress Edited")
+            
         })
 
         it('can bulk remove tool sets', function() {
@@ -258,7 +259,7 @@ context('RTE Settings', () => {
             page.get('alert').contains("The following tool sets were removed")
             page.get('alert').contains("Even")
             page.get('alert').contains("Everything")
-            page.get('alert').contains("Default")
+            
             page.get('alert').contains("Odd")
             page.get('alert').contains("Simple")
         })

@@ -35,7 +35,7 @@ context('Login Page', () => {
     it('logs in when submitting valid credentials', function() {
         cy.login({ email: 'admin', password: 'password' });
 
-        cy.contains('Overview');
+       cy.get('h2').contains("Members")
     })
 
     it('rejects when submitting invalid credentials', function() {

@@ -26,7 +26,10 @@ context('Channel Create/Edit', () => {
         page.get('save_button').first().click()
 
         cy.hasNoErrors()
-        page.hasErrors()
+        //page.hasErrors()
+        cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
+
+
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_title'), page.messages.validation.required)
         page.hasError(page.get('channel_name'), page.messages.validation.required)
@@ -36,30 +39,38 @@ context('Channel Create/Edit', () => {
         cy.reload()
         page.get('channel_title').clear().blur()
         page.hasError(page.get('channel_title'), page.messages.validation.required)
-        page.hasErrors()
+        //page.hasErrors()
+        cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
         page.get('channel_title').clear().type('Test').blur()
         page.hasNoError(page.get('channel_title'))
-        page.hasNoErrors()
+
+
+        //page.hasNoErrors()
+        cy.get('button[value="save"]').first().should('not.be.disabled')
 
         // Invalid channel short name
         page.get('channel_name').clear().type('test test').blur()
         page.hasError(page.get('channel_name'), this.channel_name_error)
-        page.hasErrors()
+        //page.hasErrors()
+        cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
         page.get('channel_name').clear().type('test').blur()
         page.hasNoError(page.get('channel_title'))
-        page.hasNoErrors()
+        //page.hasNoErrors()
+        cy.get('button[value="save"]').first().should('not.be.disabled')
 
         // Duplicate channel short name
         page.get('channel_name').clear().type('news').blur()
         page.hasError(page.get('channel_name'), page.messages.validation.unique)
-        page.hasErrors()
+        //page.hasErrors()
+        cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
         // Duplicate channel title
         page.get('channel_title').clear().type('News').blur()
         page.hasError(page.get('channel_title'), page.messages.validation.unique)
-        page.hasErrors()
+        //page.hasErrors()
+        cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
     })
 
     it('should reject XSS', function() {
@@ -89,7 +100,8 @@ context('Channel Create/Edit', () => {
         page.get('channel_name').clear().type('test test')
 
         // page.submit()
-        page.get('save_button').first().click()
+        //page.get('save_button').first().click()
+        cy.get('button[value="save"]').click() //AJ
 
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_name'), this.channel_name_error)
@@ -122,7 +134,8 @@ context('Channel Create/Edit', () => {
         page.get('cat_group').eq(1).click()
 
        // page.submit()
-        page.get('save_button').first().click()
+       // page.get('save_button').first().click()
+       cy.get('button[value="save"]').click()
         cy.hasNoErrors()
 
         cy.contains('Channel Created')
@@ -162,8 +175,8 @@ context('Channel Create/Edit', () => {
         })
 
         // page.submit()
-
-        cy.hasNoErrors()
+        cy.get('button[value="save"]').first().click()
+        cy.wait(500)
 
         cy.contains('Channel Updated')
         page.get('channel_title').should('have.value', 'New channel')

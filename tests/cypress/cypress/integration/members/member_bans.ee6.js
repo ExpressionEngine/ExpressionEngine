@@ -57,7 +57,6 @@ context('Ban Settings', () => {
   it('should reject XSS', () => {
     page.get('banned_ips').clear().type(page.messages.xss_vector)
     page.get('banned_ips').blur()
-    page.hasErrors()
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
 
     page.get('banned_emails').clear().type(page.messages.xss_vector)
@@ -65,7 +64,7 @@ context('Ban Settings', () => {
     page.hasErrorsCount(2)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
-    page.hasErrors()
+    
 //should_have_form_errors(page)
 
     page.get('banned_usernames').clear().type(page.messages.xss_vector)
@@ -74,7 +73,7 @@ context('Ban Settings', () => {
     page.hasError(page.get('banned_usernames'), page.messages.xss_error)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
-    page.hasErrors()
+   
 //should_have_form_errors(page)
 
     page.get('banned_screen_names').clear().type(page.messages.xss_vector)
@@ -84,7 +83,7 @@ context('Ban Settings', () => {
     page.hasError(page.get('banned_usernames'), page.messages.xss_error)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
-    page.hasErrors()
+
 //should_have_form_errors(page)
   })
 
@@ -96,7 +95,9 @@ context('Ban Settings', () => {
     page.get('wrap').find('input[type!=hidden][name=ban_action][value=message]').check()
     page.get('ban_message').clear().type('Dummy Message')
     page.get('ban_destination').clear().type('Dummy Destination')
-    page.submit()
+    
+    //page.submit() AJ
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Ban Settings updated')
     // Ban settings adds a newline to queue admins for correct legible input

@@ -29,7 +29,9 @@ context('Site Manager', () => {
 
       counter++;
 
-      page.get('add_site_button').click()
+      //page.get('add_site_button').click()//AJ
+      cy.get('button').contains('Add Site').click()
+
       cy.hasNoErrors()
 
       const form = new SiteForm

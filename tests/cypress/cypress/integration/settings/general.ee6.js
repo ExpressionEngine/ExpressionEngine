@@ -38,7 +38,9 @@ context('General Settings', () => {
     page.get('date_format').filter('[value="%Y-%m-%d"]').check()
     page.get('time_format').filter('[value=24]').check()
     page.get('include_seconds_toggle').click()
-    page.submit()
+
+    //page.submit()
+    cy.get('button').contains('Save Settings').first().click()
 
     // Make sure they stuck, also test Check Now button visibility
     cy.hasNoErrors()
@@ -92,10 +94,11 @@ context('General Settings', () => {
       // Only field that's required, will be our test case
       page.get('site_name').clear()
 
-      page.submit()
+      //page.submit()
+      cy.get('button').contains('Save Settings').first().click()
 
       cy.hasNoErrors()
-      page.hasErrors()
+     
       //should_have_form_errors(page)
       page.get('wrap').contains('Attention: Settings not saved')
       page.hasError(page.get('site_name'), error_text)
@@ -140,8 +143,8 @@ context('General Settings', () => {
 
       test_field(page.get('site_name'), '<script>alert(\'stored xss\')</script>', page.messages.xss_error)
       test_field(page.get('site_name'), 'EE2')
-
-      page.submit()
+      cy.get('button').contains('Save Settings').first().click()
+      //page.submit()
       cy.hasNoErrors()
       //should_have_no_form_errors(page)
       page.get('wrap').contains('Preferences updated')

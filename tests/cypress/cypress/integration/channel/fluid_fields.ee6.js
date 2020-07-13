@@ -28,7 +28,8 @@ context('Fluid Fields', () => {
         page.get('fields').find("[value='5']").click()
         page.get('fields').find("[value='6']").click()
         page.get('fields').find("[value='7']").click()
-        page.submit()
+        //page.submit() AJ
+        cy.get('button[value="save"]').click()
 
         page.get('alert').contains('The field Fluid Field Body has been')
 
@@ -117,9 +118,11 @@ context('Fluid Fields', () => {
         page.get('fields').find("[value='7']").should('be.checked')
 
         page.get('fields').find("[value='2']").filter(':visible').click()
-        page.submit()
+        //page.submit()
+        cy.get('button[value="save"]').click()
 
-        page.get('modal_submit_button').click()
+       // page.get('modal_submit_button').click()
+       cy.get('input[value="Confirm and Delete"]').click()
 
         page.get('fields').find("[value='1']").should('be.checked')
         page.get('fields').find("[value='2']").should('not.be.checked')
@@ -140,7 +143,8 @@ context('Fluid Fields', () => {
         list.get('bulk_action').select('Delete')
         list.get('action_submit_button').click()
 
-        list.get('modal_submit_button').click()
+        //list.get('modal_submit_button').click()
+        cy.get('input[value="Confirm and Delete"]').click()
 
         list.get('fields').eq(0).contains('Fluid Field Body').should('not.exist')
     })

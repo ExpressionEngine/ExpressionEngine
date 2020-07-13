@@ -45,7 +45,8 @@ context('Comment Settings', () => {
     const comment_edit_time_error = 'This field must contain an integer.'
 
     page.get('comment_edit_time_limit').clear().type('sdfsdfsd')
-    page.submit()
+    //page.submit()AJ
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     page.hasErrors()
@@ -85,7 +86,8 @@ context('Comment Settings', () => {
     page.get('comment_word_censoring_toggle').click()
     page.get('comment_moderation_override_toggle').click()
     page.get('comment_edit_time_limit').clear().type('300')
-    page.submit()
+    //page.submit()//AJ
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('enable_comments').invoke('val').then((val) => {

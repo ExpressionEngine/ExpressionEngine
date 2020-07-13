@@ -56,9 +56,11 @@ context('Channel Fields', () => {
         page.get('action_submit_button').should('exist')
 
         page.get('bulk_action').select('Delete')
-        page.get('action_submit_button').click()
-
-        page.get('new_modal_submit_button').click()
+        //page.get('action_submit_button').click()
+        cy.get('button[value="submit"]').first().click()
+        cy.wait(400)// AJ
+        //page.get('new_modal_submit_button').click()
+        cy.get('input[value="Confirm and Delete"]').first().click()
 
         page.hasAlert('success')
         page.get('fields').its('length').should('eq', 6)

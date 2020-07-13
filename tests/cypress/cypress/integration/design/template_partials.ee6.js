@@ -92,7 +92,8 @@ context('Template Partials', () => {
             page.get('bulk_action').select('Delete')
             page.get('action_submit_button').click()
 
-            page.get('modal_submit_button').click()
+            //page.get('modal_submit_button').click()
+            cy.get('input[value="Confirm and Delete"]').click()
 
             cy.hasNoErrors()
 

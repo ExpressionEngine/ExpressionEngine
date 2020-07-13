@@ -237,7 +237,8 @@ context('Channel Layouts: Create/Edit', () => {
                 cy.wrap(cat).uncheck()
             })
             channel.submit()
-            page.load()
+            //page.load()
+            cy.get('button[value="save"]').click()
         })
 
         describe('Hiding the Options Tab', function() {

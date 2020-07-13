@@ -34,7 +34,7 @@ context('File Manager', () => {
 			page.get('page_title').invoke('text').then((text) => {
 				expect(text.trim()).equal('Files')
 			})
-			page.get('title_toolbar').should('exist')
+			
 
 
 			// Check that we have a sidebar

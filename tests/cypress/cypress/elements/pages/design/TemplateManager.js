@@ -9,6 +9,7 @@ class TemplateManager extends ControlPanel {
             "settings_icon": '.section-header__options a.icon--settings',
             "export_icon": '.section-header__options a.icon--export',
             "phrase_search": '.main-nav__toolbar .main-nav__toolbar-input',
+            
             "search_submit_button": '.section-header__controls input[type="submit"]',
             "create_new_template_button": 'fieldset.right a.btn.action',
             "perpage_filter": '.filters ul li:first-child a',

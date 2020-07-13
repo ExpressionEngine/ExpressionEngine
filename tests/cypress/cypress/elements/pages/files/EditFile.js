@@ -25,7 +25,8 @@ class EditFile extends FileManagerSection {
     }
     load() {
       cy.contains('Files').click()
-      cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.edit').click()
+     // cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.edit').click() AJ
+     cy.get('a[title="Edit"]').first().click()
     }
 }
 export default EditFile;

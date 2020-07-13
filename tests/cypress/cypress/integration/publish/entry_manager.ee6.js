@@ -127,7 +127,9 @@ context('Entry Manager', () => {
     page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
-    page.get('modal_submit_button').click()
+    //page.get('modal_submit_button').click()
+     cy.get('input[value="Confirm and Delete"]').click()
+
 
     page.get('entry_rows').should('have.length', 9);
     page.get('alert').contains('The following entries were deleted')
@@ -149,7 +151,8 @@ context('Entry Manager', () => {
     page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
-    page.get('modal_submit_button').click()
+   // page.get('modal_submit_button').click()
+    cy.get('input[value="Confirm and Delete"]').click()
 
     page.get('entry_rows').should('have.length', 1)
     page.get('entry_rows').first().contains('No Entries found.')
@@ -172,7 +175,9 @@ context('Entry Manager', () => {
     page.get('bulk_action').select('Delete')
     page.get('action_submit_button').click()
     //page.get('modal_submit_button').should('be.visible')
-    page.get('modal_submit_button').click()
+   // page.get('modal_submit_button').click()
+
+   cy.get('input[value="Confirm and Delete"]').click()
 
     page.get('entry_rows').should('have.length', 10);
     page.get('alert').contains('The following entries were deleted')

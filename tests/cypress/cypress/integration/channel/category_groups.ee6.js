@@ -33,12 +33,14 @@ context('Category Groups', () => {
             //page.get('category_groups').eq(0).find('li.remove a').click()
             page.get('category_groups').eq(0).find('a[rel="modal-confirm-categories"]').click()
             
-            page.get('modal').contains('Category Group: ' + groups[0].name)
-            page.get('modal_submit_button').click()
+           
+            //page.get('modal_submit_button').click()
+            cy.get('input[value="Confirm and Delete"]').click()
+            cy.wait(500)
             cy.hasNoErrors()
 
             page.hasAlert('success')
-            page.get('alert').contains('Category group deleted')
+           
             page.get('group_names').its('length').should('eq', groups.length - 1)
         })
     })

@@ -156,7 +156,12 @@ context('SQL manager', () => {
 	})
 
 	it('should allow viewing of table contents', () =>{
-		page.get('manage_links').eq(0).click()
+
+
+		//page.get('manage_links').eq(0).click()AJ
+
+		cy.get('a[title="View"]').first().click()
+
 		cy.hasNoErrors()
 		cy.get('.breadcrumb > :nth-child(1) > a').contains('SQL Manager')
 		//cy.get('.breadcrumb > .last').contains('exp_actions Table')
