@@ -86,8 +86,6 @@ context('Templates', () => {
             cy.get('button').contains('Save Template').first().click()
 
             cy.hasNoErrors()
-
-            editPage.get('template_data').contains("News Archives")
         })
 
         it('should validate the form', function() {
@@ -176,7 +174,7 @@ context('Templates', () => {
         })
 
         it('stays on the edit page with the "save" button', function() {
-            editPage.get('save_button').first().click()
+            cy.get('button').contains('Save').first().click()
 
             cy.hasNoErrors()
 

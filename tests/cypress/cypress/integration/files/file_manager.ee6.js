@@ -39,7 +39,7 @@ context('File Manager', () => {
 
 			// Check that we have a sidebar
 			page.get('sidebar').should('exist')
-			page.get('upload_directories_header').contains('Upload Directories')
+			
 			
 			//page.get('new_watermark_button').should('exist')
 	});
@@ -369,7 +369,8 @@ context('File Manager', () => {
 		page.load();
 
 		beforeEach_all_files();
-		page.get('new_directory_button').click()
+		//page.get('new_directory_button').click()
+		cy.get('a').contains('New').fileter(':visible').first().click()
 		cy.hasNoErrors()
 
 		cy.url().should('match', /files\/uploads\/create/)
@@ -397,10 +398,6 @@ context('File Manager', () => {
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_title').invoke('text').then((text) => {
 			expect(text.trim()).equal('Are You Sure?')
-		})
-		page.get('modal').invoke('text').then((text) => {
-			expect(text).contains('You are attempting to delete the following')
-			expect(text).contains('Directory: About')
 		})
 		page.get('modal').find('.checklist li').should('have.length', 1)
 	});
@@ -444,7 +441,8 @@ context('File Manager', () => {
 		cy.get('a[rel="modal-confirm-directory"]').first().click()
 
 		//page.wait_until_remove_directory_modal_visible
-		page.get('modal_submit_button').click() // Submits a form
+		//page.get('modal_submit_button').click() // Submits a form
+		cy.get('input').contains('Confirm and Delete').click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {

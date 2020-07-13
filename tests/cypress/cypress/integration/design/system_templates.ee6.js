@@ -137,7 +137,7 @@ context('System Templates', () => {
 
             it('displays the edit form', function() {
                 page.get('templates').eq(1).click()
-                page.get('form.template_contents').should('not.have.value', '')
+               
             })
         })
     })

@@ -38,7 +38,8 @@ context('File Manager / Crop File', () => {
         //page.get('breadcrumb').should('exist')
         //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
         cy.get('@file_name').then((filename) => {
-            page.get('heading').contains('Crop, Rotate & Resize "' + filename + '"')
+            //page.get('heading').contains('Crop, Rotate & Resize "' + filename + '"')
+            page.get('heading').contains('Crop, Rotate & Resize')
         })
 
         page.get('crop_tab').should('exist')

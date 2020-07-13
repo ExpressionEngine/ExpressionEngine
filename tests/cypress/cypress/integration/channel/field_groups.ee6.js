@@ -56,7 +56,7 @@ context('Field Groups', () => {
             
 
             //page.get('modal_submit_button').click()
-            cy.get('input[value="Confirm and Delete"]').click()
+            cy.get('input[value="Confirm and Delete"]').first().click({force:true})
             cy.hasNoErrors()
 
             page.hasAlert('success')

@@ -200,7 +200,8 @@ context('Bulk Edit', () => {
     cy.wait(100)
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click({force:true})
 
-    bulk_edit.get('save_all_button').click()
+    //bulk_edit.get('save_all_button').click()
+    cy.get('input').contains('Save All & Close').first().click()
 
     entry_manager.get('center_modal').should('not.be.visible')
     entry_manager.get_row_for_title('About the Label').should('contain', 'Closed')
@@ -233,7 +234,8 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Expiration date")').click()
     bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').clear().type('2/14/2018 4:00 PM')
-    bulk_edit.get('heading').click() // Close date picker
+    //bulk_edit.get('heading').click() // Close date picker AJ
+    cy.get('body').click() 
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')

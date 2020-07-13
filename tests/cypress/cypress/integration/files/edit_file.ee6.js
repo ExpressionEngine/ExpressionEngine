@@ -46,7 +46,7 @@ context('File Manager / Edit File', () => {
   })*/
 
   it('can edit the title', () => {
-    cy.get('a').contains('About').filter(':visible').first().click()
+    cy.get('a').contains('Main Upload').first().click({force:true})
     cy.get('a').contains('.jpg').filter(':visible').first().click()
 
     page.get('title_input').clear().type("Rspec was here")
@@ -57,7 +57,7 @@ context('File Manager / Edit File', () => {
   })
 
   it('can edit the description', () => {
-     cy.get('a').contains('About').filter(':visible').first().click()
+     cy.get('a').contains('Main Upload').first().click({force:true})
     cy.get('a').contains('.jpg').filter(':visible').first().click()
 
     page.get('description_input').clear().type("Rspec was here")
@@ -69,7 +69,7 @@ context('File Manager / Edit File', () => {
   })
 
   it('can edit the credit', () => {
-     cy.get('a').contains('About').filter(':visible').first().click()
+     cy.get('a').contains('Main Upload').first().click({force:true})
     cy.get('a').contains('.jpg').filter(':visible').first().click()
 
     page.get('credit_input').type("Rspec was here")
@@ -82,7 +82,7 @@ context('File Manager / Edit File', () => {
 
   it('can edit the location', () => {
 
-     cy.get('a').contains('About').filter(':visible').first().click()
+     cy.get('a').contains('Main Upload').first().click({force:true})
     cy.get('a').contains('.jpg').filter(':visible').first().click()
     page.get('location_input').clear().type("Rspec was here")
     page.get('form_submit_button').click()

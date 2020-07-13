@@ -105,7 +105,7 @@ context('Fluid Fields', () => {
 
         page.get('fields').find("[value='2']").filter(':visible').click()
         //page.submit()
-        cy.get('button[value="save"]').click()
+        cy.get('button[value="save"]').first().click()
 
        // page.get('modal_submit_button').click()
        cy.get('input[value="Confirm and Delete"]').click()
