@@ -85,7 +85,6 @@ class Rte_ft extends EE_Fieldtype
         // Give it the full width
         $settings['field_wide'] = true;
 
-        // cross the T's
         $settings['field_fmt'] = 'none';
         $settings['field_show_fmt'] = 'n';
 
@@ -104,6 +103,52 @@ class Rte_ft extends EE_Fieldtype
         $settings = $settings['rte'];
 
         return $settings;
+    }
+
+    /**
+     * Modify DB column
+     *
+     * @param Array $data
+     * @return Array
+     */
+    public function settings_modify_column($data)
+    {
+        return $this->get_column_type($data);
+    }
+
+    /**
+     * Modify DB grid column
+     *
+     * @param array $data The field data
+     * @return array  [column => column_definition]
+     */
+    public function grid_settings_modify_column($data)
+    {
+        return $this->get_column_type($data, true);
+    }
+
+    /**
+     * Helper method for column definitions
+     *
+     * @param array $data The field data
+     * @param bool  $grid Is grid field?
+     * @return array  [column => column_definition]
+     */
+    protected function get_column_type($data, $grid = false)
+    {
+        $column = ($grid) ? 'col' : 'field';
+
+        $settings = ($grid) ? $data : $data[$column . '_settings'];
+        $field_content_type = isset($settings['db_column_type']) ? $settings['db_column_type'] : 'text';
+
+        $fields = [
+            $column . '_id_' . $data[$column . '_id'] => [
+                'type' => $field_content_type,
+                'null' => true
+            ]
+        ];
+
+        return $fields;
     }
 
     // --------------------------------------------------------------------
@@ -521,6 +566,20 @@ class Rte_ft extends EE_Fieldtype
                     'rte[defer]' => array(
                         'type' => 'yes_no',
                         'value' => (isset($settings['defer']) && $settings['defer'] == 'y') ? 'y' : 'n'
+                    )
+                )
+            ),
+            array(
+                'title' => 'db_column_type',
+                'desc' => 'db_column_type_desc',
+                'fields' => array(
+                    'rte[db_column_type]' => array(
+                        'type' => 'radio',
+                        'choices' => [
+                            'text' => lang('TEXT'),
+                            'mediumtext' => lang('MEDIUMTEXT')
+                        ],
+                        'value' => isset($settings['db_column_type']) ? $settings['db_column_type'] : 'text'
                     )
                 )
             )
