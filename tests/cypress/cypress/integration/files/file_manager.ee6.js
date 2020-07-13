@@ -40,8 +40,7 @@ context('File Manager', () => {
 			// Check that we have a sidebar
 			page.get('sidebar').should('exist')
 			page.get('upload_directories_header').contains('Upload Directories')
-			page.get('new_directory_button').should('exist')
-			page.get('watermarks_header').contains('Watermarks')
+			
 			//page.get('new_watermark_button').should('exist')
 	});
 

@@ -147,8 +147,8 @@ context('RTE Settings', () => {
                 });
             });
 
-            page.get('modal_submit_button').click() // Submits a form
-
+            //page.get('modal_submit_button').click() // Submits a form AJ
+            cy.get('input').contains('Confirm, and Remove').first().click()
             cy.hasNoErrors()
 
             page.hasAlert('error')

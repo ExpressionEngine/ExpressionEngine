@@ -61,10 +61,10 @@ context('CAPTCHA Settings', () => {
   it('should validate the form', () => {
     page.get('captcha_path').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('captcha_path'), page.messages.validation.invalid_path)
@@ -73,34 +73,32 @@ context('CAPTCHA Settings', () => {
     page.load()
     page.get('captcha_path').clear().type('sdfsdfsd')
     page.get('captcha_path').blur()
-    page.hasErrorsCount(1)
+
     page.hasError(page.get('captcha_path'), page.messages.validation.invalid_path)
-    page.hasErrors()
+
 //should_have_form_errors(page)
 
     page.get('captcha_path').clear().type(upload_path)
     page.get('captcha_path').blur()
-    page.hasErrorsCount(0)
+
 
     page.get('captcha_path').clear().type('/')
     page.get('captcha_path').blur()
-    page.hasErrorsCount(1)
+
     page.hasError(page.get('captcha_path'), page.messages.validation.not_writable)
-    page.hasErrors()
+
 //should_have_form_errors(page)
   })
 
   it('should reject XSS', () => {
     page.get('captcha_url').clear().type(page.messages.xss_vector)
     page.get('captcha_url').blur()
-    page.hasErrorsCount(1)
     page.hasError(page.get('captcha_url'), page.messages.xss_error)
     //page.hasErrors()AJ
 //should_have_form_errors(page)
 
     page.get('captcha_path').clear().type(page.messages.xss_vector)
     page.get('captcha_path').blur()
-    page.hasErrorsCount(2)
     page.hasError(page.get('captcha_url'), page.messages.xss_error)
     page.hasError(page.get('captcha_path'), page.messages.xss_error)
     //page.hasErrors()AJ
@@ -130,7 +128,7 @@ context('CAPTCHA Settings', () => {
     page.get('captcha_url').clear().type('http://hello')
     page.get('captcha_path').clear().type(upload_path)
     //page.submit()
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('require_captcha').invoke('val').then((val) => {

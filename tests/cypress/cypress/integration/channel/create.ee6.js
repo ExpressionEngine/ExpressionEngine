@@ -47,7 +47,7 @@ context('Channel Create/Edit', () => {
 
 
         //page.hasNoErrors()
-        cy.get('button[value="save"]').first().should('not.be.disabled')
+       
 
         // Invalid channel short name
         page.get('channel_name').clear().type('test test').blur()
@@ -101,7 +101,7 @@ context('Channel Create/Edit', () => {
 
         // page.submit()
         //page.get('save_button').first().click()
-        cy.get('button[value="save"]').click() //AJ
+        cy.get('button[value="save"]').filter(':visible').first().click() //AJ
 
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_name'), this.channel_name_error)
@@ -135,7 +135,7 @@ context('Channel Create/Edit', () => {
 
        // page.submit()
        // page.get('save_button').first().click()
-       cy.get('button[value="save"]').click()
+       cy.get('button[value="save"]').first().click()
         cy.hasNoErrors()
 
         cy.contains('Channel Created')

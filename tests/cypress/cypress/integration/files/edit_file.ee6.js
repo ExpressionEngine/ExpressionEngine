@@ -26,27 +26,9 @@ context('File Manager / Edit File', () => {
     page.get('page_title').invoke('text').then((text) => {
       expect(text.trim()).equal('Files')
     })
-    page.get('title_toolbar').should('exist')
-		page.get('download_all').should('exist')
+   
+    
 
-    // Check that we have a sidebar
-    page.get('sidebar').should('exist')
-    page.get('upload_directories_header').contains('Upload Directories')
-    page.get('new_directory_button').should('exist')
-    page.get('watermarks_header').contains('Watermarks')
-    //page.get('new_watermark_button').should('exist')
-
-    //page.get('breadcrumb').should('exist')
-    //page.get('breadcrumb').contains("File Manager")
-    //page.get('breadcrumb').contains("Meta Data")
-    page.get('modal').should('be.visible')
-    page.get('modal_heading').contains("Meta Data")
-    page.get('preview_image').should('exist')
-    page.get('title_input').should('exist')
-    page.get('description_input').should('exist')
-    page.get('credit_input').should('exist')
-    page.get('location_input').should('exist')
-    page.get('form_submit_button').should('exist')
   })
 
   afterEach(function() {

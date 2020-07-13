@@ -52,7 +52,7 @@ context('Field Groups', () => {
         page.get('field_groups').its('length').then((length) => {
 
             //page.get('field_groups').eq(0).find('li.remove a').click()
-            cy.get('a[href title="Remove"]').first().click()//AJ
+            cy.get('a[rel="modal-confirm-field_groups"]').first().click()//AJ
             
 
             //page.get('modal_submit_button').click()

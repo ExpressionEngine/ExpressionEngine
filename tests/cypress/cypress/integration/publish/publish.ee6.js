@@ -176,7 +176,8 @@ context('Publish Page - Create', () => {
           cy.get('button[value="save"]').click()
 
           page.get('chosen_files').should('have.length', 2);
-          page.submit()
+          //page.submit()
+          cy.get('button[value="save"]').click()
 
           page.get('chosen_files').should('have.length', 2);
         })

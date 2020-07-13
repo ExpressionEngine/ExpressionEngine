@@ -29,7 +29,7 @@ context('Fluid Fields', () => {
         page.get('fields').find("[value='6']").click()
         page.get('fields').find("[value='7']").click()
         //page.submit() AJ
-        cy.get('button[value="save"]').click()
+        cy.get('button[value="save"]').first().click()
 
         page.get('alert').contains('The field Fluid Field Body has been')
 

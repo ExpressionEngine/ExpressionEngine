@@ -138,7 +138,7 @@ context('Security & Privacy Settings', () => {
 
     page.get('un_min_len').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     //page.hasErrors()
@@ -201,7 +201,7 @@ context('Security & Privacy Settings', () => {
     page.get('cp_session_type').filter('[value=cs]').check()
    // page.submit()
    
-   cy.get('button').contains('Save Settings').first().click()
+   cy.get('input').contains('Save Settings').first().click()
 
     cy.auth();
     page.load()

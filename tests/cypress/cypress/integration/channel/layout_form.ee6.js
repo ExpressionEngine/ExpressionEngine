@@ -236,7 +236,7 @@ context('Channel Layouts: Create/Edit', () => {
             channel.get('cat_group').each(function(cat) {
                 cy.wrap(cat).uncheck()
             })
-            channel.submit()
+            //channel.submit()
             //page.load()
             cy.get('button[value="save"]').click()
         })

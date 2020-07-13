@@ -33,12 +33,7 @@ context('File Manager / Crop File', () => {
         // @file_name = page.load
         cy.hasNoErrors()
 
-        // Check that the heder data is intact
-        page.get('title_toolbar').should('exist')
-        page.get('download_all').should('exist')
-
-        // Check that we do not have a sidebar
-        page.get('sidebar').should('not.exist')
+       
 
         //page.get('breadcrumb').should('exist')
         //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')

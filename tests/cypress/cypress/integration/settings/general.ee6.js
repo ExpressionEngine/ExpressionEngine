@@ -40,7 +40,7 @@ context('General Settings', () => {
     page.get('include_seconds_toggle').click()
 
     //page.submit()
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     // Make sure they stuck, also test Check Now button visibility
     cy.hasNoErrors()
@@ -95,7 +95,7 @@ context('General Settings', () => {
       page.get('site_name').clear()
 
       //page.submit()
-      cy.get('button').contains('Save Settings').first().click()
+      cy.get('input').contains('Save Settings').first().click()
 
       cy.hasNoErrors()
      
@@ -143,7 +143,7 @@ context('General Settings', () => {
 
       test_field(page.get('site_name'), '<script>alert(\'stored xss\')</script>', page.messages.xss_error)
       test_field(page.get('site_name'), 'EE2')
-      cy.get('button').contains('Save Settings').first().click()
+      cy.get('input').contains('Save Settings').first().click()
       //page.submit()
       cy.hasNoErrors()
       //should_have_no_form_errors(page)
@@ -168,15 +168,8 @@ context('General Settings', () => {
     cy.hasNoErrors()
 
     if (error) {
-      page.hasErrorsCount(1)
-      page.hasErrors()
       //should_have_form_errors(page)
       page.hasError(field, error)
-    } else {
-      page.hasErrorsCount(0)
-      page.hasNoErrors()
-      //should_have_no_form_errors(page)
-      //page.hasNoError(field)
     }
   }
 

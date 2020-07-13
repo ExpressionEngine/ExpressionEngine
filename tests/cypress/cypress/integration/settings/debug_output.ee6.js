@@ -65,7 +65,7 @@ context('Debugging & Output Settings', () => {
 
     page.get('max_caches').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     //page.hasErrors()
@@ -116,7 +116,7 @@ context('Debugging & Output Settings', () => {
     page.get('cache_driver').filter('[value=memcached]').check()
     page.get('max_caches').clear().type('300')
     //page.submit()AJ
-    cy.get('button').contains('Save Settings').first().click()
+    cy.get('input').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('debug').filter('[value=0]').should('be.checked')

@@ -29,7 +29,7 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click()//AJ
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true})//AJ
         
         page.get('submit_buttons').should('not.have.class', 'work')
 
@@ -116,7 +116,7 @@ context('Status Create/Edit', () => {
         page.get('status_access').eq(0).click()
         page.get('status').clear().type('Open')
         //page.submit()AJ
-        cy.get('button[value="save"]').filter(':visible').first().click()
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true})
         cy.contains('Cannot Create Status')
         page.hasError(page.get('status'), 'This field must be unique.')
         page.get('status').should('have.value', 'Open')
@@ -133,7 +133,7 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('mousedown')
         page.get('status_access').click()
         //page.submit()AJ
-        cy.get('button[value="save"]').filter(':visible').first().click()
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true})
         
         cy.hasNoErrors()
 
@@ -156,7 +156,7 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('change')
         page.get('status_access').click()
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click() //AJ
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
         cy.hasNoErrors()
 
         //cy.contains('Status Updated')

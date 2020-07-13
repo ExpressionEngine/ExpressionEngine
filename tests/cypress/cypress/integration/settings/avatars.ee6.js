@@ -57,7 +57,7 @@ context('Avatar Settings', () => {
   it('should validate the form', () => {
     page.get('avatar_path').clear().type('sdfsdfsd')
    // page.submit()
-   cy.get('button[value="Save Settings"]').click()
+   cy.get('input[value="Save Settings"]').click()
 
     cy.hasNoErrors()
     
@@ -70,7 +70,6 @@ context('Avatar Settings', () => {
     page.get('avatar_path').clear().type('sdfsdfsd')
     page.get('avatar_path').blur()
     cy.wait(500);
-    page.hasErrorsCount(1)
     page.hasError(page.get('avatar_path'), page.messages.validation.invalid_path)
    
 //should_have_form_errors(page)
@@ -78,12 +77,12 @@ context('Avatar Settings', () => {
     page.get('avatar_path').clear().type(upload_path)
     page.get('avatar_path').blur()
     cy.wait(500);
-    page.hasErrorsCount(0)
+
 
     page.get('avatar_path').clear().type('/')
     page.get('avatar_path').blur()
     cy.wait(500);
-    page.hasErrorsCount(1)
+
     page.hasError(page.get('avatar_path'), page.messages.validation.not_writable)
    
 //should_have_form_errors(page)
@@ -91,7 +90,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_width').clear().type('dfsd')
     page.get('avatar_max_width').blur()
     cy.wait(500);
-    page.hasErrorsCount(2)
+
     page.hasError(page.get('avatar_max_width'), page.messages.validation.integer_error)
    
 //should_have_form_errors(page)
@@ -99,14 +98,14 @@ context('Avatar Settings', () => {
     page.get('avatar_max_height').clear().type('dsfsd')
     page.get('avatar_max_height').blur()
     cy.wait(500);
-    page.hasErrorsCount(3)
+
     page.hasError(page.get('avatar_max_height'), page.messages.validation.integer_error)
    
 //should_have_form_errors(page)
 
     page.get('avatar_max_kb').clear().type('sdfsdfsd')
     page.get('avatar_max_kb').blur()
-    page.hasErrorsCount(4)
+
     page.hasError(page.get('avatar_max_kb'), page.messages.validation.integer_error)
    
 //should_have_form_errors(page)
@@ -115,7 +114,7 @@ context('Avatar Settings', () => {
     page.get('avatar_path').clear().type(upload_path)
     page.get('avatar_path').blur()
     cy.wait(500);
-    page.hasErrorsCount(3)
+
     page.hasNoError(page.get('avatar_path'))
    
 //should_have_form_errors(page)
@@ -123,7 +122,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_width').clear().type('100')
     page.get('avatar_max_width').blur()
     cy.wait(500);
-    page.hasErrorsCount(2)
+
     page.hasNoError(page.get('avatar_max_width'))
    
 //should_have_form_errors(page)
@@ -131,7 +130,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_height').clear().type('100')
     page.get('avatar_max_height').blur()
     cy.wait(500);
-    page.hasErrorsCount(1)
+
     page.hasNoError(page.get('avatar_max_height'))
    
 //should_have_form_errors(page)
@@ -139,7 +138,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_kb').clear().type('100')
     page.get('avatar_max_kb').blur()
     cy.wait(500);
-    page.hasErrorsCount(0)
+
     page.hasNoError(page.get('avatar_max_kb'))
     //should_have_no_form_errors(page)
   })
@@ -147,14 +146,12 @@ context('Avatar Settings', () => {
   it('should reject XSS', () => {
     page.get('avatar_url').clear().type(page.messages.xss_vector)
     page.get('avatar_url').blur()
-    page.hasErrorsCount(1)
     page.hasError(page.get('avatar_url'), page.messages.xss_error)
     
 //should_have_form_errors(page)
 
     page.get('avatar_path').clear().type(page.messages.xss_vector)
     page.get('avatar_path').blur()
-    page.hasErrorsCount(2)
     page.hasError(page.get('avatar_url'), page.messages.xss_error)
     page.hasError(page.get('avatar_path'), page.messages.xss_error)
     
@@ -169,7 +166,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_height').clear().type('101')
     page.get('avatar_max_kb').clear().type('102')
 
-    cy.get('button[value="Save Settings"]').click()
+    cy.get('input[value="Save Settings"]').click()
     //page.submit()
 
     page.get('wrap').contains('Preferences updated')
