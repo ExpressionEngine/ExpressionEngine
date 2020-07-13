@@ -44,7 +44,7 @@ context('Template Settings', () => {
     cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+ 
     //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.get('wrap').contains(page.messages.validation.integer_error)

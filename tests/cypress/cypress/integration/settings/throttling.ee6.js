@@ -65,7 +65,7 @@ context('Access Throttling Settings', () => {
     cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+
 //should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('lockout_time'), integer_error)
@@ -81,7 +81,7 @@ context('Access Throttling Settings', () => {
 
     page.get('max_page_loads').clear().type('sdfsdfsd')
     page.get('max_page_loads').blur()
-    page.hasErrorsCount(2)
+
     page.hasError(page.get('max_page_loads'), integer_error)
     //page.hasErrors()
 //should_have_form_errors(page)

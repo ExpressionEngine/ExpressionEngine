@@ -35,7 +35,6 @@ context('Member Registration', () => {
 
     page.get('email').clear().type('t.e.s.t@gmail.com')
     page.get('email').blur()
-    page.hasErrors()
     page.hasError(page.get('email'), 'This field must contain a unique email address.')
 
   })

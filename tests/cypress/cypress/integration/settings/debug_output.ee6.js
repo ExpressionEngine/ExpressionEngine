@@ -77,8 +77,8 @@ context('Debugging & Output Settings', () => {
     page.load()
     page.get('max_caches').clear().type('sdfsdfsd')
     page.get('max_caches').blur()
-    page.hasErrorsCount(1)
-    page.hasErrors()
+
+
 //should_have_form_errors(page)
     page.get('wrap').contains(max_caches_error)
 

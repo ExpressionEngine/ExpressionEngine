@@ -198,7 +198,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').should('exist')
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react]').click()
     cy.wait(100)
-    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').filter(':visible').click()
+    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click({force:true})
 
     bulk_edit.get('save_all_button').click()
 
@@ -227,7 +227,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').should('exist')
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react]').click()
     cy.wait(100)
-    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').filter(':visible').first().click()
+    bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').first().click({force:true})
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')

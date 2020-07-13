@@ -272,7 +272,7 @@ context('Publish Page - Create', () => {
               let choice = 'Corndog'
               if (skew == 1) { choice = 'Burrito' }
               cy.wait(100)
-              fluid_field.get('items').eq(index).find('.fluid__item-field div[data-dropdown-react] .select__dropdown-items span:contains("'+choice+'")').click()
+              fluid_field.get('items').eq(index).find('.fluid__item-field div[data-dropdown-react] .select__dropdown-items span:contains("'+choice+'")').click({force:true})
               break;
             case 'grid':
               field.find('a[rel="add_row"]').first().click()

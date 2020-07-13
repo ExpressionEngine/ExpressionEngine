@@ -49,9 +49,9 @@ context('Comment Settings', () => {
     cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.hasErrors()
+
 //should_have_form_errors(page)
-    page.get('wrap').contains('Attention: Settings not saved')
+    
     page.get('wrap').contains(comment_edit_time_error)
 
     // AJAX validation
@@ -65,7 +65,7 @@ context('Comment Settings', () => {
 
     page.get('comment_edit_time_limit').clear().type('100')
     page.get('comment_edit_time_limit').blur()
-    page.hasErrorsCount(0)
+
     //should_have_no_form_errors(page)
   })
 

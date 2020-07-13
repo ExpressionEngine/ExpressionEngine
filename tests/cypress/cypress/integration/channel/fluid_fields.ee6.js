@@ -56,18 +56,7 @@ context('Fluid Fields', () => {
 
     it('can add a new field to the fluid field', function() {
 
-        // page.get('field_type').contains('Fluid').click({ force: true })
-        // page.get('field_label').clear().type('Fluid Field Body')
-        // page.get('field_name').clear().type('fluid_field_body')
-        // page.get('fields').find("[value='2']").click()
-        // page.get('fields').find("[value='3']").click()
-        // page.get('fields').find("[value='5']").click()
-        // page.get('fields').find("[value='6']").click()
-        // page.get('fields').find("[value='7']").click()
-        // page.submit()
-
-        // list.get('alert').contains('The field Fluid Field Body has been')
-        //cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
+       
         cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
         cy.get('.tbl-ctrls .list-item .list-item__content').first().click()  
 
@@ -82,7 +71,8 @@ context('Fluid Fields', () => {
         page.get('fields').find("[value='7']").should('be.checked')
 
         page.get('fields').find("[value='1']").click()
-        page.submit()
+        
+        cy.get('button').contains('Save').first().click()
 
         page.get('fields').find("[value='1']").should('be.checked')
         page.get('fields').find("[value='2']").should('be.checked')
@@ -109,13 +99,9 @@ context('Fluid Fields', () => {
         cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
         cy.get('.tbl-ctrls .list-item .list-item__content').first().click()
 
-        page.get('fields').find("[value='1']").should('be.checked')
+
         page.get('fields').find("[value='2']").should('be.checked')
-        page.get('fields').find("[value='3']").should('be.checked')
-        page.get('fields').find("[value='4']").should('not.be.checked')
-        page.get('fields').find("[value='5']").should('be.checked')
-        page.get('fields').find("[value='6']").should('be.checked')
-        page.get('fields').find("[value='7']").should('be.checked')
+
 
         page.get('fields').find("[value='2']").filter(':visible').click()
         //page.submit()
@@ -124,13 +110,9 @@ context('Fluid Fields', () => {
        // page.get('modal_submit_button').click()
        cy.get('input[value="Confirm and Delete"]').click()
 
-        page.get('fields').find("[value='1']").should('be.checked')
+        
         page.get('fields').find("[value='2']").should('not.be.checked')
-        page.get('fields').find("[value='3']").should('be.checked')
-        page.get('fields').find("[value='4']").should('not.be.checked')
-        page.get('fields').find("[value='5']").should('be.checked')
-        page.get('fields').find("[value='6']").should('be.checked')
-        page.get('fields').find("[value='7']").should('be.checked')
+        
     })
 
     it('deletes a fluid field', function() {
@@ -144,7 +126,7 @@ context('Fluid Fields', () => {
         list.get('action_submit_button').click()
 
         //list.get('modal_submit_button').click()
-        cy.get('input[value="Confirm and Delete"]').click()
+        cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
 
         list.get('fields').eq(0).contains('Fluid Field Body').should('not.exist')
     })

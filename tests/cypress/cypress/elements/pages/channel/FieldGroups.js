@@ -19,6 +19,11 @@ class FieldGroups extends ControlPanel {
         })
     }
 
+    change(name){
+        form.get('new_name').clear().type(name)
+        form.get('submit').first().click()
+    }
+
     save_field_group(name) {
         form.get('name').clear().type(name)
         form.get('submit').first().click()

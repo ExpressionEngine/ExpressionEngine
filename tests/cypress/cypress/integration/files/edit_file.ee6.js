@@ -46,6 +46,9 @@ context('File Manager / Edit File', () => {
   })*/
 
   it('can edit the title', () => {
+    cy.get('a').contains('About').filter(':visible').first().click()
+    cy.get('a').contains('.jpg').filter(':visible').first().click()
+
     page.get('title_input').clear().type("Rspec was here")
     page.get('form_submit_button').click()
     cy.hasNoErrors()
@@ -54,6 +57,9 @@ context('File Manager / Edit File', () => {
   })
 
   it('can edit the description', () => {
+     cy.get('a').contains('About').filter(':visible').first().click()
+    cy.get('a').contains('.jpg').filter(':visible').first().click()
+
     page.get('description_input').clear().type("Rspec was here")
     page.get('form_submit_button').click()
     cy.hasNoErrors()
@@ -63,6 +69,9 @@ context('File Manager / Edit File', () => {
   })
 
   it('can edit the credit', () => {
+     cy.get('a').contains('About').filter(':visible').first().click()
+    cy.get('a').contains('.jpg').filter(':visible').first().click()
+
     page.get('credit_input').type("Rspec was here")
     page.get('form_submit_button').click()
     cy.hasNoErrors()
@@ -72,20 +81,15 @@ context('File Manager / Edit File', () => {
   })
 
   it('can edit the location', () => {
+
+     cy.get('a').contains('About').filter(':visible').first().click()
+    cy.get('a').contains('.jpg').filter(':visible').first().click()
     page.get('location_input').clear().type("Rspec was here")
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 
     filemanager.get('alert').contains("The meta data for the file")
     filemanager.get('alert').contains("has been updated.")
-  })
-
-  it('can navigate back to the filemanger', () => {
-
-    page.get('modal').find('.m-close').click()
-    page.get('page_heading').should('be.visible')
-    page.get('modal').should('not.be.visible')
-    cy.hasNoErrors()
   })
 
 })

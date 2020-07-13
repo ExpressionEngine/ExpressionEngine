@@ -27,7 +27,7 @@ context('Template Routes', () => {
             template: 'about/index',
             route: 'foo/bar'
         })
-        page.get('update_button').click()
+        page.get('update_button').first().click({force:true})
 
         cy.hasNoErrors()
 
@@ -44,7 +44,7 @@ context('Template Routes', () => {
 
         page.get('routes').eq(0).find('td:nth-child(3) input').clear().type('cypress/edited')
 
-        page.get('update_button').click()
+        page.get('update_button').first().click({force:true})
 
         page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'cypress/edited')
     })
@@ -65,7 +65,7 @@ context('Template Routes', () => {
                 page.get('routes').eq(1).find('.js-grid-reorder-handle').dragTo(target)
             })
 
-            page.get('update_button').click()
+            page.get('update_button').first().click({force:true})
 
             page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', second)
             page.get('routes').eq(1).find('td:nth-child(3) input').should('have.value', first)

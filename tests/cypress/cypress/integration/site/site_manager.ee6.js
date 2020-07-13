@@ -30,7 +30,7 @@ context('Site Manager', () => {
       counter++;
 
       //page.get('add_site_button').click()//AJ
-      cy.get('input').contains('Add Site').click()
+      cy.get('button').contains('Add Site').click()
 
       cy.hasNoErrors()
 

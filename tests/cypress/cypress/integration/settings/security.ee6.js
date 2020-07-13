@@ -229,7 +229,8 @@ context('Security & Privacy Settings', () => {
 
     page.get('force_interstitial_toggle').should('be.visible')
     page.get('force_interstitial_toggle').click()
-    page.submit()
+    //page.submit()
+    cy.get('input').contains('Save Settings').first().click()
 
     // Since we changed session settings, login again
     cy.auth();

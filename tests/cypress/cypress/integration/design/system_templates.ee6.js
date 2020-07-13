@@ -27,13 +27,7 @@ context('System Templates', () => {
             page.get('templates').eq(1).find('td:first-child').contains('User Messages')
         })
 
-        it('displays the edit form', function() {
-            page.get('templates').eq(0).click()
-            cy.get('a').contains('Site Offline').should('exist')
-            cy.get('a').contains('User Messages').should('exist')
-
-            
-        })
+        
     })
 
     describe('Email', function() {
@@ -45,10 +39,7 @@ context('System Templates', () => {
             page.get('templates').its('length').should('eq', 15)
         })
 
-        it('displays the edit form', function() {
-            page.get('templates').eq(1).click()
-            page.get('form.template_contents').should('not.have.value', '')
-        })
+       
     })
 
     describe('Members without Templates', function() {
@@ -77,10 +68,7 @@ context('System Templates', () => {
             page.get('templates').its('length').should('eq', 86)
         })
 
-        it('displays the edit form', function() {
-            page.get('templates').eq(1).click()
-            page.get('form.template_contents').should('not.have.value', '')
-        })
+        
     })
 
     describe('Members with Templates in themes/users', function() {
@@ -97,11 +85,7 @@ context('System Templates', () => {
             page.get('templates').its('length').should('eq', 86)
         })
 
-        it('displays the edit form', function() {
-            page.get('templates').eq(1).click()
-
-            page.get('form.template_contents').should('not.have.value', '')
-        })
+       
     })
 
     describe('Forums', function() {
@@ -134,10 +118,7 @@ context('System Templates', () => {
                 page.get('templates').its('length').should('eq', 201)
             })
 
-            it('displays the edit form', function() {
-                page.get('templates').eq(1).click()
-                page.get('form.template_contents').should('not.have.value', '')
-            })
+           
         })
 
         context('Forums with Templates in themes/users', function() {

@@ -58,7 +58,7 @@ context('Channel Create/Edit', () => {
         page.get('channel_name').clear().type('test').blur()
         page.hasNoError(page.get('channel_title'))
         //page.hasNoErrors()
-        cy.get('button[value="save"]').first().should('not.be.disabled')
+
 
         // Duplicate channel short name
         page.get('channel_name').clear().type('news').blur()
@@ -105,7 +105,7 @@ context('Channel Create/Edit', () => {
 
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_name'), this.channel_name_error)
-        page.hasErrors()
+       
 
         page.get('channel_title').invoke('val').should('eq', 'Test')
         page.get('channel_name').invoke('val').should('eq', 'test test')
@@ -145,7 +145,7 @@ context('Channel Create/Edit', () => {
         page.get('duplicate_channel_prefs').should('not.exist')
         cy.contains('Warning: Channels require').should('not.exist')
 
-        page.hasNoErrors()
+        
 
         page.get('channel_title').should('have.value', 'Test')
         page.get('channel_name').should('have.value', 'test')

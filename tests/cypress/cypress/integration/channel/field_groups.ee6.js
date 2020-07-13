@@ -36,7 +36,7 @@ context('Field Groups', () => {
 
     it('saves the field group name', function() {
         page.get('field_groups_edit').eq(0).click()
-        page.save_field_group('Test Group 2')
+        page.change('Test Group 2')
 
         cy.visit(page.url)
 
@@ -52,7 +52,7 @@ context('Field Groups', () => {
         page.get('field_groups').its('length').then((length) => {
 
             //page.get('field_groups').eq(0).find('li.remove a').click()
-            cy.get('a[rel="modal-confirm-field_groups"]').first().click()//AJ
+            cy.get('a[rel="modal-confirm-field_groups"]').filter(':visible').first().click()//AJ
             
 
             //page.get('modal_submit_button').click()

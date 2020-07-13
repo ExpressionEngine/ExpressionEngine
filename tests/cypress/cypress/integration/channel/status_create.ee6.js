@@ -34,7 +34,7 @@ context('Status Create/Edit', () => {
         page.get('submit_buttons').should('not.have.class', 'work')
 
         cy.hasNoErrors()
-        page.hasErrors()
+    
         cy.contains('Cannot Create Status')
         page.hasError(page.get('status'), page.messages.validation.required)
 
@@ -46,23 +46,23 @@ context('Status Create/Edit', () => {
         // Required name
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), page.messages.validation.required)
-        page.hasErrors()
+       
 
         page.get('status').clear().type('Test')
         page.get('status').trigger('blur')
         page.hasNoError(page.get('status'))
-        page.hasNoErrors()
+
 
         // Duplicate status name
         page.get('status').clear().type('open')
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), 'This field must be unique.')
-        page.hasErrors()
+     
 
         page.get('status').clear().type('Test')
         page.get('status').trigger('blur')
         page.hasNoError(page.get('status'))
-        page.hasNoErrors()
+     
 
         // Minicolors should show up
         page.get('highlight').trigger('focus')
@@ -140,7 +140,7 @@ context('Status Create/Edit', () => {
         //cy.contains('Status Created')
         cy.visit(page.url);
         page.load_view_for_status_group(1)
-        page.get('status_names').its('length').should('eq', 4)
+        page.get('status_names').its('length').should('eq', 3)
         page.load_edit_for_status(4)
         cy.hasNoErrors()
 
