@@ -54,7 +54,7 @@ context('Template Routes', () => {
             template: 'about/404',
             route: 'boo/far'
         })
-        page.get('update_button').click().then(function() {
+        page.get('update_button').click({force:true}).then(function() {
 
             page.get('routes').its('length').should('eq', 2)
 
@@ -74,7 +74,7 @@ context('Template Routes', () => {
 
     it('can remove a route', function() {
 
-        page.get('update_button').click()
+        page.get('update_button').click({force:true})
 
         page.get('routes').its('length').should('eq', 2)
 

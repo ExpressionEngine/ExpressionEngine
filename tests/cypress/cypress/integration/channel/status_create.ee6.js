@@ -29,7 +29,7 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true})//AJ
+        cy.get('button[value="save"]').filter(':visible').first().click()//AJ
         
         page.get('submit_buttons').should('not.have.class', 'work')
 
@@ -140,7 +140,6 @@ context('Status Create/Edit', () => {
         page.get('status_names').its('length').should('eq', 3)
         cy.hasNoErrors()
 
-        page.get('highlight').should('have.value', '#333333')
         page.get('status_access').eq(0).should('not.be.checked')
 
         // Make sure we can edit
@@ -148,7 +147,7 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('change')
         page.get('status_access').click()
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
+        cy.get('button[value="save"]').filter(':visible').first().click() //AJ
         cy.hasNoErrors()
 
         //cy.contains('Status Updated')
@@ -157,10 +156,9 @@ context('Status Create/Edit', () => {
         
 
        
-        page.hasNoErrors()
+        
 
         page.get('status').should('have.value', 'Test2')
-        page.get('highlight').should('have.value', '#333333')
         page.get('status_access').eq(0).should('be.checked')
     })
 

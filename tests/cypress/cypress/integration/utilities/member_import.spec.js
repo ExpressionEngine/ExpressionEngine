@@ -31,7 +31,7 @@ context('Member Import', () => {
 	})
 
 	//TODO Big error Fatal error
-	it.only('should show the confirm import screen', () => {
+	it('should show the confirm import screen', () => {
 		//TODO try and get automatic file sending !!
 		cy.pause() 
 		page.get('member_group').eq(4).click() //super admin

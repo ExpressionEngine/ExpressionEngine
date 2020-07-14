@@ -18,7 +18,7 @@ context('Forum Tab', () => {
       	cy.get(':nth-child(7) > .field-control > input')
      })
 
-     it.only('creates a forum post when entering data into the forum tab', () => {
+     it('creates a forum post when entering data into the forum tab', () => {
      	cy.get('.solo > .btn').click() // click the New Forum button
       	helper.create_entry()
      })
@@ -27,7 +27,7 @@ context('Forum Tab', () => {
 
 })
 
-   //   it.only('creates a forum post when entering data into the forum tab', () => {
+   //   it('creates a forum post when entering data into the forum tab', () => {
 	  //   create_entry
 
 	  //   $db.query('SELECT title, body FROM exp_forum_topics').each do |row|

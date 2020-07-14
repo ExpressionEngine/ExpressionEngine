@@ -25,7 +25,7 @@ context('Field Groups', () => {
 
         page.save_field_group('Test Group 1')
 
-        cy.visit(page.url)
+        cy.authVisit(page.url);
 
         page.get('field_groups').its('length').should('eq', 3)
         page.get('field_groups_edit').its('length').should('eq', 3)
@@ -56,7 +56,7 @@ context('Field Groups', () => {
             
 
             //page.get('modal_submit_button').click()
-            cy.get('input[value="Confirm and Delete"]').first().click({force:true})
+            cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
             cy.hasNoErrors()
 
             page.hasAlert('success')

@@ -30,7 +30,7 @@ class ChannelLayoutForm extends ControlPanel {
 
             // Layout Options
             "layout_name": 'form input[type!=hidden][name=layout_name]',
-            "member_groups": 'form input[type!=hidden][name="roles[]"]',
+            "member_groups": 'input[name="roles[]"]',
             "submit_button": '.form-btns-top [value="save_and_close"]',
 
             "add_tab_modal": 'div.modal-add-new-tab',

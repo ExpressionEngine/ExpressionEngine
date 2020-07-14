@@ -122,7 +122,7 @@ context('Create and test field groups', () => {
     cy.get('body').contains('Hikaru')
   })
 
-  it.only('Updates the webpage when new content is added to the entry (no touching template should be needed)', () =>{
+  it('Updates the webpage when new content is added to the entry (no touching template should be needed)', () =>{
     cy.visit('http://localhost/admin.php?/cp/publish/edit')
     cy.get('a').contains('Test Entry').click()
     cy.get('button').contains('Add Row').eq(0).click()

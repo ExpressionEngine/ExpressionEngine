@@ -54,6 +54,8 @@ context('Templates', () => {
 
             cy.hasNoErrors()
 
+            cy.visit('http://localhost:8888/admin.php?/cp/design/template/edit/8')
+
             editPage.get('settings_tab').click()
             editPage.get('name').should('have.value', 'cypress-test-three')
             editPage.get('type').filter(':checked').should('have.value', 'webpage')

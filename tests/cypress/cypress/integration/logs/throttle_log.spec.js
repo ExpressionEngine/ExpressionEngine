@@ -41,7 +41,7 @@ context('Throttle Logging', () => {
         cy.hasNoErrors()
     })
 
-    it.only('shows the Access Throttling Logs page', () => {
+    it('shows the Access Throttling Logs page', () => {
        page.get('wrap').click()
         page.get('wrap').find('a').eq(0).click()
         page.get('wrap').find('input').eq(1).click()

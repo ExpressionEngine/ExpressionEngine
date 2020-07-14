@@ -148,7 +148,7 @@ context('RTE Settings', () => {
             });
 
             //page.get('modal_submit_button').click() // Submits a form AJ
-            cy.get('input').contains('Confirm, and Remove').filter(':visible').first().click()
+            cy.get('input').contains('Confirm, and Remove').first().click({force:true})
             cy.hasNoErrors()
 
             page.hasAlert('error')
@@ -215,8 +215,8 @@ context('RTE Settings', () => {
             cy.visit('http://localhost:8888/admin.php?/cp/addons/settings/rte/edit_toolset&toolset_id=1')
 
             page.get('tool_set_name').clear().type('Cypress Edited')
-            page.get('tool_set_save_button').click()
-
+            //page.get('tool_set_save_button').click()
+            cy.get('input').contains('Save').first().click()
             cy.hasNoErrors()
             page.get('tool_set_name').invoke('val').should('eq', "Cypress Edited")
 

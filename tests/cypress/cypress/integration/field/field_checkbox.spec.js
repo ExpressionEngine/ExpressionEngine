@@ -23,7 +23,7 @@ context('A way to create Checkbox fields', () => {
 	  	cy.get('.filter-bar').should('exist')
 	})
 
-	it.only('Tests',() => {
+	it('Tests',() => {
 		cy.visit('http://localhost/admin.php?/cp/fields')
 	  	cy.get('.main-nav__toolbar > .button').contains('New Field').click()
 	  	page.get('Type').click()

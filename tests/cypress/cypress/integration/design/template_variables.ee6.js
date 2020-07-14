@@ -31,7 +31,7 @@ context('Template Variables', () => {
     })
 
     it('can find templates that use a variable', function() {
-        page.get('variables').eq(6).find('.toolbar .find a').click()
+        page.get('variables').eq(6).find('a[title="find"]').click()
 
         cy.hasNoErrors()
 
@@ -41,12 +41,13 @@ context('Template Variables', () => {
     })
 
     it('can navigate to edit form', function() {
-        page.get('variables').eq(6).find('.toolbar .edit a').click()
+        page.get('variables').eq(6).find('a[title="Edit"]').click()
 
         cy.hasNoErrors()
     })
 
     it('should validate the form', function() {
+        cy.get('a').contains('Template Variable').first().click()
         page.get('create_new_button').click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
@@ -57,6 +58,7 @@ context('Template Variables', () => {
 
     it('can create a new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
+        cy.get('a').contains('Template Variable').first().click()
 
         page.get('create_new_button').click()
 

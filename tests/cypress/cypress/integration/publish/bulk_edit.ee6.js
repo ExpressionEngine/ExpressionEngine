@@ -241,7 +241,8 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Comment expiration date")').click()
     bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').clear().type('2/14/2018 5:00 PM')
-    bulk_edit.get('heading').click() // Close date picker
+    //bulk_edit.get('heading').click() // Close date picker
+    cy.get('body').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
@@ -280,7 +281,8 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(6).find('input[value="1"]:visible').should('not.be.checked')
     bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]:visible').should('be.checked')
 
-    bulk_edit.get('save_all_button').click()
+    //bulk_edit.get('save_all_button').click()
+    cy.get('button').contains('Save All & Close').first().click()
     entry_manager.get('alert_success').should('exist')
 
     const entries = ['Getting to Know ExpressionEngine', 'Welcome to the Example Site!']

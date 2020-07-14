@@ -169,6 +169,7 @@ context('Template Manager', () => {
             cy.get('a[title="Edit"]').first().click()
             cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
 
+            cy.get('button').contains('Settings').first().click()
             let form = new TemplateEdit
             form.get('name').clear().type('archives-and-stuff')
             form.get('type').check('feed')
@@ -178,10 +179,14 @@ context('Template Manager', () => {
             form.get('php_parse_stage').check('i')
             form.get('hit_counter').clear().type('10')
 
-            cy.get('.modal:visible form .form-btns input.btn[type="submit"]').first().click()
+            //cy.get('.modal:visible form .form-btns input.btn[type="submit"]').first().click()
+            cy.get('button').contains('Save').first().click()
+            //page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 
-            page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
+            cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
 
+            cy.get('button').contains('Settings').first().click()
+            
             form.get('name').should('have.value', 'archives-and-stuff')
             form.get('type').filter(':checked').should('have.value', 'feed')
             form.get('enable_caching').should('have.class', 'on')
