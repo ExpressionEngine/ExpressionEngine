@@ -363,6 +363,105 @@ JSC;
 	}
 
 	/**
+	 * Resize an image
+	 *
+	 * Supported parameters:
+	 *  - width
+	 *  - height
+	 *  - quality (0-100)
+	 *  - maintain_ratio (y / n)
+	 *  - master_dim (width / height)
+	 */
+	public function replace_resize($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->process_image('resize', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Crop an image
+	 *
+	 * Supported parameters:
+	 *  - width
+	 *  - height
+	 *  - quality (0-100)
+	 *  - maintain_ratio (y / n)
+	 *  - x
+	 *  - y
+	 */
+	public function replace_crop($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->process_image('crop', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Rotate an image
+	 *
+	 * Supported parameters:
+	 *  - angle (90, 180, 270, vrt, hor)
+	 */
+	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->process_image('rotate', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Generic image processing
+	 */
+	private function process_image($function = 'resize', $data, $params = array(), $tagdata = FALSE)
+	{
+		if (!in_array($function, ['resize', 'crop', 'rotate', 'watermark'])) {
+			return false;
+		}
+
+		if ($data['model_object']->isImage()) {
+			ee()->load->library('image_lib');
+			$filename = ee()->image_lib->explode_name($data['model_object']->file_name);
+			$new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+			$new_image_path = rtrim($data['model_object']->UploadDestination->server_path, '/') . '/' . $new_image;
+			if (!file_exists($new_image_path)) {
+				$imageLibConfig = array(
+					'image_library'		=> ee()->config->item('image_resize_protocol'),
+					'library_path'		=> ee()->config->item('image_library_path'),
+					'source_image'		=> $data['model_object']->getAbsolutePath(),
+					'new_image'			=> $new_image_path,
+					'maintain_ratio'	=> isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
+					'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['master_dim'] : 'auto',
+
+					'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
+					'width'				=> isset($params['width']) ? (int) $params['width'] : 100,
+					'height'			=> isset($params['height']) ? (int) $params['height'] : 100,
+					'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
+					'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
+					'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['auto', 'width', 'height'])) ? $params['angle'] : null,
+				);
+				ee()->image_lib->initialize($imageLibConfig);
+				if (!ee()->image_lib->$function()) {
+					if (ee()->config->item('debug') == 2 OR (ee()->config->item('debug') == 1 AND ee('Permission')->isSuperAdmin())) {
+						return ee()->image_lib->display_errors();
+					}
+					return ee()->TMPL->no_results();
+				}
+			}
+
+			if (!$tagdata) {
+				if (isset($params['wrap']))
+				{
+					return $this->_wrap_it($data, $params['wrap'], rtrim($data['model_object']->UploadDestination->url, '/') . '/' . rawurlencode($new_image));
+				}
+				return rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($new_image);
+			} else {
+				$props = ee()->image_lib->get_image_properties(rtrim($data['model_object']->UploadDestination->server_path, '/') . '/' . $new_image, true);
+				$vars = [
+					'url' => rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($new_image),
+					'width' => $props['width'],
+					'height' => $props['height']
+				];
+				return ee()->TMPL->parse_variables_row($tagdata, $vars);
+			}
+		}
+	}
+
+	/**
 	 * :length modifier
 	 */
 	public function replace_length($data, $params = array(), $tagdata = FALSE)
