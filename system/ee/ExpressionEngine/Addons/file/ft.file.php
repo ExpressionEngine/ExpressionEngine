@@ -405,19 +405,44 @@ JSC;
 	}
 
 	/**
+	 * Convert to webp
+	 *
+	 * Supported parameters same as for resize
+	 */
+	public function replace_webp($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->process_image('webp', $data, $params, $tagdata);
+	}
+
+	/**
 	 * Generic image processing
 	 */
 	private function process_image($function = 'resize', $data, $params = array(), $tagdata = FALSE)
 	{
-		if (!in_array($function, ['resize', 'crop', 'rotate', 'watermark'])) {
+		if (!in_array($function, ['resize', 'crop', 'rotate', 'webp'])) {
 			return false;
 		}
 
 		if ($data['model_object']->isImage()) {
 			ee()->load->library('image_lib');
 			$filename = ee()->image_lib->explode_name($data['model_object']->file_name);
-			$new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
-			$new_image_path = rtrim($data['model_object']->UploadDestination->server_path, '/') . '/' . $new_image;
+			if ($function == 'webp') {
+				$filename['ext'] = '.webp';
+			}
+			$new_image = $filename['name'] . '_' . md5(serialize($params)) . $filename['ext'];
+			$new_image_dir = rtrim($data['model_object']->UploadDestination->server_path, '/') . '/_' . $function . DIRECTORY_SEPARATOR;
+			if (!is_dir($new_image_dir)) {
+				mkdir($new_image_dir);
+				if (!file_exists($new_image_dir . 'index.html')) {
+					$f = fopen($new_image_dir . 'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
+					fwrite($f, 'Directory access is forbidden.');
+					fclose($f);
+				}
+			} elseif (!is_really_writable($new_image_dir)) {
+				return false;
+			}
+			$new_image_path = $new_image_dir . $new_image;
+			$new_image_url = rtrim($data['model_object']->UploadDestination->url, '/') . '/_' . $function . '/' . rawurlencode($new_image);
 			if (!file_exists($new_image_path)) {
 				$imageLibConfig = array(
 					'image_library'		=> ee()->config->item('image_resize_protocol'),
@@ -428,12 +453,16 @@ JSC;
 					'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['master_dim'] : 'auto',
 
 					'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
-					'width'				=> isset($params['width']) ? (int) $params['width'] : 100,
-					'height'			=> isset($params['height']) ? (int) $params['height'] : 100,
 					'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
 					'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
 					'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['auto', 'width', 'height'])) ? $params['angle'] : null,
 				);
+				if (isset($params['width'])) {
+					$imageLibConfig['width'] = (int) $params['width'];
+				}
+				if (isset($params['height'])) {
+					$imageLibConfig['height'] = (int) $params['height'];
+				}
 				ee()->image_lib->initialize($imageLibConfig);
 				if (!ee()->image_lib->$function()) {
 					if (ee()->config->item('debug') == 2 OR (ee()->config->item('debug') == 1 AND ee('Permission')->isSuperAdmin())) {
@@ -446,13 +475,13 @@ JSC;
 			if (!$tagdata) {
 				if (isset($params['wrap']))
 				{
-					return $this->_wrap_it($data, $params['wrap'], rtrim($data['model_object']->UploadDestination->url, '/') . '/' . rawurlencode($new_image));
+					return $this->_wrap_it($data, $params['wrap'], $new_image_url);
 				}
-				return rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($new_image);
+				return $new_image_url;
 			} else {
-				$props = ee()->image_lib->get_image_properties(rtrim($data['model_object']->UploadDestination->server_path, '/') . '/' . $new_image, true);
+				$props = ee()->image_lib->get_image_properties($new_image_path, true);
 				$vars = [
-					'url' => rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($new_image),
+					'url' => $new_image_url,
 					'width' => $props['width'],
 					'height' => $props['height']
 				];
