@@ -6,7 +6,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 Bullet list below, e.g.
    - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug (#53) where previous month link was not clickable in Channel Form datepicker.
 
 
 
