@@ -176,7 +176,6 @@ var DropdownController = function () {
   $('body').on('keyup', '.dropdown__search input', function () {
     $('body').find('.dropdown__search input[name=' + $(this).attr('name') + ']').val($(this).val());
   });
-
   return {
     hideAllDropdowns: hideAllDropdowns,
     showDropdown: showDropdown,
