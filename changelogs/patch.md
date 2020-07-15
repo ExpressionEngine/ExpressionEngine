@@ -5,8 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug (#432) where parent entries were not fetched for relationship field inside grid.
 
 
 
