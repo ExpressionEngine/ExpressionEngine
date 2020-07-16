@@ -5,8 +5,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
    - Fixed a bug (#72) where Maximum rows limit was not respected in File Grid field.
+   - Fixed a bug (#283) where "field required" indicator was not showing a Grid column.
 
 
 
