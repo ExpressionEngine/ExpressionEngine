@@ -237,7 +237,7 @@ class Template extends AbstractDesignController {
     				}
     				else
     				{
-    					ee()->output->send_ajax_response('success');
+    					ee()->output->send_ajax_response(['success']);
     				}
     				exit;
     			}
@@ -459,7 +459,7 @@ class Template extends AbstractDesignController {
     				}
     				else
     				{
-    					ee()->output->send_ajax_response('success');
+    					ee()->output->send_ajax_response(['success']);
     				}
     				exit;
     			}

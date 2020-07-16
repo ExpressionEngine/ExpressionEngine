@@ -121,7 +121,7 @@ class EE_Form_validation {
 		}
 		else
 		{
-			ee()->output->send_ajax_response('success');
+			ee()->output->send_ajax_response(['success']);
 		}
 	}
 

@@ -135,7 +135,7 @@ class CpSettings extends Profile {
 				}
 				else
 				{
-					ee()->output->send_ajax_response('success');
+					ee()->output->send_ajax_response(['success']);
 				}
 			}
 
