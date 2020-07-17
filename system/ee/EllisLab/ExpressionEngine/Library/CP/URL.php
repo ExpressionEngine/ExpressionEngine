@@ -153,10 +153,6 @@ class URL implements \Serializable {
 		{
 			$path = rtrim('?/cp/'.$path, '/');
 		}
-		else
-		{
-			$path = '?';
-		}
 
 		$qs = $this->qs;
 
@@ -170,7 +166,16 @@ class URL implements \Serializable {
 		// Remove AMP from the beginning of the query string if it exists
 		$qs = preg_replace('#^'.AMP.'#', '', $qs);
 
-		return $this->base.$path.rtrim('&'.$qs, '&');
+		if (!empty($qs)) {
+			$qs = rtrim($qs, '&');
+			if (empty($path)) {
+				$path = '?';
+			} else {
+				$path .= '&';
+			}
+		}
+
+		return $this->base.$path.$qs;
 	}
 
 	/**
