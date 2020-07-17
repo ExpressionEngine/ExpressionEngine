@@ -83,7 +83,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php if (isset($setting['title'])): ?>
 		<label><?=lang($setting['title'])?></label>
 		<?php endif; ?>
-		<?php if (isset($setting['desc'])): ?>
+		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
 		<?php endif; ?>
 		<?php if (isset($setting['desc_cont'])): ?>

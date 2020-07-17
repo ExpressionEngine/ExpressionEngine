@@ -365,9 +365,13 @@ else: ?>
 
 							$column_label = "<div class=\"grid-field__column-label\">
 								<div class=\"field-instruct\">
-									<label>$column_name</label>
+									<label>$column_name</label>";
+							if (!empty($column_desc)) {
+								$column_label .= "
 									<em>$column_desc</em>
-								</div>
+									";
+							}
+							$column_label .= "	</div>
 							</div>";
 
 							?>
