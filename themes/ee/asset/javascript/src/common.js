@@ -317,7 +317,7 @@ $(document).ready(function(){
 
 	function updateMenuText(newTheme) {
 		if ($('.js-dark-theme-toggle').length) {
-			$('.js-dark-theme-toggle').text(newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme);
+			$('.js-dark-theme-toggle').html('<i class="fas fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
 		}
 	}
 
