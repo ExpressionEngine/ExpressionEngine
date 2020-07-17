@@ -153,6 +153,10 @@ class URL implements \Serializable {
 		{
 			$path = rtrim('?/cp/'.$path, '/');
 		}
+		else
+		{
+			$path = '?';
+		}
 
 		$qs = $this->qs;
 
