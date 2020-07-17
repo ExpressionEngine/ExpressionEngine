@@ -248,7 +248,7 @@ class Stats {
 				0
 			);
 
-			exit;
+			return;
 		}
 
 		// Update entry stats
