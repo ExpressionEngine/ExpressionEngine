@@ -20,6 +20,8 @@ class Table {
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
+	const COL_SMALL = 6;
+	const COL_INFO = 7;
 
 	public $config = array();
 	protected $columns = array();
@@ -52,6 +54,7 @@ class Table {
 	 * 'checkbox_header' - For checkbox columns, will also show a checkbox in
 	 * 		the header when there is no data, i.e. when a table represents an
 	 * 		entity that can have actions applied to it (edge case setting)
+	 * 'show_add_button' - whether to show button to add new rows
 	 *
 	 * @param	array 	$config	See above for options
 	 */
@@ -207,6 +210,7 @@ class Table {
 		// Default settings for columns
 		$defaults = array(
 			'label'		=> NULL,
+			'name'      => NULL,
 			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
@@ -247,6 +251,11 @@ class Table {
 			if ( ! isset($settings['label']) && ! is_int($label))
 			{
 				$settings['label'] = $label;
+			}
+
+			if ( ! isset($settings['name']))
+			{
+				$settings['name'] = $label;
 			}
 
 			$this->columns[] = $settings;
@@ -455,7 +464,7 @@ class Table {
 	 */
 	public function addActionButton($url, $text, $class = "submit")
 	{
-		$class = 'btn action ' . $class;
+		$class = 'button button--primary ' . $class;
 
 		$this->action_buttons[] = array(
 			'url' => $url,

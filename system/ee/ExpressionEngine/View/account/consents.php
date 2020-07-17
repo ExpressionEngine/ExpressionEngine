@@ -1,12 +1,14 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
 <?=form_open($form_url)?>
-		<?=ee('CP/Alert')->get('shared-form')?>
 
+    <div class="panel-heading">
+      <?=ee('CP/Alert')->get('shared-form')?>
 	   <div class="title-bar">
-			<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+			<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>
+    </div>
 
        <?php $this->embed('_shared/table', $table); ?>
 
@@ -32,6 +34,7 @@
 		]); ?>
        <?php endif; ?>
 <?=form_close()?>
+</div>
 
 <?php foreach($requests as $request): ?>
 	<?php ee('CP/Modal')->startModal('modal-consent-request-' . $request->getId()); ?>
@@ -52,8 +55,8 @@
 					echo $contents;
 					?>
 					<?=form_open($form_url, [], ['selection[]' => $request->getId()])?>
-					<button class="btn action" name="bulk_action" value="opt_in"><?=lang('accept')?></button>
-					<button class="btn draft" name="bulk_action" value="opt_out"><?=lang('decline')?></button>
+					<button class="button button--primary" name="bulk_action" value="opt_in"><?=lang('accept')?></button>
+					<button class="button button--secondary" name="bulk_action" value="opt_out"><?=lang('decline')?></button>
 					<?=form_close()?>
 				</div>
 			</div>

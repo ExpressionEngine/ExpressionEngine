@@ -94,7 +94,7 @@
 				</fieldset>
 
 				<div class="dialog__buttons">
-						<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
+						<?=form_submit('submit', lang('login'), 'class="button button--primary" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 				</div>
 			</div>
 			<?=form_close()?>

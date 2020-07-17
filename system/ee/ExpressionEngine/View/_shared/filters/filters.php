@@ -1,5 +1,8 @@
 <?php if ( ! empty($filters) && is_array($filters)): ?>
-<div class="filter-bar">
+<div class="title-bar__filter-toggle-button js-filter-bar-toggle" style="display: none">
+	<button type="button" class="filter-bar__button button button--default button--small"><i class="fas fa-sm fa-filter"></i> <?=lang('filters')?></button>
+</div>
+<div class="filter-bar filter-bar--collapsible">
 	<?php foreach ($filters as $filter): ?>
 		<div class="filter-bar__item <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
 			<?=$filter['html']?>

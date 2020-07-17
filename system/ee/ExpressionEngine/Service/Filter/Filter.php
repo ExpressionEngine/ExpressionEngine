@@ -221,6 +221,7 @@ abstract class Filter {
 	protected function prepareOptions(URL $base_url)
 	{
 		$options = array();
+		$base_url->removeQueryStringVariable('columns');
 		foreach ($this->options as $show => $label)
 		{
 			$url = clone $base_url;

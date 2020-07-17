@@ -83,7 +83,7 @@ $current_page = ee()->uri->segment(2);
 									<?=$channel_name?>
 									</a>
 									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
-									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--primary button--small"><i class="fas fa-plus"></i></a>
+									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--link button--xsmall"><i class="fas fa-plus"></i></a>
 									<?php endif; ?>
 								</div>
 							<?php endforeach ?>
@@ -119,7 +119,7 @@ $current_page = ee()->uri->segment(2);
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
 										<div class="search-input">
-											<input class="search-input__input" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+											<input class="search-input__input input--small" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
 										</div>
 									</form>
 										<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>
@@ -197,6 +197,10 @@ $current_page = ee()->uri->segment(2);
         <div class="ee-main-header">
 
           <a href="" class="sidebar-toggle" title="Toggle Sidebar"><i class="fas fa-angle-left"></i></a>
+
+          <a class="main-nav__mobile-menu js-toggle-main-sidebar hidden">
+        		<svg xmlns="http://www.w3.org/2000/svg" width="18.585" height="13.939" viewBox="0 0 18.585 13.939"><g transform="translate(-210.99 -17.71)"><path d="M3,12.1H19.585" transform="translate(208.99 12.575)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,6H19.585" transform="translate(208.99 12.71)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,18H9.386" transform="translate(208.99 12.649)" fill="none" stroke-linecap="round" stroke-width="2"/></g></svg>
+        	</a>
 
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">

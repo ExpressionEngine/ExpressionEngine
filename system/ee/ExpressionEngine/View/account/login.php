@@ -24,9 +24,9 @@
 		</fieldset>
 		<?php if ($cp_session_type == 'c'):?>
 		<fieldset>
-			<label for="remember_me" class="small-checkbox-label">
-				<input type="checkbox" class="checkbox--small" name="remember_me" value="1" id="remember_me" tabindex="3">
-				<?=lang('remember_me')?>
+			<label for="remember_me" class="checkbox-label">
+				<input type="checkbox" class="checkbox" name="remember_me" value="1" id="remember_me" tabindex="3">
+				<div class="checkbox-label__text"><?=lang('remember_me')?></div>
 			</label>
 		</fieldset>
 		<?php endif;?>

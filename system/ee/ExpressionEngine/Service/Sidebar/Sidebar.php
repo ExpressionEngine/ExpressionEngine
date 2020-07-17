@@ -104,7 +104,7 @@ class Sidebar {
 		}
 
 		if ($is_legacy) {
-			$this->class .= ' legacy-sidebar';
+			$this->class .= ' ';
 		}
 
 		return $this->view->make('_shared/sidebar/sidebar')

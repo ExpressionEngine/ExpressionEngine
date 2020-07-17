@@ -8,12 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Option Group Fieldtype
  */
-class Checkboxes_ft extends OptionFieldtype {
+class Checkboxes_ft extends OptionFieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'Checkboxes',
@@ -338,6 +340,10 @@ class Checkboxes_ft extends OptionFieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		return $this->replace_tag($data);
 	}
 }
 

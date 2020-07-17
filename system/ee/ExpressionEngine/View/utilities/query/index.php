@@ -1,11 +1,14 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
-
+<div class="panel">
 <div class="form-standard">
 	<?=form_open(ee('CP/URL')->make('utilities/query'), 'class="ajax-validate"')?>
-		<div class="title-bar title-bar--large">
-			<h2 class="title-bar__title"><?=lang('sql_query_form_abbr')?></h2>
-		</div>
 
+  <div class="panel-heading">
+    <div class="title-bar title-bar--large">
+			<h3 class="title-bar__title"><?=lang('sql_query_form_abbr')?></h3>
+		</div>
+  </div>
+<div class="panel-body">
 		<?=ee('CP/Alert')
 			->makeInline()
 			->asImportant()
@@ -31,7 +34,7 @@
 				<?=form_error('thequery')?>
 
 				<div class="field-instruct">
-					<div class="button-group">
+					<div class="button-group button-group-xsmall">
 						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('SELECT * FROM `exp_` WHERE 1');">SELECT *</button>
 						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('INSERT INTO `exp_` (``) VALUES ()');">INSERT</button>
 						<button type="button" class="button button--default font-monospace" onclick="insertIntoSQlQueryForm('UPDATE `exp_` SET ``=\'\' WHERE 1');">UPDATE</button>
@@ -42,9 +45,13 @@
 				</div>
 			</div>
 		</fieldset>
+  </div>
 
+<div class="panel-footer">
 		<div class="form-btns">
 			<?=cp_form_submit('query_btn', 'query_btn_saving')?>
 		</div>
+  </div>
 	</form>
+</div>
 </div>

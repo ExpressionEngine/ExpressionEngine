@@ -142,7 +142,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 			$href = isset($button['href']) ? $button['href'] : '#';
 			$for = isset($button['for']) ? $button['for'] : '';
 		?>
-		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="<?=$href?>" data-for="<?=$for?>"><?=lang($button['text'])?></a>
+		<a class="button button--default button--small submit js-modal-link--side" style="margin-top: 10px;" rel="<?=$rel?>" href="<?=$href?>" data-for="<?=$for?>"><?=lang($button['text'])?></a>
 		<?php endif; ?>
 	</div>
 </<?=$element?>>

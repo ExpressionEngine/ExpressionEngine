@@ -29,6 +29,7 @@ class Channel extends StructureModel {
 		'channel_allow_img_urls'     => 'boolString',
 		'channel_auto_link_urls'     => 'boolString',
 		'channel_notify'             => 'boolString',
+		'sticky_enabled'             => 'boolString',
 		'comment_system_enabled'     => 'boolString',
 		'comment_require_membership' => 'boolString',
 		'comment_moderate'           => 'boolString',
@@ -119,6 +120,7 @@ class Channel extends StructureModel {
 		'channel_allow_img_urls'     => 'enum[y,n]',
 		'channel_auto_link_urls'     => 'enum[y,n]',
 		'channel_notify'             => 'enum[y,n]',
+		'sticky_enabled'             => 'enum[y,n]',
 		'comment_system_enabled'     => 'enum[y,n]',
 		'comment_require_membership' => 'enum[y,n]',
 		'comment_moderate'           => 'enum[y,n]',
@@ -182,6 +184,7 @@ class Channel extends StructureModel {
 	protected $channel_notify = FALSE;
 	protected $channel_notify_emails;
 	protected $comment_url;
+	protected $sticky_enabled = false;
 	protected $comment_system_enabled = TRUE;
 	protected $comment_require_membership = FALSE;
 	protected $comment_moderate = FALSE;

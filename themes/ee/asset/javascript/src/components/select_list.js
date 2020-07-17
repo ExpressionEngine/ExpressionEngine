@@ -64,6 +64,10 @@ function (_React$Component) {
           if (item.parent && _this.props.autoSelectParents) {
             selected = selected.concat(_this.diffItems(_this.props.selected, _this.getFlattenedParentsOfItem(item)));
           }
+
+          if (item.children && _this.props.autoSelectParents) {
+            selected = selected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
         } else {
           var deselect = [item];
 
@@ -106,6 +110,17 @@ function (_React$Component) {
             return item.value == thisItem.value;
           });
           return !found;
+        });
+        newlySelected.forEach(function (item) {
+          if (item.children && _this.props.autoSelectParents) {
+            newlySelected = newlySelected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
+        });
+
+        _this.props.selected.forEach(function (item) {
+          if (item.children && _this.props.autoSelectParents) {
+            newlySelected = newlySelected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
         });
 
         _this.props.selectionChanged(_this.props.selected.concat(newlySelected));

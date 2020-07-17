@@ -257,7 +257,7 @@ class Relationship extends React.Component {
                         {
                             dropdownItems.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="float-right meta-info">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

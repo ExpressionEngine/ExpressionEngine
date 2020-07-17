@@ -1,13 +1,21 @@
 <div class="mb">
 	<?php $this->embed('ee:_shared/form')?>
 </div>
+<div class="panel">
 <div class="snap table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
-			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
-			</fieldset>
-			<h1><?=lang('available_tool_sets')?></h1>
+    <div class="panel-heading">
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+          <h3 class="title-bar__title"><?=lang('available_tool_sets')?></h3>
+          <div class="title-bar__extra-tools">
+    				<a class="button button--primary tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
+    			</div>
+        </div>
+      </div>
+
+    </div>
 
 			<?=ee('CP/Alert')->get('toolsets-form')?>
 
@@ -37,6 +45,7 @@
 		]); ?>
 		<?=form_close();?>
 	</div>
+</div>
 </div>
 
 <?php

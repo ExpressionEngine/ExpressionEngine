@@ -56,6 +56,8 @@ $lang = array(
 
 'column_comment_total' => 'Comments',
 
+'column_categories' => 'Categories',
+
 'column_entry_date' => 'Date',
 
 'column_entry_id' => 'ID#',
@@ -986,7 +988,25 @@ $lang = array(
 
 'showing' => 'Showing',
 
-'unauthorized_entry_desc' => 'You do not have permission to edit one of the selected entries.'
+'unauthorized_entry_desc' => 'You do not have permission to edit one of the selected entries.',
+
+/* Entry Manager */
+
+'entry_manager_view_created' => 'View Created',
+
+'entry_manager_view_created_desc' => 'The view <b>%s</b> has been created.',
+
+'entry_manager_view_updated' => 'View Updated',
+
+'entry_manager_view_updated_desc' => 'The view <b>%s</b> has been updated.',
+
+'entry_manager_view_not_created' => 'Cannot Create View',
+
+'entry_manager_view_not_created_desc' => 'We were unable to create this view, please review and fix errors below.',
+
+'entry_manager_view_not_updated' => 'Cannot Update View',
+
+'entry_manager_view_not_updated_desc' => 'We were unable to update this view, please review and fix errors below.',
 
 );
 
