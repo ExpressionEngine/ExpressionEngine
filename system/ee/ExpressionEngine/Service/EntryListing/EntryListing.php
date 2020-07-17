@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2020, Pack et Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -117,7 +117,7 @@ class EntryListing {
 	 * @param string $search_value Search criteria to filter entries by
 	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $view_id = NULL, $extra_filters = [])
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE, $view_id = NULL, $extra_filters = [])
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
@@ -127,6 +127,9 @@ class EntryListing {
 		$this->search_in = $search_in;
 		$this->extra_filters = $extra_filters;
 		$this->view_id = $view_id;
+		if ($include_author_filter && !in_array('Author', $this->extra_filters)) {
+			$this->extra_filters[] = 'Author';
+		}
 
 		$this->setupFilters();
 		$this->setupEntries();

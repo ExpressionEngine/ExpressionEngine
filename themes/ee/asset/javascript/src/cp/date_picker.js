@@ -438,7 +438,7 @@ $(document).ready(function () {
 	EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
 
 	// Date fields inside a Grid need to be bound when a new row is added
-	if (Grid !== undefined)
+	if (typeof Grid !== 'undefined')
 	{
 		Grid.bind('date', 'display', function(cell)
 		{

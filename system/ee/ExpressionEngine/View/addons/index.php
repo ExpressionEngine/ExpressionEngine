@@ -51,40 +51,22 @@
 </div>
 </div>
 
-<?php ee('CP/Modal')->startModal('modal-confirm-remove'); ?>
-<div class="modal-wrap modal-confirm-remove hidden">
-	<div class="modal">
-		<div class="col-group">
-			<div class="col w-16">
-				<a class="m-close" href="#"></a>
-				<div class="form-standard">
-					<?=form_open($form_url, '', array('bulk_action' => 'remove'))?>
-						<div class="form-btns form-btns-top">
-							<h1><?=lang('confirm_uninstall')?></h1>
-						</div>
-						<?=ee('CP/Alert')
-							->makeInline()
-							->asIssue()
-							->addToBody(lang('confirm_uninstall_desc'))
-							->render()?>
-						<div class="txt-wrap">
-							<ul class="checklist">
-								<?php if (isset($checklist)):
-									$end = end($checklist); ?>
-									<?php foreach ($checklist as $item): ?>
-									<li<?php if ($item == $end) echo ' class="last"'; ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
-									<?php endforeach;
-								endif ?>
-							</ul>
-							<div class="ajax"></div>
-						</div>
-						<div class="form-btns">
-							<?=cp_form_submit('btn_confirm_and_uninstall', 'btn_confirm_and_uninstall_working')?>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<?php ee('CP/Modal')->endModal(); ?>
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> $form_url,
+	'title' => lang('confirm_uninstall'),
+	'alert' => lang('confirm_uninstall_desc'),
+	'button' => [
+		'text' => lang('btn_confirm_and_uninstall'),
+		'working' => lang('btn_confirm_and_uninstall_working')
+	],
+	'hidden'	=> array(
+
+	)
+);
+
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete', $modal);
+?>

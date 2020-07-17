@@ -257,7 +257,6 @@ class MemberImport extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->load->model('member_model');
 		ee()->lang->loadfile('settings');
 
 		$role = ee('Model')->get('Role', ee()->input->post('role_id'))->first();
@@ -837,7 +836,7 @@ class MemberImport extends Utilities {
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
 		$vars['new_fields'] = $new_custom_fields['new'];
 
-		$query = $this->member_model->count_records('member_fields');
+		$query = ee()->db->count_all('member_fields');
 
 		$vars['order_start'] = $query + 1;
 

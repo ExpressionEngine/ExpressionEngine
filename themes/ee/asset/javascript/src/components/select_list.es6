@@ -236,6 +236,10 @@ class SelectList extends React.Component {
         if (item.parent && this.props.autoSelectParents) {
           selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
         }
+
+        if (item.children && this.props.autoSelectParents) {
+          selected = selected.concat(this.getFlattenedChildrenOfItem(item))
+        }
       } else {
         let deselect = [item]
         if (item.children && this.props.autoSelectParents) {
@@ -316,6 +320,16 @@ class SelectList extends React.Component {
           return item.value == thisItem.value
         })
         return ! found
+      })
+      newlySelected.forEach(item => {
+        if (item.children && this.props.autoSelectParents) {
+          newlySelected = newlySelected.concat(this.getFlattenedChildrenOfItem(item))
+        }
+      })
+      this.props.selected.forEach(item => {
+        if (item.children && this.props.autoSelectParents) {
+          newlySelected = newlySelected.concat(this.getFlattenedChildrenOfItem(item))
+        }
       })
       this.props.selectionChanged(this.props.selected.concat(newlySelected))
     } else {

@@ -246,7 +246,7 @@ else: ?>
 	<div class="grid-field" id="<?=$grid_field_name?>">
 
 	<div class="table-responsive">
-	<table class="grid-field__table">
+	<table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 	<?php if (empty($columns) && empty($data)): ?>
 		<p class="no-results">
 			<?=lang($no_results['text'])?>

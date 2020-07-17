@@ -54,6 +54,7 @@ class Table {
 	 * 'checkbox_header' - For checkbox columns, will also show a checkbox in
 	 * 		the header when there is no data, i.e. when a table represents an
 	 * 		entity that can have actions applied to it (edge case setting)
+	 * 'show_add_button' - whether to show button to add new rows
 	 *
 	 * @param	array 	$config	See above for options
 	 */

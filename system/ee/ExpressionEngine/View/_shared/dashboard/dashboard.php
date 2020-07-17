@@ -16,23 +16,26 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<ul class="simple-list">
 			<?php
 			if(!empty($number_of_channels)):
-				$entries = ee('Model')->get('ChannelEntry')
-				->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
-				->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels())
-				->order('entry_date', 'DESC')
-				->limit(7)
-				->all();
+				$assigned_channels = ee()->functions->fetch_assigned_channels();
+				if (!empty($assigned_channels)):
+					$entries = ee('Model')->get('ChannelEntry')
+					->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
+					->filter('channel_id', 'IN', $assigned_channels)
+					->order('entry_date', 'DESC')
+					->limit(7)
+					->all();
 
 
-				foreach($entries as $entry): ?>
-				<li>
-					<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
-            <?= $entry->title; ?>
-            <span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
-					</a>
-				</li>
-				<?php endforeach; ?>
-			<?php endif; ?>
+					foreach($entries as $entry): ?>
+					<li>
+						<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
+							<span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
+							<?= $entry->title; ?>
+						</a>
+					</li>
+					<?php endforeach;
+				endif;
+			endif; ?>
 		</ul>
 	</div>
 <?php endif; ?>

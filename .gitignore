@@ -100,6 +100,9 @@ themes/third_party/
 
 asset/*
 
+# Renamed installer
+system/ee/installer_*
+
 # Updater dependencies =================================================
 
 system/ee/installer/updater/ExpressionEngine/Updater/Boot/boot.common.php

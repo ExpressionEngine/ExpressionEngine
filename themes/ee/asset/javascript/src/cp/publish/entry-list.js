@@ -11,7 +11,6 @@ $(document).ready(function () {
 
 	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	var replaceData = function(data) {
-		console.log('data loaded');
 		$('.ee-main__content > .container').html(data.html);
 
 		saveDefaultUrl = data.viewManager_saveDefaultUrl;
@@ -143,7 +142,6 @@ $(document).ready(function () {
 
 	// Make the columns sortable
 	function sortableColumns() {
-		console.log('sortable.');
 		$('.filter-bar div[rev="toggle-columns"]').sortable({
 			containment: false,
 			handle: '.dropdown-reorder', // Set drag handle to the top box
