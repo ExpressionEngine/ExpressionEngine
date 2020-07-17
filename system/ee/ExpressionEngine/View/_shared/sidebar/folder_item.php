@@ -9,14 +9,14 @@
 	</a>
 	<?php if ($edit || $remove): ?>
 	<div class="button-toolbar toolbar">
-    <div class="button-group button-group-xsmall">
-		<?php if ($edit): ?>
-		<a href="<?=$edit_url?>" title="<?=lang('edit')?>" class="edit button button--default"></a>
-		<?php endif; ?>
-		<?php if ($remove): ?>
-		<a class="remove m-link button button--default" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"></a>
-		<?php endif; ?>
+		<div class="button-group button-group-xsmall">
+			<?php if ($edit): ?>
+			<a href="<?=$edit_url?>" title="<?=lang('edit')?>" class="edit button button--default"></a>
+			<?php endif; ?>
+			<?php if ($remove): ?>
+			<a class="remove m-link button button--default" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"></a>
+			<?php endif; ?>
+		</div>
 	</div>
 	<?php endif; ?>
-</div>
 </div>

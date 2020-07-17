@@ -68,7 +68,11 @@
 			<?php endif; ?>
 				<div class="field-instruct">
 					<label><span class="ico sub-arrow js-toggle-field"></span><?=$field->getLabel()?></label>
-					<em><?=$field->getInstructions()?></em>
+					<?php
+					$fieldInstructions = $field->getInstructions();
+					if (!empty($fieldInstructions)) : ?>
+					<em><?=$fieldInstructions?></em>
+					<?php endif; ?>
 				</div>
 				<div class="field-control">
 					<?php if ($field->get('field_id') == 'revisions'): ?>
