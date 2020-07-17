@@ -598,7 +598,7 @@ function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
-        className: "button button--small button--default float-right",
+        className: "button button--small default float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
