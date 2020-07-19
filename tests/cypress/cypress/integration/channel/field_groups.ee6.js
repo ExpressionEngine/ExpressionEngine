@@ -59,6 +59,8 @@ context('Field Groups', () => {
             cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
             cy.hasNoErrors()
 
+             cy.authVisit(page.url);
+
             page.hasAlert('success')
             page.get('field_groups').its('length').should('eq', length-1)
         })
