@@ -54,7 +54,6 @@ context('Template Variables', () => {
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
         page.hasError(form.get('name'), 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes')
-        page.hasErrors()
     })
 
     it('can create a new variable', function() {

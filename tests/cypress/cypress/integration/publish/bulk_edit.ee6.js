@@ -270,8 +270,8 @@ context('Bulk Edit', () => {
     //cy.wait('@ajax')
     cy.wait(5000) // ajax does not work here for some reason - possibly Cypress bug
 
-    bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 2 entries') })
-
+    //bulk_edit.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Editing 2 entries') })
+    cy.get('h1').contains('Editing 2 entries')
     bulk_edit.get('fluid_fields').eq(0).find('.select__button-label').contains('Closed')
     bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
     bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')

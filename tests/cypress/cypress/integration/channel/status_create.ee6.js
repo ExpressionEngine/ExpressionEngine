@@ -29,7 +29,7 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').eq(1).click()//AJ we want one at bottom because tests think top one is covered -_-
+        cy.get('button[value="save_and_new"]').filter(':visible').first().click()//AJ
         
       
 
@@ -161,6 +161,8 @@ context('Status Create/Edit', () => {
         cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
         cy.hasNoErrors()
         cy.authVisit(page.url);
+        page.load_view_for_status_group(1)
+
         cy.get('span').contains('Test2').should('exist')
 
     })
