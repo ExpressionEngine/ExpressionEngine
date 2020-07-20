@@ -9,7 +9,7 @@ class FieldGroups extends ControlPanel {
 
         this.selectors = Object.assign(this.selectors, {
             //"create_new": '.sidebar a.button--action.left',
-            "create_new": 'a[href="admin.php?/cp/fields/create"]',
+            "create_new": 'a[href="admin.php?/cp/fields/groups/create"]', //added /groups/
 
             "field_groups": '.folder-list > div',
             //"field_groups_edit": '.folder-list div li.edit a',

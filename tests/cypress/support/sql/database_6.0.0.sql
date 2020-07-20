@@ -2760,4 +2760,6 @@ CREATE TABLE `exp_entry_manager_views` (
  PRIMARY KEY (`view_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+
 /*Changed when merged Andy J's two branches together*/

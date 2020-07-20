@@ -134,7 +134,7 @@ context('Publish Page - Create', () => {
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          file_modal.get('upload_button').should('exist')
+          //file_modal.get('upload_button').should('exist') no longer exists in new cp
 
           file_modal.get('filters').eq(1).find('a').first().click()
 

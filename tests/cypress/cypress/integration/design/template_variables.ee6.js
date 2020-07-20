@@ -62,7 +62,7 @@ context('Template Variables', () => {
         cy.get('a').contains('Template Variable').first().click()
 
         //page.get('create_new_button').click()
-        cy.get('button').contains('Create New').first().click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 

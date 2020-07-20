@@ -37,7 +37,7 @@ class TemplateRoutes extends ControlPanel {
         options = Object.assign(defaults, options)
 
         //this.get('new_route_button').click()
-        cy.get('button').contains('New route').first().click()
+        cy.get('a').contains('New route').first().click()
         let route = this.$('routes').eq(-1)
         this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__button').click()
         this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__dropdown .select__dropdown-item').contains(options.template).click({ force: true })

@@ -41,14 +41,14 @@ context('Template Partials', () => {
     })
 
     it('can navigate to edit form', function() {
-        page.get('partials').eq(6).find('td:nth-child(3) .toolbar .edit a').click()
+        
         page.get('partials').eq(6).find('a[title="Edit"]').click()
         cy.hasNoErrors()
     })
 
     it('should validate the form', function() {
         //page.get('create_new_button').click()
-        cy.get('button').contains('Create New').first().click()
+        cy.get('a').contains('Create New').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
@@ -60,7 +60,7 @@ context('Template Partials', () => {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
         //page.get('create_new_button').click()
-        cy.get('button').contains('Create New').first().click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 

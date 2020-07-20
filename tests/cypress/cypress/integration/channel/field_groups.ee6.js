@@ -27,7 +27,7 @@ context('Field Groups', () => {
         cy.get('b').contains('Test Group 1')
         cy.get('p').contains('has been created')
 
-        cy.authVisit(page.url);
+        
 
         page.get('field_groups').its('length').should('eq', 3)
         page.get('field_groups_edit').its('length').should('eq', 3)

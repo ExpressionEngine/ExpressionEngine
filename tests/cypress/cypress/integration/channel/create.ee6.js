@@ -13,7 +13,7 @@ context('Channel Create/Edit', () => {
 
     beforeEach(function() {
         cy.authVisit(page.url);
-        cy.get('a').contains('New Channel').fist().click()
+        cy.get('a').contains('New Channel').first().click()
     })
 
 
