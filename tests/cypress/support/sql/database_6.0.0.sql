@@ -2741,6 +2741,9 @@ DELETE FROM `exp_upload_prefs_roles`;
 INSERT INTO `exp_upload_prefs_roles` (`role_id`, `upload_id`) VALUES
 	(5, 1),
 	(5, 2);
+
+ALTER TABLE exp_channels ADD sticky_enabled CHAR(1) DEFAULT 'n'; 
+/*Changed when merged Andy J's two branches together*/
 /*!40000 ALTER TABLE `exp_upload_prefs_roles` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
