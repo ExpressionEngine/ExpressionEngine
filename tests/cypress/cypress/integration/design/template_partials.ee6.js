@@ -53,7 +53,7 @@ context('Template Partials', () => {
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
         page.hasError(form.get('name'), 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes')
-        page.hasErrors()
+       
     })
 
     it('can create a new partial', function() {
@@ -72,7 +72,8 @@ context('Template Partials', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').first().click()
+        //form.get('save_button').first().click()
+        cy.get('input').contains('Save Partial').first().click()
 
         cy.hasNoErrors()
 

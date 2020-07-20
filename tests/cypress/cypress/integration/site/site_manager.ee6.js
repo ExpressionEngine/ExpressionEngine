@@ -68,8 +68,9 @@ context('Site Manager', () => {
       page.get('bulk_action').select('Delete')
       page.get('action_submit_button').click()
 
-      page.get('modal_submit_button').should('be.visible')
-      page.get('modal_submit_button').click()
+      //page.get('modal_submit_button').should('be.visible')
+      //page.get('modal_submit_button').click()
+      cy.get('button').contains('Confirm and Delete').first().click()
 
       cy.hasNoErrors()
 
@@ -84,7 +85,8 @@ context('Site Manager', () => {
 
       cy.hasNoErrors()
 
-      page.get('global_menu').should('have.text', 'Rspec Site ' + counter)
+      //page.get('global_menu').should('have.text', 'Rspec Site ' + counter)
+      cy.get('h1').contains('Rspec Site '+ counter)
     })
   })
 })

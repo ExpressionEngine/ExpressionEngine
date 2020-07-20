@@ -15,11 +15,12 @@ class EntryManager extends ControlPanel {
   }
 
   check_entry(title) {
-    this.get_row_for_title(title).find('input[type="checkbox"]').click();
+    //this.get_row_for_title(title).find('input[type="checkbox"]').click();
+    this.get_row_for_title(title).find('input[type="checkbox"]').check();
   }
 
   get_row_for_title(title) {
-
+    cy.wait(300)//AJ
     return this.get('entry_rows').find('td:nth-child(2) a').filter(function(index) { return Cypress.$(this).text() === title; }).parent().parent()
 
   }

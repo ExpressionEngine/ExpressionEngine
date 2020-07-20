@@ -370,7 +370,7 @@ context('File Manager', () => {
 
 		beforeEach_all_files();
 		//page.get('new_directory_button').click()
-		cy.get('a[href="admin.php?/cp/files/uploads/create]').first().click()
+		cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
 		cy.hasNoErrors()
 
 		cy.url().should('match', /files\/uploads\/create/)

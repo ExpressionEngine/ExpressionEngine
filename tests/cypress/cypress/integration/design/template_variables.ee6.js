@@ -49,7 +49,7 @@ context('Template Variables', () => {
     it('should validate the form', function() {
         cy.get('a').contains('Template Variable').first().click()
         //page.get('create_new_button').click()
-        cy.get('button').contains('Create New').first().click()
+        cy.get('a').contains('Create New').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
@@ -74,7 +74,8 @@ context('Template Variables', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').first().click()
+        //form.get('save_button').first().click()
+        cy.get('input[value="Save Template Variable"]').first().click()
 
         cy.hasNoErrors()
 

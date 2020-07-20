@@ -29,9 +29,9 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click()//AJ
+        cy.get('button[value="save"]').filter(':visible').eq(1).click()//AJ we want one at bottom because tests think top one is covered -_-
         
-        page.get('submit_buttons').should('not.have.class', 'work')
+      
 
         cy.hasNoErrors()
     
@@ -157,7 +157,7 @@ context('Status Create/Edit', () => {
         //New edit
         cy.get('span').contains('Featured').click()
         cy.wait(300)
-        cy.get('input[name=status]').clear.type('Test2')
+        cy.get('input[name=status]').clear().type('Test2')
         cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
         cy.hasNoErrors()
         cy.authVisit(page.url);

@@ -28,7 +28,7 @@ context('Template Routes', () => {
             template: 'about/index',
             route: 'foo/bar'
         })
-        page.get('update_button').first().click({force:true})
+        page.get('update_button').filter(':visible').first().click()
 
         cy.hasNoErrors()
 
@@ -55,7 +55,7 @@ context('Template Routes', () => {
             template: 'about/404',
             route: 'boo/far'
         })
-        page.get('update_button').click({force:true}).then(function() {
+        page.get('update_button').filter(':visible').first().click({force:true}).then(function() {
 
             page.get('routes').its('length').should('eq', 2)
 
