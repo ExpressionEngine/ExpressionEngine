@@ -130,7 +130,8 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click()
+        //page.get('add_tab_modal_submit_button').click()
+        cy.get('button').contains('Add Tab').first().click()
 
         page.get('tabs').its('length').should('eq', tabCount + 1)
         page.get('tabs').eq(-1).contains(new_tab_name)
@@ -152,7 +153,7 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click().then(function() {
+        cy.get('button').contains('Add Tab').first().click().then(function() {
 
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
@@ -171,7 +172,7 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click().then(function() {
+        cy.get('button').contains('Add Tab').first().click().click().then(function() {
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
         })

@@ -2749,3 +2749,15 @@ ALTER TABLE exp_channels ADD sticky_enabled CHAR(1) DEFAULT 'n';
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
+
+CREATE TABLE `exp_entry_manager_views` (
+ `view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `channel_id` int(6) unsigned NOT NULL,
+ `member_id` int(10) unsigned NOT NULL,
+ `name` varchar(128) NOT NULL DEFAULT '',
+ `columns` text NOT NULL,
+ PRIMARY KEY (`view_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Changed when merged Andy J's two branches together*/

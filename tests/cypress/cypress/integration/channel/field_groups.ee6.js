@@ -24,6 +24,8 @@ context('Field Groups', () => {
 
 
         page.save_field_group('Test Group 1')
+        cy.get('b').contains('Test Group 1')
+        cy.get('p').contains('has been created')
 
         cy.authVisit(page.url);
 
@@ -57,11 +59,12 @@ context('Field Groups', () => {
 
             //page.get('modal_submit_button').click()
             cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+            page.hasAlert('success')
             cy.hasNoErrors()
 
              cy.authVisit(page.url);
 
-            page.hasAlert('success')
+            
             page.get('field_groups').its('length').should('eq', length-1)
         })
     })

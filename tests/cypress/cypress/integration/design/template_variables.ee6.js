@@ -48,7 +48,8 @@ context('Template Variables', () => {
 
     it('should validate the form', function() {
         cy.get('a').contains('Template Variable').first().click()
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('button').contains('Create New').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
@@ -60,7 +61,8 @@ context('Template Variables', () => {
         // 'Cannot figure out how to populate a codemirror form element'
         cy.get('a').contains('Template Variable').first().click()
 
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('button').contains('Create New').first().click()
 
         cy.hasNoErrors()
 

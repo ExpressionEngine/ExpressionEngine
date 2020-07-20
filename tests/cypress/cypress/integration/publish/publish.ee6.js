@@ -143,7 +143,7 @@ context('Publish Page - Create', () => {
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          file_modal.get('upload_button').should('exist')
+          //file_modal.get('upload_button').should('exist') new cp brings files up in seperate spot this check is no longer valid
         })
 
         it('the file field retains data after being created and edited', () => {

@@ -29,7 +29,7 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click()//AJ
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true})//AJ
         
         page.get('submit_buttons').should('not.have.class', 'work')
 
@@ -140,14 +140,15 @@ context('Status Create/Edit', () => {
         page.get('status_names').its('length').should('eq', 3)
         cy.hasNoErrors()
 
-        page.get('status_access').eq(0).should('not.be.checked')
+        //page.get('status_access').eq(0).should('not.be.checked')
+        cy.get('input[data-group-toggle="[]"][value = "3"]').should('not.be.checked')
 
         // Make sure we can edit
         page.get('status').clear().type('Test2')
         page.get('status').trigger('change')
         page.get('status_access').click()
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click() //AJ
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
         cy.hasNoErrors()
 
         //cy.contains('Status Updated')

@@ -370,7 +370,7 @@ context('File Manager', () => {
 
 		beforeEach_all_files();
 		//page.get('new_directory_button').click()
-		cy.get('a').contains('New').fileter(':visible').first().click()
+		cy.get('a').contains('New').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		cy.url().should('match', /files\/uploads\/create/)
@@ -411,7 +411,7 @@ context('File Manager', () => {
 
 		//page.wait_until_remove_directory_modal_visible
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('input[value="Confirm and Delete"]').fileter(':visible').first().click()
+		cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {
