@@ -290,6 +290,21 @@ $(document).ready(function(){
 		}
 	})
 
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.sidebar-toggle').on('click', function (e) {
+		e.preventDefault();
+		let isHidden = $('.ee-sidebar').hasClass('ee-sidebar__collapsed');
+
+		if (isHidden) {
+			$('.ee-sidebar').removeClass('ee-sidebar__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-right').addClass('fa-angle-left');
+		} else {
+			$('.ee-sidebar').addClass('ee-sidebar__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
+		}
+	})
+
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------
 
