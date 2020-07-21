@@ -446,6 +446,12 @@ $setup = [
 			return new Sidebar\Sidebar($view);
 		},
 
+		'CP/NavigationSidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Navigation\NavigationSidebar($view);
+		},
+
 		'Config' => function($ee)
 		{
 			return new Config\Factory($ee);

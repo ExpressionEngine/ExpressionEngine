@@ -53,7 +53,7 @@ class BasicItem extends ListItem {
 			$class = ' ' . $class . '';
 		}
 
-		$attrs = '';
+		$attrs = $this->attributes;
 
 		if ($this->url_is_external)
 		{
