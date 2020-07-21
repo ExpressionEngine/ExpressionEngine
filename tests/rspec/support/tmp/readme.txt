@@ -1,1 +1,0 @@
-This folder is for tests where files need to be written and possibly deleted. Since we own the folder and its writeable, shouldn't have any problems.
