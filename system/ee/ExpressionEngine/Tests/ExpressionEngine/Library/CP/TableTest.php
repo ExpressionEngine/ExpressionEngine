@@ -66,36 +66,42 @@ class TableTest extends TestCase {
 		$expected_cols = array(
 			array(
 				'label'		=> 'Name',
+				'name'		=> 'Name',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			array(
 				'label'		=> 'Records',
+				'name'		=> 'Records',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			array(
 				'label'		=> 'Size',
+				'name'		=> 'Size',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			array(
 				'label'		=> 'Manage',
+				'name'		=> 'Manage',
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_TOOLBAR
 			),
 			array(
 				'label'		=> 'Status',
+				'name'		=> 'Status',
 				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_STATUS
 			),
 			array(
 				'label'		=> NULL,
+				'name'		=> NULL,
 				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_CHECKBOX

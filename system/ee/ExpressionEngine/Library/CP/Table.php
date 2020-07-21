@@ -253,7 +253,7 @@ class Table {
 				$settings['label'] = $label;
 			}
 
-			if ( ! isset($settings['name']))
+			if ( ! isset($settings['name']) && ! is_int($label))
 			{
 				$settings['name'] = $label;
 			}

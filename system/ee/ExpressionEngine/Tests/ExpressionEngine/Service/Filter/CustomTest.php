@@ -39,8 +39,9 @@ class CustomTest extends TestCase {
 		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
 		$url = m::mock('ExpressionEngine\Library\CP\URL');
 
-		$vf->shouldReceive('make->render');
-		$url->shouldReceive('setQueryStringVariable', 'compile');
+		$vf->shouldReceive('make->render')->atLeast()->once();
+		$url->shouldReceive('removeQueryStringVariable', 'setQueryStringVariable', 'compile')->atLeast()->once();
+
 		$filter->render($vf, $url);
 
 	}

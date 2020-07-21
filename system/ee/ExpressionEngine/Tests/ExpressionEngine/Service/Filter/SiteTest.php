@@ -104,7 +104,7 @@ class SiteTest extends TestCase {
 		$filter->enableMSM();
 
 		$vf->shouldReceive('make->render')->atLeast()->once();
-		$url->shouldReceive('setQueryStringVariable', 'compile')->atLeast()->once();
+		$url->shouldReceive('removeQueryStringVariable', 'setQueryStringVariable', 'compile')->atLeast()->once();
 
 		$filter->render($vf, $url);
 
