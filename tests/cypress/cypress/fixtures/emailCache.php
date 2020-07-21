@@ -58,16 +58,16 @@ $message = isset($options['message']) ? $options['message'] : FALSE;
 $total_sent = isset($options['total-sent']) && is_numeric($options['total-sent']) ? (int) $options['total-sent'] : NULL;
 
 $emails = array(
-	"wes.baker@ellislab.com"      => "Wes Baker",
-	"pascal.kriete@ellislab.com"  => "Pascal Kriete",
-	"kevin.cupp@ellislab.com"     => "Kevin Cupp",
-	"daniel.bingham@ellislab.com" => "Daniel Bingham",
-	"quinn.chrzan@ellislab.com"   => "Quinn Chrzan",
-	"seth.barber@ellislab.com"    => "Seth Barber",
-	"james.mathias@ellislab.com"  => "James Mathias",
-	"robin.sowell@ellislab.com"   => "Robin Sowell",
-	"rick.ellis@ellislab.com"     => "Rick Ellis",
-	"derek.jones@ellislab.com"    => "Derek Jones",
+	"fake-email-1-fake@expressionengine.com"      => "John J. Ransom",
+	"fake-email-2-fake@expressionengine.com"  => "Lisa A. Burke",
+	"fake-email-3-fake@expressionengine.com"     => "Elisa D. Reade",
+	"fake-email-4-fake@expressionengine.com" => "Melvin N. Torres",
+	"fake-email-5-fake@expressionengine.com"   => "David O. Newman",
+	"fake-email-6-fake@expressionengine.com"    => "James K. Miller",
+	"fake-email-7-fake@expressionengine.com"  => "Julian L. Vazquez",
+	"fake-email-8-fake@expressionengine.com"   => "Juana R. Ramirez",
+	"fake-email-9-fake@expressionengine.com"     => "Kenneth C. Chappell",
+	"fake-email-10-fake@expressionengine.com"    => "Gregory L. Fisher",
 );
 
 $subjects = array(

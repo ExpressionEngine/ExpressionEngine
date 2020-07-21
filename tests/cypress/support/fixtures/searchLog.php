@@ -50,7 +50,7 @@ $terms = isset($options['terms']) ? $options['terms'] : FALSE;
 $types = array('forum', 'site', 'wiki');
 $default_terms = array(
 	"ExpressionEngine",
-	"EllisLab",
+	"ExpressionEngine",
 	"Maker",
 	"Manifesto",
 	"lorem ipsum",

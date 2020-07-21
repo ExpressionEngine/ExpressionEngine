@@ -1632,7 +1632,7 @@ CREATE TABLE `exp_members` (
 
 LOCK TABLES `exp_members` WRITE;
 /*!40000 ALTER TABLE `exp_members` DISABLE KEYS */;
-INSERT INTO `exp_members` VALUES (1,1,'admin','EllisLab','e293d2294b8f211c537917f97f3ad41d147296fb37f5e8a228708842fa45b38ae5335a80fbb87e3ec63e43723a4899bc788268e25182e6fb19008bc3a8574b27','z|Pc.>\"li~u\'~rFNl63p`@97+|K]Qk=CI*I6rm\"!8+frL\'x*,Wz2|}zcFZ>DLeQFPqHJTEVD2XW4N<p},npa\"w@VyW*B$a1sPaD,LkX@tUXD-JC_*Em8XLMFK#;)\\#F@','ff2d4656d5521c4f5d1ae24a4ba6cde84f75c886','6015594a7e1793aaec38c250ed4db8ae6272e637',NULL,'team@ellislab.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'fe80::1',1438109475,1438109500,1438111685,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
+INSERT INTO `exp_members` VALUES (1,1,'admin','ExpressionEngine','e293d2294b8f211c537917f97f3ad41d147296fb37f5e8a228708842fa45b38ae5335a80fbb87e3ec63e43723a4899bc788268e25182e6fb19008bc3a8574b27','z|Pc.>\"li~u\'~rFNl63p`@97+|K]Qk=CI*I6rm\"!8+frL\'x*,Wz2|}zcFZ>DLeQFPqHJTEVD2XW4N<p},npa\"w@VyW*B$a1sPaD,LkX@tUXD-JC_*Em8XLMFK#;)\\#F@','ff2d4656d5521c4f5d1ae24a4ba6cde84f75c886','6015594a7e1793aaec38c250ed4db8ae6272e637',NULL,'team@expressionengine.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'fe80::1',1438109475,1438109500,1438111685,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
 /*!40000 ALTER TABLE `exp_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1874,7 +1874,7 @@ CREATE TABLE `exp_online_users` (
 
 LOCK TABLES `exp_online_users` WRITE;
 /*!40000 ALTER TABLE `exp_online_users` DISABLE KEYS */;
-INSERT INTO `exp_online_users` VALUES (1,1,1,'n','EllisLab','fe80::1',1438109608,''),(2,1,1,'n','EllisLab','fe80::1',1438111685,'');
+INSERT INTO `exp_online_users` VALUES (1,1,1,'n','ExpressionEngine','fe80::1',1438109608,''),(2,1,1,'n','ExpressionEngine','fe80::1',1438111685,'');
 /*!40000 ALTER TABLE `exp_online_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2327,7 +2327,7 @@ CREATE TABLE `exp_stats` (
 
 LOCK TABLES `exp_stats` WRITE;
 /*!40000 ALTER TABLE `exp_stats` DISABLE KEYS */;
-INSERT INTO `exp_stats` VALUES (1,1,1,1,'EllisLab',1,0,0,0,1438109475,0,0,1438111685,1,1438109590,1438714390);
+INSERT INTO `exp_stats` VALUES (1,1,1,1,'ExpressionEngine',1,0,0,0,1438109475,0,0,1438111685,1,1438109590,1438714390);
 /*!40000 ALTER TABLE `exp_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
