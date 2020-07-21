@@ -48,6 +48,8 @@ class FileUpdaterTest extends TestCase {
 			$this->backups_path.'themes_ee/'
 		);
 
+		$this->filesystem->shouldReceive('isWritable')->atLeast()->once();
+
 		$this->fileupdater->backupExistingInstallFiles();
 
 		// Multiple themes folders, but are the same
