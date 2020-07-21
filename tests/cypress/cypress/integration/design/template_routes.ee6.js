@@ -28,6 +28,10 @@ context('Template Routes', () => {
             template: 'about/index',
             route: 'foo/bar'
         })
+
+        cy.get('i').contains('Choose wisely').first().click()
+        cy.get('span').contains('/').first().click()
+        cy.wait(300)
         page.get('update_button').filter(':visible').first().click()
 
         cy.hasNoErrors()
