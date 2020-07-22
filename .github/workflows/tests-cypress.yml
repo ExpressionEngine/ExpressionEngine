@@ -51,8 +51,8 @@ jobs:
                 sudo chmod -R 777 system/user/cache
                 sudo chmod -R 777 system/user/templates
                 sudo chmod -R 777 system/user/language
-                sudo chmod -R 777 tests/support/tmp
-                sudo chmod -R 777 tests/support/file-sync/uploads
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
                 sudo chmod -R 777 images
                 sudo chmod -R 777 themes/user
                 sudo chmod -R 777 tests/cypress/cypress/screenshots

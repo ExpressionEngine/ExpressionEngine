@@ -2,9 +2,8 @@ name: Run PHP Tests
 
 on:
   push:
-    branches:
-      - release/6.0.0
-  pull_request:
+    branches-ignore:
+      - '**'
 
 jobs:
     php-tests:
