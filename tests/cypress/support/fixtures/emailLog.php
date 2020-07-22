@@ -52,16 +52,16 @@ $subject = isset($options['subject']) ? $options['subject'] : FALSE;
 $message = isset($options['message']) ? $options['message'] : FALSE;
 
 $recipients = array(
-	"wes"    => "Wes Baker",
-	"pascal" => "Pascal Kriete",
-	"kevin"  => "Kevin Cupp",
-	"daniel" => "Daniel Bingham",
-	"quinn"  => "Quinn Chrzan",
-	"seth"   => "Seth Barber",
-	"james"  => "James Mathias",
-	"robin"  => "Robin Sowell",
-	"rick"   => "Rick Ellis",
-	"derek"  => "Derek Jones",
+	"wes"    => "John J. Ransom",
+	"pascal" => "Lisa A. Burke",
+	"kevin"  => "Elisa D. Reade",
+	"daniel" => "Melvin N. Torres",
+	"quinn"  => "David O. Newman",
+	"seth"   => "James K. Miller",
+	"james"  => "Julian L. Vazquez",
+	"robin"  => "Juana R. Ramirez",
+	"rick"   => "Kenneth C. Chappell",
+	"derek"  => "Gregory L. Fisher",
 );
 
 $subjects = array(

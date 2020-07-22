@@ -42,7 +42,7 @@ context('Installer', () => {
       page.install_form.db_username.set $test_config[:db_username]
       page.install_form.db_password.set $test_config[:db_password]
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -59,7 +59,7 @@ context('Installer', () => {
       page.install_form.db_username.set $test_config[:db_username]
       page.install_form.db_password.set $test_config[:db_password]
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -80,7 +80,7 @@ context('Installer', () => {
 
       page.install_form.install_default_theme.click()
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -99,7 +99,7 @@ context('Installer', () => {
       page.install_form.db_username.set $test_config[:db_username]
       page.install_form.db_password.set $test_config[:db_password]
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -130,7 +130,7 @@ context('Installer', () => {
       page.install_form.db_username.set $test_config[:db_username]
       page.install_form.db_password.set $test_config[:db_password]
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -208,7 +208,7 @@ context('Installer', () => {
       page.install_form.db_name.set $test_config[:db_name]
       page.install_form.db_username.clear().type('nonsense'
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.license_agreement.click()
       page.install_form.install_submit.click()
@@ -324,7 +324,7 @@ context('Installer', () => {
       page.install_form.db_username.set $test_config[:db_username]
       page.install_form.db_password.set $test_config[:db_password]
       page.install_form.username.clear().type('admin'
-      page.install_form.email_address.clear().type('hello@ellislab.com'
+      page.install_form.email_address.clear().type('hello@expressionengine.com'
       page.install_form.password.clear().type('password'
       page.install_form.install_submit.click()
 

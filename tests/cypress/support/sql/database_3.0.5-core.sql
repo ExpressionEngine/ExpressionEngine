@@ -1607,7 +1607,7 @@ CREATE TABLE `exp_members` (
 
 LOCK TABLES `exp_members` WRITE;
 /*!40000 ALTER TABLE `exp_members` DISABLE KEYS */;
-INSERT INTO `exp_members` VALUES (1,1,'admin','admin','069feaeb4c941d06dfa14a6d8c58faf14f2c2fd18e348e8491d25cf59764957ae5c0d3d9c88724b7b3b1aae8677442466988f06177ca7ebe9c80c2f7d6638618','yfNv89o+n^\',xtfU7D-~DT@+R|@De5!ABys83w*x[)_]Gp4ZHE/\"w~IX**1mNSN|l&d`N<[{crVRa-\'awHqFFjB\\&\'HIF8S&P|U(85]tJ*qOvh-8A;SZLGEErZuhKHyz','8bc31fa9b24039ba10bbcd054c34169ff58c7d82','e5737d385d132051aaec0c1e1a1d3e7342ede91e',NULL,'wes.baker@ellislab.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'fe80::1',1450210164,1450210169,1450210169,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL);
+INSERT INTO `exp_members` VALUES (1,1,'admin','admin','069feaeb4c941d06dfa14a6d8c58faf14f2c2fd18e348e8491d25cf59764957ae5c0d3d9c88724b7b3b1aae8677442466988f06177ca7ebe9c80c2f7d6638618','yfNv89o+n^\',xtfU7D-~DT@+R|@De5!ABys83w*x[)_]Gp4ZHE/\"w~IX**1mNSN|l&d`N<[{crVRa-\'awHqFFjB\\&\'HIF8S&P|U(85]tJ*qOvh-8A;SZLGEErZuhKHyz','8bc31fa9b24039ba10bbcd054c34169ff58c7d82','e5737d385d132051aaec0c1e1a1d3e7342ede91e',NULL,'fake-email-1-fake@expressionengine.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'fe80::1',1450210164,1450210169,1450210169,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `exp_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2611,7 +2611,7 @@ CREATE TABLE `exp_update_log` (
 
 LOCK TABLES `exp_update_log` WRITE;
 /*!40000 ALTER TABLE `exp_update_log` DISABLE KEYS */;
-INSERT INTO `exp_update_log` VALUES (1,1450210164,'Smartforge::add_key failed. Table \'exp_comments\' does not exist.','Smartforge::add_key',120,'/Users/wes/Development/ee.core/system/ee/EllisLab/Addons/comment/upd.comment.php');
+INSERT INTO `exp_update_log` VALUES (1,1450210164,'Smartforge::add_key failed. Table \'exp_comments\' does not exist.','Smartforge::add_key',120,'/Users/wes/Development/ee.core/system/ee/ExpressionEngine/Addons/comment/upd.comment.php');
 /*!40000 ALTER TABLE `exp_update_log` ENABLE KEYS */;
 UNLOCK TABLES;
 

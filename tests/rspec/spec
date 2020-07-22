@@ -1,4 +1,0 @@
-Dir["tests/**/test_*.rb"].each {|f| require_relative f}
-
-# Run these last
-Dir["updater_tests/test_*.rb"].each {|f| require_relative f}
