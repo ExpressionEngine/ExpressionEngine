@@ -298,9 +298,11 @@ $(document).ready(function(){
 
 		if (isHidden) {
 			$('.ee-sidebar').removeClass('ee-sidebar__collapsed');
+			$(this).removeClass('sidebar-toggle__collapsed');
 			$('.sidebar-toggle i').removeClass('fa-angle-right').addClass('fa-angle-left');
 		} else {
 			$('.ee-sidebar').addClass('ee-sidebar__collapsed');
+			$(this).addClass('sidebar-toggle__collapsed');
 			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
 		}
 	})
