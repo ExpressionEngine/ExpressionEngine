@@ -2259,15 +2259,24 @@ class Comment {
 
 		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
 		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
+		$redirect = ee()->functions->create_url($ret);
 
-		$return_link = ee()->functions->create_url($ret);
+		if ( ! $ret) {
+			$return_link = array($redirect,
+							stripslashes(ee()->config->item('site_name')));
+		}
+		else {
+			$return_link = array($redirect,
+				ee()->lang->line('cmt_return_to_comments'));
+		}
+
 
 		$data = array(
 			'title' 	=> ee()->lang->line($title),
 			'heading'	=> ee()->lang->line('thank_you'),
 			'content'	=> ee()->lang->line($content).' '.$entry_title,
-			'redirect'	=> $return_link,
-			'link'		=> array($return_link, ee()->lang->line('cmt_return_to_comments')),
+			'redirect'	=> $redirect,
+			'link'		=> $return_link,
 			'rate'		=> 3
 		);
 
