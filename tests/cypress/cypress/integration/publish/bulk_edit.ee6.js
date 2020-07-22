@@ -19,7 +19,10 @@ context('Bulk Edit', () => {
     entry_manager.load()
     // Sort by title to normalize sorting since date sort might be inconsistent
     // across environments since entries have the same entry date
+    cy.server()
+    cy.route("GET", "**/cp/publish/edit**").as("sort");
     entry_manager.get('sort_links').eq(1).click()
+    cy.wait('@sort')
     cy.hasNoErrors()
 
   })

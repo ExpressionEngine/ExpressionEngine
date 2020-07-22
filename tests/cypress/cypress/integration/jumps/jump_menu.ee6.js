@@ -18,7 +18,7 @@ context('Jump Menu', () => {
 	}
 
 	before(function() {
-        //cy.task('db:seed')
+        cy.task('db:seed')
     })
 
     beforeEach(function() {

@@ -768,6 +768,17 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(160, 1, 'cp_url', '{base_url}admin.php');
 /*!40000 ALTER TABLE `exp_config` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_entry_manager_views
+DROP TABLE IF EXISTS `exp_entry_manager_views`;
+CREATE TABLE `exp_entry_manager_views` (
+  `view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `channel_id` int(6) unsigned NOT NULL,
+  `member_id` int(10) unsigned NOT NULL,
+  `name` varchar(128) NOT NULL DEFAULT '',
+  `columns` text NOT NULL,
+  PRIMARY KEY (`view_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Dumping structure for table ee-test.exp_consents
 DROP TABLE IF EXISTS `exp_consents`;
 CREATE TABLE IF NOT EXISTS `exp_consents` (
