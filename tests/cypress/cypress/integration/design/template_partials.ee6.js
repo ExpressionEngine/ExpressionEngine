@@ -31,7 +31,7 @@ context('Template Partials', () => {
     })
 
     it('can find templates that use a partial', function() {
-        page.get('partials').eq(6).find('td:nth-child(3) .toolbar .find a').click()
+        page.get('partials').eq(6).find('a[title="find"]').click()
 
         cy.hasNoErrors()
 
@@ -41,26 +41,26 @@ context('Template Partials', () => {
     })
 
     it('can navigate to edit form', function() {
-        page.get('partials').eq(6).find('td:nth-child(3) .toolbar .edit a').click()
-
+        
+        page.get('partials').eq(6).find('a[title="Edit"]').click()
         cy.hasNoErrors()
-
-
     })
 
     it('should validate the form', function() {
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
         page.hasError(form.get('name'), 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes')
-        page.hasErrors()
+       
     })
 
     it('can create a new partial', function() {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 
@@ -72,7 +72,8 @@ context('Template Partials', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').first().click()
+        //form.get('save_button').first().click()
+        cy.get('input').contains('Save Partial').first().click()
 
         cy.hasNoErrors()
 

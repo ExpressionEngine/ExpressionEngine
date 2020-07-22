@@ -17,8 +17,9 @@ context('Template Routes', () => {
     })
 
     it('displays', function() {
-        page.get('new_route_button').should('exist')
-        page.get('update_button').should('exist')
+        //page.get('new_route_button').should('exist')
+        cy.get('a').contains('New route').should('exist')
+        cy.get('input[value="Update"]').should('exist')
         page.get('no_results').should('exist')
     })
 
@@ -27,7 +28,11 @@ context('Template Routes', () => {
             template: 'about/index',
             route: 'foo/bar'
         })
-        page.get('update_button').first().click({force:true})
+
+        cy.get('i').contains('Choose wisely').first().click()
+        cy.get('span').contains('/').first().click()
+        cy.wait(300)
+        page.get('update_button').filter(':visible').first().click()
 
         cy.hasNoErrors()
 
@@ -54,7 +59,7 @@ context('Template Routes', () => {
             template: 'about/404',
             route: 'boo/far'
         })
-        page.get('update_button').click({force:true}).then(function() {
+        page.get('update_button').filter(':visible').first().click({force:true}).then(function() {
 
             page.get('routes').its('length').should('eq', 2)
 

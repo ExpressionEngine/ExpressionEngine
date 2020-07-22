@@ -2753,8 +2753,3 @@ DELETE FROM `exp_upload_prefs_roles`;
 INSERT INTO `exp_upload_prefs_roles` (`role_id`, `upload_id`) VALUES
 	(5, 1),
 	(5, 2);
-/*!40000 ALTER TABLE `exp_upload_prefs_roles` ENABLE KEYS */;
-
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

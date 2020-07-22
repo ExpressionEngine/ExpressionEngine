@@ -6,7 +6,8 @@ class TemplateRoutes extends ControlPanel {
         this.url = 'admin.php?/cp/design/routes';
 
         this.elements({
-            "routes": 'table tbody tr.setting-field',
+            //"routes": 'table tbody tr.setting-field',
+            "routes" : 'tbody[class="ui-sortable"]',
             // "reorder": 'td:first-child .reorder',
             // "template": 'td:nth-child(2)',
             // "template_choice": 'div[data-input-value*="routes[rows]"]',
@@ -35,11 +36,12 @@ class TemplateRoutes extends ControlPanel {
 
         options = Object.assign(defaults, options)
 
-        this.get('new_route_button').click()
+        //this.get('new_route_button').click()
+        cy.get('a').contains('New route').first().click()
         let route = this.$('routes').eq(-1)
-        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__button').click()
+        this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__button').filter(':visible').first().click()
         this.get('routes').eq(-1).find('div[data-input-value*="routes[rows]"] .select__dropdown .select__dropdown-item').contains(options.template).click({ force: true })
-        this.get('routes').eq(-1).find('td:nth-child(3) input').type(options.route)
+        this.get('routes').eq(-1).find('td:nth-child(3) input').filter(':visible').first().type(options.route)
 
         if (options.segments_required) {
             if (route.find('td:nth-child(4) [data-toggle-for=required]').hasClass('off')) {

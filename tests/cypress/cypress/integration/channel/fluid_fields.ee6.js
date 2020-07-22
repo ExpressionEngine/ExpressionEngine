@@ -108,7 +108,7 @@ context('Fluid Fields', () => {
         cy.get('button[value="save"]').first().click()
 
        // page.get('modal_submit_button').click()
-       cy.get('input[value="Confirm, and Remove"]').first().click()
+       cy.get('input[value="Confirm, and Remove"]').filter(':visible').first().click()
 
         
         page.get('fields').find("[value='2']").should('not.be.checked')

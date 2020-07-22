@@ -29,9 +29,9 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click()//AJ
+        cy.get('button[value="save_and_new"]').filter(':visible').first().click()//AJ
         
-        page.get('submit_buttons').should('not.have.class', 'work')
+      
 
         cy.hasNoErrors()
     
@@ -140,26 +140,31 @@ context('Status Create/Edit', () => {
         page.get('status_names').its('length').should('eq', 3)
         cy.hasNoErrors()
 
-        page.get('status_access').eq(0).should('not.be.checked')
+        //page.get('status_access').eq(0).should('not.be.checked')
+        cy.get('input[data-group-toggle="[]"][value = "3"]').should('not.be.checked')
 
-        // Make sure we can edit
-        page.get('status').clear().type('Test2')
-        page.get('status').trigger('change')
-        page.get('status_access').click()
-        //page.submit()
-        cy.get('button[value="save"]').filter(':visible').first().click() //AJ
-        cy.hasNoErrors()
-
+        // Make sure we can edit ||| New CP has a different way to do this.
+        // page.get('status').clear().type('Test2')
+        // page.get('status').trigger('change')
+        // page.get('status_access').click()
+        // cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
+        // cy.hasNoErrors()
         //cy.contains('Status Updated')
+        //cy.authVisit(page.url);
+        // page.get('status').should('have.value', 'Test2')
+        // page.get('status_access').eq(0).should('be.checked')
 
+        //New edit
+        cy.get('span').contains('Featured').click()
+        cy.wait(300)
+        cy.get('input[name=status]').clear().type('Test2')
+        cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
+        cy.hasNoErrors()
         cy.authVisit(page.url);
-        
+        page.load_view_for_status_group(1)
 
-       
-        
+        cy.get('span').contains('Test2').should('exist')
 
-        page.get('status').should('have.value', 'Test2')
-        page.get('status_access').eq(0).should('be.checked')
     })
 
     it('should not allow open and closed status names to be edited', function() {

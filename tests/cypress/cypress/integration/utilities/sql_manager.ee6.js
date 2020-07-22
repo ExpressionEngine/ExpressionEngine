@@ -95,7 +95,8 @@ context('SQL manager', () => {
 	})
 
 	it('should validate the table operations submission', () =>{
-		page.get('select_all').click()
+		//page.get('select_all').click()
+		cy.get('input[type="checkbox"][title="select all"]').first().click()
 		cy.wait(500)
 		page.get('op_submit').click()
 		page.get('wrap').contains('You must select an action to perform on the selected tables.')
@@ -103,7 +104,8 @@ context('SQL manager', () => {
 	})
 
 	it('should repair the tables and sort and search the results', () =>{
-		page.get('select_all').click()
+		//page.get('select_all').click()
+		cy.get('input[type="checkbox"][title="select all"]').first().click()
 		page.get('op_select').select('Repair')
 		page.get('op_submit').click()
 		cy.hasNoErrors()
@@ -129,7 +131,8 @@ context('SQL manager', () => {
 	})
 
 	it('should optimize the tables and sort and search the results', () =>{
-		page.get('select_all').click()
+		//page.get('select_all').click()
+		cy.get('input[type="checkbox"][title="select all"]').first().click()
 		page.get('op_select').select('Optimize')
 		page.get('op_submit').click()
 		cy.hasNoErrors()

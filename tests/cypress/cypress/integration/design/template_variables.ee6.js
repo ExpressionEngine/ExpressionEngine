@@ -48,19 +48,20 @@ context('Template Variables', () => {
 
     it('should validate the form', function() {
         cy.get('a').contains('Template Variable').first().click()
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
         page.hasError(form.get('name'), 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes')
-        page.hasErrors()
     })
 
     it('can create a new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
         cy.get('a').contains('Template Variable').first().click()
 
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 
@@ -72,7 +73,8 @@ context('Template Variables', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').first().click()
+        //form.get('save_button').first().click()
+        cy.get('input[value="Save Template Variable"]').first().click()
 
         cy.hasNoErrors()
 

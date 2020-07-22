@@ -49,21 +49,16 @@ context('Spam Module', () => {
       page.get('wrap').contains('about')
     })
 
-    it('can mark as ham', () => {
-      page.get('wrap').find('.check-ctrl input[type="checkbox"]').check()
+    it('can mark as spam', () => {
+      page.get('wrap').find('input[type="checkbox"]').eq(0).check()
+      page.get('wrap').find('input[type="checkbox"]').eq(1).check()
       page.get('bulk_action').should('be.visible')
       page.get('bulk_action').select("approve")
       page.get('action_submit_button').click()
       cy.hasNoErrors()
     })
 
-    it('can mark as spam', () => {
-      page.get('wrap').find('.check-ctrl input[type="checkbox"]').check()
-      page.get('bulk_action').should('be.visible')
-      page.get('bulk_action').select("approve")
-      page.get('action_submit_button').click()
-      cy.hasNoErrors()
-    })
+    
 
   })
 

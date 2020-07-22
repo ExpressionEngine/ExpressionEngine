@@ -130,13 +130,15 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click()
+        //page.get('add_tab_modal_submit_button').click()
+        cy.get('button').contains('Add Tab').first().click()
+        cy.wait(600)
 
         page.get('tabs').its('length').should('eq', tabCount + 1)
         page.get('tabs').eq(-1).contains(new_tab_name)
 
-        page.get('layout_name').clear().type('Default')
-        page.get('submit_button').click()
+        cy.get('input[name="layout_name"]').clear().type('Default')
+        cy.get('button').contains('Save').first().click()
         cy.wait(300) //AJ
         cy.hasNoErrors()
 
@@ -152,13 +154,13 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click().then(function() {
+        cy.get('button').contains('Add Tab').first().click().then(function() {
 
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
 
             let field_text = page.$('fields').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text().trim()
-
+            cy.wait(600)
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('tabs').eq(-1))
             page.get('tabs').eq(-1).should('have.class', 'active')
             page.get('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contains(field_text)
@@ -171,7 +173,7 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        page.get('add_tab_modal_submit_button').click().then(function() {
+        cy.get('button').contains('Add Tab').first().click().click().then(function() {
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
         })
@@ -179,6 +181,7 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('fields').eq(0).find('label.layout-item__title').eq(0).invoke('text').then((field_text) => {
             cy.log(field_text);
             console.log(field_text)
+            cy.wait(600)
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('tabs').eq(-1))
             page.get('tabs').eq(-1).should('have.class', 'active')
             page.get('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contains(field_text)

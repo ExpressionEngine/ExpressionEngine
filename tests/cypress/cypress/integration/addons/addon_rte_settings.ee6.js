@@ -152,7 +152,7 @@ context('RTE Settings', () => {
             cy.hasNoErrors()
 
             page.hasAlert('error')
-            page.get('alert').contains("The default RTE tool set cannot be removed")
+            page.get('alert').contains("Your Rich Text Editor Settings could not be saved")
             page.get('tool_set_names').eq(1).contains(tool_set_name)
         })
 
@@ -216,7 +216,7 @@ context('RTE Settings', () => {
 
             page.get('tool_set_name').clear().type('Cypress Edited')
             //page.get('tool_set_save_button').click()
-            cy.get('input').contains('Save').first().click()
+            cy.get('button').contains('Save').first().click()
             cy.hasNoErrors()
             page.get('tool_set_name').invoke('val').should('eq', "Cypress Edited")
 
@@ -267,7 +267,7 @@ context('RTE Settings', () => {
 
     describe('Toolsets', function() {
         beforeEach(function() {
-            page.get('create_new_button').click()
+            cy.get('a').contains('Create New').filter(':visible').first().click({force:true})
         })
 
         it('can navigate back to settings from tool set', function() {
