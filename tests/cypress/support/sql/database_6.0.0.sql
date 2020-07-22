@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
   `channel_auto_link_urls` char(1) NOT NULL DEFAULT 'n',
   `channel_notify` char(1) NOT NULL DEFAULT 'n',
   `channel_notify_emails` varchar(255) DEFAULT NULL,
+  `sticky_enabled` char(1) NOT NULL default 'n',
   `comment_url` varchar(80) DEFAULT NULL,
   `comment_system_enabled` char(1) NOT NULL DEFAULT 'y',
   `comment_require_membership` char(1) NOT NULL DEFAULT 'n',
