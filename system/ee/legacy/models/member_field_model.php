@@ -44,8 +44,7 @@ class Member_field_model extends CI_Model {
 		if (empty($data['m_field_order'])
 			OR ! is_numeric($data['m_field_order']))
 		{
-			ee()->load->model('member_model');
-			$count = ee()->member_model->count_records('member_fields');
+			$count = ee()->db->count_all('member_fields');
 			$data['m_field_order'] = $count + 1;
 		}
 

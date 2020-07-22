@@ -1031,6 +1031,16 @@ class Channels extends AbstractChannelsController {
 							'value' => $channel->channel_auto_link_urls
 						)
 					)
+				),
+				array(
+					'title' => 'enable_sticky',
+					'desc' => 'enable_sticky_desc',
+					'fields' => array(
+						'sticky_enabled' => array(
+							'type' => 'yes_no',
+							'value' => $channel->sticky_enabled
+						)
+					)
 				)
 			),
 			'channel_form' => array(

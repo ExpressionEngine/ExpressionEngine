@@ -2,12 +2,14 @@
 	<?=form_open($form_url)?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-		<div class="title-bar js-filters-collapsable">
+		<div class="title-bar js-filters-collapsible">
 			<h2 class="title-bar__title"><?=$cp_heading?></h2>
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>
 
+
 		<?php $this->embed('_shared/table', $table); ?>
+
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 			<?php if ($can_edit || $can_delete) {

@@ -176,17 +176,17 @@ class Permission {
 	{
 		$which = $this->prepareArguments(func_get_args());
 
+		if ( ! count($which))
+		{
+			throw new \BadMethodCallException('Invalid parameter count, 1 or more arguments required.');
+		}
+
 		// Super Admins always have access
 		// SA access above count below so entries page doesn't bomb out on first run
 		// order matters
 		if ($this->isSuperAdmin())
 		{
 			return TRUE;
-		}
-
-		if ( ! count($which))
-		{
-			throw new \BadMethodCallException('Invalid parameter count, 1 or more arguments required.');
 		}
 
 		foreach ($which as $w)

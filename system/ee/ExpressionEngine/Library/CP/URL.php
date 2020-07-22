@@ -99,6 +99,18 @@ class URL implements \Serializable
     }
 
     /**
+     * Removes in the $qs array by passing its key
+     *
+     * @param string $key   The name of the query string variable
+     * @return self This returns a reference to itself
+     */
+    public function removeQueryStringVariable($key)
+    {
+        unset($this->qs[$key]);
+        return $this;
+    }
+
+    /**
      * Sets a value in the $qs array which will become the Query String of
      * the request
      *
