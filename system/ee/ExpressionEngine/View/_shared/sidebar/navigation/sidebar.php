@@ -30,8 +30,8 @@
 						<nav class="nav-custom">
 							<?php foreach ($custom->getItems() as $item) : ?>
 							<?php if ($item->isSubmenu()) : ?>
-								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#"><?= lang($item->title) ?></a>
-								<div class="dropdown">
+								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon">?</span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
+								<div class="dropdown dropdown--accent">
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
 										<div class="search-input">
@@ -57,7 +57,7 @@
 									</div>
 								</div>
 							<?php else : ?>
-							<a class="ee-sidebar__item" href="<?= $item->url ?>"><?= lang($item->title) ?></a>
+							<a class="ee-sidebar__item" href="<?= $item->url ?>" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon">?</span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
 							<?php endif; ?>
 							<?php endforeach; ?>
 						</nav>
