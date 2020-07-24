@@ -273,6 +273,9 @@ $(document).ready(function(){
 			$('.main-nav__mobile-menu').addClass('hidden');
 			$('.ee-wrapper-overflow').removeClass('is-mobile');
 		}
+    if( $('.ee-sidebar').hasClass('ee-sidebar__collapsed') && window.innerWidth < 1000) {
+      $('.ee-wrapper').addClass('sidebar-hidden__collapsed');
+    }
 	}, 100)
 
 	// Update the sidebar visibility on page load, and when the window width changes

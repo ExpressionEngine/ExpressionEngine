@@ -65,7 +65,7 @@
 					<?php endif; ?>
 
           <!-- Dev Links -->
-          <div class="ee-sidebar__items-custom">
+          <div class="ee-sidebar__items-dev">
 						<?php if (count($cp_main_menu['develop'])) : ?>
 							<?php
 								$developer_pages = ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'];
