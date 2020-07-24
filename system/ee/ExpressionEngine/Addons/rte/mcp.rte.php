@@ -207,6 +207,13 @@ class Rte_mcp
     public function edit_toolset()
     {
 
+        ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/settings.css' . '" />');
+
+        ee()->cp->add_js_script(array(
+            'ui' => 'draggable',
+            'fp_module' => 'rte'
+        ));
+
         $request = ee('Request');
 
         $defaultConfigSettings = RteHelper::defaultConfigSettings();
@@ -269,9 +276,13 @@ class Rte_mcp
 
         $fullToolbar = RteHelper::defaultToolbars()['Full'];
         $fullToolset = array();
-        foreach ($fullToolbar as $i=>$tool) {
-            $fullToolset[$tool] = lang($tool.'_rte');
+        foreach ($fullToolbar as $i => $tool) {
+            $fullToolset[$tool] = lang($tool . '_rte');
         }
+
+        $toolbarInputHtml = ee('View')->make('rte:toolbar')->render(
+            ['buttons' => $fullToolset, 'selection' => $config->settings['toolbar']]
+        );
 
         $sections = array(
             'rte_basic_settings' => array(
@@ -306,13 +317,11 @@ class Rte_mcp
                     'wide'    => true,
                     'fields'  => array(
                         'settings[toolbar]' => array(
-                            'type' => 'checkbox',
-                            'choices' => $fullToolset,
-                            'value' => $config->settings['toolbar'],
-                            'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
+                            'type' => 'html',
+                            'content' => $toolbarInputHtml
                         )
                     )
-                        ),
+                ),
                 array(
                     'title' => lang('rte_height'),
                     'fields' => array(
