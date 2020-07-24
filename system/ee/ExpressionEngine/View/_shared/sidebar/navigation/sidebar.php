@@ -30,7 +30,7 @@
 						<nav class="nav-custom">
 							<?php foreach ($custom->getItems() as $item) : ?>
 							<?php if ($item->isSubmenu()) : ?>
-								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon">?</span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
+								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href="#" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon"><?=substr(lang($item->title), 0, 1)?></span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
 								<div class="dropdown dropdown--accent">
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
@@ -57,7 +57,7 @@
 									</div>
 								</div>
 							<?php else : ?>
-							<a class="ee-sidebar__item" href="<?= $item->url ?>" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon">?</span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
+							<a class="ee-sidebar__item" href="<?= $item->url ?>" title="<?= lang($item->title) ?>"><span class="ee-sidebar__item-custom-icon"><?=substr(lang($item->title), 0, 1)?></span><span class="ee-sidebar__collapsed-hidden"><?= lang($item->title) ?></span></a>
 							<?php endif; ?>
 							<?php endforeach; ?>
 						</nav>
@@ -70,7 +70,7 @@
 								$developer_pages = ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'];
 								$developer_menu_active = (in_array($current_page, $developer_pages) ? 'active' : '');
 							?>
-							<a href="" class="ee-sidebar__item js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <?=lang('nav_developer')?></a>
+							<a href="" class="ee-sidebar__item js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <span class="ee-sidebar__collapsed-hidden"><?=lang('nav_developer')?></span></a>
 							<div class="developer-menu js-developer-menu-content hidden">
 								<?php foreach ($cp_main_menu['develop'] as $key => $link) : ?>
 									<a class="ee-sidebar__item" href="<?= $link ?>"><?= lang($key) ?></a>
@@ -79,7 +79,7 @@
 						<?php endif; ?>
 
 						<?php if (ee('Permission')->can('access_sys_prefs')) : ?>
-						<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
+						<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <span class="ee-sidebar__collapsed-hidden"><?= lang('nav_settings') ?></span></a>
 						<?php endif; ?>
 
 
