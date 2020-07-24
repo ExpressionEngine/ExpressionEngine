@@ -1,7 +1,7 @@
 			<?php $cp_main_menu = ee()->menu->generate_menu(); $current_page = ee()->uri->segment(2); ?>
 			<div class="ee-sidebar <?=$class?> <?php if (!isset($ee_cp_viewmode) || $ee_cp_viewmode!='classic') : ?> hidden<?php endif; ?>">
 				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
-				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i> <?=ee()->config->item('site_name')?></span><span class="ee-sidebar__title-down-arrow ee-sidebar__collapsed-hidden"><i class="fas fa-angle-down"></i></span></a>
+				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i><span class="ee-sidebar__collapsed-hidden"> <?=ee()->config->item('site_name')?></span></span><span class="ee-sidebar__title-down-arrow ee-sidebar__collapsed-hidden"><i class="fas fa-angle-down"></i></span></a>
 
 				<div class="dropdown dropdown--accent">
 					<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
@@ -64,7 +64,8 @@
 					</div>
 					<?php endif; ?>
 
-					<div class="ee-sidebar__items-bottom">
+          <!-- Dev Links -->
+          <div class="ee-sidebar__items-custom">
 						<?php if (count($cp_main_menu['develop'])) : ?>
 							<?php
 								$developer_pages = ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'];
@@ -81,9 +82,11 @@
 						<?php if (ee('Permission')->can('access_sys_prefs')) : ?>
 						<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <span class="ee-sidebar__collapsed-hidden"><?= lang('nav_settings') ?></span></a>
 						<?php endif; ?>
+          </div>
 
 
-						<?php
+          <div class="ee-sidebar__items-bottom">
+            <?php
 							$version_class = '';
 							$update_available = isset(ee()->view->new_version);
 							$vital_update = $update_available && $new_version['security'];
@@ -102,7 +105,7 @@
 							}
 						?>
 
-						<a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>">ExpressionEngine <span><?=ee()->view->formatted_version?></span></a>
+						<a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>" title="Updates"><i class="fas fa-download fa-fw"></i> <span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span></a>
 					</div>
 
 				</div>
