@@ -2204,10 +2204,12 @@ class Comment {
 	 */
 	function comment_subscribe()
 	{
+		ee()->lang->loadfile('comment');
+
 		// Membership is required
 		if (ee()->session->userdata('member_id') == 0)
 		{
-			return;
+			return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
 		}
 
 		$id		= ee()->input->get('entry_id');
@@ -2216,13 +2218,10 @@ class Comment {
 
 		if ( ! $id)
 		{
-			return;
+			return ee()->output->show_user_error('submission', 'invalid_subscription');
 		}
 
-		ee()->lang->loadfile('comment');
-
 		// Does entry exist?
-
 		ee()->db->select('title');
 		$query = ee()->db->get_where('channel_titles', array('entry_id' => $id));
 

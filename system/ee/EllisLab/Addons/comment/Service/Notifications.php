@@ -118,7 +118,7 @@ class Notifications {
 			'location'     => $comment->location,
 			'name'         => $comment->name,
 			'name_of_commenter' => $comment->name,
-			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id={$comment->entry_id}&type=unsubscribe',
+			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$comment->entry_id.'&type=unsubscribe',
 			'site_name'    => stripslashes(ee()->config->item('site_name')),
 			'site_url'     => ee()->config->item('site_url'),
 			'url'          => $comment->url,
