@@ -244,9 +244,11 @@ $(document).ready(function(){
 
 
 
-    $(document).ready(function(){
-                $(".ee-debugger").appendTo(".ee-main");
-        });
+  // EE debugger
+  // Insert debugger UI into main column of CP layout to avoid breaking CP sidebar
+  $(document).ready(function(){
+    $(".ee-debugger").appendTo(".ee-main");
+  });
 
   // Side bar toggle
 	// -------------------------------------------------------------------
