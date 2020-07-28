@@ -244,7 +244,11 @@ $(document).ready(function(){
 
 
 
-	// Side bar toggle
+    $(document).ready(function(){
+                $(".ee-debugger").appendTo(".ee-main");
+        });
+
+  // Side bar toggle
 	// -------------------------------------------------------------------
 
 	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
