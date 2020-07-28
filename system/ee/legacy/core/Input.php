@@ -214,50 +214,30 @@ class EE_Input {
 		// Deal with secure cookies.
 		$data['secure_cookie'] = bool_config_item('cookie_secure');
 
-		// SameSite explained: https://web.dev/samesite-cookies-explained/
-		// Allow default setting for all site cookies, then allow for overrides when this method is called.
-		// Cookies without a SameSite attribute will be treated as SameSite=Lax.
-		$sameSiteConfigValue = ee()->config->item('cookie_samesite');
+		if ($data['secure_cookie']) {
+			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false;
 
-		if ($sameSiteConfigValue) {
-			// Don't allow invalid values
-			if (!in_array($sameSiteConfigValue, ['Lax', 'None', 'Strict'])) {
-				$sameSiteConfigValue = 'Lax';
-			}
-
-			// Cookies with SameSite=None must also specify Secure, meaning they require a secure context.
-			if ($sameSiteConfigValue === 'None') {
-				$data['secure_cookie'] = true;
+			if (!$req || $req === 'off') {
+				return false;
 			}
 		}
 
-		// Allow calls to set cookies set a specific value, but if not set, default to global config value if it exists, or Lax.
-		if (!isset($data['samesite'])) {
-			$data['samesite'] = $sameSiteConfigValue ?: 'Lax';
-		}
-
-		if ($data['samesite'] === 'None') {
-			$data['secure_cookie'] = true;
-		}
-
-		if ($data['secure_cookie'])
-		{
-			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
-			if ( ! $req OR $req == 'off')
-			{
-				return FALSE;
-			}
-		}
+		$data = $this->validateCookieData($data);
 
 		/* -------------------------------------------
 		/* 'set_cookie_end' hook.
 		/*  - Take control of Cookie setting routine
 		/*  - Added EE 2.5.0
 		*/
-			ee()->extensions->call('set_cookie_end', $data);
-			if (ee()->extensions->end_script === TRUE) return;
+		$data = ee()->extensions->call('set_cookie_end', $data);
+
+		if (ee()->extensions->end_script === true) {
+			return false;
+		}
 		/*
 		/* -------------------------------------------*/
+
+		$data = $this->validateCookieData($data);
 
 		if (PHP_VERSION_ID < 70300) {
 			// Older versions of PHP do not support an array as the 3rd parameter,
@@ -279,6 +259,39 @@ class EE_Input {
 			'httponly' => $data['httponly'],
 			'samesite' => $data['samesite'],
 		]);
+	}
+
+	/**
+	 * Validate the cookie settings to maintain data integrity.
+	 * SameSite explained: https://web.dev/samesite-cookies-explained
+	 * Allow default setting for all site cookies, then allow for overrides when this method is called.
+	 * Cookies without a SameSite attribute will be treated as SameSite=Lax.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	private function validateCookieData($data = [])
+	{
+		// Set a default value if undefined
+		if (!isset($data['samesite'])) {
+			$data['samesite'] = 'Lax';
+		}
+
+		// Allow site administrators to override EE and/or 3rd part add-on cookies.
+		// There is nothing wrong with wanting all cookies to be Strict.
+		$data['samesite'] = ee()->config->item('cookie_samesite') ?: $data['samesite'];
+
+		// Don't allow invalid values for samesite
+		if (!in_array($data['samesite'], ['Lax', 'None', 'Strict'])) {
+			$data['samesite'] = 'Lax';
+		}
+
+		// Cookies with SameSite=None must also specify Secure, meaning they require a secure context.
+		if ($data['samesite'] === 'None') {
+			$data['secure_cookie'] = true;
+		}
+
+		return $data;
 	}
 
 	/**
