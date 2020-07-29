@@ -30,9 +30,9 @@ context('Member Import', () => {
 		page.get('include_seconds')
 	})
 
-	//TODO Big error Fatal error
+	
 	it('should show the confirm import screen', () => {
-		//TODO try and get automatic file sending !!
+		
 		cy.pause() 
 		page.get('member_group').eq(4).click() //super admin
 		page.get('language').check('english') //check english
@@ -49,10 +49,3 @@ context('Member Import', () => {
 
 })
 
-//     @page.options.map {|option| option.text}.should ==
-//         ['Member group', 'Language', 'Timezone',
-//             'Date & time format', 'Show seconds?', 'Create custom fields?']
-//     @page.values.map {|value| value.text}.should ==
-//         ['Members', 'English',
-//             'America/New_York', 'yyyy-mm-dd, 24-hour', 'Yes', 'No']
-//   end

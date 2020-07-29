@@ -27,7 +27,7 @@ context('Cache Manager', () => {
 
     it('should validate the form', () =>{
     	//let field_required = 'This field is required.';
-    	//let form_error = 'Attention: Query not run'; Dont need these
+
     	//Submit nothing
     	page.get('wrap').find('div').eq(13).find('input').click()
     	page.get('wrap').contains("Attention: Query not run")
@@ -84,7 +84,7 @@ context('Cache Manager', () => {
 		page.get('wrap').contains(error_text)
 	})
 
-	//Works not sure how to get page length tho..
+
 	it('should show query results', () =>{
 		page.get('query_form').type("SELECT * FROM exp_channels")
 		page.submit()
@@ -110,7 +110,7 @@ context('Cache Manager', () => {
 		results.get('table').find('tbody tr:nth-child(1) td:nth-child(1)').contains('2')
 		results.get('table').find('tbody tr:nth-child(2) td:nth-child(1)').contains('1')
 	})
-	//how to get page?? Works but now pg tests |-_-|
+	
 	it('should search query results', () =>{
 		page.get('query_form').type("select * from exp_channel_titles")
 		page.submit()
@@ -122,20 +122,19 @@ context('Cache Manager', () => {
 		page.get('wrap').find('input').eq(2).click()
 		cy.hasNoErrors()
 		results.get('rows').its('length').should('eq',2)
-		//pg test here?? dunno how to get this??
+		
 		results.get('table').find('tbody tr:nth-child(2) td:nth-child(7)').contains('About the Label')
 		//Make sure we can still sort and maintain search results
 		results.get('sort_links').eq(0).click()
 		cy.hasNoErrors()
 		cy.get('h1').find('i').contains('we found 2 results for "the"')
 		results.get('rows').its('length').should('eq',2)
-		//pg test here??
+		
 		//This should be in the next row down now
 		results.get('table').find('tbody tr:nth-child(1) td:nth-child(7)').contains("About the Label")
 
 	})
 
-	// TODO needs work
 	it.skip('should paginate query results', () =>{
 		//# Generate random data that will paginate
 		cp_log.generate_data.count = 30;
@@ -144,14 +143,13 @@ context('Cache Manager', () => {
 		page.submit()
 		cy.hasNoErrors()
 		results.get('rows').its('length').should('eq',25)
-		//ask Bryan when he gets back about this.
+		
 
 
 
 	})
 
-//From here to end - last 2 I have no idea what rb files are talking about...
-//TODO look over and send Bryan some thought out questions.
+
 
 	//works
 	it('should show no results when there are no results', () =>{

@@ -239,7 +239,7 @@ context('Create combinations of field', () => {
 		 cy.get('body').contains('one, two')
 	})
 
-	//TODO not sure what is going on here
+
 	it('Test Radio', () => {
 
 		cy.visit('http://localhost/admin.php?/cp/fields')

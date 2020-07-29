@@ -9,12 +9,12 @@ context('Communicate Sent', () => {
 		it('shows the sent Emails page (with no results)', () => {
 			cy.auth();
 			page.load();
-			page.get('no_results').should('exist')
 			cy.get('.solo').contains('No Sent emails found. Create new Email')
 			page.get('pagination').should('not.exist')
    		})
 
    		it('sorts by subject (asc) and (desc)', () => {
+   			cy.auth();
    			page.SubjectSorter()
    		})
 
@@ -23,7 +23,7 @@ context('Communicate Sent', () => {
    			page.SentSorter()
    		})
 
-   		it('can search by subject', () => {
+   		it.only('can search by subject', () => {
 			cy.auth();
 			page.load();
 
