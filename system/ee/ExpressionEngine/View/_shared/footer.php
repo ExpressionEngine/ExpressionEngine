@@ -1,3 +1,4 @@
+				<div id="output_profiler"></div>
 			</div>
 		</section>
 	</div>
