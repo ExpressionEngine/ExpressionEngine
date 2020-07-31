@@ -5,8 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Minor Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug (#480) where there has been no notice when extensions are disabled.
 
 
 
