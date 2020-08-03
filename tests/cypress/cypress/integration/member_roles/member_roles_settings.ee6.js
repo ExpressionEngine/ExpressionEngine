@@ -65,12 +65,9 @@ context('Test Member roles Settings ', () => {
 
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('SettingManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-
+		
 		cy.get('.ee-sidebar').contains('Settings').should('exist')
-		cy.get('.ee-sidebar').contains('CP Overview')
+
 
 	   cy.get('.ee-sidebar').should('not.contain','Categories')
 	   cy.get('.ee-sidebar').should('not.contain', 'Entries')
@@ -89,14 +86,11 @@ context('Test Member roles Settings ', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('SettingManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
-	   cy.get('.box').contains('General Settings')
-	   cy.get('.box').contains('URL and Path Settings')
-	   cy.get('.box').contains('Debugging & Output')
+	   
 
 	   cy.get('.box').contains('Settings')
 	   cy.get('.box').contains('HTML Buttons')
@@ -112,10 +106,9 @@ context('Test Member roles Settings ', () => {
 
 
 
-	   cy.get('.box').contains('General Settings').click()
-	   cy.hasNoErrors()
+	
 
-	   cy.get('.ee-sidebar').contains('Settings').click()
+	   
 	   cy.get('.box').contains('URL and Path Settings')
 	   cy.hasNoErrors()
 
@@ -124,7 +117,7 @@ context('Test Member roles Settings ', () => {
 	   cy.hasNoErrors()
 
 
-	   //Consent
+	   //Content
 	   cy.get('.ee-sidebar').contains('Settings').click()
 	   cy.get('.box').contains('Settings')
 	   cy.hasNoErrors()
@@ -158,7 +151,7 @@ context('Test Member roles Settings ', () => {
 
 	})
 
-	it('Loses Acccess to Consent',() => {
+	it('Loses Acccess to Content',() => {
 
 	   cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
@@ -167,7 +160,7 @@ context('Test Member roles Settings ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
 	   cy.get('button').contains('CP Access').click()
-		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn off concent access
+		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn off  access
 		cy.get('button').contains('Save').eq(0).click()
 
 		logout()
@@ -180,8 +173,7 @@ context('Test Member roles Settings ', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('SettingManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	  
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
@@ -204,94 +196,7 @@ context('Test Member roles Settings ', () => {
 
 	})
 
-	it('Loses Acccess to All Security and Privacy',() => {
-
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
-	   cy.get('button').contains('CP Access').click()
-		cy.get('#fieldset-can_access_security_settings .toggle-btn').click(); //turn off security & privacy
-		cy.get('button').contains('Save').eq(0).click()
-
-		logout()
-
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('SettingManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-
-	   cy.get('h1').contains('SettingManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-	   cy.get('.ee-sidebar').contains('Settings').click()
-
-	   cy.get('.box').contains('General Settings')
-	   cy.get('.box').contains('URL and Path Settings')
-	   cy.get('.box').contains('Debugging & Output')
-
-	   
-	   cy.get('.box').contains('Settings')
-	   cy.get('.box').contains('HTML Buttons')
-	   cy.get('.box').contains('Hit Tracking')
-	   cy.get('.box').contains('Word Censoring')
-	   cy.get('.box').contains('Menu Manager')
-
-	   cy.get('.box').should('not.contain', 'Access Throttling')
-	   cy.get('.box').should('not.contain', 'CAPTCHA')
-	   cy.get('.box').should('not.contain','Consent Requests') 
-	})
-
-	it('Can have just Consent without the other Privacy turned on', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
-	   cy.get('button').contains('CP Access').click()
-		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn on concent access 
-		cy.get('button').contains('Save').eq(0).click()
-
-
-		logout()
-
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('SettingManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-
-	   cy.get('h1').contains('SettingManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-	   cy.get('.ee-sidebar').contains('Settings').click()
-
-	   cy.get('.box').contains('General Settings')
-	   cy.get('.box').contains('URL and Path Settings')
-	   cy.get('.box').contains('Debugging & Output')
-
-	   
-	   cy.get('.box').contains('Settings')
-	   cy.get('.box').contains('HTML Buttons')
-	   cy.get('.box').contains('Hit Tracking')
-	   cy.get('.box').contains('Word Censoring')
-	   cy.get('.box').contains('Menu Manager')
-
-	   
-	   cy.get('.box').should('not.contain','Access Throttling')
-	   cy.get('.box').should('not.contain','CAPTCHA')
-	   cy.get('.box').contains('Consent Requests')
-	})
-
-	it('Cleans for reruns', () =>{
+	it.skip('Cleans for reruns', () =>{
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');

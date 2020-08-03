@@ -76,12 +76,11 @@ context('Test Member roles Addons ', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('AddonManager1')
 		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+		//
 
 
 		cy.get('.ee-sidebar').contains('Add-Ons').should('exist')
-		cy.get('.ee-sidebar').contains('CP Overview')
-
+		
 	   cy.get('.ee-sidebar').should('not.contain','Categories')
 	   cy.get('.ee-sidebar').should('not.contain', 'Entries')
 
@@ -102,7 +101,7 @@ context('Test Member roles Addons ', () => {
 
 	   cy.get('h1').contains('AddonManager1')
 	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
 
 	   cy.get('.ee-sidebar').contains('Add-Ons').click()
 
@@ -126,50 +125,7 @@ context('Test Member roles Addons ', () => {
 
 	})
 
-	it('Can not access Email after that permission is taken off', () =>{
-
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-
-	   cy.get('div[class="list-item__title"]').contains('AddonManager').click()
-
-	   cy.get('button').contains('CP Access').click()
-		
-	   cy.get('#fieldset-addons_access .checkbox-label:nth-child(6) > input').click(); //turn off email
-	   cy.get('button').contains('Save').click()
-
-	   logout()
-
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('AddonManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		
-
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-
-	   cy.get('h1').contains('AddonManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-	   cy.get('.ee-sidebar').contains('Add-Ons').click()
-
-	   
-	   cy.contains('Rich Text Editor')
-	   cy.contains('Statistics')
-	   cy.get(':nth-child(3) > .add-on-card__cog > .fas').should('not.exist')
-
-	})
-
-
-
-	it('Cleans for reruns', () =>{
+	it.skip('Cleans for reruns', () =>{
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');

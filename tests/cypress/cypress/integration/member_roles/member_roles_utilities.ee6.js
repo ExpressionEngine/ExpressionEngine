@@ -52,14 +52,13 @@ context('Test Member roles Utilities ', () => {
 	
 		
 		cy.get('#fieldset-can_access_utilities .toggle-btn').click()
-		cy.get('.field-inputs:nth-child(1) > .nestable-item .nestable-item:nth-child(1) input').click();
-		cy.get('.field-inputs:nth-child(1) > .nestable-item .nestable-item:nth-child(2) input').click();
+
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').click();
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(3) input').click();
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(5) input').click();
 
-
+cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); 
 		cy.get('button').contains('Save').eq(0).click()
 	})
 
@@ -72,8 +71,8 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
+	  //
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
@@ -111,7 +110,7 @@ context('Test Member roles Utilities ', () => {
 	   cy.get('button').contains('CP Access').click()
 
 
-		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').click(); //turn off access to communicate
+		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); //turn off access to communicate
 		logout()
 
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
@@ -122,8 +121,8 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
+	  //
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
@@ -162,7 +161,7 @@ context('Test Member roles Utilities ', () => {
 
 
 		
-		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').click(); //turn off access to Translations
+		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').last().click(); //turn off access to Translations
 		logout()
 
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
@@ -173,8 +172,8 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
+	  //
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
@@ -225,8 +224,8 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
+	  //
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
@@ -282,8 +281,8 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   //
+	  //
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
@@ -310,7 +309,7 @@ context('Test Member roles Utilities ', () => {
 
 	
 
-	it('cleans for reruns', () =>{
+	it.skip('cleans for reruns', () =>{
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');

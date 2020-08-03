@@ -63,8 +63,7 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('LogManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	   
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Logs').click()
 
@@ -104,13 +103,11 @@ context('Test Member roles Utilities ', () => {
 	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('LogManager1')
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
 	   cy.get('.ee-sidebar').should('not.contain','Developer').click()
 	})
 
 
-	it('cleans for reruns', () =>{
+	it.skip('cleans for reruns', () =>{
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');

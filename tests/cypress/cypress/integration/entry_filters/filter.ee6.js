@@ -14,9 +14,9 @@ context('Entry filtering', () => {
 
 		it('Creates Channels to work with', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/channels/create')
-			cy.get("input[name = 'channel_title']").type('Blog')
+			cy.get("input[name = 'channel_title']").type('Channel')
 		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('The channel Blog has been created')
+		  	cy.get('p').contains('The channel Channel has been created')
 
 		  	cy.visit('http://localhost:8888/admin.php?/cp/channels/create')
 			cy.get("input[name = 'channel_title']").type('Contact')
@@ -34,104 +34,125 @@ context('Entry filtering', () => {
 
 		it('Creates  Entries to work with', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-		  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-		  	cy.get('a').contains('Blog').click()
-		  	cy.get('input[name="title"]').type('Blog Entry')
+		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
+		  	cy.wait(500)
+		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
+		  	cy.get('input[name="title"]').type('Channel Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('The entry Blog Entry has been created')
+		  	cy.get('p').contains('The entry Channel Entry has been created')
 
 		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-		  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-		  	cy.get('a').contains('Contact').click()
+		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
+		  	cy.wait(500)
+		  	cy.get('a').contains('Contact').click({force:true})
 		  	cy.get('input[name="title"]').type('Contact Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Contact Entry has been created')
 
 
 		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-		  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-		  	cy.get('a').contains('Discover').click()
+		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
+		  	cy.wait(500)
+		  	cy.get('a').contains('Discover').click({force:true})
 		  	cy.get('input[name="title"]').type('Discover Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Discover Entry has been created')
 		})
 		
-		it('Closes the Blog entry to sort by later', () => {
+		it('Closes the Channel entry to sort by later', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			cy.get('a').contains('Blog Entry').eq(0).click()
+			cy.get('a').contains('Channel Entry').eq(0).click()
 			cy.get('button').contains('Options').click()
 			cy.get('label[class= "select__button-label act"]').click()
 			cy.get('span').contains('Closed').click()
 			cy.get('button').contains('Save').eq(0).click()
-			cy.get('p').contains('The entry Blog Entry has been updated')
+			cy.get('p').contains('The entry Channel Entry has been updated')
 		})
 
 		it('Can sort entries by their channel also tests clear', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();
-			entry.get('Entries').should('have.length',1)
-			cy.get('a').contains('Blog Entry').should('exist')
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();
+			entry.get('Entries').find('tr').should('have.length',1)
+			cy.get('a').contains('Channel Entry').should('exist')
 
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();
-			entry.get('Entries').should('have.length',1)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();
+			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Contact Entry').should('exist')
 
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(3)').click();
-			entry.get('Entries').should('have.length',1)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 		})
 
 		it('Can sort by status of entries (Open or closed) and can combine this sort with channel', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').should('have.length',3)
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('StatusSort').click()
 
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
-			entry.get('Entries').should('have.length',2)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',2)
 
 			entry.get('StatusSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click(); //Closed
-			entry.get('Entries').should('have.length',1)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
 			
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Blog
-			entry.get('Entries').should('have.length',0)
-			cy.wait(500)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').contains('No Entries found')
+		
 
 			entry.get('StatusSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click(); //Closed
-			entry.get('Entries').should('have.length',1)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();//Contact
-			entry.get('Entries').should('have.length',0)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(3)').click();//Discover
-			entry.get('Entries').should('have.length',0)
+			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').contains('No Entries found')
 		})
 
 		it('can sort by search bar (Searching in Titles)', () =>{
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('SearchBar').clear().type('Blog{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('SearchBar').clear().type('Channel{enter}')
+			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Contact{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Discover{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
 		it('can change the columns', () => {
@@ -159,7 +180,7 @@ context('Entry filtering', () => {
 			entry.get('Category').uncheck({force:true})
 			entry.get('Title').uncheck({force:true})
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',3)
 
 			cy.get('a').contains('ID#').should('exist')
 			cy.get('a').contains('Title').should('exist')
@@ -191,21 +212,29 @@ context('Entry filtering', () => {
       		
 
 		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-		  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-		  	cy.get('a').contains('Blog').click()
-		  	cy.get('input[name="title"]').type('Another Entry in Blog')
+		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
+		  	cy.wait(500)
+		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
+		  	cy.get('input[name="title"]').type('Another Entry in Channel')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('has been created')
 
+
+		  	
+
 		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-		  	entry.get('Entries').should('have.length',4)
+		  	entry.get('Entries').find('tr').should('have.length',4)
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('user2').click()
-		  	entry.get('Entries').should('have.length',1)
+		  	cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+		  	entry.get('Entries').find('tr').should('have.length',1)
 
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('admin').click()
-		  	entry.get('Entries').should('have.length',3)
+		  	cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+		  	entry.get('Entries').find('tr').should('have.length',3)
 
 		})
 
@@ -213,20 +242,28 @@ context('Entry filtering', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			entry.get('AuthorSort').click()
 			cy.get('a').contains('admin').click()
-			entry.get('Entries').should('have.length',3)
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',3)
 
 			entry.get('StatusSort').click()
 
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
-			entry.get('Entries').should('have.length',2)
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',2)
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();
-			entry.get('Entries').should('have.length',0)
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();
-			entry.get('Entries').should('have.length',1)
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
+			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
 		it('can Search in Content but not title',() => {
@@ -255,7 +292,7 @@ context('Entry filtering', () => {
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
 			cy.wait(900)
 			entry.get('SearchBar').type('The Quick Brown{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
@@ -264,7 +301,7 @@ context('Entry filtering', () => {
 			cy.wait(900)
 			entry.get('SearchBar').type('Discover{enter}')
 			cy.wait(900)
-			entry.get('Entries').should('have.length',0)
+			entry.get('Entries').contains('No Entries found')
 
 
 		})
@@ -276,53 +313,53 @@ context('Entry filtering', () => {
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
 			cy.wait(900)
 			entry.get('SearchBar').type('The Quick Brown{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 			entry.get('SearchBar').clear()
 			entry.get('SearchBar').type('Discover{enter}')
-			entry.get('Entries').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 
 		})
 
-		it('can sort by amount of entries and paginates correctly', () =>{
-			var i;
-			for(i = 0 ; i < 25 ; i++){
-				let title = "Blog " + i;
-				cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-			  	cy.get('a').contains('Blog').click()
-			  	cy.get('input[name="title"]').type(title)
-			  	cy.get('button').contains('Save').eq(0).click()
-			  	cy.get('p').contains('has been created')
-			}
+		// it('can sort by amount of entries and paginates correctly', () =>{
+		// 	var i;
+		// 	for(i = 0 ; i < 25 ; i++){
+		// 		let title = "Channel " + i;
+		// 		cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		// 	  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
+		// 	  	cy.get('a').contains('Channel').click()
+		// 	  	cy.get('input[name="title"]').type(title)
+		// 	  	cy.get('button').contains('Save').eq(0).click()
+		// 	  	cy.get('p').contains('has been created')
+		// 	}
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			cy.get(':nth-child(2) > .pagination__link').should('exist')
-			entry.get('Entries').should('have.length',25)
-			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-			cy.get('a').contains('All 29 entries').click()
-			cy.get(':nth-child(2) > .pagination__link').should('not.exist')
-			entry.get('Entries').should('have.length',29)
+		// 	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		// 	cy.get(':nth-child(2) > .pagination__link').should('exist')
+		// 	entry.get('Entries').should('have.length',25)
+		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+		// 	cy.get('a').contains('All 29 entries').click()
+		// 	cy.get(':nth-child(2) > .pagination__link').should('not.exist')
+		// 	entry.get('Entries').should('have.length',29)
 
-			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-			cy.get('a').contains('25 results').click()
-			entry.get('Entries').should('have.length',25)
-			cy.get(':nth-child(2) > .pagination__link').should('exist')
-			cy.get(':nth-child(2) > .pagination__link').click()
-			entry.get('Entries').should('have.length',4)
+		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+		// 	cy.get('a').contains('25 results').click()
+		// 	entry.get('Entries').should('have.length',25)
+		// 	cy.get(':nth-child(2) > .pagination__link').should('exist')
+		// 	cy.get(':nth-child(2) > .pagination__link').click()
+		// 	entry.get('Entries').find('tr').should('have.length',4)
 
-			entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-			cy.get('a').contains('All 29 entries').click()
-			entry.get('Entries').should('have.length',29)
-			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Blog
-			entry.get('Entries').should('have.length',27)
-			cy.get(':nth-child(2) > .pagination__link').should('not.exist')
+		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
+		// 	cy.get('a').contains('All 29 entries').click()
+		// 	entry.get('Entries').should('have.length',29)
+		// 	entry.get('ChannelSort').click()
+		// 	cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Channel
+		// 	entry.get('Entries').should('have.length',27)
+		// 	cy.get(':nth-child(2) > .pagination__link').should('not.exist')
 
-		})
+		// })
 
-		it('cleans for reruns', () => {
+		it.skip('cleans for reruns', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			cy.get('input[title="select all"]').click()
 			cy.get('select').select('Delete')

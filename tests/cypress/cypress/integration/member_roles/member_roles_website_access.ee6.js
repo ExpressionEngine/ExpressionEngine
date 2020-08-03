@@ -5,15 +5,42 @@ const member = new MemberCreate;
 
 context('Test Member roles Web access ', () => {
 
-	it('(Sanity check) : Allows Members to view the Web Site', () => {
+	it('Create Test role to view site', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('Members1');
+	  	cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/index.php/blog/entry/action-comedy-how-to#comments')
-		cy.get('h2').contains('Comment as Members1') //logged in as Member1
+		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.get('a').contains('New Role').click()
+		cy.get('input[name="name"]').clear().type('Test')
+		cy.get('button').contains('Save & Close').eq(0).click()
+
 	})
+
+	it('adds a Test member', () => {
+		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.get('#username').type('admin');
+		cy.get('#password').type('password');
+		cy.get('.button').click();
+		add_members('Test',1)
+	})
+
+	it('Let Test Role access CP', () => {
+	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.get('#username').type('admin');
+	   cy.get('#password').type('password');
+	   cy.get('.button').click();
+
+
+	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+
+	   cy.get('div[class="list-item__title"]').contains('Test').click()
+
+	   cy.get('button').contains('CP Access').click()
+	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
+	})
+	
 
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
@@ -24,8 +51,7 @@ context('Test Member roles Web access ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('admin')//ensure admin logged in
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	  
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
@@ -33,18 +59,18 @@ context('Test Member roles Web access ', () => {
 		cy.get('.on > .slider').click();
 		cy.get('input').contains('Save Settings').click()
 
-		cy.visit('http://localhost:8888/index.php/blog/entry/action-comedy-how-to#comments')
-		cy.get('h2').contains('Comment as admin') //logged in as admin
+		cy.visit('http://localhost:8888')
+		
 		logout()
 
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('Members1');
+	  	cy.get('#username').type('Test1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
 		
 
-		cy.visit('http://localhost:8888/index.php/blog/entry/action-comedy-how-to#comments',{failOnStatusCode:false})
+		cy.visit('http://localhost:8888',{failOnStatusCode:false})
 	   
 	   cy.on('uncaught:exception', (err, runnable) => {
 			    expect(err.message).to.include('something about the error')
@@ -62,7 +88,7 @@ context('Test Member roles Web access ', () => {
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-	   cy.get('div[class="list-item__title"]').contains('Members').click()
+	   cy.get('div[class="list-item__title"]').contains('Test').click()
 	   cy.get('button').contains('Website Access').click()
 
 		cy.get('#fieldset-website_access .checkbox-label:nth-child(2) > input').click(); //Turn offline access on for members
@@ -71,12 +97,12 @@ context('Test Member roles Web access ', () => {
 		logout()
 
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('Members1');
+	   cy.get('#username').type('Test1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/index.php/blog/entry/action-comedy-how-to#comments')
-		cy.get('h2').contains('Comment as Members1') //logged in as Member1
+	   cy.visit('http://localhost:8888',{failOnStatusCode: false})
+
 	})
 
 	it('cleans for reruns', () => {
@@ -92,8 +118,7 @@ context('Test Member roles Web access ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('admin')//ensure admin logged in
-	   cy.get('.main-nav__account-icon > img').click()
-	   cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
+	  
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
@@ -102,7 +127,7 @@ context('Test Member roles Web access ', () => {
 		cy.get('input').contains('Save Settings').click()
 
 		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-	   cy.get('div[class="list-item__title"]').contains('Members').click()
+	   cy.get('div[class="list-item__title"]').contains('Test').click()
 	   cy.get('button').contains('Website Access').click()
 
 		cy.get('#fieldset-website_access .checkbox-label:nth-child(2) > input').click(); //Turn offline access on for members
@@ -115,4 +140,29 @@ function logout(){
   cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
+}
+
+function add_members(group, count){
+  let i = 1;
+  for(i ; i <= count; i++){
+    member.load() //goes to member creation url
+
+    let email = group;
+    email += i.toString();
+    email += "@test.com";
+    let username = group + i.toString();
+    member.get('username').clear().type(username)
+      member.get('email').clear().type(email)
+      member.get('password').clear().type('password')
+      member.get('confirm_password').clear().type('password')
+
+    cy.get("body").then($body => {
+          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
+              cy.get("input[name=verify_password]").type('password');
+          }
+        });  
+      cy.get('button').contains('Roles').click()
+    cy.get('label').contains(group).click()
+      member.get('save_and_new_button').click()
+  }
 }

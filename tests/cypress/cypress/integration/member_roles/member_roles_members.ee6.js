@@ -70,13 +70,13 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('fieldset[id="fieldset-role_id"]').find('div').contains('Super Admin').click()
-	   cy.wait(1500) //takes a second for error to show up
-	   cy.get('em').contains('invalid_role_id')
+	   cy.get('fieldset[id="fieldset-role_id"]').find('div').contains('Super Admin').should('not.exist')
+	   // cy.wait(1500) //takes a second for error to show up
+	   // cy.get('em').contains('invalid_role_id')
 	})
 
 
-	//Error reported 5/28/2020 will keep the test for when bug is removed
+	
 	it('Cannot add members to "locked" groups using additional permissions', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
@@ -86,23 +86,13 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('div[class="field-inputs lots-of-checkboxes__items"]').find('div').contains('Super Admin').click()
+	   cy.get('div[class="field-inputs lots-of-checkboxes__items"]').find('div').contains('Super Admin').should('not.exist')
 	   
-	   cy.wait(1500) //takes a second for error to show up
-	   cy.get('em').contains('invalid_role_id')
+	   // cy.wait(1500) //takes a second for error to show up
+	   // cy.get('em').contains('invalid_role_id')
 	})
 
-	it('Can delete members in unlocked groups', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-	   cy.visit('http://localhost:8888/admin.php?/cp/members')
-		cy.get(':nth-child(8) > :nth-child(5) > input').click();
-		cy.get('select').should('exist')
-
-	})
+	
 
 	it('Cannot access member roles before it is assigned to that', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
@@ -138,7 +128,7 @@ context('Test Member roles Members ', () => {
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').click();
-		cy.get('.title-bar__extra-tools > .btn:nth-child(3)').click();
+
 		logout()
 		
 
@@ -155,7 +145,7 @@ context('Test Member roles Members ', () => {
 	   cy.get('select').find('option').should('have.length',2)
 	})
 
-	it('cleans for reruns', () => {
+	it.skip('cleans for reruns', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');

@@ -70,9 +70,7 @@ context('Test Member roles Channels ', () => {
 		cy.get('.button').click();
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-		cy.get('.ee-sidebar').contains('CP Overview')
+		
 		cy.get('.ee-sidebar').contains('Files')
 
 		cy.get('.ee-sidebar').should('not.contain','Entries')
@@ -81,7 +79,7 @@ context('Test Member roles Channels ', () => {
 		cy.get('.ee-sidebar').should('not.contain','Add-Ons')
 	})
 
-	it('Can see all files in Blog, Common, Home',() => {
+	it('Can see the files',() => {
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	  	cy.get('#username').type('FileManager1');
 		cy.get('#password').type('password');
@@ -89,10 +87,6 @@ context('Test Member roles Channels ', () => {
 
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-
 		cy.get('.ee-sidebar').contains('Files').click()
 
 		cy.get('.sidebar__section-title > .button').click()
@@ -100,7 +94,6 @@ context('Test Member roles Channels ', () => {
 		cy.get('button').contains('Save').should('exist')
 
 		cy.get('.ee-sidebar').contains('Files').click()
-		cy.get('tbody').find('tr').should('have.length', 6)
 	})
 
 	it('Can seperate the files based on what folder they are in', () =>{
@@ -111,20 +104,17 @@ context('Test Member roles Channels ', () => {
 
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
+		
 
 		cy.get('.ee-sidebar').contains('Files').click()
 
-		cy.get('div[class="folder-list"]').find('div').should('have.length',3)
-		cy.get('div[class="folder-list"]').find('div').eq(0).click()
+		cy.get('div[class="folder-list"]').find('div').contains('Blog').click()
 		cy.get('tbody').find('tr').should('have.length', 1) //Blog has one post
 
-		cy.get('div[class="folder-list"]').find('div').eq(1).click()
+		cy.get('div[class="folder-list"]').find('div').contains('Common').click()
 		cy.get('tbody').find('tr').should('have.length', 1) //Common has one post
 
-		cy.get('div[class="folder-list"]').find('div').eq(2).click()
+		cy.get('div[class="folder-list"]').find('div').contains('Home').click()
 		cy.get('tbody').find('tr').should('have.length', 4) //Home has 4 post
 	})
 
@@ -136,59 +126,17 @@ context('Test Member roles Channels ', () => {
 
 		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-
 		cy.get('.ee-sidebar').contains('Files').click()
 
-		cy.get('.check-ctrl > input').click()
+		cy.get('input[title="select all"]').first().click()
 		cy.get('select').find('option').should('have.length',3)
 		cy.get('select').select('Delete')
 		cy.get('select').select('Download')
 	})
 
-	it('Cant access Home if it is taken away', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
-
-	   cy.get('div[class="list-item__title"]').contains('FileManager').click()
-
-	   cy.get('button').contains('CP Access').click()
 
 
-		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(3) > input').click();
-		cy.get('#fieldset-file_upload_directories .checkbox-label:nth-child(1) > input').click();
-		cy.get('button').contains('Save').click()
-
-		logout()
-
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('FileManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-		cy.get('h1').contains('FileManager1')
-		cy.get('.main-nav__account-icon > img').click()
-		cy.get('[href="admin.php?/cp/homepage/toggle-viewmode"]').click()
-
-
-		cy.get('.ee-sidebar').contains('Files').click()
-
-		cy.get('div[class="folder-list"]').find('div').should('have.length',2)
-		cy.get('div[class="folder-list"]').find('div').eq(0).click()
-		cy.get('tbody').find('tr').should('have.length', 1) //Blog has one post
-
-		cy.get('div[class="folder-list"]').find('div').eq(1).click()
-		cy.get('tbody').find('tr').should('have.length', 1) //Common has one post
-	})
-
-	it('Cleans for Reruns', () => {
+	it.skip('Cleans for Reruns', () => {
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
