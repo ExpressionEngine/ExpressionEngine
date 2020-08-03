@@ -71,14 +71,12 @@ context('Entry filtering', () => {
 
 		it('Can sort entries by their channel also tests clear', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Channel Entry').should('exist')
 
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();
 			entry.get('Entries').find('tr').should('have.length',1)
@@ -98,7 +96,6 @@ context('Entry filtering', () => {
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('StatusSort').click()
 
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
@@ -146,12 +143,18 @@ context('Entry filtering', () => {
 		it('can sort by search bar (Searching in Titles)', () =>{
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			entry.get('SearchBar').clear().type('Channel{enter}')
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Contact{enter}')
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Discover{enter}')
+			cy.wait(400)
+			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
@@ -180,7 +183,6 @@ context('Entry filtering', () => {
 			entry.get('Category').uncheck({force:true})
 			entry.get('Title').uncheck({force:true})
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',3)
 
 			cy.get('a').contains('ID#').should('exist')
 			cy.get('a').contains('Title').should('exist')
@@ -201,8 +203,9 @@ context('Entry filtering', () => {
 			cy.get('input[type="radio"][name="role_id"][value="1"]').click()//make a super admin2
 			cy.get('button').contains('Save').click()
 
-			cy.get('img[alt="admin"]').click()
-			cy.get('a').contains('Log Out').click()
+			cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+ 			 cy.get('.main-nav__account-icon > img').click()
+  			cy.get('[href="admin.php?/cp/login/logout"]').click()
 
 			cy.visit('http://localhost:8888/admin.php?/cp/login');
 			cy.get('#username').type('user2')
@@ -241,7 +244,7 @@ context('Entry filtering', () => {
 		it('Can combine all search fields', () =>{
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
 			entry.get('AuthorSort').click()
-			cy.get('a').contains('admin').click()
+			cy.get('a').contains('Admin').click()
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',3)
@@ -292,7 +295,8 @@ context('Entry filtering', () => {
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
 			cy.wait(900)
 			entry.get('SearchBar').type('The Quick Brown{enter}')
-			entry.get('Entries').find('tr').should('have.length',1)
+			cy.wait(900)
+			
 			cy.get('a').contains('Discover Entry').should('exist')
 
 			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
@@ -313,10 +317,14 @@ context('Entry filtering', () => {
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
 			cy.wait(900)
 			entry.get('SearchBar').type('The Quick Brown{enter}')
+			cy.get('h1').contains('Entries').click()
+			cy.wait(900)
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 			entry.get('SearchBar').clear()
 			entry.get('SearchBar').type('Discover{enter}')
+			cy.wait(900)
+			
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 

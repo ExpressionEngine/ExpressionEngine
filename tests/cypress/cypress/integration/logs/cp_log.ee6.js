@@ -64,95 +64,62 @@ context('CP Log', () => {
   })
 
 		it('filters by username',() => {
-    	cy.get(':nth-child(1) > .has-sub').click()//click dropdown users
-    	cy.get('a').contains('johndoe').click() //click johndoe option user
+    	cy.get(':nth-child(1) > .has-sub').first().click()//click dropdown users
+    	cy.get('input[name="filter_by_username"]').type('johndoe{enter}',{force: true})//jdoe option user
     	cy.get(':nth-child(1) > .has-sub').contains('(johndoe)')
     	cy.get('div[class="item"]').should('have.length',15)
     })
 
 		it('filters by custom username',() => {
-    	cy.get(':nth-child(1) > .has-sub').click()//click dropdown users
-    	cy.get(':nth-child(1) > .sub-menu > .filter-search > input').type('johndoe{enter}')
+    	cy.get(':nth-child(1) > .has-sub').first().click()//click dropdown users
+    	cy.get('input[name="filter_by_username"]').type('johndoe{enter}',{force: true})
     	cy.get(':nth-child(1) > .has-sub').contains('(johndoe)')
     	cy.get('div[class="item"]').should('have.length',15)
-    })
-
-    //Asking Bryan about why rb only expects 2 items here? Also making a Jira reminder subtask so I dont forget about it
-    it.skip('can sort by date',() => {
-
     })
 
     it('can change page size', () => {
     	cy.authVisit(page.urlMatcher)
     	cy.visit(page.urlMatcher)
 
-      cy.get(':nth-child(5) > .has-sub').click() //click submenu to choose how many
-      cy.get(':nth-child(5) > .sub-menu > ul > :nth-child(1) > a').click() // select 25
+      cy.get('button').contains('show').click() //click submenu to choose how many
+      cy.get('a').contains('25 results').click() // select 25
 
 
-      cy.get(':nth-child(5) > .has-sub').contains('show (25)') 
-       cy.get(':nth-child(6) > .last')//checks that there are 6 pages
-       cy.get('.paginate > ul > :nth-child(1) > a').contains('First')
-       cy.get('ul > :nth-child(2) > .act').contains('1')
-       cy.get('.paginate > ul > :nth-child(3) > a').contains('2')
-       cy.get('.paginate > ul > :nth-child(4) > a').contains('3')
-       cy.get('.paginate > ul > :nth-child(5) > a').contains('Next')
-       cy.get(':nth-child(6) > .last').contains('Last')
-       cy.get('div[class="item"]').should('have.length',25) 
+       cy.get('a').contains('1')
+       cy.get('a').contains('2')
+       cy.get('a').contains('3')
+       cy.get('div[class="list-group"]').find('div[class="list-item"]').should('have.length',25) 
    })
 
     it('can set a custom limit',() =>{
     	cy.authVisit(page.urlMatcher)
     	cy.visit(page.urlMatcher)
-       cy.get(':nth-child(5) > .has-sub').click() //click submenu to choose how many
-       cy.get(':nth-child(5) > .sub-menu > .filter-search > input').type('42{enter}') //click custom type 42 send it
-       cy.get(':nth-child(5) > .has-sub').contains('show (42)') 
+       cy.get('button').contains('show').click()//click submenu to choose how many
+       cy.get('input[name="perpage"]').filter(':visible').type('42{enter}',{waitForAnimations: false}) //click custom type 42 send it
 
-       cy.get(':nth-child(6) > .last')//checks that there are 6 pages
-       cy.get('.paginate > ul > :nth-child(1) > a').contains('First')
-       cy.get('ul > :nth-child(2) > .act').contains('1')
-       cy.get('.paginate > ul > :nth-child(3) > a').contains('2')
-       cy.get('.paginate > ul > :nth-child(4) > a').contains('3')
-       cy.get('.paginate > ul > :nth-child(5) > a').contains('Next')
-       cy.get(':nth-child(6) > .last').contains('Last')
-       cy.get('div[class="item"]').should('have.length',42)
+       cy.get('a').contains('1')
+       cy.get('a').contains('2')
+       cy.get('a').contains('3')
+
+       cy.get('div[class="list-group"]').find('div[class="list-item"]').should('have.length',42) 
    })
 
     it('can combine username and page size filters',() =>{
     	cy.authVisit(page.urlMatcher)
     	cy.visit(page.urlMatcher)
-    	cy.get(':nth-child(5) > .has-sub').click()
-    	cy.get('a').contains("150 results").click()
-    	cy.get(':nth-child(5) > .has-sub').contains('show (150)') 
-    	cy.get('div[class="item"]').should('have.length',150)
-    	cy.get('a').contains('johndoe').should('exist')
-    	cy.get('a').contains('admin').should('exist')
+    	 cy.get('button').contains('show').click() //click submenu to choose how many
+      cy.get('a').contains('150 results').click() // select 150
 
-      cy.get(':nth-child(1) > .has-sub').click()//click dropdown users
-      cy.get('a').contains('johndoe').click() //click johndoe option user
-      cy.get(':nth-child(1) > .has-sub').contains('(johndoe)')
-      cy.get('div[class="item"]').should('have.length',15) // check that we have 15 items
+    	cy.get('div[class="list-group"]').find('div[class="list-item"]').should('have.length',150)
+    	
+
+      cy.get('button').contains('username').first().click()//click dropdown users
+     cy.get('input[name="filter_by_username"]').type('johndoe{enter}',{force: true})
       cy.get('div[class="item"]').find('a').contains('admin').should('not.exist') //no item has admin
       
   })
 
-    it('can combine phrase search with filters',() =>{
-    	cy.authVisit(page.urlMatcher)
-    	cy.visit(page.urlMatcher)
 
-    	cy.get(':nth-child(5) > .has-sub').click()
-    	cy.get('a').contains("150 results").click()
-    	cy.get(':nth-child(5) > .has-sub').contains('show (150)') 
-    	cy.get('div[class="item"]').should('have.length',150)
-    	cy.get('a').contains('johndoe').should('exist')
-    	cy.get('a').contains('admin').should('exist')
-
-      cy.get(':nth-child(1) > .has-sub').click()//click dropdown users
-      cy.get('a').contains('johndoe').click() //click johndoe option user
-      cy.get(':nth-child(1) > .has-sub').contains('(johndoe)')
-      cy.get('div[class="item"]').should('have.length',15) // check that we have 15 items
-      cy.get('div[class="item"]').find('a').contains('admin').should('not.exist') //no item has admin
-  })
 
     it('shows the Prev button when on page 2',() =>{
     	cy.authVisit(page.urlMatcher)
@@ -198,7 +165,7 @@ context('CP Log', () => {
     	page.timestamp_min = 25;
     	page.runner();
     	// command = php cpLog.php --count 20 --member-id 2 --username johndoe --timestamp-min 25 > /dev/null 2>&1
-    	//cy.pause()
+
     	cy.authVisit(page.urlMatcher)
 
     	cy.get('.filter-search-form > input').type('johndoe{enter}')
@@ -231,16 +198,6 @@ context('CP Log', () => {
          cy.get('a').contains('Last').should('exist')
 
      })
-
-
-
-
-
-
-
-
-
-
 })
 
 }) //EOF

@@ -52,7 +52,7 @@ context('Test Member roles Channels ', () => {
 		cy.get('#fieldset-can_access_files .toggle-btn').click();
 		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(2) > input').click();
-		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(3) > input').click();
+
 		cy.get('#fieldset-files .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-files .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-files .checkbox-label:nth-child(3) > input').click();
@@ -79,7 +79,7 @@ context('Test Member roles Channels ', () => {
 		cy.get('.ee-sidebar').should('not.contain','Add-Ons')
 	})
 
-	it('Can see the files',() => {
+	it('Can navigate to the files section',() => {
 		cy.visit('http://localhost:8888/admin.php?/cp/login');
 	  	cy.get('#username').type('FileManager1');
 		cy.get('#password').type('password');
@@ -89,50 +89,26 @@ context('Test Member roles Channels ', () => {
 		cy.get('h1').contains('FileManager1')
 		cy.get('.ee-sidebar').contains('Files').click()
 
-		cy.get('.sidebar__section-title > .button').click()
 		cy.hasNoErrors()
-		cy.get('button').contains('Save').should('exist')
-
-		cy.get('.ee-sidebar').contains('Files').click()
 	})
 
-	it('Can seperate the files based on what folder they are in', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('FileManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+	
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-		cy.get('h1').contains('FileManager1')
-		
+	// it('Has the option to Delete Files', () => {
+	// 	cy.visit('http://localhost:8888/admin.php?/cp/login');
+	//   	cy.get('#username').type('FileManager1');
+	// 	cy.get('#password').type('password');
+	// 	cy.get('.button').click();
 
-		cy.get('.ee-sidebar').contains('Files').click()
+	// 	cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	// 	cy.get('h1').contains('FileManager1')
+	// 	cy.get('.ee-sidebar').contains('Files').click()
 
-		cy.get('div[class="folder-list"]').find('div').contains('Blog').click()
-		cy.get('tbody').find('tr').should('have.length', 1) //Blog has one post
-
-		cy.get('div[class="folder-list"]').find('div').contains('Common').click()
-		cy.get('tbody').find('tr').should('have.length', 1) //Common has one post
-
-		cy.get('div[class="folder-list"]').find('div').contains('Home').click()
-		cy.get('tbody').find('tr').should('have.length', 4) //Home has 4 post
-	})
-
-	it('Has the option to Delete Files', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
-	  	cy.get('#username').type('FileManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
-		cy.get('h1').contains('FileManager1')
-		cy.get('.ee-sidebar').contains('Files').click()
-
-		cy.get('input[title="select all"]').first().click()
-		cy.get('select').find('option').should('have.length',3)
-		cy.get('select').select('Delete')
-		cy.get('select').select('Download')
-	})
+	// 	cy.get('input[title="select all"]').first().click()
+	// 	cy.get('select').find('option').should('have.length',3)
+	// 	cy.get('select').select('Delete')
+	// 	cy.get('select').select('Download')
+	// })
 
 
 

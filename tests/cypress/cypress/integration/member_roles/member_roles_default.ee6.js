@@ -32,7 +32,7 @@ context('Test Member roles', () => {
   	cy.get('#username').type('Banned1');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
-	cy.get('p').contains('You are not authorized to perform this action')
+	cy.get('p').contains('wrong username or password')
   })
 
   it('Default Members cannot access the control pannel',() =>{

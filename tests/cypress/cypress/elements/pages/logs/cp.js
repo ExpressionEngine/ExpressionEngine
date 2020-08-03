@@ -4,59 +4,59 @@ class CpLogs extends ControlPanel {
   constructor() {
     super()
 
-    this.urlMatcher = /logs\/cp/
+    this.urlMatcher = 'admin.php?/cp/logs/cp';
+    
+    this.count =  250;
+    this.site_id = null;
+    this.member_id = null;
+    this.username = null;
+    this.ip_address = null;
+    this.timestamp_min = null;
+    this.timestamp_max = null;
+    this.Action = null;
 
    }
 
-  generate_data(
-    count =  250,
-    site_id = null,
-    member_id = null,
-    username = null,
-    ip_address = null,
-    timestamp_min = null,
-    timestamp_max = null,
-    action = null
-    )
+
   
- {
- 	let command = "cd fixtures && php cpLog.php"
+ runner(){
+  let command = "cd fixtures && php cpLog.php"
 
- 	 if (count){
-      command += " --count " + count.toString()
+   if (this.count){
+      command += " --count " + this.count.toString()
     }
 
-    if (site_id){
-      command += " --site-id " + site_id.toString()
-    }
-    
-
-    if (member_id){
-      command += " --member-id " + member_id.toString()
+    if (this.site_id){
+      command += " --site-id " + this.site_id.toString()
     }
     
 
-    if (username){
-      command += " --username '" + username.toString() + "'"
+    if (this.member_id){
+      command += " --member-id " + this.member_id.toString()
     }
     
 
-    if (ip_address){
-      command += " --ip-address '" + ip_address.toString() + "'"
+    if (this.username){
+      command += " --username '" + this.username.toString() + "'"
     }
     
 
-    if (timestamp_min){
-      command += " --timestamp-min " + timestamp_min.toString()
+    if (this.ip_address){
+      command += " --ip-address '" + this.ip_address.toString() + "'"
     }
     
 
-    if (timestamp_max){
-      command += " --timestamp-max " + timestamp_max.toString()
+    if (this.timestamp_min){
+      command += " --timestamp-min " + this.timestamp_min.toString()
+    }
+    
+
+    if (this.timestamp_max){
+      command += " --timestamp-max " + this.timestamp_max.toString()
     }
 
-    if (action){
-      command += " --action '" + action.toString() + "'"
+    if (this.Action){
+      command += " --action '" + this.Action.toString() + "'"
     }
     
     command += " > /dev/null 2>&1"
@@ -68,8 +68,3 @@ class CpLogs extends ControlPanel {
 }
 
  export default CpLogs;
-
-
-  	
-  	
-

@@ -70,7 +70,7 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('fieldset[id="fieldset-role_id"]').find('div').contains('Super Admin').should('not.exist')
+	   cy.get('fieldset[id="fieldset-role_id"]').contains('Super Admin').should('not.exist')
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')
 	})
@@ -86,7 +86,7 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('div[class="field-inputs lots-of-checkboxes__items"]').find('div').contains('Super Admin').should('not.exist')
+	   cy.get('div').contains('Super Admin').should('not.exist')
 	   
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')
