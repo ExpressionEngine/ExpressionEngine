@@ -122,7 +122,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		</ul>
 
 		<?php if ($can_moderate_comments): ?>
-		<div class="widget__bottom-buttons">
+		<div class="widget__bottom-buttons button-group button-group-small">
 			<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="button button--default button--small">
 				<?php if ($number_of_pending_comments > 0): ?>
 				<i class="icon--caution icon-left"></i>
