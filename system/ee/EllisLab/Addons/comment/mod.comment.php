@@ -2206,15 +2206,23 @@ class Comment {
 	{
 		ee()->lang->loadfile('comment');
 
-		// Membership is required
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
-		}
-
 		$id		= ee()->input->get('entry_id');
+		$hash	= ee()->input->get('hash');
 		$type	= (ee()->input->get('type')) ? 'unsubscribe' : 'subscribe';
 		$ret	= ee()->input->get('ret');
+
+
+		// Membership is required unless hash is set
+		if (ee()->session->userdata('member_id') == 0)
+		{
+			if ($type == 'subscribe') {
+				return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+			}
+			elseif ($type == 'unsubscribe' && ! $hash) {
+				return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+			}
+		}
+
 
 		if ( ! $id)
 		{
@@ -2250,14 +2258,20 @@ class Comment {
 		}
 
 		// They check out- let them through
-		ee()->subscription->$type();
+		if ($type == 'unsubscribe') {
+			ee()->subscription->$type(FALSE, $hash);
+			$title = 'cmt_unsubscribe';
+			$content = 'you_have_been_unsubscribed';
+		}
+		else {
+			ee()->subscription->$type();
+			$title = 'cmt_subscribe';
+			$content = 'you_have_been_subscribed';
+		}
 
 		// Show success message
-
 		ee()->lang->loadfile('comment');
 
-		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
-		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
 		$redirect = ee()->functions->create_url($ret);
 
 		if ( ! $ret) {
