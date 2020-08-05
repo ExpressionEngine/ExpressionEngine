@@ -1,73 +1,42 @@
 import ControlPanel from '../ControlPanel'
-import './logs.js'
+
 class SearchLogs extends ControlPanel {
   constructor() {
     super()
+    this.elements({
+      'username' : 'button[data-filter-label="username"]',
+      'filter_user' : 'input[name="filter_by_username"]',
 
-    this.urlMatcher = /logs\/search/
+      'date' : 'button[data-filter-label="date"]',
 
+      'show' : 'button[data-filter-label="show"]',
+      'custom_limit' : 'input[name="perpage"]',
+
+      'search' : 'input[name="filter_by_keyword"]',
+
+      'delete_all' : 'button[rel="modal-confirm-all"]',
+
+     'list' : 'div[class="list-group"]',
+
+     'empty' : 'p[class="no-results"]',
+     'confirm' : 'input[type="submit"]',
+
+
+    //for creating member
+     "save_button": 'form .form-btns-top button[type=submit][value=save]',
+        "save_and_new_button": 'form .form-btns-top button[type=submit][value=save_and_new]',
+        "save_and_close_button": 'form .form-btns-top button[type=submit][value=save_and_close]',
+
+        'member_groups': 'input[type!=hidden][name=role_id]:visible',
+        'usernamem': 'input[type!=hidden][name=username]:visible',
+        'email': 'input[type!=hidden][name=email]:visible',
+        'password': 'input[type!=hidden][name=password]:visible',
+        'confirm_password': 'input[type!=hidden][name=confirm_password]:visible'
+
+
+
+    
+    })
   }
-
-  generate_data(
-    count = 250,
-    site_id = null,
-    member_id = null,
-    screen_name = null,
-    ip_address = null,
-    timestamp_min = null,
-    timestamp_max = null,
-    type = null,
-    terms = null
-    )
-
-  {
-  	let  command = "cd fixtures && php searchLog.php"
-  	if (count){
-      command += " --count " + count.to_s
-  	}
-    
-
-    if (site_id){
-      command += " --site-id " + site_id.to_s
-    }
-    
-
-    if (member_id){
-      command += " --member-id " + member_id.to_s
-    }
-    
-
-    if (screen_name){
-      command += " --screen-name '" + screen_name.to_s + "'"
-    }
-    
-
-    if (ip_address){
-      command += " --ip-address '" + ip_address.to_s + "'"
-    }
-    
-
-    if (timestamp_min){
-      command += " --timestamp-min " + timestamp_min.to_s
-    }
-    
-
-    if (timestamp_max){
-      command += " --timestamp-max " + timestamp_max.to_s
-    }
-    
-
-    if (type){
-      command += " --type '" + type.to_s + "'"
-    }
-    
-
-    if (terms){
-      command += " --terms '" + terms.to_s + "'"
-    }
-    command += " > /dev/null 2>&1"
-    cy.exec(command)
-  }
-
 }
 export default SearchLogs;

@@ -6,247 +6,196 @@ const { _, $ } = Cypress
 context('Search Log', () => {
 
 	beforeEach(function() {
-		cy.authVisit(page.urlMatcher);
-		cy.hasNoErrors()
-	})
+			cy.visit('http://localhost:8888/admin.php?/cp/login');
+	      cy.get('#username').type('admin');
+	      cy.get('#password').type('password');
+	      cy.get('.button').click();
+	      cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+			cy.hasNoErrors()
+    })
 
-	it('shows the Search Logs page', () => {
-		page.count = 150;
-		page.timestamp_min = 26;
-		page.runner()
-		page.count = 15;
-		page.member_id = 8;
-		page.screen_name = 'johndoe';
-		page.timestamp_min = 25;
-		page.runner()
-		page.get('remove_all').should('exist')
-		page.get('pagination').should('exist')
-		page.get('perpage_filter').contains('show (25)')
-		page.get('pages').should('have.length',6)
-		page.get('items').should('have.length',25)
-	})
+   it('shows the Control Panel Access Logs page', () => {
+      page.get('username').should('exist')
+      page.get('date').should('exist')
+      page.get('show').should('exist')
+      cy.get('h1').contains('System Logs')
+   })
+
+
 
 	it('searches by phrases', () => {
-		page.count = 1;
-		page.timestamp_max =0;
-		page.subject = "Rspec entry for search";
-		page.runner()
-		//done without pasuse
-		cy.get('.filter-search-form > input').type("Rspec{enter}")
-		page.get('wrap').contains("we found 1 result")
-		page.get('items').should('have.length',1)
-		
+		cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'Hello There')")
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		page.get('list').find('div[class="list-item"]').should('have.length',1)
+
+		page.get('search').filter(':visible').first().type('Hello There{enter}')
+		cy.wait(400)
+		page.get('list').find('div[class="list-item"]').should('have.length',1)
 	})
 
 	it('shows no results on a failed search', () => {
 
-		cy.get('.filter-search-form > input').type("NotFoundHere{enter}")
-		cy.get('h1 > i').contains('we found 0 result')
-		page.get('username_filter').should('exist')
-		page.get('date_filter').should('exist')
-		page.get('perpage_filter').should('exist')
-
-       page.get('no_results').should('exist')
-
-      page.get('pagination').should('not.exist')
-      page.get('remove_all').should('not.exist')
+		page.get('search').filter(':visible').first().type('NotFound{enter}')
+		cy.wait(400)
+		page.get('empty').should('exist')
 		
 	})
+
+//get joe just like in CP test
+	var temp = 0;
+	  var JoeId =0;
+	  it('gets Johndoes ID', () => {
+	    cy.visit('admin.php/cp/admin.php?/cp/members')
+	    cy.get('input[name="filter_by_keyword"]').type('johndoe1{enter}')
+	    cy.wait(600)
+	    cy.get('h1').contains('Members').click()
+	    cy.get('tr[class="app-listing__row"]').find('td').eq(0).then(($span) =>{
+	      temp = $span.text();
+
+	      JoeId = temp.substring(2,temp.length)
+	      cy.log(JoeId);
+	    })
+	  })
 
 	it('filters by username', () => {
-		page.get('username_filter').click()
-		cy.get('a').contains('johndoe').click()
-		page.get('username_filter').contains('username (johndoe)')
-		page.get('items').should('have.length',15)
-		page.get('pagination').should('not.exist')
-		
+		 page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
+
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+		}
+
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+		}
+
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
+
+		page.get('username').filter(':visible').first().click()
+
+		page.get('filter_user').filter(':visible').type('admin{enter}',{waitForAnimations: false})
+		cy.wait(300)
+		page.get('list').find('div[class="list-item"]').should('have.length',15)
 	})
 
 
-	it('filters by custom username', () => {
-		page.get('username_filter').click()
-		cy.get(':nth-child(1) > .sub-menu > .filter-search > input').type('johndoe{enter}')
-    	cy.get(':nth-child(1) > .has-sub').contains('(johndoe)')
-    	cy.get('div[class="item"]').should('have.length',15)
-	})
+	
 
 	it('filters by date', () => {
-		page.count = 19;
-		page.timestamp_max = 22;
-		page.runner()
-		page.get('date_filter').click()
-		cy.get('a').contains('Last 24 Hours').click()
-		cy.get('div[class="item"]').should('have.length',19)
+		page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
 
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', 1, 'From 1969')")
+		}
+
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'From Today')")
+		}
+
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
+
+		page.get('date').filter(':visible').first().click()
+		cy.get('a').contains('24 Hours').click()
+		cy.wait(300)
+		page.get('list').find('div[class="list-item"]').should('have.length',15)
 		
     })
 
-	it('can change page size', () => {
-		page.get('perpage_filter').click()
-		cy.get('a').contains('25 results').click()
-		page.get('perpage_filter').contains('show (25)')
-		cy.get('div[class="item"]').should('have.length',25)
-		page.get('pagination').should('exist')
-		cy.get('.paginate > ul > :nth-child(1) > a').contains('First')
-       cy.get('ul > :nth-child(2) > .act').contains('1')
-       cy.get('.paginate > ul > :nth-child(3) > a').contains('2')
-       cy.get('.paginate > ul > :nth-child(4) > a').contains('3')
-       cy.get('.paginate > ul > :nth-child(5) > a').contains('Next')
-       cy.get(':nth-child(6) > .last').contains('Last')
-		
-	})
+    it('can set a custom page size', () => {
+    	page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
 
-	it('can set a custom limit', () => {
-		page.get('perpage_filter').click()
-		cy.get(':nth-child(5) > .sub-menu > .filter-search > input').type('42{enter}')
-		page.get('perpage_filter').contains('show (42)') 
+		var i = 0;
+        for (i = 0; i < 50; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', 1, 'From 1969')")
+		}
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
 
-       
-       cy.get('.paginate > ul > :nth-child(1) > a').contains('First')
-       cy.get('a').contains('1').should('exist')
-       cy.get('a').contains('2').should('exist')
-       cy.get('a').contains('3').should('exist')
-       cy.get('a').contains('Next').should('exist')
-       cy.get('a').contains('Last').should('exist')
-       cy.get('div[class="item"]').should('have.length',42)
-	})
+		page.get('list').find('div[class="list-item"]').should('have.length',25)
 
+		page.get('show').filter(':visible').first().click()
+		page.get('custom_limit').filter(':visible').first().type('42{enter}',{waitForAnimations: false})
+		cy.wait(300)
 
-	it('can combine username and page size filters', () => {
-		page.get('perpage_filter').click()
-		cy.get('a').contains('150 results').click()
-		cy.get('div[class="item"]').should('have.length',150)
-    	cy.get('a').contains('johndoe').should('exist')
-    	cy.get('a').contains('admin').should('exist')
+		page.get('list').find('div[class="list-item"]').should('have.length',42)
 
-    	cy.get('div').find('[class="paginate"]').should('exist')
-    	//page.get('paginate').should('exist')
+    })
 
-    	page.get('username_filter').click()
-    	cy.get('a').contains('johndoe').click()
-    	page.get('perpage_filter').contains('show (150)') 
-    	page.get('username_filter').contains('(johndoe)')
-    	cy.get('div').find('[class="paginate"]').should('not.exist')
-	})
+    it('can combine username and show filters', () => {
 
-	it('can combine phrase search with filters', () => {
-		page.get('perpage_filter').click()
-		cy.get('a').contains('150 results').click()
-		cy.get('a').contains('johndoe').should('exist')
-    	cy.get('a').contains('admin').should('exist')
+    	page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
 
-    	cy.get('div').find('[class="paginate"]').should('exist')
-    	//combine filters
-    	page.get('username_filter').click()
-		cy.get('a').contains('johndoe').click()
-    	page.get('perpage_filter').contains('show (150)') 
-    	page.get('username_filter').contains('(johndoe)')
-    	cy.get('div').find('[class="paginate"]').should('not.exist')
-    	cy.get('div[class="item"]').find('a').contains('admin').should('not.exist')
-    	cy.get('div[class="item"]').should('have.length',15)
-	})
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+		}
 
+		var i = 0;
+        for (i = 0; i < 15; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+		}
 
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
 
+		page.get('username').filter(':visible').first().click()
 
+		page.get('filter_user').filter(':visible').type('admin{enter}',{waitForAnimations: false})
+		cy.wait(300)
+		page.get('list').find('div[class="list-item"]').should('have.length',15)
 
-	it('shows the Prev button when on page 2', () => {
-		cy.get('a').contains('Next').click()
-    	cy.get('a').contains('Previous').should('exist')
-	})
+		page.get('show').filter(':visible').first().click()
+		page.get('custom_limit').filter(':visible').first().type('30{enter}',{waitForAnimations: false})
 
-	it('does not show Next on the last page', () => {
-		cy.get(':nth-child(6) > .last').click()
-		cy.get('a').contains('Next').should('not.exist')
-	})
+		page.get('list').find('div[class="list-item"]').should('have.length',15)
 
+    })
 
-	it('does not lose a filter value when paginating', () => {
-		page.get('perpage_filter').click()
-	
-      cy.get('a').contains('25 results').click() // select 25
-      page.get('perpage_filter').contains('show (25)') 
-       cy.get(':nth-child(6) > .last')//checks that there are 6 pages
-       cy.get('.paginate > ul > :nth-child(1) > a').contains('First')
-       cy.get('div[class="item"]').should('have.length',25) 
-       cy.get('a').contains('Next').should('exist')
-       cy.get('a').contains('Next').click()
-       cy.get('div[class="item"]').should('have.length',25) 
-       cy.get('a').contains('1').should('exist')
-       cy.get('a').contains('2').should('exist')
-       cy.get('a').contains('First').should('exist')
-       cy.get('a').contains('Next').should('exist')
-       cy.get('a').contains('Previous').should('exist')
-       cy.get('a').contains('Last').should('exist')
-	})
+    it('can remove a single entry', () => {
+      cy.get('i[class="fas fa-trash-alt"]').first().click()
+      page.get('confirm').filter(':visible').first().click()
+      cy.get('body').contains('1 log(s) deleted')
+    })
 
-	 it('will paginate phrase search results', () => {
-		page.count = 20;
-		page.member_id = 2;
-		page.screen_name = 'johndoe';
-		page.timestamp_min = 25;
-		page.runner()
-		cy.get('.filter-search-form > input').type('johndoe{enter}')
+    it('can remove all',() => {
+    	page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
+      	page.get('empty').should('exist')
+    })
 
-    	 //PG 1
-    	 cy.get('h1 > i').contains('we found 35 results')
-    	 page.get('perpage_filter').contains('show (25)') 
+    it('does not lose filter when paginating', () => {
+    	var i = 0;
+        for (i = 0; i < 30; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+		}
+
+		var i = 0;
+        for (i = 0; i < 30; i++) {
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+		}
+
+		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
+
+		page.get('username').filter(':visible').first().click()
+
+		page.get('filter_user').filter(':visible').type('admin{enter}',{waitForAnimations: false})
+		cy.wait(300)
+		page.get('list').find('div[class="list-item"]').should('have.length',25)
+		cy.get('a').filter(':visible').contains('johndoe1').should('not.exist')
+
+		cy.get('a[class="pagination__link"]').contains('2').click()
+		cy.get('a').filter(':visible').contains('johndoe1').should('not.exist')
+		page.get('list').find('div[class="list-item"]').should('have.length',5)
+    })
   
-    	 cy.get('div[class="item"]').should('have.length',25) // check that we have 15 items
-         cy.get('div[class="item"]').find('a').contains('admin').should('not.exist') //no item has admin
-         cy.get('a').contains('1').should('exist')
-         cy.get('a').contains('2').should('exist')
-         cy.get('a').contains('First').should('exist')
-         cy.get('a').contains('Next').should('exist')
-
-         cy.get('a').contains('Last').should('exist')
-
-         cy.get('a').contains('Next').click()
-
-       //PG 2
-
-       cy.get('h1 > i').contains('we found 35 results')
-       page.get('perpage_filter').contains('show (25)') 
-     
-    	 cy.get('div[class="item"]').should('have.length',10) // check that we have 15 items
-         cy.get('div[class="item"]').find('a').contains('admin').should('not.exist') //no item has admin
-         cy.get('a').contains('1').should('exist')
-         cy.get('a').contains('2').should('exist')
-         cy.get('a').contains('Previous').should('exist')
-         cy.get('a').contains('First').should('exist')
-
-         cy.get('a').contains('Last').should('exist')
-
-		
-	 })
-
-
-	 it('can remove a single entry', () => {
-		page.count = 1;
-		page.timestamp_max = 0;
-
-		page.terms = "entry to be deleted";
-		page.runner()
-		cy.get('.filter-search-form > input').type("entry to be deleted{enter}")
-		page.get('wrap').contains("we found 1 result")
-		page.get('items').should('have.length',1)
-		cy.get('.remove > .m-link').click()
-		cy.get('.modal-confirm-600 > .modal > .col-group > .col > .form-standard > form > :nth-child(6) > .btn').click()
-		cy.get('.app-notice__content > :nth-child(2)').contains('1 log(s) deleted')
-		
-	 })
-
-
-	it('can remove all entries', () => {
-		page.get('remove_all').should('exist')
-		page.get('remove_all').click()
-		cy.get('.modal-confirm-all > .modal > .col-group > .col > .form-standard > form > :nth-child(6) > .btn').click()	
-		cy.get('.app-notice__content > :nth-child(2)').contains('log(s) deleted')	
-		page.get('no_results').should('exist')
-	})
-
-
-
-
 
 })

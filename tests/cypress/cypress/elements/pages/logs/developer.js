@@ -1,45 +1,28 @@
 import ControlPanel from '../ControlPanel'
-import './logs.js'
+
 class DeveloperLog extends ControlPanel {
   constructor() {
     super()
+    this.elements({
+      
 
-    this.urlMatcher = /logs\/developer/
+      'date' : 'button[data-filter-label="date"]',
 
-   }
+      'show' : 'button[data-filter-label="show"]',
+      'custom_limit' : 'input[name="perpage"]',
+
+      'search' : 'input[name="filter_by_keyword"]',
+
+      'delete_all' : 'button[rel="modal-confirm-all"]',
+
+     'list' : 'div[class="list-group"]',
+
+     'empty' : 'p[class="no-results"]',
+     'confirm' : 'input[type="submit"]',
 
 
-    generate_data(
-	    count = 250,
-	    timestamp_min = null,
-	    timestamp_max = null,
-	    description = null
-    )
-
-{
-	let command = "cd fixtures && php developerLog.php"
-
-	if (count){
-      command += " --count " + count.toString()
-	
-    }
-
-    if (timestamp_min){
-      command += " --timestamp-min " + timestamp_min.toString()
-    }
     
-
-    if (timestamp_max){
-      command += " --timestamp-max " + timestamp_max.toString()
-    }
-    
-
-    if (description){
-      command += " --description '" + description.toString() + "'"
-    }
-    
-
-    command += " > /dev/null 2>&1"
-    cy.exec(command)
+    })
+  }
 }
-
+export default DeveloperLog;
