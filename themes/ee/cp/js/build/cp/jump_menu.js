@@ -46,6 +46,7 @@ EE.cp.JumpMenu = {
   typingAjaxDelay: 400,
   // Internal Variables
   typingTimeout: false,
+  blurTimeout: false,
   ajaxRequest: false,
   currentFocus: 1,
   shortcut: 'Ctrl',
@@ -60,12 +61,32 @@ EE.cp.JumpMenu = {
 
     jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
     jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
-    jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
+    jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false); // jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
+
     jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function () {
-      EE.cp.JumpMenu._showResults(1);
+      EE.cp.JumpMenu.currentFocus = 1;
+      clearTimeout(EE.cp.JumpMenu.blurTimeout);
+      jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
+      jumpContainer.document.querySelector('#jumpEntry2').value = '';
+
+      EE.cp.JumpMenu._showJumpMenu(1);
     });
     jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function () {
+      clearTimeout(EE.cp.JumpMenu.blurTimeout);
+
       EE.cp.JumpMenu._showResults(2);
+    });
+    jumpContainer.document.querySelector('#jumpEntry1').addEventListener("blur", function () {
+      clearTimeout(EE.cp.JumpMenu.blurTimeout);
+      EE.cp.JumpMenu.blurTimeout = setTimeout(function () {
+        EE.cp.JumpMenu._closeJumpMenu(1);
+      }, 1000);
+    });
+    jumpContainer.document.querySelector('#jumpEntry2').addEventListener("blur", function () {
+      clearTimeout(EE.cp.JumpMenu.blurTimeout);
+      EE.cp.JumpMenu.blurTimeout = setTimeout(function () {
+        EE.cp.JumpMenu._closeJumpMenu(1);
+      }, 1000);
     });
     jumpContainer.document.querySelectorAll('.js-jump-menu-trigger').forEach(function (triggerLink) {
       triggerLink.addEventListener("click", function (e) {
@@ -80,12 +101,29 @@ EE.cp.JumpMenu = {
   },
   _showJumpMenu: function _showJumpMenu() {
     var loadResults = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    jumpContainer.$('#jump-menu').trigger('modal:open');
-    jumpContainer.document.querySelector('#jump-menu .jump-to').focus();
+    jumpContainer.$('#jump-menu').css({
+      position: 'absolute',
+      'z-index': 100,
+      top: '59px',
+      right: '97px'
+    }).show(); //trigger('modal:open');
+
+    jumpContainer.document.querySelector('.input--jump').focus();
 
     if (loadResults) {
       EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, '');
     }
+  },
+  _closeJumpMenu: function _closeJumpMenu() {
+    var skipBlur = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    clearTimeout(EE.cp.JumpMenu.blurTimeout); // If the user clicked off the fields for more than a second, close them.
+
+    if (skipBlur === false) {
+      jumpContainer.document.querySelector('.jump-to').blur();
+    }
+
+    jumpContainer.document.querySelector('.jump-to').value = '';
+    jumpContainer.$('#jump-menu').hide();
   },
   _keyPress: function _keyPress(e) {
     if (e.target && e.target.className.indexOf('jump-to') !== -1) {
@@ -95,7 +133,7 @@ EE.cp.JumpMenu = {
       } else if (e.key == 'Tab' && e.shiftKey) {
         // If the user hit backspace on the secondary input field and it's empty, focus the top level field.
         e.preventDefault();
-        jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+        jumpContainer.document.querySelector('#jumpEntry2').value = '';
         jumpContainer.document.querySelector('#jumpEntry1').focus();
       } else if (e.key == 'Backspace' && EE.cp.JumpMenu.currentFocus > 1) {
         // If the user pressed Backspace, record the current value of the field before
@@ -118,8 +156,7 @@ EE.cp.JumpMenu = {
       if (e.key == 'Escape') {
         // Pressing ESC should close the jump menu. We blur the field to make sure
         // subsequent keystrokes aren't entered into it just in case.
-        jumpContainer.document.querySelector('.jump-to').value = '';
-        jumpContainer.document.querySelector('.jump-to').blur();
+        EE.cp.JumpMenu._closeJumpMenu(1);
       } else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
         var numItems = jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
 
@@ -150,7 +187,7 @@ EE.cp.JumpMenu = {
         }
       } else if (EE.cp.JumpMenu.currentFocus > 1 && e.key == 'Backspace' && lastSearch == '') {
         // If the user hit backspace on the secondary input field and it's empty, focus the top level field.
-        jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+        // jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
         jumpContainer.document.querySelector('#jumpEntry1').focus();
       } else if (e.key != 'Enter' && e.key != 'Shift' && e.key != 'Tab') {
         // Check if we're on a sub-level as those will always be dynamic.
@@ -190,8 +227,9 @@ EE.cp.JumpMenu = {
    */
   handleDynamic: function handleDynamic(commandKey) {
     var searchString = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    jumpContainer.document.querySelector('#jumpMenu1').style.display = 'none'; // Load the secondary input field and focus it. This also shows the secondary results box.
 
+    // jumpContainer.document.querySelector('#jumpMenu1').style.display = 'none';
+    // Load the secondary input field and focus it. This also shows the secondary results box.
     this._showResults(2);
 
     jumpContainer.document.querySelector('#jumpEntry2').focus();
@@ -303,7 +341,10 @@ EE.cp.JumpMenu = {
     var entryInputTarget = '#jumpEntry' + level;
     var resultsTarget = '#jumpMenuResults' + level; // Show the first or secondary input box.
 
-    jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
+    if (level > 1) {
+      jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
+    }
+
     jumpContainer.document.querySelector(entryInputTarget).focus(); // Reset the target results box to empty for our new results.
 
     jumpContainer.document.querySelector(resultsTarget).innerHTML = '';
