@@ -221,7 +221,7 @@ class Relationship extends React.Component {
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
+                                        <input type="text" class="search-input__input input--small" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
                                 <div className="filter-bar__item">
@@ -235,11 +235,11 @@ class Relationship extends React.Component {
                                 </div>
                                 <div className="filter-bar__item">
                                     {props.channels.length == 1 &&
-                                    <button type="button" className="button button--primary" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
+                                    <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary">New Entry <i class="fas fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fas fa-caret-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (
