@@ -15,7 +15,8 @@ $(document).ready(function () {
     }
   });
   $('.add-on-card .dropdown__link.m-link').on('click', function (e) {
-    var modalIs = '.' + $(this).attr('rel'); // $(modalIs + " .checklist").html(''); // Reset it
+    var modalIs = '.' + $(this).attr('rel');
+    $(modalIs + " .checklist").html(''); // Reset it
 
     $(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
     $(modalIs + " form").attr('action', $(this).data('action-url')); // Reset it

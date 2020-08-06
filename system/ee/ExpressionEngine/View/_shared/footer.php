@@ -102,7 +102,7 @@
 			</div>
 		</div>
 
-		<div id="jump-menu" class="hidden" style="display:none;">
+		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) { echo ' on-welcome'; } ?>" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
 					<input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">

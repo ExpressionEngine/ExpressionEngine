@@ -103,12 +103,17 @@ EE.cp.JumpMenu = {
     var loadResults = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     jumpContainer.$('#jump-menu').css({
       position: 'absolute',
-      'z-index': 100,
+      'z-index': 150,
       top: '59px',
       right: '97px'
     }).show(); //trigger('modal:open');
 
     jumpContainer.document.querySelector('.input--jump').focus();
+
+    if ($('#jump-menu').hasClass('on-welcome')) {
+      $('.welcome-jump-instructions').fadeIn();
+      $('.main-nav__account').fadeIn();
+    }
 
     if (loadResults) {
       EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, '');
@@ -124,6 +129,11 @@ EE.cp.JumpMenu = {
 
     jumpContainer.document.querySelector('.jump-to').value = '';
     jumpContainer.$('#jump-menu').hide();
+
+    if ($('#jump-menu').hasClass('on-welcome')) {
+      $('.welcome-jump-instructions').fadeOut();
+      $('.main-nav__account').fadeOut();
+    }
   },
   _keyPress: function _keyPress(e) {
     if (e.target && e.target.className.indexOf('jump-to') !== -1) {

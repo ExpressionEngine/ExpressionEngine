@@ -103,8 +103,13 @@ EE.cp.JumpMenu = {
 	},
 
 	_showJumpMenu: function(loadResults = '') {
-		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':100, top:'59px', right:'97px' }).show();//trigger('modal:open');
+		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'97px' }).show();//trigger('modal:open');
 		jumpContainer.document.querySelector('.input--jump').focus();
+
+		if ($('#jump-menu').hasClass('on-welcome')) {
+			$('.welcome-jump-instructions').fadeIn();
+			$('.main-nav__account').fadeIn();
+		}
 
 		if (loadResults) {
 			EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, '');
@@ -121,6 +126,11 @@ EE.cp.JumpMenu = {
 
 		jumpContainer.document.querySelector('.jump-to').value = '';
 		jumpContainer.$('#jump-menu').hide();
+
+		if ($('#jump-menu').hasClass('on-welcome')) {
+			$('.welcome-jump-instructions').fadeOut();
+			$('.main-nav__account').fadeOut();
+		}
 	},
 
 	_keyPress: function(e) {
