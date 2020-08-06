@@ -229,7 +229,12 @@ class EE_Input {
 		/*  - Take control of Cookie setting routine
 		/*  - Added EE 2.5.0
 		*/
-		$data = ee()->extensions->call('set_cookie_end', $data);
+		$hookResponse = ee()->extensions->call('set_cookie_end', $data);
+
+		// Only accept hook response if it includes valid data. At minimum it should return name, value, expire.
+		if (is_array($hookResponse) && empty(array_diff_key(array_flip(['expire', 'name', 'value']), $hookResponse))) {
+			$data = array_replace($data, $hookResponse);
+		}
 
 		if (ee()->extensions->end_script === true) {
 			return false;
