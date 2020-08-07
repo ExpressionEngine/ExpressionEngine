@@ -13,39 +13,47 @@ context('Member Import', () => {
 	    cy.hasNoErrors()
 	})
 
-	// it('', () => {
-		  
-	// })
 
 	it('shows the Member Import page', () => {
-		page.get('wrap').contains('Member Import')
-		page.get('wrap').contains('Member XML file')
-		page.get('member_group')
-		page.get('language')
-		page.get('tz_country')
-		page.get('timezone')
-		page.get('date_format')
-		page.get('time_format')
-		page.get('auto_custom_field')
-		page.get('include_seconds')
+		page.get('general_radio').contains('Banned').should('exist')
+		page.get('general_radio').contains('Guests').should('exist')
+		page.get('general_radio').contains('Members').should('exist')
+		page.get('general_radio').contains('Super Admin').should('exist')
+		page.get('general_radio').contains('Pending').should('exist')
+		page.get('general_radio').contains('mm/dd/yyyy').should('exist')
+		page.get('general_radio').contains('dd/mm/yyyy').should('exist')
+		page.get('general_radio').contains('dd-mm-yyyy').should('exist')
+		page.get('general_radio').contains('yyyy-mm-dd').should('exist')
 	})
 
-	
-	it('should show the confirm import screen', () => {
-		
-		cy.pause() 
-		page.get('member_group').eq(4).click() //super admin
-		page.get('language').check('english') //check english
-		page.get('tz_country').select('United States')
-		page.get('timezone').select('New York')
-		page.get('date_format').check('%Y-%m-%d')
-		page.get('time_format').check('24')
-		cy.get(':nth-child(9) > .field-control > .toggle-btn > .slider').click()
-		page.submit()
 
+	it('can import basic xml', () =>{
+		const fileName = 'members.xml'
+    	page.submit(fileName, 'application/xml', 'input[name="member_xml_file"]') 
+    	page.get('general_radio').contains('Banned').click()
+    	page.get('send_it').first().click()
+    	cy.get('input').contains('Confirm').first().click()
+    	cy.get('body').contains('Total of 4 members imported.')
+    	cy.hasNoErrors()
 	})
 
-	
+	it('dont allow duplicate data', () =>{
+		const fileName = 'members.xml'
+    	page.submit(fileName, 'application/xml', 'input[name="member_xml_file"]') 
+    	page.get('general_radio').contains('Banned').click()
+    	page.get('send_it').first().click()
+    	cy.get('input').contains('Confirm').first().click()
+    	cy.get('body').contains("The username you chose is not available (Username: 'Member1' - within user record 'Member1')")
+	})
 
+	it('does not import invalid XML data', () => {
+		const fileName = 'invalid.xml'
+    	page.submit(fileName, 'application/xml', 'input[name="member_xml_file"]') 
+    	page.get('general_radio').contains('Banned').click()
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('Check the XML file for any incorrect syntax.')
+    	cy.get('body').contains('Unable to parse XML')
+	})
 })
+
 

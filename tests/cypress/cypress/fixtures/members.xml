@@ -1,0 +1,27 @@
+<members>
+	<member>
+		<screen_name>member1</screen_name>
+		<username>Member1</username>
+		<password type="text">password</password>
+		<email>member1@fake.com</email>
+	</member>
+	<member>
+		<screen_name>member2</screen_name>
+		<username>Member2</username>
+		<password type="text">password</password>
+		<email>member2@fake.com</email>
+	</member>
+	<member>
+		<screen_name>member3</screen_name>
+		<username>Member3</username>
+		<password type="text">password</password>
+		<email>member3@fake.com</email>
+	</member>
+	<member>
+		<screen_name>member4</screen_name>
+		<username>Member4</username>
+		<password type="text">password</password>
+		<email>member4@fake.com</email>
+	</member>
+</members>
+			

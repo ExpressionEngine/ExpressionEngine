@@ -7,6 +7,9 @@ class MemberImport extends ControlPanel {
 
         this.selectors = Object.assign(this.selectors, {
 
+        	"general_radio" : 'div[class="checkbox-label__text"]',
+            "send_it" : 'input[value="Import Members"]',
+
 		  "file_location": 'input[type!=hidden][name=xml_file]',
 		  "member_group": 'input[type!=hidden][name=group_id]',
 		  "language": 'input[type!=hidden][name=language]',
@@ -34,6 +37,23 @@ class MemberImport extends ControlPanel {
     	this.open_dev_menu()
     	this.get('main_menu').find('a:contains("Utilities")').click()
     	this.get('wrap').find('a:contains("Member Import")').click()
+    }
+
+ 
+
+    submit(fileName, fileType, selector){
+        cy.get(selector).then(subject => {
+                cy.fixture(fileName, 'base64')
+                .then(Cypress.Blob.base64StringToBlob)
+                .then(blob => {
+                    const el = subject[0]
+                    const testFile = new File([blob], fileName, { type: fileType })
+                    const dataTransfer = new DataTransfer()
+                    dataTransfer.items.add(testFile)
+                    el.files = dataTransfer.files
+                    console.log(el.files)
+              })
+        })
     }
 
 
