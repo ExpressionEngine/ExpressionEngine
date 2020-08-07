@@ -24,9 +24,22 @@ class EditFile extends FileManagerSection {
       })
     }
     load() {
-      cy.contains('Files').click()
-     // cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.edit').click() AJ
-     cy.get('a[title="Edit"]').first().click()
+      cy.visit('admin.php?/cp/files')
+    }
+
+    submit(fileName, fileType, selector){
+        cy.get(selector).then(subject => {
+                cy.fixture(fileName, 'base64')
+                .then(Cypress.Blob.base64StringToBlob)
+                .then(blob => {
+                    const el = subject[0]
+                    const testFile = new File([blob], fileName, { type: fileType })
+                    const dataTransfer = new DataTransfer()
+                    dataTransfer.items.add(testFile)
+                    el.files = dataTransfer.files
+                    console.log(el.files)
+              })
+        })
     }
 }
 export default EditFile;

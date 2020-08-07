@@ -43,7 +43,7 @@ context('Member Import', () => {
     	page.get('general_radio').contains('Banned').click()
     	page.get('send_it').first().click()
     	cy.get('input').contains('Confirm').first().click()
-    	cy.get('body').contains("The username you chose is not available (Username: 'Member1' - within user record 'Member1')")
+    	cy.get('body').contains("The username you chose is not available (Username: 'Import1' - within user")
 	})
 
 	it('does not import invalid XML data', () => {
@@ -51,6 +51,7 @@ context('Member Import', () => {
     	page.submit(fileName, 'application/xml', 'input[name="member_xml_file"]') 
     	page.get('general_radio').contains('Banned').click()
     	page.get('send_it').first().click()
+    	cy.get('input').contains('Confirm').first().click()
     	cy.get('body').contains('Check the XML file for any incorrect syntax.')
     	cy.get('body').contains('Unable to parse XML')
 	})
