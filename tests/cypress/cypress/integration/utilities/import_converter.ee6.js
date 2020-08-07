@@ -2,261 +2,192 @@ import ImportConverter from '../../elements/pages/utilities/Import_file_converte
 
 const page = new ImportConverter;
 
+import util from '../../elements/pages/utilities/Submit'
+
 
 context('Import File Converter', () => {
 
-	// it('', () => {
-
-	// })
-
-	before(function() {
-		cy.task('filesystem:create', Cypress.env("TEMP_DIR")+'/about');
-		cy.task('filesystem:copy', { from: 'members-comma.txt', to: Cypress.env("TEMP_DIR")+'/about' })
-		cy.task('filesystem:copy', { from: 'members-other.txt', to: Cypress.env("TEMP_DIR")+'/about' })
-		cy.task('filesystem:copy', { from: 'members-pipe.txt', to: Cypress.env("TEMP_DIR")+'/about' })
-		cy.task('filesystem:copy', { from: 'members-tab.txt', to: Cypress.env("TEMP_DIR")+'/about' })
-
-	})
-
-	after(function() {
-			cy.task('filesystem:delete', Cypress.env("TEMP_DIR")+'/about')
-
-	})
-
+	
 	beforeEach(function() {
-		cy.auth();
-	    page.load()
-	    cy.hasNoErrors()
+	    cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.get('#username').type('admin');
+		cy.get('#password').type('password');
+		cy.get('.button').click();
 
-	})
-
-	it('shows the Import File Converter page', () => {
-		page.get('wrap').contains('Import File Converter')
-		page.get('wrap').contains('Member file')
-		page.get('delimiter')
-		page.get('enclosing_char')
-	})
-	//works will pause each time tab.txt needs to be loaded in
-	it('should validate the form', () => {
-		 //gonna manually select file if find out how to auto submit put that on each of the Submit comments below
-		let custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)'
-        let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
-		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
-		let assign_fields_title = 'Import File Converter - Assign Fields'
-		cy.pause()
-		// Submit here
-		page.get('wrap').find('input[value=other]').click()
-		page.get('wrap').find('input').eq(1).click() //convert button
-		page.get('wrap').find('em').contains(custom_delimit_required)
-
-		page.get('delimiter_special').type('"')
-		//Submit here
-		cy.pause()
-		page.get('wrap').find('input').eq(1).click()
-		page.get('wrap').contains('You must have at least 3 fields')
-		/* Attention! rb file says that this ^^^ should work but it doesnt and it doesnt
-		 doesn't seem like it should work either.  Delimiter "
-		 is not in the tab txt file anywhere !*/
-		cy.pause()
-		page.get('wrap').find('input[value=other]').click()
-		page.get('delimiter_special').type('d')
-		page.get('wrap').find('input').eq(1).click()
-		page.get('wrap').find('em').contains(custom_delimit_validation)
-
-
-		page.get('wrap').find('input[value=tab]').click()
-		cy.pause()
-		page.submit()
-		//Attention this doesnt work either It takes user to warn page and should return success
-
-
-		 //    #########################
-		 //    # Regular form validation
-		 //    #########################
-		 //Don't upload a file
-		 page.load()
-		 page.submit()
-		 page.get('wrap').contains('This field is required')
-
-		 page.load()
-		 cy.pause()
-		 page.submit()
-		 page.get('wrap').contains(min_field_error)
-
-		 page.load()
-		 cy.pause()
-		 page.get('wrap').find('input[value=tab]').click()
-		 page.submit()
-		 page.get('wrap').contains(assign_fields_title)
-	})
-
-	it('should validate the way files are delimited Tab', () => {
-		let custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)'
-        let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
-		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
-		let assign_fields_title = 'Import File Converter - Assign Fields'
-
-		cy.pause()
-		page.submit() // using comma
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=pipe]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=other]').click()
-		page.get('delimiter_special').type('*')
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=tab]').click()
-		page.submit()
-		page.get('wrap').contains(assign_fields_title)
-
-	})
-
-	it('should validate the way files are delimited Comma', () => {
-		let custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)'
-        let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
-		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
-		let assign_fields_title = 'Import File Converter - Assign Fields'
-
-		cy.pause()
-		page.get('wrap').find('input[value=pipe]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=other]').click()
-		page.get('delimiter_special').type('*')
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=tab]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.submit() // using comma
-		page.get('wrap').contains(assign_fields_title)
-
-	})
-
-	it('should validate the way files are delimited Pipe', () => {
-		let custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)'
-        let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
-		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
-		let assign_fields_title = 'Import File Converter - Assign Fields'
-
-		cy.pause()
-		page.get('wrap').find('input[value=other]').click()
-		page.get('delimiter_special').type('*')
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=tab]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.submit() // using comma
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=pipe]').click()
-		page.submit()
-		page.get('wrap').contains(assign_fields_title)
-
-	})
-
-	it('should validate the way files are delimited Other', () => {
-		let custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)'
-        let custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.'
-		let min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
-		let assign_fields_title = 'Import File Converter - Assign Fields'
-		cy.pause()
-		page.get('wrap').find('input[value=tab]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.submit() // using comma
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=pipe]').click()
-		page.submit()
-		page.get('wrap').contains(min_field_error)
-
-		cy.pause()
-		page.get('wrap').find('input[value=other]').click()
-		page.get('delimiter_special').type('*')
-		page.submit()
-		page.get('wrap').contains(assign_fields_title)
+		cy.visit('admin.php?/cp/utilities/import-converter')
 
 	})
 
 
-	it('should validate assigned fields', () => {
-		let username_error = 'You must assign a field to "username"'
-	    let screenname_error = 'You must assign a field to "screen_name"'
-	    let email_error = 'You must assign a field to "email"'
-	    let duplicate_error = 'Duplicate field assignment: username'
-	    let form_error = 'Attention: File not converted'
-	    let assign_fields_title = 'Import File Converter - Assign Fields'
 
-	    cy.pause()
-	    page.get('wrap').find('input[value=tab]').click()
-	    page.submit()
-	    page.get('wrap').contains(assign_fields_title)
-	    page.get('wrap').contains('member1')
-	    page.get('wrap').contains('Member1')
-	    page.get('wrap').contains('member1@fake.com')
-
-	    page.submit()
-	    page.get('wrap').contains(form_error)
-
-	    page.get('wrap').contains('You must assign a field to "screen_name"')
-	    page.get('wrap').contains('You must assign a field to "email"')
-
-	    page.get('field2').select('username')
-	    page.submit()
-	    page.get('wrap').contains('You must assign a field to "screen_name"')
-	    page.get('wrap').contains('You must assign a field to "email"')
-
-	    page.get('field2').select('screen_name')
-	    page.get('field3').select('password')
-	    page.submit()
-	    page.get('wrap').contains('You must assign a field to "email"')
-
-	    page.get('field1').select('username')
-	    page.get('field4').select('email')
-	    page.submit()
-	    page.get('wrap').contains('Confirm Assignments')
+	it('Testing around', () => {
+		const fileName = 'members-comma.txt'
+    	page.submit(fileName, 'text/plain', 'input[name="member_file"]') 
+    	//page.submit(fileName, 'text/plain', page.get('file_location')) 
+    	//for some reason using page.get('file_location') as third argument does not work
 	})
 
-	it.skip('should generate valid XML for the member importer', () => {
-		cy.pause()
-	    page.get('wrap').find('input[value=tab]').click()
-	    page.submit()
-	    page.get('field1').select('username')
-	    page.get('field2').select('screen_name')
-	    page.get('field3').select('password')
-	    page.get('field4').select('email')
-	    page.submit()
-	    page.get('wrap').contains('Confirm Assignments')
-	    page.submit()
-	    cy.hasNoErrors()
-	    page.get('wrap').contains('XML Code')
-	    page.get('xml_code').contains('<members>')
+
+	it('shows the Import File Converter page', () =>{
+		page.get('file_location').should('exist')
+		cy.get('body').contains('Import File Converter')
 
 	})
 
+	const comma = 'members-comma.txt';
+	const other = 'members-other.txt';
+	const pipe = 'members-pipe.txt';
+	const tab = 'members-tab.txt';
+
+	const custom_delimit_validation = 'Alphanumeric delimiters not allowed (a-z / 0-9)';
+    const custom_delimit_required = 'You must provide a delimiting character with the "Other:" option.';
+
+
+
+	it('Validation Pt 1: Must Provide Delimiter', () => {
+
+    	page.submit(other, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Other').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains(custom_delimit_required)
+
+	})
+
+	it('Validation Pt 2: Must Provide Delimiter', () => {
+
+    	page.submit(other, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Other').first().click()
+    	cy.wait(400)
+    	page.get('delimiter_special').first().type('d')
+    	page.get('send_it').first().click()
+    	cy.get('body').contains(custom_delimit_validation)
+	})
+
+	it('Validation Pt 3: No File Attached', () => {
+		page.get('send_it').first().click()
+		cy.get('body').contains('Attention: File not converted')
+		cy.get('body').contains('This field is required')
+	})
+
+	it('Validation Pt 4: Select wrong delimiter', () => {
+		page.submit(other, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comma').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+	})
+
+	it('Validates the way files are delimited: Comma', () =>{
+		page.submit(comma, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Tab').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+    	page.submit(comma, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Pipe').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+
+		page.submit(comma, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comma').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.hasNoErrors()
+	})
+
+
+	it('Validates the way files are delimited: Tab', () =>{
+		page.submit(tab, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comma').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+    	page.submit(tab, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Pipe').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+
+		page.submit(tab, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Tab').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.hasNoErrors()
+	})
+
+	it('Validates the way files are delimited: Pipe', () =>{
+		page.submit(pipe, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comma').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+    	page.submit(pipe, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Tab').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.get('body').contains('You must have at least 3 fields')
+
+
+		page.submit(pipe, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Pipe').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+    	cy.hasNoErrors()
+	})
+
+	it('Validate Assigned Fields', () => {
+		page.submit(comma, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comm').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+
+    	page.get('field1').should('exist')
+    	page.get('field2').should('exist')
+    	page.get('field3').should('exist')
+    	page.get('field4').should('exist')
+
+    	page.get('send_it_2').first().click()//send without setting fields
+    	cy.get('body').contains('Attention: File not converted')
+    	cy.get('body').contains('You must assign a field to "username"')
+    	cy.get('body').contains('You must assign a field to "screen_name"')
+    	cy.get('body').contains('You must assign a field to "email"')
+	})
+
+	it.only('Converts correctly' ,() => {
+		page.submit(comma, 'text/plain', 'input[name="member_file"]')
+    	page.get('delimiter').contains('Comm').first().click()
+    	cy.wait(400)
+    	page.get('send_it').first().click()
+
+    	page.get('field1').should('exist')
+    	page.get('field2').should('exist')
+    	page.get('field3').should('exist')
+    	page.get('field4').should('exist')
+
+
+    	page.get('field1').select('username')
+    	page.get('field2').select('screen_name')
+    	page.get('field3').select('password')
+    	page.get('field4').select('email')
+
+    	page.get('send_it_2').first().click()
+    	cy.hasNoErrors()
+    	cy.get('body').contains('Passwords are plain text') //Has a page that warns that passwords are plain text for tests this is fine
+
+    	page.get('send_it_2').first().click()
+    	cy.hasNoErrors()
+
+    	cy.get('body').contains('XML Code')
+    	cy.get('input[value="Download File"]').should('exist')
+
+	})
 
 })
 
