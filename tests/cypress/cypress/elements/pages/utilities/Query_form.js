@@ -6,7 +6,7 @@ class QueryForm extends ControlPanel {
         //this.url = no url passed;
 
         this.selectors = Object.assign(this.selectors, {
-        	 "query_form" : 'textarea[name=thequery]'
+        	 "query_form" : '.CodeMirror-line'
         })
 
     }
