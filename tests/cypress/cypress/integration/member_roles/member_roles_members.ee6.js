@@ -61,7 +61,7 @@ context('Test Member roles Members ', () => {
 		cy.get('button').contains('save').eq(0).click()
 	})
 
-	it('Cannot add members to "locked" groups (Super admins only)', () => {
+	it.only('Cannot add members to "locked" groups (Super admins only)', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
@@ -70,14 +70,14 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('fieldset[id="fieldset-role_id"]').contains('Super Admin').should('not.exist')
+	   cy.get('fieldset[id="fieldset-role_id"]').filter(':visible').contains('Super Admin').should('not.exist')
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')
 	})
 
 
 	
-	it('Cannot add members to "locked" groups using additional permissions', () => {
+	it.only('Cannot add members to "locked" groups using additional permissions', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
@@ -86,7 +86,7 @@ context('Test Member roles Members ', () => {
 	   cy.visit('http://localhost:8888/admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
-	   cy.get('div').contains('Super Admin').should('not.exist')
+	   cy.get('div').filter(':visible').contains('Super Admin').should('not.exist')
 	   
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')

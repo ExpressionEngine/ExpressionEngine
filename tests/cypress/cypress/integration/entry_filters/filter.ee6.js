@@ -305,7 +305,7 @@ context('Entry filtering', () => {
 			cy.wait(900)
 			entry.get('SearchBar').type('Discover{enter}')
 			cy.wait(900)
-			entry.get('Entries').contains('No Entries found')
+			cy.get('body').contains('No Entries found')
 
 
 		})
