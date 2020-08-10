@@ -699,7 +699,9 @@ $setup = [
 		'notify_me',
 		'save_info',
 		'tracker',
-		'viewtype'
+		'viewtype',
+		'ee_cp_viewmode',
+		'collapsed_nav'
 	],
 ];
 

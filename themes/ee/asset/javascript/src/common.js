@@ -307,6 +307,7 @@ $(document).ready(function(){
 			$(this).addClass('sidebar-toggle__collapsed');
 			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
 		}
+		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
 	// Toggle Developer Menu

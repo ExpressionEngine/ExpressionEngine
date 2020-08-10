@@ -168,6 +168,7 @@ class Cp {
 			'THEME_URL'        => $this->cp_theme_url,
 			'hasRememberMe'    => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
 		if (ee()->session->flashdata('update:completed'))
