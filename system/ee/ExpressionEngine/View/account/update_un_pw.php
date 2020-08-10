@@ -1,8 +1,7 @@
 <?php $this->extend('_templates/login'); ?>
 
 <div class="login__logo">
-  <?xml version="1.0" encoding="UTF-8"?>
-  <svg width="281px" height="36px" viewBox="0 0 281 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <?php $this->embed('ee:_shared/ee-logo')?>
       <title>ExpressionEngine</title>
       <defs>
           <polygon id="path-1" points="0.3862 0.1747 18.6557 0.1747 18.6557 21.5 0.3862 21.5"></polygon>

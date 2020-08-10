@@ -357,6 +357,7 @@ EE.cp.formValidation = {
 			if ( ! this._errorsExist(form) || ( ! this._errorsExist(tab_container) && tab_has_own_button))
 			{
 				button.removeClass('disable').removeAttr('disabled');
+				$('.saving-options').removeClass('disable').removeAttr('disabled');
 
 				button.each(function(index, thisButton) {
 					thisButton = $(thisButton);
