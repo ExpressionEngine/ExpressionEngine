@@ -36,7 +36,7 @@ class NavigationSidebar extends AbstractSidebar
 
         $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('tachometer-alt');
         if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries')) {
-            $item = $this->addItem(lang('menu_entries'))->withIcon('newspaper')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
+            $item = $this->addItem(lang('menu_entries'), ee('CP/URL', 'publish/edit'))->withIcon('newspaper')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
             if (ee()->uri->segment(2) == 'publish') {
                 $item->isActive();
             }
@@ -153,10 +153,10 @@ class NavigationSidebar extends AbstractSidebar
         }
 
         if (!empty($devItems)) {
-            $this->addBottomItem(lang('nav_developer'))->withIcon('database')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
+            $item = $this->addBottomItem(lang('nav_developer'), ee('CP/URL')->make('channels'))->withIcon('database')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
             $devMenu = $this->addBottomList(lang('developer'));
             if (in_array(ee()->uri->segment(2), ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'])) {
-                $devMenu->isActive();
+                $item->isActive();
             }
             foreach ($devItems as $name => $link) {
                 $devMenu->addItem(lang($name), $link);
