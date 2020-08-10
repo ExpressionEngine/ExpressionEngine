@@ -1,3 +1,4 @@
+				<div id="output_profiler"></div>
 			</div>
 		</section>
 	</div>
@@ -101,10 +102,10 @@
 			</div>
 		</div>
 
-		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
+		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) { echo ' on-welcome'; } ?>" style="display:none;">
 			<div class="jump-menu">
-				<div class="jump-menu__input" id="jumpMenu1">
-					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
+				<div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
+					<input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
 				</div>
 				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
 					<span id="jumpEntry1Selection" class="action-tag"></span>

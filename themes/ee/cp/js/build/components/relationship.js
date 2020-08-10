@@ -285,7 +285,7 @@ function (_React$Component) {
         className: "search-input"
       }, React.createElement("input", {
         type: "text",
-        "class": "search-input__input",
+        "class": "search-input__input input--small",
         onChange: this.handleSearch,
         placeholder: EE.relationship.lang.search
       }))), React.createElement("div", {
@@ -302,13 +302,13 @@ function (_React$Component) {
         className: "filter-bar__item"
       }, props.channels.length == 1 && React.createElement("button", {
         type: "button",
-        className: "button button--primary",
+        className: "button button--primary button--small",
         onClick: function onClick() {
           return _this3.openPublishFormForChannel(_this3.props.channels[0]);
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--primary"
+        className: "js-dropdown-toggle button button--primary button--small"
       }, "New Entry ", React.createElement("i", {
         "class": "fas fa-caret-down icon-right"
       })), React.createElement("div", {

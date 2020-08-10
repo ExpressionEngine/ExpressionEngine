@@ -29,8 +29,8 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 					foreach($entries as $entry): ?>
 					<li>
 						<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
-							<span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
-							<?= $entry->title; ?>
+              <?= $entry->title; ?>
+              <span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
 						</a>
 					</li>
 					<?php endforeach;
@@ -122,7 +122,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		</ul>
 
 		<?php if ($can_moderate_comments): ?>
-		<div class="widget__bottom-buttons">
+		<div class="widget__bottom-buttons button-group button-group-small">
 			<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="button button--default button--small">
 				<?php if ($number_of_pending_comments > 0): ?>
 				<i class="icon--caution icon-left"></i>
@@ -197,8 +197,8 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<?php for ($i = 0; $i < 6; $i++) { ?>
 				<li>
 					<a class="normal-link" href="<?=$news[$i]['link']?>" rel="external">
-						<span class="meta-info float-right ml-s"><?=$news[$i]['date']?></span>
-						<?=$news[$i]['title']?>
+            <?=$news[$i]['title']?>
+            <span class="meta-info float-right ml-s"><?=$news[$i]['date']?></span>
 					</a>
 				</li>
 				<?php } ?>

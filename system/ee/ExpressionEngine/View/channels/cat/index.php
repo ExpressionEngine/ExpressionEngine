@@ -7,7 +7,7 @@
       <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
-          <h3 class="title-bar__title">hello<?=$cp_page_title?></h3>
+          <h3 class="title-bar__title"><?=$cp_page_title?></h3>
           <?php if ($can_create_categories):?>
           <div class="title-bar__extra-tools">
             <a class="button button--primary" href="<?=ee('CP/URL')->make('categories/groups/create')?>"><?=lang('create_new')?></a>

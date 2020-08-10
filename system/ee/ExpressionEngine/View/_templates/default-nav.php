@@ -19,9 +19,15 @@
 			<?php if (isset($header['search_form_url'])): ?>
 				<?=form_open($header['search_form_url'])?>
 					<?php if (isset($header['search_button_value'])): ?>
-					<input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+            <div class="field-control with-icon-start">
+              <i class="fas fa-search icon-start"></i>
+              <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+            </div>
 					<?php else: ?>
-					<input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+          <div class="field-control with-icon-start">
+            <i class="fas fa-search icon-start"></i>
+            <input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+          </div>
 					<?php endif; ?>
 				</form>
 			<?php endif ?>
