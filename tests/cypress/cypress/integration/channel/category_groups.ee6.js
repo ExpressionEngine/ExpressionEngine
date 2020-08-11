@@ -30,17 +30,17 @@ context('Category Groups', () => {
 
     it('should delete a category group', function() {
         page.groupNames().then(function(groups) {
-            //page.get('category_groups').eq(0).find('li.remove a').click()
-            page.get('category_groups').eq(0).find('a[rel="modal-confirm-categories"]').click()
-            
-           
+            //mouseover does not work, so just force clicking the invisible button
+            page.get('category_groups').eq(0).find('a[rel="modal-confirm-categories"]').click({force: true})
+
+
             //page.get('modal_submit_button').click()
             cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
             cy.wait(500)
             cy.hasNoErrors()
 
             page.hasAlert('success')
-           
+
             page.get('group_names').its('length').should('eq', groups.length - 1)
         })
     })

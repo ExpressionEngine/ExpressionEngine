@@ -27,7 +27,7 @@ context('Field Groups', () => {
         cy.get('b').contains('Test Group 1')
         cy.get('p').contains('has been created')
 
-        
+
 
         page.get('field_groups').its('length').should('eq', 3)
         page.get('field_groups_edit').its('length').should('eq', 3)
@@ -51,9 +51,8 @@ context('Field Groups', () => {
     it('deletes a field group', function() {
         page.get('field_groups').its('length').then((length) => {
 
-            //page.get('field_groups').eq(0).find('li.remove a').click()
-            cy.get('a[rel="modal-confirm-field_groups"]').filter(':visible').first().click()//AJ
-            
+            page.get('field_groups').eq(0).find('a[rel="modal-confirm-field_groups"]').first().click({force: true})//AJ
+
 
             //page.get('modal_submit_button').click()
             cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
@@ -62,7 +61,7 @@ context('Field Groups', () => {
 
              //cy.authVisit(page.url);
 
-            
+
             page.get('field_groups').its('length').should('eq', length-1)
         })
     })

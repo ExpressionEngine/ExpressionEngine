@@ -43,7 +43,7 @@ context('Template Manager', () => {
             page.get('alert').contains('cypress-test')
 
 
-           
+
         })
 
         it('can duplicate an existing template group', function() {
@@ -63,7 +63,7 @@ context('Template Manager', () => {
             page.hasAlert()
             page.get('alert').contains('Template Group Created')
             page.get('alert').contains('cypress-test-two')
-            
+
         })
 
         it('can edit a template group', function() {
@@ -93,13 +93,12 @@ context('Template Manager', () => {
             form.get('name').trigger('blur')
 
             page.hasError(form.get('name'), 'The template group name you submitted is already taken')
-           
+
         })
 
         it('remove a template group', function() {
             page.get('template_groups').its('length').then((length) => {
-                //page.get('template_groups').eq(4).find('.toolbar .remove a').click() 0 indexed so this is wrong also .remove a should not be used AJ
-                cy.get('a[rel="modal-confirm-template-group"]').first().click()
+                page.get('template_groups').last().find('a[rel="modal-confirm-template-group"]').first().click({force: true})
 
                 cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click({force:true})
 
@@ -118,7 +117,7 @@ context('Template Manager', () => {
 
             cy.hasNoErrors()
 
-            
+
         })
 
         it('can change the default group', function() {
@@ -136,7 +135,7 @@ context('Template Manager', () => {
             let form = new TemplateGroupEdit
             form.get('is_site_default').click()
             //form.get('save_button').first().click() AJ
-            cy.get('input[value="Save Template Group"]').first().click() 
+            cy.get('input[value="Save Template Group"]').first().click()
 
 
             cy.hasNoErrors()
@@ -157,14 +156,14 @@ context('Template Manager', () => {
             cy.log(template)
             cy.visit('admin.php?/cp/design/manager/about')
 
-        
+
 
             cy.hasNoErrors()
 
         })
 
         it('can change the settings for a template', function() {
-            
+
 
             cy.get('a[title="Edit"]').first().click()
             cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
@@ -186,7 +185,7 @@ context('Template Manager', () => {
             cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
 
             cy.get('button').contains('Settings').first().click()
-            
+
             form.get('name').should('have.value', 'archives-and-stuff')
             form.get('type').filter(':checked').should('have.value', 'feed')
             form.get('enable_caching').should('have.class', 'on')
@@ -205,7 +204,7 @@ context('Template Manager', () => {
             form.get('name').trigger('blur')
 
             page.hasError(form.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
-            
+
         })
 
         it('can export some templates', function() {
@@ -249,7 +248,7 @@ context('Template Manager', () => {
         page.get('phrase_search').type('Recent News').type('{enter}')
         cy.wait(500)
 
-        
+
         cy.get('h2').contains("Search Results")
         page.get('templates').its('length').should('eq', 4)
     })

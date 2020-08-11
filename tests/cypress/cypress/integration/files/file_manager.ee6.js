@@ -34,13 +34,13 @@ context('File Manager', () => {
 			page.get('page_title').invoke('text').then((text) => {
 				expect(text.trim()).equal('Files')
 			})
-			
+
 
 
 			// Check that we have a sidebar
 			page.get('sidebar').should('exist')
-			
-			
+
+
 			//page.get('new_watermark_button').should('exist')
 	});
 
@@ -278,7 +278,7 @@ context('File Manager', () => {
 		cy.get('a[title="Edit"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
-		
+
 	});
 
 	it('can crop an image', () => {
@@ -405,8 +405,8 @@ context('File Manager', () => {
 	it('can remove a directory', () => {
 		beforeEach_all_files();
 		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
-		
-		cy.get('a[rel="modal-confirm-directory"]').first().click()
+
+		page.get('sidebar').find('.folder-list > div:first-child').find('a[rel="modal-confirm-directory"]').first().click({force: true})
 
 
 		//page.wait_until_remove_directory_modal_visible
