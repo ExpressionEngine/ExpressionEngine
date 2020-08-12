@@ -164,7 +164,10 @@ class NavigationSidebar extends AbstractSidebar
         }
 
         if (ee('Permission')->can('access_sys_prefs')) {
-            $this->addBottomItem(lang('nav_settings'), ee('CP/URL', 'settings'))->withIcon('cog');
+            $item = $this->addBottomItem(lang('nav_settings'), ee('CP/URL', 'settings'))->withIcon('cog');
+            if (ee()->uri->segment(2) == 'settings') {
+                $item->isActive();
+            }
         }
     }
 
