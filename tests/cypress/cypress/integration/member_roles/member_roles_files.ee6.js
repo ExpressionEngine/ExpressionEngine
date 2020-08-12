@@ -7,12 +7,12 @@ const member = new MemberCreate;
 context('Test Member roles Channels ', () => {
 
 	it('Creates File Manager Role', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('FileManager')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -20,7 +20,7 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('adds a File Manager member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -28,7 +28,7 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('File Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('FileManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -36,19 +36,19 @@ context('Test Member roles Channels ', () => {
 	 })
 
 	it('Let File Role access Files and CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('FileManager').click()
 
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 
-	   
+
 		cy.get('#fieldset-can_access_files .toggle-btn').click();
 		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-upload_destination_access .checkbox-label:nth-child(2) > input').click();
@@ -64,13 +64,13 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('can login now and can view files but nothing else', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('FileManager1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
-		
+
 		cy.get('.ee-sidebar').contains('Files')
 
 		cy.get('.ee-sidebar').should('not.contain','Entries')
@@ -80,27 +80,27 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('Can navigate to the files section',() => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('FileManager1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
 		cy.get('.ee-sidebar').contains('Files').click()
 
 		cy.hasNoErrors()
 	})
 
-	
+
 
 	// it('Has the option to Delete Files', () => {
-	// 	cy.visit('http://localhost:8888/admin.php?/cp/login');
+	// 	cy.visit('admin.php?/cp/login');
 	//   	cy.get('#username').type('FileManager1');
 	// 	cy.get('#password').type('password');
 	// 	cy.get('.button').click();
 
-	// 	cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	// 	cy.visit('admin.php?/cp/members/profile/settings')
 	// 	cy.get('h1').contains('FileManager1')
 	// 	cy.get('.ee-sidebar').contains('Files').click()
 
@@ -113,12 +113,12 @@ context('Test Member roles Channels ', () => {
 
 
 	it.skip('Cleans for Reruns', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('.list-item:nth-child(2) input').click();
 
@@ -126,11 +126,11 @@ context('Test Member roles Channels ', () => {
 	   cy.get('select').select('Delete')
     	cy.get('.bulk-action-bar > .button').click()
     	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
-    	cy.visit('http://localhost:8888/admin.php?/cp/members')
+    	cy.visit('admin.php?/cp/members')
 
 
 	    cy.get('tr:nth-child(1) > td > input').click();
-	    
+
 	    cy.get('select').select('Delete');
 
 	    cy.get('.button--primary').click();
@@ -140,7 +140,7 @@ context('Test Member roles Channels ', () => {
 	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
 	          }
 	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not. 
+	    //Sometimes it asks for password to delete users and sometimes it does not.
 
 	    cy.get('.button--danger').click();
 	    cy.get('.modal-confirm-delete form').submit();
@@ -171,15 +171,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

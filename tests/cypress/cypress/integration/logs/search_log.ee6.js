@@ -6,7 +6,7 @@ const { _, $ } = Cypress
 context('Search Log', () => {
 
 	beforeEach(function() {
-			cy.visit('http://localhost:8888/admin.php?/cp/login');
+			cy.visit('admin.php?/cp/login');
 	      cy.get('#username').type('admin');
 	      cy.get('#password').type('password');
 	      cy.get('.button').click();
@@ -38,7 +38,7 @@ context('Search Log', () => {
 		page.get('search').filter(':visible').first().type('NotFound{enter}')
 		cy.wait(400)
 		page.get('empty').should('exist')
-		
+
 	})
 
 //get joe just like in CP test
@@ -82,7 +82,7 @@ context('Search Log', () => {
 	})
 
 
-	
+
 
 	it('filters by date', () => {
 		page.get('delete_all').click()
@@ -105,7 +105,7 @@ context('Search Log', () => {
 		cy.get('a').contains('24 Hours').click()
 		cy.wait(300)
 		page.get('list').find('div[class="list-item"]').should('have.length',15)
-		
+
     })
 
     it('can set a custom page size', () => {
@@ -196,6 +196,6 @@ context('Search Log', () => {
 		cy.get('a').filter(':visible').contains('johndoe1').should('not.exist')
 		page.get('list').find('div[class="list-item"]').should('have.length',5)
     })
-  
+
 
 })

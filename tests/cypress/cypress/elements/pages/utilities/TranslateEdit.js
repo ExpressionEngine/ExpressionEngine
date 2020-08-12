@@ -17,7 +17,7 @@ class TranslateEdit extends ControlPanel {
 
   load() {
     this.open_dev_menu()
-    this.get('main_menu').find('a:contains("Utilities")').click()
+    cy.get('body > .dropdown').find('a:contains("Utilities")').click()
     this.get('wrap').find('a:contains("English")').click()
     this.get('wrap').find('ul.toolbar li.edit a').first().click() // The addons_lang.php edit link
   }

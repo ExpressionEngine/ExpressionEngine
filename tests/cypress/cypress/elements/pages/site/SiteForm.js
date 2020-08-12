@@ -31,6 +31,7 @@ class SiteForm extends ControlPanel {
     this.get('name').type(options.name)
     this.get('short_name').clear().type(options.short_name)
     this.get('description').type(options.description)
+    cy.get('.form-btns-top .saving-options').click()
     this.get('save_button').click()
   }
 

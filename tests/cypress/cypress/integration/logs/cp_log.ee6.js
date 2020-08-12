@@ -7,7 +7,7 @@ context('CP Log', () => {
 	describe('Pregen == true', function() {
 
 		beforeEach(function() {
-			cy.visit('http://localhost:8888/admin.php?/cp/login');
+			cy.visit('admin.php?/cp/login');
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
@@ -40,8 +40,8 @@ context('CP Log', () => {
     })
 
     it('Create Test role to view site', () => {
-      
-      cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+
+      cy.visit('admin.php?/cp/members/roles')
       cy.get('a').contains('New Role').click()
       cy.get('input[name="name"]').clear().type('johndoe')
       cy.get('button').contains('Save & Close').eq(0).click()
@@ -49,13 +49,13 @@ context('CP Log', () => {
   })
 
   it('adds a Test member', () => {
-    
+
     add_members('johndoe',1)
   })
 
   it('Let Test Role access CP', () => {
-     
-     cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+
+     cy.visit('admin.php?/cp/members/roles')
      cy.get('div[class="list-item__title"]').contains('johndoe').click()
      cy.get('button').contains('CP Access').click()
      cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
@@ -89,7 +89,7 @@ context('CP Log', () => {
 
 
 		it('filters by username',() => {
-     
+
     	  var i = 0;
         for (i = 0; i < 15; i++) {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
@@ -117,7 +117,7 @@ context('CP Log', () => {
       page.get('delete_all').click()
       page.get('confirm').filter(':visible').first().click()
       logout()
-      cy.visit('http://localhost:8888/admin.php?/cp/login');
+      cy.visit('admin.php?/cp/login');
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
@@ -234,7 +234,7 @@ context('CP Log', () => {
       cy.get('body').contains('1 log(s) deleted')
     })
 
-    
+
 
     it('has a next page and paginates correctly',() => {
       //remove all
@@ -309,15 +309,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
     cy.get('label').contains(group).click()
-      page.get('save_and_new_button').click()
+    cy.get('.form-btns-top .saving-options').click()
+    page.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

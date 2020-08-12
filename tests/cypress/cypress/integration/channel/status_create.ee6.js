@@ -29,12 +29,14 @@ context('Status Create/Edit', () => {
         page.load_create_for_status_group(1)
 
         //page.submit()
+        page.get('status').should('exist')
+        cy.get('.form-btns-top .saving-options').last().click()
         cy.get('button[value="save_and_new"]').filter(':visible').first().click()//AJ
-        
-      
+
+
 
         cy.hasNoErrors()
-    
+
         cy.contains('Cannot Create Status')
         page.hasError(page.get('status'), page.messages.validation.required)
 
@@ -46,7 +48,7 @@ context('Status Create/Edit', () => {
         // Required name
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), page.messages.validation.required)
-       
+
 
         page.get('status').clear().type('Test')
         page.get('status').trigger('blur')
@@ -57,12 +59,12 @@ context('Status Create/Edit', () => {
         page.get('status').clear().type('open')
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), 'This field must be unique.')
-     
+
 
         page.get('status').clear().type('Test')
         page.get('status').trigger('blur')
         page.hasNoError(page.get('status'))
-     
+
 
         // Minicolors should show up
         page.get('highlight').trigger('focus')
@@ -104,7 +106,7 @@ context('Status Create/Edit', () => {
         page.get('status').clear().type(page.messages.xss_vector)
         page.get('status').trigger('blur')
         page.hasError(page.get('status'), page.messages.xss_error)
-       
+
         page.get('highlight').clear().type(page.messages.xss_vector)
         page.get('highlight').trigger('blur')
         page.get('highlight').should('have.value', '')
@@ -130,14 +132,15 @@ context('Status Create/Edit', () => {
         page.get('status').trigger('mousedown')
         page.get('status_access').click()
         //page.submit()AJ
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true})
-        
+        cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true})
+
         cy.hasNoErrors()
 
         //cy.contains('Status Created')
+
         cy.visit(page.url);
         page.load_view_for_status_group(1)
-        page.get('status_names').its('length').should('eq', 3)
+        page.get('status_names').its('length').should('eq', 4)
         cy.hasNoErrors()
 
         //page.get('status_access').eq(0).should('not.be.checked')
@@ -158,7 +161,7 @@ context('Status Create/Edit', () => {
         cy.get('span').contains('Featured').click()
         cy.wait(300)
         cy.get('input[name=status]').clear().type('Test2')
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
+        cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true}) //AJ
         cy.hasNoErrors()
         cy.authVisit(page.url);
         page.load_view_for_status_group(1)

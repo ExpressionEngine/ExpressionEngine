@@ -7,9 +7,9 @@ import util from '../../elements/pages/utilities/Submit'
 
 context('Import File Converter', () => {
 
-	
+
 	beforeEach(function() {
-	    cy.visit('http://localhost:8888/admin.php?/cp/login');
+	    cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -22,8 +22,8 @@ context('Import File Converter', () => {
 
 	it('Testing around', () => {
 		const fileName = 'members-comma.txt'
-    	page.submit(fileName, 'text/plain', 'input[name="member_file"]') 
-    	//page.submit(fileName, 'text/plain', page.get('file_location')) 
+    	page.submit(fileName, 'text/plain', 'input[name="member_file"]')
+    	//page.submit(fileName, 'text/plain', page.get('file_location'))
     	//for some reason using page.get('file_location') as third argument does not work
 	})
 

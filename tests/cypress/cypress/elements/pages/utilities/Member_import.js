@@ -35,11 +35,11 @@ class MemberImport extends ControlPanel {
 
     load(){
     	this.open_dev_menu()
-    	this.get('main_menu').find('a:contains("Utilities")').click()
+    	cy.get('body > .dropdown').find('a:contains("Utilities")').click()
     	this.get('wrap').find('a:contains("Member Import")').click()
     }
 
- 
+
 
     submit(fileName, fileType, selector){
         cy.get(selector).then(subject => {

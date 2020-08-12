@@ -47,7 +47,7 @@ context('Channel Create/Edit', () => {
 
 
         //page.hasNoErrors()
-       
+
 
         // Invalid channel short name
         page.get('channel_name').clear().type('test test').blur()
@@ -105,7 +105,7 @@ context('Channel Create/Edit', () => {
 
         cy.contains('Cannot Create Channel')
         page.hasError(page.get('channel_name'), this.channel_name_error)
-       
+
 
         page.get('channel_title').invoke('val').should('eq', 'Test')
         page.get('channel_name').invoke('val').should('eq', 'test test')
@@ -145,7 +145,7 @@ context('Channel Create/Edit', () => {
         page.get('duplicate_channel_prefs').should('not.exist')
         cy.contains('Warning: Channels require').should('not.exist')
 
-        
+
 
         page.get('channel_title').should('have.value', 'Test')
         page.get('channel_name').should('have.value', 'test')
@@ -241,6 +241,7 @@ context('Channel Create/Edit', () => {
         page.get('comment_allow_img_urls').click()
         page.get('comment_auto_link_urls').click()
 
+        cy.get('.form-btns-top .saving-options').click()
         page.get('save_and_new_button').click()
         cy.contains('Channel Updated')
 

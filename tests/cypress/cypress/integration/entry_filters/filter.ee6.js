@@ -1,39 +1,32 @@
 import Entries from '../../elements/pages/entries/Entries';
 const entry = new Entries
 const { _, $ } = Cypress
-Cypress.config().baseUrl = 'localhost:8888';
-context('Entry filtering', () => {
+context.skip('Entry filtering', () => {
 
-		beforeEach(function() {
-			cy.visit('http://localhost:8888/admin.php?/cp/login');
-			cy.get('#username').type('admin')
-      		cy.get('#password').type('password')
-      		cy.get('.button').click()
-			cy.hasNoErrors()
-		})
+		before(function(){
+			cy.task('db:seed')
+			cy.auth()
 
-		it('Creates Channels to work with', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/channels/create')
-			cy.get("input[name = 'channel_title']").type('Channel')
-		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('The channel Channel has been created')
+			//it('Creates Channels to work with', () => {
+				cy.visit('admin.php?/cp/channels/create')
+				cy.get("input[name = 'channel_title']").type('Channel')
+				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('p').contains('The channel Channel has been created')
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/channels/create')
-			cy.get("input[name = 'channel_title']").type('Contact')
-		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('The channel Contact has been created')
+				  cy.visit('admin.php?/cp/channels/create')
+				cy.get("input[name = 'channel_title']").type('Contact')
+				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('p').contains('The channel Contact has been created')
 
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/channels/create')
-			cy.get("input[name = 'channel_title']").type('Discover')
-		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('The channel Discover has been created')
+				  cy.visit('admin.php?/cp/channels/create')
+				cy.get("input[name = 'channel_title']").type('Discover')
+				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('p').contains('The channel Discover has been created')
 
-	  	
-		})
 
-		it('Creates  Entries to work with', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			//it('Creates  Entries to work with', () => {
+			cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
 		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
@@ -41,7 +34,7 @@ context('Entry filtering', () => {
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Channel Entry has been created')
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		  	cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
 		  	cy.get('a').contains('Contact').click({force:true})
@@ -50,50 +43,62 @@ context('Entry filtering', () => {
 		  	cy.get('p').contains('The entry Contact Entry has been created')
 
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		  	cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
 		  	cy.get('a').contains('Discover').click({force:true})
 		  	cy.get('input[name="title"]').type('Discover Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Discover Entry has been created')
-		})
-		
-		it('Closes the Channel entry to sort by later', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+
+
+			//it('Closes the Channel entry to sort by later', () => {
+			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('a').contains('Channel Entry').eq(0).click()
 			cy.get('button').contains('Options').click()
 			cy.get('label[class= "select__button-label act"]').click()
 			cy.get('span').contains('Closed').click()
 			cy.get('button').contains('Save').eq(0).click()
 			cy.get('p').contains('The entry Channel Entry has been updated')
+
+
+
 		})
 
-		it('Can sort entries by their channel also tests clear', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		beforeEach(function() {
+			cy.auth()
+
+			cy.server()
+		})
+
+		it.only('Can sort entries by their channel also tests clear', () => {
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('ChannelSort').click()
+			cy.route("GET", "**/publish/edit**").as("ajax");
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();
+			cy.wait("@ajax")
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Channel Entry').should('exist')
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();
+			cy.wait("@ajax")
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Contact Entry').should('exist')
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('Entries').find('tr').should('have.length',3)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 		})
 
 		it('Can sort by status of entries (Open or closed) and can combine this sort with channel', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
 			entry.get('StatusSort').click()
@@ -113,13 +118,13 @@ context('Entry filtering', () => {
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
-			
+
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
-		
+
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
@@ -141,7 +146,7 @@ context('Entry filtering', () => {
 		})
 
 		it('can sort by search bar (Searching in Titles)', () =>{
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchBar').clear().type('Channel{enter}')
 			cy.wait(400)
 			cy.get('h1').contains('Entries').click()
@@ -159,7 +164,7 @@ context('Entry filtering', () => {
 		})
 
 		it('can change the columns', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('a').contains('Author').should('exist')
 			entry.get('ColumnsSort').click()
 			entry.get('Author').uncheck()
@@ -169,7 +174,7 @@ context('Entry filtering', () => {
 
 
 		it('makes a default if all columns are turned off', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('ColumnsSort').click()
 
 			entry.get('Author').uncheck({force:true})
@@ -192,7 +197,7 @@ context('Entry filtering', () => {
 		})
 
 		it('Creates a second user to sort by their entries', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/members/create')
+			cy.visit('admin.php?/cp/members/create')
 			cy.get('input[name="username"]').eq(0).type('user2')
 			cy.get('input[name="email"]').eq(0).type('user2@test.com')
 			cy.get('input[name="password"]').eq(0).type('password')
@@ -203,18 +208,18 @@ context('Entry filtering', () => {
 			cy.get('input[type="radio"][name="role_id"][value="1"]').click()//make a super admin2
 			cy.get('button').contains('Save').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+			cy.visit('admin.php?/cp/members/profile/settings')
  			 cy.get('.main-nav__account-icon > img').click()
   			cy.get('[href="admin.php?/cp/login/logout"]').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/login');
+			cy.visit('admin.php?/cp/login');
 			cy.get('#username').type('user2')
       		cy.get('#password').type('password')
       		cy.get('.button').click()
 
-      		
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+
+		  	cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
 		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
@@ -223,9 +228,9 @@ context('Entry filtering', () => {
 		  	cy.get('p').contains('has been created')
 
 
-		  	
 
-		  	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+
+		  	cy.visit('admin.php?/cp/publish/edit')
 		  	entry.get('Entries').find('tr').should('have.length',4)
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('user2').click()
@@ -242,7 +247,7 @@ context('Entry filtering', () => {
 		})
 
 		it('Can combine all search fields', () =>{
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('AuthorSort').click()
 			cy.get('a').contains('Admin').click()
 			cy.wait(400)
@@ -271,35 +276,35 @@ context('Entry filtering', () => {
 
 		it('can Search in Content but not title',() => {
 			//Real quick add in a text field to one of our channels
-			cy.visit('http://localhost:8888/admin.php?/cp/fields')
+			cy.visit('admin.php?/cp/fields')
 			cy.get('a').contains('New Field').click()
 			cy.get('input[name="field_label"]').type('Simple Text')
 			cy.get('button').contains('Save').click()
 			cy.get('p').contains('has been created')
 
-			cy.visit('http://localhost:8888/admin.php?/cp/channels')
+			cy.visit('admin.php?/cp/channels')
 			cy.get('div').contains('Discover').click()
 			cy.get('button').contains('Fields').click()
 			cy.get('div').contains('Simple Text').click()
 			cy.get('button').contains('Save').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('a').contains('Discover Entry').click()
 			cy.get('input[maxlength="256"]').type('The Quick Brown fox...')
 			cy.get('button').contains('Save').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
-			
-			
+			cy.visit('admin.php?/cp/publish/edit')
+
+
 			entry.get('SearchIn').click()
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
 			cy.wait(900)
 			entry.get('SearchBar').type('The Quick Brown{enter}')
 			cy.wait(900)
-			
+
 			cy.get('a').contains('Discover Entry').should('exist')
 
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchIn').click()
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
 			cy.wait(900)
@@ -311,7 +316,7 @@ context('Entry filtering', () => {
 		})
 
 		it('search by content and title', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchIn').click()
 			cy.wait(900)
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
@@ -324,7 +329,7 @@ context('Entry filtering', () => {
 			entry.get('SearchBar').clear()
 			entry.get('SearchBar').type('Discover{enter}')
 			cy.wait(900)
-			
+
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 
@@ -334,7 +339,7 @@ context('Entry filtering', () => {
 		// 	var i;
 		// 	for(i = 0 ; i < 25 ; i++){
 		// 		let title = "Channel " + i;
-		// 		cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		// 		cy.visit('admin.php?/cp/publish/edit')
 		// 	  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
 		// 	  	cy.get('a').contains('Channel').click()
 		// 	  	cy.get('input[name="title"]').type(title)
@@ -342,7 +347,7 @@ context('Entry filtering', () => {
 		// 	  	cy.get('p').contains('has been created')
 		// 	}
 
-		// 	cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+		// 	cy.visit('admin.php?/cp/publish/edit')
 		// 	cy.get(':nth-child(2) > .pagination__link').should('exist')
 		// 	entry.get('Entries').should('have.length',25)
 		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
@@ -368,19 +373,19 @@ context('Entry filtering', () => {
 		// })
 
 		it.skip('cleans for reruns', () => {
-			cy.visit('http://localhost:8888/admin.php?/cp/publish/edit')
+			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('input[title="select all"]').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
 			cy.get('input[value="Confirm and Delete"]').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/channels')
+			cy.visit('admin.php?/cp/channels')
 			cy.get('.ctrl-all').click() //select all channels
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
 			cy.get('input[value="Confirm and Delete"]').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/members')
+			cy.visit('admin.php?/cp/members')
 			cy.get('input[data-confirm="Member: <b>user2</b>"]').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
@@ -388,7 +393,7 @@ context('Entry filtering', () => {
 			cy.get('input[name="verify_password"]').type('password')
 			cy.get('input[value="Confirm and Delete"]').click()
 
-			cy.visit('http://localhost:8888/admin.php?/cp/fields')
+			cy.visit('admin.php?/cp/fields')
 			cy.get('.ctrl-all').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()

@@ -24,14 +24,16 @@ context('Template Routes', () => {
     })
 
     it('can add a new route', function() {
+        cy.viewport(1280, 660)
+
         page.add_route({
             template: 'about/index',
             route: 'foo/bar'
         })
 
-        cy.get('i').contains('Choose wisely').first().click()
-        cy.get('span').contains('/').first().click()
-        cy.wait(300)
+        //cy.get('i').filter(':visible').contains('Choose wisely').first().click()
+        //cy.get('.select--open .select__dropdown-item span').contains('/').first().click()
+        //cy.wait(300)
         page.get('update_button').filter(':visible').first().click()
 
         cy.hasNoErrors()

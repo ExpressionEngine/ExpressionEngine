@@ -5,12 +5,12 @@ const { _, $ } = Cypress
 context('Throttle Logging', () => {
 
     	beforeEach(function() {
-          cy.visit('http://localhost:8888/admin.php?/cp/login');
+          cy.visit('admin.php?/cp/login');
           cy.get('#username').type('admin');
           cy.get('#password').type('password');
           cy.get('.button').click();
           cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
-         
+
       })
 
 
@@ -50,7 +50,7 @@ context('Throttle Logging', () => {
         //delete what was there
         page.get('delete_all').click()
         page.get('confirm').filter(':visible').first().click()
-        page.get('empty').should('exist') 
+        page.get('empty').should('exist')
 
         //add in new things
         var i = 0;
@@ -69,7 +69,7 @@ context('Throttle Logging', () => {
       it('can combine phrase search with filters',() => {
         page.get('delete_all').click()
         page.get('confirm').filter(':visible').first().click()
-        page.get('empty').should('exist') 
+        page.get('empty').should('exist')
 
         //add in new things
         var i = 0;
@@ -94,13 +94,13 @@ context('Throttle Logging', () => {
       it('can remove all entries',() => {
          page.get('delete_all').click()
         page.get('confirm').filter(':visible').first().click()
-        page.get('empty').should('exist') 
+        page.get('empty').should('exist')
 
       })
 
 
       it('doesnt lose filter when paginating',() => {
-        
+
 
         //add in new things with differnet ip address search for one of them and make sure the other does not appear after pagination
           var i = 0;
@@ -134,11 +134,11 @@ context('Throttle Logging', () => {
       it('Throttling will show message if someone tries to reload too much', () => {
         var i = 0;
         for (i = 0; i < 15; i++) {
-              cy.visit('http://localhost:8888/index.php/blog')
+              cy.visit('index.php/blog')
 
         }
         cy.get('body').contains('You have exceeded the allowed page load frequency.')
-    	   
+
     	})
 
 

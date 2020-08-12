@@ -25,8 +25,9 @@ context('Member Registration', () => {
     page.get('email').clear().type('test@gmail.com')
     page.get('password').clear().type('password')
     page.get('confirm_password').clear().type('password')
-    
+
     //page.get('save_and_new_button').click() AJ
+    cy.get('.form-btns-top .saving-options').click()
     cy.get('button').contains('Save & New').click()
 
     cy.hasNoErrors()

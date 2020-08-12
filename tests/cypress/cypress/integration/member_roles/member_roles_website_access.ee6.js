@@ -6,12 +6,12 @@ const member = new MemberCreate;
 context('Test Member roles Web access ', () => {
 
 	it('Create Test role to view site', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('Test')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -19,7 +19,7 @@ context('Test Member roles Web access ', () => {
 	})
 
 	it('adds a Test member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -27,67 +27,67 @@ context('Test Member roles Web access ', () => {
 	})
 
 	it('Let Test Role access CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
 
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 	})
-	
+
 
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	   cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('admin')//ensure admin logged in
-	  
+
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
-	   
+
 		cy.get('.on > .slider').click();
 		cy.get('input').contains('Save Settings').click()
 
 		cy.visit('http://localhost:8888')
-		
+
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('Test1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		
+
 
 		cy.visit('http://localhost:8888',{failOnStatusCode:false})
-	   
+
 	   cy.on('uncaught:exception', (err, runnable) => {
 			    expect(err.message).to.include('something about the error')
-			    done()		    
+			    done()
 			    return false
-		}) 
-		/*got this block off of cypress docs it allows for you to continue 
+		})
+		/*got this block off of cypress docs it allows for you to continue
 	   if there is an error which is what trying to access the website while offline will do*/
 	   cy.contains('This site is currently offline')
 	})
 
 	it('Super Admins can allow roles to access offline site', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
 	   cy.get('button').contains('Website Access').click()
 
@@ -96,7 +96,7 @@ context('Test Member roles Web access ', () => {
 
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('Test1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -110,23 +110,23 @@ context('Test Member roles Web access ', () => {
 		//Turn member access off.
 
 		//Turn site online
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	   cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('admin')//ensure admin logged in
-	  
+
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
-	   
+
 		cy.get('#fieldset-is_system_on > .field-control > .toggle-btn').click()
 		cy.get('input').contains('Save Settings').click()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
 	   cy.get('button').contains('Website Access').click()
 
@@ -137,7 +137,7 @@ context('Test Member roles Web access ', () => {
 })//End Context
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }
@@ -160,9 +160,10 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }

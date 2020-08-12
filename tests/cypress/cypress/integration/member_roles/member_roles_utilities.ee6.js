@@ -7,12 +7,12 @@ const member = new MemberCreate;
 context('Test Member roles Utilities ', () => {
 
 	it('Creates Utilities Manager Role', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('UtilManager')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -20,7 +20,7 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('adds a Utilies  Manager member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -28,7 +28,7 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Util Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('UtilManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -36,21 +36,21 @@ context('Test Member roles Utilities ', () => {
 	 })
 
 	it('Let Addon Role access Utils and CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 
-	
-		
+
+
 		cy.get('#fieldset-can_access_utilities .toggle-btn').click()
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').click();
@@ -58,17 +58,17 @@ context('Test Member roles Utilities ', () => {
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(5) input').click();
 
-cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); 
+cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click();
 		cy.get('button').contains('Save').eq(0).click()
 	})
 
 	it('Can get to Utils now', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('UtilManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
@@ -97,13 +97,13 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	})
 
 	it('Loses Communication', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
@@ -113,12 +113,12 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); //turn off access to communicate
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('UtilManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
@@ -147,29 +147,29 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 	it('Loses Translations',() =>{
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
 	   cy.get('button').contains('CP Access').click()
 
 
-		
+
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').last().click(); //turn off access to Translations
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('UtilManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
@@ -177,7 +177,7 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
-	   
+
 	   cy.get('.box').contains('PHP Info')
 
 	   cy.get('.box').contains('File Converter')
@@ -199,13 +199,13 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	})
 
 	it('loses Import',() => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
@@ -216,12 +216,12 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
  				//turn off access to Imports
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('UtilManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
@@ -229,10 +229,10 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
-	   
+
 	   cy.get('.box').contains('PHP Info')
 
-	   
+
 
 	   cy.get('.box').contains('Backup Database')
 	   cy.get('.box').contains('SQL Manager')
@@ -254,13 +254,13 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 	it('loses SQL Manager',() => {
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
@@ -273,12 +273,12 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
  				//turn off access to SQL
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('UtilManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
@@ -286,10 +286,10 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Utilities').click()
 
-	   
+
 	   cy.get('.box').contains('PHP Info')
 
-	   
+
 
 	   cy.get('.box').contains('Cache Manager')
 	   cy.get('.box').contains('Search Reindex')
@@ -307,30 +307,30 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 	})
 
-	
+
 
 	it.skip('cleans for reruns', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('.list-item:nth-child(6) input').click();
-	
+
 
 	   cy.get('select').select('Delete')
 	   cy.pause()
     	cy.get('.bulk-action-bar > .button').click()
     	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
-    	cy.visit('http://localhost:8888/admin.php?/cp/members')
+    	cy.visit('admin.php?/cp/members')
 
 
 	    cy.get('tr:nth-child(1) > td > input').click();
-	    
+
 	    cy.get('select').select('Delete');
-	    
+
 	    cy.get('.button--primary').click();
 
 	    cy.get("body").then($body => {
@@ -338,13 +338,13 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
 	          }
 	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not. 
+	    //Sometimes it asks for password to delete users and sometimes it does not.
 
 	    cy.get('.button--danger').click();
 	    cy.get('.modal-confirm-delete form').submit();
 	})
 
-	
+
 
 
 }) //Contesxt
@@ -368,15 +368,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

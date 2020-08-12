@@ -7,12 +7,12 @@ const member = new MemberCreate;
 context('Test Member roles Settings ', () => {
 
 	it('Creates Settings Manager Role', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('SettingManager')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -20,7 +20,7 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it('adds a Settings Manager member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -28,7 +28,7 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it('Setting Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('SettingManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -36,20 +36,20 @@ context('Test Member roles Settings ', () => {
 	 })
 
 	it('Let Addon Role access Settings and CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
 
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 
-	
+
 		cy.get('#fieldset-can_access_sys_prefs .toggle-btn').click();
 		cy.get('#fieldset-can_access_security_settings .toggle-btn').click();
 		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn everything on to start with
@@ -58,14 +58,14 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it('Can see the Settings now but nothing else',() => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('SettingManager1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('SettingManager1')
-		
+
 		cy.get('.ee-sidebar').contains('Settings').should('exist')
 
 
@@ -74,23 +74,23 @@ context('Test Member roles Settings ', () => {
 	   cy.get('.ee-sidebar').should('not.contain', 'Add-ons')
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
-	  
+
 	})
 
 	it('Can Access all Settings and no errors when accessed',() => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('SettingManager1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+		cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('SettingManager1')
-	   
+
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
-	   
+
 
 	   cy.get('.box').contains('Settings')
 	   cy.get('.box').contains('HTML Buttons')
@@ -106,9 +106,9 @@ context('Test Member roles Settings ', () => {
 
 
 
-	
 
-	   
+
+
 	   cy.get('.box').contains('URL and Path Settings')
 	   cy.hasNoErrors()
 
@@ -153,11 +153,11 @@ context('Test Member roles Settings ', () => {
 
 	it('Loses Acccess to Content',() => {
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
 	   cy.get('button').contains('CP Access').click()
 		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn off  access
@@ -165,15 +165,15 @@ context('Test Member roles Settings ', () => {
 
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('SettingManager1');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+		cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('SettingManager1')
-	  
+
 
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
@@ -181,7 +181,7 @@ context('Test Member roles Settings ', () => {
 	   cy.get('.box').contains('URL and Path Settings')
 	   cy.get('.box').contains('Debugging & Output')
 
-	   
+
 	   cy.get('.box').contains('Settings')
 	   cy.get('.box').contains('HTML Buttons')
 	   cy.get('.box').contains('Hit Tracking')
@@ -197,26 +197,26 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it.skip('Cleans for reruns', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('.list-item:nth-child(5) input').click();
-	
+
 
 	   cy.get('select').select('Delete')
     	cy.get('.bulk-action-bar > .button').click()
     	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
-    	cy.visit('http://localhost:8888/admin.php?/cp/members')
+    	cy.visit('admin.php?/cp/members')
 
 
 	    cy.get('tr:nth-child(1) > td > input').click();
-	    
+
 	    cy.get('select').select('Delete');
-	    
+
 	    cy.get('.button--primary').click();
 
 	    cy.get("body").then($body => {
@@ -224,7 +224,7 @@ context('Test Member roles Settings ', () => {
 	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
 	          }
 	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not. 
+	    //Sometimes it asks for password to delete users and sometimes it does not.
 
 	    cy.get('.button--danger').click();
 	    cy.get('.modal-confirm-delete form').submit();
@@ -252,15 +252,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

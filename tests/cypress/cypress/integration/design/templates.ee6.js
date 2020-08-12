@@ -52,9 +52,9 @@ context('Templates', () => {
             //createPage.get('save_and_edit_button').first().click()
             cy.get('button').contains('Save Template').first().click()
 
-            
+
             cy.get('a').contains('cypress-test-three').click()
-            //cy.visit('http://localhost:8888/admin.php?/cp/design/template/edit/8')
+            //cy.visit('admin.php?/cp/design/template/edit/8')
 
             editPage.get('settings_tab').click()
             editPage.get('name').should('have.value', 'cypress-test-three')
@@ -95,7 +95,7 @@ context('Templates', () => {
             createPage.get('name').trigger('blur')
 
             createPage.hasError(createPage.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
-            
+
         })
 
     })

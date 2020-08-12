@@ -6,7 +6,7 @@ const { _, $ } = Cypress
 context('Developer Log', () => {
 
 	beforeEach(function() {
-      cy.visit('http://localhost:8888/admin.php?/cp/login');
+      cy.visit('admin.php?/cp/login');
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
@@ -26,13 +26,13 @@ context('Developer Log', () => {
 		page.get('search').type('Hello{enter}')
 		page.get('list').find('div[class="list-item"]').should('have.length',1)
 		page.get('empty').should('not.exist')
-	
+
 	})
 
 	it('shows no results on a failed search', () => {
 			page.get('search').type('Nothing{enter}')
 			page.get('empty').should('exist')
-		
+
 	})
 
 	it('filters by date', () => {
@@ -83,7 +83,7 @@ context('Developer Log', () => {
           cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
         }
 
-        
+
 
         cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
@@ -99,7 +99,7 @@ context('Developer Log', () => {
     })
 
     it('can combine date and page size filters',() => {
-    	 
+
 
          var i = 0;
         for (i = 0; i < 15; i++) {
@@ -157,7 +157,7 @@ context('Developer Log', () => {
     })
 
     it('can paginate with filters',() => {
-    	 
+
 
          var i = 0;
         for (i = 0; i < 30; i++) {

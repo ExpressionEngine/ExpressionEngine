@@ -56,9 +56,9 @@ context('Fluid Fields', () => {
 
     it('can add a new field to the fluid field', function() {
 
-       
-        cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
-        cy.get('.tbl-ctrls .list-item .list-item__content').first().click()  
+
+        cy.visit('admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
+        cy.get('.tbl-ctrls .list-item .list-item__content').first().click()
 
 
             // confirm our state
@@ -71,7 +71,7 @@ context('Fluid Fields', () => {
         page.get('fields').find("[value='7']").should('be.checked')
 
         page.get('fields').find("[value='1']").click()
-        
+
         cy.get('button').contains('Save').first().click()
 
         page.get('fields').find("[value='1']").should('be.checked')
@@ -96,7 +96,7 @@ context('Fluid Fields', () => {
 
        // cy.get('.tbl-ctrls .list-item .list-item__content').contains('Fluid Field Body').click()
             // confirm our state
-        cy.visit('http://localhost:8888/admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
+        cy.visit('admin.php?/cp/fields&fieldtype=fluid_field&perpage=25')
         cy.get('.tbl-ctrls .list-item .list-item__content').first().click()
 
 
@@ -110,9 +110,9 @@ context('Fluid Fields', () => {
        // page.get('modal_submit_button').click()
        cy.get('input[value="Confirm, and Remove"]').filter(':visible').first().click()
 
-        
+
         page.get('fields').find("[value='2']").should('not.be.checked')
-        
+
     })
 
     it('deletes a fluid field', function() {

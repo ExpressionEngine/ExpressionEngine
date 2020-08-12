@@ -6,12 +6,12 @@ const member = new MemberCreate;
 context('Test Member roles Utilities ', () => {
 
 	it('Creates Log Manager Role', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('LogManager')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -19,7 +19,7 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('adds a Log  Manager member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -27,7 +27,7 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Log Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('LogManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -35,13 +35,13 @@ context('Test Member roles Utilities ', () => {
 	 })
 
 	it('Let Addon Role access Utils and CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('LogManager').click()
 
@@ -55,15 +55,15 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Can get to Logs now', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('LogManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('LogManager1')
-	   
+
 	   cy.get('.ee-sidebar').contains('Developer').click()
 	   cy.get('.ee-sidebar').contains('Logs').click()
 
@@ -75,18 +75,18 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Loses access', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('LogManager').click()
 
 	   cy.get('button').contains('CP Access').click()
-	   
+
 
 
 		cy.get('#fieldset-can_access_logs .toggle-btn').click(); //turn off slog
@@ -95,12 +95,12 @@ context('Test Member roles Utilities ', () => {
 
 		logout()
 
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	    cy.get('#username').type('LogManager1');
 	    cy.get('#password').type('password');
 	    cy.get('.button').click();
 
-	    cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('LogManager1')
 	   cy.get('.ee-sidebar').should('not.contain','Developer').click()
@@ -108,27 +108,27 @@ context('Test Member roles Utilities ', () => {
 
 
 	it.skip('cleans for reruns', () =>{
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('.list-item:nth-child(3) input').click();
-	
+
 
 	   cy.get('select').select('Delete')
 
     	cy.get('.bulk-action-bar > .button').click()
     	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
-    	cy.visit('http://localhost:8888/admin.php?/cp/members')
+    	cy.visit('admin.php?/cp/members')
 
 
 	    cy.get('tr:nth-child(1) > td > input').click();
-	    
+
 	    cy.get('select').select('Delete');
-	    
+
 	    cy.get('.button--primary').click();
 
 	    cy.get("body").then($body => {
@@ -136,7 +136,7 @@ context('Test Member roles Utilities ', () => {
 	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
 	          }
 	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not. 
+	    //Sometimes it asks for password to delete users and sometimes it does not.
 
 	    cy.get('.button--danger').click();
 	    cy.get('.modal-confirm-delete form').submit();
@@ -171,15 +171,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

@@ -7,12 +7,12 @@ const member = new MemberCreate;
 context('Test Member roles Members ', () => {
 
 	it('Creates Member Manager Role', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
 
-		cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 		cy.get('a').contains('New Role').click()
 		cy.get('input[name="name"]').clear().type('MemberManager')
 		cy.get('button').contains('Save & Close').eq(0).click()
@@ -20,7 +20,7 @@ context('Test Member roles Members ', () => {
 	})
 
 	it('adds a Member Manager member', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 		cy.get('#username').type('admin');
 		cy.get('#password').type('password');
 		cy.get('.button').click();
@@ -28,7 +28,7 @@ context('Test Member roles Members ', () => {
 	})
 
 	it('Member Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
@@ -36,13 +36,13 @@ context('Test Member roles Members ', () => {
 	 })
 
 	it('Let Members Role access Members and CP', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('MemberManager').click()
 
@@ -62,12 +62,12 @@ context('Test Member roles Members ', () => {
 	})
 
 	it.only('Cannot add members to "locked" groups (Super admins only)', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members')
+	   cy.visit('admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('fieldset[id="fieldset-role_id"]').filter(':visible').contains('Super Admin').should('not.exist')
@@ -76,48 +76,48 @@ context('Test Member roles Members ', () => {
 	})
 
 
-	
+
 	it.only('Cannot add members to "locked" groups using additional permissions', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members')
+	   cy.visit('admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('div').filter(':visible').contains('Super Admin').should('not.exist')
-	   
+
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')
 	})
 
-	
+
 
 	it('Cannot access member roles before it is assigned to that', () => {
-		cy.visit('http://localhost:8888/admin.php?/cp/login');
+		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles',{failOnStatusCode:false})
-	   
+	   cy.visit('admin.php?/cp/members/roles',{failOnStatusCode:false})
+
 	   cy.on('uncaught:exception', (err, runnable) => {
 			    expect(err.message).to.include('something about the error')
-			    done()		    
+			    done()
 			    return false
 		}) //got this block off of cypress docs
 	   cy.contains('You are not authorized')
 	})
 
 	it('Can accecss member roles after it is assigned',() =>{
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('MemberManager').click()
 
@@ -130,14 +130,14 @@ context('Test Member roles Members ', () => {
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').click();
 
 		logout()
-		
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('MemberManager1');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('a').contains('New Role').should('exist')
 	   cy.get('.ctrl-all').click()
 	   cy.get('select').should('exist')
@@ -146,24 +146,24 @@ context('Test Member roles Members ', () => {
 	})
 
 	it.skip('cleans for reruns', () => {
-	   cy.visit('http://localhost:8888/admin.php?/cp/login');
+	   cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('admin');
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('.list-item:nth-child(3) input').click();
-    	
+
 
     	cy.get('select').select('Delete')
     	cy.get('.bulk-action-bar > .button').click()
     	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
-    	cy.visit('http://localhost:8888/admin.php?/cp/members')
+    	cy.visit('admin.php?/cp/members')
 
 
 	    cy.get('tr:nth-child(1) > td > input').click();
-	    
+
 	    cy.get('select').select('Delete');
 	    cy.get('.button--primary').click();
 
@@ -172,7 +172,7 @@ context('Test Member roles Members ', () => {
 	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
 	          }
 	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not. 
+	    //Sometimes it asks for password to delete users and sometimes it does not.
 
 	    cy.get('.button--danger').click();
 	    cy.get('.modal-confirm-delete form').submit();
@@ -202,15 +202,16 @@ function add_members(group, count){
           if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
               cy.get("input[name=verify_password]").type('password');
           }
-        });  
+        });
       cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-      member.get('save_and_new_button').click()
+	cy.get('label').contains(group).click()
+	cy.get('.form-btns-top .saving-options').click()
+    member.get('save_and_new_button').click()
   }
 }
 
 function logout(){
-  cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+  cy.visit('admin.php?/cp/members/profile/settings')
   cy.get('.main-nav__account-icon > img').click()
   cy.get('[href="admin.php?/cp/login/logout"]').click()
 }

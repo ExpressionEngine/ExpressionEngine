@@ -127,7 +127,7 @@ context('Template Manager', () => {
 
            // page.get('template_groups').eq(0).find('.toolbar .edit a').click() AJ
 
-           cy.get('a[title="Edit"]').first().click()
+           cy.get('a[title="Edit"]').first().click({force: true})
 
 
             cy.hasNoErrors()
@@ -165,8 +165,8 @@ context('Template Manager', () => {
         it('can change the settings for a template', function() {
 
 
-            cy.get('a[title="Edit"]').first().click()
-            cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
+            cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+            //cy.visit('admin.php/cp/admin.php?/cp/design/template/edit/1')
 
             cy.get('button').contains('Settings').first().click()
             let form = new TemplateEdit
@@ -182,8 +182,6 @@ context('Template Manager', () => {
             cy.get('button').contains('Save').first().click()
             //page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 
-            cy.visit('http://localhost:8888/admin.php/cp/admin.php?/cp/design/template/edit/1')
-
             cy.get('button').contains('Settings').first().click()
 
             form.get('name').should('have.value', 'archives-and-stuff')
@@ -196,7 +194,7 @@ context('Template Manager', () => {
         })
 
         it('should validate the settings form', function() {
-            cy.visit('http://localhost:8888/admin.php?/cp/design/template/edit/1')
+            cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
             cy.get('button').contains('Settings').click()
 
             let form = new TemplateEdit
@@ -207,30 +205,32 @@ context('Template Manager', () => {
 
         })
 
-        it('can export some templates', function() {
+        it.skip('can export some templates', function() {
             // "need to handle download via POST"
         })
 
         it('can remove a template', function() {
-            page.get('templates').eq(0).find('td:nth-child(4) input').click()
+            page.get('templates').its('length').then((length) => {
+                page.get('templates').eq(0).find('td:nth-child(4) input').click()
 
-            page.get('bulk_action').should('exist')
-            page.get('action_submit_button').should('exist')
+                page.get('bulk_action').should('exist')
+                page.get('action_submit_button').should('exist')
 
-            page.get('bulk_action').select('Delete')
-            page.get('action_submit_button').click()
+                page.get('bulk_action').select('Delete')
+                page.get('action_submit_button').click()
 
-            //page.get('modal_submit_button').click()
-            cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+                //page.get('modal_submit_button').click()
+                cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
 
-            cy.hasNoErrors()
+                cy.hasNoErrors()
 
-            page.hasAlert('success')
-            page.get('templates').its('length').should('eq', 2)
+                page.hasAlert('success')
+                page.get('templates').its('length').should('eq', length-1)
+            })
         })
     })
 
-    it('can export all templates', function() {
+    it.skip('can export all templates', function() {
         cy.hasNoErrors()
             /*
                 url = page.export_icon[:href]
@@ -249,7 +249,7 @@ context('Template Manager', () => {
         cy.wait(500)
 
 
-        cy.get('h2').contains("Search Results")
+        cy.get('h3').contains("Search Results")
         page.get('templates').its('length').should('eq', 4)
     })
 

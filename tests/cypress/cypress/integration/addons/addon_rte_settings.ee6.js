@@ -4,7 +4,7 @@ import RteSettings from '../../elements/pages/addons/RteSettings';
 const page = new RteSettings;
 const { _, $ } = Cypress
 
-context('RTE Settings', () => {
+context.skip('RTE Settings', () => {
 
     before(function() {
         cy.task('db:seed')
@@ -212,7 +212,7 @@ context('RTE Settings', () => {
 
         it('can edit a tool set', function() {
             //page.get('tool_sets').eq(1).click() || instead of trying to click on this just go directly
-            cy.visit('http://localhost:8888/admin.php?/cp/addons/settings/rte/edit_toolset&toolset_id=1')
+            cy.visit('admin.php?/cp/addons/settings/rte/edit_toolset&toolset_id=1')
 
             page.get('tool_set_name').clear().type('Cypress Edited')
             //page.get('tool_set_save_button').click()
@@ -238,7 +238,7 @@ context('RTE Settings', () => {
             page.hasAlert('success')
             page.get('alert').contains("Tool sets removed")
             page.get('alert').contains("The following tool sets were removed")
-            
+
         })
 
         it('can bulk remove tool sets', function() {
@@ -247,7 +247,7 @@ context('RTE Settings', () => {
             // Uncheck the Default tool set
             page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
-            
+
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
             cy.get('input[type="submit"][value="Confirm, and Remove"]').eq(1).click() //try this instead.
@@ -259,7 +259,7 @@ context('RTE Settings', () => {
             page.get('alert').contains("The following tool sets were removed")
             page.get('alert').contains("Even")
             page.get('alert').contains("Everything")
-            
+
             page.get('alert').contains("Odd")
             page.get('alert').contains("Simple")
         })

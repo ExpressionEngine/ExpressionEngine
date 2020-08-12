@@ -393,7 +393,7 @@ context('File Manager', () => {
 		beforeEach_all_files();
 
 		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
-		cy.get('a[rel="modal-confirm-directory"]').first().click()
+		cy.get('a[rel="modal-confirm-directory"]').first().click({force: true})
 
 		//page.wait_until_remove_directory_modal_visible
 		page.get('modal_title').invoke('text').then((text) => {
@@ -438,7 +438,7 @@ context('File Manager', () => {
 		})
 
 		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
-		cy.get('a[rel="modal-confirm-directory"]').first().click()
+		cy.get('a[rel="modal-confirm-directory"]').first().click({force: true})
 
 		//page.wait_until_remove_directory_modal_visible
 		//page.get('modal_submit_button').click() // Submits a form

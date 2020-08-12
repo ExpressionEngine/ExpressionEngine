@@ -98,7 +98,7 @@
 
 //   load() {
 //     this.open_dev_menu()
-//     this.get('main_menu').find('a:contains("Utilities")').click()
+//     cy.get('body > .dropdown').find('a:contains("Utilities")').click()
 //     this.get('wrap').find('a:contains("Sent")').click()
 //   }
 // }
@@ -163,7 +163,7 @@ class CommunicateSent extends ControlPanel {
           }else{
              cy.expect(42).to.equal(41) //have cypress throw error
           }
-          
+
         })
       })
     }
@@ -184,7 +184,7 @@ class CommunicateSent extends ControlPanel {
           }else{
              cy.expect(42).to.equal(41) //have cypress throw error
           }
-          
+
         })
       })
     }
@@ -214,14 +214,14 @@ class CommunicateSent extends ControlPanel {
      let back = forward.reverse();
      let k = 0;
      for(k; k<20;k++){
-      
+
       this.get('subjects').eq(k).contains(back[k])
      }
 
 
   }
 
-  
+
   runner(){
       let command = "cd fixtures && php emailCache.php"
 
@@ -280,7 +280,7 @@ class CommunicateSent extends ControlPanel {
 
   load() {
     this.open_dev_menu()
-    this.get('main_menu').find('a:contains("Utilities")').click()
+    cy.get('body > .dropdown').find('a:contains("Utilities")').click()
     this.get('wrap').find('a:contains("Sent")').click()
     cy.get('input[name="filter_by_keyword"]').should('exist')
   }

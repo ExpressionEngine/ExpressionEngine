@@ -43,6 +43,7 @@ context('Channel Layouts: Create/Edit', () => {
             // Confirm the icon is for showing
             page.get('hide_options_tab').should('have.class', 'tab-off')
 
+            cy.get('.form-btns-top .saving-options').click()
             page.get('submit_button').click()
             cy.hasNoErrors()
 
@@ -63,6 +64,7 @@ context('Channel Layouts: Create/Edit', () => {
             // Confirm the icon is for showing
             page.get('hide_options_tab').should('have.class', 'tab-off')
 
+            cy.get('.form-btns-top .saving-options').click()
             page.get('submit_button').click()
             cy.hasNoErrors()
 
@@ -87,6 +89,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
+            cy.get('.form-btns-top .saving-options').click()
             page.get('submit_button').click()
             cy.hasNoErrors()
 
@@ -103,6 +106,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
             page.get('layout_name').clear().type('Default')
+            cy.get('.form-btns-top .saving-options').click()
             page.get('submit_button').click()
             cy.hasNoErrors()
 
@@ -173,7 +177,7 @@ context('Channel Layouts: Create/Edit', () => {
         let tabCount = page.$('tabs').length
         page.get('add_tab_button').click()
         page.get('add_tab_modal_tab_name').clear().type(new_tab_name)
-        cy.get('button').contains('Add Tab').first().click().click().then(function() {
+        cy.get('button').contains('Add Tab').first().click().then(function() {
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
         })
@@ -221,6 +225,7 @@ context('Channel Layouts: Create/Edit', () => {
     // This was a bug in 3.0
     it('can create two layouts for the same channel', function() {
         page.get('layout_name').clear().type('Default')
+        cy.get('.form-btns-top .saving-options').click()
         page.get('submit_button').click()
         cy.hasNoErrors()
         cy.reload()
@@ -239,9 +244,8 @@ context('Channel Layouts: Create/Edit', () => {
             channel.get('cat_group').each(function(cat) {
                 cy.wrap(cat).uncheck()
             })
-            //channel.submit()
-            //page.load()
             cy.get('button[value="save"]').first().click()
+            page.load()
         })
 
         describe('Hiding the Options Tab', function() {
@@ -254,6 +258,7 @@ context('Channel Layouts: Create/Edit', () => {
                 // Confirm the icon is for showing
                 page.get('hide_options_tab').should('have.class', 'tab-off')
 
+                cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click()
                 cy.hasNoErrors()
 
@@ -272,6 +277,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('hide_options_tab').should('have.class', 'tab-off')
 
                 page.get('layout_name').clear().type('Default')
+                cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click()
                 cy.wait(300) //AJ
                 cy.hasNoErrors()
@@ -296,6 +302,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').should('not.be.checked')
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
+                cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click()
                 cy.hasNoErrors()
 
@@ -312,6 +319,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
                 page.get('layout_name').clear().type('Default')
+                cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click().then(function() {
                     cy.hasNoErrors()
 
@@ -324,7 +332,7 @@ context('Channel Layouts: Create/Edit', () => {
             })
         })
 
-        
+
     })
 
     // Bug #21220

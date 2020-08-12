@@ -37,7 +37,7 @@ context('Field Groups', () => {
     })
 
     it('saves the field group name', function() {
-        page.get('field_groups_edit').eq(0).click()
+        page.get('field_groups_edit').eq(0).click({force: true})
         page.change('Test Group 2')
 
         cy.visit(page.url)

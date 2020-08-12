@@ -93,8 +93,6 @@ class Channel extends ControlPanel {
     }
 
     hasLocalErrors() {
-        this.get('save_button').filter('[type=submit]').first().click()
-        cy.wait(400)//AJ
         this.get('save_button').filter('[type=submit]').first().should('be.disabled')
     }
 }

@@ -7,8 +7,8 @@ const member = new MemberCreate;
 context('Test Member roles', () => {
 
   it('Super Admins can add members to default groups', () => {
-  	cy.visit('http://localhost:8888/admin.php?/cp/login');
-	
+  	cy.visit('admin.php?/cp/login');
+
 	cy.get('#username').type('admin');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
@@ -20,7 +20,7 @@ context('Test Member roles', () => {
   })
 
   it('Default Guests cannot access the control pannel',() => {
-  	cy.visit('http://localhost:8888/admin.php?/cp/login');
+  	cy.visit('admin.php?/cp/login');
   	cy.get('#username').type('Guests1');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
@@ -28,7 +28,7 @@ context('Test Member roles', () => {
   })
 
   it('Default Banned cannot access the control pannel',() => {
-  	cy.visit('http://localhost:8888/admin.php?/cp/login');
+  	cy.visit('admin.php?/cp/login');
   	cy.get('#username').type('Banned1');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
@@ -36,7 +36,7 @@ context('Test Member roles', () => {
   })
 
   it('Default Members cannot access the control pannel',() =>{
-  	cy.visit('http://localhost:8888/admin.php?/cp/login');
+  	cy.visit('admin.php?/cp/login');
   	cy.get('#username').type('Members1');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
@@ -44,14 +44,14 @@ context('Test Member roles', () => {
   })
 
   it('Super Admins have access to all ee-sidebar options',() =>{
-  	cy.visit('http://localhost:8888/admin.php?/cp/login');
+  	cy.visit('admin.php?/cp/login');
   	cy.get('#username').type('admin');
 	cy.get('#password').type('password');
 	cy.get('.button').click();
 
-	cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	cy.visit('admin.php?/cp/members/profile/settings')
 	cy.get('h1').contains('admin')
-	
+
 	cy.get('.ee-sidebar').contains('Entries')
 	cy.get('.ee-sidebar').contains('Files')
 	cy.get('.ee-sidebar').contains('Members')
@@ -64,14 +64,14 @@ context('Test Member roles', () => {
 })
 
 function createRole(Name){
-	cy.visit('http://localhost:8888/admin.php?/cp/members/roles')
+	cy.visit('admin.php?/cp/members/roles')
   	cy.get('a').contains('New Role').click()
   	cy.get('input[name="name"]').type(Name)
 }
 
 
 function logout(){
-	cy.visit('http://localhost:8888/admin.php?/cp/members/profile/settings')
+	cy.visit('admin.php?/cp/members/profile/settings')
 	cy.get('.main-nav__account-icon > img').click()
 	cy.get('[href="admin.php?/cp/login/logout"]').click()
 }
@@ -94,9 +94,10 @@ function add_members(group, count){
 	        if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
 	            cy.get("input[name=verify_password]").type('password');
 	        }
-   	    });  
+   	    });
 	    cy.get('button').contains('Roles').click()
 		cy.get('label').contains(group).click()
+		cy.get('.form-btns-top .saving-options').click()
 	    member.get('save_and_new_button').click()
 	}
 }
@@ -110,4 +111,3 @@ function add_members(group, count){
 
 
 
- 
