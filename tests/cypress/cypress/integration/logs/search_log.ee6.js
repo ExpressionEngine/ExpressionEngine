@@ -5,13 +5,23 @@ const { _, $ } = Cypress
 
 context('Search Log', () => {
 
+	var JoeId =0;
+
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('johndoe')
+		cy.addMembers('johndoe', 1)
+		//cy.auth()
+		cy.visit('admin.php?/cp/members')
+		cy.get("tr[class='app-listing__row']:contains('johndoe1')").find('td').eq(0).then(($span) =>{
+			JoeId = $span.text().substring(2)
+		})
+	})
+
 	beforeEach(function() {
-			cy.visit('admin.php?/cp/login');
-	      cy.get('#username').type('admin');
-	      cy.get('#password').type('password');
-	      cy.get('.button').click();
-	      cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
-			cy.hasNoErrors()
+		cy.auth()
+	    cy.visit('admin.php?/cp/logs/search')
+		cy.hasNoErrors()
     })
 
    it('shows the Control Panel Access Logs page', () => {
@@ -24,8 +34,8 @@ context('Search Log', () => {
 
 
 	it('searches by phrases', () => {
-		cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'Hello There')")
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`, `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'Hello There', 'site')")
+		cy.visit('admin.php?/cp/logs/search')
 		page.get('list').find('div[class="list-item"]').should('have.length',1)
 
 		page.get('search').filter(':visible').first().type('Hello There{enter}')
@@ -41,21 +51,6 @@ context('Search Log', () => {
 
 	})
 
-//get joe just like in CP test
-	var temp = 0;
-	  var JoeId =0;
-	  it('gets Johndoes ID', () => {
-	    cy.visit('admin.php/cp/admin.php?/cp/members')
-	    cy.get('input[name="filter_by_keyword"]').type('johndoe1{enter}')
-	    cy.wait(600)
-	    cy.get('h1').contains('Members').click()
-	    cy.get('tr[class="app-listing__row"]').find('td').eq(0).then(($span) =>{
-	      temp = $span.text();
-
-	      JoeId = temp.substring(2,temp.length)
-	      cy.log(JoeId);
-	    })
-	  })
 
 	it('filters by username', () => {
 		 page.get('delete_all').click()
@@ -63,15 +58,15 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin', 'site')")
 		}
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.visit('/admin.php?/cp/logs/search')
 		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
 
 		page.get('username').filter(':visible').first().click()
@@ -90,19 +85,19 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', 1, 'From 1969')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', 1, 'From 1969', 'site')")
 		}
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'From Today')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'From Today', 'site')")
 		}
 
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.visit('/admin.php?/cp/logs/search')
 		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
 
 		page.get('date').filter(':visible').first().click()
-		cy.get('a').contains('24 Hours').click()
+		cy.get('.dropdown--open a').contains('24 Hours').click({waitForAnimations: false})
 		cy.wait(300)
 		page.get('list').find('div[class="list-item"]').should('have.length',15)
 
@@ -114,9 +109,9 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 50; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', 1, 'From 1969')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', 1, 'From 1969', 'site')")
 		}
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.visit('/admin.php?/cp/logs/search')
 
 		page.get('list').find('div[class="list-item"]').should('have.length',25)
 
@@ -135,15 +130,15 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin', 'site')")
 		}
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.visit('/admin.php?/cp/logs/search')
 		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
 
 		page.get('username').filter(':visible').first().click()
@@ -166,31 +161,37 @@ context('Search Log', () => {
     })
 
     it('can remove all',() => {
-    	page.get('delete_all').click()
-      	page.get('confirm').filter(':visible').first().click()
-      	page.get('empty').should('exist')
-    })
 
-    it('does not lose filter when paginating', () => {
-    	var i = 0;
+		page.get('delete_all').click()
+      	page.get('confirm').filter(':visible').first().click()
+		page.get('empty').should('exist')
+
+	})
+
+	it('does not lose filter when paginating',() => {
+
+		cy.task('db:query',"TRUNCATE `exp_search_log`");
+		var i = 0;
         for (i = 0; i < 30; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', '1', 'admin', UNIX_TIMESTAMP(), 'I am Admin', 'site')")
 		}
 
 		var i = 0;
         for (i = 0; i < 30; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/search')
+		cy.visit('/admin.php?/cp/logs/search')
 		page.get('list').find('div[class="list-item"]').should('have.length',25)//default showing number
 
 		page.get('username').filter(':visible').first().click()
 
-		page.get('filter_user').filter(':visible').type('admin{enter}',{waitForAnimations: false})
-		cy.wait(300)
+		page.get('filter_user').filter(':visible').type('admin{enter}')
+
 		page.get('list').find('div[class="list-item"]').should('have.length',25)
 		cy.get('a').filter(':visible').contains('johndoe1').should('not.exist')
+
+		cy.hasNoErrors()
 
 		cy.get('a[class="pagination__link"]').contains('2').click()
 		cy.get('a').filter(':visible').contains('johndoe1').should('not.exist')

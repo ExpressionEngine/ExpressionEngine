@@ -40,6 +40,42 @@ Cypress.Commands.add("auth", (user) => {
     cy.login(user);
 })
 
+Cypress.Commands.add("addMembers", (group, count) => {
+    cy.auth();
+    let i = 1;
+    for(i ; i <= count; i++){
+        cy.visit('/admin.php?/cp/members/create') //goes to member creation url
+
+        let email = group;
+        email += i.toString();
+        email += "@test.com";
+        let username = group + i.toString();
+        cy.get('input[name=username]:visible').clear().type(username)
+        cy.get('input[name=email]:visible').clear().type(email)
+        cy.get('input[name=password]:visible').clear().type('password')
+        cy.get('input[name=confirm_password]:visible').clear().type('password')
+
+        cy.get("body").then($body => {
+            if ($body.find("input[name=verify_password]:visible").length > 0) {   //evaluates as true if verify is needed
+                cy.get("input[name=verify_password]").type('password');
+            }
+        });
+        cy.get('button').contains('Roles').click()
+        cy.get('label').contains(group).click()
+        cy.get('.form-btns-top .saving-options').click()
+        cy.get('form .form-btns-top button[type=submit][value=save_and_new]').click()
+    }
+})
+
+Cypress.Commands.add("addRole", (role) => {
+    cy.auth();
+    cy.visit('admin.php?/cp/members/roles')
+    cy.get('a').contains('New Role').click()
+    cy.get('input[name="name"]').clear().type(role)
+    cy.get('.form-btns-top .saving-options').click()
+    cy.get('button').contains('Save & Close').eq(0).click()
+})
+
 Cypress.Commands.add("authVisit", (url, user) => {
     cy.auth(user);
     cy.visit(url);
@@ -52,13 +88,15 @@ Cypress.Commands.add("hasNoErrors", () => {
     }
 
     cy.contains('Line Number:').should('not.exist')
+    cy.contains('Severity:').should('not.exist')
 
-    //cy.get('section').contains('Errors Found').should('not.exist')
+    //cy.contains('Errors').should('not.exist')
 
     // Our custom PHP error handler
     cy.contains(', line').should('not.exist')
 
     cy.contains('Exception Caught').should('not.exist')
+    cy.contains('Warning Caught').should('not.exist')
 })
 
 Cypress.Commands.add("dragTo", { prevSubject: true }, (subject, target) => {

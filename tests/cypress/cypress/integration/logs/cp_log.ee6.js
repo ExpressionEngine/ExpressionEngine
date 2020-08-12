@@ -11,7 +11,7 @@ context('CP Log', () => {
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
-      cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+      cy.visit('/admin.php?/cp/logs/cp')
 			cy.hasNoErrors()
 		})
 
@@ -74,7 +74,7 @@ context('CP Log', () => {
   var temp = 0;
   var JoeId =0;
   it('gets Johndoes ID', () => {
-    cy.visit('admin.php/cp/admin.php?/cp/members')
+    cy.visit('admin.php?/cp/members')
     cy.get('input[name="filter_by_keyword"]').type('johndoe1{enter}')
     cy.wait(600)
     cy.get('h1').contains('Members').click()
@@ -95,7 +95,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         page.get('username').click()
         cy.wait(800)
         page.get('filter_user').type('johndoe1{enter}',{waitForAnimations: false})
@@ -105,7 +105,7 @@ context('CP Log', () => {
 
     //this uses search bar test above uses the username filter
     it('can search by username',() => {
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         page.get('search').type('johndoe1{enter}',{waitForAnimations: false})
         page.get('list').find('div[class="list-item"]').should('have.length',15)
         page.get('empty').should('not.exist')
@@ -121,7 +121,7 @@ context('CP Log', () => {
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
-      cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+      cy.visit('/admin.php?/cp/logs/cp')
       page.get('list').find('div[class="list-item"]').should('have.length',2)
       page.get('date').click()
       cy.get('a').contains('24 Hours').click()
@@ -139,7 +139,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -159,7 +159,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -179,7 +179,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         cy.get('a').filter(':visible').contains('johndoe1')
         cy.get('a').filter(':visible').contains('admin')
 
@@ -208,7 +208,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         cy.get('a').filter(':visible').contains('johndoe1')
         cy.get('a').filter(':visible').contains('admin')
 
@@ -247,7 +247,7 @@ context('CP Log', () => {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
 
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
@@ -268,7 +268,7 @@ context('CP Log', () => {
         for (i = 0; i < 26; i++) {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/cp')
+        cy.visit('/admin.php?/cp/logs/cp')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
         page.get('username').click()
         cy.wait(800)

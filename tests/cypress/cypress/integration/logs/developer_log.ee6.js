@@ -10,7 +10,7 @@ context('Developer Log', () => {
       cy.get('#username').type('admin');
       cy.get('#password').type('password');
       cy.get('.button').click();
-      cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+      cy.visit('/admin.php?/cp/logs/developer')
 
 	})
 
@@ -22,7 +22,7 @@ context('Developer Log', () => {
 
 	it('searches by phrases', () => {
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
-		cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+		cy.visit('/admin.php?/cp/logs/developer')
 		page.get('search').type('Hello{enter}')
 		page.get('list').find('div[class="list-item"]').should('have.length',1)
 		page.get('empty').should('not.exist')
@@ -63,7 +63,7 @@ context('Developer Log', () => {
          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+        cy.visit('/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -85,7 +85,7 @@ context('Developer Log', () => {
 
 
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+        cy.visit('/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -110,7 +110,7 @@ context('Developer Log', () => {
           cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+        cy.visit('/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -133,7 +133,7 @@ context('Developer Log', () => {
           cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+        cy.visit('/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
 
@@ -168,7 +168,7 @@ context('Developer Log', () => {
           cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
         }
 
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/developer')
+        cy.visit('/admin.php?/cp/logs/developer')
         page.get('list').find('div[class="list-item"]').should('have.length',25) //default 25 logs show
 
         page.get('date').filter(':visible').first().click()

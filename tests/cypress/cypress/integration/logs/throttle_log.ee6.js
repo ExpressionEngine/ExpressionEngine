@@ -9,7 +9,7 @@ context('Throttle Logging', () => {
           cy.get('#username').type('admin');
           cy.get('#password').type('password');
           cy.get('.button').click();
-          cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+          cy.visit('/admin.php?/cp/logs/throttle')
 
       })
 
@@ -24,7 +24,7 @@ context('Throttle Logging', () => {
 
       it('shows the throttling log page', () => {
         cy.task('db:query', "INSERT INTO `exp_throttle` (`throttle_id`, `ip_address`, `last_activity`, `hits`, `locked_out`) VALUES (NULL, '0', UNIX_TIMESTAMP(), '100', 'n')")
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+        cy.visit('/admin.php?/cp/logs/throttle')
 
         page.get('show').should('exist')
         page.get('date').should('exist')
@@ -34,14 +34,14 @@ context('Throttle Logging', () => {
 
       it('can search by phrase', () => {
         cy.task('db:query', "INSERT INTO `exp_throttle` (`throttle_id`, `ip_address`, `last_activity`, `hits`, `locked_out`) VALUES (NULL, '172.16.11', UNIX_TIMESTAMP(), '100', 'n')")
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+        cy.visit('/admin.php?/cp/logs/throttle')
         page.get('search').filter(':visible').first().type('172.16.11{enter}',{waitForAnimations: false})
         page.get('list').find('div[class="list-item"]').should('have.length',1)
         page.get('empty').should('not.exist')
       })
 
       it('shows no result on a failed search', () => {
-        cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+        cy.visit('/admin.php?/cp/logs/throttle')
         page.get('search').filter(':visible').first().type('NothingHere{enter}',{waitForAnimations: false})
         page.get('empty').should('exist')
       })
@@ -57,7 +57,7 @@ context('Throttle Logging', () => {
          for (i = 0; i < 30; i++) {
              cy.task('db:query', "INSERT INTO `exp_throttle` (`throttle_id`, `ip_address`, `last_activity`, `hits`, `locked_out`) VALUES (NULL, '172.16.11', UNIX_TIMESTAMP(), '100', 'n')")
           }
-          cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+          cy.visit('/admin.php?/cp/logs/throttle')
           page.get('list').find('div[class="list-item"]').should('have.length',25)
 
           page.get('show').filter(':visible').first().click()
@@ -112,7 +112,7 @@ context('Throttle Logging', () => {
              cy.task('db:query', "INSERT INTO `exp_throttle` (`throttle_id`, `ip_address`, `last_activity`, `hits`, `locked_out`) VALUES (NULL, '111.11.11', UNIX_TIMESTAMP(), '100', 'n')")
           }
 
-          cy.visit('/admin.php/cp/admin.php?/cp/logs/throttle')
+          cy.visit('/admin.php?/cp/logs/throttle')
 
           page.get('search').filter(':visible').first().type('111.11.11{enter}',{waitForAnimations: false})
           page.get('list').find('div[class="list-item"]').should('have.length',25)

@@ -166,7 +166,7 @@ context('Template Manager', () => {
 
 
             cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
-            //cy.visit('admin.php/cp/admin.php?/cp/design/template/edit/1')
+            //cy.visit('admin.php?/cp/design/template/edit/1')
 
             cy.get('button').contains('Settings').first().click()
             let form = new TemplateEdit
