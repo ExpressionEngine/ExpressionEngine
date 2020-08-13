@@ -94,7 +94,7 @@ context('CP Log', () => {
     })
 
 
-    it.only('can filter by date' , () => {
+    it('can filter by date' , () => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`")
 
       for (var i = 0; i < 3; i++) {

@@ -5,7 +5,7 @@ const { _, $ } = Cypress
 
 context('Email Log', () => {
 
-	/*before(function(){
+	before(function(){
 		cy.task('db:seed')
 		cy.addRole('johndoe')
 		cy.addMembers('johndoe', 1)
@@ -15,7 +15,7 @@ context('Email Log', () => {
 		cy.exec(command2)
 		const command3 = `cd support/fixtures && php emailLog.php --count 1 --timestamp-max 0 --subject "Rspec entry for search"`;
     	cy.exec(command3)
-	})*/
+	})
 
 	beforeEach(function() {
 			cy.authVisit(page.url);

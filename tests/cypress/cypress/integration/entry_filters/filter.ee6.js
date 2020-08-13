@@ -1,7 +1,7 @@
 import Entries from '../../elements/pages/entries/Entries';
 const entry = new Entries
 const { _, $ } = Cypress
-context.skip('Entry filtering', () => {
+context('Entry filtering', () => {
 
 		before(function(){
 			cy.task('db:seed')
@@ -61,7 +61,35 @@ context.skip('Entry filtering', () => {
 			cy.get('button').contains('Save').eq(0).click()
 			cy.get('p').contains('The entry Channel Entry has been updated')
 
+			cy.visit('admin.php?/cp/members/create')
+			cy.get('input[name="username"]').eq(0).type('user2')
+			cy.get('input[name="email"]').eq(0).type('user2@test.com')
+			cy.get('input[name="password"]').eq(0).type('password')
+			cy.get('input[name="confirm_password"]').eq(0).type('password')
+			cy.get('input[name="verify_password"]').eq(0).type('password')
+			cy.get('button').contains('Roles').click()
 
+			cy.get('input[type="radio"][name="role_id"][value="1"]').click()//make a super admin2
+			cy.get('button').contains('Save').click()
+
+			cy.visit('admin.php?/cp/members/profile/settings')
+			cy.get('.main-nav__account-icon > img').click()
+			cy.get('[href="admin.php?/cp/login/logout"]').click()
+
+			cy.visit('admin.php?/cp/login');
+			cy.get('#username').type('user2')
+			cy.get('#password').type('password')
+			cy.get('.button').click()
+
+
+
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
+			cy.wait(500)
+			cy.get('a').filter(':visible').contains('Channel').click({force:true})
+			cy.get('input[name="title"]').type('Another Entry in Channel')
+			cy.get('button').contains('Save').eq(0).click()
+			cy.get('p').contains('has been created')
 
 		})
 
@@ -71,13 +99,15 @@ context.skip('Entry filtering', () => {
 			cy.server()
 		})
 
-		it.only('Can sort entries by their channel also tests clear', () => {
+		it('Can sort entries by their channel also tests clear', () => {
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('ChannelSort').click()
-			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();
 			cy.wait("@ajax")
-			entry.get('Entries').find('tr').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',2)
 			cy.get('a').contains('Channel Entry').should('exist')
 
 			cy.visit('admin.php?/cp/publish/edit')
@@ -88,7 +118,7 @@ context.skip('Entry filtering', () => {
 			cy.get('a').contains('Contact Entry').should('exist')
 
 			cy.visit('admin.php?/cp/publish/edit')
-			entry.get('Entries').find('tr').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',14)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();
 			cy.wait("@ajax")
@@ -98,67 +128,72 @@ context.skip('Entry filtering', () => {
 		})
 
 		it('Can sort by status of entries (Open or closed) and can combine this sort with channel', () => {
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.visit('admin.php?/cp/publish/edit')
-			cy.wait(400)
+
 			cy.get('h1').contains('Entries').click()
 			entry.get('StatusSort').click()
 
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',2)
+			entry.get('Entries').find('tr').should('have.length',12)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').contains('No Entries found')
+			//entry.get('Entries').contains('No Entries found')
+			entry.get('Entries').find('tr').should('have.length',1)
 
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 		})
 
 		it('can sort by search bar (Searching in Titles)', () =>{
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchBar').clear().type('Channel{enter}')
-			cy.wait(400)
+			//cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',1)
+			entry.get('Entries').find('tr').should('have.length',2)
 
 			entry.get('SearchBar').clear().type('Contact{enter}')
-			cy.wait(400)
+			//cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Discover{enter}')
-			cy.wait(400)
+			//cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
@@ -197,84 +232,57 @@ context.skip('Entry filtering', () => {
 		})
 
 		it('Creates a second user to sort by their entries', () => {
-			cy.visit('admin.php?/cp/members/create')
-			cy.get('input[name="username"]').eq(0).type('user2')
-			cy.get('input[name="email"]').eq(0).type('user2@test.com')
-			cy.get('input[name="password"]').eq(0).type('password')
-			cy.get('input[name="confirm_password"]').eq(0).type('password')
-			cy.get('input[name="verify_password"]').eq(0).type('password')
-			cy.get('button').contains('Roles').click()
-
-			cy.get('input[type="radio"][name="role_id"][value="1"]').click()//make a super admin2
-			cy.get('button').contains('Save').click()
-
-			cy.visit('admin.php?/cp/members/profile/settings')
- 			 cy.get('.main-nav__account-icon > img').click()
-  			cy.get('[href="admin.php?/cp/login/logout"]').click()
-
-			cy.visit('admin.php?/cp/login');
-			cy.get('#username').type('user2')
-      		cy.get('#password').type('password')
-      		cy.get('.button').click()
-
-
+			cy.route("GET", "**/publish/edit**").as("ajax");
 
 		  	cy.visit('admin.php?/cp/publish/edit')
-		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
-		  	cy.wait(500)
-		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
-		  	cy.get('input[name="title"]').type('Another Entry in Channel')
-		  	cy.get('button').contains('Save').eq(0).click()
-		  	cy.get('p').contains('has been created')
-
-
-
-
-		  	cy.visit('admin.php?/cp/publish/edit')
-		  	entry.get('Entries').find('tr').should('have.length',4)
+		  	entry.get('Entries').find('tr').should('have.length',14)
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('user2').click()
-		  	cy.wait(400)
+		  	cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 		  	entry.get('Entries').find('tr').should('have.length',1)
 
 		  	entry.get('AuthorSort').click()
-		  	cy.get('a').contains('admin').click()
-		  	cy.wait(400)
+		  	cy.get('a').contains('Admin').click()
+		  	cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-		  	entry.get('Entries').find('tr').should('have.length',3)
+		  	entry.get('Entries').find('tr').should('have.length',13)
 
 		})
 
 		it('Can combine all search fields', () =>{
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('AuthorSort').click()
 			cy.get('a').contains('Admin').click()
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',3)
+			entry.get('Entries').find('tr').should('have.length',13)
 
 			entry.get('StatusSort').click()
 
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
-			entry.get('Entries').find('tr').should('have.length',2)
+			entry.get('Entries').find('tr').should('have.length',11)
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();
-			cy.wait(400)
+			cy.wait("@ajax")
 			cy.get('h1').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
 		it('can Search in Content but not title',() => {
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			//Real quick add in a text field to one of our channels
 			cy.visit('admin.php?/cp/fields')
 			cy.get('a').contains('New Field').click()
@@ -298,37 +306,37 @@ context.skip('Entry filtering', () => {
 
 			entry.get('SearchIn').click()
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
-			cy.wait(900)
+			cy.wait("@ajax")
 			entry.get('SearchBar').type('The Quick Brown{enter}')
-			cy.wait(900)
 
 			cy.get('a').contains('Discover Entry').should('exist')
 
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchIn').click()
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=content&perpage=25"]').click()
-			cy.wait(900)
+			cy.wait("@ajax")
 			entry.get('SearchBar').type('Discover{enter}')
-			cy.wait(900)
+
 			cy.get('body').contains('No Entries found')
 
 
 		})
 
 		it('search by content and title', () => {
+			cy.route("GET", "**/publish/edit**").as("ajax");
+
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchIn').click()
 			cy.wait(900)
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
-			cy.wait(900)
+			cy.wait("@ajax")
 			entry.get('SearchBar').type('The Quick Brown{enter}')
 			cy.get('h1').contains('Entries').click()
-			cy.wait(900)
+
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 			entry.get('SearchBar').clear()
 			entry.get('SearchBar').type('Discover{enter}')
-			cy.wait(900)
 
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')

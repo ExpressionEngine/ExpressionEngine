@@ -10,7 +10,7 @@ context('Jump Menu', () => {
 		page.get('primary_input').focus()
 		page.get('primary_input').clear();
 		page.get('primary_results').should('be.visible').contains("More than 10 results found, please refine your search")
-		page.get('secondary_results').should('not.be.visible')
+		//page.get('secondary_results').should('not.be.visible')
 		page.get('no_results').should('not.be.visible')
 
 		cy.get("body").type('{esc}');
@@ -18,7 +18,7 @@ context('Jump Menu', () => {
 	}
 
 	before(function() {
-        cy.task('db:seed')
+        //cy.task('db:seed')
     })
 
     beforeEach(function() {
@@ -41,7 +41,7 @@ context('Jump Menu', () => {
 		beforeEach(function() {
 			page.get('primary_input').type('entr');
 			page.get('primary_results').should('be.visible')
-			page.get('secondary_results').should('not.be.visible')
+			//page.get('secondary_results').should('not.be.visible')
 			page.get('no_results').should('not.be.visible')
 
 			page.get('jump_menu').contains("Create Entry")

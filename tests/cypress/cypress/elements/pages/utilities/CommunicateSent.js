@@ -149,21 +149,14 @@ class CommunicateSent extends ControlPanel {
   }
 
   SentSorter(){
-     cy.auth();
-     this.load();
+
     cy.get(':nth-child(3) > .sort').click({force: true})
     let a = 0;
     for(a;a<18;a++){
       let b = a + 1;
       this.get('total_sents').eq(a).invoke('text').then((text1) => {
         this.get('total_sents').eq(b).invoke('text').should((text2) => {
-
-          if(parseInt(text1) <= parseInt(text1) ){
-            cy.expect(42).to.equal(42)
-          }else{
-             cy.expect(42).to.equal(41) //have cypress throw error
-          }
-
+          expect(parseInt(text1)).to.equal(parseInt(text2));
         })
       })
     }
@@ -223,7 +216,7 @@ class CommunicateSent extends ControlPanel {
 
 
   runner(){
-      let command = "cd fixtures && php emailCache.php"
+      let command = "cd support/fixtures && php emailCache.php"
 
       if (this.count) {
         command += " --count " + this.count.toString()
@@ -273,7 +266,7 @@ class CommunicateSent extends ControlPanel {
         command += " --total-sent '" + this.total_sent.toString() + "'"
       }
 
-      command += " > /dev/null 2>&1"
+      //command += " > /dev/null 2>&1"
 
       cy.exec(command)
   }
