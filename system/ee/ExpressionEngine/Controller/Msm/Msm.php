@@ -344,7 +344,7 @@ class Msm extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'errors' => $errors,
-			'hide_top_buttons' => true,
+			'hide_top_buttons' => false,
 			'buttons' => [
 				[
 					'name' => 'submit',

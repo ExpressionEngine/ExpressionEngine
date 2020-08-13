@@ -35,7 +35,7 @@ foreach ($setting['fields'] as $field_name => $field)
 }
 if (isset($setting['security']) && $setting['security'] == TRUE)
 {
-	$fieldset_classes .= ' fieldset-security-enhanced';
+	$fieldset_classes .= ' fieldset-security-caution ';
 }
 if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
