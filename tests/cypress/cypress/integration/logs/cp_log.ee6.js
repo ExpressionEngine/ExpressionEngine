@@ -6,11 +6,21 @@ context('CP Log', () => {
 
 	describe('Pregen == true', function() {
 
+    var JoeId =0;
+
+    before(function(){
+      cy.task('db:seed')
+      cy.addRole('johndoe')
+      cy.addMembers('johndoe', 1)
+      //cy.auth()
+      cy.visit('admin.php?/cp/members')
+      cy.get("tr[class='app-listing__row']:contains('johndoe1')").find('td').eq(0).then(($span) =>{
+        JoeId = $span.text().substring(2)
+      })
+    })
+
 		beforeEach(function() {
-			cy.visit('admin.php?/cp/login');
-      cy.get('#username').type('admin');
-      cy.get('#password').type('password');
-      cy.get('.button').click();
+			cy.auth();
       cy.visit('/admin.php?/cp/logs/cp')
 			cy.hasNoErrors()
 		})
@@ -39,20 +49,6 @@ context('CP Log', () => {
       page.get('empty').should('exist')
     })
 
-    it('Create Test role to view site', () => {
-
-      cy.visit('admin.php?/cp/members/roles')
-      cy.get('a').contains('New Role').click()
-      cy.get('input[name="name"]').clear().type('johndoe')
-      cy.get('button').contains('Save & Close').eq(0).click()
-
-  })
-
-  it('adds a Test member', () => {
-
-    add_members('johndoe',1)
-  })
-
   it('Let Test Role access CP', () => {
 
      cy.visit('admin.php?/cp/members/roles')
@@ -63,28 +59,14 @@ context('CP Log', () => {
   })
 
   it('can remove everything', () =>{
+      for (i = 0; i < 2; i++) {
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+      }
+
       page.get('delete_all').click()
       page.get('confirm').filter(':visible').first().click()
       page.get('empty').should('exist')
     })
-
-
-
-
-  var temp = 0;
-  var JoeId =0;
-  it('gets Johndoes ID', () => {
-    cy.visit('admin.php?/cp/members')
-    cy.get('input[name="filter_by_keyword"]').type('johndoe1{enter}')
-    cy.wait(600)
-    cy.get('h1').contains('Members').click()
-    cy.get('tr[class="app-listing__row"]').find('td').eq(0).then(($span) =>{
-      temp = $span.text();
-
-      JoeId = temp.substring(2,temp.length)
-      cy.log(JoeId);
-    })
-  })
 
 
 
@@ -112,27 +94,27 @@ context('CP Log', () => {
     })
 
 
-    it('can filter by date' , () => {
-      //first delete all current logs
-      page.get('delete_all').click()
-      page.get('confirm').filter(':visible').first().click()
-      logout()
-      cy.visit('admin.php?/cp/login');
-      cy.get('#username').type('admin');
-      cy.get('#password').type('password');
-      cy.get('.button').click();
-      cy.visit('/admin.php?/cp/logs/cp')
-      page.get('list').find('div[class="list-item"]').should('have.length',2)
+    it.only('can filter by date' , () => {
+      cy.task('db:query', "TRUNCATE `exp_cp_log`")
+
+      for (var i = 0; i < 3; i++) {
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+      }
+
+      for (var i = 0; i < 3; i++) {
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,1286668800,'Test')")
+      }
+
+      page.get('list').find('div[class="list-item"]').should('have.length',6)
       page.get('date').click()
       cy.get('a').contains('24 Hours').click()
       cy.wait(400)
-      page.get('list').find('div[class="list-item"]').should('have.length',2)
+      page.get('list').find('div[class="list-item"]').should('have.length',3)
 
     })
 
     it('can change page size', () => {
-      page.get('delete_all').click()
-      page.get('confirm').filter(':visible').first().click()
+      cy.task('db:query', "TRUNCATE `exp_cp_log`")
 
       var i = 0;
         for (i = 0; i < 55; i++) {
@@ -290,35 +272,3 @@ context('CP Log', () => {
 
 }) //EOF
 
-
-function add_members(group, count){
-  let i = 1;
-  for(i ; i <= count; i++){
-    cy.visit('/admin.php?/cp/members/create') //goes to member creation url
-
-    let email = group;
-    email += i.toString();
-    email += "@test.com";
-    let username = group + i.toString();
-    page.get('usernamem').clear().type(username)
-      page.get('email').clear().type(email)
-      page.get('password').clear().type('password')
-      page.get('confirm_password').clear().type('password')
-
-    cy.get("body").then($body => {
-          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
-              cy.get("input[name=verify_password]").type('password');
-          }
-        });
-      cy.get('button').contains('Roles').click()
-    cy.get('label').contains(group).click()
-    cy.get('.form-btns-top .saving-options').click()
-    page.get('save_and_new_button').click()
-  }
-}
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}
