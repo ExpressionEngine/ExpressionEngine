@@ -27,7 +27,7 @@ class Date extends Settings {
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 		$fields = ee()->config->prep_view_vars('localization_cfg');
 		$fields = $fields['fields'];
-		$timezone = ee()->localize->timezone_menu($this->member->timezone, 'timezone');
+		$timezone = ee()->localize->timezone_menu($this->member->timezone ?: ee()->config->item('default_site_timezone'), 'timezone');
 
 		$vars['sections'] = array(
 			array(
