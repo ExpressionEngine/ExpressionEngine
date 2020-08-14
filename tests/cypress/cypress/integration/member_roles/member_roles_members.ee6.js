@@ -10,23 +10,8 @@ context('Test Member roles Members ', () => {
 		cy.task('db:seed')
 		cy.addRole('MemberManager')
 		cy.addMembers('MemberManager', 1)
-		cy.logout()
-	})
 
-	it('Member Manager can not login because cp access has not been given yet',() => {
-		cy.auth({
-			email: 'MemberManager1',
-			password: 'password'
-		})
-
-	   cy.get('p').contains('You are not authorized to perform this action')
-	 })
-
-	it('Let Members Role access Members and CP', () => {
-	   cy.auth();
-
-
-	   cy.visit('admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('MemberManager').click()
 
@@ -43,7 +28,10 @@ context('Test Member roles Members ', () => {
 		cy.get('#fieldset-member_actions .checkbox-label:nth-child(5) > input').click();
 		cy.get('#fieldset-member_actions .checkbox-label:nth-child(6) > input').click(); //lets role do everthing to members
 		cy.get('button').contains('save').eq(0).click()
+
+		cy.logout()
 	})
+
 
 	it('Cannot add members to "locked" groups (Super admins only)', () => {
 		cy.auth({

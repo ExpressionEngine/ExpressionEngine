@@ -2101,7 +2101,7 @@ CREATE TABLE IF NOT EXISTS `exp_roles` (
 DELETE FROM `exp_roles`;
 /*!40000 ALTER TABLE `exp_roles` DISABLE KEYS */;
 INSERT INTO `exp_roles` (`role_id`, `name`, `short_name`, `description`, `is_locked`) VALUES
-	(1, 'Super Admin', 'super_admin', '', 'n'),
+	(1, 'Super Admin', 'super_admin', '', 'y'),
 	(2, 'Banned', 'banned', '', 'n'),
 	(3, 'Guests', 'guests', '', 'n'),
 	(4, 'Pending', 'pending', '', 'n'),
