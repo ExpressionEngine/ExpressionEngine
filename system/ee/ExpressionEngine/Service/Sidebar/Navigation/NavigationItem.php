@@ -12,6 +12,7 @@ namespace ExpressionEngine\Service\Sidebar\Navigation;
 
 use ExpressionEngine\Service\Sidebar\ListItem;
 use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Library\CP\URL;
 
 /**
  * Main Sidebar Navigation Item

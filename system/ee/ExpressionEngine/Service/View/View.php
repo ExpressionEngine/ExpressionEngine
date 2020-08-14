@@ -96,6 +96,9 @@ class View {
 		if (ee()->input->cookie('ee_cp_viewmode')) {
 			$vars['ee_cp_viewmode'] = ee()->input->cookie('ee_cp_viewmode');
 		}
+		if (ee()->input->cookie('collapsed_nav')) {
+			$vars['collapsed_nav'] = ee()->input->cookie('collapsed_nav');
+		}
 
 		$this->processing = $vars;
 

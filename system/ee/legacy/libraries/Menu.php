@@ -45,7 +45,7 @@ class EE_Menu {
 
 		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
-		$menu['develop']  = $this->_develop_menu();
+		//$menu['develop']  = $this->_develop_menu(); //commenting this out as it's not used anymore anywhere
 		$menu['custom']   = NULL;
 
 		$custom = ee('CP/CustomMenu');
