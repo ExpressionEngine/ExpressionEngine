@@ -107,14 +107,22 @@ class Msm extends CP_Controller {
 			{
 				$status = array(
 					'class' => 'enable',
-					'content' => lang('online')
+					'content' => ee('View')->make('_shared/status-tag')->render([
+						'label' => lang('online'),
+						'class' => 'enable',
+						'styles' => []
+					])
 				);
 			}
 			else
 			{
 				$status = array(
 					'class' => 'disable',
-					'content' => lang('offline')
+					'content' => ee('View')->make('_shared/status-tag')->render([
+						'label' => lang('offline'),
+						'class' => 'disable',
+						'styles' => []
+					])
 				);
 			}
 			$edit_url = ee('CP/URL')->make('msm/edit/' . $site->site_id);

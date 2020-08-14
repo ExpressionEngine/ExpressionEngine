@@ -2,8 +2,6 @@ import ImportConverter from '../../elements/pages/utilities/Import_file_converte
 
 const page = new ImportConverter;
 
-import util from '../../elements/pages/utilities/Submit'
-
 
 context('Import File Converter', () => {
 
@@ -160,7 +158,7 @@ context('Import File Converter', () => {
     	cy.get('body').contains('You must assign a field to "email"')
 	})
 
-	it.only('Converts correctly' ,() => {
+	it('Converts correctly' ,() => {
 		page.submit(comma, 'text/plain', 'input[name="member_file"]')
     	page.get('delimiter').contains('Comm').first().click()
     	cy.wait(400)

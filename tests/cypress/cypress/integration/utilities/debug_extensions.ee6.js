@@ -18,7 +18,7 @@ context('Debug Extensions', () => {
 	  })
 
 	  //Works!
-	  it('can disable and enable an extension', () => {
+	  it.skip('can disable and enable an extension', () => {
 
 	 	  	page.get('statuses').find('span').contains("Enabled")
 	 	  	page.get('checkbox_header').find('input[type="checkbox"]').check()
@@ -36,7 +36,7 @@ context('Debug Extensions', () => {
 
  	  })
 
-	  
+
 	  it('can navigate to a manual page', () =>{
 
 	  		//cy.get('ul.toolbar li.manual a').click AJ

@@ -43,7 +43,7 @@ context('Email Log', () => {
 		page.get('remove_all').should('exist')
 		page.get('pagination').should('exist')
 		page.get('perpage_filter').contains('show (25)')
-		page.get('pages').should('have.length',6)
+		page.get('pages').should('have.length',7)
 		page.get('items').should('have.length',25)
 	})
 
@@ -143,7 +143,7 @@ context('Email Log', () => {
     	page.get('pagination').should('exist')
     	//combine filters
     	page.get('username_filter').click()
-		cy.get('a').contains('johndoe1').click()
+		cy.get('a').contains('johndoe1').click({waitForAnimations: false})
     	page.get('perpage_filter').contains('show (150)')
     	page.get('username_filter').contains('(johndoe1)')
     	page.get('pagination').should('not.exist')

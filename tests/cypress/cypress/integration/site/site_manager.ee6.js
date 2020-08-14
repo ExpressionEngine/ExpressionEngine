@@ -54,7 +54,7 @@ context('Site Manager', () => {
       page.get('sites').eq(1).find('td:first-child').contains('2')
       page.get('sites').eq(1).find('td:nth-child(2)').contains('Rspec Site ' + counter)
       page.get('sites').eq(1).find('td:nth-child(3)').contains('{rspec_site_'+counter+'}')
-      page.get('sites').eq(1).find('td:nth-child(4) .status-tag').contains('Online')
+      page.get('sites').eq(1).find('td:nth-child(4)').contains('Online')
     })
 
     it('can delete a site', () => {

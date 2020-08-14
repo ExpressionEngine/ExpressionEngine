@@ -59,9 +59,11 @@ context('CP Log', () => {
   })
 
   it('can remove everything', () =>{
-      for (i = 0; i < 2; i++) {
+      for (var i = 0; i < 2; i++) {
         cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
       }
+
+      cy.visit('/admin.php?/cp/logs/cp')
 
       page.get('delete_all').click()
       page.get('confirm').filter(':visible').first().click()
@@ -72,8 +74,8 @@ context('CP Log', () => {
 
 		it('filters by username',() => {
 
-    	  var i = 0;
-        for (i = 0; i < 15; i++) {
+        cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
+        for (var i = 0; i < 15; i++) {
           cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
@@ -83,26 +85,32 @@ context('CP Log', () => {
         page.get('filter_user').type('johndoe1{enter}',{waitForAnimations: false})
         page.get('list').find('div[class="list-item"]').should('have.length',15)
         page.get('empty').should('not.exist')
+      })
     })
 
     //this uses search bar test above uses the username filter
     it('can search by username',() => {
-        cy.visit('/admin.php?/cp/logs/cp')
+      cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
+      for (var i = 0; i < 15; i++) {
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+      }
+
+      cy.visit('/admin.php?/cp/logs/cp')
         page.get('search').type('johndoe1{enter}',{waitForAnimations: false})
         page.get('list').find('div[class="list-item"]').should('have.length',15)
         page.get('empty').should('not.exist')
+      })
     })
 
 
     it('can filter by date' , () => {
-      cy.task('db:query', "TRUNCATE `exp_cp_log`")
-
+      cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
       for (var i = 0; i < 3; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Today')")
       }
 
       for (var i = 0; i < 3; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,1286668800,'Test')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,1286668800,'Older one')")
       }
 
       page.get('list').find('div[class="list-item"]').should('have.length',6)
@@ -110,11 +118,12 @@ context('CP Log', () => {
       cy.get('a').contains('24 Hours').click()
       cy.wait(400)
       page.get('list').find('div[class="list-item"]').should('have.length',3)
+    })
 
     })
 
     it('can change page size', () => {
-      cy.task('db:query', "TRUNCATE `exp_cp_log`")
+      cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
 
       var i = 0;
         for (i = 0; i < 55; i++) {
@@ -129,7 +138,7 @@ context('CP Log', () => {
         cy.get('a').contains('50 results').click()
         cy.wait(400)
       page.get('list').find('div[class="list-item"]').should('have.length',50)
-
+      })
     })
 
     it('can set custom page size', () => {

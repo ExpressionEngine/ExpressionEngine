@@ -161,7 +161,7 @@ context('Test Templates roles ', () => {
 	})
 
 
-	it.only('can turn on variables', () =>{
+	it('can turn on variables', () =>{
 		cy.auth();
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('TempManager').click()
