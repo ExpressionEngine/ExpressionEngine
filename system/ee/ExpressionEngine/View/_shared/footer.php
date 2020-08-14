@@ -73,7 +73,7 @@
 		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
 			<div class="modal modal--no-padding dialog dialog--warning">
 
-			<div class="dialog__header dialog__header--centered">
+			<div class="dialog__header">
 				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
 				<h2 class="dialog__title">Log into <?=ee()->config->item('site_name')?></h2>
 			</div>
