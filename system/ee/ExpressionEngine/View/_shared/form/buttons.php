@@ -45,7 +45,7 @@
 		if ($i == 0) {
 			$class = 'button button--primary';
 		} else {
-			$class = ''; // buttons inside dropdown
+			$class = 'button__within-dropdown'; // buttons inside dropdown
 		}
 
 		$disabled = '';
@@ -67,7 +67,7 @@
 
 		$button['attrs'] = (isset($button['attrs'])) ? $button['attrs'] : '';
 	?>
-		<button class="btn <?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_html?><?=$button_text?></button>
+		<button class="button <?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_html?><?=$button_text?></button>
 		<?php if ($i == 0 && count($submits) > 1) : ?>
 		<button type="button" class="<?=$class?> dropdown-toggle js-dropdown-toggle saving-options" data-dropdown-pos="bottom-end">
 			<i class="fas fa-angle-down"></i>
