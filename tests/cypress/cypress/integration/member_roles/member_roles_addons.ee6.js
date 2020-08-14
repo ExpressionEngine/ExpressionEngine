@@ -6,40 +6,26 @@ const member = new MemberCreate;
 
 context('Test Member roles Addons ', () => {
 
-	it('Creates Addon Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('AddonManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Addon Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('AddonManager',1)
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('AddonManager')
+		cy.addMembers('AddonManager', 1)
+		cy.logout();
 	})
 
 	it('Addon Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('AddonManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'AddonManager1',
+			password: 'password'
+		})
+		cy.hasNoErrors()
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
 	it('Let Addon Role access Addons and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth()
+
+		cy.hasNoErrors()
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -68,10 +54,12 @@ context('Test Member roles Addons ', () => {
 	})
 
 	it('Can see the Addons now but nothing else',() => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('AddonManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'AddonManager1',
+			password: 'password'
+		})
+
+		cy.hasNoErrors()
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('AddonManager1')
@@ -90,11 +78,12 @@ context('Test Member roles Addons ', () => {
 	})
 
 	it('Can Access all Addons and has the option to Uninstall them',() => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('AddonManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'AddonManager1',
+			password: 'password'
+		})
 
+		cy.hasNoErrors()
 
 
 		cy.visit('admin.php?/cp/members/profile/settings')
@@ -161,35 +150,3 @@ context('Test Member roles Addons ', () => {
 
 
 }) //End Context
-
-function add_members(group, count){
-  let i = 1;
-  for(i ; i <= count; i++){
-    member.load() //goes to member creation url
-
-    let email = group;
-    email += i.toString();
-    email += "@test.com";
-    let username = group + i.toString();
-    member.get('username').clear().type(username)
-      member.get('email').clear().type(email)
-      member.get('password').clear().type('password')
-      member.get('confirm_password').clear().type('password')
-
-    cy.get("body").then($body => {
-          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
-              cy.get("input[name=verify_password]").type('password');
-          }
-        });
-      cy.get('button').contains('Roles').click()
-	cy.get('label').contains(group).click()
-	cy.get('.form-btns-top .saving-options').click()
-    member.get('save_and_new_button').click()
-  }
-}
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}

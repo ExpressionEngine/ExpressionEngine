@@ -35,6 +35,12 @@ Cypress.Commands.add("login", (user) => {
     cy.get('input[type=submit]').click()
 })
 
+Cypress.Commands.add("logout", () => {
+    cy.visit('admin.php?/cp/members/profile/settings')
+    cy.get('.main-nav__account-icon > img').click()
+    cy.get('[href="admin.php?/cp/login/logout"]').click()
+})
+
 Cypress.Commands.add("auth", (user) => {
     cy.visit('admin.php');
     cy.login(user);

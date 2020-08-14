@@ -5,40 +5,25 @@ const member = new MemberCreate;
 
 context('Test Member roles Utilities ', () => {
 
-	it('Creates Log Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('LogManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('LogManager')
+		cy.addMembers('LogManager', 1)
+		cy.logout()
 	})
 
-	it('adds a Log  Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('LogManager',1)
-	})
 
 	it('Log Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('LogManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'LogManager1',
+			password: 'password'
+		})
+
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
 	it('Let Addon Role access Utils and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -55,17 +40,17 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Can get to Logs now', () => {
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('LogManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'LogManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('LogManager1')
 
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Logs').click()
+	   page.open_dev_menu()
+    	cy.contains('Logs').click()
 
 	  cy.get('.box').contains('Control Panel')
 	  cy.get('.box').contains('Throttling')
@@ -75,10 +60,7 @@ context('Test Member roles Utilities ', () => {
 	})
 
 	it('Loses access', () => {
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth()
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -93,12 +75,12 @@ context('Test Member roles Utilities ', () => {
 
 		cy.get('button').contains('Save').eq(0).click()
 
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('LogManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'LogManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
@@ -108,10 +90,10 @@ context('Test Member roles Utilities ', () => {
 
 
 	it.skip('cleans for reruns', () =>{
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'LogManager1',
+			password: 'password'
+		})
 
 	   cy.visit('admin.php?/cp/members/roles')
 

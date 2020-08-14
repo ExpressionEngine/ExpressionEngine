@@ -6,43 +6,12 @@ const member = new MemberCreate;
 
 context('Test Member roles Utilities ', () => {
 
-	it('Creates Utilities Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('UtilManager')
+		cy.addMembers('UtilManager', 1)
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('UtilManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Utilies  Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('UtilManager',1)
-	})
-
-	it('Util Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('UtilManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-	   cy.get('p').contains('You are not authorized to perform this action')
-	 })
-
-	it('Let Addon Role access Utils and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-
-	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
@@ -58,23 +27,25 @@ context('Test Member roles Utilities ', () => {
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(5) input').click();
 
-cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click();
+		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click();
 		cy.get('button').contains('Save').eq(0).click()
+
+		cy.logout()
 	})
 
 	it('Can get to Utils now', () => {
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('UtilManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'UtilManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
 	  //
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Utilities').click()
+	  page.open_dev_menu()
+	  cy.contains('Utilities').click()
 
 	   cy.get('.box').contains('Send Email')
 	   cy.get('.box').contains('Sent')
@@ -97,10 +68,7 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	})
 
 	it('Loses Communication', () => {
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -111,20 +79,20 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); //turn off access to communicate
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('UtilManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'UtilManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
 	  //
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Utilities').click()
+	  page.open_dev_menu()
+	  cy.contains('Utilities').click()
 
 	   cy.get('.box').contains('CP Translations')
 	   cy.get('.box').contains('PHP Info')
@@ -147,10 +115,7 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 	it('Loses Translations',() =>{
 
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -162,20 +127,19 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').last().click(); //turn off access to Translations
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('UtilManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'UtilManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
-	   //
-	  //
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Utilities').click()
+
+	   page.open_dev_menu()
+		cy.contains('Utilities').click()
 
 
 	   cy.get('.box').contains('PHP Info')
@@ -199,10 +163,7 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 	})
 
 	it('loses Import',() => {
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -214,20 +175,20 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(3) input').click();
  				//turn off access to Imports
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('UtilManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'UtilManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
 	  //
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Utilities').click()
+	  page.open_dev_menu()
+	  cy.contains('Utilities').click()
 
 
 	   cy.get('.box').contains('PHP Info')
@@ -254,10 +215,7 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 
 	it('loses SQL Manager',() => {
 
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -271,20 +229,20 @@ cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-lab
 			cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
 
  				//turn off access to SQL
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	    cy.get('#username').type('UtilManager1');
-	    cy.get('#password').type('password');
-	    cy.get('.button').click();
+		cy.auth({
+			email: 'UtilManager1',
+			password: 'password'
+		})
 
 	    cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('UtilManager1')
 	   //
 	  //
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Utilities').click()
+	  page.open_dev_menu()
+	  cy.contains('Utilities').click()
 
 
 	   cy.get('.box').contains('PHP Info')

@@ -6,40 +6,24 @@ const member = new MemberCreate;
 
 context('Test Member roles Members ', () => {
 
-	it('Creates Member Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('MemberManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Member Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('MemberManager',1)
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('MemberManager')
+		cy.addMembers('MemberManager', 1)
+		cy.logout()
 	})
 
 	it('Member Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
+
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
 	it('Let Members Role access Members and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -61,11 +45,11 @@ context('Test Member roles Members ', () => {
 		cy.get('button').contains('save').eq(0).click()
 	})
 
-	it.only('Cannot add members to "locked" groups (Super admins only)', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	it('Cannot add members to "locked" groups (Super admins only)', () => {
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
 
 	   cy.visit('admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
@@ -77,11 +61,11 @@ context('Test Member roles Members ', () => {
 
 
 
-	it.only('Cannot add members to "locked" groups using additional permissions', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	it('Cannot add members to "locked" groups using additional permissions', () => {
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
 
 	   cy.visit('admin.php?/cp/members')
 	   cy.get('a').contains('New Member').click()
@@ -95,10 +79,10 @@ context('Test Member roles Members ', () => {
 
 
 	it('Cannot access member roles before it is assigned to that', () => {
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
 
 	   cy.visit('admin.php?/cp/members/roles',{failOnStatusCode:false})
 
@@ -111,10 +95,7 @@ context('Test Member roles Members ', () => {
 	})
 
 	it('Can accecss member roles after it is assigned',() =>{
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -129,13 +110,13 @@ context('Test Member roles Members ', () => {
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').click();
 
-		logout()
+		cy.logout()
 
 
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('MemberManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
 
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('a').contains('New Role').should('exist')

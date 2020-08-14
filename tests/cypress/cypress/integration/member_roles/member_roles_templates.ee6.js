@@ -6,43 +6,12 @@ const member = new MemberCreate;
 
 context('Test Templates roles ', () => {
 
-	it('Creates Templates Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('TempManager')
+		cy.addMembers('TempManager', 1)
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('TempManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Temp Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('TempManager',1)
-	})
-
-	it('Temp Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('TempManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-	   cy.get('p').contains('You are not authorized to perform this action')
-	 })
-
-	it('Let Temp Role access Temp and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-
-	   cy.visit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('TempManager').click()
 
@@ -54,13 +23,16 @@ context('Test Templates roles ', () => {
 		cy.get('#fieldset-can_admin_design .toggle-btn').click();
 
 		cy.get('button').contains('Save').eq(0).click()
+
+		cy.logout()
 	})
 
+
 	it('Can see CP and Temp', () => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('TempManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'TempManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('TempManager1')
@@ -76,10 +48,8 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Templates')
-
-	   cy.get('.ee-sidebar').contains('Templates').click()
+	   page.open_dev_menu()
+    	cy.contains('Templates').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -95,10 +65,7 @@ context('Test Templates roles ', () => {
 	})
 
 	it('Can turn on groups', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('TempManager').click()
 	   cy.get('button').contains('CP Access').click()
@@ -110,12 +77,12 @@ context('Test Templates roles ', () => {
  //turn off security & privacy
 		cy.get('button').contains('Save').eq(0).click()
 
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('TempManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'TempManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('TempManager1')
@@ -131,10 +98,8 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Templates')
-
-	   cy.get('.ee-sidebar').contains('Templates').click()
+	   page.open_dev_menu()
+	   cy.contains('Templates').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -151,10 +116,7 @@ context('Test Templates roles ', () => {
 	})
 
 	it('can turn on partials', () =>{
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth();
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('TempManager').click()
 	   cy.get('button').contains('CP Access').click()
@@ -167,12 +129,12 @@ context('Test Templates roles ', () => {
 
 		cy.get('button').contains('Save').eq(0).click()
 
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('TempManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'TempManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('TempManager1')
@@ -188,10 +150,8 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Templates')
-
-	   cy.get('.ee-sidebar').contains('Templates').click()
+	   page.open_dev_menu()
+	   cy.contains('Templates').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -201,11 +161,8 @@ context('Test Templates roles ', () => {
 	})
 
 
-	it('can turn on variables', () =>{
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	it.only('can turn on variables', () =>{
+		cy.auth();
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('TempManager').click()
 	   cy.get('button').contains('CP Access').click()
@@ -219,12 +176,12 @@ context('Test Templates roles ', () => {
 
 		cy.get('button').contains('Save').eq(0).click()
 
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('TempManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'TempManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('TempManager1')
@@ -237,16 +194,13 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   cy.get('.ee-sidebar').contains('Developer').click()
-	   cy.get('.ee-sidebar').contains('Templates')
-
-	   cy.get('.ee-sidebar').contains('Templates').click()
+	   page.open_dev_menu()
+	   cy.contains('Templates').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
 	   cy.get('.box').contains('Email')
 	   cy.get('.box').contains('Template Routes')
-	   cy.get('.box').contains('Template Partials')
 	   cy.get('.box').contains('Template Variables')
 	})
 
@@ -284,36 +238,3 @@ context('Test Templates roles ', () => {
 	    cy.get('.modal-confirm-delete form').submit();
 	})
 })
-
-
-function add_members(group, count){
-  let i = 1;
-  for(i ; i <= count; i++){
-    member.load() //goes to member creation url
-
-    let email = group;
-    email += i.toString();
-    email += "@test.com";
-    let username = group + i.toString();
-    member.get('username').clear().type(username)
-      member.get('email').clear().type(email)
-      member.get('password').clear().type('password')
-      member.get('confirm_password').clear().type('password')
-
-    cy.get("body").then($body => {
-          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
-              cy.get("input[name=verify_password]").type('password');
-          }
-        });
-      cy.get('button').contains('Roles').click()
-	cy.get('label').contains(group).click()
-	cy.get('.form-btns-top .saving-options').click()
-    member.get('save_and_new_button').click()
-  }
-}
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}

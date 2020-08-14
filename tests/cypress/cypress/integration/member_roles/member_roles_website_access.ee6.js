@@ -5,25 +5,11 @@ const member = new MemberCreate;
 
 context('Test Member roles Web access ', () => {
 
-	it('Create Test role to view site', () => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('Test')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Test member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('Test',1)
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('Test')
+		cy.addMembers('Test', 1)
+		cy.logout()
 	})
 
 	it('Let Test Role access CP', () => {
@@ -61,7 +47,7 @@ context('Test Member roles Web access ', () => {
 
 		cy.visit('http://localhost:8888')
 
-		logout()
+		cy.logout()
 
 		cy.visit('admin.php?/cp/login');
 	  	cy.get('#username').type('Test1');

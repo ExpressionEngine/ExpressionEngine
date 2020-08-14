@@ -193,8 +193,10 @@ class NavigationSidebar extends AbstractSidebar
             $output .= $item->render($this->view);
         }
 
-        foreach ($this->bottomItems as $item) {
-            $bottom .= $item->render($this->view);
+        if (!empty($this->bottomItems)) {
+            foreach ($this->bottomItems as $item) {
+                $bottom .= $item->render($this->view);
+            }
         }
 
         return $this->view->make('_shared/sidebar/navigation/sidebar')

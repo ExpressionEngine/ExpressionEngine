@@ -6,40 +6,24 @@ const member = new MemberCreate;
 
 context('Test Member roles Settings ', () => {
 
-	it('Creates Settings Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('SettingManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
-	})
-
-	it('adds a Settings Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('SettingManager',1)
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('SettingManager')
+		cy.addMembers('SettingManager', 1)
+		cy.logout();
 	})
 
 	it('Setting Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('SettingManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'SettingManager1',
+			password: 'password'
+		})
+
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
 	it('Let Addon Role access Settings and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 
 
 	   cy.visit('admin.php?/cp/members/roles')
@@ -58,10 +42,10 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it('Can see the Settings now but nothing else',() => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('SettingManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'SettingManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('SettingManager1')
@@ -78,10 +62,10 @@ context('Test Member roles Settings ', () => {
 	})
 
 	it('Can Access all Settings and no errors when accessed',() => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('SettingManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'SettingManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 
@@ -153,22 +137,19 @@ context('Test Member roles Settings ', () => {
 
 	it('Loses Acccess to Content',() => {
 
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
 	   cy.get('button').contains('CP Access').click()
 		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn off  access
 		cy.get('button').contains('Save').eq(0).click()
 
-		logout()
+		cy.logout()
 
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('SettingManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'SettingManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 
@@ -232,36 +213,3 @@ context('Test Member roles Settings ', () => {
 
 
 })
-
-
-function add_members(group, count){
-  let i = 1;
-  for(i ; i <= count; i++){
-    member.load() //goes to member creation url
-
-    let email = group;
-    email += i.toString();
-    email += "@test.com";
-    let username = group + i.toString();
-    member.get('username').clear().type(username)
-      member.get('email').clear().type(email)
-      member.get('password').clear().type('password')
-      member.get('confirm_password').clear().type('password')
-
-    cy.get("body").then($body => {
-          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
-              cy.get("input[name=verify_password]").type('password');
-          }
-        });
-      cy.get('button').contains('Roles').click()
-	cy.get('label').contains(group).click()
-	cy.get('.form-btns-top .saving-options').click()
-    member.get('save_and_new_button').click()
-  }
-}
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}

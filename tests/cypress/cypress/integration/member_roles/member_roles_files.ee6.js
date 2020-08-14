@@ -6,40 +6,24 @@ const member = new MemberCreate;
 
 context('Test Member roles Channels ', () => {
 
-	it('Creates File Manager Role', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-
-		cy.visit('admin.php?/cp/members/roles')
-		cy.get('a').contains('New Role').click()
-		cy.get('input[name="name"]').clear().type('FileManager')
-		cy.get('button').contains('Save & Close').eq(0).click()
-
+	before(function(){
+		cy.task('db:seed')
+		cy.addRole('FileManager')
+		cy.addMembers('FileManager', 1)
+		cy.logout()
 	})
 
-	it('adds a File Manager member', () => {
-		cy.visit('admin.php?/cp/login');
-		cy.get('#username').type('admin');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
-		add_members('FileManager',1)
-	})
 
 	it('File Manager can not login because cp access has not been given yet',() => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('FileManager1');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+		cy.auth({
+			email: 'FileManager1',
+			password: 'password'
+		})
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
 	it('Let File Role access Files and CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
+	   cy.auth();
 
 	   cy.visit('admin.php?/cp/members/roles')
 
@@ -64,10 +48,10 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('can login now and can view files but nothing else', () => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('FileManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'FileManager1',
+			password: 'password'
+		})
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
 
@@ -80,10 +64,10 @@ context('Test Member roles Channels ', () => {
 	})
 
 	it('Can navigate to the files section',() => {
-		cy.visit('admin.php?/cp/login');
-	  	cy.get('#username').type('FileManager1');
-		cy.get('#password').type('password');
-		cy.get('.button').click();
+		cy.auth({
+			email: 'FileManager1',
+			password: 'password'
+		})
 
 		cy.visit('admin.php?/cp/members/profile/settings')
 		cy.get('h1').contains('FileManager1')
