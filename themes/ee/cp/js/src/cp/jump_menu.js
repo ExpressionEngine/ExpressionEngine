@@ -75,7 +75,7 @@ EE.cp.JumpMenu = {
 			jumpContainer.document.querySelector('#jumpEntry2').value = '';
 			EE.cp.JumpMenu._showJumpMenu(1);
 		});
-		
+
 		jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function() {
 			clearTimeout(EE.cp.JumpMenu.blurTimeout);
 			EE.cp.JumpMenu._showResults(2);
@@ -90,7 +90,7 @@ EE.cp.JumpMenu = {
 			clearTimeout(EE.cp.JumpMenu.blurTimeout);
 			EE.cp.JumpMenu.blurTimeout = setTimeout(function() { EE.cp.JumpMenu._closeJumpMenu(1); }, 1000);
 		});
-		
+
 		jumpContainer.document.querySelectorAll('.js-jump-menu-trigger').forEach(
 			function(triggerLink) {
 			  triggerLink.addEventListener("click", function (e) {
@@ -103,7 +103,7 @@ EE.cp.JumpMenu = {
 	},
 
 	_showJumpMenu: function(loadResults = '') {
-		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'97px' }).show();//trigger('modal:open');
+		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'82px' }).show();//trigger('modal:open');
 		jumpContainer.document.querySelector('.input--jump').focus();
 
 		if ($('#jump-menu').hasClass('on-welcome')) {
