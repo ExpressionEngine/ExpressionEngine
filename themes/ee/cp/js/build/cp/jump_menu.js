@@ -46,7 +46,6 @@ EE.cp.JumpMenu = {
   typingAjaxDelay: 400,
   // Internal Variables
   typingTimeout: false,
-  blurTimeout: false,
   ajaxRequest: false,
   currentFocus: 1,
   shortcut: 'Ctrl',
@@ -65,28 +64,13 @@ EE.cp.JumpMenu = {
 
     jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function () {
       EE.cp.JumpMenu.currentFocus = 1;
-      clearTimeout(EE.cp.JumpMenu.blurTimeout);
       jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
       jumpContainer.document.querySelector('#jumpEntry2').value = '';
 
       EE.cp.JumpMenu._showJumpMenu(1);
     });
     jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function () {
-      clearTimeout(EE.cp.JumpMenu.blurTimeout);
-
       EE.cp.JumpMenu._showResults(2);
-    });
-    jumpContainer.document.querySelector('#jumpEntry1').addEventListener("blur", function () {
-      clearTimeout(EE.cp.JumpMenu.blurTimeout);
-      EE.cp.JumpMenu.blurTimeout = setTimeout(function () {
-        EE.cp.JumpMenu._closeJumpMenu(1);
-      }, 1000);
-    });
-    jumpContainer.document.querySelector('#jumpEntry2').addEventListener("blur", function () {
-      clearTimeout(EE.cp.JumpMenu.blurTimeout);
-      EE.cp.JumpMenu.blurTimeout = setTimeout(function () {
-        EE.cp.JumpMenu._closeJumpMenu(1);
-      }, 1000);
     });
     jumpContainer.document.querySelectorAll('.js-jump-menu-trigger').forEach(function (triggerLink) {
       triggerLink.addEventListener("click", function (e) {
@@ -97,6 +81,28 @@ EE.cp.JumpMenu = {
     });
     jumpContainer.document.querySelector('.app-overlay').addEventListener("click", function () {
       jumpContainer.document.querySelector('.jump-to').blur();
+    }); // If the user clicked outside of the jump menu panels, close them.
+
+    document.addEventListener("click", function (evt) {
+      var jumpEntry = document.getElementById("jumpEntry1");
+      var jumpMenu = document.getElementById("jump-menu");
+      var targetElement = evt.target; // clicked element
+
+      do {
+        if (targetElement == jumpEntry || targetElement == jumpMenu) {
+          // This is a click inside. Do nothing, just return.
+          console.log('clicked inside');
+          return;
+        } // Go up the DOM
+
+
+        targetElement = targetElement.parentNode;
+      } while (targetElement); // This is a click outside.
+
+
+      console.log('clicked outside');
+
+      EE.cp.JumpMenu._closeJumpMenu();
     });
   },
   _showJumpMenu: function _showJumpMenu() {
@@ -105,9 +111,8 @@ EE.cp.JumpMenu = {
       position: 'absolute',
       'z-index': 150,
       top: '59px',
-      right: '97px'
-    }).show(); //trigger('modal:open');
-
+      right: '82px'
+    }).show();
     jumpContainer.document.querySelector('.input--jump').focus();
 
     if ($('#jump-menu').hasClass('on-welcome')) {
@@ -120,13 +125,7 @@ EE.cp.JumpMenu = {
     }
   },
   _closeJumpMenu: function _closeJumpMenu() {
-    var skipBlur = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    clearTimeout(EE.cp.JumpMenu.blurTimeout); // If the user clicked off the fields for more than a second, close them.
-
-    if (skipBlur === false) {
-      jumpContainer.document.querySelector('.jump-to').blur();
-    }
-
+    jumpContainer.document.querySelector('.jump-to').blur();
     jumpContainer.document.querySelector('.jump-to').value = '';
     jumpContainer.$('#jump-menu').hide();
 
