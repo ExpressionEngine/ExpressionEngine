@@ -215,14 +215,6 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'fields',
                 'permission' => ['can_create_channel_fields', 'can_edit_channel_fields']
             ),
-            'editChannelField' => array(
-                'icon' => 'fa-pencil-alt',
-                'command' => 'edit channel custom field',
-                'dynamic' => true,
-                'addon' => false,
-                'target' => 'channels/field',
-                'permission' => 'can_edit_channel_fields'
-            ),
             'createChannel' => array(
                 'icon' => 'fa-plus',
                 'command' => 'create new publish channel',
@@ -238,6 +230,14 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'channels/edit',
                 'permission' => 'can_edit_channels'
+            ),
+            'editChannelField' => array(
+                'icon' => 'fa-pencil-alt',
+                'command' => 'edit channel custom field',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'channels/field',
+                'permission' => 'can_edit_channel_fields'
             ),
             'createChannelField' => array(
                 'icon' => 'fa-plus',
