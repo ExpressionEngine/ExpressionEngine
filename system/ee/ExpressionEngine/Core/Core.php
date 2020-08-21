@@ -13,6 +13,7 @@ namespace ExpressionEngine\Core;
 use ExpressionEngine\Legacy\App as LegacyApp;
 use ExpressionEngine\Service\Dependency\InjectionContainer;
 use ExpressionEngine\Error\FileNotFound;
+use ExpressionEngine\Cli\Cli;
 
 /**
  * Core Abstract
@@ -101,6 +102,13 @@ abstract class Core {
 		}
 
 		$routing = $this->getRouting($request);
+
+		if(REQ === 'CLI') {
+
+			$this->bootCli();
+
+		}
+
 		$routing = $this->loadController($routing);
 		$routing = $this->validateRequest($routing);
 
@@ -110,6 +118,21 @@ abstract class Core {
 		$this->runController($routing);
 
 		return $application->getResponse();
+	}
+
+	protected function bootCli()
+	{
+
+		$this->legacy->includeBaseController();
+
+		$cli = new Cli;
+
+		$cli->process();
+
+		// This will be all we do, so we'll die here.
+		// However, the CLI service should handle the completion, this is just a fallback
+		die();
+
 	}
 
 	/**
