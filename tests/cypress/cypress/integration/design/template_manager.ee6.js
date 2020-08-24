@@ -66,16 +66,16 @@ context('Template Manager', () => {
 
         })
 
-        it.only('can edit a template group', function() {
+        it('can edit a template group', function() {
             let form = new TemplateGroupEdit
             form.load_edit_for_group('search')
 
             cy.hasNoErrors()
 
-            form.get('name').clear().type('cypress-test-three')
-            cy.wait(500)
+            form.get('name').clear().type('cypress-test-three')//.trigger('blur')
+            //cy.wait("@ajax")
             //form.get('save_button').first().click()
-            cy.get('input').contains('Save Template Group').first().click()
+            cy.get('input').contains('Save Template Group').first().click({failOnStatusCode:false})
 
             cy.hasNoErrors()
 

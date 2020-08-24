@@ -6,6 +6,10 @@ const page = new DebugOutput
 
 context('Debugging & Output Settings', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
+
   beforeEach(function() {
     cy.auth();
     page.load()
@@ -64,7 +68,6 @@ context('Debugging & Output Settings', () => {
     const max_caches_error = 'This field must contain an integer.'
 
     page.get('max_caches').clear().type('sdfsdfsd')
-    //page.submit()
     cy.get('input').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
@@ -74,16 +77,20 @@ context('Debugging & Output Settings', () => {
     page.get('wrap').contains(max_caches_error)
 
     // AJAX validation
+
+
     page.load()
     page.get('max_caches').clear().type('sdfsdfsd')
     page.get('max_caches').blur()
 
 
 //should_have_form_errors(page)
-    page.get('wrap').contains(max_caches_error)
+    page.hasError(page.get('max_caches'), max_caches_error)
 
     page.get('max_caches').clear().type('100')
     page.get('max_caches').blur()
+
+    page.get('wrap').should('not.contain', 'Attention')
     //page.hasErrorsCount(0)
     //should_have_no_form_errors(page)
   })

@@ -113,6 +113,7 @@ context('CP Log', () => {
         cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,1286668800,'Older one')")
       }
 
+      cy.visit('/admin.php?/cp/logs/cp')
       page.get('list').find('div[class="list-item"]').should('have.length',6)
       page.get('date').click()
       cy.get('a').contains('24 Hours').click()
