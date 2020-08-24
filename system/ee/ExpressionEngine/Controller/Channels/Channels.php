@@ -324,7 +324,7 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
 		ee()->view->header = array(
-			'title' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel'),
+			'title' => is_null($channel_id) ? lang('channels') : $channel->channel_title,
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/content-design'),
