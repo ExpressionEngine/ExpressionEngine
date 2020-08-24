@@ -275,7 +275,7 @@ class Msm extends CP_Controller {
 		ee()->view->cp_page_title = lang('create_site');
 
 		ee()->view->header = array(
-			'title' => lang('create_site'),
+			'title' => lang('sites'),
 		);
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
@@ -381,7 +381,7 @@ class Msm extends CP_Controller {
 		);
 
 		ee()->view->header = array(
-			'title' => lang('edit_site'),
+			'title' => $site->site_label,
 		);
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');

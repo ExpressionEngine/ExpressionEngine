@@ -64,8 +64,9 @@
 					</div>
 					<?php endif; ?>
 
-
-					<?=$bottom?>
+          <div class="ee-sidebar__items-dev">
+  					<?=$bottom?>
+          </div>
 
 
           <div class="ee-sidebar__items-bottom">

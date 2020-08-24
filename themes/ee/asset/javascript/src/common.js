@@ -243,6 +243,11 @@ $(document).ready(function(){
 		});
 
 
+    // Clicking icons in Jump input focuses input
+    $('.jump-focus').click(function() {
+      $("#jumpEntry1").focus();
+    })
+
   // Side bar toggle
 	// -------------------------------------------------------------------
 

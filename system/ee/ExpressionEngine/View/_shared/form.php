@@ -92,10 +92,6 @@
           <?php endforeach ?>
         </div>
 
-        <?php if (isset($tabs)):?>
-    		</div>
-    		<?php endif; ?>
-
         <div class="panel-footer">
 
 
@@ -103,6 +99,10 @@
             <?php $this->embed('ee:_shared/form/buttons'); ?>
           </div>
         </div>
+
+		<?php if (isset($tabs)):?>
+			</div>
+		<?php endif; ?>
 
 
   	</form>

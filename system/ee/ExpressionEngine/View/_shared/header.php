@@ -67,9 +67,9 @@ $current_page = ee()->uri->segment(2);
       		<?php endif ?>
 
           <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
-            <i class="fas fa-bullseye fa-fw icon-start"></i>
+            <i class="fas fa-bullseye fa-fw icon-start jump-focus"></i>
             <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="Jump to..." autocomplete="off">
-            <span class="input-shortcut">⌘J</span>
+            <span class="input-shortcut jump-focus">⌘J</span>
           </div>
 
           <div class="main-header__account">

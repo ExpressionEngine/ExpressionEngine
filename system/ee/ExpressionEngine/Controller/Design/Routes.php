@@ -90,7 +90,7 @@ class Routes extends AbstractDesignController {
 		$blank_row = $this->getRouteRow(ee('Model')->make('TemplateRoute'), $errors);
 		$grid->setBlankRow($blank_row['columns']);
 
-		$grid->addActionButton('#', lang('new_route'), 'add');
+		$grid->addActionButton('#', lang('new_route'), 'add button--small');
 
 		$vars = array(
 			'table'          => $grid->viewData($this->base_url),
