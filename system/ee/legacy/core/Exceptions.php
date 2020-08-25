@@ -213,9 +213,11 @@ class EE_Exceptions {
 		*/
 	}
 
-	public function show_exception(\Exception $exception, $status_code = 500)
+	public function show_exception($exception, $status_code = 500)
 	{
 		set_status_header($status_code);
+
+		$error_type = get_class($exception);
 
 		$message = $exception->getMessage();
 
@@ -268,18 +270,13 @@ class EE_Exceptions {
 			$line = htmlentities($line, ENT_QUOTES, 'UTF-8');
 		}
 
-		$debug = DEBUG;
-
 		// We'll only want to show certain information, like file paths, if we're allowed
-		if (isset(ee()->config) && isset(ee()->session))
-		{
-			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee('Permission')->isSuperAdmin());
-		}
+		$debug = (bool) (DEBUG OR (isset(ee()->config) && ee()->config->item('debug') > 1) OR (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
 
 		// Hide sensitive information such as file paths and database information
 		if ( ! $debug)
 		{
-			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
+			$location_parts = explode('/', $location);
 			$location = array_pop($location_parts);
 
 			if (strpos($message, 'SQLSTATE') !== FALSE)
