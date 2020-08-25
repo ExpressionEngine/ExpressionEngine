@@ -100,7 +100,7 @@ EE.cp.JumpMenu = {
       } while (targetElement); // This is a click outside.
 
 
-      console.log('clicked outside');
+      //console.log('clicked outside');
 
       EE.cp.JumpMenu._closeJumpMenu();
     });
