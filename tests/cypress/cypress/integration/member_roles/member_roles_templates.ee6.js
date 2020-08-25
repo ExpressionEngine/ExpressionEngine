@@ -217,7 +217,7 @@ context('Test Templates roles ', () => {
 
 	   cy.get('select').select('Delete')
     	cy.get('.bulk-action-bar > .button').click()
-    	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .btn').click()
+    	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .button').click()
     	cy.visit('admin.php?/cp/members')
 
 

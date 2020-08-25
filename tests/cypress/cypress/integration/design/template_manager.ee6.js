@@ -179,7 +179,7 @@ context('Template Manager', () => {
             form.get('php_parse_stage').check('i')
             form.get('hit_counter').clear().type('10')
 
-            //cy.get('.modal:visible form .form-btns input.btn[type="submit"]').first().click()
+            //cy.get('.modal:visible form .form-btns input.button[type="submit"]').first().click()
             cy.get('button').contains('Save').first().click()
             //page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 

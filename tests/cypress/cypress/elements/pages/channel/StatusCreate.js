@@ -11,7 +11,7 @@ class ChannelManager extends ControlPanel {
             "color_panel": 'div.colorpicker__panel',
             "status_access": 'input[type!=hidden][name="status_access[]"]',
 
-            "submit_buttons": ".app-modal:visible .form-btns .btn",
+            "submit_buttons": ".app-modal:visible .form-btns .button",
             "status_names": '[data-input-value="statuses"] .checkbox-label .status-tag',
         })
     }

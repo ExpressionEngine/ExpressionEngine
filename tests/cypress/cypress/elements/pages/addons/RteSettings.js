@@ -15,7 +15,7 @@ class RteSettings extends ControlPanel {
             "default_tool_set": 'input[type!=hidden][name="rte_default_toolset_id"]',
             "save_settings_button": 'input[value="Save Settings"]',
 
-            "create_new_button": 'div.tbl-ctrls form fieldset.tbl-search a.btn.action',
+            "create_new_button": 'div.tbl-ctrls form fieldset.tbl-search a.button.action',
             "tool_sets": 'div.tbl-ctrls form div.table-responsive table tr',
             "tool_set_name_header": 'div.tbl-ctrls form div.table-responsive table tr th:first-child',
             "status_header": 'div.tbl-ctrls form div.table-responsive table tr th:nth-child(2)',

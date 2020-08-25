@@ -6,7 +6,7 @@ class TemplatePartialForm extends ControlPanel {
         this.url = 'admin.php?/cp/design/snippets';
 
         this.elements({
-            "save_button": '.form-standard .form-btns .btn',
+            "save_button": '.form-standard .form-btns .button',
 
             "name": 'input[type!=hidden][name="snippet_name"]',
             "contents": '.CodeMirror',

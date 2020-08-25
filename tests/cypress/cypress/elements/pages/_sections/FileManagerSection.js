@@ -20,7 +20,7 @@ class FileManagerSection extends ControlPanel {
 			'upload_directories_header': 'div.sidebar h2:first-child',
 			'new_directory_button': 'div.sidebar h2:first-child .button--action',
 			'watermarks_header': 'div.sidebar .sidebar__link:contains("Watermarks")',
-			'new_watermark_button': 'fieldset.right a.btn.action',
+			'new_watermark_button': 'fieldset.right a.button.action',
 			'folder_list': 'div.sidebar div.scroll-wrap .folder-list div'
 
 		});

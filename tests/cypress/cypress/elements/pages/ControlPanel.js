@@ -11,7 +11,7 @@ class ControlPanel {
             'dev_menu': '.ee-sidebar__item[title="Developer"]',
             'members_btn': '.ee-sidebar__item:contains("Members")',
 
-            "submit_buttons": '.form-btns .btn',
+            "submit_buttons": '.form-btns .button',
             "fieldset_errors": '.fieldset-invalid',
             "settings_btn": '.ee-sidebar__item[title="Settings"]',
             "error_messages": 'em.ee-form-error-message',
@@ -42,7 +42,7 @@ class ControlPanel {
             // Modals
             "modal": 'div.modal:visible',
             "modal_title": 'div.modal:visible h2',
-            "modal_submit_button": 'div.modal:visible input.btn', //dont use for andy's branches
+            "modal_submit_button": 'div.modal:visible input.button', //dont use for andy's branches
             "new_modal_submit_button" : 'input[type="submit"]', //use this instead
 
             // Grid

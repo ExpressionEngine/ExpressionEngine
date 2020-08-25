@@ -46,7 +46,7 @@ context('Traversal', () => {
 
   it('.last() - get last DOM element', () => {
     // https://on.cypress.io/last
-    cy.get('.traversal-buttons .btn')
+    cy.get('.traversal-buttons .button')
       .last().should('contain', 'Submit')
   })
 
@@ -71,7 +71,7 @@ context('Traversal', () => {
 
   it('.not() - remove DOM elements from set of DOM elements', () => {
     // https://on.cypress.io/not
-    cy.get('.traversal-disabled .btn')
+    cy.get('.traversal-disabled .button')
       .not('[disabled]').should('not.contain', 'Disabled')
   })
 

@@ -6,7 +6,7 @@ class UploadSync extends FileManagerSection {
 
     this.elements({
       'progress_bar': '.progress-bar .progress',
-      'sync_button': 'div.form-standard form .form-btns-top input.btn',
+      'sync_button': 'div.form-standard form .form-btns-top input.button',
       'sizes': 'input[type!=hidden][name="sizes[]"]'
     });
   }

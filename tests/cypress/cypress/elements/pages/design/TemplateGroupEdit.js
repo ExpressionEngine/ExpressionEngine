@@ -6,7 +6,7 @@ class TemplateGroupEdit extends ControlPanel {
         this.url = 'admin.php?/cp/design/group/edit';
 
         this.elements({
-            "save_button": '.form-standard .form-btns .btn',
+            "save_button": '.form-standard .form-btns .button',
             "name": 'input[type=text][name=group_name]',
             "is_site_default": '[data-toggle-for="is_site_default"]',
         })

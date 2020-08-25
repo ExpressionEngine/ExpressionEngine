@@ -92,7 +92,7 @@ context('Querying', () => {
       cy.get('button').click()
 
       // Bad. Coupled to styling. Highly subject to change.
-      cy.get('.btn.btn-large').click()
+      cy.get('.button.button-large').click()
 
       // Average. Coupled to the `name` attribute which has HTML semantics.
       cy.get('[name=submission]').click()

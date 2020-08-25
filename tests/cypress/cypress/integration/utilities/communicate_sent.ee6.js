@@ -206,8 +206,8 @@ context.skip('Communicate Sent', () => {
 
 			cy.get('.check-ctrl > input').click() // select all
 			cy.get('select').select('Remove')
-			cy.get('.tbl-bulk-act > .btn').click()
-			cy.get('.modal-confirm-remove > .modal > .col-group > .col > .form-standard > form > :nth-child(6) > .btn').click()
+			cy.get('.tbl-bulk-act > .button').click()
+			cy.get('.modal-confirm-remove > .modal > .col-group > .col > .form-standard > form > :nth-child(6) > .button').click()
 			cy.get('.app-notice__content > :nth-child(1) > b').contains('Emails removed')
    		})
 

@@ -7,8 +7,8 @@ class TemplateEdit extends ControlPanel {
 
         this.elements({
             "view_rendered_button": '.form-btns .button--action',
-            "save_button": '.form-btns button.btn[value="edit"]',
-            "save_and_close_button": '.form-btns button.btn[value="finish"]',
+            "save_button": '.form-btns button.button[value="edit"]',
+            "save_and_close_button": '.form-btns button.button[value="finish"]',
 
             //Tabs
             "edit_tab": '.tab-bar__tabs [rel="t-0"]',

@@ -35,7 +35,7 @@ class ChannelLayoutForm extends ControlPanel {
 
             "add_tab_modal": 'div.modal-add-new-tab',
             "add_tab_modal_tab_name": 'div.modal-add-new-tab input[type!=hidden][name="tab_name"]',
-            "add_tab_modal_submit_button": 'div.modal-add-new-tab .form-ctrls .btn',
+            "add_tab_modal_submit_button": 'div.modal-add-new-tab .form-ctrls .button',
         })
     }
 

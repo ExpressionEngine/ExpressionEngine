@@ -24,17 +24,17 @@ class Channel extends ControlPanel {
             // Fields Tab
             "title_field_label": 'input[type!=hidden][name=title_field_label]',
             "field_groups": 'div[data-input-value="field_groups"] input[type="checkbox"]',
-            "add_field_group_button": 'div[data-input-value="field_groups"] + a.btn[rel=add_new]',
+            "add_field_group_button": 'div[data-input-value="field_groups"] + a.button[rel=add_new]',
             "custom_fields": 'div[data-input-value="custom_fields"] input[type="checkbox"]',
-            "add_field_button": 'div[data-input-value="custom_fields"] + a.btn[rel=add_new]',
+            "add_field_button": 'div[data-input-value="custom_fields"] + a.button[rel=add_new]',
 
             // Categories Tab
             "cat_group": 'div[data-input-value="cat_group"] input[type="checkbox"]',
-            "add_cat_group_button": 'div[data-input-value="cat_group"] + a.btn[rel=add_new]',
+            "add_cat_group_button": 'div[data-input-value="cat_group"] + a.button[rel=add_new]',
 
             // Statuses Tab
             "statuses": 'div[data-input-value="statuses"] input[type="checkbox"]',
-            "add_status_button": 'div[data-input-value="statuses"] + a.btn[rel=add_new]',
+            "add_status_button": 'div[data-input-value="statuses"] + a.button[rel=add_new]',
 
             // Settings Tab
             "channel_description": 'textarea[name=channel_description]',

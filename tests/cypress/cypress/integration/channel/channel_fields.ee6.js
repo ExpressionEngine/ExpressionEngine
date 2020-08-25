@@ -34,7 +34,7 @@ context('Channel Fields', () => {
 
         it('saves a field', function() {
             page.get('fields_edit').eq(1).click()
-            //form.get('form').find('.btn[value="save"]').first().click()
+            //form.get('form').find('.button[value="save"]').first().click()
             cy.get('button[value="save"]').eq(0).click()
             page.hasAlert('success')
         })

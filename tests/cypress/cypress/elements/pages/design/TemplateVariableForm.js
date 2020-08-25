@@ -6,7 +6,7 @@ class TemplateVariableForm extends ControlPanel {
         this.url = 'admin.php?/cp/design/variables';
 
         this.elements({
-            "save_button": '.form-standard .form-btns .btn',
+            "save_button": '.form-standard .form-btns .button',
             "name": 'input[type!=hidden][name="variable_name"]',
             "contents": '.CodeMirror',
             "contents_editor": '.CodeMirror textarea',
