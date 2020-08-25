@@ -11,7 +11,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		$('.modal-remove-field input.btn').on('click', function(e) {
+		$('.modal-remove-field .button').on('click', function(e) {
 			e.preventDefault();
 			$('.form-standard form').off('submit');
 
@@ -36,7 +36,7 @@
 
 			if (showModal) {
 				e.preventDefault();
-				$('.modal-remove-field input.btn').attr('disabled', false);
+				$('.modal-remove-field .button').attr('disabled', false);
 				$('.modal-remove-field').trigger('modal:open');
 			}
 		});

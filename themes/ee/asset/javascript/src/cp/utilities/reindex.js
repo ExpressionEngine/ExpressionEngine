@@ -8,7 +8,7 @@
 
 EE.cp.reindex = {
 
-	buttons: $('input.btn:visible'),
+	buttons: $('.button:visible'),
 	site: 'all',
 
 	init: function() {

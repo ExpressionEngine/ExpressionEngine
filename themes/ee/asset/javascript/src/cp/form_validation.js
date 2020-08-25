@@ -43,7 +43,7 @@ EE.cp.formValidation = {
 
 		// These are the text input selectors we listen to for activity
 		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
-		this._buttonSelector = '.form-btns .btn';
+		this._buttonSelector = '.form-btns .button';
 
 		form.each(function(index, el) {
 
