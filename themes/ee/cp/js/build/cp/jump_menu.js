@@ -91,7 +91,6 @@ EE.cp.JumpMenu = {
       do {
         if (targetElement == jumpEntry || targetElement == jumpMenu) {
           // This is a click inside. Do nothing, just return.
-          console.log('clicked inside');
           return;
         } // Go up the DOM
 
@@ -99,8 +98,6 @@ EE.cp.JumpMenu = {
         targetElement = targetElement.parentNode;
       } while (targetElement); // This is a click outside.
 
-
-      console.log('clicked outside');
 
       EE.cp.JumpMenu._closeJumpMenu();
     });

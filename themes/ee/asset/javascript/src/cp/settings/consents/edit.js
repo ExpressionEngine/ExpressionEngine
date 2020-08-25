@@ -15,7 +15,7 @@ $(document).ready(function () {
 		e.preventDefault();
 		modal.trigger('modal:open');
 
-		$('.modal input.btn').one('click', function(e) {
+		$('.modal .button').one('click', function(e) {
 			e.preventDefault();
 			modal.trigger('modal:close');
 

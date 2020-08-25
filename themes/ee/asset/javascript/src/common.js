@@ -647,7 +647,7 @@ $(document).ready(function(){
 					$('body').css('overflow','hidden');
 				}
 
-				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+				var button = $('.form-ctrls .button', this);
 				button.removeClass('work');
 				button.val(button.data('submit-text'));
 			}
