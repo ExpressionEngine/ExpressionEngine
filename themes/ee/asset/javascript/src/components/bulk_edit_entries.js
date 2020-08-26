@@ -100,7 +100,7 @@ function (_React$Component) {
         });
       })), React.createElement("div", {
         className: "meta-info"
-      }, lang.showing, " ", limitedItems.length, " ", lang.of, " ", totalItems, " \u2014", React.createElement("a", {
+      }, lang.showing, " ", limitedItems.length, " ", lang.of, " ", totalItems, " \u2014 ", React.createElement("a", {
         href: true,
         className: "danger-link",
         onClick: function onClick(e) {
