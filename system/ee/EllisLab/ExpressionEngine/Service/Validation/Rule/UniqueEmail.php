@@ -11,7 +11,7 @@
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
-
+use EllisLab\ExpressionEngine\Service\Validation\Rule\Email;
 /**
  * EmailUnique Validation Rule
  */
@@ -26,6 +26,15 @@ class UniqueEmail extends ValidationRule {
 	{
 		// Check for config, otherwise default
 		$prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
+
+		//do we have a valid email address?
+		$emailValid = new Email();
+		$validEmail = $emailValid->validate($key, $value);
+
+		if (!$validEmail) {
+			// no valid email address kill it here
+			return FALSE;
+		}
 
 		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
 		{
