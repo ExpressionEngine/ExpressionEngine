@@ -77,6 +77,8 @@ class EE_Image_lib {
 			$this->initialize($props);
 		}
 
+		ee()->lang->load('image_lib');
+
 		log_message('debug', "Image Lib Class Initialized");
 	}
 
@@ -1603,8 +1605,6 @@ class EE_Image_lib {
 	 */
 	function set_error($msg)
 	{
-		ee()->lang->load('imglib');
-
 		if (is_array($msg))
 		{
 			foreach ($msg as $val)
