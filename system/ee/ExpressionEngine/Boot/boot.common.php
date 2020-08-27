@@ -366,7 +366,7 @@ require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
 * @access	public
 * @return	void
 */
-	function show_exception(\Exception $e, $status_code = 500)
+	function show_exception($e, $status_code = 500)
 	{
 		$_error = load_class('Exceptions', 'core');
 		echo $_error->show_exception($e, $status_code);

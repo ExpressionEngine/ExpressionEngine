@@ -58,7 +58,7 @@ Grid.Publish = function(field, settings) {
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.find('.grid-field__table tbody');
-	this.addButtonToolbar = $('a[rel=add_row]', this.parentContainer);
+	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
 
@@ -225,6 +225,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
+		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
 		if (this.header) {
@@ -237,6 +238,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				// Show add button if row count is below the max rows setting,
 				// and only if there are already other rows present
 				this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
+				if (this.isFileGrid) {
+					this.root.closest('.js-file-grid').find('div[data-file-grid-react]').toggle(rowCount < this.settings.grid_max_rows && rowCount >= 0);
+				}
 			}
 
 			if (this.settings.grid_min_rows !== '') {
