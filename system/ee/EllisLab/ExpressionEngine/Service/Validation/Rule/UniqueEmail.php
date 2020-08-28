@@ -12,6 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 use EllisLab\ExpressionEngine\Service\Validation\Rule\Email;
+
 /**
  * EmailUnique Validation Rule
  */
@@ -39,11 +40,13 @@ class UniqueEmail extends ValidationRule {
 		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
 		{
 			$address = explode('@', $value);
-			$query = ee()->db->query('SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
-				FROM exp_members
-				WHERE email LIKE "%gmail.com"
-				HAVING gmail = "'.str_replace('.', '', $address[0]).'";');
-			$count = $query->num_rows();
+            $sql = 'SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
+                FROM exp_members
+                WHERE email LIKE "%gmail.com"
+                HAVING gmail = "'.ee()->db->escape_str(str_replace('.', '', $address[0])).'";';
+            $query = ee()->db->query($sql);
+
+            $count = $query->num_rows();
 		}
 		else
 		{
