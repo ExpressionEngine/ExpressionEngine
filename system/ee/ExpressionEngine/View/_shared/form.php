@@ -92,18 +92,19 @@
           <?php endforeach ?>
         </div>
 
-        <div class="panel-footer">
 
-
-          <div class="form-btns">
-            <?php $this->embed('ee:_shared/form/buttons'); ?>
-          </div>
-        </div>
 
 		<?php if (isset($tabs)):?>
 			</div>
 		<?php endif; ?>
 
+    <div class="panel-footer">
+
+
+      <div class="form-btns">
+        <?php $this->embed('ee:_shared/form/buttons'); ?>
+      </div>
+    </div>
 
   	</form>
   </div>
