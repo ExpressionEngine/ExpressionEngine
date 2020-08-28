@@ -7,7 +7,7 @@
 			<?=ee('CP/Alert')->get('view-members')?>
 		</div>
 
-		<div class="title-bar js-filters-collapsable">
+		<div class="title-bar js-filters-collapsible">
 			<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>

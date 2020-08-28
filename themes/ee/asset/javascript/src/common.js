@@ -360,22 +360,14 @@ $(document).ready(function(){
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 
-	$('.js-filters-collapsable').each(function() {
-		var button = '<div class="title-bar__filter-toggle-button js-filter-bar-toggle">'
-		+ '<button type="button" class="filter-bar__button"><i class="fas fa-sm fa-filter"></i> Filters</button>'
-		+ '</div>'
-
-		$(button).insertAfter($(this).find('.title-bar__title'))
-	})
-
 	function collapseFilterBar(container, collapse) {
 		$(container).find('.filter-bar').toggleClass('filter-bar--collapsed', collapse)
 
 		$('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
 	}
 
-	$('.js-filter-bar-toggle button',).on('click', function(e) {
-		var container = $(this).closest('.js-filters-collapsable')
+	$('body').on('click', '.js-filter-bar-toggle button', function(e) {
+		var container = $(this).closest('.js-filters-collapsible')
 
 		var filterBar = $('.filter-bar', container)
 
@@ -395,9 +387,9 @@ $(document).ready(function(){
 
 		$('.js-filter-bar-toggle').toggle(collapse)
 
-		$('.js-filters-collapsable').each(function() {
+		$('.js-filters-collapsible').each(function() {
 			collapseFilterBar(this, collapse)
-			$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
+			//$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
 		})
 	})
 
@@ -405,7 +397,7 @@ $(document).ready(function(){
 	window.addEventListener('resize', function () { updateFilterBars() })
 	updateFilterBars()
 
-	// Tabs and Scrolls
+	// Tabs
 	// -------------------------------------------------------------------
 
 		//Load initial tab, if requested
@@ -870,6 +862,13 @@ $(document).ready(function(){
 
 			e.preventDefault();
 		});
+
+		$('body').on('click', '.js-toggle-link', function(e) {
+			e.preventDefault()
+
+			var rel = $(this).attr('rel')
+			$('div[rev='+rel+']').toggle()
+		})
 
 	// =============
 	// filter-bar
