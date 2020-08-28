@@ -721,6 +721,7 @@ class EE_Image_lib {
 		{
 			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
 			{
+				ee()->lang->load('image_lib');
 				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
 				return FALSE;
 			}
