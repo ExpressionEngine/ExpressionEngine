@@ -40,7 +40,7 @@ class FileGrid extends React.Component {
     if ( ! this.gridInstance) {
       this.gridInstance = $(this.dropZone)
         .closest('.js-file-grid')
-        .find('.grid-input-form')
+        .find('.grid-field')
         .data('GridInstance')
     }
 

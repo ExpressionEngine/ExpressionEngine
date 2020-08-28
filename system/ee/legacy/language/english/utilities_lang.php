@@ -99,6 +99,8 @@ $lang = array(
 
 'your_email' => 'Your email',
 
+'view_email_cache' => 'Sent Emails',
+
 
 /* CP Translation */
 'cannot_access' => 'cannot be accessed',
