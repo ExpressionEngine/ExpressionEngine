@@ -199,34 +199,6 @@ class Addons_installer {
 	}
 
 	/**
-	 * RTE Tool Installer
-	 *
-	 * @access	private
-	 * @param String $tool The name of the tool, with or without spaces, but
-	 *     without _rte at the end
-	 */
-	function install_rte_tool($tool)
-	{
-		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
-		ee()->load->model('rte_tool_model');
-		ee()->rte_tool_model->add($tool);
-	}
-
-	/**
-	 * RTE Tool Uninstaller
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	void
-	 */
-	function uninstall_rte_tool($tool)
-	{
-		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
-		ee()->load->model('rte_tool_model');
-		ee()->rte_tool_model->delete($tool);
-	}
-
-	/**
 	 * Module Install Setup
 	 *
 	 * Contains common code for install and uninstall routines

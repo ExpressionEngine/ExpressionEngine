@@ -1,31 +1,20 @@
 <?php
 
 return array(
-	'author'         => 'ExpressionEngine',
-	'author_url'     => 'https://expressionengine.com/',
-	'name'           => 'Rich Text Editor',
-	'description'    => '',
-	'version'        => '1.0.1',
-	'namespace'      => 'ExpressionEngine\Addons\Rte',
-	'settings_exist' => TRUE,
-	'docs_url'       => DOC_URL.'add-ons/rte/control_panel/index.html',
-	'fieldtypes'     => array(
-		'rte' => array(
-			'compatibility' => 'text'
-		)
-	),
-
-	'models' => array(
-		'Tool' => 'Model\Tool',
-		'Toolset' => 'Model\Toolset'
-	),
-
-	'models.dependencies' => array(
-		'Toolset' => array(
-			'ee:Member'
-		),
-	)
-
+    'name'              => "Rich Text Editor",
+    'description'       => "",
+    'version'           => "2.0.0",
+    'namespace'         => 'ExpressionEngine\Addons\Rte',
+    'author'            => 'ExpressionEngine',
+    'author_url'        => 'https://expressionengine.com/',
+    'settings_exist'    => true,
+    'services'          => array(),
+    'models'            => array(
+        'Toolset' => 'Model\Toolset'
+    ),
+    'fieldtypes'     => array(
+        'rte' => array(
+            'compatibility' => 'text'
+        )
+    )
 );
-
-// EOF

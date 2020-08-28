@@ -25,6 +25,7 @@
 					source: options.source
 				};
 				options.callback(data, picker);
+				window.document.dispatchEvent(new CustomEvent('filepicker:pick', { detail: data }));
 			};
 
 		if (options.iframe) {

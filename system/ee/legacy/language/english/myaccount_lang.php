@@ -434,16 +434,6 @@ $lang = array(
 
 'right_column' => 'Right Column',
 
-'rte_enabled' => 'Enable Rich Text Editor?',
-
-'rte_enabled_desc' => 'When enabled, the below chosen RTE will appear in publishing forms for this user.',
-
-'rte_settings' => 'RTE Settings',
-
-'rte_toolset' => 'RTE tool set',
-
-'rte_toolset_desc' => 'Choose your preferred RTE tool set.',
-
 'save_bookmarklet' => 'Save Bookmarklet',
 
 'screen_name' => 'Screen Name',

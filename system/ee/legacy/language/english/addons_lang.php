@@ -179,8 +179,6 @@ $lang = array(
 
 'required_by' => 'Required by:',
 
-'rte_tool' => 'Rich Text Editor Tool',
-
 'specific_page' => 'Specific Page?',
 
 'version' => 'Version',
