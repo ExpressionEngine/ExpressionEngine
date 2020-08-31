@@ -40,13 +40,13 @@ class UniqueEmail extends ValidationRule {
 		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
 		{
 			$address = explode('@', $value);
-            $sql = 'SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
-                FROM exp_members
-                WHERE email LIKE "%gmail.com"
-                HAVING gmail = "'.ee()->db->escape_str(str_replace('.', '', $address[0])).'";';
-            $query = ee()->db->query($sql);
+			$sql = 'SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
+				FROM exp_members
+				WHERE email LIKE "%gmail.com"
+				HAVING gmail = "'.ee()->db->escape_str(str_replace('.', '', $address[0])).'";';
+			$query = ee()->db->query($sql);
 
-            $count = $query->num_rows();
+			$count = $query->num_rows();
 		}
 		else
 		{
