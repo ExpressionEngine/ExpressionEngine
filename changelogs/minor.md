@@ -4,6 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+   - Fixed a bug (#428) where Grid was throwing error PHP with certain fieldtypes.
    - Fixed a bug (#421) where attachments were not sent from Communicate page.
 
 Bullet list below, e.g.
