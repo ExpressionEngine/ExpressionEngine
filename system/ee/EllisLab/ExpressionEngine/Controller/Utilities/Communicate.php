@@ -225,6 +225,7 @@ class Communicate extends Utilities {
 		$vars['base_url'] = ee('CP/URL')->make('utilities/communicate/send');
 		$vars['save_btn_text'] = 'btn_send_email';
 		$vars['save_btn_text_working'] = 'btn_send_email_working';
+		$vars['has_file_input'] = true;
 
 		return ee()->cp->render('settings/form', $vars);
 	}
