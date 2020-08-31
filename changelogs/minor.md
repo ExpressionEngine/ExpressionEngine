@@ -5,7 +5,9 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Minor Release
 
 Bullet list below, e.g.
+   - Fixed a bug (#480) where there has been no notice when extensions are disabled.
    - Fixed a bug (#499) where categories hidden from channel layout might get lost upon saving the entry.
+
 
 
 
