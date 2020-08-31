@@ -663,8 +663,8 @@ class EE_Config {
 			'banishment_message',
 			'enable_search_log',
 			'max_logged_searches',
-			'rte_enabled',
-			'rte_default_toolset_id',
+			'rte_default_toolset',
+			'rte_file_browser',
 			'forum_trigger'
 		);
 

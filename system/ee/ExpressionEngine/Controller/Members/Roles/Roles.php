@@ -1260,18 +1260,6 @@ class Roles extends AbstractRolesController {
 							]
 						]
 					],
-					[
-						'title' => 'rte_toolsets',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_addons',
-						'fields' => [
-							'rte_toolsets' => [
-								'type' => 'checkbox',
-								'choices' => $permissions['choices']['rte_toolsets'],
-								'value' => $permissions['values']['rte_toolsets']
-							]
-						]
-					],
 				]
 			],
 			'tools_utilities' => [
@@ -1688,11 +1676,6 @@ class Roles extends AbstractRolesController {
 					'can_create_template_variables' => lang('create_template_variables'),
 					'can_edit_template_variables'   => lang('edit_template_variables'),
 					'can_delete_template_variables' => lang('delete_template_variables'),
-				],
-				'rte_toolsets' => [
-					'can_upload_new_toolsets' => lang('upload_new_toolsets'),
-					'can_edit_toolsets'       => lang('edit_toolsets'),
-					'can_delete_toolsets'     => lang('delete_toolsets')
 				],
 				'access_tools' => [
 					'can_access_comm' => [
