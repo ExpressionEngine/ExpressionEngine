@@ -14,7 +14,7 @@
 				<?=$file_info['filename']?></b>.<?=$file_info['extension']?>
 			<?php endif ?>
 		</div>
-		<div class="list-item__secondary">File Size</div>
+		<!--<div class="list-item__secondary">File Size</div>-->
 	</div>
 	<div class="list-item__content-right">
 		<div class="fields-upload-tools">

@@ -209,7 +209,7 @@ class EE_Image_lib {
 				}
 
 				// Is there a file name?
-				if ( ! preg_match("#\.(jpg|jpeg|gif|png)$#i", $full_dest_path))
+				if ( ! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path))
 				{
 					$this->dest_folder = $full_dest_path.'/';
 					$this->dest_image = $this->source_image;
@@ -348,6 +348,18 @@ class EE_Image_lib {
 		}
 
 		return $this->$protocol('resize');
+	}
+
+	function webp()
+	{
+		$protocol = 'image_process_'.$this->image_library;
+
+		if (preg_match('/gd2$/i', $protocol))
+		{
+			$protocol = 'image_process_gd';
+		}
+
+		return $this->$protocol('webp');
 	}
 
 	/**
@@ -505,6 +517,10 @@ class EE_Image_lib {
 
 		$copy($dst_img, $src_img, 0, 0, $this->x_axis, $this->y_axis, $this->width, $this->height, $this->orig_width, $this->orig_height);
 
+		//if we are converting, change image type
+		if ($action == 'webp') {
+			$this->image_type = 4;
+		}
 
 		//  Show the image
 		if ($this->dynamic_output == TRUE)
@@ -705,6 +721,7 @@ class EE_Image_lib {
 		{
 			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
 			{
+				ee()->lang->load('image_lib');
 				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
 				return FALSE;
 			}
@@ -1244,6 +1261,15 @@ class EE_Image_lib {
 
 				return imagecreatefrompng($path);
 				break;
+			case 4 :
+				if ( ! function_exists('imagecreatefromwebp'))
+				{
+					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
+					return FALSE;
+				}
+
+				return imagecreatefromwebp($path);
+				break;
 		}
 
 		$this->set_error(array('imglib_unsupported_imagecreate'));
@@ -1312,12 +1338,23 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
+			case 4	:
+				if ( ! function_exists('imagewebp'))
+				{
+					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
+					return FALSE;
+				}
+				if ( ! @imagewebp($resource, $this->full_dst_path, $this->quality))
+				{
+					$this->set_error('imglib_save_failed');
+					return FALSE;
+				}
+				break;
 			default		:
 				$this->set_error(array('imglib_unsupported_imagecreate'));
 				return FALSE;
 				break;
 		}
-
 		return TRUE;
 	}
 
@@ -1345,6 +1382,9 @@ class EE_Image_lib {
 				break;
 			case 3:
 				imagepng($resource);
+				break;
+			case 4:
+				imagewebp($resource);
 				break;
 			default:
 				echo 'Unable to display the image';
@@ -1427,7 +1467,7 @@ class EE_Image_lib {
 
 		$vals = @getimagesize($path);
 
-		$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
+		$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png', '4' => 'webp');
 
 		$mime = (isset($types[$vals['2']])) ? 'image/'.$types[$vals['2']] : 'image/jpg';
 
@@ -1564,7 +1604,7 @@ class EE_Image_lib {
 	 */
 	function set_error($msg)
 	{
-		ee()->lang->load('imglib');
+		ee()->lang->load('image_lib');
 
 		if (is_array($msg))
 		{

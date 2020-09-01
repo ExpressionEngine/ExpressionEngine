@@ -2,6 +2,46 @@
 
 $lang = array(
 
+
+// Settings
+'rte_file_browser' => 'File Browser',
+'rte_file_browser_desc' => 'Which file browser should be used when browsing for images and files from your RTE fields?',
+
+// Configs
+'rte_clone' => 'Clone',
+'rte_no_configs' => 'There are currently no configurations.',
+
+// Edit Config
+'rte_basic_settings' => 'Basic Settings',
+'rte_create_config' => 'Create a New Configuration',
+'rte_edit_config' => 'Edit Configuration',
+'rte_config_settings' => 'Configuration Settings',
+'rte_config_name' => 'Configuration Name',
+'rte_toolbar' => 'Customize the Toolbar',
+'rte_height' => 'Height',
+'rte_upload_dir' => 'Upload Directory',
+'rte_advanced_settings' => 'Advanced Settings',
+'rte_config_saved' => 'Configuration Saved!',
+'rte_config_saved_desc' => 'Your configuration saved successfully.',
+
+// Delete Config
+'rte_delete_config' => 'Delete Configuration',
+'rte_delete_config_confirm' => 'Are you sure you want to permanently delete this configuration?',
+'rte_config_deleted' => 'Configuration Deleted',
+'rte_config_deleted_desc' => 'Your configuration was deleted successfully.',
+
+// -------------------------------------------
+//  Field Settings
+// -------------------------------------------
+
+'rte_editor_config' => 'Editor Configuration',
+'rte_edit_configs' => 'Edit&nbsp;Configurations',
+'rte_defer' => 'Defer CKEditor initialization?',
+'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize CKEditor until the field is clicked on.',
+
+
+// RTE
+
 'available_tool_sets' => 'Available Tool Sets',
 
 'btn_save_settings' => 'Save Settings',
@@ -22,7 +62,7 @@ $lang = array(
 
 'no_tool_sets' => 'No Tool Sets Found',
 
-'rte_module_description' => 'Enables rich text editing in text areas',
+'rte_module_description' => '',
 
 'rte_module_name' => 'Rich Text Editor',
 
@@ -178,146 +218,59 @@ $lang = array(
 
 'toolset_name' => 'Tool set Name',
 
-
-/* Tool names (based on class name) */
-'blockquote_rte' => 'Quote',
-
-'blockquote_rte_desc' => 'uses <blockquote>',
+/* tool names */
 
 'bold_rte' => 'Bold',
 
-'bold_rte_desc' => 'uses <b>',
-
-'headings_rte' => 'Headings',
-
-'headings_rte_desc' => 'uses <h*>',
-
-'image_rte' => 'Image',
-
-'image_rte_desc' => 'uses <img>',
-
 'italic_rte' => 'Italic',
 
-'italic_rte_desc' => 'uses <i>',
-
-'link_rte' => 'Link',
-
-'link_rte_desc' => '<a href="">',
-
-'ordered_list_rte' => 'Numbered List',
-
-'ordered_list_rte_desc' => 'uses <ol>',
-
-'preferences_rte' => 'Preferences',
-
-'strip_tags_rte' => 'Clear Formatting',
+'strikethrough_rte' => 'Strikethrough',
 
 'underline_rte' => 'Underline',
 
-'underline_rte_desc' => 'uses <u>',
+'blockquote_rte' => 'Block quote',
 
-'unordered_list_rte' => 'Bulleted List',
+'heading_rte' => 'Heading',
 
-'unordered_list_rte_desc' => 'uses <ul>',
+'removeFormat_rte' => 'Remove formatting',
 
-'view_source_rte' => 'View Code',
+'undo_rte' => 'Undo',
 
-'view_source_rte_desc' => 'allows author to see code',
+'redo_rte' => 'Redo',
 
+'numberedList_rte' => 'Numbered list',
 
-/* Tool misc */
-'add_link' => 'Add Link',
+'bulletedList_rte' => 'Bulleted list',
 
-'external_link' => 'External Link',
+'outdent_rte' => 'Decrease indent',
 
-'heading_1' => 'heading 1',
+'indent_rte' => 'Increase indent',
 
-'heading_2' => 'heading 2',
+'link_rte' => 'Link',
 
-'heading_3' => 'heading 3',
+'filemanager_rte' => 'Image',
 
-'heading_4' => 'heading 4',
+'insertTable_rte' => 'Table',
 
-'heading_5' => 'heading 5',
+'mediaEmbed_rte' => 'Media',
 
-'heading_6' => 'heading 6',
+'alignment:left_rte' => 'Align left',
 
-'img_add' => 'Image',
+'alignment:right_rte' => 'Align right',
 
-'img_align_center' => 'Center image',
+'alignment:center_rte' => 'Align center',
 
-'img_align_left' => 'Left-align image',
+'alignment:justify_rte' => 'Justify',
 
-'img_align_right' => 'Right-align image',
+'horizontalLine_rte' => 'Horizontal line',
 
-'img_center' => 'center',
+'specialCharacters_rte' => 'Special characters',
 
-'img_in_text' => 'in text',
+'readMore_rte' => '"Read More" separator',
 
-'img_remove' => 'Remove Image',
+'fontColor_rte' => 'Font color',
 
-'img_title' => 'upload file',
+'fontBackgroundColor_rte' => 'Font background',
 
-'img_wrap_left' => 'Left-align image in text',
-
-'img_wrap_none' => 'Separate Text',
-
-'img_wrap_right' => 'Right-align image in text',
-
-'link' => 'Link',
-
-'make_blockquote' => 'Quote',
-
-'make_bold' => 'Bold',
-
-'make_italics' => 'Italicize',
-
-'make_ol' => 'Numbered List',
-
-'make_ul' => 'Bulleted List',
-
-'make_underline' => 'Underline',
-
-'paragraph' => 'paragraph',
-
-'remove_blockquote' => 'Remove Quote',
-
-'remove_bold' => 'Unbold',
-
-'remove_italics' => 'Remove Italics',
-
-'remove_link' => 'Remove Link',
-
-'remove_ol' => 'Remove Numbered List',
-
-'remove_ul' => 'Remove Bulleted List',
-
-'remove_underline' => 'Remove Underline',
-
-'strip_tags' => 'Clear Formatting',
-
-'title_blockquote' => 'create blockquote',
-
-'title_bold' => 'make bold',
-
-'title_italics' => 'make italic',
-
-'title_link' => 'create hyperlink',
-
-'title_ol' => 'create ordered list',
-
-'title_ul' => 'create unordered list',
-
-'title_underline' => 'make underline',
-
-'title_view' => 'view code',
-
-'update_link' => 'Update Link',
-
-'view_code' => 'View Code',
-
-'view_content' => 'View Content',
-
+''=>''
 );
-
-// EOF

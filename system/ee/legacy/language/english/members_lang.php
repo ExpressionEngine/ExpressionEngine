@@ -960,8 +960,6 @@ $lang = array(
 
 'resend_activation_emails' => 'Resend Activation Emails',
 
-'rte_toolsets' => 'RTE toolsets',
-
 'search_roles_button' => 'Search Roles',
 
 'search_members_button' => 'Search Members',
