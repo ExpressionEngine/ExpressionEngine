@@ -5,6 +5,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Fixed a bug (#[457](https://github.com/ExpressionEngine/ExpressionEngine/issues/457)) where accented characters in variables were not truncated properly
+
 
    - Fixed a PHP error that could occur on publish if Pages was installed and hidden via layouts.
    - Fixed a bug ([#230](https://github.com/ExpressionEngine/ExpressionEngine/issues/230)) where accepting checksum in CP might result in wrong redirect when session type is "Session ID only".
