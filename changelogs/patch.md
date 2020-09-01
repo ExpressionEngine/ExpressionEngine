@@ -5,6 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Fixed a bug (#432) where parent entries were not fetched for relationship field inside grid.
    - Fixed a bug (#450) where pagination on tables was not working correctly when performing search for html tags.
    - Fixed a bug (#[457](https://github.com/ExpressionEngine/ExpressionEngine/issues/457)) where accented characters in variables were not truncated properly
 
