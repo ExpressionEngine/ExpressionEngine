@@ -4,6 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+   - Fixed a bug (#91, #417) where link button was not working and formatting not displayed in RTE field on frontend.
    - Added validation for category parent (#411)
    - Fixed a bug (#428) where Grid was throwing error PHP with certain fieldtypes.
    - Fixed a bug (#421) where attachments were not sent from Communicate page.
