@@ -4,6 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+   - Fixed a bug (#438) where JS combo loader was throwing error if extra `v` was passed into URL.
    - Fixed a bug (#91, #417) where link button was not working and formatting not displayed in RTE field on frontend.
    - Added validation for category parent (#411)
    - Fixed a bug (#428) where Grid was throwing error PHP with certain fieldtypes.
