@@ -4,12 +4,13 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-- Fixed a bug where checking for updates might produce an error.
-- Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
+   - Fixed a bug (#428) where Grid was throwing error PHP with certain fieldtypes.
+   - Fixed a bug (#421) where attachments were not sent from Communicate page.
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug (#480) where there has been no notice when extensions are disabled.
+   - Fixed a bug (#499) where categories hidden from channel layout might get lost upon saving the entry.
+
 
 
 
