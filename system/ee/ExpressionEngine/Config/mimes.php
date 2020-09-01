@@ -107,6 +107,7 @@ return array(
 	'image/svg', // .svg
 	'image/tiff', // .tif, .tiff
 	'image/x-png', // .png
+	'image/webp', // .webp
 	'message/rfc822', // .eml
 	'text/comma-separated-values', // .csv
 	'text/css', // .css

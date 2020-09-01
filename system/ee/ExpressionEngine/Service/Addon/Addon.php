@@ -373,6 +373,20 @@ class Addon {
 	}
 
 	/**
+	 * Get the RTE class
+	 *
+	 * @return string The fqcn or $class
+	 */
+	public function getRteFilebrowserClass()
+	{
+		$this->requireFile('rtefb');
+
+		$class = ucfirst($this->shortname).'_rtefb';
+
+		return $this->getFullyQualified($class);
+	}
+
+	/**
 	 * Has a README.md file?
 	 *
 	 * @return bool TRUE of it does, FALSE if not
@@ -430,6 +444,16 @@ class Addon {
 	public function hasPlugin()
 	{
 		return $this->hasFile('pi');
+	}
+
+	/**
+	 * Has a rtefb.* file?
+	 *
+	 * @return bool TRUE of it does, FALSE if not
+	 */
+	public function hasRteFilebrowser()
+	{
+		return $this->hasFile('rtefb');
 	}
 
 	/**

@@ -342,8 +342,6 @@ class EE_Schema {
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
-			rte_enabled char(1) NOT NULL DEFAULT 'y',
-			rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,

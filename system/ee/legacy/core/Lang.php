@@ -13,8 +13,8 @@
  */
 class EE_Lang {
 
-	private $language	= array();
-	private $addon_language	= array();
+	public $language	= array();
+	public $addon_language	= array();
 	private $is_loaded	= array();
 
 
@@ -175,7 +175,7 @@ class EE_Lang {
 
 		switch ($scope) {
 			case 'addon':
-				$this->addon_language = array_merge($this->language, $lang);
+				$this->addon_language = array_merge($this->addon_language, $lang);
 				break;
 			case 'ee':
 			default:

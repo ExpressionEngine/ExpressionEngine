@@ -199,15 +199,17 @@ EE.cp.formValidation = {
 				});
 
 				// Update the button text to the value of its "work-text" data attribute
-				if ($button.data('work-text') != '')
-				{
-					// Replace button text with working text and disable the button to prevent further clicks
-					if ($button.is('input')) {
-						$button.attr('value', $button.data('work-text'));
-					} else if ($button.is('button')) {
-						$button.text($button.data('work-text'));
+				$button.each(function(index, thisButton) {
+					thisButton = $(thisButton);
+					if (!thisButton.hasClass('dropdown-toggle') && thisButton.data('work-text') != '') {
+						// Replace button text with working text and disable the button to prevent further clicks
+						if (thisButton.is('input')) {
+							thisButton.attr('value', thisButton.data('work-text'));
+						} else if (thisButton.is('button')) {
+							thisButton.text(thisButton.data('work-text'));
+						}
 					}
-				}
+				});
 			}
 
 			return true;
@@ -361,10 +363,12 @@ EE.cp.formValidation = {
 
 				button.each(function(index, thisButton) {
 					thisButton = $(thisButton);
-					if (thisButton.is('input')) {
-						thisButton.attr('value', thisButton.data('submit-text'));
-					} else if (thisButton.is('button')) {
-						thisButton.text(thisButton.data('submit-text'));
+					if (!thisButton.hasClass('dropdown-toggle')) {
+						if (thisButton.is('input')) {
+							thisButton.attr('value', thisButton.data('submit-text'));
+						} else if (thisButton.is('button')) {
+							thisButton.text(thisButton.data('submit-text'));
+						}
 					}
 				});
 			}
@@ -402,11 +406,16 @@ EE.cp.formValidation = {
 			// Disable submit button
 			button.addClass('disable').attr('disabled', 'disabled');
 
-			if (button.is('input')) {
-				button.attr('value', EE.lang.btn_fix_errors);
-			} else if (button.is('button')) {
-				button.text(EE.lang.btn_fix_errors);
-			}
+			button.each(function(index, thisButton) {
+				thisButton = $(thisButton);
+				if (!thisButton.hasClass('dropdown-toggle')) {
+					if (thisButton.is('input')) {
+						thisButton.attr('value', EE.lang.btn_fix_errors);
+					} else if (thisButton.is('button')) {
+						thisButton.text(EE.lang.btn_fix_errors);
+					}
+				}
+			})
 		}
 
 		// There may be callbacks for fields that need to do extra processing

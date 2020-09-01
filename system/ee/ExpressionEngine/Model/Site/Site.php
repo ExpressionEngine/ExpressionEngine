@@ -114,7 +114,8 @@ class Site extends Model {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert'
+		'afterInsert',
+		'afterSave'
 	);
 
 	// Properties
@@ -149,7 +150,7 @@ class Site extends Model {
 	}
 
 	public function onAfterInsert()
-    {
+	{
 		$this->setDefaultPreferences('system');
 		$this->setDefaultPreferences('channel');
 		$this->setDefaultPreferences('template');
@@ -160,7 +161,12 @@ class Site extends Model {
 		$this->createSpecialtyTemplates();
 		$this->copyPermissions();
 		$this->copyRoleSettings();
-    }
+	}
+
+	public function onAfterSave()
+	{
+		ee()->cache->delete('/site_pages/', \Cache::GLOBAL_SCOPE);
+	}
 
 	/**
 	 * Given a type loops through config's divination method and sets the

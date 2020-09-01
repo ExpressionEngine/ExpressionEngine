@@ -2,7 +2,6 @@
 <div class="file-preview-modal">
 	<div class="file-preview-modal__preview">
 		<div class="title-bar">
-			<h3 class="title-bar__title"><?= lang('preview'); ?></h3>
 
 			<div class="title-bar__extra-tools">
 				<div class="button-group">

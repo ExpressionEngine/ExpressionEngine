@@ -247,7 +247,7 @@ class Group extends AbstractDesignController {
 							)
 						)
 					),
-					array(
+					(sizeof($groups) > 1) ? array(
 						'title' => 'duplicate_group',
 						'desc' => 'duplicate_group_desc',
 						'fields' => array(
@@ -259,7 +259,7 @@ class Group extends AbstractDesignController {
 								]
 							)
 						)
-					),
+					) : '',
 					array(
 						'title' => 'make_default_group',
 						'desc' => 'make_default_group_desc',
