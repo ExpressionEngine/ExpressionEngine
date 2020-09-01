@@ -190,7 +190,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Fix rest of fields
     cy.route("POST", "**/files/uploads/**").as("ajax18");
-    page.get('name').clear().type('Dir')
+    page.get('name').clear().type('Dir2')
     page.get('name').trigger('blur')
     cy.wait("@ajax18");
     page.hasErrorsCount(2)
@@ -480,7 +480,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Fix error and make sure everything submitted ok
     cy.route("POST", "**/files/uploads/**").as("ajax37");
-    page.get('name').clear().type('Dir')
+    page.get('name').clear().type('Dir1')
     page.get('name').trigger('blur')
     cy.wait("@ajax37");
     page.hasNoErrors()
@@ -489,7 +489,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('wrap').contains('Upload directory saved')
 
     page.get('name').invoke('val').then((text) => {
-      expect(text).equal('Dir')
+      expect(text).equal('Dir1')
     })
     page.get('server_path').invoke('val').then((text) => {
       expect(text).equal(upload_path + '/')

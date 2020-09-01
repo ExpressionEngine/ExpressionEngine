@@ -2286,7 +2286,7 @@ CREATE TABLE IF NOT EXISTS `exp_sites` (
 DELETE FROM `exp_sites`;
 /*!40000 ALTER TABLE `exp_sites` DISABLE KEYS */;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1, 'EE3', 'default_site', NULL, 'YToxOntzOjc6ImVtYWlsZWQiO2E6MDp7fX0=', 'YToxOntpOjE7YToxOntzOjM6InVybCI7czozMjoiaHR0cDovL3ByaXZhdGU2MC50ZXN0L2luZGV4LnBocC8iO319');
+	(1, 'EE6', 'default_site', NULL, 'YToxOntzOjc6ImVtYWlsZWQiO2E6MDp7fX0=', 'YToxOntpOjE7YToxOntzOjM6InVybCI7czozMjoiaHR0cDovL3ByaXZhdGU2MC50ZXN0L2luZGV4LnBocC8iO319');
 /*!40000 ALTER TABLE `exp_sites` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_snippets
