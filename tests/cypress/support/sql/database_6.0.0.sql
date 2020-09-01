@@ -47,7 +47,8 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(21, 'Comment', 'edit_comment', 0),
 	(22, 'Search', 'do_search', 1),
 	(23, 'Channel', 'live_preview', 0),
-	(24, 'File', 'addonIcon', 1);
+	(24, 'File', 'addonIcon', 1),
+  (25, 'Rte', 'pages_autocomplete', 0);
 /*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_captcha
@@ -1125,12 +1126,13 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(9, 'checkboxes', '1.0.0', 'YTowOnt9', 'n'),
 	(10, 'radio', '1.0.0', 'YTowOnt9', 'n'),
 	(11, 'relationship', '1.0.0', 'YTowOnt9', 'n'),
-	(12, 'rte', '1.0.0', 'YTowOnt9', 'n'),
+	(12, 'rte', '2.0.0', 'YTowOnt9', 'n'),
 	(13, 'url', '1.0.0', 'YTowOnt9', 'n'),
 	(14, 'email_address', '1.0.0', 'YTowOnt9', 'n'),
 	(15, 'toggle', '1.0.0', 'YTowOnt9', 'n'),
 	(16, 'fluid_field', '1.0.0', 'YTowOnt9', 'n'),
-	(17, 'colorpicker', '1.0.0', 'YTowOnt9', 'n');
+	(17, 'colorpicker', '1.0.0', 'YTowOnt9', 'n'),
+  (18, 'duration', '2.0.0', 'YTowOnt9', 'n');
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_field_groups
@@ -1816,7 +1818,7 @@ INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp
 	(3, 'Channel', '2.0.1', 'n', 'n'),
 	(4, 'Member', '2.1.0', 'n', 'n'),
 	(5, 'Stats', '2.0.0', 'n', 'n'),
-	(6, 'Rte', '1.0.1', 'y', 'n'),
+	(6, 'Rte', '2.0.0', 'y', 'n'),
 	(7, 'Email', '2.0.0', 'n', 'n'),
 	(8, 'Rss', '2.0.0', 'n', 'n'),
 	(9, 'Comment', '2.3.2', 'y', 'n'),
@@ -2167,52 +2169,16 @@ INSERT INTO `exp_role_settings` (`id`, `role_id`, `site_id`, `menu_set_id`, `is_
 	(5, 5, 1, 1, 'n', NULL, 'n', 10, 20, 60, 'n', 'y', NULL, 0, NULL);
 /*!40000 ALTER TABLE `exp_role_settings` ENABLE KEYS */;
 
--- Dumping structure for table ee-test.exp_rte_tools
-DROP TABLE IF EXISTS `exp_rte_tools`;
-CREATE TABLE IF NOT EXISTS `exp_rte_tools` (
-  `tool_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(75) DEFAULT NULL,
-  `class` varchar(75) DEFAULT NULL,
-  `enabled` char(1) DEFAULT 'y',
-  PRIMARY KEY (`tool_id`),
-  KEY `enabled` (`enabled`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
-
--- Dumping data for table ee-test.exp_rte_tools: ~10 rows (approximately)
-DELETE FROM `exp_rte_tools`;
-/*!40000 ALTER TABLE `exp_rte_tools` DISABLE KEYS */;
-INSERT INTO `exp_rte_tools` (`tool_id`, `name`, `class`, `enabled`) VALUES
-	(1, 'Blockquote', 'Blockquote_rte', 'y'),
-	(2, 'Bold', 'Bold_rte', 'y'),
-	(3, 'Headings', 'Headings_rte', 'y'),
-	(4, 'Image', 'Image_rte', 'y'),
-	(5, 'Italic', 'Italic_rte', 'y'),
-	(6, 'Link', 'Link_rte', 'y'),
-	(7, 'Ordered List', 'Ordered_list_rte', 'y'),
-	(8, 'Underline', 'Underline_rte', 'y'),
-	(9, 'Unordered List', 'Unordered_list_rte', 'y'),
-	(10, 'View Source', 'View_source_rte', 'y');
-/*!40000 ALTER TABLE `exp_rte_tools` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_rte_toolsets
 DROP TABLE IF EXISTS `exp_rte_toolsets`;
 CREATE TABLE IF NOT EXISTS `exp_rte_toolsets` (
-  `toolset_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` int(10) DEFAULT 0,
-  `name` varchar(100) DEFAULT NULL,
-  `tools` text DEFAULT NULL,
-  `enabled` char(1) DEFAULT 'y',
-  PRIMARY KEY (`toolset_id`),
-  KEY `member_id` (`member_id`),
-  KEY `enabled` (`enabled`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `toolset_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `toolset_name` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `settings` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`toolset_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_rte_toolsets: ~0 rows (approximately)
-DELETE FROM `exp_rte_toolsets`;
-/*!40000 ALTER TABLE `exp_rte_toolsets` DISABLE KEYS */;
-INSERT INTO `exp_rte_toolsets` (`toolset_id`, `member_id`, `name`, `tools`, `enabled`) VALUES
-	(1, 0, 'Default', '3|2|5|1|9|7|6|4|10', 'y');
-/*!40000 ALTER TABLE `exp_rte_toolsets` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_search
 DROP TABLE IF EXISTS `exp_search`;

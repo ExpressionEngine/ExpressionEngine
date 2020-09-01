@@ -1,5 +1,3 @@
-Cypress.config().baseUrl = 'localhost:8888';
-
 import CreateField from '../../elements/pages/field/CreateField';
 import MainField from '../../elements/pages/field/MainField';
 import CreateGroup from '../../elements/pages/field/CreateGroup';
@@ -18,39 +16,37 @@ var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
-	beforeEach(function() {
-      cy.visit('admin.php')
-      cy.get('#username').type('admin')
-      cy.get('#password').type('password')
-      cy.get('.button').click()
-  	})
 
-  	it('verifies fields page exists', () => {
+	/*before(function(){
+		cy.task('db:seed')
+
+		cy.auth()
+
+
+  		cy.log('verifies fields page exists')
 	  	cy.visit('admin.php?/cp/fields')
 	  	cy.get('.main-nav__title > h1').contains('Field')
 	  	cy.get('.main-nav__toolbar > .button').contains('New Field')
 	  	cy.get('.filter-bar').should('exist')
 	  	cy.get('.filter-bar').should('exist')
-	})
 
-	it('Creates a bunch of fields', () => {
+		cy.log('Creates a bunch of fields')
 		let i = 0;
 		for(i ; i < options.length; i++){
 	  		let name = options[i];
 	  		addField(name)
 	  	}
 
-	})
 
-	it('Creates a bunch of Template Groups',() => {
+		cy.log('Creates a bunch of Template Groups')
 		let i = 0;
 		for(i ; i < GroupName.length; i++){
 	  		let name = GroupName[i];
 	  		addGroup(name)
 	  	}
-	})
 
-	it('Creates a Channel to work in', () => {
+
+		cy.log('Creates a Channel to work in')
 		cy.visit('admin.php?/cp/channels/create')
 		cy.get("input[name = 'channel_title']").type('AATestChannel')
 	  	cy.get('button').contains('Fields').click()
@@ -65,9 +61,7 @@ context('Create combinations of field', () => {
 	  	cy.get('p').contains('The channel AATestChannel has been created')
 
 
-	})
-
-	it('Creates a Entry to work in', () => {
+		cy.log('Creates a Entry to work in')
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('button').contains('New').first().click()
 		cy.get('a').contains('AATestChannel').first().click()
@@ -77,9 +71,13 @@ context('Create combinations of field', () => {
 
 	  	group.get('Save').eq(0).click()
 	  	cy.get('p').contains('The entry AA Test Entry has been created')
+	})*/
+
+	beforeEach(function() {
+		cy.auth()
 	})
 
-	it.skip('Tests Checkboxes', () => {
+	it('Tests Checkboxes', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Checkboxes Test').click()
 		cy.get('div').contains('Value/Label Pairs').click()
@@ -121,7 +119,7 @@ context('Create combinations of field', () => {
 	    cy.get('body').contains('Hi')
 	})
 
-	it.skip('Tests Date', () => {
+	it('Tests Date', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('input[data-date-format= "%n/%j/%Y %g:%i %A"]').eq(0).type('6/17/2020 12:33 PM')
@@ -186,7 +184,7 @@ context('Create combinations of field', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('button').contains('Choose Existing').eq(0).click()
-		cy.get('a[rel="modal-file"]').contains('Blog').eq(0).click()
+		cy.get('a[rel="modal-file"]').contains('About').eq(0).click()
 		cy.get('tr[data-id="1"]').click()
 		cy.get('button').contains('Save').eq(0).click()
 
@@ -199,8 +197,8 @@ context('Create combinations of field', () => {
 
 		 cy.visit('index.php/aaFile')
 
-		 cy.get('body').contains('themes/user/site/default/asset/img/blog/blog.jpg')
-		 cy.get('a').contains('blog')
+		 cy.get('body').contains('staff_jane.png')
+		 cy.get('a').contains('staff_jane')
 	})
 
 
@@ -222,15 +220,15 @@ context('Create combinations of field', () => {
 
 	})
 
-	it('Tests Rich Text Editor', ()=> {
+	it.skip('Tests Rich Text Editor', ()=> {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.WysiHat-editor').type('This is paragraph{enter}')
+		cy.get('.ck-content').type('This is paragraph{enter}')
 		cy.get('select').select('heading 1')
-		cy.get('.WysiHat-editor').type('This is heading 1{enter}')
+		cy.get('.ck-content').type('This is heading 1{enter}')
 
 		cy.get('select').select('heading 2')
-		cy.get('.WysiHat-editor').type('This is heading 2{enter}')
+		cy.get('.ck-content').type('This is heading 2{enter}')
 
 		cy.get('select').select('heading 3')
 		cy.get('.WysiHat-editor').type('This is heading 3{enter}')
@@ -243,25 +241,25 @@ context('Create combinations of field', () => {
 	})
 
 	it('Tests Select', () => {
-		// cy.visit('admin.php?/cp/fields')
-		// cy.get('div').contains('AA Select').click()
-		// cy.get('div').contains('Value/Label Pairs').click()
-		// cy.get('a').contains('Add New').click()
-		// cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('1')
-		// cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Select').click()
+		cy.get('div').contains('Value/Label Pairs').click()
+		cy.get('a').contains('Add New').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('1one')
+		cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
 
-		// cy.get('a').contains('Add A Row').click()
-		// cy.get('input[name = "value_label_pairs[rows][new_row_2][value]"]').type('2')
-		// cy.get('input[name = "value_label_pairs[rows][new_row_2][label]"]').type('two')
+		cy.get('a').contains('Add A Row').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_2][value]"]').type('2two')
+		cy.get('input[name = "value_label_pairs[rows][new_row_2][label]"]').type('two')
 
-		// checkboxes.get('Save').eq(0).click()
+		checkboxes.get('Save').eq(0).click()
 
-cy.visit('admin.php?/cp/publish/edit')
+		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('label[class="select__button-label act"]').first().click()
+		cy.get('fieldset').contains('AA Select Dropdown Test').parents('fieldset').find('.select .select__button').click()
+		cy.wait(500)
+		cy.get('.select__dropdown-item:visible').last().click()
 		cy.get('button').contains('Save').eq(0).click()
-
-
 
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaSelect').eq(0).click()
@@ -272,7 +270,7 @@ cy.visit('admin.php?/cp/publish/edit')
 		cy.get('[value="edit"]').click()
 		cy.visit('index.php/aaSelectDropdown')
 
-		cy.get('body').contains('1')
+		cy.get('body').contains('2two')
 	})
 
 	it('Tests Textarea', () => {
@@ -308,7 +306,7 @@ cy.visit('admin.php?/cp/publish/edit')
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get(':nth-child(18) > .field-control > .toggle-btn').click()
+		cy.get('fieldset').contains('AA Toggle Test').parents('fieldset').find('.toggle-btn').click()
 		cy.get('button').contains('Save').eq(0).click()
 
 		cy.visit('index.php/aaToggle')
@@ -334,7 +332,7 @@ cy.visit('admin.php?/cp/publish/edit')
 		cy.get('body').contains('Visit us')
 		cy.get('a').contains('Visit us').click()
 
-		cy.url().should('eq', 'index.php/aaToggle')
+		cy.url().should('contain', 'index.php/aaURL')
 
 
 	})
@@ -363,13 +361,11 @@ function addGroup(name){
 
 //creates a feild with the name
 function addField(name){
-	cy.visit('admin.php?/cp/fields')
-  	cy.get('.main-nav__toolbar > .button').contains('New Field').click()
+	cy.visit('admin.php?/cp/fields/create')
   	cy.get('div[class="select__button"]').filter(':visible').first().click()
   	page.get('Type_Options').contains(name).click()
   	let title = 'AA ' + name + ' Test'
   	page.get('Name').type(title)
-
 
   	cy.hasNoErrors()
   	page.get('Save').eq(0).click()
