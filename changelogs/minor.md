@@ -11,6 +11,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
    - Fixed a bug (#421) where attachments were not sent from Communicate page.
 
 Bullet list below, e.g.
+   - Added dabatase column type selector for textarea and RTE fields (#464)
    - Added post-upgrade and utility check for broken template tags and missing fieldtypes
    - Fixed a bug (#480) where there has been no notice when extensions are disabled.
    - Fixed a bug (#499) where categories hidden from channel layout might get lost upon saving the entry.
