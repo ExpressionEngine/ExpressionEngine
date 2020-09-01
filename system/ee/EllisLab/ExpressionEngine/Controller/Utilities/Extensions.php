@@ -52,6 +52,14 @@ class Extensions extends Utilities {
 	 */
 	public function index()
 	{
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
+
 		if (ee()->input->post('bulk_action') == 'enable')
 		{
 			$this->enable(ee()->input->post('selection'));
