@@ -177,6 +177,14 @@ class Addons extends CP_Controller {
 			'third' => lang('third_party_addons')
 		);
 
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
+
 		$vars = array(
 			'tables' => array(
 				'first' => NULL,
