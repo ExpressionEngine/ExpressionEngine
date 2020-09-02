@@ -17,7 +17,7 @@
 					<thead>
 						<tr>
 							<th class="first check-ctrl">
-								<?=form_checkbox('select_all', 'true', set_checkbox('select_all', 'true'), 'title="select all"')?>
+								<?=form_checkbox('select_all', 'true', set_checkbox('select_all', 'true'), 'title="' . lang('select_all') . '"')?>
 							</th>
 							<th><?=lang('field_name')?></th>
 							<th><?=lang('field_label')?></th>

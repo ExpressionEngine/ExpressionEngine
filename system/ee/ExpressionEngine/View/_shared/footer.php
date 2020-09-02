@@ -87,7 +87,7 @@
 				<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 				<fieldset class="fieldset-required">
 					<div class="field-instruct">
-						<label><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
+						<label for="logout-confirm-password"><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
 					</div>
 					<div class="field-control">
 						<input type="password" name="password" value="" id="logout-confirm-password">
@@ -123,7 +123,7 @@
 		</div>
 
 		<?=ee('CP/Alert')->getStandard()?>
-		
+
 		<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
 		<script type="text/javascript">
 		$(document).ready(function(){
