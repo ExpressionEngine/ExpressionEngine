@@ -122,6 +122,10 @@ class Javascript_loader {
 		$max_age		= 5184000;
 		$modified		= ($mtime !== FALSE) ? $mtime : @filemtime($file);
 		$modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
+		if (!is_int($modified)) {
+			$modified = time();
+		}
+
 
 		// Remove anything after the semicolon
 
