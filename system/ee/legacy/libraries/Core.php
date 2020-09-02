@@ -486,6 +486,28 @@ class EE_Core {
 			$request = implode('/', $request);
 			return 'CP: '.$request;
 		});
+
+
+		//show them post-update checks, again
+		if (ee()->input->get('after') == 'update')
+		{
+			$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
+			$messages = $advisor->postUpdateChecks();
+			if (!empty($messages)) {
+				ee()->lang->load('utilities');
+				$alert = '';
+				foreach ($messages as $message) {
+					$alert .= $message . BR;
+				}
+				$alert .= sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile());
+				ee('CP/Alert')
+					->makeBanner()
+					->asWarning()
+					->addToBody($alert)
+					->canClose()
+					->now();
+			}
+		}
 	}
 
 	/**

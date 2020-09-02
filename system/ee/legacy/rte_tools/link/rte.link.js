@@ -296,3 +296,137 @@ WysiHat.addButton('link', {
 		this.$link_dialog.trigger('modal:close');
 	}
 });
+
+
+$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
+	// set the heightIs variable
+	// this allows the overlay to be scrolled
+	var heightIs = $(document).height();
+
+	// fade in the overlay
+	$('.app-overlay')
+		.removeClass('app-overlay--destruct')
+		.removeClass('app-overlay---closed')
+		.addClass('app-overlay---open')
+		.css('height', heightIs);
+
+	if (e.linkIs) {
+		// strongly warn the actor of their potential future mistakes
+		if(e.linkIs.indexOf('js-modal--destruct') !== -1){
+			$('.app-overlay')
+				.addClass('app-overlay--destruct');
+		}
+
+		// warn the actor of their potential future mistakes
+		if(e.linkIs.indexOf('js-modal--warning') !== -1){
+			$('.app-overlay')
+				.addClass('app-overlay--warning');
+		}
+	}
+
+	// reveal the modal
+	if ($(this).hasClass('modal-wrap')) {
+		$(this).fadeIn('slow');
+	} else {
+		$(this).removeClass('app-modal---closed')
+			.addClass('app-modal---open');
+	}
+
+	// remove viewport scroll for --side
+	if (e.linkIs) {
+		if(e.linkIs.indexOf('js-modal-link--side') !== -1){
+			$('body').css('overflow','hidden');
+		}
+	}
+
+	if(e.modalIs == 'live-preview'){
+		$('.live-preview')
+			.removeClass('live-preview---closed')
+			.addClass('live-preview---open');
+	}
+
+	// remember the scroll location on open
+	$(this).data('scroll', $(document).scrollTop());
+
+	// scroll up, if needed, but only do so after a significant
+	// portion of the overlay is show so as not to disorient the user
+	if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
+	{
+		setTimeout(function() {
+			$(document).scrollTop(0);
+		}, 100);
+	} else {
+		// Remove viewport scroll
+		$('body').css('overflow','hidden');
+	}
+});
+
+$(document).on('keydown', function(e) {
+	if (e.keyCode === 27) {
+		$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+	}
+});
+
+$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
+	var modal = $(this)
+
+	if (modal.is(":visible")) {
+		// fade out the overlay
+		$('.overlay').fadeOut('slow');
+
+		if (modal.hasClass('modal-wrap')) {
+			modal.fadeOut('fast');
+		} else {
+			// disappear the app modal
+			modal.addClass('app-modal---closed');
+			setTimeout(function() {
+				modal.removeClass('app-modal---open');
+			}, 500);
+
+			if (modal.hasClass('app-modal--live-preview')) {
+				// disappear the preview
+				$('.live-preview---open').addClass('live-preview---closed');
+				setTimeout(function() {
+					$('.live-preview---open').removeClass('live-preview---open');
+				}, 500);
+			}
+		}
+
+		// distract the actor
+		$('.app-overlay---open').addClass('app-overlay---closed');
+		setTimeout(function() {
+			$('.app-overlay---open').removeClass('app-overlay---open')
+				.removeClass('app-overlay--destruct')
+				.removeClass('app-overlay--warning');
+		}, 500);
+
+		// replace the viewport scroll, if needed
+		setTimeout(function() {
+			$('body').css('overflow','');
+		}, 200);
+
+		if ( ! $(this).is('.modal-form-wrap, .app-modal'))
+		{
+			$(document).scrollTop($(this).data('scroll'));
+		} else {
+			// Remove viewport scroll
+			$('body').css('overflow','hidden');
+		}
+
+		var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+		button.removeClass('work');
+		button.val(button.data('submit-text'));
+	}
+});
+
+// listen for clicks on the element with a class of overlay
+$('body').on('click', '.m-close, .js-modal-close', function(e) {
+	$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+
+	// stop THIS from reloading the source window
+	e.preventDefault();
+});
+
+$('body').on('click', '.overlay, .app-overlay---open', function() {
+	$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+});
