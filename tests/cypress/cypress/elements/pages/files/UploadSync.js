@@ -13,7 +13,7 @@ class UploadSync extends FileManagerSection {
 
   // Load the sync screen for the nth directory listed
   load_sync_for_dir(number) {
-    cy.contains('Files').click()
+    cy.visit('admin.php?/cp/files')
 
     cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+') > a').click()
     cy.get('a.icon--sync').click()
