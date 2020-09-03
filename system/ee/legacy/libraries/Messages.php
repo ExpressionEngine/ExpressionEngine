@@ -1753,7 +1753,13 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which = 'buddy';
+ 		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
+ 		
+ 		if( !in_array($which, array('buddy', 'blocked')) )
+ 		{
+ 			$which = 'buddy';	
+ 		}
+		
 
 		if ($this->allegiance == 'cp')
 		{
