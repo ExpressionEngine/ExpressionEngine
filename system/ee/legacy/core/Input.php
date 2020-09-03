@@ -979,7 +979,7 @@ class EE_Input {
 		}
 
 		// Remove control characters
-		$str = remove_invisible_characters($str);
+		$str = remove_invisible_characters($str, FALSE);
 
 		// Should we filter the input data?
 		if ($this->_enable_xss === TRUE)
