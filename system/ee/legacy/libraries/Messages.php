@@ -1631,9 +1631,6 @@ DOH;
 
 		$search_query = array();
 
-// echo "<pre>";
-// var_dump($_POST);
-// exit;
 		foreach ($_POST as $key => $val)
 		{
 			if ($key == 'which_field')
