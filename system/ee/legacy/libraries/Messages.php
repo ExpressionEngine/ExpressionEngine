@@ -1637,22 +1637,34 @@ DOH;
 			{
 				continue;
 			}
-			if ($key == 'group_id')
+			elseif ($key == 'group_id')
 			{
 				if ($val != 'any')
 				{
 					$search_query[] = " exp_member_groups.group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
-			else
+			elseif ($key == 'screen_name')
 			{
-				if ($val != '')
+				if (!empty($val))
 				{
-					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
+					$search_query[] = "screen_name LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
 			}
+			elseif ($key == 'email' && !empty($val))
+			{
+					$search_query[] = "email LIKE '%".ee()->db->escape_like_str($val)."%'";
+			}
+			elseif ($key == 'site_id' && !empty($val))
+			{
+				$search_query[] = "site_id LIKE '%".ee()->db->escape_like_str($val)."%'";
+			}
+			else
+			{
+				//not valid input.
+				continue;
+			}
 		}
-
 		if (count($search_query) < 1)
 		{
 			ee()->functions->redirect($redirect_url);
@@ -1741,7 +1753,13 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
+ 		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
+ 		
+ 		if( !in_array($which, array('buddy', 'blocked')) )
+ 		{
+ 			$which = 'buddy';	
+ 		}
+		
 
 		if ($this->allegiance == 'cp')
 		{
@@ -1786,13 +1804,12 @@ DOH;
 					$search_query[] = " group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
-			else
+			//site_id, screen_name, email, group_id
+			elseif (in_array($key, array('site_id', 'screen_name', 'email', 'group_id')) && !empty($val))
 			{
-				if ($val != '')
-				{
 					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
-				}
 			}
+			
 		}
 
 		if (count($search_query) < 1)
