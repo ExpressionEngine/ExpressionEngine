@@ -838,6 +838,12 @@ $lang = array(
 
 'unauthorized_for_this_channel' => 'You are not authorized to post in this channel',
 
+/* DB column type */
+
+'db_column_type' => 'Column type in database',
+
+'db_column_type_desc' => 'Choose database column type to hold your data. TEXT (64Kb) is usually good for an article. If your field content is rather a book, select MEDIUMTEXT (16Mb)',
+
 );
 
 // EOF
