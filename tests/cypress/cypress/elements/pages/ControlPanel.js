@@ -12,7 +12,7 @@ class ControlPanel {
             'members_btn': '.ee-sidebar__item:contains("Members")',
 
             "submit_buttons": '.form-btns .button',
-            "fieldset_errors": '.fieldset-invalid',
+            "fieldset_errors": '.fieldset-invalid:visible',
             "settings_btn": '.ee-sidebar__item[title="Settings"]',
             "error_messages": 'em.ee-form-error-message',
 

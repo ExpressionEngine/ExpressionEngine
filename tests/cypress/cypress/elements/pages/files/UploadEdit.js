@@ -15,7 +15,7 @@ class UploadEdit extends FileManagerSection {
         'max_height': 'input[type!=hidden][name=max_height]',
         'image_manipulations': '#image_manipulations',
         'grid_rows': '#image_manipulations tr:visible',
-        'upload_member_groups': 'input[type!=hidden][name="upload_member_groups[]"]',
+        'upload_member_groups': 'input[type!=hidden][name="upload_roles[]"]',
         'cat_group': 'input[type!=hidden][name="cat_group[]"]'
       })
     }
@@ -27,7 +27,7 @@ class UploadEdit extends FileManagerSection {
     load_edit_for_dir(number) {
       cy.contains('Files').click()
       cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')').trigger('mouseover')
-      cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')  li.edit a').click()
+      cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')  a.edit').click({force: true})
     }
 
     create_manipulation() {
@@ -85,7 +85,7 @@ class UploadEdit extends FileManagerSection {
     }
 
     delete_for_row(row) {
-      return this.grid_row(row).find('td:nth-child(7) li.remove a')
+      return this.grid_row(row).find('td:nth-child(7) a[rel=remove_row]')
     }
 }
 export default UploadEdit;

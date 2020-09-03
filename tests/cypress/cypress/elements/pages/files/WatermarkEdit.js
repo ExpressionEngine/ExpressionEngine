@@ -33,7 +33,8 @@ class WatermarkEdit extends FileManagerSection {
     }
     load() {
       cy.contains('Files').click()
-      cy.get('div.sidebar h2:nth-of-type(2)').contains('New').click()
+      cy.get('div.sidebar a').contains('Watermarks').click()
+      cy.get('a').contains('Create New').click()
     }
 
     load_edit_for_watermark(number) {

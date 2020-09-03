@@ -1142,6 +1142,8 @@ class Updater {
 		ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
 
 		ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
+	}
+
 	private function addStickyChannelPreference() {
 		ee()->smartforge->add_column(
 			'channels',

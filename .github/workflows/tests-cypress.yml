@@ -3,10 +3,10 @@ name: Run Cypress Tests
 on:
   push:
     branches:
-      - release/6.0.0
-      - testing/ee6
       - design/6.0.0/cp
   pull_request:
+    branches:
+      - release/6.0.0
 
 jobs:
     cypress-tests:
@@ -25,10 +25,13 @@ jobs:
 
         strategy:
             matrix:
-                php: [7.1]
-                os: [ubuntu-latest]
+                php: [7.3, 7.2, 7.1, 5.6]
+                os: [ubuntu-18.04]
+                include:
+                  - php: 7.4
+                    os: ubuntu-20.04 #is using mysql8
 
-        name: P${{ matrix.php }} - ${{ matrix.os }}
+        name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -62,7 +65,7 @@ jobs:
               run: |
                 sudo systemctl start mysql
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
-                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
             - name: Install PHP dependencies
               working-directory: tests/cypress
