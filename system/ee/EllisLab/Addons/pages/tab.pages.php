@@ -152,7 +152,7 @@ class Pages_tab {
 		$data = $_POST;
 		$validator->defineRule('whenURI', function($key, $value, $parameters, $rule) use ($data)
 		{
-			if ($data['pages__pages_uri'] == '' OR $data['pages__pages_uri'] == lang('example_uri')) {
+			if (empty($data['pages__pages_uri']) OR $data['pages__pages_uri'] == lang('example_uri')) {
 				return $rule->skip();
 			}
 
