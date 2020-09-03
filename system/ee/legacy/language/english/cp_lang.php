@@ -123,8 +123,6 @@ $lang = array(
 
 'required_field' => 'required field',
 
-'required_fields' => 'Required Fields',
-
 'retry' => 'Retry?',
 
 'reveal_sidebar' => 'show sidebar',
