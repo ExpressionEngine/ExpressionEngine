@@ -17,7 +17,7 @@ var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
 
-	/*before(function(){
+	before(function(){
 		cy.task('db:seed')
 
 		cy.auth()
@@ -71,7 +71,7 @@ context('Create combinations of field', () => {
 
 	  	group.get('Save').eq(0).click()
 	  	cy.get('p').contains('The entry AA Test Entry has been created')
-	})*/
+	})
 
 	beforeEach(function() {
 		cy.auth()

@@ -44,9 +44,9 @@ context('Test Member roles Addons ', () => {
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(4) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(5) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(6) > input').click();
-		cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(1) > input').click();
-		cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(2) > input').click();
-		cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(3) > input').click(); //lets them do anything with addons
+		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(1) > input').click();
+		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(2) > input').click();
+		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(3) > input').click(); //lets them do anything with addons
 
 
 

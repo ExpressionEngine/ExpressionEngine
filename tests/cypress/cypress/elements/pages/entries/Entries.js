@@ -4,7 +4,7 @@ import ControlPanel from '../ControlPanel'
 		constructor() {
 			super()
 
-			this.urlMatcher = 'http://localhost:8888/admin.php?/cp/publish/edit';
+			this.urlMatcher = 'admin.php?/cp/publish/edit';
 
 			this.elements({
 			   "ChannelSort" : 'button[data-filter-label="channel"]',
@@ -34,7 +34,7 @@ import ControlPanel from '../ControlPanel'
 			   "Entries" : 'tbody',
 
 			   "SelectAll" : 'input[title = "select all"]'
-			   
+
 
 
 

@@ -166,7 +166,7 @@ class Rte_ft extends EE_Fieldtype
         $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
-        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
+        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? true : false;
 
         if (strpos($id, '_new_') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
@@ -550,7 +550,7 @@ class Rte_ft extends EE_Fieldtype
             $configFields = array(
                 array(
                     'type'    => 'html',
-                    'content' => '<a href="' . ee('CP/URL')->make('addons/settings/rte/editConfig')->compile() . '">' . lang('rte_create_config') . '</a>'
+                    'content' => '<a href="' . ee('CP/URL')->make('addons/settings/rte/edit_toolset')->compile() . '">' . lang('rte_create_config') . '</a>'
                 )
             );
         }

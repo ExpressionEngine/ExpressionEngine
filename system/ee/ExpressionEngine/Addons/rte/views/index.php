@@ -6,7 +6,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
+				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/edit_toolset')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 

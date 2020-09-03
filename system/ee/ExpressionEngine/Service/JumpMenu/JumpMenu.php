@@ -949,12 +949,14 @@ class JumpMenu extends AbstractJumpMenu
 
         //translate the commands
         foreach ($items[1] as $index => $item) {
-            $commands = explode(' ', $item['command']);
-            $commands_translated = [];
-            foreach ($commands as $command) {
-                $commands_translated[] = lang($command);
+            if (isset($item['command'])) {
+                $commands = explode(' ', $item['command']);
+                $commands_translated = [];
+                foreach ($commands as $command) {
+                    $commands_translated[] = lang($command);
+                }
+                $items[1][$index]['command'] = implode(' ', $commands_translated);
             }
-            $items[1][$index]['command'] = implode(' ', $commands_translated);
         }
 
 

@@ -13,13 +13,8 @@ context('Test Member roles Web access ', () => {
 	})
 
 	it('Let Test Role access CP', () => {
-	   cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
 
-
-	   cy.visit('admin.php?/cp/members/roles')
+	   cy.authVisit('admin.php?/cp/members/roles')
 
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
 
@@ -29,12 +24,8 @@ context('Test Member roles Web access ', () => {
 
 
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
 
-	   cy.visit('admin.php?/cp/members/profile/settings')
+	   cy.authVisit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('admin')//ensure admin logged in
 
@@ -45,7 +36,7 @@ context('Test Member roles Web access ', () => {
 		cy.get('.on > .slider').click();
 		cy.get('input').contains('Save Settings').click()
 
-		cy.visit('http://localhost:8888')
+		cy.visit('/')
 
 		cy.logout()
 
@@ -56,7 +47,7 @@ context('Test Member roles Web access ', () => {
 
 
 
-		cy.visit('http://localhost:8888',{failOnStatusCode:false})
+		cy.visit('/',{failOnStatusCode:false})
 
 	   cy.on('uncaught:exception', (err, runnable) => {
 			    expect(err.message).to.include('something about the error')
@@ -87,11 +78,11 @@ context('Test Member roles Web access ', () => {
 	   cy.get('#password').type('password');
 	   cy.get('.button').click();
 
-	   cy.visit('http://localhost:8888',{failOnStatusCode: false})
+	   cy.visit('/',{failOnStatusCode: false})
 
 	})
 
-	it('cleans for reruns', () => {
+	it.skip('cleans for reruns', () => {
 		//Turn web back on
 		//Turn member access off.
 
