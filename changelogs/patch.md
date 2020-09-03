@@ -18,6 +18,7 @@ Bullet list below, e.g.
    - Fixed a bug where some member pages did not display in the forums when using the forum tag on regular templates.
    - Fixed a bug ([#419](https://github.com/ExpressionEngine/ExpressionEngine/issues/419)) where deprecated pagination code in member templates could cause a PHP error.
    - Updates additional files for PHP 7.4 compatibility.
+   - Altered a javascript filename that mod_security tended to object to.
    - Fixed a bug where input data were assumed to be URL encoded, causing certain character sequences to be stripped when cleaned.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
