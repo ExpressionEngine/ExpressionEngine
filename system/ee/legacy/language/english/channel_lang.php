@@ -488,6 +488,8 @@ $lang = array(
 
 'category_updated_desc' => 'The category <b>%s</b> has been updated.',
 
+'category_parent_invalid' => 'Category parent needs to be in same group and different from the category itself',
+
 'create_category' => 'Create Category',
 
 'create_category_btn' => 'Create New Category',

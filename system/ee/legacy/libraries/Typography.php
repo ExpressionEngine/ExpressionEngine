@@ -317,6 +317,8 @@ class EE_Typography {
 		//	}
 		$chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 
+		$chunks = ($chunks === FALSE) ? (array) $str : $chunks;
+
 		// Build our finalized string.  We cycle through the array, skipping tags, and processing the contained text
 		$str = '';
 		$process = TRUE;
