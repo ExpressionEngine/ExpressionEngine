@@ -24,9 +24,9 @@ class ViewType {
 	 * Determine view type for given destination (directory or 'all')
 	 * Checks $_GET and Cookie, sets cookie if required
 	 */
-	public function determineViewType($destination = 'all', $viewtype = 'table')
+	public function determineViewType($destination = 'all', $viewtype = 'list')
 	{
-		$views = ['table', 'thumb'];
+		$views = ['list', 'thumb'];
 		$viewtype_prefs = [];
 
 		if (ee()->input->cookie('viewtype')) {

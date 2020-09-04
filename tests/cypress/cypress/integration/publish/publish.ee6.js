@@ -120,7 +120,8 @@ context('Publish Page - Create', () => {
           page.get('chosen_files').should('have.length.gte', 2)
         })
 
-        it('the file field restricts you to the chosen directory', () => {
+        it.only('the file field restricts you to the chosen directory', () => {
+          cy.server();
           let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
           link.click()
 
@@ -134,16 +135,17 @@ context('Publish Page - Create', () => {
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          //file_modal.get('upload_button').should('exist') no longer exists in new cp
-
+          file_modal.get('upload_button').should('exist')// no longer exists in new cp
+          cy.route("GET", "**/filepicker/modal**").as("ajax");
           file_modal.get('filters').eq(1).find('a').first().click()
+          cy.wait("@ajax");
 
           //file_modal.wait_for_filters
           file_modal.get('filters').should('have.length', 3)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          //file_modal.get('upload_button').should('exist') new cp brings files up in seperate spot this check is no longer valid
+          file_modal.get('upload_button').should('exist')// new cp brings files up in seperate spot this check is no longer valid
         })
 
         it('the file field retains data after being created and edited', () => {

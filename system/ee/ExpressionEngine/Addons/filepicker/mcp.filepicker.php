@@ -122,7 +122,7 @@ class Filepicker_mcp {
 			$total_files = $files->count();
 
 			$viewTypeService = new ViewType();
-			$type = $viewTypeService->determineViewType('all', 'table');
+			$type = $viewTypeService->determineViewType('all', 'list');
 
 		}
 		else
@@ -200,7 +200,7 @@ class Filepicker_mcp {
 				}
 			}
 
-			$filters->add('ViewType', ['table', 'thumb'], $type);
+			$filters->add('ViewType', ['list', 'thumb'], $type);
 
 			$filters = $filters->add('Perpage', $total_files, 'show_all_files');
 
@@ -211,7 +211,7 @@ class Filepicker_mcp {
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $perpage; // Offset is 0 indexed
 
-			$vars['filters'] = $filters->render($reset_url);
+			$vars['filters'] = $filters->render($base_url);
 		}
 		else
 		{
