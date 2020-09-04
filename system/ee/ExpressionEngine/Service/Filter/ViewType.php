@@ -30,7 +30,7 @@ class Viewtype extends Filter {
 	 * @param  string $default_value ['table', 'thumb']
 	 * @return void
 	 */
-	public function __construct(array $options = array(), string $default_value = 'table')
+	public function __construct(array $options = array(), $default_value = 'table')
 	{
 		$this->name = 'viewtype';
 		$this->label = 'viewtype_filter';
