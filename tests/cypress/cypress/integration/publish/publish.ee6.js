@@ -120,7 +120,7 @@ context('Publish Page - Create', () => {
           page.get('chosen_files').should('have.length.gte', 2)
         })
 
-        it.only('the file field restricts you to the chosen directory', () => {
+        it('the file field restricts you to the chosen directory', () => {
           cy.server();
           let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
           link.click()
