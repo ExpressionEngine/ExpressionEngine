@@ -77,11 +77,11 @@ class Views extends CP_Controller {
 		return $this->viewForm($view, $vars);
 	}
 
-	public function clone($view_id)
+	public function cloneView($view_id)
 	{
 		$vars = [
 			'cp_page_title' => 'Clone [saved view]',
-			'base_url' => ee('CP/URL')->make('publish/views/clone/'.$view_id),
+			'base_url' => ee('CP/URL')->make('publish/views/clone-view/'.$view_id),
 		];
 
 		// Probably create a new model here based off the old one and pass that in

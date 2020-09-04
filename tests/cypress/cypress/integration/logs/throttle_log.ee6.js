@@ -134,7 +134,7 @@ context('Throttle Logging', () => {
       it('Throttling will show message if someone tries to reload too much', () => {
         var i = 0;
         for (i = 0; i < 15; i++) {
-              cy.visit('index.php/blog')
+              cy.visit('index.php/news')
 
         }
         cy.get('body').contains('You have exceeded the allowed page load frequency.')
