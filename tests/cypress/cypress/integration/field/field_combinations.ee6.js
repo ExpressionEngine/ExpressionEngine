@@ -22,7 +22,6 @@ context('Create combinations of field', () => {
 
 		cy.auth()
 
-
   		cy.log('verifies fields page exists')
 	  	cy.visit('admin.php?/cp/fields')
 	  	cy.get('.main-nav__title > h1').contains('Field')
@@ -31,30 +30,22 @@ context('Create combinations of field', () => {
 	  	cy.get('.filter-bar').should('exist')
 
 		cy.log('Creates a bunch of fields')
-		let i = 0;
-		for(i ; i < options.length; i++){
-	  		let name = options[i];
-	  		addField(name)
+		for(let i = 0; i < options.length; i++){
+	  		addField(options[i])
 	  	}
-
 
 		cy.log('Creates a bunch of Template Groups')
-		let i = 0;
-		for(i ; i < GroupName.length; i++){
-	  		let name = GroupName[i];
-	  		addGroup(name)
+		for(let j = 0 ; j < GroupName.length; j++){
+	  		addGroup(GroupName[j])
 	  	}
-
 
 		cy.log('Creates a Channel to work in')
 		cy.visit('admin.php?/cp/channels/create')
 		cy.get("input[name = 'channel_title']").type('AATestChannel')
 	  	cy.get('button').contains('Fields').click()
 
-	  	let i = 0;
-		for(i ; i < options.length; i++){
-	  		let name = options[i];
-	  		addToChannel(name)
+		for(let k = 0 ; k < options.length; k++){
+	  		addToChannel(options[k])
 	  	}
 
 	  	cy.get('button').contains('Save').eq(0).click()
