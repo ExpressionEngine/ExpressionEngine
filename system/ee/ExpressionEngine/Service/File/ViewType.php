@@ -24,7 +24,7 @@ class ViewType {
 	 * Determine view type for given destination (directory or 'all')
 	 * Checks $_GET and Cookie, sets cookie if required
 	 */
-	public function determineViewType(string $destination = 'all', $viewtype = 'table')
+	public function determineViewType($destination = 'all', $viewtype = 'table')
 	{
 		$views = ['table', 'thumb'];
 		$viewtype_prefs = [];
