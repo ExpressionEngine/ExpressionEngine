@@ -1492,7 +1492,7 @@ class Wizard extends CI_Controller
         foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path) {
             $prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
             $this->userdata[$path] = rtrim(realpath($prefix . $this->userdata[$path]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-            $this->userdata[$path] = str_replace($this->base_path, '{base_path}', $this->userdata[$path]);
+            $this->userdata[$path] = str_replace(str_replace('/', DIRECTORY_SEPARATOR, $this->base_path), '{base_path}', $this->userdata[$path]);
         }
 
         $config = array(

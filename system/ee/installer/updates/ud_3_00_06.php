@@ -26,6 +26,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'addStickyChannelPreference',
 				'_comment_formatting'
 			)
 		);
@@ -55,6 +56,25 @@ class Updater {
 			)
 		);
 
+	}
+
+	private function addStickyChannelPreference()
+	{
+		if (!ee()->db->field_exists('sticky_enabled', 'channels')) {
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'sticky_enabled' => array(
+						'type'				=> 'char',
+						'constraint'		=> 1,
+						'null'				=> FALSE,
+						'default'			=> 'n'
+					)
+				)
+			);
+
+			ee()->db->update('channels', ['sticky_enabled' => 'y']);
+		}
 	}
 }
 /* END CLASS */

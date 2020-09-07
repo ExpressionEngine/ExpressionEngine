@@ -377,7 +377,7 @@ class EE_Form_validation {
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_username', str_replace('%x', $len, ee()->lang->line('username_too_short')));
+			$this->set_message('valid_username', str_replace('%d', $len, ee()->lang->line('username_too_short')));
 			return FALSE;
 		}
 

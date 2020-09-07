@@ -317,7 +317,7 @@ class Updater {
 			$existing = ee('Model')->get('UploadDestination')
 				->fields('name')
 				->filter('name', 'IN', array_keys($member_directories))
-				->filter('site_id', $site_id)
+				->filter('site_id', $site['site_id'])
 				->all()
 				->pluck('name');
 
@@ -329,7 +329,7 @@ class Updater {
 			foreach ($member_directories as $name => $data)
 			{
 				$dir = ee('Model')->make('UploadDestination', $data);
-				$dir->site_id = $site_id;
+				$dir->site_id = $site['site_id'];
 				$dir->name = $name;
 				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 				$dir->save();

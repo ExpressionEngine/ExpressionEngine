@@ -582,18 +582,20 @@ class Updater {
 			$query = ee()->db->get_where('sites', array('site_id' => $site));
 			$row = $query->row_array();
 
-			$config = unserialize(base64_decode($row['site_template_preferences']));
+			if (isset($row['site_template_preferences'])) {
+				$config = unserialize(base64_decode($row['site_template_preferences']));
 
-			// If ANY sites save as file, they all must
-			if (isset($config['save_tmpl_files']))
-			{
-				// Only update config if the key still exists
-				$update_config = TRUE;
-
-				if ($config['save_tmpl_files'] == 'y')
+				// If ANY sites save as file, they all must
+				if (isset($config['save_tmpl_files']))
 				{
-					$save_as_file = TRUE;
-					break;
+					// Only update config if the key still exists
+					$update_config = TRUE;
+
+					if ($config['save_tmpl_files'] == 'y')
+					{
+						$save_as_file = TRUE;
+						break;
+					}
 				}
 			}
 
