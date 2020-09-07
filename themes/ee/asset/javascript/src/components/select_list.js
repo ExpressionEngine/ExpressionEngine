@@ -598,7 +598,7 @@ function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
-        className: "button button--small button--secondary-alt float-right",
+        className: "button button--small default float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
@@ -651,7 +651,7 @@ function (_React$Component3) {
       }, React.createElement("i", {
         className: "fas fa-check-circle"
       }), " ", label, props.selectionRemovable && React.createElement("a", {
-        className: "button button--secondary-alt float-right",
+        className: "button button--default float-right",
         href: "",
         onClick: props.clearSelection
       }, React.createElement("i", {

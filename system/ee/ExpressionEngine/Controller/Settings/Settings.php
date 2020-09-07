@@ -47,6 +47,9 @@ class Settings extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
+		$list = $sidebar->addHeader(lang('general'))
+			->addBasicList();
+
 		$sidebar->addItem(lang('general_settings'), ee('CP/URL')->make('settings/general'));
 		$sidebar->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
@@ -74,7 +77,11 @@ class Settings extends CP_Controller {
 			$list->addItem(lang('comment_settings'), ee('CP/URL')->make('settings/comments'));
 		}
 
-		$list->addItem(lang('html_buttons'), ee('CP/URL')->make('settings/buttons'));
+		$link = ee('CP/URL')->make('settings/buttons');
+		$item = $list->addItem(lang('html_buttons'), $link);
+		if ($link->matchesTheRequestedURI()) {
+            $item->isActive();
+        }
 
 		if (ee('Permission')->hasAll('can_access_design', 'can_admin_design'))
 		{
@@ -84,7 +91,12 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
 
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
-		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
+
+		$link = ee('CP/URL')->make('settings/menu-manager');
+		$item = $list->addItem(lang('menu_manager'), $link);
+		if ($link->matchesTheRequestedURI()) {
+            $item->isActive();
+        }
 
 		if (ee('Permission')->hasAll('can_access_members', 'can_admin_roles'))
 		{
@@ -104,16 +116,18 @@ class Settings extends CP_Controller {
 			$list->addItem(lang('settings'), ee('CP/URL')->make('settings/security-privacy'));
 			$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
 			$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
-
-			if (ee('Permission')->can('manage_consents'))
-			{
-				$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
-			}
 		}
 		elseif (ee('Permission')->can('manage_consents'))
 		{
 			$list = $sidebar->addHeader(lang('security_privacy'))->addBasicList();
-			$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
+		}
+
+		if (ee('Permission')->can('manage_consents')) {
+			$link = ee('CP/URL')->make('settings/consents');
+			$item = $list->addItem(lang('consent_requests'), $link);
+			if ($link->matchesTheRequestedURI()) {
+				$item->isActive();
+			}
 		}
 	}
 

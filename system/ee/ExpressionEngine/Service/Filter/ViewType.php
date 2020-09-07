@@ -27,10 +27,10 @@ class Viewtype extends Filter {
 
 	/**
 	 * @param  array $options options
-	 * @param  string $default_value ['table', 'thumb']
+	 * @param  string $default_value ['list', 'thumb']
 	 * @return void
 	 */
-	public function __construct(array $options = array(), string $default_value = 'table')
+	public function __construct(array $options = array(), $default_value = 'list')
 	{
 		$this->name = 'viewtype';
 		$this->label = 'viewtype_filter';
@@ -38,7 +38,7 @@ class Viewtype extends Filter {
 		$this->options = $options;
 
 		$this->options = array(
-			'table'  => lang('viewtype_list'),
+			'list'  => lang('viewtype_list'),
 			'thumb'  => lang('viewtype_thumb'),
 		);
 
@@ -71,7 +71,7 @@ class Viewtype extends Filter {
 	{
 		$value = $this->value();
 
-		if (in_array($value, ['table', 'thumb']))
+		if (in_array($value, ['list', 'thumb']))
 		{
 			return TRUE;
 		}
@@ -90,7 +90,6 @@ class Viewtype extends Filter {
 		$original_options = $this->options;
 		$options = $this->prepareOptions($url);
 		$new_options = [];
-
 		foreach ($options as $url => $label) {
 			$new_options[] = [
 				'url' => $url,

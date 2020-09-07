@@ -20,7 +20,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		$('table .toolbar .settings a').click(function (e) {
+		$('table .toolbar a.settings').click(function (e) {
 			var settings_button = this;
 			var modal = $('.' + $(this).attr('rel'));
 
@@ -64,7 +64,7 @@
 		// Reorder template groups
 		EE.cp.folderList.onSort('template-group', function(list) {
 			// Create an array of template group names
-			var template_groups = $.map($('> li', list), function(list_item) {
+			var template_groups = $.map($('> .sidebar__link', list), function(list_item) {
 				return $(list_item).data('group_name');
 			});
 

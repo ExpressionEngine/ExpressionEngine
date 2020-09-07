@@ -27,7 +27,6 @@ class Installer extends Core {
 		define('PATH_PI', SYSPATH .'ee/ExpressionEngine/Addons/');
 		define('PATH_EXT', SYSPATH .'ee/ExpressionEngine/Addons/');
 		define('PATH_FT', SYSPATH .'ee/ExpressionEngine/Addons/');
-		define('PATH_RTE', EE_APPPATH.'rte_tools/');
 		define('INSTALLER', TRUE);
 
 		get_config(array('subclass_prefix' => 'Installer_'));

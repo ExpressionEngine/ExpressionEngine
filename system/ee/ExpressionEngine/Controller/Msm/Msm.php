@@ -107,14 +107,22 @@ class Msm extends CP_Controller {
 			{
 				$status = array(
 					'class' => 'enable',
-					'content' => lang('online')
+					'content' => ee('View')->make('_shared/status-tag')->render([
+						'label' => lang('online'),
+						'class' => 'enable',
+						'styles' => []
+					])
 				);
 			}
 			else
 			{
 				$status = array(
 					'class' => 'disable',
-					'content' => lang('offline')
+					'content' => ee('View')->make('_shared/status-tag')->render([
+						'label' => lang('offline'),
+						'class' => 'disable',
+						'styles' => []
+					])
 				);
 			}
 			$edit_url = ee('CP/URL')->make('msm/edit/' . $site->site_id);
@@ -267,7 +275,7 @@ class Msm extends CP_Controller {
 		ee()->view->cp_page_title = lang('create_site');
 
 		ee()->view->header = array(
-			'title' => lang('create_site'),
+			'title' => lang('sites'),
 		);
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
@@ -344,7 +352,7 @@ class Msm extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'errors' => $errors,
-			'hide_top_buttons' => true,
+			'hide_top_buttons' => false,
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -373,7 +381,7 @@ class Msm extends CP_Controller {
 		);
 
 		ee()->view->header = array(
-			'title' => lang('edit_site'),
+			'title' => $site->site_label,
 		);
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');

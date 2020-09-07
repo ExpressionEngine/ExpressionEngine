@@ -25,6 +25,7 @@
 					source: options.source
 				};
 				options.callback(data, picker);
+				window.document.dispatchEvent(new CustomEvent('filepicker:pick', { detail: data }));
 			};
 
 		if (options.iframe) {
@@ -165,7 +166,7 @@
 					frame.show();
 					bindFrameUnload();
 
-					if ($(this).contents().find('.form-ctrls .btn.draft[value="cancel"]').length > 0)
+					if ($(this).contents().find('.form-ctrls .button.draft[value="cancel"]').length > 0)
 					{
 						$(modal).on('modal:close', cancelOnClose);
 					}

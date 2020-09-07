@@ -30,6 +30,9 @@ class File_upload_preferences_model extends CI_Model
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$member = ee()->session->getMember();
+			if (empty($member)) {
+				return [];
+			}
 			$assigned_upload_destinations = $member->getAssignedUploadDestinations()->pluck('id');
 			$this->db->where_in('id', $assigned_upload_destinations);
 		}

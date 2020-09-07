@@ -58,7 +58,6 @@ class EE_Core
         define('PATH_PI', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_EXT', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_FT', SYSPATH . 'ee/ExpressionEngine/Addons/');
-        define('PATH_RTE', APPPATH . 'rte_tools/');
         define('PATH_THIRD', SYSPATH . 'user/addons/');
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');

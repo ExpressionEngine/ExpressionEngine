@@ -50,6 +50,7 @@ class Updater {
 				'addDashboardLayoutsTable',
 				'addLayoutWidgetsTable',
 				'addAddonIcons',
+				'migrateRte',
 				'addStickyChannelPreference',
 				'addMemberModuleActions'
 			]
@@ -1121,6 +1122,26 @@ class Updater {
 		{
 			ee()->db->insert('actions', $row_data);
 		}
+	}
+
+	private function migrateRte()
+	{
+		ee()->smartforge->drop_table('rte_toolsets');
+		ee()->smartforge->drop_table('rte_tools');
+
+		require_once PATH_ADDONS . 'rte/upd.rte.php';
+		$Rte_upd = new \Rte_upd();
+		$Rte_upd->install_rte_toolsets_table();
+
+		$row_data = array(
+			'class' => 'Rte',
+			'method' => 'pages_autocomplete'
+		);
+		ee()->db->insert('actions', $row_data);
+
+		ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
+
+		ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
 	}
 
 	private function addStickyChannelPreference() {

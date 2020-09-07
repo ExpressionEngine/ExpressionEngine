@@ -105,7 +105,7 @@ class Login extends CP_Controller {
 		}
 
 		// Normal login button state
-		$this->view->btn_class = 'button button--action button--large button--wide';
+		$this->view->btn_class = 'button button--primary button--large button--wide';
 		$this->view->btn_label = lang('login');
 		$this->view->btn_disabled = '';
 

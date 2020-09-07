@@ -140,8 +140,6 @@ $lang = array(
 
 'view' => 'View',
 
-'view_email_cache' => 'Sent Emails',
-
 'wordwrap' => 'Word Wrapping',
 
 'your_email' => 'Your email',

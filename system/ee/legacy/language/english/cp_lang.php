@@ -27,11 +27,19 @@ $lang = array(
 
 'utilities' => 'Utilities',
 
-'dark_theme'  => 'Dark Theme',
+'dark_theme' => 'Dark Theme',
+
 'light_theme' => 'Light Theme',
 
+'dark' => 'Dark',
+
+'light' => 'Light',
+
 'jump_menu_item' => 'Jump Menu',
+
 'jump_menu_input' => 'Go To...',
+
+'menu_manager' => 'Menu Manager',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
@@ -104,7 +112,7 @@ $lang = array(
 
 'nav_homepage' => 'CP Home',
 
-'nav_overview' => 'CP Overview',
+'nav_overview' => 'Overview',
 
 'nav_settings' => 'Settings',
 
@@ -732,6 +740,8 @@ $lang = array(
 'can_assign_post_authors' => 'Change entry author',
 
 /* Dashboard Widgets */
+
+'dashboard' => 'Dashboard',
 
 'save_dashboard_layout' => 'Save layout',
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,176 +9,109 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Addons\Rte\RteHelper;
 use ExpressionEngine\Service\Addon\Installer;
 
-/**
- * Rich Text Editor Module update class
- */
 class Rte_upd extends Installer
 {
-	public $has_cp_backend = 'y';
 
-	public $actions = [
+    public $actions = [
         [
-            'method' => 'get_js'
+            'method' => 'pages_autocomplete'
         ]
-	];
+    ];
+    public $has_cp_backend = 'y';
+    public $has_publish_fields = 'n';
 
-	public $methods = [
-		[
-			'hook' => 'myaccount_nav_setup'
-		],
-		[
-			'hook' => 'cp_menu_array'
-		]
-	];
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
+    // --------------------------------------------------------------------
 
-		ee()->load->dbforge();
-	}
+    /**
+     * Install Rte
+     */
+    public function install()
+    {
+        parent::install();
 
-	/**
-	 * Module Installer
-	 *
-	 * @return	bool
-	 */
-	public function install()
-	{
-		parent::install();
+        $this->install_rte_toolsets_table();
 
-		// RTE Toolsets Table
-		$fields = array(
-			'toolset_id'	=> array(
-				'type'				=> 'int',
-				'constraint'		=> '10',
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'member_id'			=> array(
-				'type'				=> 'int',
-				'constraint'		=> '10',
-				'default'			=> '0'
-			),
-			'name'				=> array(
-				'type'				=> 'varchar',
-				'constraint'		=> '100'
-			),
-			'tools'				=> array(
-				'type'				=> 'text'
-			),
-			'enabled'			=> array(
-				'type'				=> 'char',
-				'constraint'		=> '1',
-				'default'			=> 'y'
-			)
-		);
-		ee()->dbforge->add_field($fields);
-		ee()->dbforge->add_key('toolset_id', TRUE);
-		ee()->dbforge->add_key(array('member_id','enabled'));
-		ee()->dbforge->create_table('rte_toolsets');
+        return true;
+    }
 
-		// RTE Tools Table
-		$fields = array(
-			'tool_id'	=> array(
-				'type'				=> 'int',
-				'constraint'		=> '10',
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'name'			=> array(
-				'type'				=> 'varchar',
-				'constraint'		=> '75'
-			),
-			'class'			=> array(
-				'type'				=> 'varchar',
-				'constraint'		=> '75'
-			),
-			'enabled'		=> array(
-				'type'				=> 'char',
-				'constraint'		=> '1',
-				'default'			=> 'y'
-			)
-		);
-		ee()->dbforge->add_field($fields);
-		ee()->dbforge->add_key('tool_id', TRUE);
-		ee()->dbforge->add_key(array('enabled'));
-		ee()->dbforge->create_table('rte_tools');
+    public function install_rte_toolsets_table()
+    {
+        // -------------------------------------------
+        //  Create the exp_rte_toolsets table
+        // -------------------------------------------
+        ee()->load->dbforge();
+        if (ee()->db->table_exists('rte_toolsets')) {
+            ee()->dbforge->drop_table('rte_toolsets');
+        }
 
-		// Load the default toolsets
-		ee()->load->model('rte_toolset_model');
-		ee()->rte_toolset_model->load_default_toolsets();
+        ee()->dbforge->add_field(array(
+            'toolset_id'   => array('type' => 'int', 'constraint' => 6, 'unsigned' => true, 'auto_increment' => true),
+            'toolset_name' => array('type' => 'varchar', 'constraint' => 32),
+            'settings'    => array('type' => 'text')
+        ));
+        ee()->dbforge->add_key('toolset_id', true);
+        ee()->dbforge->create_table('rte_toolsets');
 
-		// Install the extension
-		parent::activate_extension();
+        // -------------------------------------------
+        //  Populate it
+        // -------------------------------------------
+        $toolbars = RteHelper::defaultToolbars();
 
-		// Update the config
-		ee()->config->update_site_prefs(
-			array(
-				'rte_enabled' 				=> 'y',
-				'rte_default_toolset_id' 	=> 1
-			),
-			'all' // Update all sites
-		);
+        foreach ($toolbars as $name => &$toolbar) {
+            $config_settings = array_merge(RteHelper::defaultConfigSettings(), array('toolbar' => $toolbar));
 
-		return TRUE;
-	}
+            $config = ee('Model')->make('rte:Toolset');
+            $config->toolset_name = $name;
+            $config->settings = $config_settings;
+            $config->save();
+        }
 
-	/**
-	 * Module Uninstaller
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	public function uninstall()
-	{
-		parent::uninstall();
+        return true;
+    }
 
-		parent::disable_extension();
+    // --------------------------------------------------------------------
 
-		// Tables
-		ee()->dbforge->drop_table('rte_toolsets');
-		ee()->dbforge->drop_table('rte_tools');
+    /**
+     * Update Rte.
+     */
+    public function update($current = '')
+    {
+        if (version_compare($current, '2.0.0', '<')) {
+            $data = array(
+                'class' => 'Rte',
+                'method' => 'pages_autocomplete'
+            );
 
-		// Update the config
-		ee()->config->update_site_prefs(
-			array(
-				'rte_enabled' 				=> 'n',
-				'rte_default_toolset_id' 	=> 1
-			),
-			'all' // Update all sites
-		);
+            ee()->db->insert('actions', $data);
 
-		return TRUE;
-	}
+            $this->install_rte_toolsets_table();
+        }
 
-	/**
-	 * Module Updater
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
+        // -------------
+        return true;
+    }
 
-	public function update($current='')
-	{
-		// Remove RTE's usage of publish_form_entry_data hook, it is unused
-		if (version_compare($current, '1.0.1', '<'))
-		{
-			ee()->db->delete(
-				'extensions',
-				array(
-					'class'	=> $this->name.'_ext',
-					'hook'	=> 'publish_form_entry_data'
-				)
-			);
-		}
+    // --------------------------------------------------------------------
 
-		return TRUE;
-	}
+    /**
+     * Uninstall Rte.
+     */
+    public function uninstall()
+    {
+        parent::uninstall();
 
+        // Drop the exp_rte_configs table
+        ee()->load->dbforge();
+        ee()->dbforge->drop_table('rte_toolsets');
+
+        return true;
+    }
 }
-// END CLASS
-
-// EOF

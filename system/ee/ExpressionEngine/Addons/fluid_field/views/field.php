@@ -29,7 +29,7 @@
 
 		<?php if ( empty($is_bulk_edit)): ?>
 		<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>
-		<div class="dropdown inverted-theme">
+		<div class="dropdown">
 			<a href class="dropdown__link js-toggle-fluid-item"><?=lang('collapse')?></a>
 			<a href class="dropdown__link js-hide-all-fluid-items"><?=lang('collapse_all')?></a>
 			<a href class="dropdown__link js-show-all-fluid-items"><?=lang('expand_all')?></a>

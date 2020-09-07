@@ -852,6 +852,8 @@ $lang = array(
 
 'edit_roles' => 'Edit roles',
 
+'edit_member' => 'Edit member',
+
 'edit_members' => 'Edit members',
 
 'edit_statuses' => 'Edit statuses',
@@ -957,8 +959,6 @@ $lang = array(
 'resend_activation_email' => 'Resend Activation Email',
 
 'resend_activation_emails' => 'Resend Activation Emails',
-
-'rte_toolsets' => 'RTE toolsets',
 
 'search_roles_button' => 'Search Roles',
 

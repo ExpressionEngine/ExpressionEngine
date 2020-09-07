@@ -45,7 +45,7 @@ class Themes extends Jumps {
 					if (preg_match('/' . $keyword . '/', $theme)) {
 						$response['switchTheme' . $theme] = array(
 							'icon' => $icon,
-							'command' => $theme,
+							'command' => lang($theme),
 							'command_title' => $theme,
 							'dynamic' => true,
 							'addon' => false,
@@ -69,7 +69,7 @@ class Themes extends Jumps {
 			foreach ($this->themes as $theme => $icon) {
 				$response['switchTheme' . $theme] = array(
 					'icon' => $icon,
-					'command' => $theme,
+					'command' => lang($theme),
 					'command_title' => $theme,
 					'dynamic' => true,
 					'addon' => false,
@@ -79,43 +79,5 @@ class Themes extends Jumps {
 		}
 
 		$this->sendResponse($response);
-	}
-
-	public function directories()
-	{
-		$directories = $this->loadDirectories(ee()->input->post('searchString'));
-
-		$response = array();
-
-		foreach ($directories as $directory) {
-			$id = $directory->getId();
-
-			$response['editEntry' . $directory->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $directory->name,
-				'command_title' => $directory->name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('files/uploads/edit/' . $directory->getId())->compile()
-			);
-		}
-
-		$this->sendResponse($response);
-	}
-
-	private function loadDirectories($searchString = false)
-	{
-		$directories = ee('Model')->get('UploadDestination');
-
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
-
-			foreach ($keywords as $keyword) {
-				$directories->filter('name', 'LIKE', '%' . $keyword . '%');
-			}
-		}
-
-		return $directories->order('name', 'ASC')->limit(11)->all();
 	}
 }

@@ -3,8 +3,10 @@ name: Run PHP Tests
 on:
   push:
     branches:
-      - release/6.0.0
+      - testing/ee6-unit-testing
   pull_request:
+    branches:
+      - release/6.0.0
 
 jobs:
     php-tests:

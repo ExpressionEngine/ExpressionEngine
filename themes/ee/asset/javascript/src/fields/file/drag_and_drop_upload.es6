@@ -322,7 +322,7 @@ class DragAndDropUpload extends React.Component {
                         placeholder={EE.lang.file_dnd_filter_directories}
                         items={EE.dragAndDrop.uploadDesinations}
                         onSelect={(directory) => this.setDirectory(directory)}
-                        buttonClass="button--secondary-alt"
+                        buttonClass="button--default button--small"
                     />
                 }
             </div>
@@ -347,12 +347,12 @@ class DragAndDropUpload extends React.Component {
         {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
           <React.Fragment>
             <div className="button-segment">
-            <a href="#" className="button button--action m-link" rel="modal-file" onClick={(e) => {
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>
 
-            <a href="#" className="button button--action m-link" rel="modal-file" onClick={(e) => {
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
@@ -370,7 +370,7 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.chooseExisting(directory)}
               rel="modal-file"
               itemClass="m-link"
-              buttonClass="button--action"
+              buttonClass="button--default button--small"
             />
 
             <DropDownButton key={EE.lang.file_dnd_upload_new}
@@ -382,7 +382,7 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.uploadNew(directory)}
               rel="modal-file"
               itemClass="m-link"
-              buttonClass="button--action"
+              buttonClass="button--default button--small"
             />
           </div>
         )}
