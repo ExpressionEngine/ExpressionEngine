@@ -423,7 +423,7 @@ else: ?>
 								</button>
 								<?php endif ?>
 								<button type="button" class="button button--small button--default">
-									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
+									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></a>
 								</button>
 							</div>
 						</td>
