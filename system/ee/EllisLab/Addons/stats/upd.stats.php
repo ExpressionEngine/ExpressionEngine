@@ -13,7 +13,7 @@
  */
 class Stats_upd {
 
-	var $version	= '2.0.0';
+	var $version	= '2.1.0';
 
 	function __construct()
 	{
@@ -35,6 +35,15 @@ class Stats_upd {
 					);
 
 		ee()->db->insert('modules', $data);
+
+		// Create syncing action
+		$data = [
+			'class'			=> 'Stats',
+			'method'		=> 'sync_stats',
+			'csrf_exempt'	=> 1,
+		];
+
+		ee()->db->insert('actions', $data);
 
 		return TRUE;
 	}
@@ -76,6 +85,21 @@ class Stats_upd {
 		if (version_compare($current, '2.0', '<'))
 		{
 			ee()->dbforge->drop_column('stats', 'weblog_id');
+		}
+
+		// Add stat sync action
+		if (version_compare($current, '2.1', '<'))
+		{
+
+			// Create syncing action
+			$data = [
+				'class'			=> 'Stats',
+				'method'		=> 'sync_stats',
+				'csrf_exempt'	=> 1,
+			];
+
+			ee()->db->insert('actions', $data);
+
 		}
 
 		return TRUE;

@@ -14,6 +14,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
    - Fixed a bug (#421) where attachments were not sent from Communicate page.
 
 Bullet list below, e.g.
+   - Added config override to ignore channel stats
+   - Add stats module action to run stats
    - Fixed a bug where searching entries in CP in content only could produce SQL error.
 
 

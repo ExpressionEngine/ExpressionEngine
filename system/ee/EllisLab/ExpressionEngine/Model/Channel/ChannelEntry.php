@@ -605,6 +605,11 @@ class ChannelEntry extends ContentModel {
 
 	private function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 
