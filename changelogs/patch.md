@@ -7,6 +7,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#53) where previous month link was not clickable in Channel Form datepicker.
+   - Fixed a bug (#72) where Maximum rows limit was not respected in File Grid field.
+   - Fixed a bug (#283) where "field required" indicator was not showing a Grid column.
    - Fixed a bug (#432) where parent entries were not fetched for relationship field inside grid.
    - Fixed a bug (#450) where pagination on tables was not working correctly when performing search for html tags.
    - Fixed a bug (#[457](https://github.com/ExpressionEngine/ExpressionEngine/issues/457)) where accented characters in variables were not truncated properly
@@ -20,6 +22,11 @@ Bullet list below, e.g.
    - Fixed a bug where some member pages did not display in the forums when using the forum tag on regular templates.
    - Fixed a bug ([#419](https://github.com/ExpressionEngine/ExpressionEngine/issues/419)) where deprecated pagination code in member templates could cause a PHP error.
    - Updates additional files for PHP 7.4 compatibility.
+   - Fixed a bug where a query string could be added to URLs erroneously.
+   - Fixed a bug ([#379](https://github.com/ExpressionEngine/ExpressionEngine/issues/379)) where comment subscription emails contained an invalid unsubscribe link.
+
+   - Altered a javascript filename that mod_security tended to object to.
+   - Fixed a bug where input data were assumed to be URL encoded, causing certain character sequences to be stripped when cleaned.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

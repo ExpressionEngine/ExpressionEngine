@@ -228,6 +228,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			// Show add button if row count is below the max rows setting,
 			// and only if there are already other rows present
 			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
+			if (this.isFileGrid) {
+				this.root.closest('.js-file-grid').find('div[data-file-grid-react]').toggle(rowCount < this.settings.grid_max_rows && rowCount >= 0);
+			}
 		}
 
 		if (this.settings.grid_min_rows !== '') {
