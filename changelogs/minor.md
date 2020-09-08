@@ -5,6 +5,9 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Minor Release
 
    - Fixed a bug (#383) where Moblog wasn't functioning.
+- Fixed a bug where checking for updates might produce an error.
+- Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
+- Added support for SameSite cookies
    - Fixed a bug (#438) where JS combo loader was throwing error if extra `v` was passed into URL.
    - Fixed a bug (#91, #417) where link button was not working and formatting not displayed in RTE field on frontend.
    - Added validation for category parent (#411)
