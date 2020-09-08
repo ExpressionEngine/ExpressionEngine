@@ -5,6 +5,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Added <new feature>
+   - Fixed a bug (#53) where previous month link was not clickable in Channel Form datepicker.
    - Fixed a bug (#72) where Maximum rows limit was not respected in File Grid field.
    - Fixed a bug (#283) where "field required" indicator was not showing a Grid column.
    - Fixed a bug (#432) where parent entries were not fetched for relationship field inside grid.
