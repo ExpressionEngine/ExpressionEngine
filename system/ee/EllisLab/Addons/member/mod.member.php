@@ -180,7 +180,7 @@ class Member {
 		{
 			$this->request = '';
 		}
-		elseif (strpos($this->request, '/') !== FALSE)
+		elseif ($this->member_template && strpos($this->request, '/') !== FALSE)
 		{
 			$xr = explode("/", $this->request);
 			$this->request = str_replace(current($xr).'/', '', $this->request);

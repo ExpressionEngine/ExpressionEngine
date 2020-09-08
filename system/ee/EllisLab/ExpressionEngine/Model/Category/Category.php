@@ -70,7 +70,8 @@ class Category extends ContentModel {
 		'cat_name'			=> 'required|noHtml|xss',
 		'cat_url_title'		=> 'required|alphaDash|unique[group_id]',
 		'cat_description'	=> 'xss',
-		'cat_order'			=> 'isNaturalNoZero'
+		'cat_order'			=> 'isNaturalNoZero',
+		'parent_id'			=> 'validateParentCategory'
 	);
 
 	protected static $_events = array(
@@ -168,6 +169,26 @@ class Category extends ContentModel {
 		}
 
 		return new Collection($children);
+	}
+
+	/**
+	 * Validate parent category
+	 * cannot set parent to self, of category from other group/site
+	 */
+	public function validateParentCategory($key, $value, $params, $rule) {
+		if (!empty($this->cat_id) && !empty($value)) {
+			if ($value == $this->cat_id) {
+				return lang('category_parent_invalid');
+			}
+			$parent = $this->getModelFacade()->get('Category', $value)
+				->filter('group_id', $this->getProperty('group_id'))
+				->filter('site_id', $this->getProperty('site_id'))
+				->first();
+			if (empty($parent)) {
+				return lang('category_parent_invalid');
+			}
+		}
+		return true;
 	}
 }
 
