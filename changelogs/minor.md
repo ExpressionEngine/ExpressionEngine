@@ -4,9 +4,21 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+   - Fixed a bug (#438) where JS combo loader was throwing error if extra `v` was passed into URL.
+   - Fixed a bug (#91, #417) where link button was not working and formatting not displayed in RTE field on frontend.
+   - Added validation for category parent (#411)
+   - Fixed a bug (#428) where Grid was throwing error PHP with certain fieldtypes.
+   - Fixed a bug (#421) where attachments were not sent from Communicate page.
+
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed a bug where searching entries in CP in content only could produce SQL error.
+
+
+   - Added dabatase column type selector for textarea and RTE fields (#464)
+   - Added post-upgrade and utility check for broken template tags and missing fieldtypes
+   - Fixed a bug (#480) where there has been no notice when extensions are disabled.
+   - Fixed a bug (#499) where categories hidden from channel layout might get lost upon saving the entry.
+   - Fixed a bug where unsaved entried were not pulled in for live preview when using `status="open|closed"` parameter.
 
 
 

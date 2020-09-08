@@ -148,6 +148,7 @@ class Wizard extends CI_Controller {
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
 		define('DOC_URL', 'https://docs.expressionengine.com/v5/');
+		define('AMP', '&amp;');
 
 		// Third party constants
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
@@ -441,6 +442,20 @@ class Wizard extends CI_Controller {
 				->count_all_results('members');
 			$type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+			//Perform post-flight checks
+			if ($type == 'update') {
+				$postflight_messages = $this->postflight();
+				if (!empty($postflight_messages)) {
+					ee()->lang->loadfile('utilities');
+					foreach ($postflight_messages as $message) {
+						$vars['update_notices'][] = (object) [
+							'is_header' => false,
+							'message' => $message . '<br>' . sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile())
+						];
+					}
+				}
+			}
+
 			$this->is_installed = TRUE;
 			$this->show_success($type, $vars);
 			return FALSE;
@@ -465,6 +480,20 @@ class Wizard extends CI_Controller {
 
 		// Onward!
 		return TRUE;
+	}
+
+	/**
+	 * Post-flight Tests - guide to any further actions needed
+	 * @return Array
+	 */
+	private function postflight()
+	{
+		$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
+
+		//make sure all addons are loaded
+		ee('App')->setupAddons(PATH_THIRD);
+
+		return $advisor->postUpdateChecks();
 	}
 
 	/**
@@ -1035,7 +1064,14 @@ class Wizard extends CI_Controller {
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
 		// Try to rename automatically if there are no errors
-		if ($this->rename_installer()
+		if (!$this->rename_installer()) {
+			array_unshift($template_variables['update_notices'], (object) [
+				'is_header' => false,
+				'message' => lang('success_delete')
+			]);
+		}
+
+		if (empty($template_variables['update_notices'])
 			&& empty($template_variables['errors'])
 			&& empty($template_variables['error_messages']))
 		{
