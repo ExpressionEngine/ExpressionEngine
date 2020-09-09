@@ -16,9 +16,27 @@ namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
  */
 trait SteppableTrait {
 
+	/**
+	 * Set the steps (method names) to run through
+	 *
+	 * @param	array	$steps	Method names
+	 */
 	public function setSteps(Array $steps)
 	{
 		$this->steps = $steps;
+	}
+
+	/**
+	 * Runs an individual step
+	 */
+	public function runStep($step)
+	{
+		$this->currentStep = $step;
+		$this->nextStep = NULL;
+
+		list($step, $parameters) = $this->parseStepString($step);
+
+		call_user_func_array([$this, $step], $parameters);
 	}
 
 }

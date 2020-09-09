@@ -668,6 +668,51 @@ class Filesystem {
 	}
 
 	/**
+	 * Finds string and replaces it
+	 * @param  string $file
+	 * @param  string $search
+	 * @param  string $replace
+	 * @return void
+	 */
+	public function findAndReplace($file, $search, $replace)
+	{
+
+		if ($this->exists($file)) {
+
+		    return;
+
+		}
+
+		// If we're given a directory iterate over the files and recursively call findAndReplace()
+		if ($this->isDir($file)) {
+
+		    foreach ($this->getDirectoryContents($file) as $file) {
+
+		        $this->findAndReplace($file, $search, $replace);
+
+		    }
+
+		    return;
+
+		}
+
+		$contents = $this->read($file);
+
+		if (strpos($search, '/') === 0) {
+
+		    $contents = preg_replace($search, $replace, $contents);
+
+		} else {
+
+		    $contents = str_replace($search, $replace, $contents);
+
+		}
+
+		$this->write($file, $contents, true);
+
+	}
+
+	/**
 	 * Add EE's default index file to a directory
 	 */
 	protected function addIndexHtml($dir)

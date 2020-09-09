@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_2_4_0;
+
 /**
  * Update
  */
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_update_watermarks_table',
 				'_update_file_dimensions_table',
