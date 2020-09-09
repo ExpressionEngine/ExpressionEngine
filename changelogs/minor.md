@@ -4,6 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+- Added relationship_entries_tagdata hook, which is functionally identical to the channel_entries_tagdata hook 
    - Fixed a bug (#383) where Moblog wasn't functioning.
 - Fixed a bug where checking for updates might produce an error.
 - Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
