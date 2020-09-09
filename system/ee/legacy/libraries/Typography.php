@@ -2599,11 +2599,11 @@ while (--j >= 0)
 		{
 			if (is_php('7.2'))
 			{
-				$parts['host'] = idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
+				$parts['host'] = @idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
 			}
 			else
 			{
-				$parts['host'] = idn_to_ascii($parts['host']);
+				$parts['host'] = @idn_to_ascii($parts['host']);
 			}
 		}
 
