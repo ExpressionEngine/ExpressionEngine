@@ -25,10 +25,19 @@ module.exports = (on, config) => {
     const Filesystem = require('./filesystem.js');
     const fs = new Filesystem;
 
+    const Installer = require('./installer.js');
+    const installer = new Installer;
+
     const baseUrl = config.env.CYPRESS_BASE_URL || null;
     if (baseUrl) {
         config.baseUrl = baseUrl;
     }
+
+    on('task', {
+        'db:clear': () => {
+            return db.truncate()
+        }
+    })
 
     on('task', {
         'db:seed': () => {
@@ -91,6 +100,18 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'filesystem:read': (file) => {
+            return fs.read(file);
+        }
+    })
+
+    on('task', {
+        'filesystem:rename': ({from, to}) => {
+            return fs.rename(from, to);
+        }
+    })
+
+    on('task', {
         'ee:config': ({ item, value, site_id }) => {
             if (!item) {
                 return;
@@ -120,6 +141,50 @@ module.exports = (on, config) => {
             return db.seed('channel_sets/relationships-specified-channels.sql')
         }
     })
+
+    on('task', {
+        'installer:enable': () => {
+            return installer.enable_installer()
+        }
+    })
+
+    on('task', {
+        'installer:disable': () => {
+            return installer.disable_installer()
+        }
+    })
+
+    on('task', {
+        'installer:create_config': () => {
+            return installer.create_config()
+        }
+    })
+
+    on('task', {
+        'installer:replace_config': () => {
+            return installer.replace_config()
+        }
+    })
+
+    on('task', {
+        'installer:revert_config': () => {
+            return installer.revert_config()
+        }
+    })
+
+    on('task', {
+        'installer:backup_templates': () => {
+            return installer.backup_templates()
+        }
+    })
+
+    on('task', {
+        'installer:restore_templates': () => {
+            return installer.restore_templates()
+        }
+    })
+
+
 
     on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' && browser.isHeadless) {

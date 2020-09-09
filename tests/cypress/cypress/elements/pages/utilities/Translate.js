@@ -8,9 +8,9 @@ class Translate extends ControlPanel {
     this.elements({
       'languages': 'div.sidebar ul:nth-child(4) li',
 
-      'heading': 'div.w-12 form h1',
+      'heading': '.ee-main .title-bar .title-bar__title',
 
-      'phrase_search': 'form fieldset.tbl-search input[type!=hidden][name=search]',
+      'phrase_search': 'form .search-input input[type!=hidden][name=search]',
       'search_submit_button': 'form fieldset.tbl-search input.submit',
 
       'table': 'form table',
@@ -22,6 +22,7 @@ class Translate extends ControlPanel {
   load() {
     this.open_dev_menu()
     cy.get('body > .dropdown').find('a:contains("Utilities")').click()
+    this.get('wrap').find('a:contains("CP Translation")').click()
     this.get('wrap').find('a:contains("English")').click()
   }
 
