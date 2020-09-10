@@ -625,19 +625,22 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 */
 	protected function hookShouldTrigger($hook)
 	{
-
 		$process = true;
-
-		if($hook == 'after_channel_entry_save') {
-			
-			if($this->_has_saved) $process = false;
-
-			$this->_has_saved = true;
-			
+		switch ($hook) {
+			case 'before_channel_entry_delete':
+				$process = false;
+				break;
+			case 'after_channel_entry_save':
+				if($this->_has_saved) {
+					$process = false;
+				}
+				$this->_has_saved = true;
+				break;
+			default:
+				$process = true;
+				break;
 		}
-
 		return $process;
-
 	}
 
 	/**

@@ -28,6 +28,9 @@ Bullet list below, e.g.
 
    - Altered a javascript filename that mod_security tended to object to.
    - Fixed a bug where input data were assumed to be URL encoded, causing certain character sequences to be stripped when cleaned.
+   - Implemented different approach to trigger `before_channel_entry_delete` extension hook. Fixes a bug ([#487](https://github.com/ExpressionEngine/ExpressionEngine/issues/487)) where custom fields data were not available for extensions when deleting entry.
+
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
