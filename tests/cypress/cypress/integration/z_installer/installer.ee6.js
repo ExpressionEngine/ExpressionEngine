@@ -13,13 +13,24 @@ const install_success = new Success
 
 context('Installer', () => {
   before(function() {
-    cy.task('installer:enable')
+
   })
 
   beforeEach(function(){
     // Delete existing config and create a new one
     cy.task('db:clear')
+    cy.task('installer:enable')
     cy.task('installer:create_config')
+
+    let installer_folder = '../../system/ee/installer';
+    cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+      for (const item in files) {
+        if (files[item].indexOf('system/ee/installer') >= 0) {
+          installer_folder = files[item];
+          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+        }
+      }
+    })
 
     page.load()
     cy.hasNoErrors()
@@ -29,6 +40,24 @@ context('Installer', () => {
     cy.task('installer:disable')
     //cy.task('installer:revert_config')
   })
+
+  function install_complete() {
+    page.get('header').invoke('text').then((text) => {
+      expect(text).to.be.oneOf([ "Install Complete!", "Log In", "Log into Default Site" ])
+      if (text == "Install Complete!") {
+        install_success.get('updater_msg').contains("ExpressionEngine has been installed")
+        for (const el in install_success.all_there) {
+          cy.get(install_success.all_there[el]).should('exist')
+        }
+      } else {
+        cy.contains('Username');
+        cy.contains('Password');
+        cy.contains('Remind me');
+
+        cy.get('input[type=submit]').should('not.be.disabled');
+      }
+    })
+  }
 
   it('loads', () => {
     page.get('inline_errors').should('not.exist')
@@ -53,11 +82,7 @@ context('Installer', () => {
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()
-      page.get('header').invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!') })
-      install_success.get('updater_msg').contains("ExpressionEngine has been installed")
-      for (const el in install_success.all_there) {
-        cy.get(install_success.all_there[el]).should('exist')
-      }
+      install_complete();
     })
 
     it('installs successfully using localhost as the database host', () => {
@@ -75,11 +100,7 @@ context('Installer', () => {
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()
-      page.get('header').invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!') })
-      install_success.get('updater_msg').contains("ExpressionEngine has been installed")
-      for (const el in install_success.all_there) {
-        cy.get(install_success.all_there[el]).should('exist')
-      }
+      install_complete();
     })
 
     it('installs successfully with the default theme', () => {
@@ -101,11 +122,7 @@ context('Installer', () => {
         install_form.get('install_submit').click()
 
         cy.hasNoErrors()
-        page.get('header').invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!') })
-        install_success.get('updater_msg').contains("ExpressionEngine has been installed")
-        for (const el in install_success.all_there) {
-          cy.get(install_success.all_there[el]).should('exist')
-        }
+        install_complete();
 
         cy.task('installer:restore_templates')
       })
@@ -126,11 +143,7 @@ context('Installer', () => {
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()
-      page.get('header').invoke('text').then((text) => { expect(text).to.be.equal('Install Complete!') })
-      install_success.get('updater_msg').contains("ExpressionEngine has been installed")
-      for (const el in install_success.all_there) {
-        cy.get(install_success.all_there[el]).should('exist')
-      }
+      install_complete();
 
       let installed_modules = []
       cy.task('db:query', 'SELECT module_name FROM exp_modules').then((result) => {
@@ -149,7 +162,7 @@ context('Installer', () => {
       })
     })
 
-    it.only('uses {base_url} and {base_path}', () => {
+    it('uses {base_url} and {base_path}', () => {
       install_form.get('db_hostname').clear().type('127.0.0.1')
       install_form.get('db_name').clear().type(Cypress.env("DB_DATABASE"))
       install_form.get('db_username').clear().type(Cypress.env("DB_USER"))
@@ -164,43 +177,56 @@ context('Installer', () => {
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()
+      install_complete();
       cy.task('installer:disable').then(()=>{
 
-      //   print @env
-      //   print File.read(@env)
-      cy.task('filesystem:rename', {from: '../../system/ee/installer', to: '../../system/ee/installer_old'}).then(() => {
+        //   print @env
+        //   print File.read(@env)
+        let installer_folder = '../../system/ee/installer';
+        cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+          for (const item in files) {
+            if (files[item].indexOf('system/ee/installer') >= 0) {
+              installer_folder = files[item];
+              cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer_old'}).then(() => {
 
-        //   print @config
-        //   print File.read(@config)
-          install_success.get('login_button').click()
-          cy.auth();
+                //   print @config
+                //   print File.read(@config)
+                cy.get('body').then(($body) => {
+                  if ($body.find('p.msg-choices a').length) {
+                    install_success.get('login_button').click()
+                  }
+                  cy.login();
 
-          let settings = new UrlsSettings
-          settings.load()
+                  let settings = new UrlsSettings
+                  settings.load()
 
-          settings.get('base_url').invoke('val').then((val) => { expect(val).to.be.equal(Cypress.config().baseUrl) })
-          settings.get('base_path').invoke('val').then((val) => { expect(val).to.not.be.equal('') })
-          settings.get('site_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
-          settings.get('cp_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
-          settings.get('theme_folder_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
-          settings.get('theme_folder_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
+                  settings.get('base_url').invoke('val').then((val) => { expect(val).to.contain(Cypress.config().baseUrl) })
+                  settings.get('base_path').invoke('val').then((val) => { expect(val).to.not.be.equal('') })
+                  settings.get('site_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
+                  settings.get('cp_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
+                  settings.get('theme_folder_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
+                  settings.get('theme_folder_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
 
-          settings = new MessagingSettings
-          settings.load()
+                  settings = new MessagingSettings
+                  settings.load()
 
-          settings.get('prv_msg_upload_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
-          settings.get('prv_msg_upload_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
+                  settings.get('prv_msg_upload_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
+                  settings.get('prv_msg_upload_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
 
-          settings = new CaptchaSettings
-          settings.load()
+                  settings = new CaptchaSettings
+                  settings.load()
 
-          settings.get('captcha_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
-          settings.get('captcha_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
+                  settings.get('captcha_url').invoke('val').then((val) => { expect(val).to.include('{base_url}') })
+                  settings.get('captcha_path').invoke('val').then((val) => { expect(val).to.include('{base_path}') })
 
-          cy.task('filesystem:rename', {from: '../../system/ee/installer_old', to: '../../system/ee/installer'}).then(() => {
-            cy.task('installer:enable');
-          })
+                  cy.task('filesystem:rename', {from: '../../system/ee/installer_old', to: '../../system/ee/installer'})
+                })
+
+              })
+            }
+          }
         })
+
       })
     })
 

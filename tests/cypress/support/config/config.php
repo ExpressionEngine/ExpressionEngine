@@ -18,13 +18,14 @@ if (function_exists('opcache_reset'))
     opcache_reset();
 }
 
-$config['site_url'] = 'http://ee2.test:8080/';
+$config['base_url'] = 'http://localhost:8888/';
+$config['site_url'] = $config['base_url'];
 $config['app_version'] = '6.0.0';
 $config['license_contact'] = 'ellislab.developers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://ee2.test:8080/system/index.php';
-$config['theme_folder_url'] = 'http://ee2.test:8080/themes/';
+$config['cp_url'] = 'http://localhost:8888/system/index.php';
+$config['theme_folder_url'] = 'http://localhost:8888/themes/';
 $config['theme_folder_path'] = '/home/ubuntu/ExpressionEngine/themes/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';

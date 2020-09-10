@@ -22,6 +22,14 @@ module.exports = (on, config) => {
         database: config.env.DB_DATABASE
     });
 
+    const db_defaults = {
+        database: config.env.DB_DATABASE,
+        dbdriver: 'mysqli',
+        hostname: config.env.DB_HOST,
+        password: config.env.DB_PASSWORD,
+        username: config.env.DB_USER
+    }
+
     const Filesystem = require('./filesystem.js');
     const fs = new Filesystem;
 
@@ -100,6 +108,12 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'filesystem:exists': (file) => {
+            return fs.exists(file);
+        }
+    })
+
+    on('task', {
         'filesystem:read': (file) => {
             return fs.read(file);
         }
@@ -161,14 +175,34 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'installer:replace_config': () => {
-            return installer.replace_config()
+        'installer:replace_config': ({file, options}) => {
+            installer.replace_config(file, options)
+            installer.set_base_url(config.baseUrl)
+            return true;
         }
     })
 
     on('task', {
         'installer:revert_config': () => {
             return installer.revert_config()
+        }
+    })
+
+    on('task', {
+        'installer:replace_database_config': ({file, options}) => {
+            return installer.replace_database_config(file, options, db_defaults)
+        }
+    })
+
+    on('task', {
+        'installer:revert_database_config': () => {
+            return installer.revert_database_config()
+        }
+    })
+
+    on('task', {
+        'installer:delete_database_config': () => {
+            return installer.delete_database_config()
         }
     })
 
@@ -181,6 +215,12 @@ module.exports = (on, config) => {
     on('task', {
         'installer:restore_templates': () => {
             return installer.restore_templates()
+        }
+    })
+
+    on('task', {
+        'installer:version': () => {
+            return installer.version()
         }
     })
 

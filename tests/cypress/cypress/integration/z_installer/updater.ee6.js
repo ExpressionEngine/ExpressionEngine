@@ -1,71 +1,94 @@
-require './bootstrap.rb'
+/// <reference types="Cypress" />
+
+import Updater from '../../elements/pages/installer/Updater';
+import Form from '../../elements/pages/installer/_install_form';
+import Success from '../../elements/pages/installer/_install_success';
+
+const page = new Updater
+
+const database = 'support/config/database-2.10.1.php'
+const config = 'support/config/config-2.10.1.php'
 
 // Note: Tests need `page.load()` to be called manually since we're manipulating
 // files before testing the upgrade. Please do not add `page.load()` to any of the
 // `before` calls.
 
 context('Updater', () => {
-  before :all do
-    @installer = Installer::Prepare.new
-    @installer.enable_installer
-
-    @database = File.expand_path('../circleci/database-2.10.1.php')
-    @config = File.expand_path('../circleci/config-2.10.1.php')
-  }
 
   beforeEach(function(){
-    @installer.replace_config(@config)
-    @installer.replace_database_config(@database)
 
-    @version = '2.20.0'
-    @installer.version = @version
+    cy.task('db:clear')
+    cy.task('db:load', '../../support/sql/database_2.10.1.sql')
 
-    page = Installer::Updater.new
+    cy.task('installer:enable')
+    cy.task('installer:replace_config', {file: config})
+    cy.task('installer:replace_database_config', {file: database})
+
+    let installer_folder = '../../system/ee/installer';
+    cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+      for (const item in files) {
+        if (files[item].indexOf('system/ee/installer') >= 0) {
+          installer_folder = files[item];
+          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+        }
+      }
+    })
+
+    //@version = '2.20.0'
+    //@installer.version = @version
+
     cy.hasNoErrors()
-  }
+  })
 
-  after :each do
-    @installer.revert_config
-    @installer.revert_database_config
-    @installer.backup_templates
-  }
+  afterEach(function(){
+    cy.task('installer:revert_config')
+    cy.task('installer:revert_database_config')
+    cy.task('installer:backup_templates')
+  })
 
-  after :all do
-    @installer.restore_templates
-    @installer.disable_installer
-    @installer.delete_database_config
-  }
+  after(function(){
+    cy.task('installer:restore_templates')
+    cy.task('installer:disable')
+    cy.task('installer:delete_database_config')
+  })
 
   it('appears when using a database.php file', () => {
     page.load()
-    page.should have(0).inline_errors
-    page.header.text.should match /ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-  }
+    page.get('inline_errors').should('not.exist')
+    page.get('header').invoke('text').then((text) => {
+      expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
+    })
+  })
 
   it('shows an error when no database information exists at all', () => {
-    @installer.delete_database_config
-    page.load()
-    page.header.text.should == 'Install Failed'
-    page.error.contains('Unable to locate any database connection information.'
-  }
+    cy.task('installer:delete_database_config').then(()=>{
+      page.load()
+      page.get('header').invoke('text').then((text) => {
+        expect(text).to.eq('Install Failed')
+      })
+      page.get('error').contains('Unable to locate any database connection information.')
+    })
+  })
 
   context('when updating from 2.x to 3.x', () => {
-    it('updates using mysql as the dbdriver', () => {
-      @installer.replace_database_config(@database, dbdriver: 'mysql')
-      test_update
-      test_templates
-    }
-
+    it.only('updates using mysql as the dbdriver', () => {
+      cy.task('installer:replace_database_config', {file: database, options: {dbdriver: 'mysql'}}).then(() => {
+        test_update()
+        test_templates()
+      })
+    })
+  })
+/*
     it('updates using localhost as the database host', () => {
       @installer.replace_database_config(@database, hostname: 'localhost')
-      test_update
-      test_templates
+      test_update()
+      test_templates()
     }
 
     it('updates using 127.0.0.1 as the database host', () => {
       @installer.replace_database_config(@database, hostname: '127.0.0.1')
-      test_update
-      test_templates
+      test_update()
+      test_templates()
     }
 
     it('updates with the old tmpl_file_basepath', () => {
@@ -75,8 +98,8 @@ context('Updater', () => {
         tmpl_file_basepath: '../system/expressionengine/templates',
         app_version: '2.20.0'
       )
-      test_update
-      test_templates
+      test_update()
+      test_templates()
     }
 
     it('updates with invalid tmpl_file_basepath', () => {
@@ -86,8 +109,8 @@ context('Updater', () => {
         tmpl_file_basepath: '../system/not/a/directory/templates',
         app_version: '2.20.0'
       )
-      test_update
-      test_templates
+      test_update()
+      test_templates()
     }
 
     it('updates using new template basepath', () => {
@@ -97,13 +120,13 @@ context('Updater', () => {
         tmpl_file_basepath: '../system/user/templates',
         app_version: '2.20.0'
       )
-      test_update
-      test_templates
+      test_update()
+      test_templates()
     }
 
     it('has all required modules installed after the update', () => {
-      test_update
-      test_templates
+      test_update()
+      test_templates()
 
       installed_modules = []
       $db.query('SELECT module_name FROM exp_modules').each do |row|
@@ -127,7 +150,7 @@ context('Updater', () => {
       clear_db_result
     }
 
-    test_update(true)
+    test_update()(true)
   }
 
   it('updates successfully when updating from 2.1.3 to 3.x', () => {
@@ -146,7 +169,7 @@ context('Updater', () => {
       clear_db_result
     }
 
-    test_update
+    test_update()
   }
 
   it('updates a core installation successfully and installs the member module', () => {
@@ -167,91 +190,119 @@ context('Updater', () => {
       clear_db_result
     }
 
-    test_update
+    test_update()
 
     $db.query('SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').each do |row|
       row['count'].should == 1
     }
   }
-
-  def test_update(mailinglist = false)
+*/
+  function test_update(mailinglist = false) {
     // Delete any stored mailing lists
-    mailing_list_zip = File.expand_path(
-      '../../system/user/cache/mailing_list.zip'
-    )
-    File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
+    const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
+    cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
-    // Attempt to work around potential asynchronicity
-    cy.wait(1000)
-    page.load()
-
-    // Wait a second and try loading the page again in case we're not seeing the
-    // correct page
-    attempts = 0
-    header_step_1 = /ExpressionEngine to \d+\.\d+\.\d+/
-    while page.header.text.match(header_step_1) == false && attempts < 5
-      cy.wait(1000)
       page.load()
-      attempts += 1
-    }
 
-    page.should have(0).inline_errors
-    page.header.text.should match /ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-    page.submit.click()
-    cy.hasNoErrors()
+      // Wait a second and try loading the page again in case we're not seeing the
+      // correct page
+      /*let header_step_1 = /ExpressionEngine to \d+\.\d+\.\d+/
+      page.get('header').invoke('text').then((text) => {
+        expect(text).to.match(header_step_1)
+      })*/
 
-    page.header.text.should match /ExpressionEngine to \d+\.\d+\.\d+/
-    page.updater_steps.contains('Running'
+      page.get('inline_errors').should('not.exist')
+      page.get('header').invoke('text').then((text) => {
+        expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
+      })
 
-    // Sleep until ready
-    while (page.has_updater_steps? && (page.updater_steps.text.include? 'Running'))
+      page.get('submit').click()
       cy.hasNoErrors()
-      cy.wait(1000)
-    }
 
-    page.header.text.should == 'Update Complete!'
+      page.get('header').invoke('text').then((text) => {
+        expect(text).to.match(/ExpressionEngine to \d+\.\d+\.\d+/)
+      })
+      page.get('updater_steps').contains('Running')
 
-    page.has_success_actions?.should == true
-    page.success_actions[0].text.should == 'Log In'
+      cy.hasNoErrors()
 
-    if mailinglist == false
-      page.should have(1).success_actions
-    else
-      page.should have(2).success_actions
-      page.success_actions[1].text.should == 'Download Mailing List'
-      File.exist?(mailing_list_zip).should == true
-    }
+      cy.get('h1:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
 
-    test_version
+      cy.hasNoErrors()
+
+      page.get('header').invoke('text').then((text) => {
+        if (text == "Update Complete!") {
+          page.get('success_actions').should('exist')
+          page.get('success_actions').first().invoke('text').then((text) => {
+            expect(text).to.eq('Log In')
+          })
+        } else {
+          cy.contains('Username');
+          cy.contains('Password');
+          cy.contains('Remind me');
+
+          cy.get('input[type=submit]').should('not.be.disabled');
+        }
+      })
+
+      if (mailinglist == false) {
+        //page.get('success_actions').its('length').should('eq', 1)
+      } else {
+        page.get('success_actions').its('length').should('eq', 2)
+        page.get('success_actions').last().invoke('text').then((text) => {
+          expect(text).to.eq('Download Mailing List')
+        })
+        cy.task('filesystem:exists', mailing_list_zip).then((exists) => {
+          expect(exists).to.eq(true)
+        })
+      }
+
+      let installer_folder = '../../system/ee/installer';
+      cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+        for (const item in files) {
+          if (files[item].indexOf('system/ee/installer') >= 0) {
+            installer_folder = files[item];
+            cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          }
+        }
+      })
+
+      test_version()
+    })
   }
 
-  def test_version
-    File.open(File.expand_path('../../system/user/config/config.php'), 'r') do |file|
-      config_version = file.read.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
-
-      File.open(File.expand_path('../../system/ee/installer/controllers/wizard.php'), 'r') do |file|
-        wizard_version = file.read.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
+  function test_version() {
+    cy.task('filesystem:read', '../../system/user/config/config.php').then((config) => {
+      let config_version = config.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
+      cy.task('filesystem:read', '../../system/ee/installer/controllers/wizard.php').then((wizard) => {
+        let wizard_version = wizard.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
 
         // @TODO UD files don't account for -dp.#, so just compare the first three segs
-        conf = config_version.split(/[\.\-]/)
-        wiz = wizard_version.split(/[\.\-]/)
+        let conf = config_version.split(/[\.\-]/)
+        let wiz = wizard_version.split(/[\.\-]/)
 
-        conf[0].should == wiz[0]
-        conf[1].should == wiz[1]
-        conf[2].should == wiz[2]
-      }
-    }
+        expect(conf[0]).to.eq(wiz[0])
+        expect(conf[1]).to.eq(wiz[1])
+        expect(conf[2]).to.eq(wiz[2])
+      })
+    })
   }
 
-  def test_templates
-    File.exist?('../../system/user/templates/default_site/').should == true
+  function test_templates() {
+    cy.task('filesystem:exists', '../../system/user/templates/default_site/').then((exists) => {
+      expect(exists).to.eq(true)
+    })
 
     // Ensure none of the templates say anything about Directory access being
     // forbidden
-    Dir.glob('../../system/user/templates/default_site/**/*.html') do |filename|
-      File.open(filename, 'r') do |file|
-        file.each { |l| l.should_not include 'Directory access is forbidden.' }
+    cy.task('filesystem:list', {target: '../../system/user/templates/default_site/', mask: '**/*.html'}).then((files) => {
+      for (const key in files) {
+        cy.log(files[key]);
+        cy.task('filesystem:read', files[key]).then((file) => {
+          expect(file).to.not.include('Directory access is forbidden.')
+        })
       }
-    }
+    })
   }
-}
+
+})

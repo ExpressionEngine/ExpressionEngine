@@ -10,12 +10,15 @@
 |
 */
 
+$config['base_url'] = 'http://localhost:8888/';
+$config['site_url'] = $config['base_url'];
+
 $config['app_version'] = '213';
 $config['install_lock'] = "";
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '1';
 $config['cp_url'] = '/admin.php';
-$config['theme_folder_url'] = 'http://localhost/themes/';
+$config['theme_folder_url'] = 'http://localhost:8888/themes/';
 $config['doc_url'] = 'http://expressionengine.com/user_guide/';
 $config['is_system_on'] = 'y';
 $config['site_label'] = 'ExpressionEngine 2.1.3';

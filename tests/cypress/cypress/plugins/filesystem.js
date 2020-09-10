@@ -55,6 +55,10 @@ class Filesystem {
         return fs.statSync(file);
     }
 
+    exists(file) {
+        return fs.existsSync(file);
+    }
+
     read(file) {
         return fs.readFileSync(path.resolve(file), "utf8");
     }

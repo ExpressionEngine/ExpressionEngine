@@ -3,7 +3,6 @@ const fse = require('fs-extra');
 const glob = require("glob")
 const del = require('del');
 const path = require('path');
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 
 const system             = '../../system/';
 const env               = system + '../.env.php'
@@ -26,6 +25,17 @@ class Installer {
 		dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
 		fs.writeFileSync(path.resolve(env), dotenv)
 		return true
+	}
+
+	set_base_url(baseUrl) {
+		let config_contents = fs.readFileSync(path.resolve(config), "utf8");
+		config_contents = config_contents.replace(
+			new RegExp('http://localhost:8888/', 'g'),
+			baseUrl
+		)
+		fs.writeFileSync(path.resolve(config), config_contents);
+
+		return true;
 	}
 
 	// Replace the current config file with another, while backing up the
@@ -69,8 +79,8 @@ class Installer {
 			config_contents = fs.readFileSync(path.resolve(config), "utf8");
 			for (const property in options.database) {
 				config_contents = config_contents.replace(
-					/'#{property}' => .*?,/,
-					"'#{property}' => '#{config_contents[property]}',"
+					/'${property}' => .*?,/,
+					"'${property}' => '${config_contents[property]}',"
 				)
 			}
 		}
@@ -78,8 +88,8 @@ class Installer {
 		for (const property in options) {
 			if (property != 'database' && property != 'app_version') {
 				config_contents = config_contents.replace(
-					/\$config\['#{property}'\]\s+=\s+.*?;/,
-					"$config['#{property}'] = '#{config_contents[property]}';"
+					/\$config\['${property}'\]\s+=\s+.*?;/,
+					"$config['${property}'] = '${config_contents[property]}';"
 				)
 			}
 		}
@@ -116,60 +126,71 @@ class Installer {
 		}
 		return true
 	}
-/*
-# Replaces current database config with file of your choice
-#
-# @param [String] file Path to file you want, ideally use File.expand_path
-# @param [Hash] options Hash of options for replacing
-# @return [void]
-def replace_database_config(file, options = {})
-  File.rename(@database, @database + '.tmp') if File.exist?(@database)
-  FileUtils.cp(file, @database) if File.exist?(file)
-  FileUtils.chmod(666, @database) if File.exist?(@database)
 
-  # Replace important values
-  return unless File.exist?(file)
+	// Replaces current database config with file of your choice
+	//
+	// @param [String] file Path to file you want, ideally use File.expand_path
+	// @param [Hash] options Hash of options for replacing
+	// @return [void]
+	replace_database_config(file, options = {}, defaults = {}) {
 
-  defaults = {
-    database: $test_config[:db_name],
-    dbdriver: 'mysqli',
-    hostname: $test_config[:db_host],
-    password: $test_config[:db_password],
-    username: $test_config[:db_username]
-  }
+		if (fs.existsSync(database)) {
+			fs.renameSync(database, database + '.tmp')
+		}
+		if (fs.existsSync(file)) {
+			fse.copySync(path.resolve(file), path.resolve(database));
+		}
+		if (fs.existsSync(database)) {
+			fs.chmodSync(database, 666);
+		}
 
-  defaults.merge(options).each do |key, value|
-    swap(
-      @database,
-      /\['#{key}'\] = '.*?';/,
-      "['#{key}'] = '#{value}';"
-    )
-  end
-end
+		// Replace important values
+		if (!fs.existsSync(file)) {
+			return true;
+		}
 
-# Revert current database config to previous (database.php.tmp)
-#
-# @return [void]
-def revert_database_config
-  database_temp = @database + '.tmp'
-  return unless File.exist?(database_temp)
+		let db_config_contents = fs.readFileSync(path.resolve(database), "utf8");
 
-  File.delete(@database) if File.exist?(@database)
-  File.rename(database_temp, @database)
-end
+		const set_options = Object.assign(defaults, options);
+		for (const key in set_options) {
+			db_config_contents = db_config_contents.replace(
+				new RegExp("'" + key + "'] = '(.*)';", "g"),
+				"'" + key + "'] = '" + set_options[key] + "';"
+			)
+		}
 
-# Set the version in the config file to something else
-#
-# @param [Number] version The semver verison number you want to use
-# @return [void]
-def version=(version)
-  swap(
-    @config,
-    /\$config\['app_version'\] = '.*?';/i,
-    "$config['app_version'] = '#{version}';"
-  )
-end
-*/
+		fs.writeFileSync(path.resolve(database), db_config_contents);
+
+		return db_config_contents;
+	}
+
+	// Revert current database config to previous (database.php.tmp)
+	//
+	// @return [void]
+	revert_database_config() {
+		const database_temp = database + '.tmp'
+		if (fs.existsSync(database_temp)) {
+			if (fs.existsSync(database)) {
+				fs.unlinkSync(path.resolve(database))
+			}
+			fs.renameSync(database_temp, database)
+		}
+		return true;
+	}
+
+	// Set the version in the config file to something else
+	//
+	// @param [Number] version The semver verison number you want to use
+	// @return [void]
+	version(version) {
+		let config_contents = fs.readFileSync(path.resolve(config), "utf8");
+		config_contents = config_contents.replace(
+			/\$config\['app_version'\] = '(.*)?';/i,
+			"$config['app_version'] = '${version}';"
+		)
+		fs.writeFileSync(path.resolve(config), config_contents);
+	}
+
 	// Backup any templates for restoration later
 	//
 	// @return [void]

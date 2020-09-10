@@ -11,26 +11,23 @@
 |
 */
 
-$config['app_version'] = '3.0.5';
-$config['debug'] = '1';
-$config['cp_url'] = 'http://localhost/system/index.php';
-$config['theme_folder_url'] = 'http://localhost/themes/';
+$config['base_url'] = 'http://localhost:8888/';
+$config['site_url'] = $config['base_url'];
+
+$config['app_version'] = '2.20.0';
+$config['license_contact'] = 'team@ellislab.com';
+$config['license_number'] = '1123-5813-2134-5589';
+$config['debug'] = '2';
+$config['cp_url'] = '/admin.php';
+$config['theme_folder_url'] = 'http://localhost:8888/themes/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cache_driver'] = 'file';
-$config['database'] = array(
-	'expressionengine' => array(
-		'hostname' => 'localhost',
-		'database' => 'circle_test',
-		'username' => 'ubuntu',
-		'password' => '',
-	),
-);
-$config['db_port'] = '';
-$config['site_label'] = '';
 $config['cookie_prefix'] = '';
 $config['cookie_httponly'] = 'y';
+$config['cp_session_type'] = 'c';
+$config['website_session_type'] = 'c';
 
 
 // END EE config items
@@ -110,6 +107,17 @@ $config['log_threshold'] = 0;
 */
 $config['log_date_format'] = 'Y-m-d H:i:s';
 
+/*
+|--------------------------------------------------------------------------
+| Cache Directory Path
+|--------------------------------------------------------------------------
+|
+| Leave this BLANK unless you would like to set something other than the
+| default system/expressionengine/cache/ directory. Use a full server path
+| with trailing slash.
+|
+*/
+$config['cache_path'] = '';
 
 /*
 |--------------------------------------------------------------------------
