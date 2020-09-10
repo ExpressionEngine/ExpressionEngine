@@ -388,11 +388,25 @@ class JumpMenu extends AbstractJumpMenu
             //settings
             'systemSettingsGeneral' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings general_settings site_name site_short_name site_online version_autocheck enable_msm show_ee_news language date_time_settings',
+                'command' => 'system_settings general_settings site_online version_autocheck enable_msm show_ee_news language date_time_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/general',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    'fieldset-site_name' => array(
+                        'trail' => [
+                            'settings',
+                            'general_settings'
+                        ],
+                        'command' => 'site site_name',
+                        'command_title' => 'site_name'
+                    ),
+                    'fieldset-site_short_name' => array(
+                        'trail' => 'settings',
+                        'command' => 'site_short_name'
+                    )
+                )
             ),
             'systemSettingsUrls' => array(
                 'icon' => 'fa-wrench',
@@ -724,8 +738,6 @@ class JumpMenu extends AbstractJumpMenu
     {
         ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
 
-        $items = self::$items;
-
         //load language for all the jumps
         ee()->lang->load('settings');
         ee()->lang->load('addons');
@@ -738,6 +750,36 @@ class JumpMenu extends AbstractJumpMenu
         ee()->lang->load('design');
         ee()->lang->load('utilities');
         ee()->lang->load('logs');
+
+        $items = self::$items;
+
+        //take out anchors and make them separate items
+        foreach ($items[1] as $key => $item) {
+            if (isset($item['anchors'])) {
+                foreach ($item['anchors'] as $achor_key => $anchor) {
+                    $trail = '';
+                    if (isset($anchor['trail'])) {
+                        if (is_array($anchor['trail'])) {
+                            foreach ($anchor['trail'] as $tail) {
+                                $trail .= lang($tail) . ' &raquo; ';
+                            }
+                        } else {
+                            $trail = lang($anchor['trail']) . ' &raquo; ';
+                        }
+                    }
+                    $items[1][$key . '_' . $achor_key] = array(
+                        'icon' => $item['icon'],
+                        'command' => $anchor['command'],
+                        'command_title' => $trail . (isset($anchor['command_title']) ? lang($anchor['command_title']) : lang($anchor['command'])),
+                        'dynamic' => isset($item['dynamic']) ? $item['dynamic'] : false,
+                        'addon' => isset($item['addon']) ? $item['addon'] : false,
+                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $achor_key,
+                        'permission' => isset($item['permission']) ? $item['permission'] : null
+                    );
+                }
+                unset($items[1][$key]['acnchors']);
+            }
+        }
 
         //logs have dynamically build titles
 
