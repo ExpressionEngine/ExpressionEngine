@@ -8,6 +8,7 @@ const page = new Updater
 
 const database = 'support/config/database-2.10.1.php'
 const config = 'support/config/config-2.10.1.php'
+let from_version = '2.10.1';
 
 // Note: Tests need `page.load()` to be called manually since we're manipulating
 // files before testing the upgrade. Please do not add `page.load()` to any of the
@@ -35,7 +36,7 @@ context('Updater', () => {
     })
 
     //@version = '2.20.0'
-    //@installer.version = @version
+    //cy.task('installer:version = @version
 
     cy.hasNoErrors()
   })
@@ -70,135 +71,149 @@ context('Updater', () => {
     })
   })
 
-  context('when updating from 2.x to 3.x', () => {
-    it.only('updates using mysql as the dbdriver', () => {
+  context('when updating from 2.x to 6.x', () => {
+    it('updates using mysql as the dbdriver', () => {
       cy.task('installer:replace_database_config', {file: database, options: {dbdriver: 'mysql'}}).then(() => {
         test_update()
         test_templates()
       })
     })
-  })
-/*
+
+
     it('updates using localhost as the database host', () => {
-      @installer.replace_database_config(@database, hostname: 'localhost')
-      test_update()
-      test_templates()
-    }
+      cy.task('installer:replace_database_config', {file: database, options: {hostname: 'localhost'}}).then(()=>{
+        test_update()
+        test_templates()
+      })
+    })
 
     it('updates using 127.0.0.1 as the database host', () => {
-      @installer.replace_database_config(@database, hostname: '127.0.0.1')
-      test_update()
-      test_templates()
-    }
+      cy.task('installer:replace_database_config', {file: database, options: {hostname: '127.0.0.1'}}).then(()=>{
+        test_update()
+        test_templates()
+      })
+    })
 
     it('updates with the old tmpl_file_basepath', () => {
-      @installer.revert_config
-      @installer.replace_config(
-        @config,
-        tmpl_file_basepath: '../system/expressionengine/templates',
-        app_version: '2.20.0'
-      )
-      test_update()
-      test_templates()
-    }
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config, options: {
+            tmpl_file_basepath: '../system/expressionengine/templates',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_update()
+          test_templates()
+        })
+      })
+    })
 
     it('updates with invalid tmpl_file_basepath', () => {
-      @installer.revert_config
-      @installer.replace_config(
-        @config,
-        tmpl_file_basepath: '../system/not/a/directory/templates',
-        app_version: '2.20.0'
-      )
-      test_update()
-      test_templates()
-    }
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file:config, options: {
+            tmpl_file_basepath: '../system/not/a/directory/templates',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_update()
+          test_templates()
+        })
+      })
+    })
 
     it('updates using new template basepath', () => {
-      @installer.revert_config
-      @installer.replace_config(
-        @config,
-        tmpl_file_basepath: '../system/user/templates',
-        app_version: '2.20.0'
-      )
-      test_update()
-      test_templates()
-    }
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config, options: {
+            tmpl_file_basepath: '../system/user/templates',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_update()
+          test_templates()
+        })
+      })
+    })
 
     it('has all required modules installed after the update', () => {
       test_update()
       test_templates()
 
-      installed_modules = []
-      $db.query('SELECT module_name FROM exp_modules').each do |row|
-        installed_modules << row['module_name'].downcase
-      }
+      let installed_modules = []
+      cy.task('db:query', 'SELECT module_name FROM exp_modules').then((result) => {
+        result[0].forEach(function(row){
+          installed_modules.push(row.module_name.toLowerCase());
+        });
 
-      installed_modules.should include('channel')
-      installed_modules.should include('comment')
-      installed_modules.should include('member')
-      installed_modules.should include('stats')
-      installed_modules.should include('rte')
-      installed_modules.should include('file')
-      installed_modules.should include('filepicker')
-      installed_modules.should include('search')
-    }
-  }
+        expect(installed_modules).to.include('channel')
+        expect(installed_modules).to.include('comment')
+        expect(installed_modules).to.include('member')
+        expect(installed_modules).to.include('stats')
+        expect(installed_modules).to.include('rte')
+        expect(installed_modules).to.include('file')
+        expect(installed_modules).to.include('filepicker')
+        expect(installed_modules).to.include('search')
+      })
+    })
+  })
 
-  it('updates and creates a mailing list export when updating from 2.x to 3.x with the mailing list module', () => {
-    clean_db do
-      $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
-      clear_db_result
-    }
+  it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
+    cy.task('db:load', '../../support/sql/database_2.10.1-mailinglist.sql').then(()=>{
+      test_update(true)
+    })
+  })
 
-    test_update()(true)
-  }
-
-  it('updates successfully when updating from 2.1.3 to 3.x', () => {
-    @installer.revert_config
-    @installer.replace_config(
-      File.expand_path('../circleci/config-2.1.3.php'),
-      app_version: '213'
-    )
-    @installer.revert_database_config
-    @installer.replace_database_config(
-      File.expand_path('../circleci/database-2.1.3.php')
-    )
-
-    clean_db do
-      $db.query(IO.read('sql/database_2.1.3.sql'))
-      clear_db_result
-    }
-
-    test_update()
-  }
+  it('updates successfully when updating from 2.1.3 to 6.x', () => {
+    cy.task('installer:revert_config').then(()=>{
+      cy.task('installer:replace_config', {
+        file: 'support/config/config-2.1.3.php', options: {
+          app_version: '213'
+        }
+      }).then(()=>{
+        cy.task('installer:revert_database_config').then(()=>{
+          cy.task('installer:replace_database_config', {
+            file: 'support/config/database-2.1.3.php'
+          }).then(()=>{
+            cy.task('db:load', '../../support/sql/database_2.1.3.sql').then(()=>{
+              from_version = '2.1.3'
+              test_update()
+            })
+          })
+        })
+      })
+    })
+  })
 
   it('updates a core installation successfully and installs the member module', () => {
-    @installer.revert_config
-    @installer.replace_config(
-      File.expand_path('../circleci/config-3.0.5-core.php'),
-      database: {
-        hostname: $test_config[:db_host],
-        database: $test_config[:db_name],
-        username: $test_config[:db_username],
-        password: $test_config[:db_password]
-      },
-      app_version: '3.0.5'
-    )
+    cy.task('installer:revert_config').then(()=>{
+      cy.task('installer:replace_config', {
+        file: 'support/config/config-3.0.5-core.php', options: {
+          database: {
+            hostname: Cypress.env("DB_HOST"),
+            database: Cypress.env("DB_DATABASE"),
+            username: Cypress.env("DB_USER"),
+            password: Cypress.env("DB_PASSWORD")
+          },
+          app_version: '3.0.5'
+        }
+      }).then(()=>{
+        cy.task('db:load', '../../support/sql/database_3.0.5-core.sql').then(()=>{
+          from_version = '3.0.5'
+          test_update()
+          cy.task('db:query', 'SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').then((result) => {
+            expect(result[0].length).to.eq(1)
+          })
+        })
+      })
+    })
+  })
 
-    clean_db do
-      $db.query(IO.read('sql/database_3.0.5-core.sql'))
-      clear_db_result
-    }
-
-    test_update()
-
-    $db.query('SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').each do |row|
-      row['count'].should == 1
-    }
-  }
-*/
   function test_update(mailinglist = false) {
     // Delete any stored mailing lists
+    cy.log('mailing list:')
+    cy.log(mailinglist)
+
     const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
@@ -226,7 +241,11 @@ context('Updater', () => {
 
       cy.hasNoErrors()
 
-      cy.get('h1:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
+      if (mailinglist == true || from_version == '2.1.3' || from_version == '2.10.1' || from_version == '3.0.5') {
+        cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
+      } else {
+        cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
+      }
 
       cy.hasNoErrors()
 
@@ -245,9 +264,9 @@ context('Updater', () => {
         }
       })
 
-      if (mailinglist == false) {
-        //page.get('success_actions').its('length').should('eq', 1)
-      } else {
+      cy.log('Update Complete!');
+
+      if (mailinglist == true) {
         page.get('success_actions').its('length').should('eq', 2)
         page.get('success_actions').last().invoke('text').then((text) => {
           expect(text).to.eq('Download Mailing List')

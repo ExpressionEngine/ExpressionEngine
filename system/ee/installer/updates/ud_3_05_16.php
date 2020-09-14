@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_2_3_1;
+namespace ExpressionEngine\Updater\Version_3_5_16;
 
 /**
  * Update
@@ -23,11 +23,9 @@ class Updater {
 	 * @return TRUE
 	 */
 	public function do_update()
-    {
-		// rien ne va plus
+	{
 		return TRUE;
-    }
+	}
 }
-/* END CLASS */
 
 // EOF

@@ -24,8 +24,8 @@ $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'hostname' => 'localhost',
-		'database' => 'circle_test',
-		'username' => 'ubuntu',
+		'database' => 'ee-test',
+		'username' => 'root',
 		'password' => '',
 	),
 );

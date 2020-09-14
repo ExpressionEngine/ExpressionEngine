@@ -714,7 +714,7 @@ class JumpMenu extends AbstractJumpMenu
 
     public function clearAllCaches()
     {
-        ee()->cache->file->clean('jumpmenu');
+        ee()->cache->file->delete('jumpmenu');
     }
 
     /**
