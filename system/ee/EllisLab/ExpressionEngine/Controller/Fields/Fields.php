@@ -247,7 +247,7 @@ class Fields extends AbstractFieldsController {
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_success'))
-					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
+					->addToBody(sprintf(lang('create_field_success_desc'), ee('Format')->make('Text', $field->field_label)->convertToEntities()))
 					->defer();
 
 				if (AJAX_REQUEST)
@@ -394,7 +394,7 @@ class Fields extends AbstractFieldsController {
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_field_success'))
-					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
+					->addToBody(sprintf(lang('edit_field_success_desc'), ee('Format')->make('Text', $field->field_label)->convertToEntities()))
 					->defer();
 
 				if (ee('Request')->post('submit') == 'save_and_new')
