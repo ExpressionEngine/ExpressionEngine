@@ -52,7 +52,7 @@ class CommandPrepareUpgrade extends Cli
         'new-public-path:'          => 'Absolute path of new site public path',
         'no-config-file'            => 'Ignores the config file and doesn\'t check for it',
         'ee-version'                => 'The current site ',
-        'should-move-system-path'   => 'Whether the upgrade process should move the old theme folder to the new site',
+        'should-move-system-path'   => 'Whether the upgrade process should move the old system folder to the new site',
         'old-system-path:'          => 'Absolute path of old site system folder',
         'new-system-path:'          => 'Absolute path of new site system folder',
         'should-move-template-path' => 'Whether the upgrade process should move the old template folder to the new site',
