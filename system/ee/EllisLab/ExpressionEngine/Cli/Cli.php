@@ -224,7 +224,7 @@ class Cli
 
         $result = $this->input->in();
 
-        return $result ?? $default;
+        return $result ? $result : $default;
     }
 
     /**
@@ -266,7 +266,7 @@ class Cli
      */
     protected function commandExists($command = null)
     {
-        $commandToParse = $command ?? $this->commandCalled;
+        $commandToParse = $command ? $command : $this->commandCalled;
 
         if (EE_INSTALLED) {
             return array_key_exists($commandToParse, $this->availableCommands);
@@ -283,7 +283,7 @@ class Cli
      */
     protected function getCommand($command = null)
     {
-        $commandToParse = $command ?? $this->commandCalled;
+        $commandToParse = $command ? $command : $this->commandCalled;
 
         return $this->availableCommands[$commandToParse];
     }

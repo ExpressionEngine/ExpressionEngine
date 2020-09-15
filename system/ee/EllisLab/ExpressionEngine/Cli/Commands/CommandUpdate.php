@@ -198,7 +198,9 @@ class CommandUpdate extends Cli {
 
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
-		ee()->db->dbprefix = $databaseConfig['expressionengine']['dbprefix'] ?? 'exp_';
+		ee()->db->dbprefix = isset($databaseConfig['expressionengine']['dbprefix'])
+								? $databaseConfig['expressionengine']['dbprefix']
+								: 'exp_';
 		ee()->db->db_debug = FALSE;
 
 		ee()->load->add_package_path(EE_APPPATH);
