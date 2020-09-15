@@ -13,6 +13,7 @@ namespace EllisLab\ExpressionEngine\Core;
 use EllisLab\ExpressionEngine\Legacy\App as LegacyApp;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
 use EllisLab\ExpressionEngine\Error\FileNotFound;
+use EllisLab\ExpressionEngine\Cli\Cli;
 
 /**
  * Core Abstract
@@ -101,6 +102,13 @@ abstract class Core {
 		}
 
 		$routing = $this->getRouting($request);
+
+		if(defined('REQ') && REQ === 'CLI') {
+
+			$this->bootCli();
+
+		}
+
 		$routing = $this->loadController($routing);
 		$routing = $this->validateRequest($routing);
 
@@ -110,6 +118,25 @@ abstract class Core {
 		$this->runController($routing);
 
 		return $application->getResponse();
+	}
+
+	/**
+	 * Loads EE CLI
+	 * @return void
+	 */
+	protected function bootCli()
+	{
+
+		$this->legacy->includeBaseController();
+
+		$cli = new Cli;
+
+		$cli->process();
+
+		// This will be all we do, so we'll die here.
+		// However, the CLI service should handle the completion, this is just a fallback
+		die();
+
 	}
 
 	/**

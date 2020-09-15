@@ -56,6 +56,8 @@ $lang = array(
 	'start_update'   => 'Update',
 	'update_note'    => '<b>Please</b> read <a href="'.DOC_URL.'installation/update.html" rel="external">Updating ExpressionEngine</a> <strong>before</strong> starting.',
 	'update_backup'  => 'Please <b>back up</b> your database before updating ExpressionEngine',
+	'update_should_get_database_backup' => 'Backup database before upgrade',
+	'update_should_update_addons'		=> 'Allow addons to upgrade (advanced)',
 	'updating_title' => "Updating ExpressionEngine to %s",
 	'running_updates' => "Running updates for %s",
 	'updating'       => 'Updating ExpressionEngine',
