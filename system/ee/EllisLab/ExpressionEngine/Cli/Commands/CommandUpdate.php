@@ -46,7 +46,7 @@ class CommandUpdate extends Cli {
 	 * @var array
 	 */
 	public $commandOptions = [
-		'rollback'				=> 'Rollsback last update',
+		'rollback'				=> 'Rollback last update',
 		'verbose,v'				=> 'Verbose output',
 		'microapp'				=> 'Run as microapp',
 		'step:'					=> 'Step in process (param required)',
