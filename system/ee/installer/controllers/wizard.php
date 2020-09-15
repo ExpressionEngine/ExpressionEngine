@@ -36,8 +36,8 @@ class Wizard extends CI_Controller {
 	private $current_step 			= 1;
 	private $steps        			= 3;
 	private $addon_step   			= FALSE;
-	private $shouldBackupDatabase	= false;
-	private $shouldUpgradeAddons 	= false;
+	private $shouldBackupDatabase	= FALSE;
+	private $shouldUpgradeAddons 	= FALSE;
 
 	public $now;
 	public $year;
