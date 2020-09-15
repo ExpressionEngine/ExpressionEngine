@@ -559,7 +559,7 @@ class Updater {
 			ee()->update_notices->item('No templates contain the {birthday} variable.');
 		}
 
-		ee()->update_notices->item('Done.');
+		//ee()->update_notices->item('Done.');
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);

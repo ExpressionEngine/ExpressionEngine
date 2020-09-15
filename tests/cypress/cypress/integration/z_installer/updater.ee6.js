@@ -9,6 +9,7 @@ const page = new Updater
 const database = 'support/config/database-2.10.1.php'
 const config = 'support/config/config-2.10.1.php'
 let from_version = '2.10.1';
+let expect_login = false;
 
 // Note: Tests need `page.load()` to be called manually since we're manipulating
 // files before testing the upgrade. Please do not add `page.load()` to any of the
@@ -19,7 +20,6 @@ context('Updater', () => {
   beforeEach(function(){
 
     cy.task('db:clear')
-    cy.task('db:load', '../../support/sql/database_2.10.1.sql')
 
     cy.task('installer:enable')
     cy.task('installer:replace_config', {file: config})
@@ -72,6 +72,11 @@ context('Updater', () => {
   })
 
   context('when updating from 2.x to 6.x', () => {
+    beforeEach(function(){
+
+      cy.task('db:load', '../../support/sql/database_2.10.1.sql')
+    })
+
     it('updates using mysql as the dbdriver', () => {
       cy.task('installer:replace_database_config', {file: database, options: {dbdriver: 'mysql'}}).then(() => {
         test_update()
@@ -209,6 +214,56 @@ context('Updater', () => {
     })
   })
 
+  it('updates without notices going straigth to login page', () => {
+    cy.task('installer:revert_config').then(()=>{
+      cy.task('installer:replace_config', {
+        file: 'support/config/config-5.3.0.php', options: {
+          database: {
+            hostname: Cypress.env("DB_HOST"),
+            database: Cypress.env("DB_DATABASE"),
+            username: Cypress.env("DB_USER"),
+            password: Cypress.env("DB_PASSWORD")
+          },
+          app_version: '5.3.0'
+        }
+      }).then(()=>{
+        cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
+          from_version = '5.3.0'
+          expect_login = true
+          test_update()
+          page.get('success_actions').should('not.exist')
+
+        })
+      })
+    })
+  })
+
+  it('shows post-upgrade notice', () => {
+    cy.task('installer:revert_config').then(()=>{
+      cy.task('installer:replace_config', {
+        file: 'support/config/config-5.3.0.php', options: {
+          database: {
+            hostname: Cypress.env("DB_HOST"),
+            database: Cypress.env("DB_DATABASE"),
+            username: Cypress.env("DB_USER"),
+            password: Cypress.env("DB_PASSWORD")
+          },
+          app_version: '5.3.0'
+        }
+      }).then(()=>{
+          cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
+            from_version = '5.3.0'
+            cy.task('db:query', "INSERT INTO `exp_fieldtypes` (`name`, `version`, `settings`, `has_global_settings`) VALUES ('fake_fieldtype','1.0.0','YTowOnt9','n');").then(()=>{
+              cy.task('db:query', "INSERT INTO `exp_channel_fields` (`site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`) VALUES (1,'fake_fieldtype','fake_fieldtype','','fake_fieldtype','','n',0,0,10,0,'n','ltr','y','n','xhtml','y',2,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y');").then(()=>{
+                test_update()
+                page.get('success_actions').should('exist')
+              })
+          })
+        })
+      })
+    })
+  })
+
   function test_update(mailinglist = false) {
     // Delete any stored mailing lists
     cy.log('mailing list:')
@@ -241,7 +296,7 @@ context('Updater', () => {
 
       cy.hasNoErrors()
 
-      if (mailinglist == true || from_version == '2.1.3' || from_version == '2.10.1' || from_version == '3.0.5') {
+      if (mailinglist == true || expect_login == false) {
         cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
       } else {
         cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
@@ -265,6 +320,8 @@ context('Updater', () => {
       })
 
       cy.log('Update Complete!');
+
+      page.get('error').should('not.exist')
 
       if (mailinglist == true) {
         page.get('success_actions').its('length').should('eq', 2)

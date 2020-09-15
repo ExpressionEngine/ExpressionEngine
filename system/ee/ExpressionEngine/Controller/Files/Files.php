@@ -27,7 +27,7 @@ class Files extends AbstractFilesController {
 	public function index()
 	{
 		$viewTypeService = new ViewType();
-		$view_type = $viewTypeService->determineViewType('all', 'table');
+		$view_type = $viewTypeService->determineViewType('all', 'list');
 
 		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
@@ -58,7 +58,7 @@ class Files extends AbstractFilesController {
 			ee()->view->cp_heading = lang('all_files');
 		}
 
-		if ($view_type !== 'table') {
+		if ($view_type == 'thumb') {
 			ee()->cp->render('files/index-' . $view_type, $vars);
 		} else {
 			ee()->cp->render('files/index', $vars);
@@ -95,7 +95,7 @@ class Files extends AbstractFilesController {
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
 		$viewTypeService = new ViewType();
-		$view_type = $viewTypeService->determineViewType('dir_'.$id, 'table');
+		$view_type = $viewTypeService->determineViewType('dir_'.$id, 'list');
 		//$dir->default_modal_view is not used here as it's not modal view
 
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);
@@ -120,7 +120,7 @@ class Files extends AbstractFilesController {
 			ee()->view->can_sync_directory ? $id : NULL
 		);
 
-		if ($view_type !== 'table') {
+		if ($view_type == 'thumb') {
 			ee()->cp->render('files/directory-' . $view_type, $vars);
 		} else {
 			ee()->cp->render('files/directory', $vars);

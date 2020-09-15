@@ -64,7 +64,7 @@ class Installer {
 		if (typeof(options.app_version)!=='undefined' && options.attempt < 5) {
 			if(!config_contents.includes(options.app_version)) {
 				options.attempt += 1
-				replace_config(file, options)
+				this.replace_config(file, options)
 			}
 
 			if (options.attempt != 0) {

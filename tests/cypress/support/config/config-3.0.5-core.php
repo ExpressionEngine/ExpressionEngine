@@ -26,7 +26,7 @@ $config['database'] = array(
 		'hostname' => 'localhost',
 		'database' => 'ee-test',
 		'username' => 'root',
-		'password' => '',
+		'password' => 'root',
 	),
 );
 $config['db_port'] = '';

@@ -150,6 +150,7 @@ class Wizard extends CI_Controller
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('AMP', '&amp;');
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
@@ -244,6 +245,9 @@ class Wizard extends CI_Controller
 
         // If we're not at a defined stage, this is the first step.
         if (! $action) {
+            //remove the update notices from previous installations
+            $this->update_notices->clear();
+            //display the form
             if ($this->is_installed) {
                 return $this->update_form();
             } else {
@@ -417,6 +421,20 @@ class Wizard extends CI_Controller
                 ->count_all_results('members');
             $type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+            //Perform post-flight checks
+            if ($type == 'update') {
+                $postflight_messages = $this->postflight();
+                if (!empty($postflight_messages)) {
+                    ee()->lang->loadfile('utilities');
+                    foreach ($postflight_messages as $message) {
+                        $vars['update_notices'][] = (object) [
+                            'is_header' => false,
+                            'message' => $message . '<br>' . sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile())
+                        ];
+                    }
+                }
+            }
+
             $this->is_installed = true;
             $this->show_success($type, $vars);
             return false;
@@ -440,6 +458,20 @@ class Wizard extends CI_Controller
 
         // Onward!
         return true;
+    }
+
+    /**
+     * Post-flight Tests - guide to any further actions needed
+     * @return Array
+     */
+    private function postflight()
+    {
+        $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
+
+        //make sure all addons are loaded
+        ee('App')->setupAddons(PATH_THIRD);
+
+        return $advisor->postUpdateChecks();
     }
 
     /**
@@ -976,6 +1008,14 @@ class Wizard extends CI_Controller
         if ($this->rename_installer($template_variables)) {
             ee()->load->helper('url');
             redirect($cp_login_url);
+        } else {
+            if (!isset($template_variables['update_notices'])) {
+                $template_variables['update_notices'] = [];
+            }
+            array_unshift($template_variables['update_notices'], (object) [
+                'is_header' => false,
+                'message' => lang('success_delete')
+            ]);
         }
 
         // Are we back here from a input?
