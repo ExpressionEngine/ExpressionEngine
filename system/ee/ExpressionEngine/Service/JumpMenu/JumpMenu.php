@@ -388,24 +388,91 @@ class JumpMenu extends AbstractJumpMenu
             //settings
             'systemSettingsGeneral' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings general_settings site_online version_autocheck enable_msm show_ee_news language date_time_settings',
+                'command' => 'system_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/general',
                 'permission' => 'can_access_sys_prefs',
                 'anchors' => array(
+                // site name
                     'fieldset-site_name' => array(
                         'trail' => [
                             'settings',
-                            'general_settings'
+                            // 'general_settings'
                         ],
                         'command' => 'site site_name',
                         'command_title' => 'site_name'
                     ),
+                // Short name
                     'fieldset-site_short_name' => array(
-                        'trail' => 'settings',
-                        'command' => 'site_short_name'
-                    )
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site site_short_name',
+                        'command_title' => 'site_short_name'
+                    ),
+                // System on off
+                    'fieldset-is_system_on' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site site_online',
+                        'command_title' => 'site_online'
+                    ),
+                // New version check
+                    'fieldset-new_version_check' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site version_autocheck',
+                        'command_title' => 'version_autocheck'
+                    ),
+                // MSM enabled
+                    'fieldset-multiple_sites_enabled' => array(
+                        'trail' => [
+                            'settings'
+                        ],
+                        'command' => 'site enable_msm',
+                        'command_title' => 'enable_msm'
+                    ),
+                // Show EE News
+                    'fieldset-show_ee_news' => array(
+                        'trail' => [
+                            'settings'
+                        ],
+                        'command' => 'site show_ee_news',
+                        'command_title' => 'show_ee_news'
+                    ),
+                // Default language
+                    'fieldset-deft_lang' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'site timezone',
+                        'command_title' => 'timezone'
+                    ),
+                // Date time format
+                    'fieldset-date_format-time_format' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'site date_time_fmt',
+                        'command_title' => 'date_time_fmt'
+                    ),
+                // include seconds
+                    'fieldset-include_seconds' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'site include_seconds',
+                        'command_title' => 'include_seconds'
+                    ),
                 )
             ),
             'systemSettingsUrls' => array(
