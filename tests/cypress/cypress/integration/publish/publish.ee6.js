@@ -185,7 +185,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context('when using fluid fields', () => {
+    context.only('when using fluid fields', () => {
 
       const available_fields = [
         "A Date",
@@ -367,7 +367,7 @@ context('Publish Page - Create', () => {
         })
       }
 
-      it('adds a field', () => {
+      it.only('adds a field', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -386,6 +386,9 @@ context('Publish Page - Create', () => {
         })
 
         page.get('save').click()
+
+        cy.screenshot({capture: 'fullPage'});
+
         page.get('alert').contains('Entry Updated')
 
         available_fields.forEach(function(field, index) {
