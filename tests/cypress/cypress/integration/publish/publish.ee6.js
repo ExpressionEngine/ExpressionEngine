@@ -185,7 +185,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context.only('when using fluid fields', () => {
+    context('when using fluid fields', () => {
 
       const available_fields = [
         "A Date",
@@ -367,7 +367,7 @@ context('Publish Page - Create', () => {
         })
       }
 
-      it.only('adds a field', () => {
+      it('adds a field', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
