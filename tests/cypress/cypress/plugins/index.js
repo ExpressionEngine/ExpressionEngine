@@ -49,6 +49,7 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:seed': () => {
+            fs.delete('../../system/user/cache/default_site/');
             return db.seed(config.env.DB_DUMP)
         }
     })
