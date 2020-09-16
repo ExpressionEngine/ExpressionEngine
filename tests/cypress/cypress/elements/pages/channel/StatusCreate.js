@@ -17,8 +17,7 @@ class ChannelManager extends ControlPanel {
     }
 
     load_view_for_status_group(number) {
-        this.open_dev_menu()
-        cy.contains('Channels').click()
+        cy.visit('admin.php?/cp/channels')
         cy.get('ul.list-group li:nth-child(' + number + ') a.list-item__content').first().click()
         cy.get('.js-tab-button:contains("Statuses")').click()
     }

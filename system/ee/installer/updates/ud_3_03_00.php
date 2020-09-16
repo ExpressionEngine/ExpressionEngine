@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_3_3_0;
+
 /**
  * Update
  */
@@ -22,7 +24,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'add_can_debug_column',
 				'use_site_default_localization_settings',
@@ -111,7 +113,7 @@ class Updater {
 			->get('sites')
 			->result_array();
 		$site_1 = array_shift($sites);
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		$msm_config->site_prefs('', 1);
 		$same = TRUE;

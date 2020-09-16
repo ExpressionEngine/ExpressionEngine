@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_2_9_0;
+
 /**
  * Update
  */
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_update_template_routes_table',
 				'_set_hidden_template_indicator',
@@ -149,19 +151,19 @@ class Updater {
 		// We're gonna need this to be already loaded.
 		ee()->remove('functions');
 		require_once(APPPATH . 'libraries/Functions.php');
-		ee()->set('functions', new Installer_Functions());
+		ee()->set('functions', new \Installer_Functions());
 
 		ee()->remove('extensions');
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->set('extensions', new Installer_Extensions());
+		ee()->set('extensions', new \Installer_Extensions());
 
 		ee()->remove('addons');
 		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->set('addons', new Installer_Addons());
+		ee()->set('addons', new \Installer_Addons());
 
 		$installer_config = ee()->config;
 		ee()->remove('config');
-		ee()->set('config', new MSM_Config());
+		ee()->set('config', new \MSM_Config());
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
@@ -272,11 +274,11 @@ class Updater {
 
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->set('template', new Installer_Template());
+		ee()->set('template', new \Installer_Template());
 
 		$installer_config = ee()->config;
 		ee()->remove('config');
-		ee()->set('config', new MSM_Config());
+		ee()->set('config', new \MSM_Config());
 
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 

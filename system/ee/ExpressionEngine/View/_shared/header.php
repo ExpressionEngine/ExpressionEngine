@@ -59,9 +59,19 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-        				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
+						<?php
+						$i = 0;
+						foreach ($cp_breadcrumbs as $link => $title):
+							$i++;
+							if ($i < count($cp_breadcrumbs)) :
+						?>
         					<li><a href="<?=$link?>"><?=$title?></a></li>
-        				<?php endforeach ?>
+						<?php else: ?>
+							<li><span><?=$title?></span></li>
+						<?php
+							endif;
+						endforeach;
+						?>
         			</ul>
             </div>
       		<?php endif ?>
