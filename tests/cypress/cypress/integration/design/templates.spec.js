@@ -1,0 +1,211 @@
+/// <reference types="Cypress" />
+
+import TemplateManager from '../../elements/pages/design/TemplateManager';
+// import { TemplateGroupCreate, TemplateGroupEdit } from '../../elements/pages/design/TemplateGroupForms';
+import TemplateCreate from '../../elements/pages/design/TemplateCreate';
+import TemplateEdit from '../../elements/pages/design/TemplateEdit';
+const page = new TemplateManager
+const editPage = new TemplateEdit
+const createPage = new TemplateCreate
+const { _, $ } = Cypress
+
+context('Templates', () => {
+
+    before(function() {
+        cy.task('db:seed')
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+    })
+
+    beforeEach(function() {
+        cy.authVisit(page.url);
+    })
+
+    describe('Creating a template', function() {
+        beforeEach(function() {
+            cy.authVisit(`${createPage.url}/news`)
+        })
+
+        it('displays the create form', function() {
+
+        })
+
+        it('can create a new template', function() {
+            createPage.get('name').clear().type('cypress-test')
+            createPage.get('save_button').click()
+
+            cy.hasNoErrors()
+
+            let manager = new TemplateManager
+            manager.get('templates').its('length').should('eq', 7)
+        })
+
+        it('can show the edit form after save', function() {
+            createPage.get('name').clear().type('cypress-test-two')
+            createPage.get('save_and_edit_button').click()
+
+            cy.hasNoErrors()
+        })
+
+        it('new templates have sensible defaults', function() {
+            createPage.get('name').clear().type('cypress-test-three')
+            createPage.get('save_and_edit_button').click()
+
+            cy.hasNoErrors()
+
+            let form = new TemplateEdit
+
+            form.get('settings_tab').click()
+            form.get('name').should('have.value', 'cypress-test-three')
+            form.get('type').filter(':checked').should('have.value', 'webpage')
+            form.get('enable_caching').should('have.class', "off")
+            form.get('refresh_interval').should('have.value', '0')
+            form.get('allow_php').should('have.class', "off")
+            form.get('php_parse_stage').filter(':checked').should('have.value', 'o')
+            form.get('hit_counter').should('have.value', '0')
+
+            form.get('access_tab').click()
+                // Says "radio" but works with checkboxes
+            form.get('allowed_member_groups').filter(':checked').eq(0).should('have.value', '2')
+            form.get('allowed_member_groups').filter(':checked').eq(1).should('have.value', '3')
+            form.get('allowed_member_groups').filter(':checked').eq(2).should('have.value', '4')
+            form.get('allowed_member_groups').filter(':checked').eq(3).should('have.value', '5')
+            form.get('no_access_redirect').each(function(el, i) {
+                // Only "None" should be selected
+                cy.wrap(el).should((i == 0) ? 'be.checked' : 'not.be.checked')
+            })
+            form.get('enable_http_auth').should('have.class', "off")
+            form.get('template_route').should('have.value', '')
+            form.get('require_all_variables').should('have.class', "off")
+        })
+
+        it('can duplicate an existing template', function() {
+            createPage.get('name').clear().type('cypress-test-four')
+            createPage.get('duplicate_existing_template').check('11')
+            createPage.get('save_and_edit_button').click()
+
+            cy.hasNoErrors()
+
+            let form = new TemplateEdit
+            form.get('template_data').contains("News Archives")
+        })
+
+        it('should validate the form', function() {
+            createPage.get('name').clear().type('lots of neat stuff')
+            createPage.get('name').trigger('blur')
+
+            createPage.hasError(createPage.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
+            createPage.hasErrors()
+        })
+
+    })
+
+    describe('Editing a template', function() {
+        beforeEach(function() {
+            editPage.load_edit_for_template('11')
+        })
+
+        it('displays the edit form', function() {
+            editPage.get('notes_tab').click()
+            editPage.get('template_notes').should('exist')
+
+            editPage.get('settings_tab').click()
+            editPage.get('name').should('exist')
+            editPage.get('type').should('exist')
+            editPage.get('enable_caching').should('exist')
+            editPage.get('refresh_interval').should('exist')
+            editPage.get('allow_php').should('exist')
+            editPage.get('php_parse_stage').should('exist')
+            editPage.get('hit_counter').should('exist')
+
+            editPage.get('access_tab').click()
+            editPage.get('allowed_member_groups').should('exist')
+            editPage.get('no_access_redirect').should('exist')
+            editPage.get('enable_http_auth').should('exist')
+            editPage.get('template_route').should('exist')
+            editPage.get('require_all_variables').should('exist')
+        })
+
+        it('should validate the form', function() {
+            editPage.get('settings_tab').click()
+            editPage.get('name').clear().type('lots of neat stuff')
+            editPage.get('name').trigger('blur')
+
+            editPage.hasError(editPage.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
+        })
+
+        it('can change settings', function() {
+            editPage.get('settings_tab').click()
+            editPage.get('name').clear().type('cypress-edited')
+            editPage.get('type').check('feed')
+            editPage.get('enable_caching').click()
+            editPage.get('refresh_interval').clear().type('5')
+            editPage.get('allow_php').click()
+            editPage.get('php_parse_stage').check('i')
+            editPage.get('hit_counter').clear().type('10')
+
+            editPage.get('access_tab').click()
+            editPage.get('allowed_member_groups').eq(0).uncheck()
+            editPage.get('no_access_redirect').check('16')
+            editPage.get('enable_http_auth').click()
+            editPage.get('template_route').clear().type('et/phone/home')
+            editPage.get('require_all_variables').click()
+
+            editPage.get('save_button').click()
+
+            cy.hasNoErrors()
+
+            editPage.get('settings_tab').click()
+            editPage.get('name').should('have.value', 'cypress-edited')
+            editPage.get('type').filter(':checked').should('have.value', 'feed')
+            editPage.get('enable_caching').should('have.class', 'on')
+            editPage.get('refresh_interval').should('have.value', '5')
+            editPage.get('allow_php').should('have.class', 'on')
+            editPage.get('php_parse_stage').filter(':checked').should('have.value', 'i')
+            editPage.get('hit_counter').should('have.value', '10')
+
+            editPage.get('access_tab').click()
+            editPage.get('allowed_member_groups').filter(':checked').eq(0).should('have.value', '3')
+            editPage.get('allowed_member_groups').filter(':checked').eq(1).should('have.value', '4')
+            editPage.get('allowed_member_groups').filter(':checked').eq(2).should('have.value', '5')
+            editPage.get('no_access_redirect').filter(':checked').should('have.value', '16')
+            editPage.get('enable_http_auth').should('have.class', 'on')
+            editPage.get('template_route').should('have.value', 'et/phone/home')
+            editPage.get('require_all_variables').should('have.class', 'on')
+        })
+
+        it('stays on the edit page with the "save" button', function() {
+            editPage.get('save_button').click()
+
+            cy.hasNoErrors()
+
+
+
+            editPage.get('notes_tab').click()
+            editPage.get('template_notes').should('exist')
+
+            editPage.get('settings_tab').click()
+            editPage.get('name').should('exist')
+            editPage.get('type').should('exist')
+            editPage.get('enable_caching').should('exist')
+            editPage.get('refresh_interval').should('exist')
+            editPage.get('allow_php').should('exist')
+            editPage.get('php_parse_stage').should('exist')
+            editPage.get('hit_counter').should('exist')
+
+            editPage.get('access_tab').click()
+            editPage.get('allowed_member_groups').should('exist')
+            editPage.get('no_access_redirect').should('exist')
+            editPage.get('enable_http_auth').should('exist')
+            editPage.get('template_route').should('exist')
+            editPage.get('require_all_variables').should('exist')
+        })
+
+        it('returns to the template manager with the "save & close" button', function() {
+            editPage.get('save_and_close_button').click()
+
+            cy.hasNoErrors()
+        })
+
+    })
+
+})
