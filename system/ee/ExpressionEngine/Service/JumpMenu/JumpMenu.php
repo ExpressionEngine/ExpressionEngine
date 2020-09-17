@@ -659,11 +659,94 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsDebugging' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings debugging_output enable_errors show_profiler enable_devlog_alerts gzip_output force_query_string send_headers redirect_method caching_driver max_caches use_newrelic',
+                'command' => 'system_settings  debugging_output use_newrelic',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/debug-output',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Error Visibility
+                    'fieldset-fieldset-debug' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'enable_errors enable_errors_desc debug_0 debug_1 debug_2',
+                        'command_title' => 'enable_errors'
+                    ),
+                // Enable debugging?
+                    'fieldset-show_profiler' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'show_profiler show_profiler_desc',
+                        'command_title' => 'show_profiler'
+                    ),
+                // Enable Developer Log Alerts?
+                    'fieldset-enable_devlog_alerts' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'enable_devlog_alerts enable_devlog_alerts_desc',
+                        'command_title' => 'enable_devlog_alerts'
+                    ),
+                // Enable GZIP compression?
+                    'fieldset-efieldset-gzip_output' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'gzip_output',
+                        'command_title' => 'gzip_output'
+                    ),
+                // Force URL query strings?
+                    'fieldset-force_query_string' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'force_query_string',
+                        'command_title' => 'force_query_string'
+                    ),
+                // Use HTTP page headers?
+                    'fieldset-send_headers' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'send_headers',
+                        'command_title' => 'send_headers'
+                    ),
+                // Redirection type
+                    'fieldset-redirect_method' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'redirect_method',
+                        'command_title' => 'redirect_method'
+                    ),
+                // Caching Driver
+                    'fieldset-cache_driver' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'caching_driver',
+                        'command_title' => 'caching_driver'
+                    ),
+                // Cachable URIs
+                    'fieldset-max_caches' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'max_caches max_caches_desc',
+                        'command_title' => 'max_caches'
+                    ),
+                )
             ),
             'systemSettingsContentDesign' => array(
                 'icon' => 'fa-wrench',
@@ -923,7 +1006,6 @@ class JumpMenu extends AbstractJumpMenu
             ),*/
         )
     );
-
 
     /**
      * Is the menu empty?
