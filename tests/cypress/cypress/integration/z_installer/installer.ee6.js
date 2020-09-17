@@ -32,6 +32,8 @@ context('Installer', () => {
       }
     })
 
+    cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
+
     page.load()
     cy.hasNoErrors()
   })
