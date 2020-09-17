@@ -935,19 +935,86 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsHitTracking' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings hit_tracking enable_online_user_tracking enable_hit_tracking enable_entry_view_tracking dynamic_tracking_disabling',
+                'command' => 'system_settings hit_tracking    ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/hit-tracking',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Enable online user tracking?
+                    'fieldset-enable_online_user_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_online_user_tracking enable_online_user_tracking_desc',
+                        'command_title' => 'enable_online_user_tracking'
+                    ),
+                // Enable template hit tracking?
+                    'fieldset-enable_hit_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_hit_tracking enable_hit_tracking_desc',
+                        'command_title' => 'enable_hit_tracking'
+                    ),
+                // Enable entry view tracking?
+                    'fieldset-enable_entry_view_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_entry_view_tracking enable_entry_view_tracking_desc',
+                        'command_title' => 'enable_entry_view_tracking'
+                    ),
+                // Suspend threshold?
+                    'fieldset-dynamic_tracking_disabling' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'dynamic_tracking_disabling dynamic_tracking_disabling_desc',
+                        'command_title' => 'dynamic_tracking_disabling'
+                    ),
+                )
             ),
             'systemSettingsWordCensoring' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings word_censoring enable_censoring censor_replacement censored_words',
+                'command' => 'system_settings word_censoring ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/word-censor',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Enable censorship?
+                    'fieldset-enable_censoring' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'enable_censoring enable_censoring_desc',
+                        'command_title' => 'enable_censoring'
+                    ),
+                // Replacement characters
+                    'fieldset-censor_replacement' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'censor_replacement censor_replacement_desc',
+                        'command_title' => 'censor_replacement'
+                    ),
+                // Words to censor
+                    'fieldset-censored_words' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'censored_words',
+                        'command_title' => 'censored_words'
+                    ),
+                )
             ),
             'systemSettingsMenuManager' => array(
                 'icon' => 'fa-wrench',
