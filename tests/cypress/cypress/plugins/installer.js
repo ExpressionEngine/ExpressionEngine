@@ -100,7 +100,8 @@ class Installer {
 	}
 
 	create_config() {
-		fs.writeFileSync(path.resolve(config), '');
+		fs.writeFileSync(config, '');
+		fs.openSync(config, 'w')
 		fs.chmodSync(config, 666);
 		return true
 	}
