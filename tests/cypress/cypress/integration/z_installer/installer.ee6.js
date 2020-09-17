@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context.skip('Installer', () => {
+context('Installer', () => {
   before(function() {
 
   })
@@ -19,6 +19,7 @@ context.skip('Installer', () => {
   beforeEach(function(){
     // Delete existing config and create a new one
     cy.task('db:clear')
+    cy.task('cache:clear')
     cy.task('installer:enable')
     cy.task('installer:create_config').then((path)=>{
       cy.log(path)
