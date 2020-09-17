@@ -35,6 +35,8 @@ context('Updater', () => {
       }
     })
 
+    cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
+
     //@version = '2.20.0'
     //cy.task('installer:version = @version
 
@@ -54,20 +56,27 @@ context('Updater', () => {
   })
 
   it('appears when using a database.php file', () => {
-    page.load()
-    page.get('inline_errors').should('not.exist')
-    page.get('header').invoke('text').then((text) => {
-      expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
+    cy.task('db:seed').then(()=>{
+      page.load()
+      cy.hasNoErrors()
+      page.get('inline_errors').should('not.exist')
+      page.get('header').invoke('text').then((text) => {
+        expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
+      })
     })
   })
 
   it('shows an error when no database information exists at all', () => {
     cy.task('installer:delete_database_config').then(()=>{
-      page.load()
-      page.get('header').invoke('text').then((text) => {
-        expect(text).to.eq('Install Failed')
+      cy.task('db:seed').then(()=>{
+        page.load()
+        cy.hasNoErrors()
+        page.load()
+        page.get('header').invoke('text').then((text) => {
+          expect(text).to.eq('Install Failed')
+        })
+        page.get('error').contains('Unable to locate any database connection information.')
       })
-      page.get('error').contains('Unable to locate any database connection information.')
     })
   })
 
@@ -236,7 +245,7 @@ context('Updater', () => {
         })
       })
     })
-  })
+  })*/
 
   it('shows post-upgrade notice', () => {
     cy.task('installer:revert_config').then(()=>{
@@ -262,7 +271,7 @@ context('Updater', () => {
         })
       })
     })
-  })*/
+  })
 
   function test_update(mailinglist = false) {
     // Delete any stored mailing lists
@@ -299,7 +308,7 @@ context('Updater', () => {
       if (mailinglist == true || expect_login == false) {
         cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
       } else {
-        cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
+        cy.get('body:contains("Log In")').contains("Log In", { matchCase: false, timeout: 200000 })
       }
 
       cy.hasNoErrors()

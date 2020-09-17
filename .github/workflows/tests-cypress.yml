@@ -3,7 +3,7 @@ name: Run Cypress Tests
 on:
   push:
     branches:
-      - integration-testing
+      - feature/cypress-tests
 
 jobs:
     php-tests:
@@ -58,6 +58,7 @@ jobs:
               run: |
                 cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
                 sudo chmod -R 777 system/user/templates
                 sudo chmod -R 777 system/user/language
