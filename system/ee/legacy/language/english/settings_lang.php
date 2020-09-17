@@ -173,7 +173,7 @@ $lang = array(
 
 'email_charset_desc' => 'Email requires character encoding to be properly formatted. UTF-8 is recommended.',
 
-'email_newline' => 'Newline character',
+'email_newline' => 'Email Newline character',
 
 'email_newline_desc' => '\\\n provides the widest compatibility; if this setting does not work for you, refer to your email provider for instructions.',
 

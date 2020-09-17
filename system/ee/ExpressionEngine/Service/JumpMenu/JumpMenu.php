@@ -492,7 +492,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'base_url',
                         'command_title' => 'base_url'
                     ),
-                    // Base Path
+                // Base Path
                     'fieldset-base_path' => array(
                         'trail' => [
                             'settings',
@@ -501,7 +501,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'base_path',
                         'command_title' => 'base_path'
                     ),
-                    // Site Index
+                // Site Index
                     'fieldset-site_index' => array(
                         'trail' => [
                             'settings',
@@ -510,7 +510,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'site_index',
                         'command_title' => 'site_index'
                     ),
-                    // Website root upload_directory
+                // Website root upload_directory
                     'fieldset-site_url' => array(
                         'trail' => [
                             'settings',
@@ -519,7 +519,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'site_url site_url_desc',
                         'command_title' => 'site_url'
                     ),
-                    // CP URL
+                // CP URL
                     'fieldset-cp_url' => array(
                         'trail' => [
                             'settings',
@@ -528,7 +528,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'cp_url cp_url_desc',
                         'command_title' => 'cp_url'
                     ),
-                    // Themes directory
+                // Themes directory
                     'fieldset-theme_folder_url' => array(
                         'trail' => [
                             'settings',
@@ -537,7 +537,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'themes_url_desc themes_url',
                         'command_title' => 'themes_url'
                     ),
-                    // Themes path
+                // Themes path
                     'fieldset-theme_folder_path' => array(
                         'trail' => [
                             'settings',
@@ -546,7 +546,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'themes_path',
                         'command_title' => 'themes_path'
                     ),
-                     // Member Profile Trigger word
+                 // Member Profile Trigger word
                     'fieldset-profile_trigger' => array(
                         'trail' => [
                             'settings',
@@ -555,7 +555,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'member_segment_trigger',
                         'command_title' => 'member_segment_trigger'
                     ),
-                    // Category URL Segment
+                // Category URL Segment
                     'fieldset-reserved_category_word' => array(
                         'trail' => [
                             'settings',
@@ -564,7 +564,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'category_segment_trigger',
                         'command_title' => 'category_segment_trigger'
                     ),
-                    // Category URL
+                // Category URL
                     'fieldset-use_category_name' => array(
                         'trail' => [
                             'settings',
@@ -573,7 +573,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'category_url',
                         'command_title' => 'category_url'
                     ),
-                    // URL title separator
+                // URL title separator
                     'fieldset-word_separator' => array(
                         'trail' => [
                             'settings',
@@ -581,16 +581,81 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'url_title_separator',
                         'command_title' => 'url_title_separator'
-                    ),
+                    )
                 )
             ),
             'systemSettingsEmail' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings outgoing_email webmaster_email webmaster_name email_charset mail_protocol email_newline smtp_options sending_options mail_format word_wrap',
+                'command' => 'system_settings outgoing_email sending_options',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/email',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Outgoing email address
+                    'fieldset-webmaster_email' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'webmaster_email webmaster_email_desc outgoing_email',
+                        'command_title' => 'webmaster_email'
+                    ),
+                // Email sent from name
+                    'fieldset-webmaster_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'webmaster_name webmaster_name_desc outgoing_email',
+                        'command_title' => 'webmaster_name'
+                    ),
+                // Email character encoding
+                    'fieldset-email_charset' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'email_charset outgoing_email',
+                        'command_title' => 'email_charset'
+                    ),
+                // Email Protocal
+                    'fieldset-mail_protocol' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
+                        'command_title' => 'mail_protocol'
+                    ),
+                // Email New Line
+                    'fieldset-email_newline' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'email_newline outgoing_email',
+                        'command_title' => 'email_newline'
+                    ),
+                // Email Format
+                    'fieldset-mail_format' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'mail_format mail_format_desc outgoing_email',
+                        'command_title' => 'mail_format'
+                    ),
+                // Email word wrap
+                    'fieldset-word_wrap' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'word_wrap outgoing_email',
+                        'command_title' => 'word_wrap'
+                    ),
+                )
             ),
             'systemSettingsDebugging' => array(
                 'icon' => 'fa-wrench',
