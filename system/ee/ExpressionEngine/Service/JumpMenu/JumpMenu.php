@@ -827,16 +827,57 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'emoticon_url emoticon_url_desc',
                         'command_title' => 'emoticon_url_desc'
-                    ),
+                    )
                 )
             ),
             'systemSettingsComments' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings comment_settings enable_comments comment_word_censoring comment_moderation_override comment_edit_time_limit',
+                'command' => 'system_settings comment_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/comments',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Enable comment module?
+                    'fieldset-enable_comments' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'enable_comments',
+                        'command_title' => 'enable_comments'
+                    ),
+
+                // Enable word censoring?
+                    'ffieldset-comment_word_censoring' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_word_censoring comment_word_censoring_desc',
+                        'command_title' => 'comment_word_censoring'
+                    ),
+                // Moderate after comments expire?
+                    'fieldset-comment_moderation_override' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_moderation_override comment_moderation_override_desc',
+                        'command_title' => 'comment_moderation_override'
+                    ),
+                // Comment edit time limit (in seconds)
+                    'fieldset-comment_edit_time_limit' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_edit_time_limit comment_edit_time_limit_desc',
+                        'command_title' => 'comment_edit_time_limit'
+                    )
+
+
+                )
             ),
             'systemSettingsButtons' => array(
                 'icon' => 'fa-wrench',
