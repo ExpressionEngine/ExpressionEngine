@@ -20,7 +20,7 @@ context('Installer', () => {
     // Delete existing config and create a new one
     cy.task('db:clear')
     cy.task('installer:enable')
-    cy.task('installer:create_config')
+    //cy.task('installer:create_config')
 
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
@@ -40,7 +40,7 @@ context('Installer', () => {
 
   after(function(){
     cy.task('installer:disable')
-    //cy.task('installer:revert_config')
+    cy.task('installer:revert_config')
   })
 
   function install_complete() {
