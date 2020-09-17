@@ -394,7 +394,7 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'settings/general',
                 'permission' => 'can_access_sys_prefs',
                 'anchors' => array(
-                // site name
+                // Site name
                     'fieldset-site_name' => array(
                         'trail' => [
                             'settings',
@@ -409,7 +409,7 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                             // 'general_settings'
                         ],
-                        'command' => 'site site_short_name',
+                        'command' => 'site_short_name',
                         'command_title' => 'site_short_name'
                     ),
                 // System on off
@@ -418,7 +418,7 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                             // 'general_settings'
                         ],
-                        'command' => 'site site_online',
+                        'command' => 'site_online',
                         'command_title' => 'site_online'
                     ),
                 // New version check
@@ -427,7 +427,7 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                             // 'general_settings'
                         ],
-                        'command' => 'site version_autocheck',
+                        'command' => 'version_autocheck',
                         'command_title' => 'version_autocheck'
                     ),
                 // MSM enabled
@@ -435,7 +435,7 @@ class JumpMenu extends AbstractJumpMenu
                         'trail' => [
                             'settings'
                         ],
-                        'command' => 'site enable_msm',
+                        'command' => 'enable_msm',
                         'command_title' => 'enable_msm'
                     ),
                 // Show EE News
@@ -443,7 +443,7 @@ class JumpMenu extends AbstractJumpMenu
                         'trail' => [
                             'settings'
                         ],
-                        'command' => 'site show_ee_news',
+                        'command' => 'show_ee_news',
                         'command_title' => 'show_ee_news'
                     ),
                 // Default language
@@ -452,7 +452,7 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                              // 'general_settings'
                         ],
-                        'command' => 'site timezone',
+                        'command' => 'timezone',
                         'command_title' => 'timezone'
                     ),
                 // Date time format
@@ -461,27 +461,128 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                              // 'general_settings'
                         ],
-                        'command' => 'site date_time_fmt',
+                        'command' => 'date_time_fmt',
                         'command_title' => 'date_time_fmt'
                     ),
-                // include seconds
+                // Include Seconds
                     'fieldset-include_seconds' => array(
                         'trail' => [
                             'settings',
                              // 'general_settings'
                         ],
-                        'command' => 'site include_seconds',
+                        'command' => 'include_seconds',
                         'command_title' => 'include_seconds'
                     ),
                 )
             ),
             'systemSettingsUrls' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings url_path_settings base_url base_path site_index site_url cp_url themes_url themes_path member_segment_trigger category_segment_trigger category_url url_title_separator',
+                'command' => 'system_settings url_path_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/urls',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Base URL
+                    'fieldset-base_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'base_url',
+                        'command_title' => 'base_url'
+                    ),
+                    // Base Path
+                    'fieldset-base_path' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'base_path',
+                        'command_title' => 'base_path'
+                    ),
+                    // Site Index
+                    'fieldset-site_index' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'site_index',
+                        'command_title' => 'site_index'
+                    ),
+                    // Website root upload_directory
+                    'fieldset-site_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'site_url site_url_desc',
+                        'command_title' => 'site_url'
+                    ),
+                    // CP URL
+                    'fieldset-cp_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'cp_url cp_url_desc',
+                        'command_title' => 'cp_url'
+                    ),
+                    // Themes directory
+                    'fieldset-theme_folder_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'themes_url_desc themes_url',
+                        'command_title' => 'themes_url'
+                    ),
+                    // Themes path
+                    'fieldset-theme_folder_path' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'themes_path',
+                        'command_title' => 'themes_path'
+                    ),
+                     // Member Profile Trigger word
+                    'fieldset-profile_trigger' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'member_segment_trigger',
+                        'command_title' => 'member_segment_trigger'
+                    ),
+                    // Category URL Segment
+                    'fieldset-reserved_category_word' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'category_segment_trigger',
+                        'command_title' => 'category_segment_trigger'
+                    ),
+                    // Category URL
+                    'fieldset-use_category_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'category_url',
+                        'command_title' => 'category_url'
+                    ),
+                    // URL title separator
+                    'fieldset-word_separator' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'url_title_separator',
+                        'command_title' => 'url_title_separator'
+                    ),
+                )
             ),
             'systemSettingsEmail' => array(
                 'icon' => 'fa-wrench',
@@ -757,6 +858,7 @@ class JumpMenu extends AbstractJumpMenu
             ),*/
         )
     );
+
 
     /**
      * Is the menu empty?

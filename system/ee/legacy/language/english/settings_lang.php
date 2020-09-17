@@ -67,7 +67,7 @@ $lang = array(
 
 'defaults' => 'Defaults',
 
-'enable_msm' => 'Enable Site Manager?',
+'enable_msm' => 'Enable Site Manager (MSM)?',
 
 'enable_msm_desc' => 'When enabled, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
@@ -129,7 +129,7 @@ $lang = array(
 
 'category_url_opt_titles' => 'Titles',
 
-'cp_url' => 'Control panel directory',
+'cp_url' => 'URL to your Control Panel index page',
 
 'cp_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your control panel.',
 
@@ -137,7 +137,7 @@ $lang = array(
 
 'docs_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>documentation</code> directory.',
 
-'member_segment_trigger' => 'Profile <abbr title="Uniform Resource Location">URL</abbr> segment',
+'member_segment_trigger' => 'Member profile <abbr title="Uniform Resource Location">URL</abbr> segment',
 
 'member_segment_trigger_desc' => 'Word that triggers member profile display. <b>Cannot</b> be the same as a template or template group.',
 
@@ -153,7 +153,7 @@ $lang = array(
 
 'themes_path_desc' => 'Full path location of your <code>themes</code> directory.',
 
-'themes_url' => 'Themes directory',
+'themes_url' => 'Themes directory URL',
 
 'themes_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>themes</code> directory.',
 
