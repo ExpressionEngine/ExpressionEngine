@@ -750,11 +750,85 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsContentDesign' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings content_and_design new_posts_clear_caches enable_sql_caching auto_assign_cat_parents image_resize_protocol image_library_path thumbnail_suffix enable_emoticons emoticon_url',
+                'command' => 'system_settings content_and_design      ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/content-design',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Clear cache for new entries?
+                    'fieldset-new_posts_clear_caches' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'new_posts_clear_caches new_posts_clear_caches_desc',
+                        'command_title' => 'new_posts_clear_caches'
+                    ),
+                // Cache dynamic channel queries?
+                    'fieldset-enable_sql_caching' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_sql_caching',
+                        'command_title' => 'enable_sql_caching'
+                    ),
+                // Assign category parents?
+                    'fieldset-auto_assign_cat_parents' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
+                        'command_title' => 'auto_assign_cat_parents'
+                    ),
+                // Image Resizing -- Protocol
+                    'fieldset-image_resize_protocol' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'image_resize_protocol gd gd2 imagemagick netpbm image_resizing',
+                        'command_title' => 'image_resize_protocol'
+                    ),
+                // Image Resizing -- Converter path
+                    'fieldset-image_library_path' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'image_library_path image_resizing',
+                        'command_title' => 'image_library_path'
+                    ),
+                // Image Resizing -- Thumbnail suffix
+                    'fieldset-thumbnail_prefix' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'thumbnail_suffix thumbnail_suffix_desc image_resizing',
+                        'command_title' => 'thumbnail_suffix'
+                    ),
+                // Enable emoticons?
+                    'fieldset-enable_emoticons' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_emoticons enable_emoticons_desc',
+                        'command_title' => 'enable_emoticons'
+                    ),
+                // emoticons URL
+                    'fieldset-emoticon_url' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'emoticon_url emoticon_url_desc',
+                        'command_title' => 'emoticon_url_desc'
+                    ),
+                )
             ),
             'systemSettingsComments' => array(
                 'icon' => 'fa-wrench',
