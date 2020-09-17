@@ -61,6 +61,13 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'cache:clear': () => {
+            fs.delete('../../system/user/cache/default_site/');
+            return true
+        }
+    })
+
+    on('task', {
         'db:query': (sql) => {
             return db.query(sql)
         }

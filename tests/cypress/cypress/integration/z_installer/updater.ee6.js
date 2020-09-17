@@ -200,6 +200,7 @@ context('Updater', () => {
   })
 
   it('updates a core installation successfully and installs the member module', () => {
+    cy.task('cache:clear')
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-3.0.5-core.php', options: {
