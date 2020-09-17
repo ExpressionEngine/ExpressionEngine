@@ -22,6 +22,7 @@ context('Installer', () => {
     cy.task('installer:enable')
     cy.task('installer:create_config').then((path)=>{
       cy.log(path)
+      cy.screenshot({capture: 'runner'})
     })
 
     let installer_folder = '../../system/ee/installer';
@@ -63,7 +64,7 @@ context('Installer', () => {
     })
   }
 
-  it('loads', () => {
+  it.only('loads', () => {
     page.get('inline_errors').should('not.exist')
     for (const el in install_form.all_there) {
       cy.get(install_form.all_there[el]).should('exist')
