@@ -199,7 +199,7 @@ context('Updater', () => {
     })
   })
 
-  it('updates a core installation successfully and installs the member module', () => {
+  it.only('updates a core installation successfully and installs the member module', () => {
     cy.task('cache:clear')
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
@@ -283,6 +283,8 @@ context('Updater', () => {
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
       page.load()
+
+      cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page
