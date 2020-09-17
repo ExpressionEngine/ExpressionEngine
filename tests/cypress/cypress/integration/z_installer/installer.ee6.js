@@ -64,7 +64,7 @@ context('Installer', () => {
     })
   }
 
-  it.only('loads', () => {
+  it('loads', () => {
     page.get('inline_errors').should('not.exist')
     for (const el in install_form.all_there) {
       cy.get(install_form.all_there[el]).should('exist')

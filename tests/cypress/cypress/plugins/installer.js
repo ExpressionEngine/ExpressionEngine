@@ -56,7 +56,7 @@ class Installer {
 		}
 
 		fse.copySync(path.resolve(file), path.resolve(config));
-		fs.chmodSync(path.resolve(config), 666);
+		//fs.chmodSync(path.resolve(config), 666);
 
 		let config_contents = fs.readFileSync(path.resolve(config), "utf8");
 
