@@ -121,7 +121,7 @@ class Installer {
 
 	delete_database_config() {
 		if (fs.existsSync(database)) {
-			fs.chmodSync(database, 666);
+			//fs.chmodSync(database, 666);
 			fs.unlinkSync(database)
 		}
 		return true
@@ -141,7 +141,7 @@ class Installer {
 			fse.copySync(path.resolve(file), path.resolve(database));
 		}
 		if (fs.existsSync(database)) {
-			fs.chmodSync(database, 666);
+			//fs.chmodSync(database, 666);
 		}
 
 		// Replace important values

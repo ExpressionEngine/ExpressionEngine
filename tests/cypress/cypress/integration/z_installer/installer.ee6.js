@@ -22,7 +22,7 @@ context('Installer', () => {
     cy.task('installer:enable')
     cy.task('installer:create_config').then((path)=>{
       cy.log(path)
-      cy.screenshot({capture: 'runner'})
+      //cy.screenshot({capture: 'runner'})
     })
 
     let installer_folder = '../../system/ee/installer';
