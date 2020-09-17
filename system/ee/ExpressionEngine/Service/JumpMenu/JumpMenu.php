@@ -889,11 +889,49 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsTemplate' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings template_settings strict_urls site_404 save_tmpl_revisions max_tmpl_revisions',
+                'command' => 'system_settings template_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/template',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                // Enable Strict URLs
+                    'fieldset-strict_urls' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'strict_urls',
+                        'command_title' => 'strict_urls'
+                    ),
+                // 404 page
+                    'fieldset-site_404' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'site_404 site_404_desc',
+                        'command_title' => 'site_404'
+                    ),
+                // Save Template Revisions
+                    'fieldset-save_tmpl_revisions' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'save_tmpl_revisions',
+                        'command_title' => 'save_tmpl_revisions'
+                    ),
+                // Maximum Number of Revisions to Keep
+                    'fieldset-max_tmpl_revisions' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'max_tmpl_revisions max_tmpl_revisions_desc',
+                        'command_title' => 'max_tmpl_revisions'
+                    ),
+                )
             ),
             'systemSettingsHitTracking' => array(
                 'icon' => 'fa-wrench',
