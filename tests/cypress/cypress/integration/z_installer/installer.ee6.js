@@ -20,7 +20,9 @@ context('Installer', () => {
     // Delete existing config and create a new one
     cy.task('db:clear')
     cy.task('installer:enable')
-    cy.task('installer:create_config')
+    cy.task('installer:create_config').then((path)=>{
+      cy.log(path)
+    })
 
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {

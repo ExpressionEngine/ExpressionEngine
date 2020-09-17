@@ -100,10 +100,9 @@ class Installer {
 	}
 
 	create_config() {
-		fs.writeFileSync(config, '');
-		fs.openSync(config, 'w')
-		fs.chmodSync(config, 666);
-		return true
+		fs.writeFileSync(path.resolve(config), '');
+		fs.chmodSync(path.resolve(config), 666);
+		return path.resolve(config)
 	}
 
 	// Revert the current config file to the previous (config.php.tmp)
