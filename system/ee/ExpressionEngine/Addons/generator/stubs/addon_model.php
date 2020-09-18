@@ -1,1 +1,0 @@
-        '{{model_name}}'    => 'Model\\{{model_name}}',
