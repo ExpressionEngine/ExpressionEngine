@@ -6,7 +6,7 @@ on:
       - feature/cypress-tests
 
 jobs:
-    php-tests:
+    cypress-tests:
         runs-on: ${{ matrix.os }}
 
         # services:
@@ -25,16 +25,9 @@ jobs:
                 php: [7.1]
                 os: [ubuntu-latest]
 
-        name: P${{ matrix.php }} - ${{ matrix.os }}
+        name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
-            - name: Install locales
-              run: |
-                sudo locale-gen en
-                sudo locale-gen de
-                sudo locale-gen de_DE
-                sudo locale-gen uk
-                sudo locale-gen ru
 
             - name: Checkout code
               uses: actions/checkout@v1
@@ -46,13 +39,8 @@ jobs:
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
 
-            - name: Install System dependencies
-              run: |
-                sudo apt-get update
-                sudo apt-get -yqq install libmysqlclient-dev
-
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
 
             - name: Setup Permissions
               run: |
@@ -74,7 +62,7 @@ jobs:
               run: |
                 sudo systemctl start mysql
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
-                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
             - name: Install PHP dependencies
               working-directory: tests/cypress
@@ -96,3 +84,5 @@ jobs:
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
+
+
