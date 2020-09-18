@@ -7,9 +7,8 @@ $system_path = realpath(dirname($_SERVER['SCRIPT_FILENAME'])) . '/system';
 
 if (PHP_SAPI !== 'cli') {
     header('HTTP/1.1 503 Service Unavailable.', true, '503');
-    exit("Invlid request\n");
+    exit("Invalid request\n");
 }
-
 
 // Error Reporting
 $debug = 1;
