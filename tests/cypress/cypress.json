@@ -1,5 +1,5 @@
 {
-    "baseUrl": "http://release530.ee",
+    "baseUrl": "http://localhost:8888/",
     "video": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
