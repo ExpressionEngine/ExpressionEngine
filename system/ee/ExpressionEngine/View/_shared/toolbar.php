@@ -22,7 +22,11 @@
     				continue;
     			}
     			$attr .= ' ' . $key . '="' . $val . '"';
-    		} ?>
+			}
+			if (isset($attributes['title'])) {
+				$content .= '<span class="hidden">' . $attributes['title'] . '</span>';
+			}
+			?>
     		<a class="<?=$class?> button button--default" <?=$attr?>><?=$content?></a>
     	<?php endforeach ?>
   </div>

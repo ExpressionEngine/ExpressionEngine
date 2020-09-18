@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html lang="<?=ee()->lang->code()?>" dir="ltr">
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<?php if (isset($meta_refresh)): ?>
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
@@ -77,8 +77,9 @@ $current_page = ee()->uri->segment(2);
       		<?php endif ?>
 
           <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
-            <i class="fas fa-bullseye fa-fw icon-start jump-focus"></i>
-            <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="Jump to..." autocomplete="off">
+			<i class="fas fa-bullseye fa-fw icon-start jump-focus"></i>
+			<label for="jumpEntry1" class="hidden"><?=lang('jump_menu_input')?></label>
+            <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="<?=lang('jump_menu_input')?>" autocomplete="off">
             <span class="input-shortcut jump-focus">⌘J</span>
           </div>
 
