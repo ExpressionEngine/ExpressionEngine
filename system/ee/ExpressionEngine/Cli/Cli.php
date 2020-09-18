@@ -45,12 +45,15 @@ class Cli
      * @var array
      */
     public $internalCommands = [
-        'hello'           => Commands\CommandHelloWorld::class,
-        'list'            => Commands\CommandListCommands::class,
-        'update'          => Commands\CommandUpdate::class,
-        'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
-        'run-update-hook' => Commands\CommandRunUpdateHook::class,
-        'cache:clear'     => Commands\CommandClearCaches::class,
+        'hello'             => Commands\CommandHelloWorld::class,
+        'list'              => Commands\CommandListCommands::class,
+        'update'            => Commands\CommandUpdate::class,
+        'prepare-upgrade'   => Commands\CommandPrepareUpgrade::class,
+        'run-update-hook'   => Commands\CommandRunUpdateHook::class,
+        'cache:clear'       => Commands\CommandClearCaches::class,
+        'generate:addon'    => Commands\CommandGenerateAddon::class,
+        'generate:model'    => Commands\CommandGenerateModel::class,
+        'generate:command'  => Commands\CommandGenerateCommand::class,
     ];
 
     /**

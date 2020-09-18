@@ -1,0 +1,68 @@
+{
+    "name": "pragmarx/ia-str",
+    "type": "library",
+    "description": "Laravel Illuminate Agnostic Str",
+    "keywords": [
+        "pragmarx",
+        "str",
+        "string",
+        "helpers",
+        "laravel"
+    ],
+    "homepage": "https://github.com/antonioribeiro/ia-str",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Antonio Carlos Ribeiro",
+            "email": "acr@antoniocarlosribeiro.com",
+            "homepage": "https://antoniocarlosribeiro.com",
+            "role": "Creator"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "voku/portable-ascii": "^1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0|~7.0|~8.0|~9.0",
+        "squizlabs/php_codesniffer": "^2.3",
+        "mockery/mockery": "~1.0",
+        "moontoast/math": "^1.1",
+        "doctrine/inflector": "^1.2",
+        "nesbot/carbon": "^1.26 || ^2.00",
+        "ramsey/uuid": "^3.7|^4.0",
+        "symfony/var-dumper": "~3.3|~4.0|~5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "IlluminateAgnostic\\Str\\": "src/",
+            "IlluminateAgnostic\\Str\\Tests\\": "tests/"
+        },
+        "files": [
+            "src/Support/helpers.php",
+            "src/Support/alias.php"
+        ]
+    },
+    "scripts": {
+        "test": [
+            "@composer install",
+            "vendor/bin/phpunit"
+        ],
+        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
+        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
+    },
+    "suggest": {
+        "doctrine/inflector": "",
+        "nesbot/carbon": "",
+        "ramsey/uuid": "",
+        "symfony/var-dumper": ""
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
