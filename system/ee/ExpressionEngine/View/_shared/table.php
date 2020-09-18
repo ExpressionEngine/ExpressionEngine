@@ -428,7 +428,17 @@ else: ?>
 								?>
 								<td><?=$column_label?><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
 							<?php elseif (isset($column['html'])): ?>
-								<td class="<?php if (isset($column['error']) && ! empty($column['error'])): ?>invalid<?php endif ?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+								<?php
+									$column_class = '';
+									if (isset($column['attrs']['class'])) {
+										$column_class = $column['attrs']['class'];
+										unset($column['attrs']['class']);
+									}
+									if (isset($column['error']) && ! empty($column['error'])) {
+										$column_class .= ' invalid';
+									}
+								?>
+								<td class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<?=$column_label?>
 									<?=$column['html']?>
 									<?php if (isset($column['error']) && ! empty($column['error'])): ?>

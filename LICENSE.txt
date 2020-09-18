@@ -273,15 +273,8 @@ The following subcomponents are licensed under the MIT License:
     The underscore.js component:
         Copyright (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 
-    The WysiHat component:
-        Original Wysihat code:
-        Copyright (c) 2010 Joshua Peek
-
-        Modified jq-wysihat code:
-        Copyright (c) 2010 Scott Williams
-
-        Modified el-wysihat code:
-        Copyright (C) 2012 Packet Tide, LLC
+    The CKEditor component:
+        Copyright (c) 2003-2020 CKSource
 
     The Selection and Range components use code heavily inspired by:
 

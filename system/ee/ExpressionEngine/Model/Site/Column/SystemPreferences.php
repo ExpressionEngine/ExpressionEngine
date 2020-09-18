@@ -106,8 +106,8 @@ class SystemPreferences extends CustomType {
 	protected $banishment_message;
 	protected $enable_search_log;
 	protected $max_logged_searches;
-	protected $rte_enabled;
-	protected $rte_default_toolset_id;
+	protected $rte_default_toolset;
+	protected $rte_file_browser;
 	protected $forum_trigger;
 
 	/**

@@ -149,7 +149,13 @@
  *  Run the request and get a response
  * ------------------------------------------------------
  */
-	$response = $core->run($request);
+	try {
+		$response = $core->run($request);
+	} catch(ParseError $ex){
+		show_exception($ex);
+	} catch(Error $ex){
+		show_exception($ex);
+	}
 
 /*
  * ------------------------------------------------------

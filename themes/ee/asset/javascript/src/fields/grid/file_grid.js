@@ -74,7 +74,7 @@ function (_React$Component) {
     key: "getGridInstance",
     value: function getGridInstance() {
       if (!this.gridInstance) {
-        this.gridInstance = $(this.dropZone).closest('.js-file-grid').find('.grid-input-form').data('GridInstance');
+        this.gridInstance = $(this.dropZone).closest('.js-file-grid').find('.grid-field').data('GridInstance');
       }
 
       return this.gridInstance;
