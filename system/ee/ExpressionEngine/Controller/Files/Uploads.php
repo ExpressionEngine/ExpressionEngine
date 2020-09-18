@@ -117,7 +117,7 @@ class Uploads extends AbstractFilesController {
 				}
 				else
 				{
-					ee()->output->send_ajax_response('success');
+					ee()->output->send_ajax_response(['success']);
 				}
 				exit;
 			}

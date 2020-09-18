@@ -7,8 +7,8 @@
 		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
 		<?php if (isset($filters)) echo $filters; ?>
 		<div class="title-bar__extra-tools">
-			<?php if (ee()->cp->allowed_group('can_create_member_groups')): ?>
-				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('members/groups/create')?>"><?= lang('create_new') ?></a>
+			<?php if (ee('Permission')->has('can_create_member_groups')): ?>
+				<a class="button button--primary button--small" href="<?=ee('CP/URL')->make('members/groups/create')?>"><?= lang('create_new') ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

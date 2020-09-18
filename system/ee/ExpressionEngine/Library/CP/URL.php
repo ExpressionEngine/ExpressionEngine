@@ -85,7 +85,7 @@ class URL implements \Serializable
 
     public function matchesTheRequestedURI()
     {
-        return (strpos($this->requested_uri, $this->path) !== false);
+        return (strpos($this->requested_uri, 'cp/' . $this->path) === 0);
     }
 
     /**

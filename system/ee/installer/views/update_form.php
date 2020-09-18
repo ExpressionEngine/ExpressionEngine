@@ -11,7 +11,7 @@
 	</div>
 	<form action="<?=$action?>" method="post">
 		<fieldset class="form-ctrls">
-			<input class="btn" type="submit" value="<?=lang('start_update')?>">
+			<input class="button button--primary button--large button--wide" type="submit" value="<?=lang('start_update')?>">
 		</fieldset>
 	</form>
 </div>

@@ -1,13 +1,13 @@
 <?php if ($has_localize_option): ?>
 	<?php $extra = ($disabled) ? 'disabled' : '' ?>
 	<div class="field-option">
-		<label>
+		<label class="checkbox-label">
 			<?= form_radio($localize_option_name, '', ($localized == 'y'), $extra) ?>
-			<?=lang('localized_date')?>
+			<div class="checkbox-label__text"><?=lang('localized_date')?></div>
 		</label>
-		<label>
+		<label class="checkbox-label">
 			<?= form_radio($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')), ($localized == 'n'), $extra) ?>
-			<?=lang('fixed_date')?>
+			<div class="checkbox-label__text"><?=lang('fixed_date')?></div>
 		</label>
 	</div>
 <?php endif; ?>

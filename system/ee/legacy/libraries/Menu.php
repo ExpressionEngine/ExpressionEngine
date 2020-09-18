@@ -15,6 +15,8 @@ use  ExpressionEngine\Service\Sidebar\Sidebar;
  */
 class EE_Menu {
 
+	public static $menu;
+
 	/**
 	 * Constructor
 	 *
@@ -35,11 +37,15 @@ class EE_Menu {
 	 */
 	public function generate_menu()
 	{
+		if (isset(static::$menu)) {
+			return static::$menu;
+		}
+
 		$menu = array();
 
 		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
-		$menu['develop']  = $this->_develop_menu();
+		//$menu['develop']  = $this->_develop_menu(); //commenting this out as it's not used anymore anywhere
 		$menu['custom']   = NULL;
 
 		$custom = ee('CP/CustomMenu');
@@ -94,7 +100,9 @@ class EE_Menu {
 
 		$menu['custom'] = $custom;
 
-		return $menu;
+		static::$menu = $menu;
+
+		return static::$menu;
 	}
 
 	/**

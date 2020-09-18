@@ -852,6 +852,8 @@ $lang = array(
 
 'edit_roles' => 'Edit roles',
 
+'edit_member' => 'Edit member',
+
 'edit_members' => 'Edit members',
 
 'edit_statuses' => 'Edit statuses',

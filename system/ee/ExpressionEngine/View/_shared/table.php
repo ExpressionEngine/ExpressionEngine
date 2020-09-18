@@ -179,32 +179,7 @@
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php
-									$class = isset($column['class']) ? $column['class'] : $column['content'];
-									$style = 'style="';
-
-									// override for open/closed
-									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
-									{
-										$class = $column['status'];
-									}
-									else
-									{
-										if (isset($column['background-color']) && $column['background-color'])
-										{
-											$style .= 'background-color: #'.$column['background-color'].';';
-											$style .= 'border-color: #'.$column['background-color'].';';
-										}
-
-										if (isset($column['color']) && $column['color'])
-										{
-											$style .= 'color: #'.$column['color'].';';
-										}
-									}
-
-									$style .= '"';
-								?>
-								<td><span class="collapsed-label"><?=$column_name?></span><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
 							<?php elseif (isset($column['html'])): ?>
 								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<span class="collapsed-label"><?=$column_name?></span>
@@ -365,9 +340,13 @@ else: ?>
 
 							$column_label = "<div class=\"grid-field__column-label\">
 								<div class=\"field-instruct\">
-									<label>$column_name</label>
+									<label>$column_name</label>";
+							if (!empty($column_desc)) {
+								$column_label .= "
 									<em>$column_desc</em>
-								</div>
+									";
+							}
+							$column_label .= "	</div>
 							</div>";
 
 							?>
@@ -401,32 +380,7 @@ else: ?>
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php
-									$class = isset($column['class']) ? $column['class'] : $column['content'];
-									$style = 'style="';
-
-									// override for open/closed
-									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
-									{
-										$class = $column['status'];
-									}
-									else
-									{
-										if (isset($column['background-color']) && $column['background-color'])
-										{
-											$style .= 'background-color: #'.$column['background-color'].';';
-											$style .= 'border-color: #'.$column['background-color'].';';
-										}
-
-										if (isset($column['color']) && $column['color'])
-										{
-											$style .= 'color: #'.$column['color'].';';
-										}
-									}
-
-									$style .= '"';
-								?>
-								<td><?=$column_label?><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><?=$column_label?><?=$column['content']?></td>
 							<?php elseif (isset($column['html'])): ?>
 								<?php
 									$column_class = '';
@@ -453,11 +407,11 @@ else: ?>
 						<td class="grid-field__column--tools">
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
-								<button type="button" class="button button--small button--secondary-alt">
+								<button type="button" class="button button--small button--default">
 									<a href class="grid-field__column-tool cursor-move js-grid-reorder-handle"><i class="fas fa-fw fa-arrows-alt"></i></a>
 								</button>
 								<?php endif ?>
-								<button type="button" class="button button--small button--secondary-alt">
+								<button type="button" class="button button--small button--default">
 									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
 								</button>
 							</div>
@@ -480,7 +434,7 @@ else: ?>
 			</div>
 			<?php endif; ?>
 			<?php if ($show_add_button) : ?>
-			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
+			<button type="button" rel="add_row" class="button button--default button--small js-grid-add-row"><?=lang('add_row')?></button>
 			<?php endif; ?>
 		</div>
 	</div>

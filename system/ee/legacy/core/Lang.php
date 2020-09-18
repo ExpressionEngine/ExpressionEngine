@@ -15,7 +15,7 @@ class EE_Lang {
 
 	public $language	= array();
 	public $addon_language	= array();
-	private $is_loaded	= array();
+	public $is_loaded	= array();
 
 
 	/**

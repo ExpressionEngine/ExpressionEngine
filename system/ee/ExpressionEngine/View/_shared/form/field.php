@@ -3,7 +3,7 @@ $margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
 $margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
 
 $class = (isset($field['class'])) ? $field['class'] : '';
-$class .= ($margin_top) ? ' add-mrg-top' : '';
+//$class .= ($margin_top) ? ' add-mrg-top' : '';
 $class .= ($margin_left) ? ' add-mrg-left' : '';
 
 // Check for a field name override
@@ -203,7 +203,7 @@ case 'slider': ?>
 <?php break;
 
 case 'action_button': ?>
-	<a class="btn tn action <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+	<a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
 
 case 'html':

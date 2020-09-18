@@ -1142,20 +1142,25 @@ class Updater {
 		ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
 
 		ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
-	private function addStickyChannelPreference() {
-		ee()->smartforge->add_column(
-			'channels',
-			array(
-				'sticky_enabled' => array(
-					'type'				=> 'char',
-					'constraint'		=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
-				)
-			)
-		);
+	}
 
-		ee()->db->update('channels', ['sticky_enabled' => 'y']);
+	private function addStickyChannelPreference()
+	{
+		if (!ee()->db->field_exists('sticky_enabled', 'channels')) {
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'sticky_enabled' => array(
+						'type'				=> 'char',
+						'constraint'		=> 1,
+						'null'				=> FALSE,
+						'default'			=> 'n'
+					)
+				)
+			);
+
+			ee()->db->update('channels', ['sticky_enabled' => 'y']);
+		}
 	}
 
 	private function addMemberModuleActions()

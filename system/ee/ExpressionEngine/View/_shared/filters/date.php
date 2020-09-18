@@ -1,4 +1,4 @@
-<button type="button" class="filter-bar__button has-sub js-dropdown-toggle" data-filter-label="<?=strtolower(lang($label))?>">
+<button type="button" class="filter-bar__button has-sub js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
@@ -13,7 +13,7 @@
 			value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 			placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 			rel="date-picker"
-			class="search-input__input"
+			class="search-input__input input--small"
 			<?php if ($timestamp): ?>data-timestamp="<?=$timestamp?>" <?php endif; ?>
 		>
 		</div>

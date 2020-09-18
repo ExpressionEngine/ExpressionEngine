@@ -1,10 +1,14 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
+<div class="panel">
 <div class="form-standard has-tabs publish" data-publish>
 	<?=form_open($form_url, 'class="ajax-validate"')?>
-	<div class="form-btns form-btns-top">
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
-	</div>
+  <div class="panel-heading">
+    <div class="form-btns form-btns-top">
+  		<?php $this->embed('ee:_shared/form/buttons'); ?>
+  	</div>
+  </div>
+  <div class="panel-body">
 	<div class="tab-wrap">
 		<?=ee('CP/Alert')->get('layout-form')?>
 
@@ -39,7 +43,7 @@
 			<?php endforeach; ?>
 			</div>
 
-			<a class="tab-bar__right-button button button--small button--action m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
+			<a class="tab-bar__right-button button button--xsmall button--default m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 		</div>
 			<input type="hidden" name="field_layout" value='<?=json_encode($channel_layout->field_layout)?>'>
 
@@ -67,40 +71,47 @@
 			<?php endforeach; ?>
 				</div>
 			</div>
-			<?php endforeach; ?>
 
-			<div class="form-btns">
+			<?php endforeach; ?>
+  </div>
+  </div>
+      <div class="panel-footer">
+      <div class="form-btns">
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			</div>
+      </div>
 		</form>
-	</div>
+
+
+</div>
 </div>
 
 <?php ee('CP/Modal')->startModal('add-new-tab'); ?>
 <div class="modal-wrap modal-add-new-tab hidden">
-	<div class="modal">
-		<div class="col-group">
-			<div class="col w-16">
-				<a class="m-close" href="#"></a>
-				<div class="box">
-					<h1><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h1>
+	<div class="modal modal--no-padding dialog">
+
+          <div class="dialog__header">
+            <h2 class="dialog__title"><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h2>
+            <div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
+          </div>
+          <div class="dialog__body">
 					<form class="settings">
-						<fieldset class="col-group required last">
-							<div class="setting-txt col w-8">
-								<h3><?=lang('tab_name')?></h3>
+						<fieldset class="required">
+              <div class="field-instruct">
+                <label><?=lang('tab_name')?></label>
 								<em><?=lang('tab_name_desc')?></em>
-							</div>
-							<div class="setting-field col w-8 last">
+              </div>
+							<div class="field-control">
 								<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
 							</div>
 						</fieldset>
-						<fieldset class="form-ctrls">
-							<button class="btn"><?=lang('add_tab')?></button>
-						</fieldset>
+          </div>
+          <div class="dialog__actions dialog__actions--with-bg">
+						<div class="dialog__buttons">
+							<button class="button button--primary"><?=lang('add_tab')?></button>
+						</div>
+          </div>
 					</form>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
 <?php ee('CP/Modal')->endModal(); ?>

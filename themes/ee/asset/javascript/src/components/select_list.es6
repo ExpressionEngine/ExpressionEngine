@@ -501,7 +501,7 @@ class SelectItem extends React.Component {
           <span className="meta-info">{props.item.instructions}</span>
         )}
         {props.removable && (
-            <a href="" className="button button--small button--secondary-alt float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
         )}
         </div>
       </label>
@@ -539,7 +539,7 @@ class SelectedItem extends React.Component {
       <div className="lots-of-checkboxes__selection">
         <i className="fas fa-check-circle"></i> {label}
           {props.selectionRemovable &&
-            <a className="button button--secondary-alt float-right" href="" onClick={props.clearSelection}><i class="fas fa-trash-alt"></i></a>
+            <a className="button button--default float-right" href="" onClick={props.clearSelection}><i class="fas fa-trash-alt"></i></a>
           }
       </div>
     )

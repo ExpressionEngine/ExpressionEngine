@@ -57,10 +57,6 @@ class Updater {
 
 	private function emancipateTheFields()
 	{
-		if (ee()->db->table_exists('channels_channel_field_groups'))
-		{
-			return;
-		}
 
 		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('channel_fields', array(
@@ -86,62 +82,68 @@ class Updater {
 		));
 
 		// Add the Many-to-Many tables
-		ee()->dbforge->add_field(
-			array(
-				'channel_id' => array(
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
-				),
-				'group_id' => array(
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+		if ( ! ee()->db->table_exists('channels_channel_field_groups')) {
+			ee()->dbforge->add_field(
+				array(
+					'channel_id' => array(
+						'type'       => 'int',
+						'constraint' => 4,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					),
+					'group_id' => array(
+						'type'       => 'int',
+						'constraint' => 4,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					)
 				)
-			)
-		);
-		ee()->dbforge->add_key(array('channel_id', 'group_id'), TRUE);
-		ee()->smartforge->create_table('channels_channel_field_groups');
+			);
+			ee()->dbforge->add_key(array('channel_id', 'group_id'), TRUE);
+			ee()->smartforge->create_table('channels_channel_field_groups');
+		}
 
-		ee()->dbforge->add_field(
-			array(
-				'channel_id' => array(
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
-				),
-				'field_id' => array(
-					'type'       => 'int',
-					'constraint' => 6,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+		if ( ! ee()->db->table_exists('channels_channel_fields')) {
+			ee()->dbforge->add_field(
+				array(
+					'channel_id' => array(
+						'type'       => 'int',
+						'constraint' => 4,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					),
+					'field_id' => array(
+						'type'       => 'int',
+						'constraint' => 6,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					)
 				)
-			)
-		);
-		ee()->dbforge->add_key(array('channel_id', 'field_id'), TRUE);
-		ee()->smartforge->create_table('channels_channel_fields');
+			);
+			ee()->dbforge->add_key(array('channel_id', 'field_id'), TRUE);
+			ee()->smartforge->create_table('channels_channel_fields');
+		}
 
-		ee()->dbforge->add_field(
-			array(
-				'field_id' => array(
-					'type'       => 'int',
-					'constraint' => 6,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
-				),
-				'group_id' => array(
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+		if ( ! ee()->db->table_exists('channel_field_groups_fields')) {
+			ee()->dbforge->add_field(
+				array(
+					'field_id' => array(
+						'type'       => 'int',
+						'constraint' => 6,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					),
+					'group_id' => array(
+						'type'       => 'int',
+						'constraint' => 4,
+						'unsigned'   => TRUE,
+						'null'       => FALSE
+					)
 				)
-			)
-		);
-		ee()->dbforge->add_key(array('field_id', 'group_id'), TRUE);
-		ee()->smartforge->create_table('channel_field_groups_fields');
+			);
+			ee()->dbforge->add_key(array('field_id', 'group_id'), TRUE);
+			ee()->smartforge->create_table('channel_field_groups_fields');
+		}
 
 		// Convert the one-to-one channel to field group assignment to the
 		// many-to-many structure
@@ -243,6 +245,7 @@ class Updater {
 
 	private function moveMemberFields()
 	{
+		ee()->load->model('member_model');
 
 		// Do we need a preflight
 
@@ -556,7 +559,7 @@ class Updater {
 			ee()->update_notices->item('No templates contain the {birthday} variable.');
 		}
 
-		ee()->update_notices->item('Done.');
+		//ee()->update_notices->item('Done.');
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);
@@ -579,10 +582,7 @@ class Updater {
 
 		foreach ($all_site_ids_query as $site)
 		{
-			$query = ee()->db->get_where('sites', array('site_id' => $site));
-			$row = $query->row_array();
-
-			$config = unserialize(base64_decode($row['site_template_preferences']));
+			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
 
 			// If ANY sites save as file, they all must
 			if (isset($config['save_tmpl_files']))

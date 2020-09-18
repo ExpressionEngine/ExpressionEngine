@@ -66,13 +66,35 @@ class Files extends Jumps {
 		foreach ($directories as $directory) {
 			$id = $directory->getId();
 
-			$response['editEntry' . $directory->getId()] = array(
+			$response['editUpload' . $directory->getId()] = array(
 				'icon' => 'fa-pencil-alt',
 				'command' => $directory->name,
 				'command_title' => $directory->name,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('files/uploads/edit/' . $directory->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
+	}
+
+	public function sync()
+	{
+		$directories = $this->loadDirectories(ee()->input->post('searchString'));
+
+		$response = array();
+
+		foreach ($directories as $directory) {
+			$id = $directory->getId();
+
+			$response['syncUpload' . $directory->getId()] = array(
+				'icon' => 'fa-sync-alt',
+				'command' => $directory->name,
+				'command_title' => $directory->name,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('files/uploads/sync/' . $directory->getId())->compile()
 			);
 		}
 

@@ -1,3 +1,4 @@
+				<div id="output_profiler"></div>
 			</div>
 		</section>
 	</div>
@@ -32,12 +33,12 @@
 				</div>
 				<div class="app-about__status app-about__status--update hidden">
 					<?=lang('out_of_date_upgrade')?>
-					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
 					<div class="app-about__status-version"></div>
 				</div>
 				<div class="app-about__status app-about__status--update-vital hidden">
 					<?=lang('out_of_date_recommended')?>
-					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
 					<div class="app-about__status-version"></div>
 				</div>
 			<?php endif ?>
@@ -72,7 +73,7 @@
 		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
 			<div class="modal modal--no-padding dialog dialog--warning">
 
-			<div class="dialog__header dialog__header--centered">
+			<div class="dialog__header">
 				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
 				<h2 class="dialog__title">Log into <?=ee()->config->item('site_name')?></h2>
 			</div>
@@ -94,19 +95,17 @@
 				</fieldset>
 
 				<div class="dialog__buttons">
-					<div class="button-group">
-						<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-					</div>
+						<?=form_submit('submit', lang('login'), 'class="button button--primary" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 				</div>
 			</div>
 			<?=form_close()?>
 			</div>
 		</div>
 
-		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
+		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) { echo ' on-welcome'; } ?>" style="display:none;">
 			<div class="jump-menu">
-				<div class="jump-menu__input" id="jumpMenu1">
-					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
+				<div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
+					<input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
 				</div>
 				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
 					<span id="jumpEntry1Selection" class="action-tag"></span>
@@ -117,8 +116,8 @@
 				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
 
 				<div class="jump-menu__footer">
-					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: &nbsp;&nbsp; <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
-					<span class="jump-menu__close"><?=lang('close')?> <span class="key">ESC</span></span>
+					<span class="jump-menu__shortcut"><?=lang('shortcut')?>: <span class="key">&#8984; J</span> <?=lang('or')?> <span class="key">Ctrl J</span></span>
+					<span class="jump-menu__close"><?=lang('close')?>: <span class="key">ESC</span></span>
 				</div>
 			</div>
 		</div>

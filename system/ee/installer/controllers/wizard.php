@@ -46,7 +46,7 @@ class Wizard extends CI_Controller
     // These are the methods that are allowed to be called via $_GET['m']
     // for either a new installation or an update. Note that the function names
     // are prefixed but we don't include the prefix here.
-    public $allowed_methods = array('install_form', 'do_install', 'do_update');
+    public $allowed_methods = array('install_form', 'do_install', 'do_update', 'show_success');
 
     // Absolutely, positively must always be installed
     public $required_modules = array(
@@ -150,6 +150,7 @@ class Wizard extends CI_Controller
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('AMP', '&amp;');
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
@@ -244,7 +245,10 @@ class Wizard extends CI_Controller
 
         // If we're not at a defined stage, this is the first step.
         if (! $action) {
+            //display the form
             if ($this->is_installed) {
+                //remove the update notices from previous installations
+                $this->update_notices->clear();
                 return $this->update_form();
             } else {
                 return $this->install_form();
@@ -417,6 +421,20 @@ class Wizard extends CI_Controller
                 ->count_all_results('members');
             $type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+            //Perform post-flight checks
+            if ($type == 'update') {
+                $postflight_messages = $this->postflight();
+                if (!empty($postflight_messages)) {
+                    ee()->lang->loadfile('utilities');
+                    foreach ($postflight_messages as $message) {
+                        $vars['update_notices'][] = (object) [
+                            'is_header' => false,
+                            'message' => $message . '<br>' . sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile())
+                        ];
+                    }
+                }
+            }
+
             $this->is_installed = true;
             $this->show_success($type, $vars);
             return false;
@@ -440,6 +458,20 @@ class Wizard extends CI_Controller
 
         // Onward!
         return true;
+    }
+
+    /**
+     * Post-flight Tests - guide to any further actions needed
+     * @return Array
+     */
+    private function postflight()
+    {
+        $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
+
+        //make sure all addons are loaded
+        ee('App')->setupAddons(PATH_THIRD);
+
+        return $advisor->postUpdateChecks();
     }
 
     /**
@@ -969,16 +1001,25 @@ class Wizard extends CI_Controller
     {
         $cp_login_url = $this->userdata['cp_url'] . '?/cp/login&return=&after=' . $type;
 
+        // Only show download button if mailing list export exists
+        $template_variables['mailing_list'] = (file_exists(SYSPATH . '/user/cache/mailing_list.zip'));
+
         // Try to rename automatically if there are no errors
-        if ($this->rename_installer()
-            && empty($template_variables['errors'])
-            && empty($template_variables['error_messages'])) {
+        if ($this->rename_installer($template_variables)) {
             ee()->load->helper('url');
             redirect($cp_login_url);
+        } else {
+            if (!isset($template_variables['update_notices'])) {
+                $template_variables['update_notices'] = [];
+            }
+            array_unshift($template_variables['update_notices'], (object) [
+                'is_header' => false,
+                'message' => lang('success_delete')
+            ]);
         }
 
         // Are we back here from a input?
-        if (ee()->input->get('download')) {
+        if (ee()->input->get('download') == 'mailing_list.zip') {
             ee()->load->helper('download');
             force_download(
                 'mailing_list.zip',
@@ -999,9 +1040,6 @@ class Wizard extends CI_Controller
         $template_variables['action'] = $this->set_qstr('show_success');
         $template_variables['method'] = 'get';
         $template_variables['cp_login_url'] = $cp_login_url;
-
-        // Only show download button if mailing list export exists
-        $template_variables['mailing_list'] = (file_exists(SYSPATH . '/user/cache/mailing_list.zip'));
 
         $this->set_output('success', $template_variables);
     }
@@ -1492,7 +1530,7 @@ class Wizard extends CI_Controller
         foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path) {
             $prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
             $this->userdata[$path] = rtrim(realpath($prefix . $this->userdata[$path]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-            $this->userdata[$path] = str_replace($this->base_path, '{base_path}', $this->userdata[$path]);
+            $this->userdata[$path] = str_replace(str_replace('/', DIRECTORY_SEPARATOR, $this->base_path), '{base_path}', $this->userdata[$path]);
         }
 
         $config = array(
@@ -1847,14 +1885,17 @@ class Wizard extends CI_Controller
      *
      * @return bool true if we can rename, false if we can't
      */
-    public function canRenameAutomatically()
+    public function canRenameAutomatically($template_variables)
     {
         if (version_compare($this->version, '3.0.0', '=')
             && file_exists(SYSPATH . 'user/cache/mailing_list.zip')) {
             return false;
         }
 
-        if (! empty($template_variables['error_messages'])) {
+        if (!empty($template_variables['mailing_list'])
+            || !empty($template_variables['update_notices'])
+            || !empty($template_variables['errors'])
+            || !empty($template_variables['error_messages'])) {
             return false;
         }
 
@@ -1865,9 +1906,9 @@ class Wizard extends CI_Controller
      * Rename the installer
      * @return void
      */
-    private function rename_installer()
+    private function rename_installer($template_variables)
     {
-        if (! $this->canRenameAutomatically()) {
+        if (! $this->canRenameAutomatically($template_variables)) {
             return false;
         }
 

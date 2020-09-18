@@ -1,5 +1,9 @@
 <?php $this->extend('_templates/login'); ?>
 
+<div class="login__logo">
+    <?php $this->embed('ee:_shared/ee-logo')?>
+</div>
+
 <div class="login__content">
 	<h1 class="login__title"><?=lang('reset_password')?><span class="icon-reset"></span></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>

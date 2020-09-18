@@ -113,10 +113,6 @@ class Addon {
 
 		if ($this->hasPlugin())
 		{
-			if ( ! defined('APP_VER') || version_compare(APP_VER, '3.0.0', '<'))
-			{
-				return TRUE;
-			}
 
 			// Check for an installed plugin
 			// @TODO restore the model approach once we have solved the

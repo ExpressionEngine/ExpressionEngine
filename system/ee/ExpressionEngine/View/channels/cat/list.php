@@ -1,18 +1,22 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
+	<div class="tbl-ctrls">
 	<?=form_open($base_url)?>
+  <div class="panel-heading">
+    <div class="form-btns form-btns-top">
+      <div class="title-bar title-bar--large">
+        <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+        <div class="title-bar__extra-tools">
+  				<?php if ($can_create_categories):?>
+  					<a class="tn button button--primary" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
+  				<?php endif; ?>
+  			</div>
+      </div>
+    </div>
+  </div>
 
+  <div class="panel-body">
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-
-		<div class="title-bar">
-			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
-
-			<div class="title-bar__extra-tools">
-				<?php if ($can_create_categories):?>
-					<a class="tn button button--small button--action" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
-				<?php endif; ?>
-			</div>
-		</div>
 
 		<div class="js-list-group-wrap">
 			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
@@ -51,7 +55,10 @@
 			],
 			'modal' => true
 		]); ?>
+  </div>
 	</form>
+</div>
+</div>
 
 
 <?php

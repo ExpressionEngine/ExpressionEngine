@@ -1,16 +1,18 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box snap mb table-list-wrap">
+<div class="box snap mb panel">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
-
-		<div class="app-notice-wrap">
-			<?=ee('CP/Alert')->get('view-members')?>
-		</div>
-
-		<div class="title-bar">
-			<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
-			<?php if (isset($filters)) echo $filters; ?>
+    <div class="panel-heading">
+  		<div class="app-notice-wrap">
+  			<?=ee('CP/Alert')->get('view-members')?>
+  		</div>
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+    			<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
+    			<?php if (isset($filters)) echo $filters; ?>
+        </div>
+      </div>
 		</div>
 
 

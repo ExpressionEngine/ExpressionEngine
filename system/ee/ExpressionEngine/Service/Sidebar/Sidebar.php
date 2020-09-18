@@ -15,58 +15,7 @@ use ExpressionEngine\Service\View\ViewFactory;
 /**
  * Sidebar Service
  */
-class Sidebar {
-
-	/**
-	 * @var array $items The items in this sidebar
-	 */
-	protected $items = [];
-
-	/**
-	 * @var ViewFactory $view A ViewFactory object with which we will render the sidebar.
-	 */
-	protected $view;
-
-	/**
-	 * @var FolderList $list Primary folder list for this sidebar
-	 */
-	protected $list;
-
-	/**
-	 * @var ActionBar $action_bar Primary action bar for this sidebar
-	 */
-	protected $action_bar;
-
-	/**
-	 * @var string $class Any extra classes to apply to the containing div
-	 */
-	protected $class;
-
-	/**
-	 * Constructor: sets the ViewFactory property
-	 *
-	 * @param ViewFactory $view A ViewFactory object to use with rendering
-	 */
-	public function __construct(ViewFactory $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Syntactic sugar ¯\_(ツ)_/¯
-	 */
-	public function make()
-	{
-		return $this;
-	}
-
-	/**
-	 * Creates a new Sidebar object for when the singleton won't do
-	 */
-	public function makeNew()
-	{
-		return new static($this->view);
-	}
+class Sidebar extends AbstractSidebar {
 
 	/**
 	 * Renders the sidebar
@@ -104,7 +53,7 @@ class Sidebar {
 		}
 
 		if ($is_legacy) {
-			$this->class .= ' legacy-sidebar';
+			$this->class .= ' ';
 		}
 
 		return $this->view->make('_shared/sidebar/sidebar')

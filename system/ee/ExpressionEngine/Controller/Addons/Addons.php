@@ -354,21 +354,30 @@ class Addons extends CP_Controller {
 			{
 				ee()->api_channel_fields->include_handler($addon);
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
-				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
-				{
-					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
+				$update_ft = false;
+				if (!method_exists($FT, 'update')) {
+					$update_ft = true;
+				} else {
+					if ($FT->update($fieldtype['version']) !== FALSE)
 					{
-						$model = ee('Model')->get('Fieldtype')
-							->filter('name', $addon)
-							->first();
-
-						$model->version = $addon_info->getVersion();
-						$model->save();
-
-						if ( ! isset($updated[$party][$addon]))
+						if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 						{
-							$updated[$party][$addon] = $fieldtype['name'];
+							$update_ft = true;
 						}
+					}
+				}
+				if ($update_ft)
+				{
+					$model = ee('Model')->get('Fieldtype')
+						->filter('name', $addon)
+						->first();
+
+					$model->version = $addon_info->getVersion();
+					$model->save();
+
+					if ( ! isset($updated[$party][$addon]))
+					{
+						$updated[$party][$addon] = $fieldtype['name'];
 					}
 				}
 			}
