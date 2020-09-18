@@ -73,7 +73,6 @@ class Cli {
 			$this->fail('No command given');
 
 		}
-
 		// Get command called
 		$this->commandCalled = $this->argv[1];
 		$this->availableCommands = $this->availableCommands();

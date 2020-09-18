@@ -15,7 +15,6 @@ defined('DIR_READ_MODE') || define('DIR_READ_MODE', 0755);
 defined('DIR_WRITE_MODE') || define('DIR_WRITE_MODE', 0777);
 defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH.'user/cache/');
 
-
 $cli = new ExpressionEngine\Cli\Cli;
 
 $cli->process();
