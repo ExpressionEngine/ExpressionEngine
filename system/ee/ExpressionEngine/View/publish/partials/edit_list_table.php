@@ -24,16 +24,10 @@
             </div>
         </div>
 
+        <?php $this->embed('_shared/table', $table); ?>
 
-
-
-
-
-          <?php $this->embed('_shared/table', $table); ?>
-
-          <?=$pagination?>
-          <?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-              <?php if ($can_edit || $can_delete) {
+        <?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+            <?php if ($can_edit || $can_delete) {
                   $options = [
                       [
                           'value' => "",
@@ -73,9 +67,12 @@
                       'options' => $options,
                       'modal' => true
                   ]);
-              }
-              ?>
-          <?php endif; ?>
+            }
+            ?>
+        <?php endif; ?>
+
+        <?=$pagination?>
+
       <?=form_close()?>
   </div>
 </div>
