@@ -8,7 +8,6 @@
         <div class="panel-heading">
             <div class="title-bar">
                 <h3 class="title-bar__title"><?=$cp_heading?></h3>
-                <!-- <?php if (isset($filters)) echo $filters; ?> -->
             </div>
         </div>
         <div class="filter-search-bar">
