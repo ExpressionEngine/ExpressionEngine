@@ -156,6 +156,7 @@ class FilterFactory {
 			if ( ! empty($html))
 			{
 				$filters[] = [
+					'name' => $filter->name,
 					'html' => $html,
 					'class' => $filter->list_class
 				];
@@ -169,6 +170,43 @@ class FilterFactory {
 		);
 
 		return $this->view->make('_shared/filters/filters')->render($vars);
+	}
+
+	/**
+	 * This will render the search filters down to HTML by looping through all the
+	 * Filters and calling their individual render() methods.
+	 *
+	 * @param URL $base_url A URL object reference to use when constructing URLs
+	 * @return string Returns HTML
+	 */
+	public function renderSearch(URL $base_url)
+	{
+		$url = clone $base_url;
+		$url->addQueryStringVariables($this->values());
+
+		$filters = array();
+
+		foreach ($this->filters as $filter)
+		{
+			$html = $filter->render($this->view, $url);
+			if ( ! empty($html))
+			{
+				$filters[$filter->name] = [
+					'name' => $filter->name,
+					'html' => $html,
+					'class' => $filter->list_class,
+					'value' => $filter->value()
+				];
+			}
+		}
+
+		$vars = array(
+			'filters' => $filters,
+			'has_reset' => $this->canReset(),
+			'reset_url' => $base_url
+		);
+
+		return $this->view->make('_shared/filters/search')->render($vars);
 	}
 
 	/**

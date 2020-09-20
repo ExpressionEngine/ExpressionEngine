@@ -194,15 +194,20 @@ abstract class Filter {
 			$value = $this->default_value;
 		}
 
+		// Create a filter URL without this filter (per-filter clear).
+		$url_without_filter = clone $url;
+		$url_without_filter->removeQueryStringVariable($this->name);
+
 		$filter = array(
-			'label'            => $this->label,
-			'name'             => $this->name,
-			'value'            => $value,
-			'has_list_filter'  => $this->has_list_filter,
-			'has_custom_value' => $this->has_custom_value,
-			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
-			'placeholder'      => $this->placeholder,
-			'options'          => $options,
+			'label'              => $this->label,
+			'name'               => $this->name,
+			'value'              => $value,
+			'has_list_filter'    => $this->has_list_filter,
+			'has_custom_value'   => $this->has_custom_value,
+			'custom_value'       => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
+			'placeholder'        => $this->placeholder,
+			'options'            => $options,
+			'url_without_filter' => $url_without_filter,
 		);
 		return $view->make('_shared/filters/filter')->render($filter);
 	}

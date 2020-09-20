@@ -74,7 +74,7 @@ class Edit extends AbstractPublishController {
 
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
-			ee()->input->get_post('search_in') ?: 'titles',
+			ee()->input->get_post('search_in') ?: 'titles_and_content',
 			false,
 			null, //ee()->input->get_post('view') ?: '',//view is not used atm
 			$extra_filters
@@ -110,6 +110,7 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars['filters'] = $filters->render($base_url);
+		$vars['filters_search'] = $filters->renderSearch($base_url);
 		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
 		$base_url->addQueryStringVariables(
