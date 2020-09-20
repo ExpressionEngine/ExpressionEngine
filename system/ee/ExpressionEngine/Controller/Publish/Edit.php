@@ -88,6 +88,7 @@ class Edit extends AbstractPublishController {
 		//which columns should we show
 		$selected_columns = $filter_values['columns'];
 		$selected_columns[] = 'checkbox';
+		// array_unshift($selected_columns, 'checkbox');
 
 		$columns = [];
 		foreach ($selected_columns as $column) {
