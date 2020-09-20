@@ -14,6 +14,7 @@
     </div>
 </div>
 
+<?php /*
 <div class="filter-search-bar__item">
     <button type="button" class="filter-bar__button js-dropdown-toggle button button--default button--small dropdown-open open" title="Columns"><i class="fas fa-columns"></i></button>
     <div class="dropdown dropdown__scroll ui-sortable" rev="toggle-columns" x-placement="bottom-end">
@@ -89,3 +90,5 @@
         </div>
     </div>
 </div>
+*/
+?>
