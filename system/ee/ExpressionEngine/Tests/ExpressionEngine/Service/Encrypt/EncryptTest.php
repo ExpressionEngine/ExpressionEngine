@@ -13,15 +13,15 @@ namespace ExpressionEngine\Tests\Service\Encrypt;
 use ExpressionEngine\Service\Encrypt;
 use PHPUnit\Framework\TestCase;
 
+require_once APPPATH.'helpers/multibyte_helper.php';
+
 class EncryptTest extends TestCase {
 
 	protected $base64_regex = '#^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$#';
 
 	protected function setUp(): void
     {
-		$this->markTestSkipped(
-			'Looks like multibyte helper is not loaded properly for tests'
-		);
+		
     }
 
 	public function testEncodeWithDefaultKey()
