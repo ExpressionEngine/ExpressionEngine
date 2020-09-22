@@ -23,6 +23,7 @@
 	<?php if ($alert->has_close_button): ?>
 		<a href="#" class="app-notice__controls js-notice-dismiss alert__close">
 			<span class="app-notice__dismiss alert__close-icon"></span>
+			<span class="hidden"><?=lang('close')?></span>
 		</a>
 	<?php endif; ?>
 </div>

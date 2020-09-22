@@ -19,6 +19,13 @@
 	</table>
 <?php else: ?>
 	<table cellspacing="0" <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
+		<?php
+		if (isset($table_attrs['id'])) {
+			$table_id = $table_attrs['id'];
+		} else {
+			$table_id = uniqid('tbl_');
+		}
+		?>
 		<thead>
 			<tr class="app-listing__row app-listing__row--head">
 				<?php
@@ -40,7 +47,8 @@
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input class="input--no-mrg" type="checkbox" title="select all">
+									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
@@ -116,7 +124,7 @@
 					<tr class="sub-heading"><td colspan="<?=$colspan?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
 				<?php
-				foreach ($rows as $row):
+				foreach ($rows as $row_id => $row):
 					if (isset($row['attrs']['class']))
 					{
 						$row['attrs']['class'] .= ' app-listing__row';
@@ -163,7 +171,9 @@
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td class="app-listing__cell app-listing__cell--input text--center">
+									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
 									<input
+										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
 										class="input--no-mrg"
 										name="<?=form_prep($column['name'])?>"
 										value="<?=form_prep($column['value'])?>"
@@ -245,7 +255,8 @@ else: ?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input type="checkbox" title="select all">
+									<label for="<?=$grid_field_name?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?=$grid_field_name?>-select-all" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
@@ -412,7 +423,7 @@ else: ?>
 								</button>
 								<?php endif ?>
 								<button type="button" class="button button--small button--default">
-									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
+									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></a>
 								</button>
 							</div>
 						</td>

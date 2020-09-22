@@ -376,6 +376,7 @@ context('Publish Page - Create', () => {
         })
 
         page.get('save').click()
+        cy.screenshot({capture: 'fullPage'});
         page.get('alert').contains('Entry Created')
 
         // Make sure the fields stuck around after save

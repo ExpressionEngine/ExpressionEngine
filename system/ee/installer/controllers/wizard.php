@@ -245,10 +245,10 @@ class Wizard extends CI_Controller
 
         // If we're not at a defined stage, this is the first step.
         if (! $action) {
-            //remove the update notices from previous installations
-            $this->update_notices->clear();
             //display the form
             if ($this->is_installed) {
+                //remove the update notices from previous installations
+                $this->update_notices->clear();
                 return $this->update_form();
             } else {
                 return $this->install_form();

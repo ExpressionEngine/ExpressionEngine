@@ -37,7 +37,7 @@ $lang = array(
 
 'jump_menu_item' => 'Jump Menu',
 
-'jump_menu_input' => 'Go To...',
+'jump_menu_input' => 'Jump To...',
 
 'menu_manager' => 'Menu Manager',
 
@@ -314,6 +314,8 @@ $lang = array(
 'recent_members' => 'Recent Members',
 
 'results' => 'results',
+
+'select_row' => 'Select Row',
 
 'select_all' => 'Select All',
 

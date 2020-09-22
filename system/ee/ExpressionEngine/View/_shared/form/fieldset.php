@@ -81,7 +81,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 <<?=$element?> id="fieldset-<?=implode('-', array_keys($setting['fields']))?>" class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<label><?=lang($setting['title'])?></label>
+		<label for="smth"><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
