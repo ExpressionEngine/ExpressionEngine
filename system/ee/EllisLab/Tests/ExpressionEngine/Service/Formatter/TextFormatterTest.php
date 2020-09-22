@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\Formatter\Formats\Text;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../../EllisLab/ExpressionEngine/Boot/boot.common.php';
+require_once APPPATH.'helpers/multibyte_helper.php';
 
 class TextFormatterTest extends TestCase {
 
