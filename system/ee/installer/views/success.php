@@ -1,4 +1,4 @@
-<div class="box <?=empty($update_notices) ? 'success' : 'warn'?>">
+<div class="box <?=empty($update_notices) || count($update_notices)==1 ? 'success' : 'warn'?>">
 	<h1><?=$title?><span class="icon-success"></span></h1>
 	<div class="updater-msg">
 		<p><?=$success_note?></p>
