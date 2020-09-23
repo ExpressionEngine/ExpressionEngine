@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_3_2;
+
 /**
  * Update
  */
@@ -22,7 +24,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'update_superadmin_permissions'
 			)
@@ -141,6 +143,7 @@ class Updater {
 		ee()->db->where('group_id', 1)
 			->update('member_groups', $permissions);
 	}
+
 }
 
 // EOF

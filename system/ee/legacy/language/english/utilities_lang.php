@@ -17,7 +17,9 @@ $lang = array(
 
 'data_operations' => 'Data Operations',
 
-'debug_extensions' => 'Debug Extensions',
+'manage_extensions' => 'Manage Extensions',
+
+'debug_tools' => 'Debug Tools',
 
 'default' => 'Default',
 
@@ -493,6 +495,52 @@ $lang = array(
 'validate_addresses_desc' => 'Check the email for corret format and check that the domain exists.',
 
 'export_email_addresses_fail' => 'Export Failed',
+
+/* Debug Tools */
+
+'debug_tools_overview' => 'Overview',
+
+'debug_tools_instruction' => '<a href="%s">Click here</a> to navigate to Developer &rarr; Utilities &rarr; Debug Tools in Control Panel for details and fix.',
+
+'debug_tools_debug_tags' => 'Debug Template Tags',
+
+'debug_tools_broken_tags_found' => 'We found %s broken or problematic template tags.',
+
+'debug_tools_corrupt_categories' => 'Corrupt categories',
+
+'debug_tools_corrupt_categories_found' => 'We found %s corrupt categories.',
+
+'tag_inclusions' => 'Tag inclusions',
+
+'debug_tools_fix_corrupt_categories' => 'Fix corrupt categories',
+
+'debug_tools_categories_fixed' => 'Corrupt categories have been fixed',
+
+'debug_tools_duplicate_layout_tabs' => 'Duplicate Channel Layout Tabs',
+
+'debug_tools_duplicate_layout_tabs_found' => 'We found %s duplicate Channel Layout tabs.',
+
+'debug_tools_remove_duplicate_layout_tabs' => 'Remove duplicate layout tabs',
+
+'debug_tools_fieldtypes' => 'Debug Fieldtypes',
+
+'debug_tools_show_missing_fieldtypes' => 'Show missing fieldtypes',
+
+'debug_tools_found_missing_fieldtypes' => 'We found %s missing fieldtypes.',
+
+'debug_tools_missing_fieldtypes' => 'Missing Fieldtypes',
+
+'debug_tools_missing_fieldtypes_desc' => 'The following fieldtypes are found in the database, but are not actually installed properly. This will cause issues with editing channels, fields, and entries. To resolve this, either install the missing addons or remove the fields from their tables.',
+
+'debug_tools_no_missing_fieldtypes_desc' => 'There are no missing fieldtypes in the database. Awesome!',
+
+'debug_tools_installed_unused_fieldtypes' => 'Installed But Unused Fieldtypes',
+
+'debug_tools_installed_unused_fieldtypes_desc' => 'These fieldtypes are installed, but are not currently in use.',
+
+'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
+
+'debug_tools_members' => 'Debug Members',
 
 );
 

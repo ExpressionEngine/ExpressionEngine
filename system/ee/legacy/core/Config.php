@@ -1805,8 +1805,7 @@ class EE_Config {
 				$uri = implode('/', $uri);
 			}
 
-			$suffix = ($this->item('url_suffix') == FALSE) ? '' : $this->item('url_suffix');
-			return $this->slash_item('base_url').$this->item('index_page').'?'.trim($uri, '/').$suffix;
+			return reduce_double_slashes($this->slash_item('base_url') . $this->item('index_page') . trim($uri, '/'));
 		}
 		else
 		{

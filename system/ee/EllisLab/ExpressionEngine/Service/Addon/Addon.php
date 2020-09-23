@@ -113,11 +113,6 @@ class Addon {
 
 		if ($this->hasPlugin())
 		{
-			if ( ! defined('APP_VER') || version_compare(APP_VER, '3.0.0', '<'))
-			{
-				return TRUE;
-			}
-
 			// Check for an installed plugin
 			// @TODO restore the model approach once we have solved the
 			// circular dependency between the Addon service and the
@@ -317,6 +312,20 @@ class Addon {
 	}
 
 	/**
+	 * Get the *_upgrade class
+	 *
+	 * @return string The fqcn or $class
+	 */
+	public function getUpgraderClass()
+	{
+		$this->requireFile('upgrade');
+
+		$class = ucfirst($this->shortname).'_upgrade';
+
+		return $this->getFullyQualified($class);
+	}
+
+	/**
 	 * Get the *_mcp class
 	 *
 	 * @return string The fqcn or $class
@@ -426,6 +435,16 @@ class Addon {
 	public function hasExtension()
 	{
 		return $this->hasFile('ext');
+	}
+
+	/**
+	 * Has an upd.* file?
+	 *
+	 * @return bool TRUE of it does, FALSE if not
+	 */
+	public function hasUpgrader()
+	{
+		return $this->hasFile('upgrade');
 	}
 
 	/**

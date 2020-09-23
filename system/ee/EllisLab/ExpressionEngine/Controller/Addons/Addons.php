@@ -23,6 +23,11 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
+	private $addonProviders = [
+		'EllisLab',
+		'Packet Tide',
+	];
+
 	public $assigned_modules = array();
 
 	/**
@@ -176,6 +181,14 @@ class Addons extends CP_Controller {
 			'first' => lang('addons'),
 			'third' => lang('third_party_addons')
 		);
+
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
 
 		$vars = array(
 			'tables' => array(
@@ -474,9 +487,14 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
+				$party = (in_array($addon['developer'], $this->addonProviders))
+							? 'first'
+							: 'third';
+				
 				$addons[$party][$name] = $addon;
+
 			}
+
 		}
 
 		return $addons;

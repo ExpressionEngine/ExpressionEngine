@@ -140,41 +140,27 @@ class Pages_tab {
 	public function validate($entry, $values)
 	{
 		$validator = ee('Validation')->make(array(
-			'pages_template_id' => 'validTemplate|validHasTemplate',
-			'pages_uri' => 'validURI|validHasTemplate|validSegmentCount|notDuplicated',
+			'pages_template_id' => 'whenURI[pages_uri]|required|validTemplate',
+			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
 		));
 
 		$validator->defineRule('validTemplate', $this->makeValidTemplateRule($values));
 		$validator->defineRule('validURI', $this->makeValidURIRule());
 		$validator->defineRule('validSegmentCount', $this->makeValidSegmentCountRule());
 		$validator->defineRule('notDuplicated', $this->makeNotDuplicatedRule($entry));
-		$validator->defineRule('validHasTemplate', $this->makeValidHasTemplateRule($values));
 
-		return $validator->validate($values);
-	}
-
-	/**
-	 * Validates whether a pages URI has been selected with a template
-	 * @param  array 	$values array of pages values coming from tab
-	 * @return Closure The logic needed to validate the data.
-	 */
-	private function makeValidHasTemplateRule($values)
-	{
-
-		return function($field, $value) use($values)
+		$data = $_POST;
+		$validator->defineRule('whenURI', function($key, $value, $parameters, $rule) use ($data)
 		{
-
-			if(
-				$values['pages_uri'] === ""
-				|| ($values['pages_uri'] !== "" && $values['pages_template_id'] === ""))
-			{
-				return 'invalid_template';
+			if (empty($data['pages__pages_uri']) OR $data['pages__pages_uri'] == lang('example_uri')) {
+				return $rule->skip();
 			}
 
-			return true;
+			return TRUE;
 
-		};
+		});
 
+		return $validator->validate($values);
 	}
 
 	/**
