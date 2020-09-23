@@ -47,6 +47,9 @@ $lang = array(
 'updateFiles_step' =>
 'Updating files',
 
+'updateAddons_step' =>
+'Checking addons for automatic updates',
+
 'files_not_writable' =>
 'The following paths are not writable:
 

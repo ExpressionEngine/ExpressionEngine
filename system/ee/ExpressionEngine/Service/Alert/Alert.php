@@ -150,13 +150,13 @@ class Alert {
 			$this->body .= '<ul>';
 			foreach ($item as $i)
 			{
-				$this->body .= '<li>' . $i . '</li>';
+				$this->body .= '<li>' . ee()->security->xss_clean($i) . '</li>';
 			}
 			$this->body .= '</ul>';
 		}
 		else
 		{
-			$this->body .= '<p' . $class . '>' . $item . '</p>';
+			$this->body .= '<p' . $class . '>' . ee()->security->xss_clean($item) . '</p>';
 		}
 		return $this;
 	}
@@ -264,7 +264,7 @@ class Alert {
 	 */
 	public function withTitle($title)
 	{
-		$this->title = $title;
+		$this->title = ee()->security->xss_clean($title);
 		return $this;
 	}
 

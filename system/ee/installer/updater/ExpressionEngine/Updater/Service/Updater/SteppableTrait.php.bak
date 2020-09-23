@@ -8,24 +8,18 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\Validation\Rule;
-
-use ExpressionEngine\Service\Validation\ValidationRule;
+namespace ExpressionEngine\Updater\Service\Updater;
 
 /**
- * Numeric Validation Rule
+ * This is a mock trait for unit tests. This file will be replaced with the
+ * actual trait file upon build.
  */
-class Numeric extends ValidationRule {
+trait SteppableTrait {
 
-	public function validate($key, $value)
+	public function setSteps(Array $steps)
 	{
-		return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
+		$this->steps = $steps;
 	}
 
-	public function getLanguageKey()
-	{
-		return 'is_numeric';
-	}
 }
-
 // EOF

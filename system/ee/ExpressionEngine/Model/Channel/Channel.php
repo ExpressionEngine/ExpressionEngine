@@ -570,6 +570,11 @@ class Channel extends StructureModel {
 	 */
 	public function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'entry_date')
 			->filter('channel_id', $this->getId());

@@ -40,6 +40,21 @@ class Stats_upd extends Installer
 			ee()->dbforge->drop_column('stats', 'weblog_id');
 		}
 
+		// Add stat sync action
+		if (version_compare($current, '2.1', '<'))
+		{
+
+			// Create syncing action
+			$data = [
+				'class'			=> 'Stats',
+				'method'		=> 'sync_stats',
+				'csrf_exempt'	=> 1,
+			];
+
+			ee()->db->insert('actions', $data);
+
+		}
+
 		return TRUE;
 	}
 

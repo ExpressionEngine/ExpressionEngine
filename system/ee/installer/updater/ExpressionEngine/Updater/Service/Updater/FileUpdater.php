@@ -246,9 +246,12 @@ class FileUpdater {
 
 		$source = str_replace("\\", "/", $source);
 		$destination = str_replace("\\", "/", $destination);
+		$exclusions = array_map(function($path) { return str_replace("\\", "/", $path); }, $exclusions);
 
 		foreach ($contents as $path)
 		{
+			$path = str_replace("\\", "/", $path);
+
 			// Skip exclusions and .DS_Store
 			if (in_array($path, $exclusions) OR strpos($path, '.DS_Store') !== FALSE)
 			{
