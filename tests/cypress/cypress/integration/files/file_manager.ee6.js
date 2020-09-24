@@ -433,7 +433,7 @@ context('File Manager', () => {
 		page.get('sidebar').contains("About").click()
 		cy.hasNoErrors()
 
-		page.get('sidebar').find('.active').invoke('text').then((text) => {
+		page.get('sidebar').find('.active > a').invoke('text').then((text) => {
 			expect(text.trim()).equal('About')
 		})
 

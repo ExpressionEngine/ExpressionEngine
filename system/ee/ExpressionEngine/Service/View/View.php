@@ -143,9 +143,8 @@ class View {
 		}
 
 		$buffer = ob_get_contents();
-		if ($buffer) {
-			ob_end_clean();
-		}
+
+		ob_end_clean();
 
 		return $buffer;
 	}
@@ -165,9 +164,9 @@ class View {
 
 		ob_start();
 		echo $view->render($vars);
-		if (ob_get_length()){
-			ob_end_flush();
-		}
+
+		ob_end_flush();
+
 	}
 
 	/**

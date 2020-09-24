@@ -6,6 +6,7 @@
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
     "animationDistanceThreshold": 20,
+    "waitForAnimations": false,
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
