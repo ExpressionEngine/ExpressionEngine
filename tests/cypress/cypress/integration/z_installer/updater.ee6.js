@@ -20,6 +20,7 @@ context('Updater', () => {
   beforeEach(function(){
 
     cy.task('db:clear')
+    cy.task('cache:clear')
 
     cy.task('installer:enable')
     cy.task('installer:replace_config', {file: config})
@@ -200,6 +201,7 @@ context('Updater', () => {
   })
 
   it('updates a core installation successfully and installs the member module', () => {
+    
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-3.0.5-core.php', options: {
@@ -282,6 +284,8 @@ context('Updater', () => {
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
       page.load()
+
+      cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page

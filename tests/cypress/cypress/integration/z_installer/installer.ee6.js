@@ -19,9 +19,11 @@ context('Installer', () => {
   beforeEach(function(){
     // Delete existing config and create a new one
     cy.task('db:clear')
+    cy.task('cache:clear')
     cy.task('installer:enable')
     cy.task('installer:create_config').then((path)=>{
       cy.log(path)
+      //cy.screenshot({capture: 'runner'})
     })
 
     let installer_folder = '../../system/ee/installer';
