@@ -117,6 +117,7 @@ context('Updater', () => {
             app_version: '2.20.0'
           }
         }).then(()=>{
+          cy.wait(5000)
           test_update()
           test_templates()
         })
@@ -276,6 +277,9 @@ context('Updater', () => {
   })
 
   function test_update(mailinglist = false, expect_login = false) {
+    cy.log('wait 5 sec');
+    cy.wait(5000)
+    
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)
