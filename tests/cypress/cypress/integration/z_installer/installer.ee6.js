@@ -19,17 +19,25 @@ context('Installer', () => {
   beforeEach(function(){
     // Delete existing config and create a new one
     cy.task('db:clear')
+    cy.task('cache:clear')
     cy.task('installer:enable')
-    cy.task('installer:create_config').then((path)=>{
-      cy.log(path)
-    })
 
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
         if (files[item].indexOf('system/ee/installer') >= 0) {
           installer_folder = files[item];
-          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'}).then(() => {
+            cy.task('installer:create_config').then((path)=>{
+              cy.log(path)
+              //cy.screenshot({capture: 'runner'})
+            })
+          })
+        } else {
+          cy.task('installer:create_config').then((path)=>{
+            cy.log(path)
+            //cy.screenshot({capture: 'runner'})
+          })
         }
       }
     })
@@ -238,6 +246,9 @@ context('Installer', () => {
 
   context('when using invalid database credentials', () => {
     it('shows an error with no database credentials', () => {
+      cy.wait(5000) //just wait a bit if not everything is clean from previous test
+      page.load()
+
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()

@@ -20,6 +20,7 @@ context('Updater', () => {
   beforeEach(function(){
 
     cy.task('db:clear')
+    cy.task('cache:clear')
 
     cy.task('installer:enable')
     cy.task('installer:replace_config', {file: config})
@@ -116,6 +117,7 @@ context('Updater', () => {
             app_version: '2.20.0'
           }
         }).then(()=>{
+          cy.wait(5000)
           test_update()
           test_templates()
         })
@@ -200,6 +202,7 @@ context('Updater', () => {
   })
 
   it('updates a core installation successfully and installs the member module', () => {
+    
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-3.0.5-core.php', options: {
@@ -239,7 +242,7 @@ context('Updater', () => {
         cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
           from_version = '5.3.0'
           expect_login = true
-          test_update()
+          test_update(false, expect_login)
           page.get('success_actions').should('not.exist')
 
         })
@@ -273,7 +276,10 @@ context('Updater', () => {
     })
   })
 
-  function test_update(mailinglist = false) {
+  function test_update(mailinglist = false, expect_login = false) {
+    cy.log('wait 5 sec');
+    cy.wait(5000)
+    
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)
@@ -282,6 +288,8 @@ context('Updater', () => {
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
       page.load()
+
+      cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page

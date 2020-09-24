@@ -319,7 +319,8 @@ class Filesystem {
 			throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
 		}
 
-		rename(
+		// Suppressing potential warning when renaming a directory to one that already exists.
+		@rename(
 			$this->normalize($source),
 			$this->normalize($dest)
 		);
@@ -537,13 +538,13 @@ class Filesystem {
 	 */
 	public function isWritable($path)
 	{
-		// If we're on a Unix server we call is_writable
+		// If we're on a Unix server with safe_mode off we call is_writable
 		if (DIRECTORY_SEPARATOR == '/')
 		{
 			return is_writable($this->normalize($path));
 		}
 
-		// For windows servers installations we'll actually
+		// For windows servers and safe_mode "on" installations we'll actually
 		// write a file then read it.  Bah...
 		if ($this->isDir($path))
 		{
@@ -588,8 +589,8 @@ class Filesystem {
 	/**
 	 * Returns the amount of free bytes at a given path
 	 *
-	 * @param	String	$path	Path to check
-	 * @return	Mixed	Number of bytes as a float, or FALSE on failure
+	 * @param   String  $path   Path to check
+	 * @return  Mixed   Number of bytes as a float, or FALSE on failure
 	 */
 	public function getFreeDiskSpace($path = '/')
 	{
@@ -599,7 +600,7 @@ class Filesystem {
 	/**
 	 * include() a file
 	 *
-	 * @param	string	$filename	Full path to file to include
+	 * @param   string  $filename   Full path to file to include
 	 */
 	public function include_file($filename)
 	{
@@ -665,6 +666,51 @@ class Filesystem {
 
 		return $path;
 	}
+
+	/**
+     * Finds string and replaces it
+     * @param  string $file
+     * @param  string $search
+     * @param  string $replace
+     * @return void
+     */
+    public function findAndReplace($file, $search, $replace)
+    {
+
+        if ($this->exists($file)) {
+
+            return;
+
+        }
+
+        // If we're given a directory iterate over the files and recursively call findAndReplace()
+        if ($this->isDir($file)) {
+
+            foreach ($this->getDirectoryContents($file) as $file) {
+
+                $this->findAndReplace($file, $search, $replace);
+
+            }
+
+            return;
+
+        }
+
+        $contents = $this->read($file);
+
+        if (strpos($search, '/') === 0) {
+
+            $contents = preg_replace($search, $replace, $contents);
+
+        } else {
+
+            $contents = str_replace($search, $replace, $contents);
+
+        }
+
+        $this->write($file, $contents, true);
+
+    }
 
 	/**
 	 * Add EE's default index file to a directory

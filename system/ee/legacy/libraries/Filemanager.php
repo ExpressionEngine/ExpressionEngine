@@ -1263,7 +1263,7 @@ class Filemanager {
 				return FALSE;
 			}
 
-			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			$resized_path = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 			// Does the thumb image exist
 			if (file_exists($resized_path.$prefs['file_name']))
