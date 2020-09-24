@@ -69,7 +69,10 @@ class Profile extends CP_Controller {
 
 		$this->generateSidebar();
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			'' => lang('profile')
+		);
 
 		ee()->view->header = array(
 			'title' => $this->member->username

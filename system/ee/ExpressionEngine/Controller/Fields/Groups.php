@@ -42,10 +42,6 @@ class Groups extends AbstractFieldsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
-		);
-
 		$this->generateSidebar();
 
 		$vars = array(
@@ -138,6 +134,12 @@ class Groups extends AbstractFieldsController {
 			return ee()->cp->render('_shared/form', $vars);
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			ee('CP/URL')->make('fields')->compile() => lang('fields'),
+			'' => lang('create_field_group')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -154,10 +156,6 @@ class Groups extends AbstractFieldsController {
 		{
 			show_404();
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
-		);
 
 		$this->generateSidebar($id);
 
@@ -236,6 +234,12 @@ class Groups extends AbstractFieldsController {
 		}
 
 		ee()->view->cp_page_title = lang('edit_field_group');
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			ee('CP/URL')->make('fields')->compile() => lang('fields'),
+			'' => lang('edit_field_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}
