@@ -58,6 +58,11 @@ class Files extends AbstractFilesController {
 			ee()->view->cp_heading = lang('all_files');
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			'' => lang('files')
+		);
+
 		if ($view_type == 'thumb') {
 			ee()->cp->render('files/index-' . $view_type, $vars);
 		} else {
@@ -118,6 +123,11 @@ class Files extends AbstractFilesController {
 
 		$this->stdHeader(
 			ee()->view->can_sync_directory ? $id : NULL
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			'' => $dir->name
 		);
 
 		if ($view_type == 'thumb') {
@@ -192,6 +202,12 @@ class Files extends AbstractFilesController {
 		$this->generateSidebar($dir_id);
 		$this->stdHeader($dir_id);
 		ee()->view->cp_page_title = lang('file_upload');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files/directory/' . $dir_id)->compile() => ee('Model')->get('UploadDestination', $dir_id)->fields('name')->first()->name,
+			'' => lang('upload')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}
