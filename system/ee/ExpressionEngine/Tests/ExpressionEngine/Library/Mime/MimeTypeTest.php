@@ -19,7 +19,7 @@ class MimeTypeTest extends TestCase {
 	protected $safe_mime_types = array();
 	protected $exception_class;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->safe_mime_types = array(
 			'application/pdf',
@@ -35,7 +35,7 @@ class MimeTypeTest extends TestCase {
 		$this->exception_class = (PHP_VERSION_ID < 70000) ? 'PHPUnit_Framework_Error' : 'TypeError';
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->mime_type = NULL;
 	}
@@ -53,7 +53,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException($exception);
+			$this->expectException($exception);
 		}
 		$this->mime_type = new MimeType($in);
 		$this->assertEquals($this->mime_type->getWhiteList(), $out, $description);
@@ -61,7 +61,7 @@ class MimeTypeTest extends TestCase {
 
 	public function testEmptyAddMimeTypesArgument()
 	{
-		$this->setExpectedException($this->exception_class);
+		$this->expectException($this->exception_class);
 		$this->mime_type->addMimeTypes();
 	}
 
@@ -72,7 +72,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException($exception);
+			$this->expectException($exception);
 		}
 		$this->mime_type = new MimeType();
 		$this->mime_type->addMimeTypes($in);
@@ -109,7 +109,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException('InvalidArgumentException');
+			$this->expectException('InvalidArgumentException');
 		}
 		$this->mime_type = new MimeType();
 		$this->mime_type->addMimeType($in);
@@ -162,7 +162,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException('Exception');
+			$this->expectException('Exception');
 		}
 		$this->assertEquals($this->mime_type->ofFile($in), $out, $description);
 	}
@@ -198,7 +198,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException('Exception');
+			$this->expectException('Exception');
 		}
 		$this->assertEquals($this->mime_type->fileIsImage($in), $out, $description);
 	}
@@ -210,7 +210,7 @@ class MimeTypeTest extends TestCase {
 	{
 		if ($exception)
 		{
-			$this->setExpectedException('Exception');
+			$this->expectException('Exception');
 		}
 		$this->assertEquals($this->mime_type->fileIsSafeForUpload($in), $out, $description);
 	}
