@@ -241,7 +241,7 @@ context('Updater', () => {
         cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
           from_version = '5.3.0'
           expect_login = true
-          test_update()
+          test_update(false, expect_login)
           page.get('success_actions').should('not.exist')
 
         })
@@ -275,7 +275,7 @@ context('Updater', () => {
     })
   })
 
-  function test_update(mailinglist = false) {
+  function test_update(mailinglist = false, expect_login = false) {
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)
@@ -312,7 +312,7 @@ context('Updater', () => {
       if (mailinglist == true || expect_login == false) {
         cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
       } else {
-        cy.get('body:contains("Log In")').contains("Log In", { matchCase: false, timeout: 200000 })
+        cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
       }
 
       cy.hasNoErrors()
