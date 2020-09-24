@@ -56,6 +56,7 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:load': (file) => {
+            fs.delete('../../system/user/cache/default_site/');
             return db.load(file)
         }
     })
