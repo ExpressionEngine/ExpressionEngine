@@ -312,7 +312,7 @@ context('Updater', () => {
       if (mailinglist == true || expect_login == false) {
         cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
       } else {
-        cy.get('body:contains("Log in")').contains("Log in", { matchCase: false, timeout: 200000 })
+        cy.get('body:contains("Log In")').contains("Log In", { matchCase: false, timeout: 200000 })
       }
 
       cy.hasNoErrors()
