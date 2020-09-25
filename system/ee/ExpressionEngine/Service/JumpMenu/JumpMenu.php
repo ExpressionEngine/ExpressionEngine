@@ -210,7 +210,7 @@ class JumpMenu extends AbstractJumpMenu
             'logout' => array(
                 'icon' => 'fa-sign-out-alt',
                 'command' => 'logout log_out',
-                'dynamic' => true,
+                'dynamic' => false,
                 'addon' => false,
                 'target' => 'login/logout'
             ),
@@ -693,7 +693,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command_title' => 'enable_devlog_alerts'
                     ),
                 // Enable GZIP compression?
-                    'fieldset-efieldset-gzip_output' => array(
+                    'fieldset-gzip_output' => array(
                         'trail' => [
                             'settings',
                             'debugging_output'
@@ -1410,7 +1410,7 @@ class JumpMenu extends AbstractJumpMenu
         //if this is multi-site install, add links
         if (ee()->config->item('multiple_sites_enabled') === 'y') {
             $site_list = ee()->session->userdata('assigned_sites');
-            if (count($site_list) > 1) {
+            if (!empty($site_list) && count($site_list) > 1) {
                 $items[1]['switchSite'] = array(
                     'icon' => 'fa-globe',
                     'command' => 'switch site msm',
