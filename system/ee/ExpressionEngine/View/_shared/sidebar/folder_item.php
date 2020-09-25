@@ -11,10 +11,10 @@
 	<div class="button-toolbar toolbar">
 		<div class="button-group button-group-xsmall">
 			<?php if ($edit): ?>
-			<a href="<?=$edit_url?>" title="<?=lang('edit')?>" class="edit button button--default"></a>
+			<a href="<?=$edit_url?>" title="<?=lang('edit')?>" class="edit button button--default"><span class="hidden"><?=lang('edit')?></span></a>
 			<?php endif; ?>
 			<?php if ($remove): ?>
-			<a class="remove m-link button button--default" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"></a>
+			<a class="remove m-link button button--default" rel="modal-confirm-<?=$modal_name?>" href="" title="<?=lang('remove')?>" data-confirm="<?=$confirm?>" data-<?=$key?>="<?=$value?>"><span class="hidden"><?=lang('remove')?></span></a>
 			<?php endif; ?>
 		</div>
 	</div>

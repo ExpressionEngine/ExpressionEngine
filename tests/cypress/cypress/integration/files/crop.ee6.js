@@ -33,7 +33,7 @@ context('File Manager / Crop File', () => {
         // @file_name = page.load
         cy.hasNoErrors()
 
-       
+
 
         //page.get('breadcrumb').should('exist')
         //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
@@ -355,8 +355,10 @@ context('File Manager / Crop File', () => {
     })
 
     it('can navigate back to the filemanger', function() {
-        cy.get('.ee-main a:contains("Files")').click()
+        cy.get('.ee-sidebar__items a:contains("Files")').click()
         cy.hasNoErrors()
+
+        page.get('heading').contains('Files')
 
         // file_manager = FileManager.new
         // file_manager.displayed?

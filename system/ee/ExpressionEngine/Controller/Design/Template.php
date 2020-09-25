@@ -246,7 +246,7 @@ class Template extends AbstractDesignController {
     			{
     				$template->save();
     				// Save a new revision
-    				$this->saveNewTemplateRevision($template);
+    				$template->saveNewTemplateRevision($template);
 
     				ee('CP/Alert')->makeInline('shared-form')
     					->asSuccess()
@@ -1118,10 +1118,12 @@ class Template extends AbstractDesignController {
 				->with('Site')
 				->first();
 
-			$results[$template->getId()] = [
-				'label' => $template->getPath(),
-				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
-			];
+			if (!empty($template)) {
+				$results[$template->getId()] = [
+					'label' => $template->getPath(),
+					'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+				];
+			}
 		}
 
 		return $results;

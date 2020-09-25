@@ -24,6 +24,7 @@ jobs:
         #         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
         strategy:
+            fail-fast: false
             matrix:
                 php: [7.3, 7.2, 7.1, 5.6]
                 os: [ubuntu-18.04]
@@ -52,6 +53,7 @@ jobs:
               run: |
                 cp tests/docker/EllisLabUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
                 sudo chmod -R 777 system/user/templates
                 sudo chmod -R 777 system/user/language

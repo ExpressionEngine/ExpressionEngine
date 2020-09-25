@@ -143,6 +143,7 @@ class View {
 		}
 
 		$buffer = ob_get_contents();
+
 		ob_end_clean();
 
 		return $buffer;
@@ -163,7 +164,9 @@ class View {
 
 		ob_start();
 		echo $view->render($vars);
+
 		ob_end_flush();
+
 	}
 
 	/**

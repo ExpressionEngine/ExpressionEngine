@@ -50,7 +50,8 @@ if ($wrap): ?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input type="checkbox" title="select all">
+									<label for="<?php if ($grid_input) { echo $grid_field_name; } elseif (isset($table_attrs['id'])) { echo $table_attrs['id']; } ?>select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?php if ($grid_input) { echo $grid_field_name; } elseif (isset($table_attrs['id'])) { echo $table_attrs['id']; } ?>select-all" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>

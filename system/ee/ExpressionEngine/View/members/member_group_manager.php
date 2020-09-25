@@ -34,7 +34,6 @@
 		'ajax_url' => ee('CP/URL')->make('/members/groups/confirm')
 	]); ?>
 	<?php endif; ?>
-	<?php endif; ?>
 <?=form_close()?>
 
 <?php

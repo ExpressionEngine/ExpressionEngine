@@ -11,7 +11,7 @@
 	<div class="main-nav__toolbar">
 		<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
 			<?php foreach ($header['toolbar_items'] as $name => $item): ?>
-				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
+				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"><span class="hidden"><?=$item['title']?></span></a>
 			<?php endforeach; ?>
 		<?php endif ?>
 

@@ -37,7 +37,7 @@ $lang = array(
 
 'jump_menu_item' => 'Jump Menu',
 
-'jump_menu_input' => 'Go To...',
+'jump_menu_input' => 'Jump To...',
 
 'menu_manager' => 'Menu Manager',
 
@@ -314,6 +314,8 @@ $lang = array(
 'recent_members' => 'Recent Members',
 
 'results' => 'results',
+
+'select_row' => 'Select Row',
 
 'select_all' => 'Select All',
 
@@ -643,7 +645,7 @@ $lang = array(
 
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
+'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
 'up_to_date' => 'Up to date!',
 

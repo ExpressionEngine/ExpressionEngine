@@ -126,7 +126,10 @@ class El_pings {
 			catch (\Exception $e)
 			{
 				// don't scare the user with whatever random error, but store it for debugging
-				$version_file = $e->getMessage();
+				$version_file = [
+					'error' => true,
+					'error_msg' => $e->getMessage()
+				];
 			}
 
 			// Cache version information for a day
@@ -170,6 +173,8 @@ class El_pings {
 	public function getUpgradeInfo($force_update = FALSE)
 	{
 		$version_file = $this->get_version_info($force_update);
+
+		if (!$version_file) return $version_file;
 
 		$version_info = array(
 			'version' => $version_file['latest_version'],

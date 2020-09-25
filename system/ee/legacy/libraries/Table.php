@@ -987,7 +987,11 @@ class EE_Table {
 			{
 				if (empty($link)) continue;
 
-				$url = clone $this->base_url;
+				if (is_object($this->base_url)) {
+					$url = clone $this->base_url;
+				} else {
+					$url = ee('CP/URL', $this->base_url);
+				}
 
 				$offset = str_replace('/', '', $link['pagination_url']);
 				if ( ! empty($offset))

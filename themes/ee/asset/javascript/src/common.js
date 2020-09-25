@@ -974,7 +974,7 @@ $(document).ready(function(){
 
 							// Make sure the app notice has a close button
 							if (!alert.find('.app-notice__controls').length) {
-								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span></a>`).insertAfter(alert.find('.app-notice__content'))
+								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a>`).insertAfter(alert.find('.app-notice__content'))
 							}
 						})
 					}

@@ -22,8 +22,19 @@ module.exports = (on, config) => {
         database: config.env.DB_DATABASE
     });
 
+    const db_defaults = {
+        database: config.env.DB_DATABASE,
+        dbdriver: 'mysqli',
+        hostname: config.env.DB_HOST,
+        password: config.env.DB_PASSWORD,
+        username: config.env.DB_USER
+    }
+
     const Filesystem = require('./filesystem.js');
     const fs = new Filesystem;
+
+    const Installer = require('./installer.js');
+    const installer = new Installer;
 
     const baseUrl = config.env.CYPRESS_BASE_URL || null;
     if (baseUrl) {
@@ -31,14 +42,29 @@ module.exports = (on, config) => {
     }
 
     on('task', {
+        'db:clear': () => {
+            return db.truncate()
+        }
+    })
+
+    on('task', {
         'db:seed': () => {
+            fs.delete('../../system/user/cache/default_site/');
             return db.seed(config.env.DB_DUMP)
         }
     })
 
     on('task', {
         'db:load': (file) => {
+            fs.delete('../../system/user/cache/default_site/');
             return db.load(file)
+        }
+    })
+
+    on('task', {
+        'cache:clear': () => {
+            fs.delete('../../system/user/cache/default_site/');
+            return true
         }
     })
 
@@ -91,6 +117,24 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'filesystem:exists': (file) => {
+            return fs.exists(file);
+        }
+    })
+
+    on('task', {
+        'filesystem:read': (file) => {
+            return fs.read(file);
+        }
+    })
+
+    on('task', {
+        'filesystem:rename': ({from, to}) => {
+            return fs.rename(from, to);
+        }
+    })
+
+    on('task', {
         'ee:config': ({ item, value, site_id }) => {
             if (!item) {
                 return;
@@ -120,6 +164,76 @@ module.exports = (on, config) => {
             return db.seed('channel_sets/relationships-specified-channels.sql')
         }
     })
+
+    on('task', {
+        'installer:enable': () => {
+            return installer.enable_installer()
+        }
+    })
+
+    on('task', {
+        'installer:disable': () => {
+            return installer.disable_installer()
+        }
+    })
+
+    on('task', {
+        'installer:create_config': () => {
+            return installer.create_config()
+        }
+    })
+
+    on('task', {
+        'installer:replace_config': ({file, options}) => {
+            installer.replace_config(file, options)
+            installer.set_base_url(config.baseUrl)
+            return true;
+        }
+    })
+
+    on('task', {
+        'installer:revert_config': () => {
+            return installer.revert_config()
+        }
+    })
+
+    on('task', {
+        'installer:replace_database_config': ({file, options}) => {
+            return installer.replace_database_config(file, options, db_defaults)
+        }
+    })
+
+    on('task', {
+        'installer:revert_database_config': () => {
+            return installer.revert_database_config()
+        }
+    })
+
+    on('task', {
+        'installer:delete_database_config': () => {
+            return installer.delete_database_config()
+        }
+    })
+
+    on('task', {
+        'installer:backup_templates': () => {
+            return installer.backup_templates()
+        }
+    })
+
+    on('task', {
+        'installer:restore_templates': () => {
+            return installer.restore_templates()
+        }
+    })
+
+    on('task', {
+        'installer:version': () => {
+            return installer.version()
+        }
+    })
+
+
 
     on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' && browser.isHeadless) {

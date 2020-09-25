@@ -84,7 +84,7 @@
 			<em><?=lang('share_analytics_desc')?></em>
 		</fieldset>
 		<fieldset class="form-ctrls">
-			<input class="btn" type="submit" value="<?=lang('start_installation')?>">
+			<input class="button button--primary" type="submit" value="<?=lang('start_installation')?>">
 		</fieldset>
 	</form>
 </div>

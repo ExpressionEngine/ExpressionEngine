@@ -18,7 +18,7 @@ class InjectionBindingDecoratorTest extends TestCase {
 
 	protected $di;
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		$this->di = new InjectionContainer;
 		$this->di->register('Bird', function($di) { return 'Crow'; });
@@ -34,7 +34,7 @@ class InjectionBindingDecoratorTest extends TestCase {
 		});
 	}
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		$this->di = NULL;
 	}
@@ -127,19 +127,15 @@ class InjectionBindingDecoratorTest extends TestCase {
 		$this->assertEquals( 'Bat',$this->di->make('Mammal'), 'Chaining a register after a bind persists the register');
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testReregisteringAfterBind()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->bind('Bird', 'Raven')->register('Bird', 'Seagull');
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testReregisteringASingletonAfterBind()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->bind('One', 'Uno')->registerSingleton('One', 'Ichi');
 	}
 

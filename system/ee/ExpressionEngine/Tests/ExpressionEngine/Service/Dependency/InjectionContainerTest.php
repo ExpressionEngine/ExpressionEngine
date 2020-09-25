@@ -18,12 +18,12 @@ class InjectionContainerTest extends TestCase {
 
 	protected $di;
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		$this->di = new InjectionContainer;
 	}
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		$this->di = NULL;
 	}
@@ -80,35 +80,27 @@ class InjectionContainerTest extends TestCase {
 		$this->assertFalse($this->di === $di);
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testMakingAnUnregisteredObject()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->make('AllTheThings');
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testReregistering()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->register('Bird', 'Raven')->register('Bird', 'Seagull');
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testReregisteringAsSingleton()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->register('One', 'Uno')->registerSingleton('One', 'Ichi');
 	}
 
-	/**
-	 * @expectedException Exception
-	 */
 	public function testReregisteringOverASingleton()
 	{
+		$this->expectException(\Exception::class);
 		$this->di->registerSingleton('One', 'Uno')->register('One', 'Ichi');
 	}
 

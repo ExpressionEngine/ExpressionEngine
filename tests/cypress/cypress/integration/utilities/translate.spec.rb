@@ -1,10 +1,10 @@
 /// <reference types="Cypress" />
 
-import Translate from '../../elements/pages/settings/Translate';
-import TranslateEdit from '../../elements/pages/settings/TranslateEdit';
+import Translate from '../../elements/pages/utilities/Translate';
+import TranslateEdit from '../../elements/pages/utilities/TranslateEdit';
 
 const list_page = new Translate
-const list_page = new TranslateEdit
+const edit_page = new TranslateEdit
 
 const english_path = '../../system/ee/legacy/language/english/'
 const language_path = '../../system/user/language/'
@@ -17,11 +17,11 @@ context('Translate Tool', () => {
     cy.task('filesystem:copy', { from: english_path + '*', to: language_path + 'rspeclingo/' })
   })
 
-  beforeEach(function{
+  beforeEach(function() {
     cy.auth();
   })
 
-  beforeEach_edit_false() {
+  function beforeEach_edit_false() {
     cy.auth();
 
     list_page.load()
@@ -31,10 +31,9 @@ context('Translate Tool', () => {
 
     list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('English Language Files') })
     list_page.get('phrase_search').should('exist')
-    list_page.get('search_submit_button').should('exist')
   }
 
-  beforeEach_edit_true() {
+  function beforeEach_edit_true() {
     cy.auth();
     edit_page.load()
 
@@ -55,13 +54,15 @@ context('Translate Tool', () => {
 
   it('displays 2 languages in the sidebar', () => {
     beforeEach_edit_false()
-    list_page.get('languages').should('have.length', 2)
-    list_page.languages.map {|lang| lang.text}.should == ["English (Default)", 'Rspeclingo']
+    list_page.get('languages').should('have.length', 2).invoke('text').then((text) => {
+      expect(text).to.include('English (Default)')
+      expect(text).to.include('Rspeclingo')
+    })
   })
 
-  it('displays the default language first in the sidebar', :edit => false do
+  /*it('displays the default language first in the sidebar', :edit => false do
     eeConfig({item: 'deft_lang', value: 'rspeclingo')
-    list_page.load
+    list_page.load()
     list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (Default)", 'English']
     eeConfig({item: 'deft_lang', value: 'english')
   }
@@ -77,12 +78,11 @@ context('Translate Tool', () => {
   it('can search by phrases', :edit => false do
     my_phrase = 'admin'
     list_page.get('wrap').contains(my_phrase
-    list_page.phrase_search.set my_phrase
-    list_page.search_submit_button.click()
+    list_page.get('phrase_search').clear().type(my_phrase).type('{enter}')
     cy.hasNoErrors()
 
     list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 2 results for "' + my_phrase + '"'
-    list_page.phrase_searchinvoke('val').then((val) => { expect(val).to.be.equal(my_phrase
+    list_page.phrase_search.invoke('val').then((val) => { expect(val).to.be.equal(my_phrase
     list_page.get('wrap').contains(my_phrase
     list_page.should have(3).rows // 2 rows + header row
     list_page.get('pagination').should('not.exist')
@@ -91,8 +91,7 @@ context('Translate Tool', () => {
   it('reports "no results" when a search fails', :edit => false do
     my_phrase = 'foobarbaz'
     list_page.should_not have_text my_phrase
-    list_page.phrase_search.set my_phrase
-    list_page.search_submit_button.click()
+    list_page.get('phrase_search').clear().type(my_phrase).type('{enter}')
     cy.hasNoErrors()
 
     list_page.get('heading').invoke('text').then((text) => { expect(text).to.be.equal('Search Results we found 0 results for "' + my_phrase + '"'
@@ -259,5 +258,5 @@ context('Translate Tool', () => {
     edit_page.get('alert_error').should('be.visible')
 
     FileUtils.chmod 0644, language_path + 'rspeclingo/addons_lang.php'
-  }
-}
+  }*/
+})
