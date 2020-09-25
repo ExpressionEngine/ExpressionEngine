@@ -126,6 +126,7 @@ EE.cp.JumpMenu = {
 		jumpContainer.document.querySelector('.jump-to').blur();
 		jumpContainer.document.querySelector('.jump-to').value = '';
 		jumpContainer.$('#jump-menu').hide();
+		jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
 
 		if ($('#jump-menu').hasClass('on-welcome')) {
 			$('.welcome-jump-instructions').fadeOut();
