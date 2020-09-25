@@ -303,6 +303,12 @@ class Group extends AbstractDesignController {
 		$this->generateSidebar();
 		ee()->view->cp_page_title = lang('create_new_template_group');
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('create_new_template_group')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -506,6 +512,12 @@ class Group extends AbstractDesignController {
 
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('edit_template_group');
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('edit_template_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

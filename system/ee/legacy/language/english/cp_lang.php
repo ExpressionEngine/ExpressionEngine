@@ -570,6 +570,8 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
+'search_results' => 'Search Results',
+
 'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
 'settings_save_error' => 'Attention: Settings not saved',

@@ -108,6 +108,11 @@ class Routes extends AbstractDesignController {
 			),
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('template_routes')
+		);
+
 		ee()->cp->render('design/routes/index', $vars);
 	}
 

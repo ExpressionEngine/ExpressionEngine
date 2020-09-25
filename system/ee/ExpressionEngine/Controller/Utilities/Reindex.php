@@ -231,6 +231,11 @@ class Reindex extends Utilities {
 
 		ee()->view->cp_page_title = lang('search_reindex');
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('search_reindex')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

@@ -35,6 +35,8 @@ $lang = array(
 
 'outgoing_email' => 'Outgoing Email',
 
+'email_settings' => 'Email Settings',
+
 'pages_settings' => 'Pages Settings',
 
 'security_privacy' => 'Security & Privacy',

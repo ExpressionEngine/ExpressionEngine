@@ -97,14 +97,13 @@ $current_page = ee()->uri->segment(2);
       				</div>
 
       				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><i class="fas fa-user fa-fw"></i> <?=lang('my_profile')?></a>
-      				<a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><i class="fas fa-sign-out-alt fa-fw"></i> <?=lang('log_out')?></a>
+              <a class="dropdown__link js-dark-theme-toggle" href=""><i class="fas fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
 
       				<div class="dropdown__divider"></div>
 
-      				<a class="dropdown__link js-jump-menu-trigger" href=""><i class="fas fa-bullseye fa-fw"></i> <?= lang('jump_menu_item') ?> <span class="dropdown__link-shortcut"><span class="jump-trigger"></span>J</span></a>
-      				<a class="dropdown__link js-dark-theme-toggle" href=""><i class="fas fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
+              <a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><i class="fas fa-sign-out-alt fa-fw"></i> <?=lang('log_out')?></a>
 
-      				<div class="dropdown__divider"></div>
+              <div class="dropdown__divider"></div>
 
       				<h3 class="dropdown__header"><?=lang('quick_links')?></h3>
       				<?php foreach($cp_quicklinks as $link): ?>
