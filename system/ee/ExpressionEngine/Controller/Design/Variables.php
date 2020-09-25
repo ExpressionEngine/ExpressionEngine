@@ -194,6 +194,12 @@ class Variables extends AbstractDesignController {
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_variables_header');
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('template_variables')
+		);
+
 		ee()->cp->render('design/variables/index', $vars);
 	}
 
@@ -304,7 +310,9 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
+			'' => lang('create')
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -431,7 +439,9 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/variables')->compile() => lang('template_variables'),
+			'' => lang('edit')
 		);
 
 		ee()->cp->render('settings/form', $vars);

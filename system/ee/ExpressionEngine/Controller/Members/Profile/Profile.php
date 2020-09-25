@@ -23,6 +23,7 @@ class Profile extends CP_Controller {
 	protected $query_string;
 	protected $member;
 	private $base_url = 'members/profile/settings';
+	protected $breadcrumbs;
 
 	/**
 	 * Constructor
@@ -69,9 +70,9 @@ class Profile extends CP_Controller {
 
 		$this->generateSidebar();
 
-		ee()->view->cp_breadcrumbs = array(
+		$this->breadcrumbs= array(
 			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
-			'' => lang('profile')
+			ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name
 		);
 
 		ee()->view->header = array(

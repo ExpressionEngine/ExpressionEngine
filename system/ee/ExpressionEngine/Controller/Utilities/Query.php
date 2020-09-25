@@ -76,6 +76,11 @@ class Query extends Utilities {
 			)
 		]);
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('sql_query_form')
+		);
+
 		ee()->cp->render('utilities/query/index');
 	}
 
