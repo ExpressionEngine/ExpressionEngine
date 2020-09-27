@@ -63,6 +63,11 @@ class Quicklinks extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('quick_links');
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('quick_links')
+		]);
+
 		ee()->cp->render('account/quicklinks', $data);
 	}
 
@@ -74,7 +79,6 @@ class Quicklinks extends Settings {
 	 */
 	public function create()
 	{
-		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
 		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
@@ -97,6 +101,11 @@ class Quicklinks extends Settings {
 				'order' => $order
 			);
 		}
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			ee('CP/URL')->make($this->index_url, $this->query_string)->compile() => lang('quick_links'),
+			'' => lang('create')
+		]);
 
 		$this->form($vars, $values, $id);
 	}
@@ -131,6 +140,11 @@ class Quicklinks extends Settings {
 				'order' => $id
 			);
 		}
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			ee('CP/URL')->make($this->index_url, $this->query_string)->compile() => lang('quick_links'),
+			'' => lang('edit')
+		]);
 
 		$this->form($vars, $values, $id);
 	}

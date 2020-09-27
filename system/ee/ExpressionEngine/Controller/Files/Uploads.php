@@ -46,6 +46,12 @@ class Uploads extends AbstractFilesController {
 
 		$this->stdHeader();
 		$this->generateSidebar(NULL);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			'' => lang('create_upload_directory')
+		);
+
 		return $this->form();
 	}
 
@@ -64,6 +70,13 @@ class Uploads extends AbstractFilesController {
 
 		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+			'' => lang('edit')
+		);
+
 		return $this->form($upload_id);
 	}
 
@@ -362,8 +375,6 @@ class Uploads extends AbstractFilesController {
 				'working' => 'btn_saving'
 			]
 		];
-
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -812,7 +823,12 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+			'' => lang('sync')
+		);
+
 
 		// Errors are given through a POST to this same page
 		$errors = ee()->input->post('errors');

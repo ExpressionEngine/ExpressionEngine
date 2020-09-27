@@ -223,6 +223,11 @@ class Communicate extends Utilities {
 		$vars['save_btn_text_working'] = 'btn_send_email_working';
 		$vars['has_file_input'] = true;
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('send_email')
+		);
+
 		return ee()->cp->render('settings/form', $vars);
 	}
 
@@ -902,6 +907,11 @@ class Communicate extends Utilities {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('view_email_cache')
+		);
 
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}

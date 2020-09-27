@@ -141,6 +141,11 @@ class Throttle extends Logs {
 			'form_url' => $this->base_url->compile(),
 		);
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('view_throttle_log')
+		);
+
 		ee()->cp->render('logs/throttle', $vars);
 	}
 }

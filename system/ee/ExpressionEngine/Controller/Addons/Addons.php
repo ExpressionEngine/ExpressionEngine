@@ -240,6 +240,11 @@ class Addons extends CP_Controller {
 			'file' => ['cp/confirm_remove', 'cp/add-ons'],
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>',
+			'' => lang('addons')
+		);
+
 		ee()->cp->render('addons/index', $vars);
 	}
 
@@ -762,7 +767,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>'
 		);
 
 		if (is_null($method))
@@ -801,14 +806,22 @@ class Addons extends CP_Controller {
 					ee()->view->cp_heading = $data['heading'];
 				}
 
-				if (isset($data['breadcrumb']))
-				{
+				$self_link = ee('CP/URL')->make('addons/settings/' . $addon)->compile();
+				if (isset($data['breadcrumb'])) {
+					if (!isset($data['breadcrumb'][$self_link])) {
+						$breadcrumb[$self_link] = $module['name'];
+					}
 					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
+				} else {
+					$breadcrumb[$self_link] = $module['name'];
 				}
+				
+				
 			}
 			else
 			{
 				$vars['_module_cp_body'] = $data;
+				$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $module['name'];
 			}
 		}
 		else
@@ -824,6 +837,7 @@ class Addons extends CP_Controller {
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
+				$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $fieldtype['name'];
 				ee()->view->cp_heading = $fieldtype['name'] . ' ' . lang('configuration');
 			}
 			else
@@ -839,6 +853,7 @@ class Addons extends CP_Controller {
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
+					$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $extension['name'];
 					ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
 				}
 			}
@@ -983,6 +998,12 @@ class Addons extends CP_Controller {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>',
+			ee('CP/URL')->make('addons/settings/' . $addon)->compile() => $info->getName(),
+			'' => lang('manual')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
