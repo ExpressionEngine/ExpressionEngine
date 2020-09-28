@@ -115,6 +115,11 @@ class Channels extends AbstractChannelsController {
 			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
 			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
 
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('channels')
+		);
+
 		ee()->cp->render('channels/index', $vars);
 	}
 
@@ -220,7 +225,6 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->breadcrumb_title = lang('edit').' '.$channel->channel_title;
 			ee()->view->base_url = ee('CP/URL')->make('channels/edit/'.$channel_id);
 		}
 
@@ -337,7 +341,12 @@ class Channels extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = lang('save');
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			ee('CP/URL')->make('channels')->compile() => lang('channels'),
+			'' => is_null($channel_id) ? lang('create') : lang('edit')
+		);
 
 		$vars['buttons'] = [
 			[

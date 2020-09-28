@@ -18,7 +18,7 @@ class AutoloaderTest extends TestCase {
 
 	private $autoloader;
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		$this->autoloader = new Autoloader();
 
@@ -32,7 +32,7 @@ class AutoloaderTest extends TestCase {
 		$this->autoloader->addPrefix('ExpressionEngine\AutoloaderTest', __DIR__.'/AutoloaderFixture');
 	}
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		$this->autoloader = NULL;
 	}

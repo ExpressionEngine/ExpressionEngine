@@ -17,7 +17,7 @@ class ExportTest extends TestCase {
 
 	private $export;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->export = new Export();
 	}

@@ -195,6 +195,12 @@ class MemberImport extends Utilities {
 		ee()->view->cp_page_title = lang('member_import');
 		ee()->view->save_btn_text = 'mbr_import_btn';
 		ee()->view->save_btn_text_working = 'mbr_import_btn_saving';
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('member_import')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

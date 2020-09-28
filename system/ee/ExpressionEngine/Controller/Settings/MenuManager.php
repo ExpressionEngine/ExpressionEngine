@@ -44,6 +44,11 @@ class MenuManager extends Settings {
 			'file' => array('cp/confirm_remove'),
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
+			'' => lang('menu_manager')
+		);
+
 		ee()->cp->render('settings/menu-manager/index', $vars);
 	}
 
@@ -135,11 +140,21 @@ class MenuManager extends Settings {
 
 	public function createSet()
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
+			ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
+			'' => lang('create_new_menu_set')
+		);
 		return $this->form();
 	}
 
 	public function editSet($set_id)
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
+			ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
+			'' => lang('edit_menu_set')
+		);
 		return $this->form($set_id);
 	}
 
@@ -305,8 +320,6 @@ class MenuManager extends Settings {
 				'working' => 'btn_saving'
 			]
 		];
-
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/menu-manager'), lang('menu_sets'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

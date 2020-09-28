@@ -192,6 +192,12 @@ class Snippets extends AbstractDesignController {
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_partials_header');
+
+		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
+			'' => lang('template_partials')
+		);
+
 		ee()->cp->render('design/snippets/index', $vars);
 	}
 
@@ -300,7 +306,9 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_partial');
 		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/snippets')->compile() => lang('template_partials'),
+			'' => lang('create')
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');
@@ -427,7 +435,9 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_partial');
 		ee()->view->cp_breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/snippets')->compile() => lang('template_partials'),
+			'' => lang('edit')
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');

@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->runner = new Runner();
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->runner = NULL;
 	}
@@ -71,7 +71,7 @@ class RunnerTest extends TestCase {
 	 */
 	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
 	{
-		$this->setExpectedException($exception);
+		$this->expectException($exception);
 		$this->runConditionTest($description, $str_in, '');
 	}
 

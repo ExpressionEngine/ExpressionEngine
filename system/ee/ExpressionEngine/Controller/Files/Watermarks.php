@@ -34,6 +34,11 @@ class Watermarks extends AbstractFilesController {
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			'' => lang('watermarks')
+		);
 	}
 
 	/**

@@ -324,7 +324,6 @@ class Publish extends AbstractPublishController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('publish/edit')->compile() => '<i class="fas fa-newspaper"></i>',
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 			'' => lang('new_entry')
 		);
 

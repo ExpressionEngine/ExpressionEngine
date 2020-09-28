@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 class OneToManyModelTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->parentClass = __NAMESPACE__.'\OneToManyParent';
 		$this->childClass = __NAMESPACE__.'\OneToManyChild';
@@ -27,10 +27,13 @@ class OneToManyModelTest extends TestCase {
 		$this->belongs_to_relation = m::mock('ExpressionEngine\Service\Model\Relation\BelongsTo');
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->has_many_relation = NULL;
 		$this->belongs_to_relation = NULL;
+
+		m::close();
+
 	}
 
 	public function testFillParentWithChildren()
@@ -74,6 +77,7 @@ class OneToManyModelTest extends TestCase {
 		$this->assertEquals(array(), $parent->getDirty());
 		$this->assertEquals(array(), $child1->getDirty());
 		$this->assertEquals(array(), $child2->getDirty());
+
 	}
 
 	public function testSetParentWithChild()
@@ -121,6 +125,7 @@ class OneToManyModelTest extends TestCase {
 		// setting should mark the foreign key as dirty
 		$this->assertEquals(array('parent_id' => 5), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+
 	}
 
 	public function testAddChildrenToBlankParent()
@@ -167,6 +172,7 @@ class OneToManyModelTest extends TestCase {
 		// setting should mark the foreign key as dirty
 		$this->assertEquals(array('parent_id' => 5), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+
 	}
 
 	public function testAddChildToFilledParent()
@@ -210,6 +216,7 @@ class OneToManyModelTest extends TestCase {
 		// setting should mark the foreign key as dirty, filling does not
 		$this->assertEquals(array(), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+
 	}
 
 	public function testNullCollection()
@@ -260,6 +267,7 @@ class OneToManyModelTest extends TestCase {
 		// null means our foreign key has disappeared
 		$this->assertEquals(array('parent_id' => NULL), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
+
 	}
 
 	public function testAddChildrenToUnsavedParentAndPropagateIdOn()
@@ -311,6 +319,7 @@ class OneToManyModelTest extends TestCase {
 		// null means our foreign key has disappeared
 		$this->assertEquals(array('parent_id' => 10), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => 10), $child2->getDirty());
+
 	}
 
 	public function testRemovingModelDissociates()
@@ -363,6 +372,7 @@ class OneToManyModelTest extends TestCase {
 		// null means our foreign key has disappeared
 		$this->assertEquals(array(), $child1->getDirty());
 		$this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
+
 	}
 
 	public function testReplaceExistingCollection()
@@ -432,6 +442,7 @@ class OneToManyModelTest extends TestCase {
 		$this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child3->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child4->getDirty());
+
 	}
 
 
@@ -492,6 +503,7 @@ class OneToManyModelTest extends TestCase {
 		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child3->getDirty());
 		$this->assertEquals(array('parent_id' => 5), $child4->getDirty());
+
 	}
 
 	protected function addAssociation($model, $relation, $inverse = NULL)

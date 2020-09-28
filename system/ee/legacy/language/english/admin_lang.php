@@ -42,8 +42,6 @@ $lang = array(
 
 'search_preferences' => 'Search Preferences',
 
-'search_results' => 'Search Results',
-
 'specialty_templates_blurb' => 'These templates are used for special purposes such as displaying error messages and sending email notifications.',
 
 'system_admin_blurb' => 'Most of the administrative aspects of ExpressionEngine are managed from one of the following five areas:',

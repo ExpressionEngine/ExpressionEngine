@@ -77,6 +77,8 @@ $lang = array(
 
 'yes' => 'Yes',
 
+'required_fields' => 'Required Fields',
+
 'edit_this' => 'Edit this',
 
 /* Errors */
