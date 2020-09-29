@@ -20,7 +20,7 @@
 
 	<?php if (isset($addon['update']) && !empty($show_updates)) : ?>
 		<div class="add-on-card__button">
-		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary">
+		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary button--small">
 			<?php echo sprintf(lang('update_to_version'), $addon['update']); ?>
 		</a>
 		</div>
