@@ -3,7 +3,7 @@ $margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
 $margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
 
 $class = (isset($field['class'])) ? $field['class'] : '';
-//$class .= ($margin_top) ? ' add-mrg-top' : '';
+$class .= ($margin_top) ? ' add-mrg-top' : '';
 $class .= ($margin_left) ? ' add-mrg-left' : '';
 
 // Check for a field name override
@@ -69,7 +69,7 @@ case 'text':
 
 			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 
-	<?php if ($margin_top OR $margin_left): ?>
+	<?php if (!empty($class)): ?>
 		</div>
 	<?php endif ?>
 <?php break;
