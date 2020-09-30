@@ -29,7 +29,7 @@ context('Updater', () => {
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
-        if (files[item].indexOf('system/ee/installer') >= 0) {
+        if (files[item].indexOf('system/ee/installer_') >= 0) {
           installer_folder = files[item];
           cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
         }
@@ -68,15 +68,15 @@ context('Updater', () => {
   })
 
   it('shows an error when no database information exists at all', () => {
+    cy.wait(5000);
     cy.task('installer:delete_database_config').then(()=>{
       cy.task('db:seed').then(()=>{
-        page.load()
-        cy.hasNoErrors()
         page.load()
         page.get('header').invoke('text').then((text) => {
           expect(text).to.eq('Install Failed')
         })
         page.get('error').contains('Unable to locate any database connection information.')
+        cy.hasNoErrors()
       })
     })
   })
@@ -289,7 +289,7 @@ context('Updater', () => {
 
       page.load()
 
-      cy.screenshot({capture: 'fullPage'})
+      //cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page
