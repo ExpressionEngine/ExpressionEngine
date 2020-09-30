@@ -46,6 +46,7 @@ context('Installer', () => {
 
     page.load()
     cy.screenshot({capture: 'runner'})
+    cy.screenshot({capture: 'fullPage'})
     cy.hasNoErrors()
   })
 
