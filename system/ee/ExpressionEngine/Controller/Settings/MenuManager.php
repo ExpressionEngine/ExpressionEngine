@@ -45,7 +45,6 @@ class MenuManager extends Settings {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			'' => lang('menu_manager')
 		);
 
@@ -141,7 +140,6 @@ class MenuManager extends Settings {
 	public function createSet()
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
 			'' => lang('create_new_menu_set')
 		);
@@ -151,7 +149,6 @@ class MenuManager extends Settings {
 	public function editSet($set_id)
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
 			'' => lang('edit_menu_set')
 		);

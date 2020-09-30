@@ -59,7 +59,6 @@ class Files extends AbstractFilesController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
 			'' => lang('files')
 		);
 
@@ -126,7 +125,7 @@ class Files extends AbstractFilesController {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files')->compile() => lang('files'),
 			'' => $dir->name
 		);
 
@@ -204,7 +203,7 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_page_title = lang('file_upload');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files')->compile() => lang('files'),
 			ee('CP/URL')->make('files/directory/' . $dir_id)->compile() => ee('Model')->get('UploadDestination', $dir_id)->fields('name')->first()->name,
 			'' => lang('upload')
 		);

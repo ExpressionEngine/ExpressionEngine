@@ -224,7 +224,6 @@ class Communicate extends Utilities {
 		$vars['has_file_input'] = true;
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('send_email')
 		);
 
@@ -909,7 +908,6 @@ class Communicate extends Utilities {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('view_email_cache')
 		);
 

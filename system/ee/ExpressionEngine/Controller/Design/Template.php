@@ -185,10 +185,9 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_page_title = lang('create_new_template');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			ee('CP/URL')->make('design/manager/' . $group_name)->compile() => $group->group_name,
-			'' => lang('create')
+			'' => lang('create_new_template')
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -339,10 +338,9 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = $group->group_name . '/' . $template->template_name;
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => $group->group_name,
-			'' => lang('edit')
+			'' => lang('edit_template_title')
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -602,7 +600,6 @@ class Template extends AbstractDesignController {
 		ee()->view->cp_page_title = lang('template_manager');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			'' => lang('search_results')
 		);

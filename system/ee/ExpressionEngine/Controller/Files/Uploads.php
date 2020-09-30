@@ -48,8 +48,8 @@ class Uploads extends AbstractFilesController {
 		$this->generateSidebar(NULL);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
-			'' => lang('create_upload_directory')
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			'' => lang('new_directory')
 		);
 
 		return $this->form();
@@ -72,9 +72,9 @@ class Uploads extends AbstractFilesController {
 		$this->generateSidebar($upload_id);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
-			ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
-			'' => lang('edit')
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			//ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+			'' => lang('edit_upload_directory')
 		);
 
 		return $this->form($upload_id);
@@ -824,9 +824,9 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => '<i class="fas fa-folder"></i>',
+			ee('CP/URL')->make('files')->compile() => lang('files'),
 			ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
-			'' => lang('sync')
+			'' => lang('sync_title')
 		);
 
 

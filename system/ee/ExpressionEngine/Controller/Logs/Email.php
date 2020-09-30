@@ -119,7 +119,6 @@ class Email extends Logs {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('view_email_logs')
 		);
 
@@ -150,7 +149,6 @@ class Email extends Logs {
 
 		ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('logs/email')->compile() => lang('view_email_logs'),
 			'' => lang('view')
 		);

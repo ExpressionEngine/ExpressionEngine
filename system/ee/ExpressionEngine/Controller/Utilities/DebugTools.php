@@ -50,7 +50,6 @@ class DebugTools extends Utilities
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
         ee()->view->cp_breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>',
             '' => lang('debug_tools')
         );
 
@@ -118,7 +117,6 @@ class DebugTools extends Utilities
             ->render($base_url);
 
         ee()->view->cp_breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>',
             ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
             '' => lang('debug_tools_debug_tags')
         );
@@ -139,7 +137,6 @@ class DebugTools extends Utilities
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
         ee()->view->cp_breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>',
             ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
             '' => lang('debug_tools_fieldtypes')
         );

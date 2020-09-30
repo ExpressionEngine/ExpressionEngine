@@ -135,7 +135,6 @@ class Groups extends AbstractFieldsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('fields')->compile() => lang('fields'),
 			'' => lang('create_field_group')
 		);
@@ -236,7 +235,6 @@ class Groups extends AbstractFieldsController {
 		ee()->view->cp_page_title = lang('edit_field_group');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('fields')->compile() => lang('fields'),
 			'' => lang('edit_field_group')
 		);

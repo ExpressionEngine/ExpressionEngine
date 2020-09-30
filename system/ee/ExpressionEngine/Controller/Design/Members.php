@@ -216,7 +216,6 @@ class Members extends AbstractDesignController {
 		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('member_profile_templates')
 		);
 
@@ -285,7 +284,6 @@ class Members extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/members')->compile() => lang('member_profile_templates'),
 			'' => lang('edit')
 		);

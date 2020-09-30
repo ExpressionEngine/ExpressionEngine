@@ -87,7 +87,6 @@ class Consents extends Settings {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			'' => lang('consent_requests')
 		);
 
@@ -203,7 +202,6 @@ class Consents extends Settings {
 			});
 		');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
 			'' => lang('create')
 		);
@@ -214,7 +212,6 @@ class Consents extends Settings {
 	public function newVersion($request_id)
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
 			'' => lang('edit')
 		);
@@ -304,7 +301,6 @@ class Consents extends Settings {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = sprintf(lang('consent_request_versions'), $request->title);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
 			'' => lang('consent_list_versions')
 		);

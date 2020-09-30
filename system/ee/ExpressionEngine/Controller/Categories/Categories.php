@@ -100,8 +100,8 @@ class Categories extends AbstractCategoriesController {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('categories')->compile() => '<i class="fas fa-tags"></i>',
-			'' => $cat_group->group_name
+			'' => lang('categories'),
+			//'' => $cat_group->group_name
 		);
 
 		ee()->cp->render('channels/cat/list', $data);
@@ -555,8 +555,8 @@ class Categories extends AbstractCategoriesController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('categories')->compile() => '<i class="fas fa-tags"></i>',
-			ee('CP/URL')->make('categories/group/' . $cat_group->group_id)->compile() => $cat_group->group_name,
+			ee('CP/URL')->make('categories')->compile() => lang('categories'),
+			//ee('CP/URL')->make('categories/group/' . $cat_group->group_id)->compile() => $cat_group->group_name,
 			'' => is_null($category_id) ? lang('create_category') : lang('edit_category')
 		);
 

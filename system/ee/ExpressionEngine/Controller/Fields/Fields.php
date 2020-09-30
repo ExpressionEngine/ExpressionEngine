@@ -195,12 +195,15 @@ class Fields extends AbstractFieldsController {
 			'#developer' => '<i class="fas fa-database"></i>'
 		);
 		if (!$group) {
-			$breadcrumbs[''] = lang('fields');
+			ee()->view->cp_breadcrumbs = array(
+				'' => lang('fields')
+			);
 		} else {
-			$breadcrumbs[ee('CP/URL')->make('fields')->compile()] = lang('fields');
-			$breadcrumbs[''] = $group->group_name;
+			ee()->view->cp_breadcrumbs = array(
+				ee('CP/URL')->make('fields')->compile() => lang('fields'),
+				'' => $group->group_name
+			);
 		}
-		ee()->view->cp_breadcrumbs = $breadcrumbs;
 
 		ee()->cp->render('fields/index', $vars);
 	}
@@ -345,13 +348,12 @@ class Fields extends AbstractFieldsController {
 		');
 
 		$breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('fields')->compile() => lang('fields')
 		);
 		if (!empty($group_id)) {
 			$breadcrumbs[ee('CP/URL')->make('fields', ['group_id' => $group_id])->compile()] = ee('Model')->get('ChannelFieldGroup', $group_id)->first()->group_name;
 		}
-		$breadcrumbs[''] = lang('create');
+		$breadcrumbs[''] = lang('create_new_field');
 		ee()->view->cp_breadcrumbs = $breadcrumbs;
 
 		ee()->cp->render('settings/form', $vars);
@@ -469,9 +471,8 @@ class Fields extends AbstractFieldsController {
 		ee()->view->extra_alerts = array('search-reindex');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('fields')->compile() => lang('fields'),
-			'' => lang('create')
+			'' => lang('edit_field')
 		);
 
 		ee()->cp->render('settings/form', $vars);
