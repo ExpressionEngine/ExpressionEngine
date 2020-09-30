@@ -289,7 +289,7 @@ context('Updater', () => {
 
       page.load()
 
-      cy.screenshot({capture: 'fullPage'})
+      //cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page
