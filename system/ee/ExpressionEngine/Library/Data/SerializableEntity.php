@@ -10,13 +10,14 @@
 
 namespace ExpressionEngine\Library\Data;
 
+use JsonSerializable;
 use Serializable;
 
 /**
  * This is basically like Entity, it's here to keep custom column Types
  * backwards compatible. Don't rely on this to stay, totally internal.
  */
-class SerializableEntity extends Entity implements Serializable {
+class SerializableEntity extends Entity implements JsonSerializable, Serializable {
 
 	/**
 	 * Serialize
@@ -48,6 +49,15 @@ class SerializableEntity extends Entity implements Serializable {
 	protected function getSerializeData()
 	{
 		return $this->getRawValues();
+	}
+
+	/**
+	 * returns serialized data for json_encode
+	 * @return array
+	 */
+	public function jsonSerialize()
+	{
+		return $this->getSerializeData();
 	}
 
 	/**

@@ -2,6 +2,8 @@
 
 namespace Queue\Traits;
 
+use ExpressionEngine\Service\Model\Model;
+
 trait Queueable {
 
 	protected $attempts;
@@ -37,6 +39,7 @@ trait Queueable {
 	protected function serialize()
 	{
 		$vars = get_object_vars($this);
+
 		return json_encode($vars);
 	}
 
