@@ -97,12 +97,12 @@ class CommandGenerateModel extends Cli
 
     private function getName()
     {
-        return $this->arguments[0] ?? $this->ask("Model name?");
+        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("Model name?");
     }
 
     private function getAddon()
     {
-        return $this->option('--addon') ?? $this->ask("What addon do you want to add this to?");
+        return $this->option('--addon') ? $this->option('--addon') : $this->ask("What addon do you want to add this to?");
     }
 
 }

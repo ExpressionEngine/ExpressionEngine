@@ -322,4 +322,63 @@ function surrounding_character($string)
 	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
+/**
+ * Generate a URL friendly "slug" from a given string.
+ *
+ * @param  string  $title
+ * @param  string  $separator
+ * @return string
+ */
+function slug($title, $separator = '-')
+{
+    // Convert all dashes/underscores into separator
+    $flip = $separator === '-' ? '_' : '-';
+
+    $title = preg_replace('!['.preg_quote($flip).']+!u', $separator, $title);
+
+    // Replace @ with the word 'at'
+    $title = str_replace('@', $separator.'at'.$separator, $title);
+
+    // Remove all characters that are not the separator, letters, numbers, or whitespace.
+    $title = preg_replace('![^'.preg_quote($separator).'\pL\pN\s]+!u', '', strtolower($title));
+
+    // Replace all separator characters and whitespace by a single separator
+    $title = preg_replace('!['.preg_quote($separator).'\s]+!u', $separator, $title);
+
+    return trim($title, $separator);
+}
+
+/**
+ * Convert a value to studly caps case.
+ *
+ * @param  string  $value
+ * @return string
+ */
+function studly($value)
+{
+    $value = ucwords(str_replace(['-', '_'], ' ', $value));
+
+    return str_replace(' ', '', $value);
+}
+
+/**
+ * Determine if a given string contains a given substring.
+ *
+ * @param  string  $haystack
+ * @param  string|string[]  $needles
+ * @return bool
+ */
+function string_contains($haystack, $needles)
+{
+	ee()->load->helper('multibyte');
+
+    foreach ((array) $needles as $needle) {
+        if ($needle !== '' && ee_mb_strpos($haystack, $needle) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // EOF

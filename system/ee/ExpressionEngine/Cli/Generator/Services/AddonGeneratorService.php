@@ -2,13 +2,9 @@
 
 namespace ExpressionEngine\Cli\Generator\Services;
 
-require SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator/vendor/autoload.php';
-
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Cli\Generator\Enums\FieldtypeCompatibility;
 use ExpressionEngine\Cli\Generator\Enums\Hooks;
-use IlluminateAgnostic\Arr\Support\Arr;
-use IlluminateAgnostic\Str\Support\Str;
 
 class AddonGeneratorService {
 
@@ -40,9 +36,11 @@ class AddonGeneratorService {
 	public function __construct(array $data)
 	{
 
+		ee()->load->helper('string');
+
 		$this->type = $data['type'];
 		$this->name = $data['name'];
-		$this->slug = Str::slug($data['name'], '_');
+		$this->slug = slug($data['name'], '_');
 		$this->slug_uc = ucfirst($this->slug);
 
 		$this->init();
@@ -50,16 +48,16 @@ class AddonGeneratorService {
 		// Catch all, especially for advanced settings
 		$this->data = $data;
 
-		$this->namespace = Str::studly($data['name']) .'\\\\';
+		$this->namespace = studly($data['name']) .'\\\\';
 		$this->description = $data['description'];
 		$this->version = $data['version'];
 		$this->author = $data['author'];
 		$this->author_url = $data['author_url'];
-		$this->has_settings = $data['has_settings'] ?? false;
+		$this->has_settings = isset($data['has_settings']) ? $data['has_settings'] : false;
 		$this->has_cp_backend = (isset($data['has_settings']) && $data['has_settings']) ? 'y' : 'n';
 		$this->has_publish_fields = (isset($data['has_settings']) && $data['has_settings']) ? 'y' : 'n';
-		$this->hooks = $data['hooks'] ?? null;
-		$this->compatibility = $data['compatibility'] ?? null;
+		$this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
+		$this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
 
 	}
 
@@ -74,7 +72,7 @@ class AddonGeneratorService {
 		$this->stubPath = $this->generatorPath . '/stubs' . '/';
 
 		// Create temp directory
-		$tempDir = Str::random();
+		$tempDir = random_string();
 
 		if ( ! $filesystem->isDir($this->addonPath) ) {
 		    $filesystem->mkDir($this->addonPath);
@@ -139,7 +137,7 @@ class AddonGeneratorService {
 
 		foreach(array_unique(explode(',',$this->hooks)) as $hook) {
 
-			$hookData = Hooks::getByKey(Str::upper($hook));
+			$hookData = Hooks::getByKey(strtoupper($hook));
 
 			$hookArrayStub = $filesystem->read($this->stub('hook_array.php'));
 			$hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
@@ -180,7 +178,7 @@ class AddonGeneratorService {
 
 			foreach(array_unique(explode(',', $this->hooks)) as $hook) {
 
-				$hookData = Hooks::getByKey(Str::upper($hook));
+				$hookData = Hooks::getByKey(strtoupper($hook));
 
 				$hookArrayStub = $filesystem->read($this->stub('hook_array.php'));
 				$hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
@@ -269,14 +267,14 @@ class AddonGeneratorService {
 
 		// Advanced
 		// Typography
-		if(Arr::has($this->data, 'typography') && ($typography = Arr::get($this->data, 'typography'))) {
+		if(array_key_exists('typography', $this->data) && ($typography = $this->data['typography'])) {
 			$stub = $this->write('plugin_typography', 'true', $stub);
 		} else {
 			$stub = $this->clearLine("    'plugin.typography' => {{plugin_typography}},", $stub);
 		}
 
 		// Services
-		if(Arr::has($this->data, 'services') && ($services = Arr::get($this->data, 'services'))) {
+		if(array_key_exists('services', $this->data) && ($services = $this->data['services'])) {
 
 			$servicesWriteData = '';
 
@@ -287,15 +285,15 @@ class AddonGeneratorService {
 				if(!$service || $service == '') continue;
 
 				$servicesStub = $filesystem->read($this->stub('addon_service.php'));
-				$servicesStub = $this->write('service_name', Str::studly($service), $servicesStub);
+				$servicesStub = $this->write('service_name', studly($service), $servicesStub);
 
 				$servicesWriteData .= "\n\t\t" . $servicesStub . "\n";
 
 				$serviceStub = $filesystem->read($this->stub('service.php'));
 				$serviceStub = $this->write('namespace', $this->namespace, $serviceStub);
-				$serviceStub = $this->write('class', Str::studly($service), $serviceStub);
+				$serviceStub = $this->write('class', studly($service), $serviceStub);
 
-				$this->putFile(Str::studly($service) . '.php', $serviceStub, '/Services');
+				$this->putFile(studly($service) . '.php', $serviceStub, '/Services');
 
 			}
 
@@ -308,7 +306,7 @@ class AddonGeneratorService {
 		}
 
 		// Models
-		if(Arr::has($this->data, 'models') && ($models = Arr::get($this->data, 'models'))) {
+		if(array_key_exists('models', $this->data) && ($models = $this->data['models'])) {
 
 			$modelsWriteData = '';
 
@@ -319,16 +317,16 @@ class AddonGeneratorService {
 				if(!$service || $service == '') continue;
 
 				$modelsStub = $filesystem->read($this->stub('addon_model.php'));
-				$modelsStub = $this->write('model_name', Str::studly($service), $modelsStub);
+				$modelsStub = $this->write('model_name', studly($service), $modelsStub);
 
 				$modelsWriteData .= "\n" . $modelsStub . "\n";
 
 				$modelStub = $filesystem->read($this->stub('model.php'));
 				$modelStub = $this->write('namespace', $this->namespace, $modelStub);
 				$modelStub = $this->write('slug', $this->slug, $modelStub);
-				$modelStub = $this->write('class', Str::studly($service), $modelStub);
+				$modelStub = $this->write('class', studly($service), $modelStub);
 
-				$this->putFile(Str::studly($service) . '.php', $modelStub, '/Models');
+				$this->putFile(studly($service) . '.php', $modelStub, '/Models');
 
 			}
 
@@ -341,7 +339,7 @@ class AddonGeneratorService {
 		}
 
 		// Consents
-		if(Arr::has($this->data, 'consents') && ($consents = Arr::get($this->data, 'consents'))) {
+		if(array_key_exists('consents', $this->data) && ($consents = $this->data['consents'])) {
 
 			$consentsWriteData = '';
 
@@ -350,8 +348,8 @@ class AddonGeneratorService {
 				if(!$consent || $consent == '') continue;
 
 				$consentsStub = $filesystem->read($this->stub('addon_consent.php'));
-				$consentsStub = $this->write('consent_name', Str::studly($consent), $consentsStub);
-				$consentsStub = $this->write('consent_slug', Str::slug($consent, '_'), $consentsStub);
+				$consentsStub = $this->write('consent_name', studly($consent), $consentsStub);
+				$consentsStub = $this->write('consent_slug', slug($consent, '_'), $consentsStub);
 
 				$consentsWriteData .= "\n" . $consentsStub . "\n\t";
 
@@ -366,7 +364,7 @@ class AddonGeneratorService {
 		}
 
 		// Cookies
-		if(Arr::has($this->data, 'cookies') && ($cookies = Arr::get($this->data, 'cookies'))) {
+		if(array_key_exists('cookies', $this->data) && ($cookies = $this->data['cookies'])) {
 
 			$cookiesWriteData = '';
 

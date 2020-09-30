@@ -2,11 +2,7 @@
 
 namespace ExpressionEngine\Cli\Generator\Services;
 
-require SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator/vendor/autoload.php';
-
 use ExpressionEngine\Library\Filesystem\Filesystem;
-use IlluminateAgnostic\Arr\Support\Arr;
-use IlluminateAgnostic\Str\Support\Str;
 
 class ModelGeneratorService {
 
@@ -18,10 +14,13 @@ class ModelGeneratorService {
 
 	public function __construct(array $data)
 	{
+
+		ee()->load->helper('string');
+
 		$this->name = $data['name'];
-		$this->className = Str::studly($data['name']);
+		$this->className = studly($data['name']);
 		$this->addon = $data['addon'];
-		$this->namespace = Str::studly($data['addon']);
+		$this->namespace = studly($data['addon']);
 
 		$this->init();
 	}
@@ -75,22 +74,20 @@ class ModelGeneratorService {
 		$modelsStub = $this->write('namespace', $this->namespace, $modelsStub);
 		$modelsStub = $this->write('class', $this->className, $modelsStub);
 
-		if(Str::contains($addonSetup, "'models'") || Str::contains($addonSetup, '"models"')) {
+		if(string_contains($addonSetup, "'models'") || string_contains($addonSetup, '"models"')) {
 			$modelsStub = $filesystem->read($this->stub('model.addon.php'));
 			$modelsStub = $this->write('model_data', $commandString, $modelsStub);
 
 			preg_match('(\]\;|\)\;)', $addonSetup, $matches);
 
 			if(! empty($matches)) {
-				$last = Arr::last($matches, function ($value, $key) {
-				    return true;
-				});
+				$last = array_values(array_slice($matches, -1))[0];
 
 				$addonSetup = $this->write($last, $modelsStub . "\n\n" . $last, $addonSetup);
 			}
 
 		} else {
-			$stringToReplace = Str::contains($addonSetup, "'models'")
+			$stringToReplace = string_contains($addonSetup, "'models'")
 								? '"models"'
 								: "'models'";
 

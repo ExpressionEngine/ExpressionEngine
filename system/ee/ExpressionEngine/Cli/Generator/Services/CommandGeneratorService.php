@@ -2,12 +2,8 @@
 
 namespace ExpressionEngine\Cli\Generator\Services;
 
-require SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator/vendor/autoload.php';
-
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
-use IlluminateAgnostic\Arr\Support\Arr;
-use IlluminateAgnostic\Str\Support\Str;
 
 class CommandGeneratorService {
 
@@ -22,11 +18,14 @@ class CommandGeneratorService {
 
 	public function __construct(array $data)
 	{
+
+		ee()->load->helper('string');
+
 		$this->name = $data['name'];
 		$this->addon = $data['addon'];
-		$this->addonClass = Str::studly($data['addon']);
-		$this->className = Str::studly($data['name']);
-		$this->fullClass = $this->addonClass . '\\Commands\\' . Str::studly($data['name']);
+		$this->addonClass = studly($data['addon']);
+		$this->className = studly($data['name']);
+		$this->fullClass = $this->addonClass . '\\Commands\\' . studly($data['name']);
 		$this->signature = $data['signature'];
 		$this->description = $data['description'];
 
@@ -61,7 +60,7 @@ class CommandGeneratorService {
 		$commandStub = $this->write('signature', $this->signature, $commandStub);
 		$commandStub = $this->write('description', $this->description, $commandStub);
 
-		$this->putFile(Str::studly('Command' . $this->className) . '.php', $commandStub);
+		$this->putFile(studly('Command' . $this->className) . '.php', $commandStub);
 
 		$this->addCommandToAddonSetup();
 
@@ -89,21 +88,19 @@ class CommandGeneratorService {
 
 		$filesystem->findAndReplace($this->addonPath . 'addon.setup.php', "<?php", "<?php\n\n{$useCommandString}\n\n");
 
-		if(Str::contains($addonSetup, "'commands'") || Str::contains($addonSetup, '"commands"')) {
+		if(string_contains($addonSetup, "'commands'") || string_contains($addonSetup, '"commands"')) {
 			$commandStub = $filesystem->read($this->stub('command.addon.php'));
 			$commandStub = $this->write('command_data', $commandString, $commandStub);
 
 			preg_match('(\]\;|\)\;)', $addonSetup, $matches);
 
 			if(! empty($matches)) {
-				$last = Arr::last($matches, function ($value, $key) {
-				    return true;
-				});
+				$last = array_values(array_slice($matches, -1))[0];
 
 				$addonSetup = $this->write($last, $commandStub . "\n\n" . $last, $addonSetup);
 
 		} else {
-			$stringToReplace = Str::contains($addonSetup, "'commands'")
+			$stringToReplace = string_contains($addonSetup, "'commands'")
 								? '"commands"'
 								: "'commands'";
 

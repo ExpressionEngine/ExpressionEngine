@@ -169,7 +169,7 @@ class CommandGenerateAddon extends Cli
 
     private function getType()
     {
-        $type = $this->option('-t') ?? $this->getTypeFromOptions() ?? $this->ask('What type of addon would you like to create?');
+        $type = $this->getTypeFromOptions() ?: $this->ask('What type of addon would you like to create?');
 
         if( ! in_array($type, $this->types)) {
             $this->error('Please select a proper type');
@@ -186,7 +186,7 @@ class CommandGenerateAddon extends Cli
 
     private function getName()
     {
-        return $this->arguments[0] ?? $this->ask("{$this->type['name']} name?");
+        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("{$this->type['name']} name?");
     }
 
     private function getTypeFromOptions()
