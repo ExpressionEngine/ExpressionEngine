@@ -383,8 +383,8 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoGridErrors(page.name_for_row(2))
     page.name_for_row(2).parent().find('em.ee-form-error-message').should('not.exist')
 
-    cy.route("POST", "**/files/uploads/**").as("ajax35");
     page.name_for_row(2).clear().type('some_name')
+    cy.route("POST", "**/files/uploads/**").as("ajax35");
     page.name_for_row(2).trigger('blur')
     cy.wait("@ajax35");
     page.hasErrorsCount(1)
