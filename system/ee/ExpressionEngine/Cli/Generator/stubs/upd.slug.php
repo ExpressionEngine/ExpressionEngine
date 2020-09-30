@@ -18,6 +18,8 @@ class {{slug_uc}}_upd {
 
         {{conditional_hooks}}
 
+        return true;
+
     }
 
     public function update($current = '')
@@ -35,6 +37,8 @@ class {{slug_uc}}_upd {
         ee()->db->delete('modules');
 
         {{conditional_hooks_uninstall}}
+
+        return true;
 
     }
 
