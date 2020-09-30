@@ -25,7 +25,7 @@ context('Installer', () => {
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
-        if (files[item].indexOf('system/ee/installer') >= 0) {
+        if (files[item].indexOf('system/ee/installer_') >= 0) {
           installer_folder = files[item];
           cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'}).then(() => {
             cy.task('installer:create_config').then((path)=>{
@@ -45,6 +45,8 @@ context('Installer', () => {
     cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
     page.load()
+    cy.screenshot({capture: 'runner'})
+    cy.screenshot({capture: 'fullPage'})
     cy.hasNoErrors()
   })
 
