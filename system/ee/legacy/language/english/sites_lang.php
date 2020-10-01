@@ -2,8 +2,6 @@
 
 $lang = array(
 
-'add_site' => 'Add Site',
-
 'btn_site_limit_reached' => 'Site Limit reached',
 
 'cannot_remove_site_1' => 'You cannot remove site <b>%s</b>.',

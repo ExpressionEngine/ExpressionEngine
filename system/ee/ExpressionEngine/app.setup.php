@@ -668,6 +668,7 @@ $setup = [
 			'Role' => 'Model\Role\Role',
 			'RoleGroup' => 'Model\Role\RoleGroup',
 			'RoleSetting' => 'Model\Role\RoleSetting',
+			'MemberGroup' => 'Model\Role\MemberGroup',
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',

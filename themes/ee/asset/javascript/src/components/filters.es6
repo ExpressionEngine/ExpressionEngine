@@ -64,7 +64,7 @@ function FilterSearch (props) {
   return (
     <div className="filter-bar__item">
       <div className="search-input">
-        <input type="text" className="search-input__input input-small" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+        <input type="text" className="search-input__input input--small" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
       </div>
     </div>
   )

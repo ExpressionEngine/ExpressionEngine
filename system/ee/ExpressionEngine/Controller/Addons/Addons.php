@@ -865,6 +865,7 @@ class Addons extends CP_Controller {
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
 		ee()->view->cp_page_title = ee()->view->cp_heading;
+		ee()->view->body_class = 'add-on-layout';
 
 		ee()->cp->render('addons/settings', $vars);
 	}
@@ -1000,6 +1001,8 @@ class Addons extends CP_Controller {
 			ee('CP/URL')->make('addons/settings/' . $addon)->compile() => $info->getName(),
 			'' => lang('manual')
 		);
+
+		ee()->view->body_class = 'add-on-layout';
 
 		ee()->cp->render('addons/manual', $vars);
 	}

@@ -19,7 +19,7 @@
 		}
 		?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" id="top">
+	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? 'class="' . $body_class . '"' : ''; ?>>
 		<script>
 		var currentTheme = localStorage.getItem('theme');
 
