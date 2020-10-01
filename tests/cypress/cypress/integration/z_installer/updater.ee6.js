@@ -27,21 +27,22 @@ context('Updater', () => {
     cy.task('installer:replace_database_config', {file: database})
 
     let installer_folder = '../../system/ee/installer';
+
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
+        cy.log(files[item]);
         if (files[item].indexOf('system/ee/installer_') >= 0) {
           installer_folder = files[item];
-          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          cy.log(installer_folder);
+          cy.task('filesystem:delete', '../../system/ee/installer').then(()=>{
+            cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          })
         }
       }
     })
 
     cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
-    //@version = '2.20.0'
-    //cy.task('installer:version = @version
-
-    cy.hasNoErrors()
   })
 
   afterEach(function(){
