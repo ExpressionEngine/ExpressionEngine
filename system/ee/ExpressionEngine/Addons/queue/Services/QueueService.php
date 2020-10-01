@@ -2,12 +2,21 @@
 
 namespace Queue\Services;
 
+use Queue\Models\Job;
+
 class QueueService {
 
-	public function __construct()
-	{
+	protected static $standardJobClassVariables = [
+		'jobId',
+		'attempts',
+		'attemptsTaken',
+		'className',
+		'runAt',
+		'uuid',
+	];
 
-		// Make magic, my friend
+	public static function fire(Job $job)
+	{
 
 	}
 

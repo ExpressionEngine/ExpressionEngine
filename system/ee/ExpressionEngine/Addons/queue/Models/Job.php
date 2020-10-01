@@ -21,4 +21,13 @@ class Job extends Model {
 	protected $run_at;
 	protected $created_at;
 
+	/**
+	 * return decoded payload
+	 * @return stdClass
+	 */
+	public function payload()
+	{
+		return json_decode($this->payload, true);
+	}
+
 }

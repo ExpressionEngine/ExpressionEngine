@@ -3,6 +3,11 @@
 namespace Queue\Commands;
 
 use EllisLab\ExpressionEngine\Cli\Cli;
+use Exception;
+use Queue\Exceptions\QueueException;
+use Queue\Models\Job;
+use Queue\Services\QueueService;
+use Throwable;
 
 class CommandQueueWork extends Cli {
 
@@ -55,10 +60,27 @@ class CommandQueueWork extends Cli {
 					->all();
 
 		foreach ($jobs as $job) {
-			
+			try {
+				QueueService::
+			} catch (Exception $e) {
+				$this->handleJobException($job, $exception);
+			} catch (Throwable $e) {
+				$this->handleJobException($job, $exception);
+			} catch (QueueException $e) {
+				$this->handleJobException($job, $exception);
+			}
 		}
 
-		
+	}
+
+	protected function processJob(Job $job)
+	{
+
+	}
+
+	protected function handleJobException(Job $job, $exception)
+	{
+
 	}
 
 }
