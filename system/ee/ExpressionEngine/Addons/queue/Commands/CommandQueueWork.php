@@ -47,7 +47,16 @@ class CommandQueueWork extends Cli {
 
 	public function handle()
 	{
-		$jobs = ee('Model')->get('queue:Job');
+
+		ee()->load->library('localize');
+
+		$jobs = ee('Model')->get('queue:Job')
+					->filter('run_at', '<=', ee()->localize->now)
+					->all();
+
+		foreach ($jobs as $job) {
+			
+		}
 
 		
 	}

@@ -12,11 +12,12 @@ class SampleJob extends Job {
 
 	public $entry;
 
+	protected $attempts = 3;
+
 	public function __construct(ChannelEntry $entry)
 	{
-		$this->entry = $entry;
-
 		parent::construct();
+		$this->entry = $entry;
 	}
 
 	public function handle()

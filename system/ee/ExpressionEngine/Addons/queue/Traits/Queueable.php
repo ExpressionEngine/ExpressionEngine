@@ -6,7 +6,9 @@ use ExpressionEngine\Service\Model\Model;
 
 trait Queueable {
 
+	protected $jobId;
 	protected $attempts;
+	protected $attemptsTaken = 0;
 	protected $className;
 	protected $runAt;
 	protected $uuid;
@@ -29,11 +31,24 @@ trait Queueable {
 
 	public function fail($exception)
 	{
-		$job = ee('Model')->make('queue:FailedJob');
-		$job->payload = $this->serialize();
-		$job->error = json_encode($exception);
-		$job->failed_at = ee()->localize->now;
-		$job->save();
+
+		$this->attemptsTaken++;
+
+		if($this->attemptsTaken < $this->attempts) {
+			return $this->handle();
+		}
+
+		$job = ee('Model')->get('queue:Job')
+					->filter('job_id', $this->jobId)
+					->first();
+
+		if($job) $job->delete();
+
+		$failedJob = ee('Model')->make('queue:FailedJob');
+		$failedJob->payload = $this->serialize();
+		$failedJob->error = json_encode($exception);
+		$failedJob->failed_at = ee()->localize->now;
+		$failedJob->save();
 	}
 
 	protected function serialize()
