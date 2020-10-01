@@ -43,10 +43,6 @@ context('Updater', () => {
 
     cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
-    //@version = '2.20.0'
-    //cy.task('installer:version = @version
-
-    cy.hasNoErrors()
   })
 
   afterEach(function(){
