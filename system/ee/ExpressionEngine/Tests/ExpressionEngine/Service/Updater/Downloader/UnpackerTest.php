@@ -9,7 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class UnpackerTest extends TestCase {
 
-	public function setUp()
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->zip_archive = Mockery::mock('ZipArchive');
@@ -23,7 +25,7 @@ class UnpackerTest extends TestCase {
 		$this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->filesystem = NULL;
 		$this->zip_archive = NULL;
@@ -31,6 +33,8 @@ class UnpackerTest extends TestCase {
 		$this->logger = NULL;
 		$this->requirements = NULL;
 		$this->unpacker = NULL;
+
+		Mockery::close();
 	}
 
 	public function testUnzipPackage()
@@ -69,20 +73,20 @@ class UnpackerTest extends TestCase {
 
 	public function testVerifyExtractedPackage()
 	{
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/')->atLeast()->once();
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine')->atLeast()->once();
 
-		$this->verifier->shouldReceive('verifyPath')->with(PATH_CACHE.'ee_update/ExpressionEngine', PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest');
+		$this->verifier->shouldReceive('verifyPath')->with(PATH_CACHE.'ee_update/ExpressionEngine', PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/hash-manifest')->atLeast()->once();
 
 		$this->unpacker->verifyExtractedPackage();
 	}
 
 	public function testCheckRequirements()
 	{
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/');
-		$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine');
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/')->atLeast()->once();
+		//$this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE.'ee_update/ExpressionEngine')->atLeast()->once();
 
-		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+		$this->requirements->shouldReceive('setClassPath')->with(PATH_CACHE.'ee_update/ExpressionEngine/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php')->atLeast()->once();
 		$this->requirements->shouldReceive('check')->andReturn(TRUE)->once();
 
 		$this->unpacker->checkRequirements();

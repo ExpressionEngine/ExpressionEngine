@@ -108,6 +108,10 @@ class Routes extends AbstractDesignController {
 			),
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('template_routes')
+		);
+
 		ee()->cp->render('design/routes/index', $vars);
 	}
 

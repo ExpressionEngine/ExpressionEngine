@@ -154,6 +154,11 @@ class Members extends CP_Controller {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('members')
+		);
+
 		ee()->cp->render('members/view_members', $vars);
 	}
 
@@ -245,6 +250,12 @@ class Members extends CP_Controller {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('pending')
+		);
+
 		ee()->cp->render('members/pending', $vars);
 	}
 
@@ -607,6 +618,12 @@ class Members extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('banned_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('banned')
+		);
+
 		ee()->cp->render('members/banned', $vars);
 	}
 
@@ -792,6 +809,12 @@ class Members extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('manage_bans');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('manage_bans')
+		);
+
 		ee()->cp->render('members/ban_settings', $vars);
 	}
 
@@ -1559,6 +1582,12 @@ class Members extends CP_Controller {
 				'working' => 'btn_saving'
 			]
 		];
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('create')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

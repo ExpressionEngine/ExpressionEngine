@@ -55,7 +55,7 @@ context('Create combinations of field', () => {
 		cy.log('Creates a Entry to work in')
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('button').contains('New').first().click()
-		cy.get('a').contains('AATestChannel').first().click()
+		cy.get('.ee-main a').contains('AATestChannel').first().click()
 
 	  	cy.get('input[name="title"]').type('AA Test Entry')
 

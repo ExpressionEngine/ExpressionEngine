@@ -276,6 +276,8 @@ $lang = array(
 
 'create_upload_directory' => 'Create Upload Directory',
 
+'new_directory' => 'New Directory',
+
 'create_watermark' => 'Create Watermark',
 
 'default_modal_view' => 'Default modal view?',

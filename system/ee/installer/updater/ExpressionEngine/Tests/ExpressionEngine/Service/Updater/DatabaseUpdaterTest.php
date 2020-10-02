@@ -9,7 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class DatabaseUpdaterTest extends TestCase {
 
-	public function setUp()
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
 
@@ -33,7 +35,7 @@ class DatabaseUpdaterTest extends TestCase {
 		$this->dbupdater = new DatabaseUpdater('3.1.0', $this->filesystem);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->filesystem = NULL;
 		$this->dbupdater = NULL;

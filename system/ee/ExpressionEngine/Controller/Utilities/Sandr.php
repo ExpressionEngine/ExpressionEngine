@@ -76,6 +76,11 @@ class Sandr extends Utilities {
 		ee()->view->replace_options = $this->tools_model->get_search_replace_options();
 
 		ee()->view->cp_page_title = lang('sandr');
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('search_and_replace')
+		);
+
 		ee()->cp->render('utilities/sandr');
 	}
 

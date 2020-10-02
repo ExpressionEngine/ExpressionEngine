@@ -85,6 +85,10 @@ class Email extends AbstractDesignController {
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('email_message_templates');
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('email_message_templates')
+		);
+
 		ee()->cp->render('design/email/index', $vars);
 	}
 
@@ -161,8 +165,8 @@ class Email extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/email/')->compile() => sprintf(lang('breadcrumb_group'), lang('email'))
+			ee('CP/URL')->make('design/email')->compile() => lang('email_message_templates'),
+			'' => lang('edit_template_title')
 		);
 
 		if (lang($template->template_name.'_desc') != $template->template_name.'_desc')

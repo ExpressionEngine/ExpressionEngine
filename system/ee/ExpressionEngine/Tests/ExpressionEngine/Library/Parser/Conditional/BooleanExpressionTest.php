@@ -18,7 +18,7 @@ class BooleanExpressionTest extends TestCase {
 
 	private $expr;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->expr = new BooleanExpression();
 	}

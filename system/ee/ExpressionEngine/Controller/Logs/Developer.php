@@ -220,6 +220,10 @@ class Developer extends Logs
             'form_url' => $this->base_url->compile(),
         );
 
+        ee()->view->cp_breadcrumbs = array(
+			'' => lang('view_developer_log')
+		);
+
         ee()->cp->render('logs/developer', $vars);
     }
 }

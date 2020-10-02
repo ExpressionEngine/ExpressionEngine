@@ -148,6 +148,11 @@ class ImportConverter extends Utilities {
 		ee()->view->base_url = ee('CP/URL')->make('utilities/import-converter');
 		ee()->view->save_btn_text = 'import_convert_btn';
 		ee()->view->save_btn_text_working = 'import_convert_btn_saving';
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('import_converter')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

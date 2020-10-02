@@ -19,7 +19,7 @@ class FilesystemTest extends TestCase {
 	protected $dummy_files;
 	protected $path;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->fs = new Filesystem();
 
@@ -47,7 +47,7 @@ class FilesystemTest extends TestCase {
 		}
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		foreach ($this->dummy_files as $file)
 		{

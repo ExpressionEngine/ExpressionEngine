@@ -398,6 +398,8 @@ $lang = array(
 
 'view_site' => 'View Site',
 
+'add_site' => 'Add Site',
+
 
 /* learning EE lang vars */
 'building_ee_site_01' => 'Building An ExpressionEngine Site - Chapter 01',
@@ -570,6 +572,8 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
+'search_results' => 'Search Results',
+
 'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
 'settings_save_error' => 'Attention: Settings not saved',
@@ -645,7 +649,7 @@ $lang = array(
 
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
+'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
 'up_to_date' => 'Up to date!',
 

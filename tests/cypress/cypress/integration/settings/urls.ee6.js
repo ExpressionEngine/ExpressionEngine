@@ -122,19 +122,19 @@ context('URL and Path Settings', () => {
     page.get('theme_folder_path').clear().type('/')
     // When a text field is invalid, shouldn't need to blur
     // page.get('theme_folder_path').blur()
-    //page.hasErrorsCount(3)
+    page.hasErrorsCount(3)
     // Make sure validation timer is still bound to field
     page.get('theme_folder_path').clear()
-    //page.hasErrorsCount(4)
+    page.hasErrorsCount(4)
     page.get('theme_folder_path').clear().type('/')
-    //page.hasErrorsCount(3)
+    page.hasErrorsCount(3)
     // Timer should be unbound on blur
     page.get('theme_folder_path').blur()
 
     // Invalid theme path
     page.get('theme_folder_path').clear().type('/dfsdfsdfd')
     page.get('theme_folder_path').blur()
-    //page.hasErrorsCount(4)
+    page.hasErrorsCount(4)
 
     //page.hasErrors()
 //should_have_form_errors(page)

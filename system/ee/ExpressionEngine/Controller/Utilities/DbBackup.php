@@ -71,6 +71,10 @@ class DbBackup extends Utilities {
 			]
 		]);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('backup_database')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

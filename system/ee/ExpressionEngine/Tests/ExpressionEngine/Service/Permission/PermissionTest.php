@@ -58,30 +58,23 @@ class PermissionTest extends TestCase {
 		$this->assertTrue($permission->hasAll('can_edit_all_the_things'));
 	}
 
-	/**
-     * @expectedException BadFunctionCallException
-     */
 	public function testHasException()
 	{
+		$this->expectException(\BadFunctionCallException::class);
 		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1), [], [1 => 'Super Admin']);
 		$permission->has('can_edit_own_comments', 'can_edit_all_the_things');
 	}
 
-	/**
-     * @expectedException BadFunctionCallException
-     */
 	public function testHasAnyException()
 	{
-	$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1), [], [1 => 'Super Admin']);
+		$this->expectException(\BadFunctionCallException::class);
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1), [], [1 => 'Super Admin']);
 		$permission->hasAny();
 	}
 
-
-	/**
-     * @expectedException BadFunctionCallException
-     */
 	public function testHasAllException()
 	{
+		$this->expectException(\BadFunctionCallException::class);
 		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1), [], [1 => 'Super Admin']);
 		$permission->hasAll();
 	}

@@ -22,9 +22,6 @@ define('RD', '}');
 // Minor CI annoyance
 function log_message() {}
 
-// Add hamcrest matchers
-require_once __DIR__ . '/vendor/hamcrest/hamcrest-php/hamcrest/Hamcrest.php';
-
 // add the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
 

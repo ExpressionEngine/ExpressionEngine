@@ -56,7 +56,15 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:load': (file) => {
+            fs.delete('../../system/user/cache/default_site/');
             return db.load(file)
+        }
+    })
+
+    on('task', {
+        'cache:clear': () => {
+            fs.delete('../../system/user/cache/default_site/');
+            return true
         }
     })
 
@@ -230,6 +238,32 @@ module.exports = (on, config) => {
     on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' && browser.isHeadless) {
             launchOptions.args.push('--disable-gpu');
+
+            launchOptions.args.push('--disable-background-networking')
+            launchOptions.args.push('--enable-features=NetworkService,NetworkServiceInProcess')
+            launchOptions.args.push('--disable-background-timer-throttling')
+            launchOptions.args.push('--disable-backgrounding-occluded-windows')
+            launchOptions.args.push('--disable-breakpad')
+            launchOptions.args.push('--disable-client-side-phishing-detection')
+            launchOptions.args.push('--disable-default-apps')
+            launchOptions.args.push('--disable-dev-shm-usage')
+            launchOptions.args.push('--disable-extensions')
+            launchOptions.args.push('--disable-features=site-per-process,TranslateUI')
+            launchOptions.args.push('--disable-hang-monitor')
+            launchOptions.args.push('--disable-ipc-flooding-protection')
+            launchOptions.args.push('--disable-popup-blocking')
+            launchOptions.args.push('--disable-prompt-on-repost')
+            launchOptions.args.push('--disable-renderer-backgrounding')
+            launchOptions.args.push('--disable-sync')
+            launchOptions.args.push('--force-color-profile=srgb')
+            launchOptions.args.push('--metrics-recording-only')
+            launchOptions.args.push('--no-first-run')
+            launchOptions.args.push('--safebrowsing-disable-auto-update')
+            launchOptions.args.push('--enable-automation')
+            launchOptions.args.push('--password-store=basic')
+            launchOptions.args.push('--use-mock-keychain')
+            launchOptions.args.push('--webview-disable-safebrowsing-support')
+
             return launchOptions
         }
     });

@@ -24,6 +24,11 @@ class NavigationListItem extends ListItem
     protected $addlink;
 
     /**
+     * @var bool $divider Whether to display divider element below item
+     */
+    protected $divider = false;
+
+    /**
      * Sets the URL property of the item
      *
      * @param URL|string $url A CP\URL object or string containing the
@@ -54,6 +59,18 @@ class NavigationListItem extends ListItem
     }
 
     /**
+     * Sets the divider property of the item
+     *
+     * @return self This returns a reference to itself
+     */
+    public function withDivider()
+    {
+        $this->divider = true;
+
+        return $this;
+    }
+
+    /**
      * Renders this item. This should not be called directly. Instead use
      * the NavigationSidebar's render method.
      *
@@ -73,6 +90,7 @@ class NavigationListItem extends ListItem
             'text' => $this->text,
             'url' => $this->url,
             'addlink' => $this->addlink,
+            'divider' => $this->divider,
             'attrs' => $attrs,
             'class' => $class,
             'icon' => $this->icon

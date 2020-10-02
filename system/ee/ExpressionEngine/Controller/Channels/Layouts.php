@@ -151,13 +151,19 @@ class Layouts extends AbstractChannelsController {
 			->currentPage($page)
 			->render($vars['base_url']);
 
-		$vars['breadcrumb_title'] = '';
 		$vars['cp_page_title'] = sprintf(lang('channel_form_layouts'), $channel->channel_title);
 		$vars['channel_title'] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
 		$vars['layouts'] = $data;
 		$vars['no_results'] = ['text' => lang('no_layouts'), 'href' => $vars['create_url']];
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
+		$breadcrumbs = array(
+			ee('CP/URL')->make('channels')->compile() => lang('channels')
+		);
+		if (!empty($channel_id)) {
+			//$breadcrumbs[ee('CP/URL')->make('channels/' . $channel_id)->compile()] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
+		}
+		$breadcrumbs[''] = lang('form_layouts');
+		ee()->view->cp_breadcrumbs = $breadcrumbs;
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}
@@ -300,7 +306,9 @@ class Layouts extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
-			ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities()
+			//ee('CP/URL')->make('channels/edit/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+			ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => lang('form_layouts'),
+			'' => lang('new_layout')
 		);
 
 		ee()->view->cp_page_title = lang('create_form_layout');
@@ -434,7 +442,9 @@ class Layouts extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
-			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities()
+			//ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+			ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile() => lang('form_layouts'),
+			'' => lang('edit_layout')
 		);
 
 		ee()->view->cp_page_title = lang('edit_form_layout');
