@@ -156,7 +156,6 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
 			'' => lang('members')
 		);
 
@@ -253,7 +252,7 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			'' => lang('pending')
 		);
 
@@ -621,7 +620,7 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('banned_members');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			'' => lang('banned')
 		);
 
@@ -812,7 +811,7 @@ class Members extends CP_Controller {
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('manage_bans');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			'' => lang('manage_bans')
 		);
 
@@ -1585,7 +1584,7 @@ class Members extends CP_Controller {
 		];
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			'' => lang('create')
 		);
 

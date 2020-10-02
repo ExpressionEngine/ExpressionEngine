@@ -163,7 +163,6 @@ class Extensions extends Utilities {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('manage_extensions')
 		);
 

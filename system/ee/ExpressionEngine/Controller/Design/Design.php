@@ -129,7 +129,6 @@ class Design extends AbstractDesignController {
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			'' => $group->group_name
 		);

@@ -147,7 +147,6 @@ class Buttons extends Settings {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('html_buttons');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			'' => lang('html_buttons')
 		);
 		ee()->cp->render('account/buttons', $data);
@@ -185,9 +184,8 @@ class Buttons extends Settings {
 		$vars['cp_page_title'] = lang('create_html_button');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/buttons')->compile() => lang('html_buttons'),
-			'' => lang('create')
+			'' => lang('create_html_button')
 		);
 
 		$this->form($vars, $values);
@@ -211,9 +209,8 @@ class Buttons extends Settings {
 		$this->button = ee('Model')->get('HTMLButton', $id)->first();
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			ee('CP/URL')->make('settings/buttons')->compile() => lang('html_buttons'),
-			'' => lang('edit')
+			'' => lang('edit_html_button')
 		);
 
 		$this->form($vars, $this->button->getValues());

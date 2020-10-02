@@ -82,7 +82,6 @@ class System extends AbstractDesignController {
 		ee()->view->cp_heading = lang('system_message_templates');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('system_message_templates')
 		);
 
@@ -142,18 +141,13 @@ class System extends AbstractDesignController {
 		$this->loadCodeMirrorAssets();
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
-			ee('CP/URL')->make('design/system/')->compile() => sprintf(lang('breadcrumb_group'), lang('system'))
-		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
 		ee()->output->set_header("X-XSS-Protection: 0");
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/system')->compile() => lang('system_message_templates'),
-			'' => lang('edit')
+			'' => lang('edit_template_title')
 		);
 
 		ee()->cp->render('design/system/edit', $vars);

@@ -252,7 +252,7 @@ class Groups extends AbstractCategoriesController {
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('categories')->compile() => '<i class="fas fa-tags"></i>',
+			ee('CP/URL')->make('categories')->compile() => lang('categories'),
 			'' => is_null($group_id) ? lang('create_category_group') : lang('edit_category_group')
 		);
 

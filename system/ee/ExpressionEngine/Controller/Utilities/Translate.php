@@ -129,7 +129,6 @@ class Translate extends Utilities {
 		ee()->view->cp_page_title = lang('cp_translations');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('cp_translations')
 		);
 
@@ -242,7 +241,6 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('utilities/translate')->compile() => lang('cp_translations'),
 			'' => ucfirst($language)
 		);
@@ -379,7 +377,6 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('utilities/translate')->compile() => lang('cp_translations'),
 			ee('CP/URL')->make('utilities/translate/' . $language)->compile() => ucfirst($language),
 			'' => lang('edit')

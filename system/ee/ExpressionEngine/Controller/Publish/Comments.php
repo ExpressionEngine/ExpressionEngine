@@ -145,13 +145,16 @@ class Comments extends AbstractPublishController {
 		if ($channel)
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => sprintf(lang('all_channel_entries'), $channel->channel_title),
+				ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+				//ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => $channel->channel_title,
+				'' => lang('comments')
 			);
 		}
 		else
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL')->make('publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
+				ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+				'' => lang('comments')
 			);
 		}
 
@@ -297,7 +300,9 @@ class Comments extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
+			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+			//ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
+			'' => lang('comments')
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
@@ -509,9 +514,11 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_comment');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/comments')->compile() => lang('all_comments'),
+			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+			//ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $comment->Channel->getId()))->compile() => $comment->Channel->channel_title,
+			ee('CP/URL')->make('publish/comments/entry/' . $comment->Entry->getId())->compile() => lang('comments'),
+			'' => lang('edit_comment')
 		);
-
 		ee()->cp->render('settings/form', $vars);
 	}
 
