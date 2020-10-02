@@ -207,6 +207,57 @@ class Rte_mcp
     public function edit_toolset()
     {
 
+        if (ee('Request')->isPost()) {
+
+            $settings =  ee('Request')->post('settings');
+    
+            // -------------------------------------------
+            //  Save and redirect to Index
+            // -------------------------------------------
+    
+            $toolset_id =  ee('Request')->post('toolset_id');
+            $configName =  ee('Request')->post('toolset_name');
+    
+            if (!$configName) {
+                $configName = 'Untitled';
+            }
+    
+            // Existing configuration
+            if ($toolset_id) {
+                $config = ee('Model')->get('rte:Toolset', $toolset_id)->first();
+            }
+    
+            // New config
+            if (!isset($config) || empty($config)) {
+                $config = ee('Model')->make('rte:Toolset');
+            }
+    
+            $config->toolset_name = $configName;
+            $config->settings = $settings;
+    
+            $validate = $config->validate();
+    
+            if ($validate->isValid()) {
+                $config->save();
+    
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle($toolset_id ? lang('toolset_updated') : lang('toolset_created'))
+                    ->addToBody(sprintf($toolset_id ? lang('toolset_updated_desc') : lang('toolset_created_desc'), $configName))
+                    ->defer();
+    
+                ee()->functions->redirect($this->base_url);
+            } else {
+                $variables['errors'] = $validate;
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('toolset_error'))
+                    ->addToBody(lang('toolset_error_desc'))
+                    //->addToBody($validate->getAllErrors())
+                    ->now();
+            }
+        }
+
         ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/settings.css' . '" />');
 
         ee()->cp->add_js_script(array(
@@ -217,6 +268,8 @@ class Rte_mcp
         $request = ee('Request');
 
         $defaultConfigSettings = RteHelper::defaultConfigSettings();
+
+        $headingTitle = lang('rte_create_config');
 
         if (
             ($toolset_id = $request->get('toolset_id'))
@@ -233,14 +286,12 @@ class Rte_mcp
             } else {
                 $headingTitle = lang('rte_edit_config') . ' - ' . $config->toolset_name;
             }
-        } else {
+        } elseif (!isset($config) || empty($config)) {
             $config = ee('Model')->make('rte:Toolset', array(
                 'toolset_id' => '',
                 'toolset_name' => '',
                 'settings' => $defaultConfigSettings
             ));
-
-            $headingTitle = lang('rte_create_config');
         }
 
         $variables['config'] = $config;
@@ -336,64 +387,18 @@ class Rte_mcp
         );
 
         $variables['sections'] = $sections;
-        $variables['base_url'] = ee('CP/URL')->make('addons/settings/rte/save_toolset');
+        $variables['base_url'] = ee('CP/URL')->make('addons/settings/rte/edit_toolset');
         $variables['cp_page_title'] = $headingTitle;
 
         $variables['save_btn_text'] = lang('save');
         $variables['save_btn_text_working'] = lang('saving');
 
-
-        return ee('View')->make('ee:_shared/form')->render($variables);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Save Config
-     */
-    public function save_toolset()
-    {
-        // -------------------------------------------
-        //  Advanced Settings
-        // -------------------------------------------
-
-        $request = ee('Request');
-
-        $settings = $request->post('settings');
-
-        // -------------------------------------------
-        //  Save and redirect to Index
-        // -------------------------------------------
-
-        $toolset_id = $request->post('toolset_id');
-        $configName = $request->post('toolset_name');
-
-        if (!$configName) {
-            $configName = 'Untitled';
-        }
-
-        // Existing configuration
-        if ($toolset_id) {
-            $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first();
-        }
-
-        // New config
-        if (empty($config)) {
-            $config = ee('Model')->make('rte:Toolset');
-        }
-
-        $config->toolset_name = $configName;
-        $config->settings = $settings;
-
-        $config->save();
-
-        ee('CP/Alert')->makeInline('shared-form')
-            ->asSuccess()
-            ->withTitle(lang('rte_config_saved'))
-            ->addToBody(sprintf(lang('rte_config_saved_desc'), $configName))
-            ->defer();
-
-        ee()->functions->redirect($this->base_url);
+        return [
+            'body' => ee('View')->make('ee:_shared/form')->render($variables),
+            'breadcrumb' => [
+                '' => !empty($toolset_id) ? lang('edit_tool_set') : lang('create_tool_set')
+            ]
+        ];
     }
 
     // --------------------------------------------------------------------
@@ -403,19 +408,22 @@ class Rte_mcp
      */
     public function delete_toolset()
     {
-        $toolset_id = ee('Request')->post('deletetoolset_id');
+        $toolset_id = ee('Request')->post('selection');
 
         if (!empty($toolset_id)) {
 
-            $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first();
+            $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', 'IN', $toolset_id);
 
             if ($config) {
+
+                $removed = $config->all()->pluck('toolset_name');
                 $config->delete();
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
-                    ->withTitle(lang('rte_config_deleted'))
-                    ->addToBody(sprintf(lang('rte_config_deleted_desc'), $config->toolset_name))
+                    ->withTitle(lang('toolsets_removed'))
+                    ->addToBody(lang('remove_success_desc'))
+                    ->addToBody($removed)
                     ->defer();
             }
         }
