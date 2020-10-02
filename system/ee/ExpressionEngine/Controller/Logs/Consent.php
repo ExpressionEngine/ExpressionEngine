@@ -104,7 +104,6 @@ class Consent extends Logs {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('view_consent_log')
 		);
 

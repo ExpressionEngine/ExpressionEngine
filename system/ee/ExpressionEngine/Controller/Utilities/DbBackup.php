@@ -72,7 +72,6 @@ class DbBackup extends Utilities {
 		]);
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('backup_database')
 		);
 

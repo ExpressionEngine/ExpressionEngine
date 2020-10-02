@@ -142,7 +142,6 @@ class Forums extends AbstractDesignController {
 		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('forum_templates')
 		);
 
@@ -214,7 +213,6 @@ class Forums extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design/forums')->compile() => lang('forum_templates'),
 			'' => lang('edit')
 		);

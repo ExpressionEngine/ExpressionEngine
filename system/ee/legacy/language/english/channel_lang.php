@@ -112,6 +112,8 @@ $lang = array(
 
 'form_layouts' => 'Publish Layouts',
 
+'edit_layout' => 'Edit Layout',
+
 'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
 'import' => 'Import',

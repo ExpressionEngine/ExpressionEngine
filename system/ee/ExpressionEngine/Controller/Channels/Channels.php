@@ -116,7 +116,6 @@ class Channels extends AbstractChannelsController {
 			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('channels')
 		);
 
@@ -343,9 +342,8 @@ class Channels extends AbstractChannelsController {
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
-			'' => is_null($channel_id) ? lang('create') : lang('edit')
+			'' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel')
 		);
 
 		$vars['buttons'] = [
