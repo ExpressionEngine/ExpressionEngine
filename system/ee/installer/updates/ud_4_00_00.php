@@ -183,12 +183,6 @@ class Updater {
 
 			ee()->smartforge->drop_column('channel_fields', 'group_id');
 		}
-
-		// Update entry stats
-		foreach (ee('Model')->get('Channel')->all() as $channel)
-		{
-			$channel->updateEntryStats();
-		}
 	}
 
 	/**

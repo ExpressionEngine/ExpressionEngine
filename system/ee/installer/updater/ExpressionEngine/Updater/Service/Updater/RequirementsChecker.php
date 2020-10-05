@@ -173,6 +173,14 @@ class RequirementsChecker
 			}
 		}
 
+		// random_compat requirement is processed differently
+		require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
+		try {
+			random_bytes(1);
+		} catch (Exception $e) {
+			$failed[] = $e;
+		}
+
 		return empty($failed) ? TRUE : $failed;
 	}
 }

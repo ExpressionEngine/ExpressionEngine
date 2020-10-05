@@ -24,7 +24,9 @@
 	if (file_exists(SYSPATH.'user/config/constants.php'))
 	{
 		$user_constants = include SYSPATH.'user/config/constants.php';
-		$constants = array_merge($constants, $user_constants);
+		if (is_array($user_constants)) {
+			$constants = array_merge($constants, $user_constants);
+		}
 	}
 
 	foreach ($constants as $k => $v)
