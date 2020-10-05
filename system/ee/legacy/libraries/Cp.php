@@ -416,7 +416,7 @@ class Cp {
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
-				$alert->addToBody($button);
+				$alert->addToBody($button, '', false);
 
 				return $alert->now();
 			}
