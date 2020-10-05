@@ -624,41 +624,6 @@ abstract class AbstractDesign extends CP_Controller {
 		return $vars;
 	}
 
-	/**
-	 * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
-	 *
-	 * @param	Template	$template	Saved template model object
-	 */
-	protected function saveNewTemplateRevision($template)
-	{
-		if ( ! bool_config_item('save_tmpl_revisions'))
-		{
-			return;
-		}
-
-		// Create the new version
-		$version = ee('Model')->make('RevisionTracker');
-		$version->Template = $template;
-		$version->item_table = 'exp_templates';
-		$version->item_field = 'template_data';
-		$version->item_data = $template->template_data;
-		$version->item_date = ee()->localize->now;
-		$version->Author = $template->LastAuthor;
-		$version->save();
-
-		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
-		$versions = ee('Model')->get('RevisionTracker')
-			->filter('item_id', $template->getId())
-			->filter('item_field', 'template_data')
-			->order('item_date', 'desc')
-			->limit(ee()->config->item('max_tmpl_revisions'))
-			->all();
-
-		// Reassign versions and delete the leftovers
-		$template->Versions = $versions;
-		$template->save();
-	}
-
 	protected function removeTemplates($template_ids)
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_templates'))
