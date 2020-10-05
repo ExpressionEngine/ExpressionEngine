@@ -251,7 +251,9 @@ class EE_Config {
 		if (file_exists($userpath))
 		{
 			$userout = include $userpath;
-			$out = array_replace_recursive($out, $userout);
+			if (is_array($userout)) {
+				$out = array_replace_recursive($out, $userout);
+			}
 		}
 
 		return $out;

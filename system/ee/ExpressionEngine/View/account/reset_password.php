@@ -14,15 +14,15 @@
 			</div>
 			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</fieldset>
-		<fieldset class="last">
+		<fieldset>
 			<div class="field-instruct">
 			<?=lang('new_password_confirm', 'password_confirm')?>
 			</div>
 			<?=form_password(array('dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</fieldset>
-		<fieldset class="form-ctrls">
+		<fieldset class="last text-center">
 			<?=form_hidden('resetcode', $resetcode)?>
-			<?=form_submit('submit', 'Change Password', 'class="btn" data-work-text="updating..."')?>
+			<?=form_submit('submit', 'Change Password', 'class="button button--primary button--large button--wide" data-work-text="updating..."')?>
 		</fieldset>
 	<?=form_close()?>
 </div>
