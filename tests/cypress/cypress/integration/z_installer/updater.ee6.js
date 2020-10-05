@@ -218,7 +218,7 @@ context('Updater', () => {
       }).then(()=>{
         cy.task('db:load', '../../support/sql/database_3.0.5-core.sql').then(()=>{
           from_version = '3.0.5'
-          test_update(false, true)
+          test_update()
           cy.task('db:query', 'SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').then((result) => {
             expect(result[0].length).to.eq(1)
           })
