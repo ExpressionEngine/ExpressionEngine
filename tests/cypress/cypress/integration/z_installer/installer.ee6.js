@@ -306,6 +306,7 @@ context('Installer', () => {
   context('when using an invalid database prefix', () => {
     it('shows an error when the database prefix is too long', () => {
       cy.window().then((win) => {
+        cy.wait(5000);
         win.$('input[maxlength=30]').prop('maxlength', 80);
       })
       install_form.get('db_prefix').clear().type('1234567890123456789012345678901234567890')
@@ -345,8 +346,9 @@ context('Installer', () => {
       page.get('inline_errors').contains('Your username must be at least 4 characters long')
     })
 
-    it('shows an error when using a too-long username', () => {
+    it.only('shows an error when using a too-long username', () => {
       cy.window().then((win) => {
+        cy.wait(5000);
         win.$('input[maxlength=50]').prop('maxlength', 80);
       })
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
@@ -389,6 +391,7 @@ context('Installer', () => {
 
     it('shows an error when the password is too long', () => {
       cy.window().then((win) => {
+        cy.wait(5000);
         win.$('input[maxlength=72]').prop('maxlength', 80);
       })
       install_form.get('password').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')

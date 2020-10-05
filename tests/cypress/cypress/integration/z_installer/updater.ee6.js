@@ -181,7 +181,7 @@ context('Updater', () => {
     })
   })
 
-  it('updates successfully when updating from 2.1.3 to 6.x', () => {
+  it.only('updates successfully when updating from 2.1.3 to 6.x', () => {
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-2.1.3.php', options: {
