@@ -467,10 +467,16 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+
         foreach (ee('Model')->get('Channel')->all() as $channel)
         {
             $channel->updateEntryStats();
         }
+
+        ee('Model')->get('ChannelLayout')
+            ->with('Channel')
+            ->all()
+            ->synchronize();
         
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
