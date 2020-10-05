@@ -15,7 +15,7 @@ let expect_login = false;
 // files before testing the upgrade. Please do not add `page.load()` to any of the
 // `before` calls.
 
-context('Updater', () => {
+context.skip('Updater', () => {
 
   beforeEach(function(){
 
@@ -218,7 +218,7 @@ context('Updater', () => {
       }).then(()=>{
         cy.task('db:load', '../../support/sql/database_3.0.5-core.sql').then(()=>{
           from_version = '3.0.5'
-          test_update()
+          test_update(false, true)
           cy.task('db:query', 'SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').then((result) => {
             expect(result[0].length).to.eq(1)
           })

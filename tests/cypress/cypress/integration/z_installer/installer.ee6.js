@@ -346,9 +346,12 @@ context('Installer', () => {
       page.get('inline_errors').contains('Your username must be at least 4 characters long')
     })
 
-    it('shows an error when using a too-long username', () => {
+    it.only('shows an error when using a too-long username', () => {
       cy.window().then((win) => {
         cy.wait(5000);
+        cy.log(win);
+        cy.screenshot({capture: 'runner'})
+        cy.screenshot({capture: 'fullPage'})
         win.jQuery('input[maxlength=50]').prop('maxlength', 80);
       })
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
