@@ -15,7 +15,7 @@ let expect_login = false;
 // files before testing the upgrade. Please do not add `page.load()` to any of the
 // `before` calls.
 
-context.skip('Updater', () => {
+context('Updater', () => {
 
   beforeEach(function(){
 
