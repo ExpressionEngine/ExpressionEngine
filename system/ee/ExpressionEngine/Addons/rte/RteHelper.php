@@ -272,6 +272,8 @@ class RteHelper
             }
         }
 
+        $config['toolbar']->shouldNotGroupWhenFull = true;
+
         // -------------------------------------------
         //  JSONify Config and Return
         // -------------------------------------------

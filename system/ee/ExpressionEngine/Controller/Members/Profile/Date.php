@@ -36,7 +36,7 @@ class Date extends Settings {
 					'fields' => array(
 						'site_default' => array(
 							'type' => 'yes_no',
-							'value' => (empty($this->member->timezone)) ? 'y' : 'n',
+							'value' => (empty($this->member->timezone) && empty($this->member->date_format)) ? 'y' : 'n',
 							'group_toggle' => array(
 								'n' => 'localize'
 							)

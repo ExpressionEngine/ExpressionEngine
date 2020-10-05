@@ -180,7 +180,6 @@ class Msm extends CP_Controller {
 		ee()->view->cp_page_title = lang('sites');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('sites')
 		);
 
@@ -287,9 +286,8 @@ class Msm extends CP_Controller {
 		');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('msm')->compile() => lang('sites'),
-			'' => lang('create')
+			'' => lang('create_site')
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -390,9 +388,8 @@ class Msm extends CP_Controller {
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('msm')->compile() => lang('sites'),
-			'' => lang('edit')
+			'' => lang('edit_site')
 		);
 
 		ee()->cp->render('settings/form', $vars);

@@ -398,6 +398,8 @@ $lang = array(
 
 'view_site' => 'View Site',
 
+'add_site' => 'Add Site',
+
 
 /* learning EE lang vars */
 'building_ee_site_01' => 'Building An ExpressionEngine Site - Chapter 01',

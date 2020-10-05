@@ -90,7 +90,6 @@ class Stats extends Utilities {
 		$vars['cp_page_title'] = lang('manage_stats');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('manage_stats')
 		);
 

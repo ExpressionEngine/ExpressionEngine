@@ -78,7 +78,6 @@ class Sandr extends Utilities {
 		ee()->view->cp_page_title = lang('sandr');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('search_and_replace')
 		);
 

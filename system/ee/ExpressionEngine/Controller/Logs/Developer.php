@@ -221,7 +221,6 @@ class Developer extends Logs
         );
 
         ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('view_developer_log')
 		);
 

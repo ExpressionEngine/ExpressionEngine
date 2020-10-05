@@ -157,7 +157,7 @@ context('Publish Page - Create', () => {
               let dir_link = link.next('.dropdown').find("a:contains('About')")
               cy.get(dir_link).click()
 
-              cy.wait(1000)
+              cy.wait(2000)
 
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
