@@ -352,7 +352,7 @@ context('Installer', () => {
         cy.log(win);
         cy.screenshot({capture: 'runner'})
         cy.screenshot({capture: 'fullPage'})
-        win.jQuery('input[maxlength=50]').prop('maxlength', 80);
+        //win.jQuery('input[maxlength=50]').prop('maxlength', 80);
       })
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
       install_form.get('install_submit').click()
