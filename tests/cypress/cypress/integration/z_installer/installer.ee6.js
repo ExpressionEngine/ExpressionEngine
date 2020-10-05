@@ -354,6 +354,7 @@ context('Installer', () => {
         cy.screenshot({capture: 'fullPage'})
         //win.jQuery('input[maxlength=50]').prop('maxlength', 80);
       })
+      page.get('inline_errors').contains('blabla');
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
       install_form.get('install_submit').click()
       page.get('inline_errors').its('length').should('gte', 1)
