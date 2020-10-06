@@ -14,7 +14,7 @@
 class Wizard extends CI_Controller
 {
 
-    public $version           = '6.0.0'; // The version being installed
+    public $version           = '6.0.0-b.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
     public $languages         = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -1128,7 +1128,7 @@ class Wizard extends CI_Controller
         // On first call, we can set addons to upgrade and back up the db
         $this->shouldBackupDatabase = ee()->input->post('database_backup');
         $this->shouldUpgradeAddons = ee()->input->post('update_addons');
-        
+
         // Make sure the current step is the correct number
         $this->current_step = ($this->addon_step) ? 3 : 2;
 
@@ -1179,7 +1179,7 @@ class Wizard extends CI_Controller
         if (class_exists('Updater')) {
             $UD = new Updater;
         } else {
-            $class = '\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
+            $class = '\ExpressionEngine\Updater\Version_' . str_replace(['.', '-'], '_', $next_version) . '\Updater';
             $UD = new $class;
         }
 
@@ -1321,8 +1321,13 @@ class Wizard extends CI_Controller
         foreach ($files as $file) {
             $file_name = $file->getFilename();
 
-            if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m)) {
+            if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+)(_[a-z0-9_]*)?\.php$/', $file_name, $m)) {
                 $file_version = "{$m[1]}.{$m[2]}.{$m[3]}";
+
+                // Check for any alpha/beta versions.
+                if (!empty($m[4]) && substr($m[4], 0, 1) === '_') {
+                    $file_version .= '-' . str_replace('_', '.', substr($m[4], 1));
+                }
 
                 if (version_compare($file_version, $current_version, '>')) {
                     $remaining_updates++;
