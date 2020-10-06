@@ -1809,6 +1809,29 @@ class CI_DB_active_record extends CI_DB_driver {
 				$this->ar_aliased_tables[] = $table;
 			}
 		}
+		
+		if (in_array($table, ['member_groups', 'channel_member_groups', 'module_member_groups'])) {
+			$debug_backtrace = debug_backtrace(false);
+			foreach ($debug_backtrace as $trace)
+			{
+				$marker = 'user' . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
+				if (isset($trace['file']) 
+					&& isset($trace['class']) 
+					&& is_string($trace['class']) 
+					&& strpos($trace['file'], $marker) !== false 
+					&& strpos($trace['class'], 'CI_DB_') === false) {
+						$addon_name = explode(DIRECTORY_SEPARATOR, substr($trace['file'], strpos($trace['file'], $marker) + strlen($marker)));
+						$addon = ee('Addon')->get($addon_name[0]);
+						$message = $addon->getName() . ' is making a call to `exp_' . $table . '` database table, which is non-existent in ExpressionEngine 6. If you are site owner, try upgrading ' . $addon->getName() . ' to latest available version. If you are the add-on developer, update your ' . $trace['class'] . ' class to use <a href="https://docs.expressionengine.com/latest/development/v6-addon-migration.html#roles">Role model</a>.';
+
+						ee()->load->library('logger');
+						ee()->logger->developer($message, true);
+						
+						throw new \Exception($message);
+				}
+			}
+			
+		}
 	}
 
 	/**
