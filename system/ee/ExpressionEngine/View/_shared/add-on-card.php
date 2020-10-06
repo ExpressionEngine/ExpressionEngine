@@ -8,7 +8,7 @@
 		<h2 class="add-on-card__title"><?= $addon['name'] ?> <span class="add-on-card__title-version"><?= $addon['version'] ?></span></h2>
 
 		<?php if (!empty($addon['description'])): ?>
-		<p class="add-on-card__desc"><?= $addon['description'] ?></p>
+		<p class="add-on-card__desc" title="<?= $addon['description'] ?>"><?= $addon['description'] ?></p>
 		<?php endif; ?>
 	</div>
 
