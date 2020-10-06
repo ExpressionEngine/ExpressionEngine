@@ -240,10 +240,7 @@ class Cp {
 
 		$this->_notices();
 
-		$formatted_version = formatted_version(APP_VER);
-		ee()->view->formatted_version = strpos($formatted_version, '-') !== FALSE
-			? substr($formatted_version, 0, strpos($formatted_version, '-'))
-			: $formatted_version;
+		ee()->view->formatted_version = formatted_version(APP_VER);
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 
