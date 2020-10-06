@@ -113,8 +113,6 @@ class Updater {
 	private function _convert_template_conditional_flag()
 	{
 		ee()->update_notices->setVersion('2.9');
-		ee()->update_notices->header('The behavior of conditionals in JavaScript has changed.');
-		ee()->update_notices->item(' Checking for templates to review ...');
 
 		$changes = FALSE;
 
@@ -249,10 +247,6 @@ class Updater {
 		{
 			ee()->update_notices->item('Done. Please double check these templates for expected output.');
 		}
-		else
-		{
-			ee()->update_notices->item('Done.');
-		}
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);
@@ -269,8 +263,6 @@ class Updater {
 	private function _warn_about_layout_contents()
 	{
 		ee()->update_notices->setVersion('2.9');
-		ee()->update_notices->header('{layout:contents} reserved variable is strictly enforced.');
-		ee()->update_notices->item(' Checking for templates to review ...');
 
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
@@ -308,8 +300,6 @@ class Updater {
 		{
 			ee()->update_notices->item('The following templates are manually setting the {layout:contents} variable, please use a different variable name.<br>'.implode('<br>', $warnings));
 		}
-
-		ee()->update_notices->item('Done.');
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);

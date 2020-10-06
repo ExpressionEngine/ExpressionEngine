@@ -543,8 +543,8 @@ class Addon {
 
 			// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
 			$items[$newKey]['addon'] = true;
-			$items[$newKey]['command'] = $this->shortname . ' ' . $items[$newKey]['command'];
-			$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . $items[$newKey]['command_title'];
+			$items[$newKey]['command'] = $this->shortname . ' ' . lang($items[$newKey]['command']);
+			$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . lang($items[$newKey]['command_title']);
 
 			if ($item['dynamic'] === true) {
 				$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');

@@ -467,6 +467,17 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+
+        foreach (ee('Model')->get('Channel')->all() as $channel)
+        {
+            $channel->updateEntryStats();
+        }
+
+        ee('Model')->get('ChannelLayout')
+            ->with('Channel')
+            ->all()
+            ->synchronize();
+        
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -1384,6 +1395,8 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
+        } else if (strpos($path, '/') !== 0) {
+            $path = '/' . $path;
         }
 
         return $path;
