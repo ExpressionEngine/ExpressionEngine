@@ -304,7 +304,6 @@ class Group extends AbstractDesignController {
 		ee()->view->cp_page_title = lang('create_new_template_group');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			'' => lang('create_new_template_group')
 		);
@@ -514,7 +513,6 @@ class Group extends AbstractDesignController {
 		ee()->view->cp_page_title = lang('edit_template_group');
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			ee('CP/URL')->make('design')->compile() => lang('templates'),
 			'' => lang('edit_template_group')
 		);

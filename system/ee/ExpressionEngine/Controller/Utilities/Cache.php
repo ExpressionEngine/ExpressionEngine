@@ -75,7 +75,6 @@ class Cache extends Utilities {
 		ee()->view->save_btn_text_working = 'btn_clear_caches_working';
 
 		ee()->view->cp_breadcrumbs = array(
-			'#developer' => '<i class="fas fa-database"></i>',
 			'' => lang('cache_manager')
 		);
 

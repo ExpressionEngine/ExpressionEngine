@@ -199,7 +199,6 @@ class General extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('settings')->compile() => '<i class="fas fa-cog"></i>',
 			'' => lang('general_settings')
 		);
 		ee()->cp->render('settings/form', $vars);
@@ -275,10 +274,9 @@ class General extends Settings {
 		else
 		{
 			$version_info = ee()->el_pings->getUpgradeInfo();
-			$latest_version = $version_info['version'];
 
 			// New version available
-			if (version_compare(ee()->config->item('app_version'), $latest_version, '<'))
+			if (!empty($version_info) && version_compare(ee()->config->item('app_version'), $version_info['version'], '<'))
 			{
 				if (AJAX_REQUEST)
 				{
@@ -291,7 +289,7 @@ class General extends Settings {
 				$upgrade_url = ee('CP/URL', 'updater')->compile();
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
-				$desc = sprintf(lang('version_update_inst'), $latest_version, $upgrade_url, $instruct_url);
+				$desc = sprintf(lang('version_update_inst'), $version_info['version'], $upgrade_url, $instruct_url);
 
 				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()

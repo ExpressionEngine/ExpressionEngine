@@ -189,7 +189,7 @@
             <?php
 							$version_class = '';
 							$update_available = isset(ee()->view->new_version);
-							$vital_update = $update_available && $new_version['security'];
+							$vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
 
 							if ( ! empty($version_identifier))
 							{

@@ -241,7 +241,6 @@ class Addons extends CP_Controller {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>',
 			'' => lang('addons')
 		);
 
@@ -767,7 +766,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>'
+			ee('CP/URL')->make('addons')->compile() => lang('addons')
 		);
 
 		if (is_null($method))
@@ -998,7 +997,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('addons')->compile() => '<i class="fas fa-puzzle-piece"></i>',
+			ee('CP/URL')->make('addons')->compile() => lang('addons'),
 			ee('CP/URL')->make('addons/settings/' . $addon)->compile() => $info->getName(),
 			'' => lang('manual')
 		);

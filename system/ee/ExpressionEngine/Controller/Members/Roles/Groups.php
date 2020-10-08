@@ -116,7 +116,7 @@ class Groups extends AbstractRolesController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
 			'' => lang('create_role_group')
 		);
@@ -215,7 +215,7 @@ class Groups extends AbstractRolesController {
 		ee()->view->cp_page_title = lang('edit_role_group');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
+			ee('CP/URL')->make('members')->compile() => lang('members'),
 			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
 			'' => lang('edit_role_group')
 		);

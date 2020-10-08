@@ -212,8 +212,8 @@ class Fields extends Members\Members {
 		ee()->view->cp_page_title = lang('custom_profile_fields');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
-			'' => lang('fields')
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('custom_member_fields')
 		);
 
 		ee()->cp->render('members/custom_profile_fields', $data);
@@ -223,9 +223,9 @@ class Fields extends Members\Members {
 	{
 		
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
-			ee('CP/URL')->make('members/fields')->compile() => lang('fields'),
-			'' => lang('create')
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+			'' => lang('create_member_field')
 		);
 		
 		$this->form();
@@ -234,9 +234,9 @@ class Fields extends Members\Members {
 	public function edit($id)
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => '<i class="fas fa-users"></i>',
-			ee('CP/URL')->make('members/fields')->compile() => lang('fields'),
-			'' => lang('edit')
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+			'' => lang('edit_member_field')
 		);
 		
 		$this->form($id);
