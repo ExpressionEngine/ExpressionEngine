@@ -44,7 +44,7 @@ $current_page = ee()->uri->segment(2);
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
 			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) :
-			echo ee('CP/NavigationSidebar')->render();
+				$this->embed('ee:_shared/sidebar/navigation/navigation');
 			endif; ?>
 			<div class="ee-main">
 
