@@ -14,6 +14,8 @@ class SampleJob extends Job {
 
 	protected $attempts = 3;
 
+	protected $sleep = 10;
+
 	public function __construct(ChannelEntry $entry)
 	{
 		parent::construct();

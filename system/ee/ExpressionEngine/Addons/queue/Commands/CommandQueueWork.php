@@ -48,7 +48,8 @@ class CommandQueueWork extends Cli {
 	 * @var array
 	 */
 	public $commandOptions = [
-		'verbose,v'				=> 'Verbose output',
+		'verbose,v'	=> 'Verbose output',
+		'take,t:'	=> 'Amount of jobs to run at a time'
 	];
 
 	public function handle()
@@ -58,7 +59,8 @@ class CommandQueueWork extends Cli {
 
 		$jobs = ee('Model')->get('queue:Job')
 					->filter('run_at', '<=', ee()->localize->now)
-					->all();
+					->all()
+					->take($this->option('-t', 3));
 
 		foreach ($jobs as $job) {
 			try {

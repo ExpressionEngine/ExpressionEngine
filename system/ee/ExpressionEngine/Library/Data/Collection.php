@@ -347,6 +347,20 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 		unset($this->elements[$offset]);
 	}
 
+	/**
+	 * Take the first or last {$limit} items.
+	 * @param  int $limit
+	 * @return void
+	 */
+	public function take($limit)
+	{
+		if ($limit < 0) {
+			return array_slice($this->elements, $limit, abs($limit), true);
+		}
+
+		return array_slice($this->elements, $limit, abs($limit), true);
+	}
+
 	// Implement Countable
 
 	/**
