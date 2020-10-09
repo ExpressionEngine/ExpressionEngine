@@ -27,7 +27,7 @@ class Job extends Model {
 	 */
 	public function payload()
 	{
-		return json_decode($this->payload, true);
+		return json_decode($this->payload);
 	}
 
 }

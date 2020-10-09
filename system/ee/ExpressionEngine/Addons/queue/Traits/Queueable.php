@@ -3,12 +3,14 @@
 namespace Queue\Traits;
 
 use ExpressionEngine\Service\Model\Model;
+use use Queue\Services\SerializerService;
 
 trait Queueable {
 
 	protected $jobId;
 	protected $attempts;
 	protected $attemptsTaken = 0;
+	protected $sleep = 5;
 	protected $className;
 	protected $runAt;
 	protected $uuid;
@@ -53,9 +55,8 @@ trait Queueable {
 
 	protected function serialize()
 	{
-		$vars = get_object_vars($this);
-
-		return json_encode($vars);
+		$serializer = new SerializerService;
+		return $serializer->serialize($this);
 	}
 
 	protected function attempts()

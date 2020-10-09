@@ -4,6 +4,7 @@ namespace Queue\Services;
 
 use Queue\Exceptions\QueueException;
 use Queue\Models\Job;
+use Queue\Services\SerializerService;
 
 class QueueService {
 
@@ -11,6 +12,7 @@ class QueueService {
 		'jobId',
 		'attempts',
 		'attemptsTaken',
+		'sleep',
 		'className',
 		'runAt',
 		'uuid',
@@ -20,19 +22,11 @@ class QueueService {
 	{
 		$payload = $job->payload();
 
-		$class = $job->className;
+		$serializer = new SerializerService;
 
-		$classVars = [];
+		$jobClass = $serializer->deserialize($payload);
 
-		foreach ($payload as $classVar) {
-			if(in_array($classVar, self::$standardJobClassVariables)) {
-				continue;
-			}
-
-			$classVars[] = 
-		}
-
-		$jobClass = new $class(...$classVars);
+		$jobClass->handle();
 
 	}
 

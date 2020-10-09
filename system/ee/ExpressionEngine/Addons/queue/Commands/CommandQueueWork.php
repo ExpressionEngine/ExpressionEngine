@@ -7,6 +7,7 @@ use Exception;
 use Queue\Exceptions\QueueException;
 use Queue\Models\Job;
 use Queue\Services\QueueService;
+use RuntimeException;
 use Throwable;
 
 class CommandQueueWork extends Cli {
@@ -61,21 +62,24 @@ class CommandQueueWork extends Cli {
 
 		foreach ($jobs as $job) {
 			try {
-				QueueService::
+				QueueService::fire($job);
+				sleep($job->sleep);
 			} catch (Exception $e) {
-				$this->handleJobException($job, $exception);
+				$this->handleJobException($job, $e);
+			} catch(RuntimeException $e) {
+				$this->handleJobException($job, $e);
 			} catch (Throwable $e) {
-				$this->handleJobException($job, $exception);
+				$this->handleJobException($job, $e);
 			} catch (QueueException $e) {
-				$this->handleJobException($job, $exception);
+				$this->handleJobException($job, $e);
 			}
 		}
 
 	}
 
-	protected function processJob(Job $job)
+	protected function processJob(Job $job, $exception)
 	{
-
+		$job->fail($exception);
 	}
 
 	protected function handleJobException(Job $job, $exception)

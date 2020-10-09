@@ -57,7 +57,15 @@ class SerializableEntity extends Entity implements JsonSerializable, Serializabl
 	 */
 	public function jsonSerialize()
 	{
-		return $this->getSerializeData();
+		$output = $this->getSerializeData();
+
+		$classVars = get_class_vars($this);
+
+		foreach ($classVars as $classVarKey => $classVarValue) {
+			$output[$classVarKey] = $classVarValue;
+		}
+
+		return $output;
 	}
 
 	/**
