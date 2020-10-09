@@ -77,14 +77,9 @@ class CommandQueueWork extends Cli {
 
 	}
 
-	protected function processJob(Job $job, $exception)
-	{
-		$job->fail($exception);
-	}
-
 	protected function handleJobException(Job $job, $exception)
 	{
-
+		$job->fail($exception);
 	}
 
 }
