@@ -28,6 +28,7 @@ Bullet list below, e.g.
 
    - Altered a javascript filename that mod_security tended to object to.
    - Fixed a bug where input data were assumed to be URL encoded, causing certain character sequences to be stripped when cleaned.
+   - Fixed a bug ([#416](https://github.com/ExpressionEngine/ExpressionEngine/issues/416)) PHP error was thrown in some cases during check for available updates.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
