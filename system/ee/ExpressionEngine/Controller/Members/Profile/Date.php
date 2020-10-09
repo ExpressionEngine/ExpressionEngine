@@ -27,7 +27,7 @@ class Date extends Settings {
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 		$fields = ee()->config->prep_view_vars('localization_cfg');
 		$fields = $fields['fields'];
-		$timezone = ee()->localize->timezone_menu($this->member->timezone, 'timezone');
+		$timezone = ee()->localize->timezone_menu($this->member->timezone ?: ee()->config->item('default_site_timezone'), 'timezone');
 
 		$vars['sections'] = array(
 			array(
@@ -36,7 +36,7 @@ class Date extends Settings {
 					'fields' => array(
 						'site_default' => array(
 							'type' => 'yes_no',
-							'value' => (empty($this->member->timezone)) ? 'y' : 'n',
+							'value' => (empty($this->member->timezone) && empty($this->member->date_format)) ? 'y' : 'n',
 							'group_toggle' => array(
 								'n' => 'localize'
 							)
@@ -150,6 +150,11 @@ class Date extends Settings {
 		ee()->view->cp_page_title = lang('date_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('date_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }

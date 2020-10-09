@@ -109,9 +109,9 @@ class Channel extends StructureModel {
 
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
-		'channel_title'              => 'required|unique[site_id]|xss',
-		'channel_name'               => 'required|unique[site_id]|alphaDash',
-		'channel_url'                => 'xss',
+		'channel_title'              => 'required|maxLength[100]|unique[site_id]|xss',
+		'channel_name'               => 'required|maxLength[40]|unique[site_id]|alphaDash',
+		'channel_url'                => 'maxLength[100]|xss',
 		'preview_url'                => 'xss|validatePreviewURL',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
@@ -570,6 +570,11 @@ class Channel extends StructureModel {
 	 */
 	public function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'entry_date')
 			->filter('channel_id', $this->getId());

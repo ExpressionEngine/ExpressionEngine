@@ -452,9 +452,16 @@ class EE_relationship_tree_builder {
 				{
 					foreach (explode('|', $field_name) as $name)
 					{
-						foreach ($this->relationship_field_ids[$name] as $rel_field_id)
+						if (array_key_exists($name, $this->relationship_field_ids))
 						{
-							$field_ids[] = $rel_field_id;
+							foreach ($this->relationship_field_ids[$name] as $rel_field_id)
+							{
+								$field_ids[] = $rel_field_id;
+							}
+						}
+						if (array_key_exists($name, $this->grid_relationship_ids))
+						{
+							$field_ids[] = $this->grid_relationship_ids[$name];
 						}
 					}
 				}

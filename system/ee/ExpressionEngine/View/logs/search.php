@@ -1,15 +1,16 @@
 <?php $this->extend('_templates/default-nav') ?>
-
+<div class="panel">
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-	<div class="title-bar">
-		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
-		<?php if (isset($filters)) echo $filters; ?>
-	</div>
-
-	<section>
+  <div class="panel-heading">
+  	<div class="title-bar">
+  		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
+  		<?php if (isset($filters)) echo $filters; ?>
+  	</div>
+  </div>
+<div class="panel-body">
+  <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_search_logs_found')?></p>
 		<?php else: ?>
@@ -18,8 +19,8 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
-					<div>
+					<a href="" class="m-link float-right button button--default button--small" rel="modal-confirm-<?=$log->id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
+					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->search_date)?>,
 						<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
 						<b><?=lang('username')?>:</b>
@@ -40,15 +41,16 @@
 			</div>
 
 			<?=$pagination?>
-
-			<fieldset class="bulk-action-bar">
-				<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_search_logs')?></button>
-			</fieldset>
+      </div>
+      <div class="panel-footer">
+  			<fieldset class="bulk-action-bar">
+  				<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_search_logs')?></button>
+  			</fieldset>
+      </div>
 		<?php endif; ?>
-	</section>
 <?=form_close()?>
 </div>
-
+</div>
 <?php
 // Individual confirm delete modals
 foreach($logs as $log)

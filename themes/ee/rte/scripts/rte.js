@@ -51,7 +51,7 @@ window.Rte;
             if (width.match(/\d$/)) width += 'px';
             if (height.match(/\d$/)) height += 'px';
 
-            this.$iframe = $('<iframe class="Rte" style="width:'+width+'; height:'+height+';" frameborder="0" />').insertAfter($textarea);
+            this.$iframe = $('<iframe class="rte" style="width:'+width+'; height:'+height+';" frameborder="0" />').insertAfter($textarea);
 
             var iDoc = this.$iframe[0].contentWindow.document,
                 html = '<html>'
@@ -106,8 +106,8 @@ window.Rte;
     }
 
     if (typeof FluidField !== 'undefined') {
-        FluidField.on('Rte', 'add', function(row) {
-            var field_id = row.find('.Rte-textarea').attr('id');
+        FluidField.on('rte', 'add', function(row) {
+            var field_id = row.find('.rte-textarea').attr('id');
             var config_handle = $('#'+field_id).data('config');
             var defer = $('#'+field_id).data('defer');
 

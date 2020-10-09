@@ -221,6 +221,11 @@ class Communicate extends Utilities {
 		$vars['base_url'] = ee('CP/URL')->make('utilities/communicate/send');
 		$vars['save_btn_text'] = 'btn_send_email';
 		$vars['save_btn_text_working'] = 'btn_send_email_working';
+		$vars['has_file_input'] = true;
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('send_email')
+		);
 
 		return ee()->cp->render('settings/form', $vars);
 	}
@@ -901,6 +906,10 @@ class Communicate extends Utilities {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('view_email_cache')
+		);
 
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}

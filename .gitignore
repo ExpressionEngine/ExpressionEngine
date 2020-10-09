@@ -6,6 +6,7 @@ env_local.rb
 *.swp
 node_modules/
 .vscode/
+cypress.env.json
 phpcs.ruleset.xml
 
 system/user/addons/*
@@ -54,6 +55,8 @@ tests/rspec/support/file-sync/uploads/*
 tests/rspec/fixtures/vendor/
 tests/rspec/fixtures/composer.lock
 
+tests/cypress/vendor/
+
 system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/ExpressionEngine/Tests/composer.lock
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
@@ -99,6 +102,9 @@ images/uploads/*
 themes/third_party/
 
 asset/*
+
+# Renamed installer
+system/ee/installer_*
 
 # Updater dependencies =================================================
 

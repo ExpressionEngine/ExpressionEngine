@@ -1,0 +1,27 @@
+<members>
+	<member>
+		<screen_name>import1</screen_name>
+		<username>Import1</username>
+		<password type="text">password</password>
+		<email>import1@fake.com</email>
+	</member>
+	<member>
+		<screen_name>import2</screen_name>
+		<username>Import2</username>
+		<password type="text">password</password>
+		<email>import2@fake.com</email>
+	</member>
+	<member>
+		<screen_name>import3</screen_name>
+		<username>Import3</username>
+		<password type="text">password</password>
+		<email>import3@fake.com</email>
+	</member>
+	<member>
+		<screen_name>import4</screen_name>
+		<username>Import4</username>
+		<password type="text">password</password>
+		<email>import4@fake.com</email>
+	</member>
+</members>
+			

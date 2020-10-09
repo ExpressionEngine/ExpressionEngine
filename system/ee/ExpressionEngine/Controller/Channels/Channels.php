@@ -115,6 +115,10 @@ class Channels extends AbstractChannelsController {
 			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
 			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('channels')
+		);
+
 		ee()->cp->render('channels/index', $vars);
 	}
 
@@ -220,7 +224,6 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->breadcrumb_title = lang('edit').' '.$channel->channel_title;
 			ee()->view->base_url = ee('CP/URL')->make('channels/edit/'.$channel_id);
 		}
 
@@ -324,7 +327,7 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
 		ee()->view->header = array(
-			'title' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel'),
+			'title' => is_null($channel_id) ? lang('channels') : $channel->channel_title,
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/content-design'),
@@ -337,7 +340,11 @@ class Channels extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = lang('save');
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('channels')->compile() => lang('channels'),
+			'' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel')
+		);
 
 		$vars['buttons'] = [
 			[

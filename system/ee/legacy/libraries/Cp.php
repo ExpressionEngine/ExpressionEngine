@@ -168,6 +168,7 @@ class Cp {
 			'THEME_URL'        => $this->cp_theme_url,
 			'hasRememberMe'    => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
 		if (ee()->session->flashdata('update:completed'))
@@ -239,10 +240,7 @@ class Cp {
 
 		$this->_notices();
 
-		$formatted_version = formatted_version(APP_VER);
-		ee()->view->formatted_version = strpos($formatted_version, '-') !== FALSE
-			? substr($formatted_version, 0, strpos($formatted_version, '-'))
-			: $formatted_version;
+		ee()->view->formatted_version = formatted_version(APP_VER);
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 

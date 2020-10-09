@@ -132,10 +132,6 @@ abstract class AbstractRoles extends CP_Controller {
 				);
 		}
 
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => lang('members'),
-		);
-
 		ee()->view->left_nav = $sidebar->render();
 	}
 }

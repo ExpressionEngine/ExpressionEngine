@@ -6,11 +6,13 @@
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 			<?php if (empty($categories)): ?>
-			<table cellspacing="0" class="empty no-results">
-				<tr>
-					<td><?=sprintf(lang('no_found'), lang('categories'))?> <a class="btn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
-				</tr>
-			</table>
+        <div class="table-responsive table-responsive--collapsible">
+          <table cellspacing="0" class="empty">
+    				<tr class="no-results">
+    					<td><?=sprintf(lang('no_found'), lang('categories'))?> <a href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
+    				</tr>
+    			</table>
+        </div>
 			<?php else: ?>
 				<?php
 				foreach ($categories as $category)

@@ -272,6 +272,8 @@ class RteHelper
             }
         }
 
+        $config['toolbar']->shouldNotGroupWhenFull = true;
+
         // -------------------------------------------
         //  JSONify Config and Return
         // -------------------------------------------
@@ -398,9 +400,11 @@ class RteHelper
 
             $pageData = static::getSitePages('', $site_id);
 
-            foreach ($pageData as $page) {
-                $tags[] = LD . 'page_' . $page->entry_id . RD;
-                $urls[] = $page->uri;
+            if (!empty($pageData)) {
+                foreach ($pageData as $page) {
+                    $tags[] = LD . 'page_' . $page->entry_id . RD;
+                    $urls[] = $page->uri;
+                }
             }
 
             static::$_pageTags = array($tags, $urls);
@@ -503,26 +507,28 @@ class RteHelper
             if (!$break) {
                 $site = ee('Model')->get('Site', $site_id)->first();
                 $site_pages = $site->site_pages;
-                $entry_ids = array_keys($site_pages[$site_id]['uris']);
-                $channels = ee('Model')->get('Channel')
-                    ->fields('channel_id', 'channel_title')
-                    ->all()
-                    ->getDictionary('channel_id', 'channel_title');
-                $entries = ee('Model')->get('ChannelEntry', $entry_ids)
-                    ->fields('entry_id', 'title', 'url_title', 'channel_id')
-                    ->all();
-                $titles = $entries->getDictionary('entry_id', 'title');
-                $channel_ids = $entries->getDictionary('entry_id', 'channel_id');
-                foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
-                    if (isset($titles[$entry_id])) {
-                        $pages[] = (object) [
-                            'id' => '@' . $entry_id,
-                            'text' => $titles[$entry_id],
-                            'extra' => $channels[$channel_ids[$entry_id]],
-                            'href' => '{page_' . $entry_id . '}',
-                            'entry_id' => $entry_id,
-                            'uri' => $uri
-                        ];
+                if (isset($site_pages[$site_id]['uris'])) {
+                    $entry_ids = array_keys($site_pages[$site_id]['uris']);
+                    $channels = ee('Model')->get('Channel')
+                        ->fields('channel_id', 'channel_title')
+                        ->all()
+                        ->getDictionary('channel_id', 'channel_title');
+                    $entries = ee('Model')->get('ChannelEntry', $entry_ids)
+                        ->fields('entry_id', 'title', 'url_title', 'channel_id')
+                        ->all();
+                    $titles = $entries->getDictionary('entry_id', 'title');
+                    $channel_ids = $entries->getDictionary('entry_id', 'channel_id');
+                    foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
+                        if (isset($titles[$entry_id])) {
+                            $pages[] = (object) [
+                                'id' => '@' . $entry_id,
+                                'text' => $titles[$entry_id],
+                                'extra' => $channels[$channel_ids[$entry_id]],
+                                'href' => '{page_' . $entry_id . '}',
+                                'entry_id' => $entry_id,
+                                'uri' => $uri
+                            ];
+                        }
                     }
                 }
             }

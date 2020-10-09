@@ -100,27 +100,12 @@ $lang = array(
 
 'delete' => 'Delete',
 
-'disable_button' => 'Disable',
-
-'disable_rte' => 'Disable Rich Text Editor',
-
-'disabled' => 'Disabled',
-
-'enable_button' => 'Enable',
-
-'enable_rte' => 'Enable rich text editor?',
-
-'enable_rte_desc' => 'When enabled, registered users will be able to use the Rich Text Editor to create new content.',
-
-'enabled' => 'Enabled',
-
 'tool' => 'Tool',
 
 'toolset' => 'Tool Set',
 
 
 /* Flashes */
-'cannot_disable_default_toolset' => 'The default RTE tool set cannot be disabled',
 
 'cannot_remove_default_toolset' => 'The default RTE tool set cannot be removed',
 
@@ -146,13 +131,13 @@ $lang = array(
 
 'settings_saved_desc' => 'Your Rich Text Editor Settings have been saved.',
 
-'tool_update_failed' => 'Tool update failed. Please try again.',
-
 'tool_updated' => 'Tool updated',
 
 'toolset_created' => 'Tool set created',
 
 'toolset_created_desc' => '<b>%s</b> has been successfully created.',
+
+'toolset_updated_desc' => '<b>%s</b> has been successfully updated.',
 
 'toolset_deleted' => 'Tool set deleted successfully.',
 
@@ -167,10 +152,6 @@ $lang = array(
 'toolset_update_failed' => 'Tool set update failed. Please try again.',
 
 'toolset_updated' => 'Tool set updated',
-
-'toolsets_disabled' => '%d tool sets were disabled.',
-
-'toolsets_enabled' => '%d tool sets were enabled.',
 
 'toolsets_removed' => 'Tool sets removed',
 

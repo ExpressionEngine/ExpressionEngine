@@ -1,8 +1,15 @@
 <?php $this->extend('_templates/default-nav') ?>
-
+<div class="panel">
 <div class="tbl-ctrls">
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+  <div class="panel-heading">
+    <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+    <div class="form-btns form-btns-top">
+      <div class="title-bar title-bar--large">
+        <h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
 	<section class="item-wrap email">
 		<div class="item">
 			<ul class="toolbar">
@@ -14,6 +21,8 @@
 			</div>
 		</div>
 	</section>
+</div>
+</div>
 </div>
 
 <?php

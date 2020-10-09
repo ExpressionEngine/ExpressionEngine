@@ -143,6 +143,10 @@ class ExportEmailAddresses extends Utilities {
 			];
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('mass_notification_export')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

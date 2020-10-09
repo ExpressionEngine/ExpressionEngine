@@ -48,12 +48,12 @@ class LexerTest extends TestCase {
 		)
 	);
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->lexer = new Lexer();
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->lexer = NULL;
 	}
@@ -87,7 +87,7 @@ class LexerTest extends TestCase {
 	 */
 	public function testBadDataProvider($description, $str_in)
 	{
-		$this->setExpectedException('ExpressionEngine\Library\Parser\Conditional\Exception\LexerException');
+		$this->expectException('ExpressionEngine\Library\Parser\Conditional\Exception\LexerException');
 		$this->lexer->tokenize($str_in);
 	}
 

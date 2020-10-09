@@ -446,6 +446,12 @@ $setup = [
 			return new Sidebar\Sidebar($view);
 		},
 
+		'CP/NavigationSidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Navigation\NavigationSidebar($view);
+		},
+
 		'Config' => function($ee)
 		{
 			return new Config\Factory($ee);
@@ -662,6 +668,7 @@ $setup = [
 			'Role' => 'Model\Role\Role',
 			'RoleGroup' => 'Model\Role\RoleGroup',
 			'RoleSetting' => 'Model\Role\RoleSetting',
+			'MemberGroup' => 'Model\Role\MemberGroup',
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',
@@ -693,7 +700,9 @@ $setup = [
 		'notify_me',
 		'save_info',
 		'tracker',
-		'viewtype'
+		'viewtype',
+		'ee_cp_viewmode',
+		'collapsed_nav'
 	],
 ];
 

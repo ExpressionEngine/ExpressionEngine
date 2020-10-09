@@ -19,6 +19,13 @@
 	</table>
 <?php else: ?>
 	<table cellspacing="0" <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
+		<?php
+		if (isset($table_attrs['id'])) {
+			$table_id = $table_attrs['id'];
+		} else {
+			$table_id = uniqid('tbl_');
+		}
+		?>
 		<thead>
 			<tr class="app-listing__row app-listing__row--head">
 				<?php
@@ -40,7 +47,8 @@
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input class="input--no-mrg" type="checkbox" title="select all">
+									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
@@ -116,7 +124,7 @@
 					<tr class="sub-heading"><td colspan="<?=$colspan?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
 				<?php
-				foreach ($rows as $row):
+				foreach ($rows as $row_id => $row):
 					if (isset($row['attrs']['class']))
 					{
 						$row['attrs']['class'] .= ' app-listing__row';
@@ -163,7 +171,9 @@
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td class="app-listing__cell app-listing__cell--input text--center">
+									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
 									<input
+										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
 										class="input--no-mrg"
 										name="<?=form_prep($column['name'])?>"
 										value="<?=form_prep($column['value'])?>"
@@ -179,32 +189,7 @@
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php
-									$class = isset($column['class']) ? $column['class'] : $column['content'];
-									$style = 'style="';
-
-									// override for open/closed
-									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
-									{
-										$class = $column['status'];
-									}
-									else
-									{
-										if (isset($column['background-color']) && $column['background-color'])
-										{
-											$style .= 'background-color: #'.$column['background-color'].';';
-											$style .= 'border-color: #'.$column['background-color'].';';
-										}
-
-										if (isset($column['color']) && $column['color'])
-										{
-											$style .= 'color: #'.$column['color'].';';
-										}
-									}
-
-									$style .= '"';
-								?>
-								<td><span class="collapsed-label"><?=$column_name?></span><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
 							<?php elseif (isset($column['html'])): ?>
 								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<span class="collapsed-label"><?=$column_name?></span>
@@ -270,7 +255,8 @@ else: ?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<input type="checkbox" title="select all">
+									<label for="<?=$grid_field_name?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?=$grid_field_name?>-select-all" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
@@ -365,9 +351,13 @@ else: ?>
 
 							$column_label = "<div class=\"grid-field__column-label\">
 								<div class=\"field-instruct\">
-									<label>$column_name</label>
+									<label>$column_name</label>";
+							if (!empty($column_desc)) {
+								$column_label .= "
 									<em>$column_desc</em>
-								</div>
+									";
+							}
+							$column_label .= "	</div>
 							</div>";
 
 							?>
@@ -401,32 +391,7 @@ else: ?>
 									>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-								<?php
-									$class = isset($column['class']) ? $column['class'] : $column['content'];
-									$style = 'style="';
-
-									// override for open/closed
-									if (isset($column['status']) && in_array($column['status'], array('open', 'closed')))
-									{
-										$class = $column['status'];
-									}
-									else
-									{
-										if (isset($column['background-color']) && $column['background-color'])
-										{
-											$style .= 'background-color: #'.$column['background-color'].';';
-											$style .= 'border-color: #'.$column['background-color'].';';
-										}
-
-										if (isset($column['color']) && $column['color'])
-										{
-											$style .= 'color: #'.$column['color'].';';
-										}
-									}
-
-									$style .= '"';
-								?>
-								<td><?=$column_label?><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><?=$column_label?><?=$column['content']?></td>
 							<?php elseif (isset($column['html'])): ?>
 								<?php
 									$column_class = '';
@@ -453,12 +418,12 @@ else: ?>
 						<td class="grid-field__column--tools">
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
-								<button type="button" class="button button--small button--secondary-alt">
+								<button type="button" class="button button--small button--default">
 									<a href class="grid-field__column-tool cursor-move js-grid-reorder-handle"><i class="fas fa-fw fa-arrows-alt"></i></a>
 								</button>
 								<?php endif ?>
-								<button type="button" class="button button--small button--secondary-alt">
-									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
+								<button type="button" class="button button--small button--default">
+									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></a>
 								</button>
 							</div>
 						</td>
@@ -480,7 +445,7 @@ else: ?>
 			</div>
 			<?php endif; ?>
 			<?php if ($show_add_button) : ?>
-			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
+			<button type="button" rel="add_row" class="button button--default button--small js-grid-add-row"><?=lang('add_row')?></button>
 			<?php endif; ?>
 		</div>
 	</div>

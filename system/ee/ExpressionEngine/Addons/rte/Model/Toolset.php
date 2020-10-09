@@ -21,6 +21,10 @@ class Toolset extends Model
         'settings' => 'base64Serialized',
     );
 
+    protected static $_validation_rules = array(
+        'toolset_name' => 'required|xss|noHtml|unique',
+    );
+
     protected $toolset_id;
     protected $toolset_name;
     protected $settings;

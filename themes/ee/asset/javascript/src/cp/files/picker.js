@@ -141,6 +141,7 @@
 			}
 
 			frame.load(function (e) {
+				
 				$(modal).off('modal:close', cancelOnClose);
 
 				var response = $(this).contents().find('body');
@@ -166,14 +167,14 @@
 					frame.show();
 					bindFrameUnload();
 
-					if ($(this).contents().find('.form-ctrls .btn.draft[value="cancel"]').length > 0)
+					if ($(this).contents().find('.form-ctrls .button.draft[value="cancel"]').length > 0)
 					{
 						$(modal).on('modal:close', cancelOnClose);
 					}
 
-					var height = $(this).contents().find('body').height();
+					var height = this.contentWindow.document.body.scrollHeight;
 					$('.box', modal).height(height);
-					$(this).height(height);
+					$(this).height(height + 20);
 				}
 			});
 

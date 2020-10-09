@@ -35,7 +35,7 @@ function FileUploadProgressTable(props) {
                 <div className="list-item__content-right">
 
                   {file.error &&
-                    <a className="button button--secondary-alt" href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>{EE.lang.file_dnd_dismiss}</a>
+                    <a className="button button--default" href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>{EE.lang.file_dnd_dismiss}</a>
                   }
                   {file.duplicate && <ResolveFilenameConflict
                     file={file}
@@ -95,7 +95,7 @@ class ResolveFilenameConflict extends React.Component {
 
   render() {
     return (
-      <a href="#" className="button button--secondary-alt m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>
+      <a href="#" className="button button--default m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>
         <i class="fas fa-info-circle icon-left"></i>
         {EE.lang.file_dnd_resolve_conflict}
       </a>

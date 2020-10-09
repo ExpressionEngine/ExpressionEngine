@@ -23,10 +23,6 @@ class Groups extends AbstractRolesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager'),
-		);
-
 		$this->generateSidebar();
 
 		$vars = array(
@@ -119,6 +115,12 @@ class Groups extends AbstractRolesController {
 			return ee()->cp->render('_shared/form', $vars);
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
+			'' => lang('create_role_group')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -134,10 +136,6 @@ class Groups extends AbstractRolesController {
 		{
 			show_404();
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager'),
-		);
 
 		$this->generateSidebar($id);
 
@@ -215,6 +213,12 @@ class Groups extends AbstractRolesController {
 		}
 
 		ee()->view->cp_page_title = lang('edit_role_group');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
+			'' => lang('edit_role_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

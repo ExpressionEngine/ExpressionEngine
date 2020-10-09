@@ -104,7 +104,9 @@ class Comments extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('publish/comments'), lang('all_comments'));
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('comment_settings')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

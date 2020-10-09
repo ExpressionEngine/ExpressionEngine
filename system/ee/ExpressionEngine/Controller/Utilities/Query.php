@@ -76,6 +76,10 @@ class Query extends Utilities {
 			)
 		]);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('sql_query_form')
+		);
+
 		ee()->cp->render('utilities/query/index');
 	}
 

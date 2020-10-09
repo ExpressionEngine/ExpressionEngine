@@ -20,7 +20,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		$('table .toolbar .settings a').click(function (e) {
+		$('table .toolbar a.settings').click(function (e) {
 			var settings_button = this;
 			var modal = $('.' + $(this).attr('rel'));
 

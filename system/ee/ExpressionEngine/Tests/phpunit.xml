@@ -2,7 +2,7 @@
 
 <phpunit backupGlobals="false"
 		 backupStaticAttributes="false"
-		 bootstrap="./bootstrap.php"
+		 bootstrap="bootstrap.php"
 		 colors="true"
 		 convertErrorsToExceptions="true"
 		 convertNoticesToExceptions="true"
@@ -10,13 +10,11 @@
 		 processIsolation="false"
 		 stopOnFailure="true"
 >
-	<textsuites>
-		<testsuites>
-			<testsuite name="ExpressionEngine Test Suite">
-				<directory suffix=".php">./ExpressionEngine/</directory>
-			</testsuite>
-		</testsuites>
-	</textsuites>
+	<testsuites>
+		<testsuite name="ExpressionEngine Test Suite">
+			<directory suffix=".php">./ExpressionEngine/</directory>
+		</testsuite>
+	</testsuites>
 
 	<listeners>
 		 <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>

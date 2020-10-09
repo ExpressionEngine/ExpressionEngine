@@ -158,6 +158,11 @@ class Email extends Settings {
 		ee()->view->cp_page_title = lang('email_settings');
 		ee()->view->save_btn_text = 'btn_authenticate_and_save';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('email_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }
