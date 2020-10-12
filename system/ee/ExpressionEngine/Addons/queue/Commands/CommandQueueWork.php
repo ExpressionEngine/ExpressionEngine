@@ -59,8 +59,8 @@ class CommandQueueWork extends Cli {
 
 		$jobs = ee('Model')->get('queue:Job')
 					->filter('run_at', '<=', ee()->localize->now)
+					->limit($this->option('-t', 3));
 					->all()
-					->take($this->option('-t', 3));
 
 		foreach ($jobs as $job) {
 			try {
