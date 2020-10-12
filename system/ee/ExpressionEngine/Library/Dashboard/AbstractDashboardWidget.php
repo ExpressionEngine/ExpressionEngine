@@ -40,32 +40,32 @@ abstract class AbstractDashboardWidget implements DashboardWidgetInterface {
 		];
 	}
 
-	public function getTitle() : string
+	public function getTitle()// : string
 	{
 		return $this->title;
 	}
 
-	public function getWidth() : string
+	public function getWidth()// : string
 	{
 		return $this->width;
 	}
 
-	public function getClass() : string
+	public function getClass()// : string
 	{
 		return $this->class;
 	}
 
-	public function getContent() : string
+	public function getContent()// : string
 	{
 		return $this->content;
 	}
 
-	public function getRightHead() : string
+	public function getRightHead()// : string
 	{
 		return $this->right_head;
 	}
 
-	public function getHtml() : string
+	public function getHtml()// : string
 	{
 		return ee('View')->make('pro:dashboard/widget')->render($this->vars);
 	}

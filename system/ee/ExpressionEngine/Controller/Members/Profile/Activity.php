@@ -55,6 +55,11 @@ class Activity extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->cp_page_title = lang('view_activity');
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('view_activity')
+		]);
+
 		ee()->cp->render('members/view_activity', array('items' => $items));
 	}
 

@@ -27,11 +27,19 @@ $lang = array(
 
 'utilities' => 'Utilities',
 
-'dark_theme'  => 'Dark Theme',
+'dark_theme' => 'Dark Theme',
+
 'light_theme' => 'Light Theme',
 
+'dark' => 'Dark',
+
+'light' => 'Light',
+
 'jump_menu_item' => 'Jump Menu',
-'jump_menu_input' => 'Go To...',
+
+'jump_menu_input' => 'Jump To...',
+
+'menu_manager' => 'Menu Manager',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
@@ -104,7 +112,7 @@ $lang = array(
 
 'nav_homepage' => 'CP Home',
 
-'nav_overview' => 'CP Overview',
+'nav_overview' => 'Overview',
 
 'nav_settings' => 'Settings',
 
@@ -307,6 +315,8 @@ $lang = array(
 
 'results' => 'results',
 
+'select_row' => 'Select Row',
+
 'select_all' => 'Select All',
 
 'search_in' => 'Search in',
@@ -387,6 +397,8 @@ $lang = array(
 'sites' => 'Sites',
 
 'view_site' => 'View Site',
+
+'add_site' => 'Add Site',
 
 
 /* learning EE lang vars */
@@ -560,6 +572,8 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
+'search_results' => 'Search Results',
+
 'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
 'settings_save_error' => 'Attention: Settings not saved',
@@ -635,7 +649,7 @@ $lang = array(
 
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
+'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
 'up_to_date' => 'Up to date!',
 
@@ -732,6 +746,8 @@ $lang = array(
 'can_assign_post_authors' => 'Change entry author',
 
 /* Dashboard Widgets */
+
+'dashboard' => 'Dashboard',
 
 'save_dashboard_layout' => 'Save layout',
 

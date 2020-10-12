@@ -191,6 +191,20 @@ class Fields extends AbstractFieldsController {
 		$vars['fields'] = $data;
 		$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
+		$breadcrumbs = array(
+			'#developer' => '<i class="fas fa-database"></i>'
+		);
+		if (!$group) {
+			ee()->view->cp_breadcrumbs = array(
+				'' => lang('fields')
+			);
+		} else {
+			ee()->view->cp_breadcrumbs = array(
+				ee('CP/URL')->make('fields')->compile() => lang('fields'),
+				'' => $group->group_name
+			);
+		}
+
 		ee()->cp->render('fields/index', $vars);
 	}
 
@@ -205,10 +219,6 @@ class Fields extends AbstractFieldsController {
 		{
 			$group_id = ee('Request')->post('group_id');
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('fields')->compile() => lang('field_manager')
-		);
 
 		$this->generateSidebar($group_id);
 
@@ -337,6 +347,15 @@ class Fields extends AbstractFieldsController {
 			});
 		');
 
+		$breadcrumbs = array(
+			ee('CP/URL')->make('fields')->compile() => lang('fields')
+		);
+		if (!empty($group_id)) {
+			$breadcrumbs[ee('CP/URL')->make('fields', ['group_id' => $group_id])->compile()] = ee('Model')->get('ChannelFieldGroup', $group_id)->first()->group_name;
+		}
+		$breadcrumbs[''] = lang('create_new_field');
+		ee()->view->cp_breadcrumbs = $breadcrumbs;
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -358,10 +377,6 @@ class Fields extends AbstractFieldsController {
 		$field_groups = $field->ChannelFieldGroups;
 		$active_groups = $field_groups->pluck('group_id');
 		$this->generateSidebar($active_groups);
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
-		);
 
 		$errors = NULL;
 
@@ -455,6 +470,11 @@ class Fields extends AbstractFieldsController {
 		ee()->view->cp_page_title = lang('edit_field');
 		ee()->view->extra_alerts = array('search-reindex');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('fields')->compile() => lang('fields'),
+			'' => lang('edit_field')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -464,7 +484,7 @@ class Fields extends AbstractFieldsController {
 		$field->field_order = ($field->field_order) ?: 0;
 		$field->site_id = (int) $field->site_id ?: 0;
 
-		$field->set($_POST);
+		$field->set(ee('Security/XSS')->clean($_POST));
 
 		if ($field->field_pre_populate)
 		{

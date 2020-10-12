@@ -116,6 +116,10 @@ class Cp extends Logs {
 			'form_url' => $this->base_url->compile(),
 		);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('view_cp_log')
+		);
+
 		ee()->cp->render('logs/cp', $vars);
 	}
 }

@@ -113,7 +113,11 @@ class EE_Exceptions {
 
 		ob_start();
 
-		include(APPPATH.'errors/error_php.php');
+		if (file_exists(APPPATH)) {
+			include(APPPATH.'errors/error_php.php');
+		} else {
+			include(BASEPATH.'errors/error_php.php');
+		}
 
 		$buffer = ob_get_contents();
 		ob_end_clean();
@@ -169,7 +173,11 @@ class EE_Exceptions {
 
 		ob_start();
 
-		include(APPPATH.'errors/'.$template.'.php');
+		if (file_exists(APPPATH)) {
+			include(APPPATH.'errors/'.$template.'.php');
+		} else {
+			include(BASEPATH.'errors/'.$template.'.php');
+		}
 
 		$buffer = ob_get_contents();
 		ob_end_clean();
@@ -243,6 +251,9 @@ class EE_Exceptions {
 		{
 			$message = str_replace(["&lt;{$tag}&gt;", "&lt;/{$tag}&gt;"], ["<{$tag}>", "</{$tag}>"], $message);
 		}
+
+		//allow links to docs
+		$message = preg_replace('/&lt;a href=&quot;https:\/\/docs\.expressionengine\.com(.*)&quot;&gt;(.*)&lt;\/a&gt;/i', '<a href="https://docs.expressionengine.com${1}">${2}</a>', $message);
 
 		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());

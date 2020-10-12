@@ -1,11 +1,19 @@
+<div class="panel">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template')?>"><?=lang('create_new')?></a>
-		</fieldset>
-		<h1><?=lang('email_templates')?></h1>
-		<div class="app-notice-wrap">
-			<?=ee('CP/Alert')->get('email-templates-table')?>
-		</div>
+
+    <div class="panel-heading">
+      <div class="app-notice-wrap">
+        <?=ee('CP/Alert')->get('email-templates-table')?>
+      </div>
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+          <h3 class="title-bar__title"><?=lang('email_templates')?></h3>
+          <div class="title-bar__extra-tools">
+            <a class="button button--primary" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-email-template')?>"><?=lang('create_new')?></a>
+          </div>
+        </div>
+      </div>
+    </div>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
@@ -25,6 +33,7 @@
 		]); ?>
 		<?php endif; ?>
 	<?=form_close();?>
+</div>
 
 <?php
 $modal_vars = array(

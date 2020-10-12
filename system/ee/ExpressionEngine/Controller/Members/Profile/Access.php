@@ -80,6 +80,10 @@ class Access extends Profile {
 			'base_url'        => ee('CP/URL')->make($this->base_url, $this->query_string),
 		];
 
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('access_overview')
+		]);
+
 		ee()->cp->render('members/access', $vars);
 	}
 

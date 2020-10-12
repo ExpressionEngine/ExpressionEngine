@@ -1,4 +1,4 @@
-<div class="box sidebar legacy-sidebar">
+<div class="box sidebar">
 	<?php
 	// Grab the first and last items from the menu to determine
 	// which items we need to put 'first' and 'last' classes on
@@ -53,7 +53,7 @@
 					} ?>
 					<a <?=$attr?>><?=lang($key)?></a>
 					<?php if (isset($button)): ?>
-						<a class="btn action" href="<?=$button['href']?>"><?=lang($button['text'])?></a>
+						<a class="button button--secondary button--small" href="<?=$button['href']?>"><?=lang($button['text'])?></a>
 					<?php endif ?>
 				<?php endif; ?>
 			</h2>

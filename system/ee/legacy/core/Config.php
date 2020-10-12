@@ -251,7 +251,9 @@ class EE_Config {
 		if (file_exists($userpath))
 		{
 			$userout = include $userpath;
-			$out = array_replace_recursive($out, $userout);
+			if (is_array($userout)) {
+				$out = array_replace_recursive($out, $userout);
+			}
 		}
 
 		return $out;
@@ -368,8 +370,8 @@ class EE_Config {
 		// Need this so we know the base url a page belongs to
 		if (isset($config['site_pages'][$row['site_id']]))
 		{
-			$url = $config['site_url'].'/';
-			$url .= $config['site_index'].'/';
+			$url = (isset($config['site_url']) ? $config['site_url'] : '') . '/';
+			$url .= (isset($config['site_index']) ? $config['site_index'] : '') . '/';
 
 			$config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
@@ -1897,8 +1899,7 @@ class EE_Config {
 				$uri = implode('/', $uri);
 			}
 
-			$suffix = ($this->item('url_suffix') == FALSE) ? '' : $this->item('url_suffix');
-			return $this->slash_item('base_url').$this->item('index_page').'?'.trim($uri, '/').$suffix;
+			return reduce_double_slashes($this->slash_item('base_url') . $this->item('index_page') . trim($uri, '/'));
 		}
 		else
 		{

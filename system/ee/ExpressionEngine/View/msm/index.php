@@ -1,5 +1,5 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
 	<?=form_open($table['base_url'])?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -20,7 +20,7 @@
 			'modal' => true
 		]); ?>
 	</form>
-
+</div>
 <?php
 
 $modal_vars = array(

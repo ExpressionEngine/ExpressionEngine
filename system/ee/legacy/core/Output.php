@@ -406,7 +406,11 @@ class EE_Output {
 				$profiler->addSection('template', ee()->TMPL->log);
 			}
 
-			$output = $this->add_to_foot($output, $profiler->render());
+			if (REQ == 'CP') {
+				$output = str_replace('<div id="output_profiler"></div>', $profiler->render(), $output);
+			} else {
+				$output = $this->add_to_foot($output, $profiler->render());
+			}
 		}
 
 		if (REQ == 'PAGE')

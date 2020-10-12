@@ -39,19 +39,7 @@ class Status extends Column
 		{
 			$status = $statuses[$entry->status];
 
-			$highlight = new Color($status->highlight);
-			$color = ($highlight->isLight())
-				? $highlight->darken(100)
-				: $highlight->lighten(100);
-
-			return [
-				'content'          => (in_array($status->status, ['open', 'closed']))
-					? lang($status->status)
-					: $status->status,
-				'status'           => $status->status,
-				'color'            => $color,
-				'background-color' => $status->highlight
-			];
+			return $status->renderTag();
 		}
 
 		return (in_array($entry->status, ['open', 'closed']))

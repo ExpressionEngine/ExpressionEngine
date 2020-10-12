@@ -112,6 +112,8 @@ $lang = array(
 
 'form_layouts' => 'Publish Layouts',
 
+'edit_layout' => 'Edit Layout',
+
 'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
 'import' => 'Import',
@@ -491,6 +493,8 @@ $lang = array(
 'category_updated' => 'Category Updated',
 
 'category_updated_desc' => 'The category <b>%s</b> has been updated.',
+
+'category_parent_invalid' => 'Category parent needs to be in same group and different from the category itself',
 
 'create_category' => 'Create Category',
 

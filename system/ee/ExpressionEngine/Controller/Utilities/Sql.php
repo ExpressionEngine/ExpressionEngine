@@ -116,6 +116,10 @@ class Sql extends Utilities {
 			);
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('sql_manager')
+		);
+
 		ee()->cp->render('utilities/sql/manager', $vars);
 	}
 

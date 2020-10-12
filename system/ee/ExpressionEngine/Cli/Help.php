@@ -86,11 +86,9 @@ class Help
      */
     protected function init()
     {
-
         $this->summary = '';
 
         return $this;
-
     }
 
     /**
@@ -104,11 +102,9 @@ class Help
      */
     public function setOptions(array $options)
     {
-
         $this->options = $options;
 
         return $this;
-
     }
 
     /**
@@ -134,11 +130,9 @@ class Help
      */
     public function setSummary($summary)
     {
-
         $this->summary = $summary;
 
         return $this;
-
     }
 
     /**
@@ -164,11 +158,9 @@ class Help
      */
     public function setUsage($usage)
     {
-
         $this->usage = $usage;
 
         return $this;
-
     }
 
     /**
@@ -182,11 +174,9 @@ class Help
      */
     public function setDescr($descr)
     {
-
         $this->descr = $descr;
 
         return $this;
-
     }
 
     /**

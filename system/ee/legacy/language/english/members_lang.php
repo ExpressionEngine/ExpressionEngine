@@ -424,6 +424,8 @@ $lang = array(
 
 'your_password_delete_roles_desc' => 'You <b>must</b> enter your password in order to delete roles.',
 
+'profile' => 'Profile',
+
 
 /* Member banning */
 'ban_message' => 'This site is currently unavailable',
@@ -851,6 +853,8 @@ $lang = array(
 'edit_member_field' => 'Edit Field',
 
 'edit_roles' => 'Edit roles',
+
+'edit_member' => 'Edit member',
 
 'edit_members' => 'Edit members',
 

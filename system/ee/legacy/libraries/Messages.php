@@ -1638,10 +1638,6 @@ DOH;
 
 		foreach ($_POST as $key => $val)
 		{
-			if ($key == 'which_field' || $key == 'site_id')
-			{
-				continue;
-			}
 			if ($key == 'group_id')
 			{
 				if ($val != 'any')
@@ -1658,12 +1654,17 @@ DOH;
 					}
 				}
 			}
-			else
+			elseif ($key == 'screen_name' || $key == 'email')
 			{
-				if ($val != '')
+				if (!empty($val))
 				{
 					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
+			}
+			else
+			{
+				//not valid input.
+				continue;
 			}
 		}
 
@@ -1758,7 +1759,13 @@ DOH;
 		$this->title = '';
 		$this->crumb = '';
 
-		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
+ 		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
+ 		
+ 		if( !in_array($which, array('buddy', 'blocked')) )
+ 		{
+ 			$which = 'buddy';	
+ 		}
+		
 
 		if ($this->allegiance == 'cp')
 		{
@@ -1812,12 +1819,10 @@ DOH;
 					}
 				}
 			}
-			else
+			//screen_name, email, group_id
+			elseif (in_array($key, array('screen_name', 'email', 'group_id')) && !empty($val))
 			{
-				if ($val != '')
-				{
 					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
-				}
 			}
 		}
 

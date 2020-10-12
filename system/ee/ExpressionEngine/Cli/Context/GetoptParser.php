@@ -505,5 +505,4 @@ class GetoptParser
     {
         return $this->errors;
     }
-
 }

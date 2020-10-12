@@ -1,13 +1,13 @@
 <!doctype html>
-<html>
+<html lang="<?=ee()->lang->code()?>" dir="ltr">
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
-		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>">
-		<section class="login-container">
+		<section role="main" class="login-container">
 			<section class="login">
 
 				<?=$child_view?>

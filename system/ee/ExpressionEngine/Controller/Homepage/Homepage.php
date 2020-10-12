@@ -181,6 +181,18 @@ class Homepage extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL')->make('homepage'));
 	}
 
+	/**
+	 * Toggles the sidebar navigation to/from collapsed state
+	 *
+	 * @return void
+	 */
+	public function toggleSidebarNav() {
+
+		ee()->input->set_cookie('collapsed_nav', (int) ee()->input->get('collapsed'), 99999999);
+
+		ee()->output->send_ajax_response(['success']);
+	}
+
 }
 
 // EOF

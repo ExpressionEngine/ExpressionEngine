@@ -234,16 +234,16 @@ class CommandUpdate extends Cli {
 	 */
 	private function loadMicroapp()
 	{
-		$this->autoload(SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Library/');
-		$this->autoload(SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/');
+		$this->autoload(SYSPATH . 'ee/updater/ExpressionEngine/Updater/Library/');
+		$this->autoload(SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Logger/');
 		$this->autoload(SYSPATH . 'ee/installer/updates/');
 
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php';
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php';
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/FileUpdater.php';
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/DatabaseUpdater.php';
-		require_once SYSPATH . 'ee/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Runner.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Logger.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/FileUpdater.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/DatabaseUpdater.php';
+		require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Runner.php';
 	}
 
 	/**
@@ -363,7 +363,7 @@ class CommandUpdate extends Cli {
 	{
 
 		// We have to initialize differently for local files
-		require_once SYSPATH . 'ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
+		require_once SYSPATH . 'ee/installer/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
 
 		$this->autoload(SYSPATH . 'ee/installer/updates/');
 

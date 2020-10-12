@@ -69,7 +69,7 @@ class Stdio
      * @param Formatter $formatter A VT100 formatting object.
      *
      */
-    public function __construct (
+    public function __construct(
         Handle $stdin,
         Handle $stdout,
         Handle $stderr,

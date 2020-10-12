@@ -16,7 +16,7 @@
  *             files check for this (`if ! defined ...`)
  * ------------------------------------------------------
  */
-	define('BASEPATH', SYSPATH.'ee/legacy/');
+	defined('BASEPATH') || define('BASEPATH', SYSPATH.'ee/legacy/');
 
 	// load user configurable constants
 	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
@@ -24,12 +24,14 @@
 	if (file_exists(SYSPATH.'user/config/constants.php'))
 	{
 		$user_constants = include SYSPATH.'user/config/constants.php';
-		$constants = array_merge($constants, $user_constants);
+		if (is_array($user_constants)) {
+			$constants = array_merge($constants, $user_constants);
+		}
 	}
 
 	foreach ($constants as $k => $v)
 	{
-		define($k, $v);
+		defined($k) || define($k, $v);
 	}
 
 /*
@@ -58,7 +60,12 @@
  *  Define a custom error handler so we can log PHP errors
  * ------------------------------------------------------
  */
-	set_error_handler('_exception_handler');
+	if(defined('REQ') && REQ === 'CLI') {
+	    set_error_handler('cliErrorHandler');
+	    register_shutdown_function('cliShutdownHandler');
+	} else {
+	    set_error_handler('_exception_handler');
+	}
 
 /*
  * ------------------------------------------------------

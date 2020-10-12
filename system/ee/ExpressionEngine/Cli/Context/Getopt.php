@@ -43,13 +43,13 @@ class Getopt extends AbstractValues
         $this->errors = $errors;
     }
 
-   /**
-     *
-     * Are there error messages related to getopt parsing?
-     *
-     * @return bool
-     *
-     */
+    /**
+      *
+      * Are there error messages related to getopt parsing?
+      *
+      * @return bool
+      *
+      */
     public function hasErrors()
     {
         return $this->errors ? true : false;

@@ -135,7 +135,7 @@ class CpSettings extends Profile {
 				}
 				else
 				{
-					ee()->output->send_ajax_response('success');
+					ee()->output->send_ajax_response(['success']);
 				}
 			}
 
@@ -181,6 +181,11 @@ class CpSettings extends Profile {
 		ee()->view->cp_page_title = lang('cp_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('cp_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }

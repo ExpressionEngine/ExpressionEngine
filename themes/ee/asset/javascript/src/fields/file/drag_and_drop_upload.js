@@ -378,7 +378,7 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
         },
-        buttonClass: "button--secondary-alt"
+        buttonClass: "button--default button--small"
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {
@@ -399,7 +399,7 @@ function (_React$Component) {
         className: "button-segment"
       }, React.createElement("a", {
         href: "#",
-        className: "button button--action m-link",
+        className: "button button--default button--small m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
@@ -408,7 +408,7 @@ function (_React$Component) {
         }
       }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
         href: "#",
-        className: "button button--action m-link",
+        className: "button button--default button--small m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
@@ -429,7 +429,7 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--action"
+        buttonClass: "button--default button--small"
       }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
@@ -442,7 +442,7 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--action"
+        buttonClass: "button--default button--small"
       }))));
     }
   }]);

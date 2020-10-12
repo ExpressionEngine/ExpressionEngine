@@ -13,14 +13,16 @@ namespace ExpressionEngine\Tests\Service\Validation;
 use ExpressionEngine\Service\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
+require_once APPPATH.'helpers/multibyte_helper.php';
+
 class ValidatorTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->validator = new Validator();
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->validator = NULL;
 	}
@@ -50,6 +52,7 @@ class ValidatorTest extends TestCase {
 
 	public function testChaining()
 	{
+
 		$rules = array(
 			'a' => 'enum[yes, exists]|alpha|min_length[2]|max_length[6]'
 		);
@@ -75,6 +78,7 @@ class ValidatorTest extends TestCase {
 
 	public function testStopAfterRequired()
 	{
+
 		$rules = array(
 			'a' => 'required|enum[yes, exists]|alpha|min_length[2]|max_length[6]'
 		);
@@ -97,6 +101,7 @@ class ValidatorTest extends TestCase {
 
 	public function testSkipIfBlankAndNotRequired()
 	{
+
 		$rules = array(
 			'a' => 'enum[yes, exists]|alpha|min_length[2]|max_length[6]'
 		);
@@ -112,6 +117,7 @@ class ValidatorTest extends TestCase {
 
 	public function testWhenPresent()
 	{
+
 		$rules = array(
 			'nickname' => 'whenPresent|required|min_length[5]',
 			'email' => 'whenPresent[newsletter]|required|email'
@@ -141,6 +147,7 @@ class ValidatorTest extends TestCase {
 
 	public function testPartial()
 	{
+
 		$rules = array('a' => 'required|min_length[8]');
 		$this->validator->setRules($rules);
 

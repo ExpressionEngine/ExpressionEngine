@@ -1,13 +1,15 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
 	<?=form_open($form_url)?>
-		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+  <div class="panel-heading">
+    <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 		<div class="title-bar">
-			<h2 class="title-bar__title"><?=$cp_heading?></h2>
+			<h3 class="title-bar__title"><?=$cp_heading?></h3>
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>
-
+  </div>
+  <div class="panel-body">
 		<?php $this->embed('_shared/thumb', $files->toArray()); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
@@ -36,5 +38,6 @@
 			?>
 		<?php endif; ?>
 	<?=form_close()?>
-
+</div>
+</div>
 <?php $this->embed('files/_delete_modal'); ?>

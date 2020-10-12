@@ -19,7 +19,7 @@ class ConditionalAnnotationsIntegrationTest extends TestCase {
 	private $annotations;
 	private $runner;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->annotations = new RuntimeAnnotations();
 		$this->runner = new ConditionalRunner();
@@ -27,7 +27,7 @@ class ConditionalAnnotationsIntegrationTest extends TestCase {
 		$this->annotations->useSharedStore();
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->annotations->clearSharedStore();
 		unset($this->annotations);

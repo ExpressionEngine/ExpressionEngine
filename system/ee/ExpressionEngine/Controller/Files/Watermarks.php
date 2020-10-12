@@ -115,6 +115,11 @@ class Watermarks extends AbstractFilesController {
 			'file' => array('cp/confirm_remove'),
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			'' => lang('watermarks')
+		);
+
 		ee()->cp->render('files/watermarks', $vars);
 	}
 
@@ -154,6 +159,12 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function create()
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			ee('CP/URL')->make('files/watermarks')->compile() => lang('watermarks'),
+			'' => lang('create_watermark')
+		);
+		
 		return $this->form();
 	}
 
@@ -162,6 +173,12 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function edit($watermark_id)
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			ee('CP/URL')->make('files/watermarks')->compile() => lang('watermarks'),
+			'' => lang('edit_watermark')
+		);
+		
 		return $this->form($watermark_id);
 	}
 
@@ -442,9 +459,6 @@ class Watermarks extends AbstractFilesController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('watermark'));
 		ee()->view->save_btn_text_working = 'btn_saving';
-
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files/watermarks'), lang('watermarks'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/form_group'),

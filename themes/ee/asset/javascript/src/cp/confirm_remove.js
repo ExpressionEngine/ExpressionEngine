@@ -125,7 +125,7 @@ EE.cp.Modal = {
 			.append('<li>' + label + '</li>')
 
 		// Reset buttons back to non-working state
-		$('.form-btns .btn', modal)
+		$('.form-btns .button', modal)
 			.removeClass('work')
 			.each(function(index, button) {
 				if ($(button).data('submit-text')) {

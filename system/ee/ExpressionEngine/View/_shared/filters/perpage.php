@@ -1,4 +1,4 @@
-<button type="button" class="has-sub filter-bar__button js-dropdown-toggle" data-filter-label="<?=strtolower(lang($label))?>">
+<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
@@ -15,7 +15,7 @@
 			placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 			data-threshold="<?=$threshold?>"
 			data-threshold-text="<?=sprintf(lang('confirm_show_all_desc'), $threshold)?>"
-			class="search-input__input"
+			class="search-input__input input--small"
 		>
 		</div>
 	</div>

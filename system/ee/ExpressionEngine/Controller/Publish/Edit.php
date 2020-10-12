@@ -318,6 +318,10 @@ class Edit extends AbstractPublishController {
 			'ui' => 'sortable'
 		]);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('entries')
+		);
+
 		if (AJAX_REQUEST)
 		{
 			return array(
@@ -519,7 +523,8 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
+			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+			'' => lang('edit_entry')
 		);
 
 		if (ee('Request')->get('modal_form') == 'y')

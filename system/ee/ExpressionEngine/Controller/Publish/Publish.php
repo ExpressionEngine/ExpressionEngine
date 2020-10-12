@@ -259,6 +259,15 @@ class Publish extends AbstractPublishController {
 				'preview_url'	=> ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id
 			]);
 			ee('CP/Modal')->addModal('live-preview', $modal);
+		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
+
+			$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+				->asIssue()
+				->canClose()
+				->withTitle(lang('preview_url_not_set'))
+				->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/'.$entry->channel_id)->compile().'#tab=t-4&id=fieldset-preview_url'));
+			ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
 		}
 
 		if ($autosave_id)
@@ -314,7 +323,8 @@ class Publish extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
+			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+			'' => lang('new_entry')
 		);
 
 		$vars['breadcrumb_title'] = lang('new_entry');

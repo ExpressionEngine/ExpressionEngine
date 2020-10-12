@@ -126,6 +126,9 @@
 	}
 }
 
+.ee-main-header {
+	border-bottom: 0;
+}
 .ee-wrapper-overflow, .ee-main__content, .container, .dashboard {
 	width: 100%;
 	height: 100%;
@@ -201,23 +204,23 @@
 	z-index: 110;
 }
 #ji-title {
-	top: 20px;
-	left: 0;
+	top: 50px;
+	left: -180px;
 	right: 0;
 	color: #fff;
 	font-size: 49px;
 	text-align: center;
 }
 #ji-one-arrow {
-	top:110px;
-    left: 50%;
+	top: -12px;
+    right: 480px;
     width: 100px;
     height: 100px;
     margin-left: -380px;
 }
 #ji-one {
-    top: 201px;
-    left: 50%;
+    top: 80px;
+    right: 490px;
     width: 175px;
     height: 100px;
     margin-left: -464px;
@@ -225,16 +228,16 @@
 	font-size: 20px;
 }
 #ji-two-arrow {
-	top: 325px;
-    left: 50%;
+	top: 150px;
+    right: 473px;
     width: 100px;
     height: 100px;
     margin-left: 282px;
-    transform: scaleX(-1);
+    /* transform: scaleX(-1); */
 }
 #ji-two {
-    top: 410px;
-    left: 50%;
+    top: 243px;
+    right: 472px;
     width: 250px;
     height: 100px;
     margin-left: 282px;
@@ -242,15 +245,15 @@
 	font-size: 20px;
 }
 #ji-three-arrow {
-	top: 455px;
-    left: 50%;
+	top: 397px;
+    right: 470px;
     width: 75px;
     height: 75px;
     margin-left: -357px;
 }
 #ji-three {
-    top: 520px;
-    left: 50%;
+    top: 468px;
+    right: 454px;
     width: 190px;
     height: 100px;
     margin-left: -459px;
@@ -309,8 +312,8 @@
 		<div class="zoomIn choices">
 			<p><em>How would you like to proceed?</em></p>
 			<p>
-				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="btn button--action" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?>
-				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="btn button--action" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'jumpmenu', 'type' => 'submit'], "Jump Menu only", 'class="button button--primary" data-submit-text="Proceed with Jump Menu only" data-work-text="Please wait..."')?>
+				<?=form_button(['name' => 'ee_cp_viewmode', 'value' => 'classic', 'type' => 'submit'], "Jump Menu &amp; Navigation", 'class="button button--primary" data-submit-text="Proceed with Jump Menu and Main Navigation" data-work-text="Please wait..."')?>
 			</p>
 		</div>
 		<?=form_close()?>
@@ -318,7 +321,7 @@
 </div>
 
 <div class="welcome-jump-instructions">
-	<div id="ji-title" class="info-element">Introducing the Jump Menu</div>
+	<div id="ji-title" class="info-element">Introducing<br>the Jump Menu</div>
 
 	<svg id="ji-one-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
 	<div id="ji-one" class="info-element">
@@ -336,8 +339,8 @@
 		Some results show a <em>[bracketed]</em> option, which will require a secondary input.
 	</div>
 
-	<svg id="ji-four-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
+	<!-- svg id="ji-four-arrow" class="info-element" data-name="Arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M506.48,246.45,287.45,120a11,11,0,0,0-16.55,9.56v53h0C269.35,182.68,116,204,8.66,350.8L2,360.38a11,11,0,0,0,14.67,15.81l10-5.91c1.91-1.14,6.05-3.48,6.3-3.62,57.85-34.53,114.85-52,169.42-52,40.84,0,65.37,10.26,68.52,11.63v56.24A11,11,0,0,0,287.45,392l219-126.47a11,11,0,0,0,0-19.11Z"/></svg>
 	<div id="ji-four" class="info-element">
 		You can toggle the navigation or jump menu from here at any time.
-	</div>
+	</div -->
 </div>

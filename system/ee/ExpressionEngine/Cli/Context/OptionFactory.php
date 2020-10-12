@@ -163,15 +163,15 @@ class OptionFactory
         }
     }
 
-   /**
-     *
-     * Normalizes the option name.
-     *
-     * @param string $name The option character or long name.
-     *
-     * @return The fixed name with a leading dash or dashes.
-     *
-     */
+    /**
+      *
+      * Normalizes the option name.
+      *
+      * @param string $name The option character or long name.
+      *
+      * @return The fixed name with a leading dash or dashes.
+      *
+      */
     protected function fixOptionName($name)
     {
         $name = trim($name, ' -');
