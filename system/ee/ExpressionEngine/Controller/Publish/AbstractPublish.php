@@ -556,7 +556,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'text'    => 'preview',
 				'class'   => 'action' . $extra_class,
 				'attrs'   => 'rel="live-preview" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 			$buttons[] = [
@@ -567,7 +566,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'html'		=> '<i class="app-notice__icon"></i> ',
 				'class'   => 'action',
 				'attrs'   => 'rel="live-preview-setup" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		}
 

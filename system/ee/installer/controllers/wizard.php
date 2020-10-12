@@ -151,6 +151,7 @@ class Wizard extends CI_Controller
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('AMP', '&amp;');
+        define('BASE', EESELF . '?D=cp');
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');

@@ -14,6 +14,12 @@
 class Addons_model extends CI_Model {
 
 
+	public function __construct()
+	{
+		if (!isset($this->db)) {
+			$this->db = ee('db');
+		}
+	}
 	/**
 	 * Get Plugin Formatting
 	 *

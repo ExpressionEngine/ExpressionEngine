@@ -272,7 +272,6 @@ class Addons extends CP_Controller {
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
-			$addon['icon_url'] = $info->getIconUrl();
 
 			if ( ! empty($addon))
 			{
@@ -287,7 +286,7 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-
+				$addon['icon_url'] = $info->getIconUrl();
 
 				$addons[$name] = $addon;
 			}

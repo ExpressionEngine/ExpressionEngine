@@ -136,6 +136,10 @@ class MimeType {
 				case 'json':
 					$mime = 'application/json';
 					break;
+
+				case 'svg':
+					$mime = 'image/svg+xml';
+					break;
 			}
 		}
 
