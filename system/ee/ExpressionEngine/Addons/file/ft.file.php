@@ -374,6 +374,9 @@ JSC;
 	 */
 	public function replace_resize($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data)) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -395,6 +398,9 @@ JSC;
 	 */
 	public function replace_crop($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data)) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -421,6 +427,9 @@ JSC;
 	 */
 	public function replace_resize_crop($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data)) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$params['function'] = 'resize_crop';
 
 		$data['filename'] = $data['model_object']->file_name;
@@ -463,6 +472,9 @@ JSC;
 	 */
 	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data)) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -478,6 +490,9 @@ JSC;
 	 */
 	public function replace_webp($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data)) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
