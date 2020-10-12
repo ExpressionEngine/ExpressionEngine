@@ -367,7 +367,7 @@ function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':&nbsp;', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,

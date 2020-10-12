@@ -313,8 +313,9 @@ class DragAndDropUpload extends React.Component {
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
                 {subheading}
-                {this.state.directory == 'all' && ':&nbsp;'}
+                {this.state.directory == 'all' && ':'}
                 {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
+                &nbsp;
                 {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
                         action={this.state.directory == 'all'}
