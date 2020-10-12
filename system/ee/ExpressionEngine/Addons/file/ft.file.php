@@ -541,12 +541,12 @@ JSC;
 				'source_image'		=> $data['source_image'],
 				'new_image'			=> $new_image_path,
 				'maintain_ratio'	=> isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
-				'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['master_dim'] : 'auto',
+				'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
 				'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
 				'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
 				'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
-				'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['auto', 'width', 'height'])) ? $params['angle'] : null,
+				'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
 			);
 			if (isset($params['width'])) {
 				$imageLibConfig['width'] = (int) $params['width'];
