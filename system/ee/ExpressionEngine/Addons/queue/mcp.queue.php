@@ -98,10 +98,10 @@ class Queue_mcp {
 						'confirm' => lang('queue_jobs_id') . ': <b>' . htmlentities($job->getId(), ENT_QUOTES) . '</b>'
 					],
 				],
-			],
+			];
 		}
 
-		$table->setNoResultsText('queue_no_jobs'));
+		$table->setNoResultsText('queue_no_jobs');
 		$table->setData($data);
 
 		return $table;
@@ -160,10 +160,10 @@ class Queue_mcp {
 						'confirm' => lang('queue_jobs_id') . ': <b>' . htmlentities($job->getId(), ENT_QUOTES) . '</b>'
 					],
 				],
-			],
+			];
 		}
 
-		$table->setNoResultsText('queue_no_failed_jobs'));
+		$table->setNoResultsText('queue_no_failed_jobs');
 		$table->setData($data);
 
 		return $table;

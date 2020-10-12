@@ -49,7 +49,7 @@ class Queue_upd {
 
 		ee()->load->dbforge();
 
-		ee()->db->where('class', 'Queue');
+		ee()->db->where('module_name', 'Queue');
 
 		ee()->db->delete('modules');
 
@@ -75,7 +75,7 @@ class Queue_upd {
 		    ee()->dbforge->add_field(
 		        [
 		            'job_id'			=> [
-		                'type'              => 'big_int',
+		                'type'              => 'bigint',
 		                'constraint'        => 20,
 		                'unsigned'          => true,
 		                'auto_increment'    => true,
@@ -115,7 +115,7 @@ class Queue_upd {
 		    ee()->dbforge->add_field(
 		        [
 		            'failed_job_id'		=> [
-		                'type'              => 'big_int',
+		                'type'              => 'bigint',
 		                'constraint'        => 20,
 		                'unsigned'          => true,
 		                'auto_increment'    => true,

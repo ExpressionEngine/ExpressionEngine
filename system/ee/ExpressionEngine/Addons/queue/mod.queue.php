@@ -2,6 +2,13 @@
 
 class Queue {
 
+	public function get()
+	{
+
+		$job = ee('Model')->get('queue:Job')->all();
+
+	}
+
 	public function cancel()
 	{
 
