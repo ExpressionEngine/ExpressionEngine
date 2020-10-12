@@ -1,7 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use Queue\Job;
-
 class Queue {
 
 	public function cancel()
@@ -30,6 +28,8 @@ class Queue {
 	public function retry()
 	{
 
+		ee()->load->library('localize');
+
 		$failedJobId = ee()->input->get_post('id');
 
 		if( ! $failedJobId ) {
@@ -44,7 +44,14 @@ class Queue {
 			return;
 		}
 
-		$job = new Job
+		$job = ee('Model')->make(
+			'queue:Job',
+			[
+				'payload' => $failedJob->payload,
+				'attempts' => 0,
+				'created_at' => ee()->localize->now,
+			]
+		);
 
 		$failedJob->delete();
 

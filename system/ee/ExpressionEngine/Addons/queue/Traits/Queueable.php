@@ -3,7 +3,7 @@
 namespace Queue\Traits;
 
 use ExpressionEngine\Service\Model\Model;
-use use Queue\Services\SerializerService;
+use Queue\Services\SerializerService;
 
 trait Queueable {
 
