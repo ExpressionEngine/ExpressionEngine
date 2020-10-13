@@ -1,4 +1,4 @@
-<a href="" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in">
+<a href="" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
   <img src="http://ee6.test/themes/ee/asset/img/beta-starburst.svg" class="beta-starburst" alt="v6">
   <div class="v6-wrapper">
     <img src="http://ee6.test/themes/ee/asset/img/ee-6.svg" class="v6 beta-puff-in-center" alt="v6">
