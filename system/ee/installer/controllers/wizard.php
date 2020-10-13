@@ -478,7 +478,7 @@ class Wizard extends CI_Controller
             ->with('Channel')
             ->all()
             ->synchronize();
-        
+
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -1723,6 +1723,7 @@ class Wizard extends CI_Controller
             'memberlist_sort_order'     => "desc",
             'memberlist_row_limit'      => "20",
             'is_site_on'                => 'y',
+            'show_ee_news'              => 'y',
             'theme_folder_path'         => $this->userdata['theme_folder_path'],
         );
 
