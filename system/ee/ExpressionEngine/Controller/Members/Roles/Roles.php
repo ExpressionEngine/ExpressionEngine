@@ -519,15 +519,17 @@ class Roles extends AbstractRolesController {
 
 		// template_group_access
 		$template_group_ids = [];
-		foreach (ee('Request')->post('template_group_access') as $value)
-		{
-			if (strpos($value, 'template_group_') === 0)
+		if (!empty(ee('Request')->post('template_group_access'))) {
+			foreach (ee('Request')->post('template_group_access') as $value)
 			{
-				$template_group_ids[] = str_replace('template_group_', '', $value);
-			}
-			else
-			{
-				$allowed_perms[] = $value;
+				if (strpos($value, 'template_group_') === 0)
+				{
+					$template_group_ids[] = str_replace('template_group_', '', $value);
+				}
+				else
+				{
+					$allowed_perms[] = $value;
+				}
 			}
 		}
 
@@ -538,20 +540,23 @@ class Roles extends AbstractRolesController {
 
 		// template_access
 		$template_ids = [];
-		foreach (ee('Request')->post('assigned_templates') as $value) {
-			if (is_numeric($value)) {
-				$template_ids[] = $value;
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value) {
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
 			}
 		}
 		if (!empty($template_ids)) {
 			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
 		}
 
-
-		foreach (ee('Request')->post('assigned_templates') as $value)
-		{
-			if (is_numeric($value)) {
-				$template_ids[] = $value;
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value)
+			{
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
 			}
 		}
 		if (!empty($template_ids)) {
