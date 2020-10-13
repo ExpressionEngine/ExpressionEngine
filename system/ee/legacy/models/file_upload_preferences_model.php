@@ -29,7 +29,7 @@ class File_upload_preferences_model extends CI_Model
 		if ($group_id != 1)
 		{
 			// non admins need to first be checked for restrictions
-			// we'll add these into a where_not_in() check below
+			// we'll add these into a where_in() check below
 			$this->db->select('upload_id');
 			$access = $this->db->get_where('upload_prefs_roles', array('role_id'=>$group_id));
 
