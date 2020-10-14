@@ -12,6 +12,7 @@ class Queue_mcp {
 	 */
 	public function index()
 	{
+
 		if ( ! ee()->db->table_exists('queue_jobs'))
 		{
 			show_error(lang("queue_missing_table_queue_jobs"));
@@ -22,6 +23,9 @@ class Queue_mcp {
 			show_error(lang("queue_missing_table_queue_failed_jobs"));
 		}
 
+		$jobs = ee('Model')->get('queue:Job')->all();
+		$failedJobs = ee('Model')->get('queue:FailedJob')->all();
+
 		$vars = [
 			'base_url' => ee('CP/URL')->make('addons/settings/queue/'),
 			'cp_page_title' => lang('queue_module_name') . ' ' . lang('settings'),
@@ -31,15 +35,17 @@ class Queue_mcp {
 			'failed_jobs'	=> $failedJobs,
 		];
 		
-		$jobs = ee('Model')->get('queue:Job')->all();
-
-		$failedJobs = ee('Model')->get('queue:FailedJob')->all();
 
 		$jobsTable = $this->createJobsTable($jobs);
 		$failedJobsTable = $this->createFailedJobsTable($failedJobs);
 
 		$vars['jobs_table'] = $jobsTable->viewData(ee('CP/URL', 'queue_jobs'));
 		$vars['failed_jobs_table'] = $jobsTable->viewData(ee('CP/URL', 'queue_failed_jobs'));
+
+		$vars['tabs'] = [
+			'jobs_table'		=> $jobsTable->viewData(ee('CP/URL', 'queue_jobs')),
+			'failed_jobs_table' => $jobsTable->viewData(ee('CP/URL', 'queue_failed_jobs')),
+		];
 
 		return ee('View')->make('queue:index')->render($vars);
 	}

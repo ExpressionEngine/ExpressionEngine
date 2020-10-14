@@ -307,6 +307,8 @@ class Cli
 
         $commands = $this->internalCommands;
 
+        ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
+
         $providers = ee('App')->getProviders();
 
         foreach ($providers as $providerKey => $provider) {

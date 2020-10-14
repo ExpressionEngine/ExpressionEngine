@@ -20,8 +20,8 @@ return [
 		},
 	],
 	'models'			=> [
-		'Job'		=> 'Queue\Models\Job',
-		'FailedJob'	=> 'Queue\Models\FailedJob',
+		'Job'		=> 'Models\Job',
+		'FailedJob'	=> 'Models\FailedJob',
 	],
 	'commands'	=> [
 		'queue:test' => Queue\Commands\CommandQueueTest::class,
