@@ -543,14 +543,6 @@ class Lexer extends AbstractLexer {
 				}
       }
 
-
-      //clean up the conditional from edit link
-      //do regex search based on the marker in url
-      if ($type=='STRING')
-      {
-        $lexeme = preg_replace("/<a href=\"(.*?)\" class=\"eeFrontEdit\"><\/a>/is", '', $lexeme, 1);
-      }
-
 			switch ($type)
 			{
 				case 'BOOL':	 $obj = new Boolean($lexeme);
