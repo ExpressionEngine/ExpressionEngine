@@ -7,11 +7,7 @@ document.querySelector('.ee-main').classList.add('ee-main--dashboard')
 <div class="dashboard">
 
 <?php
-if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) {
-	include '_shared/dashboard/welcome.php';
-} else {
-	echo $dashboard;
-}
+echo $dashboard;
 ?>
 
 </div>

@@ -30,7 +30,7 @@ class BasicItem extends ListItem {
 	 */
 	public function asDeleteAction($modal_name = '')
 	{
-		$this->addClass('remove ');
+		$this->addClass('remove m-link ');
 		$this->rel = $modal_name;
 
 		return $this;

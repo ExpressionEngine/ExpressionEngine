@@ -151,6 +151,7 @@ class Wizard extends CI_Controller
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('AMP', '&amp;');
+        define('BASE', EESELF . '?D=cp');
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
@@ -477,7 +478,7 @@ class Wizard extends CI_Controller
             ->with('Channel')
             ->all()
             ->synchronize();
-        
+
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -1722,6 +1723,7 @@ class Wizard extends CI_Controller
             'memberlist_sort_order'     => "desc",
             'memberlist_row_limit'      => "20",
             'is_site_on'                => 'y',
+            'show_ee_news'              => 'y',
             'theme_folder_path'         => $this->userdata['theme_folder_path'],
         );
 

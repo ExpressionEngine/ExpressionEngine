@@ -220,6 +220,10 @@ class Application {
 			if (strpos($provider->getPath(), 'Addons/pro/levelups') !== false) {
 			    return $provider;
 			}
+			//first-party add-ons have higher precedense as well
+			if (strpos($provider->getPath(), 'ExpressionEngine/Addons') !== false) {
+				return $provider;
+			}
 		}
 
 		$provider = new Provider(

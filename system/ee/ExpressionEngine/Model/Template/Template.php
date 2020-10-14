@@ -253,7 +253,11 @@ class Template extends FileSyncedModel {
 		$version->item_field = 'template_data';
 		$version->item_data = $this->template_data;
 		$version->item_date = ee()->localize->now;
-		$version->Author = $this->LastAuthor;
+		if (!empty($this->LastAuthor)) {
+			$version->Author = $this->LastAuthor;
+		} else {
+			$version->item_author_id = 0;
+		}
 		$version->save();
 
 		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
