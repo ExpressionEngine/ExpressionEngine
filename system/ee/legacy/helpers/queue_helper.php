@@ -13,8 +13,14 @@ if( ! function_exists('queue') ) {
 
 	function queue($obj)
 	{
-		if( ! $obj instanceof Queue\Traits\Queueable ) {
-			throw new Queue\Exceptions\QueueException('Object of type ' . get_class($obj) . ' does not implement Queueable');
+
+		$uses = class_uses($obj);
+		if( ! in_array(Queue\Traits\Queueable::class, $uses)) {
+			throw new Queue\Exceptions\QueueException(
+				'Object of type '
+				. get_class($obj)
+				. ' does not implement Queueable'
+			);
 		}
 
 		$obj->create();

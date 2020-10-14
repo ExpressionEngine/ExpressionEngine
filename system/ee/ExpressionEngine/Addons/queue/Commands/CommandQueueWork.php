@@ -64,8 +64,10 @@ class CommandQueueWork extends Cli {
 
 		foreach ($jobs as $job) {
 			try {
+				$this->output->outln('Processing ' . get_class($job));
 				QueueService::fire($job);
-				sleep($job->sleep);
+				$this->info('Processed ' . get_class($job));
+				sleep($job->sleep());
 			} catch (Exception $e) {
 				$this->handleJobException($job, $e);
 			} catch(RuntimeException $e) {
@@ -81,6 +83,7 @@ class CommandQueueWork extends Cli {
 
 	protected function handleJobException(Job $job, $exception)
 	{
+		$this->error('FAILED ' . get_class($job));
 		$job->fail($exception);
 	}
 

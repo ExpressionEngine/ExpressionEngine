@@ -2,13 +2,10 @@
 
 namespace Queue\Commands;
 
+require_once  __DIR__ . '/../SampleJob.php';
+
 use EllisLab\ExpressionEngine\Cli\Cli;
-use Exception;
-use Queue\Exceptions\QueueException;
-use Queue\Models\Job;
-use Queue\Services\QueueService;
-use RuntimeException;
-use Throwable;
+use Queue\Jobs\SampleJob;
 
 class CommandQueueTest extends Cli {
 
@@ -50,5 +47,18 @@ class CommandQueueTest extends Cli {
 	public $commandOptions = [
 		'verbose,v'	=> 'Verbose output'
 	];
+
+	public function handle()
+	{
+
+		$email = $this->ask('Choose an email, we\'ll send them an inspirational quote: ');
+
+		ee()->load->helper('queue');
+
+		queue(new SampleJob($email));
+
+		$this->info('Job is queued! Run `php eecli queue:work` to process');
+
+	}
 
 }

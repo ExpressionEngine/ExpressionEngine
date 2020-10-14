@@ -69,7 +69,7 @@ class Queue_upd {
 
 		ee()->load->dbforge();
 
-		if(!ee()->db->table_exists('queue_jobs'))
+		if( ! ee()->db->table_exists('queue_jobs') )
 		{
 
 		    ee()->dbforge->add_field(
@@ -109,7 +109,7 @@ class Queue_upd {
 
 		ee()->load->dbforge();
 
-		if(!ee()->db->table_exists('queue_failed_jobs'))
+		if( ! ee()->db->table_exists('queue_failed_jobs') )
 		{
 
 		    ee()->dbforge->add_field(

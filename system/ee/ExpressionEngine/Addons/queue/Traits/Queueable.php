@@ -8,19 +8,18 @@ use Queue\Services\SerializerService;
 trait Queueable {
 
 	protected $jobId;
-	protected $attempts;
 	protected $attemptsTaken = 0;
-	protected $sleep = 5;
 	protected $className;
 	protected $runAt;
 	protected $uuid;
 
-	public function __construct()
+	public function construct()
 	{
 		ee()->load->library('localize');
+		ee()->load->helper('string');
 
 		$this->uuid = uuid4();
-		$this->className = get_class(self);
+		$this->className = get_class($this);
 	}
 
 	public function create()
@@ -36,7 +35,7 @@ trait Queueable {
 
 		$this->attemptsTaken++;
 
-		if($this->attemptsTaken < $this->attempts) {
+		if($this->attemptsTaken < $this->attempts()) {
 			return $this->handle();
 		}
 
@@ -62,6 +61,11 @@ trait Queueable {
 	protected function attempts()
 	{
 		return $this->attempts ?: 1;
+	}
+
+	protected function sleep()
+	{
+		return $this->sleep ?: 5;
 	}
 
 	protected function runAt()

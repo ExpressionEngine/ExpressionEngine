@@ -1,14 +1,12 @@
 <?php
 
-namespace Jobs;
+namespace Queue\Jobs;
 
 use Queue\Traits\Queueable;
 
-class SampleJob extends Job {
+class SampleJob {
 
-	use Queueable {
-        Queueable::__construct as private __queueConstruct;
-    };
+	use Queueable;
 
 	public $email;
 
@@ -29,7 +27,7 @@ class SampleJob extends Job {
 
 	public function __construct($email)
 	{
-		$this->__queueConstruct();
+		$this->construct();
 		$this->email = $email;
 	}
 
@@ -37,6 +35,28 @@ class SampleJob extends Job {
 	{
 
 		$quote = $this->quotes[mt_rand(0, count($this->quotes) - 1)];
+
+		ee()->load->library('email');
+
+		ee()->load->helper('text');
+
+		ee()->email->wordwrap = true;
+		
+		ee()->email->mailtype = 'html';
+		
+		ee()->email->from($this->email);
+		
+		ee()->email->to($this->email);
+
+		ee()->email->subject('EE Queue Test');
+		
+		ee()->email->message(entities_to_ascii($quote));
+		
+		$result = ee()->email->send();
+
+		ee()->email->clear();
+
+		return true;
 
 	}
 
