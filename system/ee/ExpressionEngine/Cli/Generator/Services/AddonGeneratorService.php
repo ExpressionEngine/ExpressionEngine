@@ -64,7 +64,7 @@ class AddonGeneratorService {
 	private function init()
 	{
 
-		$this->generatorPath = SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator';
+		$this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
 		$this->addonPath = SYSPATH . 'user/addons/' . $this->slug . '/';
 		$filesystem = new Filesystem;
 

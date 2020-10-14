@@ -28,7 +28,7 @@ class ModelGeneratorService {
 	private function init()
 	{
 
-		$this->generatorPath = SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator';
+		$this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
 		$this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 		$this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Models/';
 		$filesystem = new Filesystem;
