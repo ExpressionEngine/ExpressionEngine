@@ -23,7 +23,7 @@ class BulkEdit extends AbstractBulkEdit {
 	protected $standard_default_fields = [
 		'status',
 		'expiration_date',
-		'sticky'
+		//'sticky'
 		// Plus comment settings, author, and categories added dynamically below
 	];
 
