@@ -248,17 +248,17 @@ context('Bulk Edit', () => {
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Allow comments?")').click()
-    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').click()
+    bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Author")').click()
-    bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
+    bulk_edit.get('fluid_fields').eq(4).find('input[value="2"]').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Categories")').click()
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]').click()
+    bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
 
     // Make sure fields retain values after removing an entry!
     cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
@@ -272,10 +272,9 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
     bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
     bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').should('have.class', 'on')
-    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').should('have.class', 'on')
+    bulk_edit.get('fluid_fields').eq(4).find('input[value="2"]:visible').should('be.checked')
+    bulk_edit.get('fluid_fields').eq(5).find('input[value="1"]:visible').should('not.be.checked')
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]:visible').should('be.checked')
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="1"]:visible').should('not.be.checked')
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]:visible').should('be.checked')
 
     //bulk_edit.get('save_all_button').click()
     cy.get('input').contains('Save All & Close').first().click()
