@@ -159,6 +159,10 @@ class View {
 	 */
 	public function embed($view, $vars = array(), $disable = array())
 	{
+		if (empty($vars)) {
+			$vars = array();
+		}
+
 		$vars = array_merge($this->processing, $vars);
 		$view = $this->make($view)->disable($disable);
 
