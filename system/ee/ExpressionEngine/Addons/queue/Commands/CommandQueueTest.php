@@ -50,3 +50,5 @@ class CommandQueueTest extends Cli {
 	public $commandOptions = [
 		'verbose,v'	=> 'Verbose output'
 	];
+
+}
