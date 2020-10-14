@@ -35,7 +35,7 @@ class CommandGeneratorService {
 	private function init()
 	{
 
-		$this->generatorPath = SYSPATH . 'ee/EllisLab/ExpressionEngine/Cli/Generator';
+		$this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
 		$this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 		$this->commandsPath = SYSPATH . 'user/addons/' . $this->addon . '/Commands/';
 		$filesystem = new Filesystem;
