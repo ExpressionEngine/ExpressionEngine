@@ -3,9 +3,11 @@
 import BulkEdit from '../../elements/pages/publish/BulkEdit';
 import Publish from '../../elements/pages/publish/Publish';
 import EntryManager from '../../elements/pages/publish/EntryManager';
+import Channel from '../../elements/pages/channel/Channel';
 
 const bulk_edit = new BulkEdit;
 const entry_manager = new EntryManager;
+const channel = new Channel;
 
 context('Bulk Edit', () => {
 
@@ -297,6 +299,38 @@ context('Bulk Edit', () => {
       publish.get('wrap').find('[data-input-value="status"] .select__button-label').contains('Closed')
       publish.get('wrap').find('[data-toggle-for="allow_comments"]').should('have.class', 'on')
     })
+
+  })
+
+  it.only('should allow setting sticky on enabled channels', () => {
+    channel.load_edit_for_channel(1)
+    channel.get('settings_tab').click()
+    channel.get('sticky_enabled').click()
+    channel.get('save_button').click({force: true})
+    cy.contains('Channel Updated')
+    
+    entry_manager.load();
+    entry_manager.check_entry('Jason')
+
+    entry_manager.get('bulk_action').select('Bulk Edit')
+    entry_manager.get('action_submit_button').click()
+
+    bulk_edit.get('field_options').should('exist')
+
+    bulk_edit.get('field_options').contains('Add Make entry sticky?')
+
+    entry_manager.load()
+    
+    entry_manager.check_entry('Welcome to the Example Site!')
+    entry_manager.check_entry('Jason')
+
+    entry_manager.get('bulk_action').select('Bulk Edit')
+    entry_manager.get('action_submit_button').click()
+
+    bulk_edit.get('field_options').should('exist')
+
+    bulk_edit.get('field_options').should('not.contain', 'Add Make entry sticky?')
+    
 
   })
 
