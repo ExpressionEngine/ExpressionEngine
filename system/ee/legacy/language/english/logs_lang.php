@@ -148,8 +148,6 @@ $lang = array(
 
 'custom_limit' => 'custom limit',
 
-'date' => 'date',
-
 'filter_by_site' => 'filter sites',
 
 'filter_by_username' => 'filter username',
