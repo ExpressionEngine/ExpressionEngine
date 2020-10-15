@@ -66,7 +66,7 @@ Grid.Publish = function(field, settings) {
 	this.cellSelector = 'td';
 	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'a[rel=remove_row]';
+	this.deleteButtonsSelector = '[rel=remove_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -352,7 +352,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', 'a[rel=remove_row]', function(event) {
+		this.root.on('click', that.deleteButtonsSelector, function(event) {
 			event.preventDefault();
 
 			var row = $(this).closest(that.rowSelector);
