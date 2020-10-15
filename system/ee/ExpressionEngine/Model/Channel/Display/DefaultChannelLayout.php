@@ -225,7 +225,7 @@ class DefaultChannelLayout extends DefaultLayout {
 		$fields = $tab->getFields();
 		if (count($fields) == 0)
 		{
-			$url = ee('CP/URL', 'channels/edit/' . $this->channel_id)->compile();
+			$url = ee('CP/URL', 'channels/edit/' . $this->channel_id)->compile() . '#tab=t-2';
 			$alert = ee('CP/Alert')->makeInline('empty-category-tab')
 				->asWarning()
 				->cannotClose()
