@@ -407,6 +407,10 @@ abstract class AbstractFiles extends CP_Controller {
 
 			ee()->view->filters = $filters->render($reset_url);
 
+			$vars['no_results'] = [
+				'text' => sprintf(lang('no_found'), lang('files'))
+			];
+
 			$files = $files->limit($perpage)
 						->offset($offset)
 						->all();
