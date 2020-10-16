@@ -483,6 +483,7 @@ class RteHelper
         $pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
 
         if ($pages === false) {
+            $pages = [];
             $break = false;
             /**
              * `rte_autocomplete_pages` extension hook
