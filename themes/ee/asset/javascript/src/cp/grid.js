@@ -189,7 +189,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
-		console.log(this);
 		
 		// File Grid minimum row count validated on server
 		if (this.isFileGrid) {
