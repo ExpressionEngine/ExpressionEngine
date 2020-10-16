@@ -189,6 +189,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		console.log(this);
+		
 		// File Grid minimum row count validated on server
 		if (this.isFileGrid) {
 			return
@@ -200,7 +202,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		if (typeof(this.settings)!=='undefined')
 		{
-			this.settings.grid_min_rows - rowsCount;
+			neededRows = this.settings.grid_min_rows - rowsCount;
 		}
 
 		// Show empty field message if field is empty and no rows are needed
