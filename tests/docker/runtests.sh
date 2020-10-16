@@ -53,7 +53,7 @@ function setup_permissions {
 	pushd /var/www/html/ > /dev/null
 		cp tests/docker/config.php system/user/config/
 		cp tests/docker/config.rb tests/rspec/
-		cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+		cp tests/docker/ExpressionEngineUpdate.pub system/ee/EllisLab/ExpressionEngine
 		chmod 666 system/user/config/config.php
 		chmod -R 777 system/user/cache
 		chmod -R 777 system/user/templates
