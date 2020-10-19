@@ -1,8 +1,12 @@
 ---
-name: 🐛 EE6 Bug Report
+name: "\U0001F41B EE6 Bug Report"
 about: Report reproducible problems with ExpressionEngine 6
+title: ''
+labels: EE6
+assignees: ''
 
 ---
+
 <!--
 Please describe your issue in as much detail as you can; what you were trying to do, what steps did you take, what did you expect, and what did you see instead.
 

@@ -1,6 +1,10 @@
 ---
-name: 📝 Documentation Issue
-about: See https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/issues for User Guide issues
+name: "\U0001F4DD Documentation Issue"
+about: See https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/issues
+  for User Guide issues
+title: ''
+labels: ''
+assignees: ''
 
 ---
 

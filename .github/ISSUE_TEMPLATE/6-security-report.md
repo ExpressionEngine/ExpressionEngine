@@ -1,6 +1,10 @@
 ---
-name: ⚠️ Security Report
-about: See https://docs.expressionengine.com/latest/bugs_and_security_reports/ for reporting security issues.
+name: "⚠️ Security Report"
+about: See https://docs.expressionengine.com/latest/bugs_and_security_reports/ for
+  reporting security issues.
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
