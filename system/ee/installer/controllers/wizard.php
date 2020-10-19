@@ -1401,9 +1401,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        } else if (strpos($path, '/') !== 0) {
-            $path = '/' . $path;
-        }
+        } 
 
         return $path;
     }
