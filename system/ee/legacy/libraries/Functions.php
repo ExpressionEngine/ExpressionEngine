@@ -412,9 +412,12 @@ class EE_Functions {
 		} elseif (is_numeric($return)) {
 			// If the return is a number, it's a reference to how many pages back we have to go.
 			$return_link = ee()->functions->form_backtrack($return);
-		} else {
-			// If we're here, the return is a full string.
+		} elseif (substr(strtolower($return), 0, 4) === 'http') {
+			// If we're using a fully qualified URL, don't modify it.
 			$return_link = $return;
+		} else {
+			// If we're here, the return is a relative URL or template path so prepend the site URL to it.
+			$return_link = ee()->functions->fetch_site_index() . '/' . $return;
 		}
 
 		return $return_link;
