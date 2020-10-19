@@ -209,6 +209,12 @@ $lang = array(
 
 'underline_rte' => 'Underline',
 
+'subscript_rte' => 'Subscript',
+
+'superscript_rte' => 'Superscript',
+
+'code_rte' => 'Code',
+
 'blockquote_rte' => 'Block quote',
 
 'heading_rte' => 'Heading',
@@ -252,6 +258,8 @@ $lang = array(
 'fontColor_rte' => 'Font color',
 
 'fontBackgroundColor_rte' => 'Font background',
+
+'open_in_new_tab' => 'Open in a new tab',
 
 ''=>''
 );
