@@ -417,7 +417,7 @@ class EE_Functions {
 			$return_link = $return;
 		} else {
 			// If we're here, the return is a relative URL or template path so prepend the site URL to it.
-			$return_link = ee()->functions->fetch_site_index() . '/' . $return;
+			$return_link = ee()->functions->fetch_site_index() . $return;
 		}
 
 		return $return_link;
