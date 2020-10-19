@@ -19,8 +19,8 @@
 		}
 		?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? 'class="' . $body_class . '"' : ''; ?>>
-		<script>
+	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
+		<script type="text/javascript">
 		var currentTheme = localStorage.getItem('theme');
 
 		// Restore the currently selected theme
