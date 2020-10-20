@@ -280,7 +280,7 @@ class RteHelper
         $config['toolbar']->shouldNotGroupWhenFull = true;
 
         //link
-        $config['link'] = (object )['decorators' => [
+        $config['link'] = (object) ['decorators' => [
             'openInNewTab' => [
                     'mode' => 'manual',
                     'label' => lang('open_in_new_tab'),
