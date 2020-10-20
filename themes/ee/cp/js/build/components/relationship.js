@@ -209,7 +209,7 @@ function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
-      var showAddButton = this.props.limit > this.state.selected.length && this.props.can_add_items;
+      var showAddButton = this.props.limit > this.state.selected.length && (this.props.multi || this.state.selected.length == 0);
       var channelFilterItems = props.channels.map(function (channel) {
         return {
           label: channel.title,
@@ -298,7 +298,7 @@ function (_React$Component) {
           return _this3.channelFilterChange(value);
         },
         buttonClass: "filter-bar__button"
-      })), React.createElement("div", {
+      })), this.props.can_add_items && React.createElement("div", {
         className: "filter-bar__item"
       }, props.channels.length == 1 && React.createElement("button", {
         type: "button",
