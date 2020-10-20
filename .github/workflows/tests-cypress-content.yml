@@ -1,4 +1,4 @@
-name: Run Cypress Installer Tests
+name: Run Cypress Content Tests
 
 on:
   push:
@@ -79,7 +79,7 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: installer.cypress.json
+                config-file: content.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v1
