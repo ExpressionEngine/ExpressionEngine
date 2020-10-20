@@ -526,7 +526,7 @@ $lang = array(
 
 'validate_addresses' => 'Validate email addresses?',
 
-'validate_addresses_desc' => 'Check the email for corret format and check that the domain exists.',
+'validate_addresses_desc' => 'Check the email for correct format and check that the domain exists.',
 
 'export_email_addresses_fail' => 'Export Failed',
 

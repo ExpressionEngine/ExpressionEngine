@@ -532,7 +532,7 @@ $lang = array(
 
 'no_categories_assigned' => 'No Categories Assigned',
 
-'no_categories_assigned_desc' => 'There are no categories assigned to this channel. <a href="%s">Assign a category group.</a>',
+'no_categories_assigned_desc' => 'There are no categories assigned to this channel. <a href="%s" target="_blank">Assign a category group.</a>',
 
 'no_category_group_match' => 'No Category Group Match was found for all of the entries. Please choose entries that have at least one category group in common.',
 
