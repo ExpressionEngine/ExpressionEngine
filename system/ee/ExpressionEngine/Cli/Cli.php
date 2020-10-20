@@ -99,6 +99,10 @@ class Cli
 
         // Get command called
         $this->commandCalled = $this->argv[1];
+
+        // Defining missing constants
+        defined('PATH_ADDONS') || define('PATH_ADDONS', SYSPATH .'ee/ExpressionEngine/Addons/');
+        defined('PATH_THIRD') || define('PATH_THIRD',  SYSPATH . 'user/addons/');
     }
 
     /**

@@ -6,7 +6,7 @@ return [
 	'name'        		=> 'Queue',
 	'description' 		=> 'Runs scheduled jobs',
 	'version'     		=> '1.0',
-	'namespace'   		=> 'Queue',
+	'namespace'   		=> 'ExpressionEngine\Addons\Queue',
 	'settings_exist'	=> true,
 	// Advanced settings
 	'services'			=> [
@@ -24,7 +24,8 @@ return [
 		'FailedJob'	=> 'Models\FailedJob',
 	],
 	'commands'	=> [
-		'queue:test' => Queue\Commands\CommandQueueTest::class,
-		'queue:work' => Queue\Commands\CommandQueueWork::class,
+		'queue:test' => ExpressionEngine\Addons\Queue\Commands\CommandQueueTest::class,
+		'queue:work' => ExpressionEngine\Addons\Queue\Commands\CommandQueueWork::class,
+		'queue:flush' => ExpressionEngine\Addons\Queue\Commands\CommandQueueFlush::class,
 	],
 ];

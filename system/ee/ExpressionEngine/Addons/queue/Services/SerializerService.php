@@ -1,6 +1,6 @@
 <?php
 
-namespace Queue\Services;
+namespace ExpressionEngine\Addons\Queue\Services;
 
 use DateTime;
 use DateTimeImmutable;
@@ -127,9 +127,12 @@ class SerializerService
 	 * @param string $string JSON serialized value/array/object representation
 	 * @return mixed The unserialized value, array or object-graph.
 	 */
-	public function unserialize($string)
+	public function unserialize($incoming)
 	{
-		$data = json_decode($string, true);
+
+		$data = is_object($incoming)
+				? (array) $incoming
+				: json_decode($string, true);
 
 		return $this->_unserialize($data);
 	}
@@ -311,8 +314,8 @@ class SerializerService
 		if (! is_array($data)) {
 			return $data; // scalar value is fully unserialized
 		}
-
 		if (array_key_exists(self::TYPE, $data)) {
+
 			if ($data[self::TYPE] === self::HASH) {
 				// remove legacy hash tag from JSON serialized with version 1.x
 				unset($data[self::TYPE]);
@@ -378,8 +381,16 @@ class SerializerService
 	 */
 	protected function _getClassProperties($type)
 	{
+
 		if (! isset(self::$_reflections[$type])) {
-			$class = new ReflectionClass($type);
+
+			// Check if we loaded the class
+			try {
+				$class = new ReflectionClass($type);
+			} catch(\Exception $e) {
+				exit("\033[31m{$e->getMessage()}\n");
+			}
+
 			$props = [];
 
 			do {

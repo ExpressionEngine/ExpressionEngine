@@ -1,11 +1,11 @@
 <?php
 
-namespace Queue\Commands;
+namespace ExpressionEngine\Addons\Queue\Commands;
 
-require_once  __DIR__ . '/../SampleJob.php';
+require_once __DIR__ . '/../SampleJob.php';
 
-use EllisLab\ExpressionEngine\Cli\Cli;
-use Queue\Jobs\SampleJob;
+use ExpressionEngine\Cli\Cli;
+use ExpressionEngine\Addons\Queue\Jobs\SampleJob;
 
 class CommandQueueTest extends Cli {
 
@@ -45,13 +45,19 @@ class CommandQueueTest extends Cli {
 	 * @var array
 	 */
 	public $commandOptions = [
-		'verbose,v'	=> 'Verbose output'
+		'email:' => 'Email to send test to',
 	];
 
 	public function handle()
 	{
 
-		$email = $this->ask('Choose an email, we\'ll send them an inspirational quote: ');
+		$email = $this->option('--email')
+					? $this->option('--email')
+					: $this->ask('Choose an email, we\'ll send them an inspirational quote: ');
+
+		if( ! $email ) {
+			$this->fail('Email required');
+		}
 
 		ee()->load->helper('queue');
 

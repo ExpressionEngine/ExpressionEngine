@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Table;
 
 class Queue_mcp {
 
@@ -91,7 +91,7 @@ class Queue_mcp {
 				$job->created_at,
 				[
 					'toolbar_items' => [
-						'cancel' => [
+						'queue_job_cancel' => [
 							'href' => $cancelUrl,
 							'title' => lang('queue_job_cancel'),
 						]
@@ -173,6 +173,63 @@ class Queue_mcp {
 		$table->setData($data);
 
 		return $table;
+
+	}
+
+	public function cancel()
+	{
+
+		$jobId = ee()->input->get_post('id');
+
+		if( ! $jobId ) {
+			return;
+		}
+
+		$job = ee('Model')->get('queue:Job')
+					->filter('job_id', $jobId)
+					->first();
+
+		if( ! $job ) {
+			return;
+		}
+
+		$job->delete();
+
+		// Return something
+
+	}
+
+	public function retry()
+	{
+
+		ee()->load->library('localize');
+
+		$failedJobId = ee()->input->get_post('id');
+
+		if( ! $failedJobId ) {
+			return;
+		}
+
+		$failedJob = ee('Model')->get('queue:FailedJob')
+					->filter('job_id', $failedJobId)
+					->first();
+
+		if( ! $failedJob ) {
+			return;
+		}
+
+		$job = ee('Model')->make(
+			'queue:Job',
+			[
+				'payload' => $failedJob->payload,
+				'attempts' => 0,
+				'created_at' => ee()->localize->now,
+			]
+		);
+
+		$failedJob->delete();
+
+		// Return something
 
 	}
 

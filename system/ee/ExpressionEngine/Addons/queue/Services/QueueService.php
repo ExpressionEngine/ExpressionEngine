@@ -1,10 +1,10 @@
 <?php
 
-namespace Queue\Services;
+namespace ExpressionEngine\Addons\Queue\Services;
 
-use Queue\Exceptions\QueueException;
-use Queue\Models\Job;
-use Queue\Services\SerializerService;
+use ExpressionEngine\Addons\Queue\Exceptions\QueueException;
+use ExpressionEngine\Addons\Queue\Models\Job;
+use ExpressionEngine\Addons\Queue\Services\SerializerService;
 
 class QueueService {
 
@@ -24,7 +24,7 @@ class QueueService {
 
 		$serializer = new SerializerService;
 
-		$jobClass = $serializer->deserialize($payload);
+		$jobClass = $serializer->unserialize($payload);
 
 		$jobClass->handle();
 

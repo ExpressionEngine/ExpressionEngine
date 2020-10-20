@@ -1,9 +1,8 @@
 <?php
 
-namespace Queue\Traits;
+namespace ExpressionEngine\Addons\Queue\Traits;
 
-use ExpressionEngine\Service\Model\Model;
-use Queue\Services\SerializerService;
+use ExpressionEngine\Addons\Queue\Services\SerializerService;
 
 trait Queueable {
 

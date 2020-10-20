@@ -1,8 +1,8 @@
 <?php
 
-namespace Queue\Jobs;
+namespace ExpressionEngine\Addons\Queue\Jobs;
 
-use Queue\Traits\Queueable;
+use ExpressionEngine\Addons\Queue\Traits\Queueable;
 
 class SampleJob {
 

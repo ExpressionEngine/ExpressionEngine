@@ -1,8 +1,8 @@
 <?php
 
-namespace Queue\Models;
+namespace ExpressionEngine\Addons\Queue\Models;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model;
 
 class FailedJob extends Model {
 

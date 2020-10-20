@@ -1,12 +1,12 @@
 <?php
 
-namespace Queue\Commands;
+namespace ExpressionEngine\Addons\Queue\Commands;
 
-use EllisLab\ExpressionEngine\Cli\Cli;
+use ExpressionEngine\Cli\Cli;
 use Exception;
-use Queue\Exceptions\QueueException;
-use Queue\Models\Job;
-use Queue\Services\QueueService;
+use ExpressionEngine\Addons\Queue\Exceptions\QueueException;
+use ExpressionEngine\Addons\Queue\Models\Job;
+use ExpressionEngine\Addons\Queue\Services\QueueService;
 use RuntimeException;
 use Throwable;
 
@@ -55,10 +55,13 @@ class CommandQueueWork extends Cli {
 	public function handle()
 	{
 
+		$this->init();
+
 		ee()->load->library('localize');
 
 		$jobs = ee('Model')->get('queue:Job')
 					->filter('run_at', '<=', ee()->localize->now)
+					->orFilter('run_at', null)
 					->limit($this->option('-t', 3))
 					->all();
 
@@ -85,6 +88,17 @@ class CommandQueueWork extends Cli {
 	{
 		$this->error('FAILED ' . get_class($job));
 		$job->fail($exception);
+	}
+
+	protected function init()
+	{
+		$databaseConfig = ee()->config->item('database');
+		ee()->load->database();
+		ee()->db->swap_pre = 'exp_';
+		ee()->db->dbprefix = isset($databaseConfig['expressionengine']['dbprefix'])
+								? $databaseConfig['expressionengine']['dbprefix']
+								: 'exp_';
+		ee()->db->db_debug = false;
 	}
 
 }

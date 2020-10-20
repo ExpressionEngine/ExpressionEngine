@@ -1,6 +1,6 @@
 <?php
 
-namespace Queue\Exceptions;
+namespace ExpressionEngine\Addons\Queue\Exceptions;
 
 use Exception;
 
