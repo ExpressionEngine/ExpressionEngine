@@ -85,7 +85,7 @@ context('Template Routes', () => {
 
         page.get('routes').its('length').should('eq', 2)
 
-        page.get('routes').eq(0).find('td:nth-child(5) a[rel=remove_row]').click()
+        page.get('routes').eq(0).find('td:nth-child(5) [rel=remove_row]').click()
         page.get('update_button').click()
         page.get('routes').its('length').should('eq', 1)
         page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'cypress/edited')
