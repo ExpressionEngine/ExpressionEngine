@@ -65,6 +65,8 @@ class Channel extends ControlPanel {
             "max_revisions": 'input[type!=hidden][name=max_revisions]',
             "clear_versioning_data": 'input[type!=hidden][name=clear_versioning_data]',
 
+            "sticky_enabled": '[data-toggle-for=sticky_enabled]',
+
             "comment_notify_authors": '[data-toggle-for=comment_notify_authors]',
             "channel_notify": '[data-toggle-for=channel_notify]',
             "channel_notify_emails": 'input[type!=hidden][name=channel_notify_emails]',
