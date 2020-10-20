@@ -55,12 +55,16 @@ class URLTest extends TestCase {
 
 	public function exceptionalDataProvider()
 	{
+		$phpError = '\PHPUnit\Framework\Error\Error';
+		if (version_compare(PHP_VERSION, '7.4', '>=')) {
+			$phpError = '\Error';
+		}
 		return array(
 			array(array('foo'), '', '', '\InvalidArgumentException'),
-			array(new \StdClass(), '', '', '\PHPUnit\Framework\Error\Error'),
+			array(new \StdClass(), '', '', $phpError),
 			array('foo', array('foo'), '', '\InvalidArgumentException'),
-			array('foo', new \StdClass(), '', '\PHPUnit\Framework\Error\Error'),
-			array('foo', '', new \StdClass(), '\PHPUnit\Framework\Error\Error'),
+			array('foo', new \StdClass(), '', $phpError),
+			array('foo', '', new \StdClass(), $phpError),
 		);
 	}
 
