@@ -66,9 +66,9 @@ jobs:
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
-            - name: Install PHP dependencies
-              working-directory: tests/cypress
-              run: composer install
+#            - name: Install PHP dependencies
+#              working-directory: tests/cypress
+#              run: composer install
 
             - name: Start PHP Server
               run: php -S localhost:8888 &
