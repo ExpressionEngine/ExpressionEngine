@@ -37,9 +37,13 @@ class URLTest extends TestCase {
 	 */
 	public function testExceptions($path, $session_id, $qs, $exception)
 	{
-        $this->expectException($exception);
+		if (version_compare(PHP_VERSION, '7.4', '<')) {
+			$this->expectException($exception);
 
-		new URL($path, $session_id, $qs);
+			new URL($path, $session_id, $qs);
+		} else {
+			$this->markTestSkipped('PHP 7.4 variation of this test will be used instead.');
+		}
 	}
 
 	/**
@@ -48,7 +52,7 @@ class URLTest extends TestCase {
 	 */
 	public function testExceptions74($path, $session_id, $qs, $exception)
 	{
-        $this->expectException($exception);
+		$this->expectException($exception);
 
 		new URL($path, $session_id, $qs);
 	}
