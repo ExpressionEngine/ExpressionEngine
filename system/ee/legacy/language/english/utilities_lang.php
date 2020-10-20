@@ -247,14 +247,14 @@ $lang = array(
 
 'import_convert_btn_saving' => 'Converting...',
 
-'import_converter' => 'Import File Converter',
+'import_converter' => 'Member Import File Converter',
 
 
 'import_password_warning' => '<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
 
 'member_file' => 'Member file',
 
-'member_file_desc' => 'Delimited file containing member data',
+'member_file_desc' => 'Delimited file from 3rd party containing member data to be converted into ExpressionEngine\'s Member XML format.',
 
 'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
 
