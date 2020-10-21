@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -11,163 +12,198 @@
 use ExpressionEngine\Service\Addon\Installer;
 
 /**
- * Blacklist update class
+ * Block and Allow update class
  */
-class Blacklist_upd extends Installer
+class Block_and_allow_upd extends Installer
 {
-	public $has_cp_backend = 'y';
+    public $has_cp_backend = 'y';
 
     public function __construct()
     {
         parent::__construct();
     }
 
-	/**
-	 * Module Installer
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
+    /**
+     * Module Installer
+     *
+     * @access public
+     * @return bool
+     */
 
-	function install()
-	{
-		$installed = parent::install();
+    public function install()
+    {
+        $installed = parent::install();
         if ($installed) {
+            ee()->load->dbforge();
 
-			ee()->load->dbforge();
+            $fields = array(
+                'blockedlist_id' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
+                ),
+                'blockedlist_type' => array(
+                    'type' => 'varchar',
+                    'constraint' => '20',
+                ),
+                'blockedlist_value' => array(
+                    'type' => 'longtext'
+                )
+            );
 
-			$fields = array(
-				'blacklisted_id'	=> array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'auto_increment'	=> TRUE
-				),
-				'blacklisted_type'  => array(
-					'type' 				=> 'varchar',
-					'constraint'		=> '20',
-				),
-				'blacklisted_value' => array(
-					'type'				=> 'longtext'
-				)
-			);
+            ee()->dbforge->add_field($fields);
+            ee()->dbforge->add_key('blockedlist_id', true);
+            ee()->dbforge->create_table('blockedlist');
 
-			ee()->dbforge->add_field($fields);
-			ee()->dbforge->add_key('blacklisted_id', TRUE);
-			ee()->dbforge->create_table('blacklisted');
+            $fields = array(
+                'allowedlist_id' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
+                ),
+                'allowedlist_type'  => array(
+                    'type' => 'varchar',
+                    'constraint' => '20',
+                ),
+                'allowedlist_value' => array(
+                    'type' => 'longtext'
+                )
+            );
 
-			$fields = array(
-				'whitelisted_id'	=> array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'auto_increment'	=> TRUE
-				),
-				'whitelisted_type'  => array(
-					'type' 				=> 'varchar',
-					'constraint'		=> '20',
-				),
-				'whitelisted_value' => array(
-					'type'				=> 'longtext'
-				)
-			);
-
-			ee()->dbforge->add_field($fields);
-			ee()->dbforge->add_key('whitelisted_id', TRUE);
-			ee()->dbforge->create_table('whitelisted');
-
-		}
+            ee()->dbforge->add_field($fields);
+            ee()->dbforge->add_key('allowedlist_id', true);
+            ee()->dbforge->create_table('allowedlist');
+        }
         return $installed;
-	}
+    }
 
-	/**
-	 * Module Uninstaller
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function uninstall()
-	{
-		$uninstalled = parent::uninstall();
+    /**
+     * Module Uninstaller
+     *
+     * @access public
+     * @return bool
+     */
+    public function uninstall()
+    {
+        $uninstalled = parent::uninstall();
         if ($uninstalled) {
-			ee()->load->dbforge();
-			ee()->dbforge->drop_table('blacklisted');
-			ee()->dbforge->drop_table('whitelisted');
+            ee()->load->dbforge();
+            ee()->dbforge->drop_table('blockedlist');
+            ee()->dbforge->drop_table('allowedlist');
         }
         return $uninstalled;
-	}
+    }
 
-	/**
-	 * Module Updater
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function update($current='')
-	{
-		if (version_compare($current, '3.0.1', '<'))
-		{
-			ee()->load->dbforge();
+    /**
+     * Module Updater
+     *
+     * @access public
+     * @return bool
+     */
+    public function update($current = '')
+    {
+        if (version_compare($current, '3.0.1', '<')) {
+            ee()->load->dbforge();
 
-			foreach (array('blacklisted', 'whitelisted') as $table_name)
-			{
-				if (ee()->db->table_exists($table_name))
-				{
-					$fields = array(
-						$table_name.'_value' => array(
-							'name' => $table_name.'_value',
-							'type' => 'LONGTEXT'
-						)
-					);
+            foreach (array('blacklisted', 'whitelisted') as $table_name) {
+                if (ee()->db->table_exists($table_name)) {
+                    $fields = array(
+                        $table_name . '_value' => array(
+                            'name' => $table_name . '_value',
+                            'type' => 'LONGTEXT'
+                        )
+                    );
 
-					ee()->dbforge->modify_column($table_name, $fields);
-				}
-			}
-		}
+                    ee()->dbforge->modify_column($table_name, $fields);
+                }
+            }
+        }
 
-		if (version_compare($current, '3.0', '<'))
-		{
-			ee()->load->dbforge();
+        if (version_compare($current, '3.0', '<')) {
+            ee()->load->dbforge();
 
-			$sql = array();
+            $sql = array();
 
-			//if the are using a very old version this table won't exist at all
-			if ( ! ee()->db->table_exists('whitelisted'))
-			{
-				$fields = array(
-					'whitelisted_id'	=> array(
-						'type'				=> 'int',
-						'constraint'		=> 10,
-						'unsigned'			=> TRUE,
-						'auto_increment'	=> TRUE
-					),
-					'whitelisted_type'  => array(
-						'type' 		 => 'varchar',
-						'constraint' => '20',
-					),
-					'whitelisted_value' => array(
-						'type' => 'text'
-					)
-				);
+            //if the are using a very old version this table won't exist at all
+            if (! ee()->db->table_exists('whitelisted')) {
+                $fields = array(
+                    'whitelisted_id' => array(
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'auto_increment' => true
+                    ),
+                    'whitelisted_type'  => array(
+                        'type' => 'varchar',
+                        'constraint' => '20',
+                    ),
+                    'whitelisted_value' => array(
+                        'type' => 'text'
+                    )
+                );
 
-				ee()->dbforge->add_field($fields);
-				ee()->dbforge->add_key('whitelisted_id', TRUE);
-				ee()->dbforge->create_table('whitelisted');
-			}
-			else
-			{
-				$sql[] = "ALTER TABLE `exp_blacklisted` ADD COLUMN `blacklisted_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-				$sql[] = "ALTER TABLE `exp_whitelisted` ADD COLUMN `whitelisted` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-			}
+                ee()->dbforge->add_field($fields);
+                ee()->dbforge->add_key('whitelisted_id', true);
+                ee()->dbforge->create_table('whitelisted');
+            } else {
+                $sql[] = "ALTER TABLE `exp_blacklisted` ADD COLUMN `blacklisted_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+                $sql[] = "ALTER TABLE `exp_whitelisted` ADD COLUMN `whitelisted` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+            }
 
-			foreach($sql as $query)
-			{
-				ee()->db->query($query);
-			}
-		}
+            foreach ($sql as $query) {
+                ee()->db->query($query);
+            }
+        }
 
-		return TRUE;
-	}
+        if (version_compare($current, '4.0', '<')) {
+            $fields = array(
+                'blacklisted_id' => array(
+                    'name' => 'blockedlist_id',
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
+                ),
+                'blacklisted_type' => array(
+                    'name' => 'blockedlist_type',
+                    'type' => 'varchar',
+                    'constraint' => '20',
+                ),
+                'blacklisted_value' => array(
+                    'name' => 'blockedlist_value',
+                    'type' => 'longtext'
+                )
+            );
+            ee()->smartforge->modify_column('blacklisted', $fields);
+            ee()->smartforge->rename_table('blacklisted', 'blockedlist');
+
+            $fields = array(
+                'whitelisted_id' => array(
+                    'name' => 'allowedlist_id',
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
+                ),
+                'whitelisted_type'  => array(
+                    'name' => 'allowedlist_type',
+                    'type' => 'varchar',
+                    'constraint' => '20',
+                ),
+                'whitelisted_value' => array(
+                    'name' => 'allowedlist_value',
+                    'type' => 'longtext'
+                )
+            );
+
+            ee()->smartforge->modify_column('whitelisted', $fields);
+            ee()->smartforge->rename_table('whitelisted', 'allowedlist');
+        }
+
+        return true;
+    }
 }
 
 // END CLASS

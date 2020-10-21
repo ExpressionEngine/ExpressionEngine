@@ -2,9 +2,9 @@
 
 $lang = array(
 
-'blacklist_module_name' => 'Black/White List',
+'block_and_allow_module_name' => 'Block and Allow',
 
-'blacklist_module_description' => 'Blacklist and whitelist module',
+'block_and_allow_module_description' => 'Block/allow IP Addresses, URLs, and User-Agents',
 
 'add_htaccess_file' => 'Add to .htaccess file?',
 
@@ -12,9 +12,9 @@ $lang = array(
 
 'btn_save_list' => 'Save List',
 
-'btn_download_blacklist' => 'Download EE Blacklist',
+'btn_download_blockedlist' => 'Download EE Blocked List',
 
-'btn_download_whitelist' => 'Download EE Whitelist',
+'btn_download_allowedlist' => 'Download EE Allowed List',
 
 'btn_save_settings' => 'Save Settings',
 
@@ -22,13 +22,13 @@ $lang = array(
 
 'lists' => 'Lists',
 
-'whitelist' => 'Whitelist',
+'allowedlist' => 'Allowed list',
 
-'whitelist_desc' => 'Whitelists <b>allow</b> access to your website via specific <abbr title="Internet Protocol">IP</abbr> address, user agents and <abbr title="Unified Resource Locator">URL</abbr>s.',
+'allowedlist_desc' => 'Allowed lists <b>allow</b> access to your website via specific <abbr title="Internet Protocol">IP</abbr> address, user agents and <abbr title="Unified Resource Locator">URL</abbr>s.',
 
-'blacklist' => 'Blacklist',
+'blockedlist' => 'Blocked list',
 
-'blacklist_desc' => 'Blacklists <b>disallow</b> access to your website via specific <abbr title="Internet Protocol">IP</abbr> address, user agents and <abbr title="Unified Resource Locator">URL</abbr>s.',
+'blockedlist_desc' => 'Blocked lists <b>disallow</b> access to your website via specific <abbr title="Internet Protocol">IP</abbr> address, user agents and <abbr title="Unified Resource Locator">URL</abbr>s.',
 
 'ip_address' => '<abbr title="Internet Protocol">IP</abbr> address',
 
@@ -54,37 +54,33 @@ $lang = array(
 
 'lists_updated' => 'Lists updated',
 
-'lists_updated_desc' => 'The blacklist and whitelist were updated successfully.',
+'lists_updated_desc' => 'The blocked and allowed lists were updated successfully.',
 
-'blacklist_downloaded' => 'The blacklist has been updated by being downloaded from ExpressionEngine.',
+'blockedlist_downloaded' => 'The blocked list has been updated by being downloaded from ExpressionEngine.',
 
-'whitelist_downloaded' => 'The whitelist has been updated by being downloaded from ExpressionEngine.',
+'allowedlist_downloaded' => 'The allowed list has been updated by being downloaded from ExpressionEngine.',
 
-'ee_whitelist' => 'Download ExpressionEngine Whitelist',
+'ee_allowedlist' => 'Download ExpressionEngine Allowed List',
 
-'ref_whitelist_irretrievable' => 'Error: New whitelist was irretrievable.',
+'ref_allowedlist_irretrievable' => 'Error: New allowed list was irretrievable.',
 
-'ref_view_whitelist' => 'View Whitelist',
+'ref_view_allowedlist' => 'View Allowed List',
 
-'ref_no_whitelist' => 'There is currently nothing whitelisted',
+'ref_no_allowedlist' => 'There is currently nothing listed to allow',
 
-'ref_whitelisted' => 'Whitelisted',
+'ref_allowedlisted' => 'Listed to allow',
 
-'ref_no_whitelist_table' => 'Whitelist database table does not exist',
+'ref_no_allowedlist_table' => 'Allowedlist database table does not exist',
 
 'ref_type' => 'Item Type',
 
-'ee_blacklist' => 'Download ExpressionEngine Blacklist',
+'ee_blockedlist' => 'Download ExpressionEngine Blocked List',
 
-'requires_license_number' => 'Requires License Number in General Configuration',
+'ref_blockedlist_irretrievable' => 'Error: New blacklist was irretrievable.',
 
-'ref_no_license' => 'Error: No license number.',
+'ref_view_blockedlist' => 'View Blacklist',
 
-'ref_blacklist_irretrievable' => 'Error: New blacklist was irretrievable.',
-
-'ref_view_blacklist' => 'View Blacklist',
-
-'ref_no_blacklist' => 'There is currently nothing blacklisted',
+'ref_no_blockedlist' => 'There is currently nothing listed to block',
 
 'ref_ip' => 'IP Address',
 
@@ -92,9 +88,9 @@ $lang = array(
 
 'ref_url' => 'URL',
 
-'ref_blacklisted' => 'Blacklisted',
+'ref_blockedlisted' => 'Listed to block',
 
-'ref_no_blacklist_table' => 'Blacklist database table does not exist',
+'ref_no_blockedlist_table' => 'Blockedlist database table does not exist',
 
 );
 
