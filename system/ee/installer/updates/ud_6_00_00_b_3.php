@@ -17,6 +17,8 @@ namespace ExpressionEngine\Updater\Version_6_0_0_b_3;
 class Updater
 {
 
+    public $suffix = '';
+
     /**
      * Do Update
      *
@@ -25,7 +27,6 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'modifyPagesColumn',
             'renameBlacklistModule',
         ]);
 
