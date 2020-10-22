@@ -484,6 +484,10 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 			}
 
+			if ($template->enable_http_auth == 'y') {
+				$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+			}
+
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
 				$template_name = '<i class="fas fa-sm fa-eye-slash icon-left"></i>' . $template_name;

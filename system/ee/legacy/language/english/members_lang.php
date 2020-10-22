@@ -1076,6 +1076,8 @@ $lang = array(
 
 'member_role_assignment' => 'Member Role Assignment',
 
+'http_auth_protected' => 'HTTP Auth Protected',
+
 /* Access Overview */
 
 'access_overview' => 'Access Overview',
