@@ -736,7 +736,7 @@ $lang = array(
 
 'assigned_templates' => 'Allowed Templates',
 
-'assigned_templates_desc' => 'Members with this role are allowed to access selected templates.',
+'assigned_templates_desc' => 'Members with this role are allowed to access pages that are using selected templates.',
 
 'template_manager' => 'Templates',
 

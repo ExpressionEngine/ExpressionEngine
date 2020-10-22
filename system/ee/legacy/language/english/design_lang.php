@@ -8,7 +8,7 @@ $lang = array(
 
 'allowed_roles' => 'Allowed roles',
 
-'allowed_roles_desc' => 'The following roles are allowed to access this template.',
+'allowed_roles_desc' => 'The following roles are allowed to access pages that are using this template.',
 
 'allowed_roles_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
