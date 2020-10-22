@@ -198,7 +198,7 @@ class Block_and_allow_mcp
                 $old_values = explode('|', trim($row['blockedlist_value']));
                 for ($i = 0, $s = count($old_values); $i < $s; $i++) {
                     if (trim($old_values[$i]) != '') {
-                        $old[$row['blockedlist_value']][] = preg_quote($old_values[$i]);
+                        $old[$row['blockedlist_type']][] = preg_quote($old_values[$i]);
                     }
                 }
             }
@@ -379,7 +379,7 @@ class Block_and_allow_mcp
 
              $_POST[$val] = implode("|", array_unique($new_values));
 
-             ee()->db->where('blockedlist_type', $val);
+             ee()->db->where('blockedlist_type', $type);
              ee()->db->delete('blockedlist');
 
              $data = array(
@@ -448,7 +448,7 @@ class Block_and_allow_mcp
 
                 $_POST[$val] = implode("|", $new_values);
 
-                ee()->db->where('allowedlist_type', $val);
+                ee()->db->where('allowedlist_type', $type);
                 ee()->db->delete('allowedlist');
 
                 $data = array(
@@ -481,8 +481,10 @@ class Block_and_allow_mcp
 
         //  Get Current List from ExpressionEngine.com
         ee()->load->library('xmlrpc');
+        //ee()->xmlrpc->debug = true;
         ee()->xmlrpc->server('http://ping.expressionengine.com/index.php', 80);
-        ee()->xmlrpc->method("ExpressionEngine.{$listtype}list");
+        $method = ($listtype == 'allowed') ? 'whitelist' : 'blacklist';
+        ee()->xmlrpc->method("ExpressionEngine." . $method);
 
         if (ee()->xmlrpc->send_request() === false) {
             ee('CP/Alert')->makeInline('lists-form')
@@ -496,9 +498,9 @@ class Block_and_allow_mcp
         // Array of our returned info
         $remote_info = ee()->xmlrpc->display_response();
 
-        $new['url'] = (! isset($remote_info['urls']) || count($remote_info['urls']) == 0) ? array() : explode('|', $remote_info['urls']);
-        $new['agent'] = (! isset($remote_info['agents']) || count($remote_info['agents']) == 0) ? array() : explode('|', $remote_info['agents']);
-        $new['ip'] = (! isset($remote_info['ips']) || count($remote_info['ips']) == 0) ? array() : explode('|', $remote_info['ips']);
+        $new['url'] = (! isset($remote_info['urls']) || strlen($remote_info['urls']) == 0) ? array() : explode('|', $remote_info['urls']);
+        $new['agent'] = (! isset($remote_info['agents']) || strlen($remote_info['agents']) == 0) ? array() : explode('|', $remote_info['agents']);
+        $new['ip'] = (! isset($remote_info['ips']) || strlen($remote_info['ips']) == 0) ? array() : explode('|', $remote_info['ips']);
 
         //  Add current list
         $query = ee()->db->get("{$listtype}list");
