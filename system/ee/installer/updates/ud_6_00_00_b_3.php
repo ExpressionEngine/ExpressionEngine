@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -13,9 +14,10 @@ namespace ExpressionEngine\Updater\Version_6_0_0_b_3;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
 
-    var $version_suffix = '';
+    public $version_suffix = '';
 
     /**
      * Do Update
@@ -45,7 +47,6 @@ class Updater {
             ]
         ]);
     }
-
 }
 
 // EOF

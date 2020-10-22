@@ -51,7 +51,7 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
-			`site_pages` TEXT NOT NULL ,
+			`site_pages` MEDIUMTEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`)
 		)";
