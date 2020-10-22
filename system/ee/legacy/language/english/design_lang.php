@@ -560,9 +560,11 @@ $lang = array(
 
 'output' => 'Output',
 
-'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has <a href="'.DOC_URL.'templates/php.html" target="_blank" rel="external">security implications</a>.',
 
 'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
+
+'php_in_templates_config_warning' => 'You need to set <code>$config[\'allow_php\'] = \'y\';</code> in <code>config.php</code> file if you want to use this feature.',
 
 'preference' => 'Preference',
 

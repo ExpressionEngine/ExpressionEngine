@@ -2728,7 +2728,7 @@ class EE_Template {
 		$row = $query->row_array();
 
 		// Is PHP allowed in this template?
-		if ($row['allow_php'] == 'y')
+		if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y')
 		{
 			$this->parse_php = TRUE;
 
