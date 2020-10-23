@@ -134,7 +134,7 @@ $lang = array(
 
 'enable_php' => 'Allow PHP?',
 
-'enable_php_desc' => 'When enabled, you can use standard PHP within this template. <a href="'.DOC_URL.'templates/php.html" rel="external">Read about the implications before enabling</a>.',
+'enable_php_desc' => 'When enabled, you can use standard PHP within this template. <a href="'.DOC_URL.'templates/overview.html#php-in-templates" rel="external">Read about the implications before enabling</a>.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
@@ -560,7 +560,7 @@ $lang = array(
 
 'output' => 'Output',
 
-'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has <a href="'.DOC_URL.'templates/php.html" target="_blank" rel="external">security implications</a>.',
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has <a href="'.DOC_URL.'templates/overview.html#php-in-templates" target="_blank" rel="external">security implications</a>.',
 
 'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
 
