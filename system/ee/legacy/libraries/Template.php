@@ -4609,8 +4609,12 @@ class EE_Template {
 					 );
 
 					// do it!
-					$template_model = ee('Model')->make('Template', $data)->save();
-					$template_model->saveNewTemplateRevision($template_model);
+					try {
+						$template_model = ee('Model')->make('Template', $data)->save();
+						$template_model->saveNewTemplateRevision($template_model);
+					} catch (Exception $e) {
+						// if template has invalid characters that might be an issue with some databases, silently exiting here
+					}
 
 					// add to existing array so we don't try to create this template again
 					$existing[$group][] = $template_name;
