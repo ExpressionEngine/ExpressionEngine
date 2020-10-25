@@ -49,7 +49,8 @@ class CommandQueueWork extends Cli {
 	 */
 	public $commandOptions = [
 		'verbose,v'	=> 'Verbose output',
-		'take,t:'	=> 'Amount of jobs to run at a time'
+		'take,t:'	=> 'Amount of jobs to run at a time',
+		'once'		=> 'Run a single job in queue',
 	];
 
 	public function __construct()
@@ -64,11 +65,13 @@ class CommandQueueWork extends Cli {
 		$this->init();
 		ee()->load->library('localize');
 
+		$limit = $this->option('--once') ? 1 : $this->option('-t', 3);
+
 		$jobs = ee('Model')
 					->get('queue:Job')
 					->filter('run_at', '<=', ee()->localize->format_date('%Y-%m-%d %H:%i:%s', ee()->localize->now, ee()->config->item('default_site_timezone')))
 					->orFilter('run_at', null)
-					->limit($this->option('-t', 3))
+					->limit($limit)
 					->all();
 
 		foreach ($jobs as $job) {
