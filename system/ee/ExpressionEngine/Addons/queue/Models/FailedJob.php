@@ -20,4 +20,13 @@ class FailedJob extends Model {
 	protected $error;
 	protected $failed_at;
 
+	/**
+	 * return decoded payload
+	 * @return stdClass
+	 */
+	public function payload()
+	{
+		return json_decode($this->payload);
+	}
+
 }

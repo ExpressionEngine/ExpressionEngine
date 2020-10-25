@@ -87,42 +87,6 @@ class Queue_mcp {
 			'heading' => lang('queue_module_name')
 		];
 
-		if ( ! ee()->db->table_exists('queue_jobs'))
-		{
-			show_error(lang("queue_missing_table_queue_jobs"));
-		}
-
-		if ( ! ee()->db->table_exists('queue_failed_jobs'))
-		{
-			show_error(lang("queue_missing_table_queue_failed_jobs"));
-		}
-
-		$jobs = ee('Model')->get('queue:Job')->all();
-		
-		$this->generateSidebar();
-
-		$vars = [
-			'base_url' => ee('CP/URL')->make('addons/settings/queue/'),
-			'cp_page_title' => lang('queue_module_name') . ' ' . lang('settings'),
-			'save_btn_text' => 'btn_save_settings',
-			'save_btn_text_working' => 'btn_saving',
-			'jobs'	=> $jobs,
-			'failed_jobs'	=> $failedJobs,
-		];
-		
-
-		$jobsTable = $this->createJobsTable($jobs);
-		$failedJobsTable = $this->createFailedJobsTable($failedJobs);
-
-		$vars['jobs_table'] = $jobsTable->viewData(ee('CP/URL', 'queue_jobs'));
-		$vars['failed_jobs_table'] = $jobsTable->viewData(ee('CP/URL', 'queue_failed_jobs'));
-
-		$vars['tabs'] = [
-			'jobs_table'		=> $jobsTable->viewData(ee('CP/URL', 'queue_jobs')),
-			'failed_jobs_table' => $jobsTable->viewData(ee('CP/URL', 'queue_failed_jobs')),
-		];
-
-		return ee('View')->make('queue:index')->render($vars);
 	}
 
 	private function createJobsTable($jobs)
@@ -139,7 +103,7 @@ class Queue_mcp {
 		$table->setColumns(
 			[
 		    	'queue_jobs_id',
-		    	'queue_payload',
+		    	'queue_class',
 				'queue_attempts',
 				'queue_run_at',
 				'queue_created_at',
@@ -158,9 +122,11 @@ class Queue_mcp {
 
 			$cancelUrl = ee('CP/URL', 'queue/cancel/' . $job->getId());
 
+			$jobClass = $this->getJobClass($job);
+
 			$data[] = [
 				$job->job_id,
-				$job->payload,
+				$jobClass,
 				$job->attempts,
 				$job->run_at,
 				$job->created_at,
@@ -169,6 +135,7 @@ class Queue_mcp {
 						'queue_job_cancel' => [
 							'href' => $cancelUrl,
 							'title' => lang('queue_job_cancel'),
+							'content' => lang('queue_job_cancel'),
 						]
 					],
 				],
@@ -203,7 +170,7 @@ class Queue_mcp {
 		$table->setColumns(
 			[
 		    	'queue_jobs_id',
-		    	'queue_payload',
+		    	'queue_class',
 				'queue_failed_error',
 				'queue_failed_failed_at',
 				'manage' => [
@@ -221,16 +188,19 @@ class Queue_mcp {
 
 			$retryUrl = ee('CP/URL', 'queue/retry/' . $job->getId());
 
+			$jobClass = $this->getJobClass($job);
+
 			$data[] = [
 				$job->failed_job_id,
-				$job->payload,
+				$jobClass,
 				$job->error,
 				$job->failed_at,
 				[
 					'toolbar_items' => [
 						'queue_retry' => [
 							'href' => $retryUrl,
-							'title' => lang('queue_job_cancel'),
+							'title' => lang('queue_job_retry'),
+							'content' => lang('queue_job_retry'),
 						]
 					],
 				],
@@ -295,6 +265,21 @@ class Queue_mcp {
 		$failedJob->delete();
 
 		// Return something
+
+	}
+
+	private function getJobClass($job)
+	{
+
+		$payload = $job->payload();
+
+		if( ! $payload ) {
+			return '';
+		}
+
+		$array = (array) $payload;
+
+		return $array['#type'];
 
 	}
 
