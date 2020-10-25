@@ -52,46 +52,75 @@ class CommandQueueWork extends Cli {
 		'take,t:'	=> 'Amount of jobs to run at a time'
 	];
 
+	public function __construct()
+	{
+		parent::__construct();
+		ee()->load->library('localize');
+		ee()->load->helper('language');
+	}
+
 	public function handle()
 	{
-
 		$this->init();
-
 		ee()->load->library('localize');
 
-		$jobs = ee('Model')->get('queue:Job')
-					->filter('run_at', '<=', ee()->localize->now)
+		$jobs = ee('Model')
+					->get('queue:Job')
+					->filter('run_at', '<=', ee()->localize->format_date('%Y-%m-%d %H:%i:%s', ee()->localize->now, ee()->config->item('default_site_timezone')))
 					->orFilter('run_at', null)
 					->limit($this->option('-t', 3))
 					->all();
 
 		foreach ($jobs as $job) {
-			try {
-				$this->output->outln('Processing ' . get_class($job));
-				QueueService::fire($job);
-				$this->info('Processed ' . get_class($job));
-				sleep($job->sleep());
-			} catch (Exception $e) {
-				$this->handleJobException($job, $e);
-			} catch(RuntimeException $e) {
-				$this->handleJobException($job, $e);
-			} catch (Throwable $e) {
-				$this->handleJobException($job, $e);
-			} catch (QueueException $e) {
-				$this->handleJobException($job, $e);
-			}
-		}
+			$this->output->outln('Processing ' . $job->job_id);
+			$service = new QueueService($job);
 
+			$result = $service->fire();
+
+			if( ! $result['success'] ) {
+				$this->handleJobException($result);
+				$this->error('FAILED ' . $job->job_id);
+				continue;
+			}
+
+			$this->info('Processed ' . get_class($result['jobClass']));
+			sleep($result['jobClass']->sleep());
+			$result['job']->delete();
+		}
 	}
 
-	protected function handleJobException(Job $job, $exception)
+	protected function handleJobException($result)
 	{
-		$this->error('FAILED ' . get_class($job));
-		$job->fail($exception);
+		if($result['step'] == 'unserialize') {
+			$this->handleJobExceptionAtObjectSerialization($result);
+		}
+
+		if($result['step'] == 'execution') {
+			$this->handleJobExceptionAtJobExecution($result);
+		}
+	}
+
+	protected function handleJobExceptionAtObjectSerialization($result)
+	{
+		$result['job']->delete();
+		$failedJob = ee('Model')->make('queue:FailedJob');
+		$failedJob->payload = $result['job']->payload();
+		$failedJob->error = json_encode([
+			'failed_at'	=> 'serialization',
+			'message'	=> $result['message'],
+		]);
+		$failedJob->failed_at = ee()->localize->format_date('%Y-%m-%d %H:%i:%s', ee()->localize->now, ee()->config->item('default_site_timezone'));
+		$failedJob->save();
+	}
+
+	protected function handleJobExceptionAtJobExecution($result)
+	{
+		$result['job']->fail();
 	}
 
 	protected function init()
 	{
+		defined('APP_NAME') || define('APP_NAME', 'ExpressionEngine');
 		$databaseConfig = ee()->config->item('database');
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';

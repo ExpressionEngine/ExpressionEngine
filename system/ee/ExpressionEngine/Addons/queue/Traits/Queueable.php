@@ -15,6 +15,7 @@ trait Queueable {
 	public function construct()
 	{
 		ee()->load->library('localize');
+		ee()->load->helper('language');
 		ee()->load->helper('string');
 
 		$this->uuid = uuid4();
@@ -31,7 +32,6 @@ trait Queueable {
 
 	public function fail($exception)
 	{
-
 		$this->attemptsTaken++;
 
 		if($this->attemptsTaken < $this->attempts()) {
@@ -47,29 +47,29 @@ trait Queueable {
 		$failedJob = ee('Model')->make('queue:FailedJob');
 		$failedJob->payload = $this->serialize();
 		$failedJob->error = json_encode($exception);
-		$failedJob->failed_at = ee()->localize->now;
+		$failedJob->failed_at = ee()->localize->format_date('%Y-%m-%d %H:%i:%s', ee()->localize->now, ee()->config->item('default_site_timezone'));
 		$failedJob->save();
+	}
+
+	public function attempts()
+	{
+		return $this->attempts ?: 1;
+	}
+
+	public function sleep()
+	{
+		return $this->sleep ?: 1;
+	}
+
+	public function runAt()
+	{
+		return $this->runAt ?: ee()->localize->format_date('%Y-%m-%d %H:%i:%s', ee()->localize->now, ee()->config->item('default_site_timezone'));
 	}
 
 	protected function serialize()
 	{
 		$serializer = new SerializerService;
 		return $serializer->serialize($this);
-	}
-
-	protected function attempts()
-	{
-		return $this->attempts ?: 1;
-	}
-
-	protected function sleep()
-	{
-		return $this->sleep ?: 5;
-	}
-
-	protected function runAt()
-	{
-		return $this->runAt ?: ee()->localize->now;
 	}
 
 }

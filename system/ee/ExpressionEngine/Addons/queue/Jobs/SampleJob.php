@@ -36,28 +36,20 @@ class SampleJob {
 
 		$quote = $this->quotes[mt_rand(0, count($this->quotes) - 1)];
 
+		ee()->load->library('functions');
+		ee()->load->library('extensions');
 		ee()->load->library('email');
-
 		ee()->load->helper('text');
-
 		ee()->email->wordwrap = true;
-		
 		ee()->email->mailtype = 'html';
-		
 		ee()->email->from($this->email);
-		
 		ee()->email->to($this->email);
-
 		ee()->email->subject('EE Queue Test');
-		
 		ee()->email->message(entities_to_ascii($quote));
 		
 		$result = ee()->email->send();
-
 		ee()->email->clear();
 
 		return true;
-
 	}
-
 }

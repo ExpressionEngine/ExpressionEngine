@@ -4,6 +4,7 @@ namespace ExpressionEngine\Addons\Queue\Services;
 
 use DateTime;
 use DateTimeImmutable;
+use ExpressionEngine\Addons\Queue\Exceptions\QueueException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
@@ -188,7 +189,7 @@ class SerializerService
 
 		if (is_string($value)) {
 			if (preg_match('//u', $value) !== 1) {
-				throw new RuntimeException("Malformed UTF-8 characters, possibly incorrectly encoded");
+				throw new QueueException("Malformed UTF-8 characters, possibly incorrectly encoded");
 			}
 
 			return json_encode($value);
@@ -388,7 +389,8 @@ class SerializerService
 			try {
 				$class = new ReflectionClass($type);
 			} catch(\Exception $e) {
-				exit("\033[31m{$e->getMessage()}\n");
+				throw new QueueException("Error Processing Request", 1);
+				return;
 			}
 
 			$props = [];
@@ -445,16 +447,17 @@ class SerializerService
 	 */
 	protected function _unserializeDateTime($data)
 	{
-		switch ($data[self::TYPE]) {
-			case "DateTime":
-				$datetime = DateTime::createFromFormat(self::DATETIME_FORMAT, $data["datetime"], timezone_open("UTC"));
-				$datetime->setTimezone(timezone_open($data["timezone"]));
-				return $datetime;
-			case "DateTimeImmutable":
-				$datetime = DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $data["datetime"], timezone_open("UTC"));
-				return $datetime->setTimezone(timezone_open($data["timezone"]));
-			default:
-				throw new RuntimeException("unsupported type: " . $data[self::TYPE]);
+		if($data[self::TYPE] == 'DateTime') {
+			$datetime = DateTime::createFromFormat(self::DATETIME_FORMAT, $data["datetime"], timezone_open("UTC"));
+			$datetime->setTimezone(timezone_open($data["timezone"]));
+			return $datetime;
 		}
+
+		if($data[self::TYPE] == 'DateTimeImmutable') {
+			$datetime = DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT, $data["datetime"], timezone_open("UTC"));
+			return $datetime->setTimezone(timezone_open($data["timezone"]));
+		}
+
+		throw new QueueException("unsupported type: " . $data[self::TYPE]);
 	}
 }

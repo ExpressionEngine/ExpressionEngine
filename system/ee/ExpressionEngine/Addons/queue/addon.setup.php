@@ -28,4 +28,7 @@ return [
 		'queue:work' => ExpressionEngine\Addons\Queue\Commands\CommandQueueWork::class,
 		'queue:flush' => ExpressionEngine\Addons\Queue\Commands\CommandQueueFlush::class,
 	],
+	'jobs' => [
+		'SampleJob' => ExpressionEngine\Addons\Queue\Jobs\SampleJob::class,
+	],
 ];

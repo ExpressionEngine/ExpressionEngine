@@ -15,8 +15,8 @@ if( ! function_exists('queue') ) {
 	{
 
 		$uses = class_uses($obj);
-		if( ! in_array(Queue\Traits\Queueable::class, $uses)) {
-			throw new Queue\Exceptions\QueueException(
+		if( ! in_array(ExpressionEngine\Addons\Queue\Traits\Queueable::class, $uses)) {
+			throw new ExpressionEngine\Addons\Queue\Exceptions\QueueException(
 				'Object of type '
 				. get_class($obj)
 				. ' does not implement Queueable'

@@ -2,8 +2,6 @@
 
 namespace ExpressionEngine\Addons\Queue\Commands;
 
-require_once __DIR__ . '/../SampleJob.php';
-
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Addons\Queue\Jobs\SampleJob;
 
@@ -51,6 +49,8 @@ class CommandQueueTest extends Cli {
 	public function handle()
 	{
 
+		$this->init();
+
 		$email = $this->option('--email')
 					? $this->option('--email')
 					: $this->ask('Choose an email, we\'ll send them an inspirational quote: ');
@@ -65,6 +65,17 @@ class CommandQueueTest extends Cli {
 
 		$this->info('Job is queued! Run `php eecli queue:work` to process');
 
+	}
+
+	protected function init()
+	{
+		$databaseConfig = ee()->config->item('database');
+		ee()->load->database();
+		ee()->db->swap_pre = 'exp_';
+		ee()->db->dbprefix = isset($databaseConfig['expressionengine']['dbprefix'])
+								? $databaseConfig['expressionengine']['dbprefix']
+								: 'exp_';
+		ee()->db->db_debug = false;
 	}
 
 }
