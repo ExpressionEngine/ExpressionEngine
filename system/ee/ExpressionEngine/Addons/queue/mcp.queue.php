@@ -167,20 +167,18 @@ class Queue_mcp {
 			]
 		);
 
-		$table->setColumns(
+		$table->setColumns([
+			'queue_jobs_id',
+			'queue_class',
+			'queue_failed_error',
+			'queue_failed_failed_at',
+			'manage' => [
+				'type'  => Table::COL_TOOLBAR
+			],
 			[
-		    	'queue_jobs_id',
-		    	'queue_class',
-				'queue_failed_error',
-				'queue_failed_failed_at',
-				'manage' => [
-					'type'  => Table::COL_TOOLBAR
-				],
-				[
-					'type'  => Table::COL_CHECKBOX
-				]
+				'type'  => Table::COL_CHECKBOX
 			]
-		);
+		]);
 
 		$data = [];
 
@@ -281,6 +279,40 @@ class Queue_mcp {
 
 		return $array['#type'];
 
+	}
+
+	public function flush_queue($type)
+	{
+		$baseUrl = ee('CP/URL')->make('addons/settings/queue/');
+		$this->flushQueueFailed();
+		$this->flushQueueCurrent();
+		ee()->functions->redirect($baseUrl);
+	}
+
+	public function flush_failed($type)
+	{
+		$baseUrl = ee('CP/URL')->make('addons/settings/queue/');
+		$this->flushQueueFailed();
+		$this->flushQueueCurrent();
+		ee()->functions->redirect($baseUrl);
+	}
+
+	private function flushQueueFailed()
+	{
+		$jobs = ee('Model')->get('queue:FailedJob')->all();
+
+		foreach ($jobs as $job) {
+			$job->delete();
+		}
+	}
+
+	private function flushQueueCurrent()
+	{
+		$jobs = ee('Model')->get('queue:Job')->all();
+
+		foreach ($jobs as $job) {
+			$job->delete();
+		}
 	}
 
 }
