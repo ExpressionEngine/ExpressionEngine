@@ -1810,10 +1810,9 @@ class CI_DB_active_record extends CI_DB_driver {
 			}
 		}
 		
-		if (in_array($table, ['member_groups', 'channel_member_groups', 'module_member_groups'])) {
+		if (in_array($table, ['member_groups', 'channel_member_groups', 'module_member_groups', 'layout_publish_member_groups', 'template_member_groups', 'upload_no_access', 'template_no_access', 'status_no_access'])) {
 			$debug_backtrace = debug_backtrace(false);
-			foreach ($debug_backtrace as $trace)
-			{
+			foreach ($debug_backtrace as $trace) {
 				$marker = 'user' . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
 				if (isset($trace['file']) 
 					&& isset($trace['class']) 
