@@ -16,7 +16,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [7.3]
                 os: [ubuntu-18.04]
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -73,4 +73,3 @@ jobs:
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
-
