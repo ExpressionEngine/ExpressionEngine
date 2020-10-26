@@ -268,7 +268,7 @@ class Addons extends CP_Controller {
 			}
 
 			$addon = $this->getExtension($name);
-			$addon = array_merge($addon, $this->getJumpMenu($name));
+			//$addon = array_merge($addon, $this->getJumpMenu($name));
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));

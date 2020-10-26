@@ -465,7 +465,7 @@ class Member_auth extends Member {
 		$protected = ee()->functions->handle_protected();
 
 		// Determine where we need to return to in case of success or error.
-		$return_link = ee()->functions->determine_return();
+		$return_link = ee()->functions->determine_return(true);
 		$return_error_link = ee()->functions->determine_error_return();
 
 		// If they are already logged out then send them away.

@@ -418,12 +418,12 @@ else: ?>
 						<td class="grid-field__column--tools">
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
-								<button type="button" class="button button--small button--default">
-									<a href class="grid-field__column-tool cursor-move js-grid-reorder-handle"><i class="fas fa-fw fa-arrows-alt"></i></a>
+								<button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+									<span class="grid-field__column-tool"><i class="fas fa-fw fa-arrows-alt"></i></span>
 								</button>
 								<?php endif ?>
-								<button type="button" class="button button--small button--default">
-									<a href rel="remove_row" class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></a>
+								<button type="button" rel="remove_row" class="button button--small button--default">
+									<span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
 								</button>
 							</div>
 						</td>

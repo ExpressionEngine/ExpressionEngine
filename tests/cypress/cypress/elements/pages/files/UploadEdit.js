@@ -85,7 +85,7 @@ class UploadEdit extends FileManagerSection {
     }
 
     delete_for_row(row) {
-      return this.grid_row(row).find('td:nth-child(7) a[rel=remove_row]')
+      return this.grid_row(row).find('td:nth-child(7) [rel=remove_row]')
     }
 }
 export default UploadEdit;

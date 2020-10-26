@@ -374,7 +374,7 @@ JSC;
 	 */
 	public function replace_resize($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -398,7 +398,7 @@ JSC;
 	 */
 	public function replace_crop($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -427,7 +427,7 @@ JSC;
 	 */
 	public function replace_resize_crop($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$params['function'] = 'resize_crop';
@@ -472,7 +472,7 @@ JSC;
 	 */
 	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -490,7 +490,7 @@ JSC;
 	 */
 	public function replace_webp($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -578,7 +578,7 @@ JSC;
 				'width' => $props['width'],
 				'height' => $props['height']
 			];
-			return ee()->TMPL->parse_variables_row($tagdata, $vars);
+			return ee()->TMPL->parse_variables($tagdata, [$vars]);
 		}
 	}
 

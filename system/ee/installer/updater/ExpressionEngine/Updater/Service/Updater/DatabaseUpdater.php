@@ -190,7 +190,7 @@ class DatabaseUpdater {
 	protected function getUpdaterClassForFilename($filename)
 	{
 		return '\ExpressionEngine\Updater\Version_'
-		 	. str_replace('.', '_', $this->getVersionForFilename($filename))
+		 	. str_replace(['.', '-'], '_', $this->getVersionForFilename($filename))
 			 . '\Updater';
 	}
 }

@@ -570,7 +570,7 @@ class Login extends CP_Controller {
 				->cannotClose()
 				->now();
 
-			return $this->forgotten_password_form();
+			return $this->index();
 		}
 
 		$member_id = $query->row('member_id');
@@ -637,7 +637,7 @@ class Login extends CP_Controller {
 				->now();
 		}
 
-		$this->forgotten_password_form();
+		$this->index();
 	}
 
 	/**
