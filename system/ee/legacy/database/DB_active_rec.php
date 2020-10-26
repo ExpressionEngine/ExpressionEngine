@@ -1822,7 +1822,7 @@ class CI_DB_active_record extends CI_DB_driver {
 					&& strpos($trace['class'], 'CI_DB_') === false) {
 						$addon_name = explode(DIRECTORY_SEPARATOR, substr($trace['file'], strpos($trace['file'], $marker) + strlen($marker)));
 						$addon = ee('Addon')->get($addon_name[0]);
-						$message = $addon->getName() . ' is making a call to `exp_' . $table . '` database table, which is non-existent in ExpressionEngine 6. If you are site owner, try upgrading ' . $addon->getName() . ' to latest available version. If you are the add-on developer, update your ' . $trace['class'] . ' class to use <a href="https://docs.expressionengine.com/v6/development/v6-addon-migration.html#required-changes">Role model</a>.';
+						$message = $addon->getName() . ' is making a call to `exp_' . $table . '` database table, which is non-existent in ExpressionEngine 6. If you are site owner, try upgrading ' . $addon->getName() . ' to latest available version. If you are the add-on developer, update your ' . $trace['class'] . ' class to use <a href="https://docs.expressionengine.com/v6/development/v6-add-on-migration.html#required-changes">Role model</a>.';
 
 						ee()->load->library('logger');
 						ee()->logger->developer($message, true);
