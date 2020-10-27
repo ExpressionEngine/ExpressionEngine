@@ -199,7 +199,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'url' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getConfigOverriddenProperty('url') ?: 'http://',
+							'value' => $upload_destination->getConfigOverriddenProperty('url') ?: '{base_url}',
 							'required' => TRUE
 						)
 					)
@@ -210,7 +210,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'server_path' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getConfigOverriddenProperty('server_path'),
+							'value' => $upload_destination->getConfigOverriddenProperty('server_path') ?: '{base_path}',
 							'required' => TRUE
 						)
 					)
