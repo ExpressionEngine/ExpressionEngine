@@ -40,7 +40,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
     page.get('wrap').contains('Attention: Upload directory not saved')
     page.hasError(page.get('name'), page.messages.validation.required)
-    page.hasError(page.get('url'), url_error)
+    //page.hasError(page.get('url'), url_error)
     page.hasError(page.get('server_path'), page.messages.validation.required)
 
     // AJAX validation
@@ -72,7 +72,7 @@ context('Upload Destination Create/Edit', () => {
     // Multiple errors for URL
     // Error when just submitting "http://"
     cy.route("POST", "**/files/uploads/**").as("ajax4");
-    page.get('url').trigger('blur')
+    page.get('url').clear().type('http://').trigger('blur')
     cy.wait("@ajax4");
     page.hasErrorsCount(2)
     page.hasError(page.get('url'), url_error)
@@ -253,7 +253,7 @@ context('Upload Destination Create/Edit', () => {
 
     page.get('name').clear().type('Dir')
     page.get('url').clear().type('http://ee3/')
-    page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
+    page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false}).blur()
     page.submit()
 
     const dimension_error = 'A height or width must be entered if no watermark is selected.'

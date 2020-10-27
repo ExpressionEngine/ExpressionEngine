@@ -27,7 +27,7 @@ context('Upload Sync', () => {
     // Create a new upload directory for testing
     new_upload.load()
     new_upload.get('name').type('Dir')
-    new_upload.get('url').type('http://ee/')
+    new_upload.get('url').clear().type('http://ee/')
     cy.task('filesystem:path', upload_path).then((text) => {
       new_upload.get('server_path').type(text)
     })
