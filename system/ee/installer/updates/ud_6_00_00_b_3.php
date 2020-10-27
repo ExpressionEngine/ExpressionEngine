@@ -40,7 +40,7 @@ class Updater
     private function addAllowPhpConfig()
     {
         //any of templates use PHP?
-        $allow_php = 'n';
+        $allow_php = ee('Config')->getFile()->get('allow_php', 'n');
         $query = ee()->db->select('template_id')->where('allow_php', 'y')->get('templates');
         if ($query->num_rows() > 0) {
             $allow_php = 'y';
