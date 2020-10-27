@@ -83,7 +83,7 @@ if ( ! function_exists('ol'))
  */
 if ( ! function_exists('_list'))
 {
-	function _list($type = 'ul', $list, $attributes = '', $depth = 0)
+	function _list($type = 'ul', $list = '', $attributes = '', $depth = 0)
 	{
 		// If an array wasn't submitted there's nothing to do...
 		if ( ! is_array($list))

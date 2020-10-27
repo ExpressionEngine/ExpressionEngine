@@ -55,14 +55,13 @@ tests/rspec/support/file-sync/uploads/*
 tests/rspec/fixtures/vendor/
 tests/rspec/fixtures/composer.lock
 
-tests/cypress/vendor/
-
 system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/ExpressionEngine/Tests/composer.lock
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/composer.lock
 
 tests/cypress/vendor/
+tests/cypress/vendor/*
 cypress.env.json
 
 
