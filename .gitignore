@@ -60,6 +60,8 @@ system/ee/ExpressionEngine/Tests/composer.lock
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/composer.lock
 
+tests/cypress/vendor/
+tests/cypress/vendor/*
 cypress.env.json
 
 
