@@ -16,11 +16,11 @@ context('Templates', () => {
         cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
     })
 
-    beforeEach(function() {
-        cy.authVisit(page.url);
-    })
-
     describe('Creating a template', function() {
+        before(function() {
+            cy.eeConfig({ item: 'allow_php', value: 'y' })
+        })
+        
         beforeEach(function() {
             cy.authVisit(`${createPage.url}/news`)
         })
@@ -102,6 +102,7 @@ context('Templates', () => {
 
     describe('Editing a template', function() {
         beforeEach(function() {
+            cy.auth()
             editPage.load_edit_for_template('11')
         })
 
@@ -208,6 +209,27 @@ context('Templates', () => {
 
             cy.hasNoErrors()
         })
+
+        it('not enabling PHP if not enabled globally', function() {
+            cy.eeConfig({ item: 'allow_php', value: 'n' })
+
+            editPage.load_edit_for_template('11')
+            
+            editPage.get('settings_tab').click()
+            editPage.get('allow_php').should('not.exist')
+
+            cy.get('button').contains('Save').first().click()
+
+            //revering should keep the setting 
+            cy.eeConfig({ item: 'allow_php', value: 'y' })
+            editPage.load_edit_for_template('11')
+
+            editPage.get('settings_tab').click()
+            editPage.get('allow_php').should('have.class', "on")
+            
+        })
+
+
 
     })
 
