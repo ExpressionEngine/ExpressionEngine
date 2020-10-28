@@ -27,7 +27,8 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'addAllowPhpConfig'
+            'addAllowPhpConfig',
+            'modifyPagesColumn'
         ]);
 
         foreach ($steps as $k => $v) {
@@ -46,6 +47,17 @@ class Updater
             $allow_php = 'y';
         }
         ee('Config')->getFile()->set('allow_php', $allow_php, true);
+    }
+    
+    private function modifyPagesColumn()
+    {
+        $mod = ee()->smartforge->modify_column('sites', [
+            'site_pages' => [
+                'name' => 'site_pages',
+                'type' => 'MEDIUMTEXT',
+                'null' => false
+            ]
+        ]);
     }
 }
 

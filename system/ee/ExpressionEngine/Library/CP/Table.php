@@ -141,11 +141,11 @@ class Table {
 		}
 		elseif (isset($_POST['search']))
 		{
-			$defaults['search'] = $_POST['search'];
+			$defaults['search'] = ee('Request')->post('search');
 		}
 		elseif (isset($_GET['search']))
 		{
-			$defaults['search'] = $_GET['search'];
+			$defaults['search'] = ee('Request')->get('search');
 		}
 		else
 		{
@@ -157,14 +157,19 @@ class Table {
 			$defaults['sort_col'] = $_GET[$sort_col];
 		}
 
-		if (isset($_GET[$sort_dir]))
+		if (isset($_GET[$sort_dir]) && in_array(ee('Request')->get($sort_dir), ['asc', 'desc']))
 		{
-			$defaults['sort_dir'] = $_GET[$sort_dir];
+			$defaults['sort_dir'] = ee('Request')->get($sort_dir);
 		}
 
-		if (isset($_GET['page']) && $_GET['page'] > 0)
+		if (isset($_GET['page']) && ee('Request')->get('page') > 0)
 		{
-			$defaults['page'] = $_GET['page'];
+			$defaults['page'] = (int) ee('Request')->get('page');
+		}
+
+		if (isset($_GET['perpage']) && ee('Request')->get('perpage') > 0)
+		{
+			$defaults['limit'] = (int) ee('Request')->get('perpage');
 		}
 
 		$defaults = array_map(function($value) {
