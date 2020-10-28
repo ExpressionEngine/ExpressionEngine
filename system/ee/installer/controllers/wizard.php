@@ -468,6 +468,7 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        ee()->functions->clear_caching('all');
 
         foreach (ee('Model')->get('Channel')->all() as $channel)
         {
