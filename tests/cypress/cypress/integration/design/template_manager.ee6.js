@@ -13,6 +13,7 @@ context('Template Manager', () => {
     before(function() {
         cy.task('db:seed')
         cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+        cy.eeConfig({ item: 'allow_php', value: 'n' })
     })
 
     beforeEach(function() {

@@ -213,6 +213,7 @@ context('Templates', () => {
         it('not enabling PHP if not enabled globally', function() {
             cy.eeConfig({ item: 'allow_php', value: 'n' }).then((config) => {
 
+                cy.auth();
                 editPage.load_edit_for_template('11')
                 
                 editPage.get('settings_tab').click()
@@ -222,6 +223,7 @@ context('Templates', () => {
 
                 //revering should keep the setting 
                 cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
+                    cy.auth();
                     editPage.load_edit_for_template('11')
 
                     editPage.get('settings_tab').click()
