@@ -184,7 +184,7 @@ class File_upload_preferences_model extends CI_Model
 		// There are no permission checks- I don't really think there should be
 
 		$this->db->where_in('upload_id', $ids);
-		$this->db->delete('upload_no_access');
+		$this->db->delete('upload_prefs_roles');
 
 		// get the name we're going to delete so that we can return it when we're done
 		$this->db->select('name');

@@ -147,14 +147,7 @@ class Member_group_model extends CI_Model
 	 */
 	private function _update_uploads($group_id, $site_id)
 	{
-		$uploads = $this->db->query("SELECT exp_upload_prefs.id FROM exp_upload_prefs WHERE site_id = '".$this->db->escape_str($site_id)."'");
-		if ($uploads->num_rows() > 0)
-		{
-			foreach($uploads->result_array() as $upload)
-			{
-				$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
-			}
-		}
+		return "deprecated";
 	}
 
 	/**

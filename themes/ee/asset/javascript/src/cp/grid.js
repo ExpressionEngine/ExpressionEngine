@@ -254,7 +254,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
 		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
-		$(this.reorderHandleContainerSelector, this.rowContainer).parent().toggleClass('sort-cancel', rowCount == 1);
 
 		// Inside File Grid? Hide Grid completely if there are no rows
 		if (this.isFileGrid) {
