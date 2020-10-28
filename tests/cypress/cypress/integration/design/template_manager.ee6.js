@@ -194,6 +194,7 @@ context('Template Manager', () => {
 
             cy.eeConfig({ item: 'allow_php', value: 'y' }).then((config) => {
 
+                cy.authVisit(page.url);
                 cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
 
                 cy.get('button').contains('Settings').first().click()
