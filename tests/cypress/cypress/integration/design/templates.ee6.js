@@ -213,23 +213,31 @@ context('Templates', () => {
         it('not enabling PHP if not enabled globally', function() {
             cy.eeConfig({ item: 'allow_php', value: 'n' }).then((config) => {
 
-                cy.auth();
-                editPage.load_edit_for_template('11')
-                
-                editPage.get('settings_tab').click()
-                editPage.get('allow_php').should('not.exist')
-
-                cy.get('button').contains('Save').first().click()
-
-                //reverting should keep the setting 
-                cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
+                cy.eeConfig({ item: 'allow_php' }).then((config2) => {
                     cy.auth();
-                    cy.wait(1000)
                     editPage.load_edit_for_template('11')
-
+                    
                     editPage.get('settings_tab').click()
-                    editPage.get('allow_php').should('have.class', "on")
+                    editPage.get('allow_php').should('not.exist')
+
+                    cy.get('button').contains('Save').first().click()
+
+                    //reverting should keep the setting 
+                    cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
+                        //cy.log(conf)
+                        cy.eeConfig({ item: 'allow_php' }).then((config3) => {
+                            cy.auth();
+                            cy.wait(1000)
+                            editPage.load_edit_for_template('11')
+                            //cy.log(conf)
+
+                            editPage.get('settings_tab').click()
+                            editPage.get('allow_php').should('have.class', "on")
+                        })
+                        
+                    })
                 })
+                
             })
             
         })
