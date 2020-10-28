@@ -62,7 +62,10 @@
     <h3><?=$title?></h3>
   </div>
   <div class="panel-body">
-  	<div class="updater-working">
+    <div class="progress-bar" style="margin-bottom: 20px;">
+    <div class="progress"></div>
+    </div>
+    <div class="updater-working">
   		<div class="updater-load"></div>
 
   		<ul class="updater-steps">
