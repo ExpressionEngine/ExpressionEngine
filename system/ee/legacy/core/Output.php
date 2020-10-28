@@ -654,7 +654,7 @@ class EE_Output {
 	 * @param	string
 	 * @return	void
 	 */
-	function show_user_error($type = 'submission', $errors, $heading = '', $redirect_url = '')
+	function show_user_error($type = 'submission', $errors = '', $heading = '', $redirect_url = '')
 	{
 		// If we have a redirect URL, use that instead of outputting the standard error page.
 		if (! empty($redirect_url))

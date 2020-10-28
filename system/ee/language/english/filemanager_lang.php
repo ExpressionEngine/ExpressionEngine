@@ -418,7 +418,7 @@ $lang = array(
 
 'upload_path' => 'Upload path',
 
-'upload_path_desc' => 'Full path location of this <code>upload</code> directory.',
+'upload_path_desc' => 'Absolute path to your directory. We recommend using <code>{base_path}your_upload_directory</code>.',
 
 'upload_privileges' => 'Upload Privileges',
 
@@ -428,7 +428,7 @@ $lang = array(
 
 'upload_url' => 'Upload directory',
 
-'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <code>upload</code> directory.',
+'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this directory. We recommend using <code>{base_url}your_upload_directory</code>',
 
 'vertical' => 'vertical',
 
