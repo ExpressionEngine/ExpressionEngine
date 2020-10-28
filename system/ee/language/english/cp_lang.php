@@ -325,7 +325,7 @@ $lang = array(
 
 'search_in_filter' => 'search in',
 
-'columns_filter' => 'Columns',
+'columns_filter' => 'columns',
 
 'perpage_filter' => 'show',
 
