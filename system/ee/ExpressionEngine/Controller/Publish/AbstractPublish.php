@@ -319,6 +319,9 @@ abstract class AbstractPublish extends CP_Controller {
 		// Get all the fields that should be in the DOM. Any that were not
 		// POSTed will be set to NULL. This addresses a bug where browsers
 		// do not POST unchecked checkboxes.
+		$category_fields = [];
+		$category_fields_hidden = [];
+
 		foreach ($layout->getTabs() as $tab)
 		{
 			// Invisible tabs were not rendered
@@ -327,15 +330,21 @@ abstract class AbstractPublish extends CP_Controller {
 				foreach ($tab->getFields() as $field)
 				{
 					// Fields that were not required and not visible were not rendered
-					if ( ! $field->isRequired() && ! $field->isVisible())
-					{
+					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
+
+					//categories need special treatment
+					if ($field_name == 'categories') {
+						$category_fields[] = $field->getName();
+						if (!$field->isVisible()) {
+							$category_fields_hidden[] = $field->getName();
+						}
+					}
+
+					if ( ! $field->isRequired() && ! $field->isVisible()) {
 						continue;
 					}
 
-					$field_name = strstr($field->getName(), '[', TRUE) ?: $field->getName();
-
-					if ( ! array_key_exists($field_name, $_POST))
-					{
+					if ( ! array_key_exists($field_name, $_POST)) {
 						$_POST[$field_name] = NULL;
 					}
 
@@ -346,6 +355,15 @@ abstract class AbstractPublish extends CP_Controller {
 		if ( ! ee('Permission')->can('assign_post_authors'))
 		{
 			unset($_POST['author_id']);
+		}
+
+		//workaround if some category groups are hidden and some are displayed
+		if (count($category_fields_hidden) != 0 && count($category_fields_hidden) != count($category_fields)) {
+			foreach ($category_fields_hidden as $fieldname) {
+				$cat_group_name = trim(strstr($fieldname, '['), '[]');
+				$cat_group_id = str_replace('cat_group_id_', '', $cat_group_name);
+				$_POST['categories'][$cat_group_name] = $entry->Categories->filter('group_id', $cat_group_id)->pluck('cat_id');
+			}
 		}
 
 		$entry->set($_POST);
@@ -538,7 +556,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'text'    => 'preview',
 				'class'   => 'action' . $extra_class,
 				'attrs'   => 'rel="live-preview" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 			$buttons[] = [
@@ -549,7 +566,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'html'		=> '<i class="app-notice__icon"></i> ',
 				'class'   => 'action',
 				'attrs'   => 'rel="live-preview-setup" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		}
 

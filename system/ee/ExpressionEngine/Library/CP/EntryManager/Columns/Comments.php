@@ -26,9 +26,18 @@ class Comments extends Column
 	{
 		if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments'))
 		{
-			return '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+			return [
+				'encode' => false,
+				'content' =>'(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)'
+			];
 		}
 
 		return '(' . (int) $entry->comment_total . ')';
+	}
+
+	public function getTableColumnConfig() {
+		return [
+			'encode'	=> false
+		];
 	}
 }

@@ -8,9 +8,15 @@
 					<div class="dropdown__divider"></div>
 					<div class="dropdown__header"><?=lang('sites')?></div>
 
-					<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
+					<?php 
+					if (!empty($cp_main_menu['sites'])) :
+					foreach ($cp_main_menu['sites'] as $site_name => $link): 
+					?>
 						<a class="dropdown__link" href="<?=$link?>"><?=$site_name?></a>
-					<?php endforeach ?>
+					<?php endforeach; ?>
+					<div class="dropdown__divider"></div>
+					<?php endif; ?>
+					<a class="dropdown__link" href="<?=ee('CP/URL', 'msm/create')?>"><i class="fas fa-plus"></i> <?=lang('add_site')?></a>
 				</div>
 				<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
 					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>"><i class="fas fa-cog"></i> <?=lang('name_your_site')?></a>
@@ -73,7 +79,7 @@
             <?php
 							$version_class = '';
 							$update_available = isset(ee()->view->new_version);
-							$vital_update = $update_available && $new_version['security'];
+							$vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
 
 							if ( ! empty($version_identifier))
 							{

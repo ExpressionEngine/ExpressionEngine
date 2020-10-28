@@ -11,7 +11,7 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('PATH_CACHE', SYSPATH.'user/cache/');
 define('APPPATH',  BASEPATH);
-define('APP_VER',  '4.0.0');
+define('APP_VER',  '6.0.0');
 define('PATH_THEMES', realpath(SYSPATH.'/../themes').'/');
 define('DOC_URL', 'http://our.doc.url/');
 
@@ -22,7 +22,7 @@ define('EESELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 
-$constants = require '../ExpressionEngine/Config/constants.php';
+$constants = require '../Config/constants.php';
 
 foreach ($constants as $name => $val)
 {
@@ -31,9 +31,6 @@ foreach ($constants as $name => $val)
 
 // Minor CI annoyance
 function log_message() {}
-
-// Add hamcrest matchers
-require_once __DIR__ . '/vendor/hamcrest/hamcrest-php/hamcrest/Hamcrest.php';
 
 // add the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';

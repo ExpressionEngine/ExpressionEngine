@@ -3599,7 +3599,7 @@ class EE_Template {
 		$last_time = isset($last['time']) ? $last['time'] : 0;
 		$time_gain = $time - $last_time;
 		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
-		$memory_gain = $memory_usage - $last['memory'];
+		$memory_gain = $memory_usage - $last_memory;
 
 		$this->log[] = array(
 			'time' => $time,

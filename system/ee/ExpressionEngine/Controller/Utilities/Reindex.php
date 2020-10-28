@@ -231,6 +231,10 @@ class Reindex extends Utilities {
 
 		ee()->view->cp_page_title = lang('search_reindex');
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('search_reindex')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

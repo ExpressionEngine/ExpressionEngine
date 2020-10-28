@@ -143,9 +143,8 @@ class View {
 		}
 
 		$buffer = ob_get_contents();
-		if ($buffer) {
-			ob_end_clean();
-		}
+
+		ob_end_clean();
 
 		return $buffer;
 	}
@@ -160,14 +159,18 @@ class View {
 	 */
 	public function embed($view, $vars = array(), $disable = array())
 	{
+		if (empty($vars)) {
+			$vars = array();
+		}
+
 		$vars = array_merge($this->processing, $vars);
 		$view = $this->make($view)->disable($disable);
 
 		ob_start();
 		echo $view->render($vars);
-		if (ob_get_length()){
-			ob_end_flush();
-		}
+
+		ob_end_flush();
+
 	}
 
 	/**

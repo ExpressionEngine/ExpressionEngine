@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class BackupTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->query = Mockery::mock('ExpressionEngine\Service\Database\Backup\Query');
@@ -17,11 +17,13 @@ class BackupTest extends TestCase {
 		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql', 0);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->filesystem = NULL;
 		$this->query = NULL;
 		$this->backup = NULL;
+
+		Mockery::close();
 	}
 
 	public function testConservativeInserts()
@@ -88,5 +90,6 @@ class BackupTest extends TestCase {
 
 		$returned = $this->backup->writeTableInsertsConservatively('table4', 5);
 		$this->assertEquals(FALSE, $returned);
+
 	}
 }

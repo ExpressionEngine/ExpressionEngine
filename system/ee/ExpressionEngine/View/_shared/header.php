@@ -19,8 +19,8 @@
 		}
 		?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" id="top">
-		<script>
+	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
+		<script type="text/javascript">
 		var currentTheme = localStorage.getItem('theme');
 
 		// Restore the currently selected theme
@@ -59,6 +59,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
+					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>""><i class="fas fa-home"></i></a></li>
 						<?php
 						$i = 0;
 						foreach ($cp_breadcrumbs as $link => $title):
@@ -97,14 +98,13 @@ $current_page = ee()->uri->segment(2);
       				</div>
 
       				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><i class="fas fa-user fa-fw"></i> <?=lang('my_profile')?></a>
-      				<a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><i class="fas fa-sign-out-alt fa-fw"></i> <?=lang('log_out')?></a>
+              <a class="dropdown__link js-dark-theme-toggle" href=""><i class="fas fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
 
       				<div class="dropdown__divider"></div>
 
-      				<a class="dropdown__link js-jump-menu-trigger" href=""><i class="fas fa-bullseye fa-fw"></i> <?= lang('jump_menu_item') ?> <span class="dropdown__link-shortcut"><span class="jump-trigger"></span>J</span></a>
-      				<a class="dropdown__link js-dark-theme-toggle" href=""><i class="fas fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
+              <a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><i class="fas fa-sign-out-alt fa-fw"></i> <?=lang('log_out')?></a>
 
-      				<div class="dropdown__divider"></div>
+              <div class="dropdown__divider"></div>
 
       				<h3 class="dropdown__header"><?=lang('quick_links')?></h3>
       				<?php foreach($cp_quicklinks as $link): ?>

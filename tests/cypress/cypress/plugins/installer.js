@@ -56,7 +56,7 @@ class Installer {
 		}
 
 		fse.copySync(path.resolve(file), path.resolve(config));
-		fs.chmodSync(path.resolve(config), 666);
+		//fs.chmodSync(path.resolve(config), 666);
 
 		let config_contents = fs.readFileSync(path.resolve(config), "utf8");
 
@@ -100,8 +100,11 @@ class Installer {
 	}
 
 	create_config() {
+		if (fs.existsSync(config)) {
+			fs.unlinkSync(config)
+		}
 		fs.writeFileSync(path.resolve(config), '');
-		fs.chmodSync(path.resolve(config), 666);
+		//fs.chmodSync(path.resolve(config), 666);
 		return path.resolve(config)
 	}
 
@@ -121,7 +124,7 @@ class Installer {
 
 	delete_database_config() {
 		if (fs.existsSync(database)) {
-			fs.chmodSync(database, 666);
+			//fs.chmodSync(database, 666);
 			fs.unlinkSync(database)
 		}
 		return true
@@ -141,7 +144,7 @@ class Installer {
 			fse.copySync(path.resolve(file), path.resolve(database));
 		}
 		if (fs.existsSync(database)) {
-			fs.chmodSync(database, 666);
+			//fs.chmodSync(database, 666);
 		}
 
 		// Replace important values

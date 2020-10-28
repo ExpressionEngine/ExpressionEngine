@@ -162,6 +162,10 @@ class Extensions extends Utilities {
 			);
 		}
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('manage_extensions')
+		);
+
 		ee()->cp->render('utilities/extensions', $vars);
 	}
 

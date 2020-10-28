@@ -108,7 +108,7 @@
 
 			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
 		});
-		$('.modal-file').on('click', '.tbl-action .action', function(e) {
+		$('.modal-file').on('click', '.tbl-action .action, .tbl-action a.button', function(e) {
 			e.preventDefault()
 			openInIframe($(this).attr('href'))
 		});
@@ -141,6 +141,7 @@
 			}
 
 			frame.load(function (e) {
+				
 				$(modal).off('modal:close', cancelOnClose);
 
 				var response = $(this).contents().find('body');
@@ -171,9 +172,9 @@
 						$(modal).on('modal:close', cancelOnClose);
 					}
 
-					var height = $(this).contents().find('body').height();
+					var height = this.contentWindow.document.body.scrollHeight;
 					$('.box', modal).height(height);
-					$(this).height(height);
+					$(this).height(height + 20);
 				}
 			});
 

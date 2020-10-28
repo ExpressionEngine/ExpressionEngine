@@ -46,6 +46,12 @@ class Uploads extends AbstractFilesController {
 
 		$this->stdHeader();
 		$this->generateSidebar(NULL);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			'' => lang('new_directory')
+		);
+
 		return $this->form();
 	}
 
@@ -64,6 +70,13 @@ class Uploads extends AbstractFilesController {
 
 		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			//ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+			'' => lang('edit_upload_directory')
+		);
+
 		return $this->form($upload_id);
 	}
 
@@ -186,7 +199,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'url' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getConfigOverriddenProperty('url') ?: 'http://',
+							'value' => $upload_destination->getConfigOverriddenProperty('url') ?: '{base_url}',
 							'required' => TRUE
 						)
 					)
@@ -197,7 +210,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'server_path' => array(
 							'type' => 'text',
-							'value' => $upload_destination->getConfigOverriddenProperty('server_path'),
+							'value' => $upload_destination->getConfigOverriddenProperty('server_path') ?: '{base_path}',
 							'required' => TRUE
 						)
 					)
@@ -362,8 +375,6 @@ class Uploads extends AbstractFilesController {
 				'working' => 'btn_saving'
 			]
 		];
-
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -812,7 +823,12 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('files')->compile() => lang('files'),
+			ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+			'' => lang('sync_title')
+		);
+
 
 		// Errors are given through a POST to this same page
 		$errors = ee()->input->post('errors');

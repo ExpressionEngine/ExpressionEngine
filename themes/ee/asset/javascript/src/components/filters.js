@@ -99,7 +99,7 @@ function FilterSearch(props) {
     className: "search-input"
   }, React.createElement("input", {
     type: "text",
-    className: "search-input__input input-small",
+    className: "search-input__input input--small",
     placeholder: EE.lang.keyword_search,
     onChange: props.onSearch
   })));

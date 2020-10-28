@@ -87,7 +87,7 @@ class TreeNodeTest extends TestCase {
 
 	public function testPropertySetWithoutDataArrayError()
 	{
-		$this->setExpectedException('\InvalidArgumentException');
+		$this->expectException('InvalidArgumentException');
 		$node = new TreeNode('test');
 		$node->key = 'value';
 	}
@@ -95,7 +95,7 @@ class TreeNodeTest extends TestCase {
 
 	public function testAttemptToGetInvalidData()
 	{
-		$this->setExpectedException('\InvalidArgumentException');
+		$this->expectException('InvalidArgumentException');
 		$node = new TreeNode('test');
 		$test = $node->key;
 	}
@@ -115,7 +115,7 @@ class TreeNodeTest extends TestCase {
 
 	public function testFreeze()
 	{
-		$this->setExpectedException('\RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$node = new TreeNode('test');
 		$node->data = array('key' => 'value');
@@ -140,6 +140,7 @@ class TreeNodeTest extends TestCase {
 
 	public function testAdd()
 	{
+		$this->markTestIncomplete('This test has not been implemented yet.');
 		$parent = new TreeNode('parent');
 		$child1 = new TreeNode('child1');
 		$child2 = new TreeNode('child2');
@@ -150,12 +151,12 @@ class TreeNodeTest extends TestCase {
 
 	public function testIsRoot()
 	{
-
+		$this->markTestIncomplete('This test has not been implemented yet.');
 	}
 
 	public function testIsLeaf()
 	{
-
+		$this->markTestIncomplete('This test has not been implemented yet.');
 	}
 
 	/**

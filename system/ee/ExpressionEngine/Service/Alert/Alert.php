@@ -129,9 +129,10 @@ class Alert {
 	 * @param string|array $item The item to display. If it's an array it will
 	 *  be rendred as a list.
 	 * @param string $class An optional CSS class to add to the item
+	 * @param string $xss_filter Apply XSS filtering to the message
 	 * @return self This returns a reference to itself
 	 */
-	public function addToBody($item, $class = NULL)
+	public function addToBody($item, $class = NULL, $xss_filter = true)
 	{
 		if ($class)
 		{
@@ -150,13 +151,13 @@ class Alert {
 			$this->body .= '<ul>';
 			foreach ($item as $i)
 			{
-				$this->body .= '<li>' . $i . '</li>';
+				$this->body .= '<li>' . ($xss_filter ? ee('Security/XSS')->clean($i) : $i) . '</li>';
 			}
 			$this->body .= '</ul>';
 		}
 		else
 		{
-			$this->body .= '<p' . $class . '>' . $item . '</p>';
+			$this->body .= '<p' . $class . '>' . ($xss_filter ? ee('Security/XSS')->clean($item) : $item) . '</p>';
 		}
 		return $this;
 	}
@@ -264,7 +265,7 @@ class Alert {
 	 */
 	public function withTitle($title)
 	{
-		$this->title = $title;
+		$this->title = ee('Security/XSS')->clean($title);
 		return $this;
 	}
 

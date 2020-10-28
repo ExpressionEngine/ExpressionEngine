@@ -252,6 +252,9 @@ class EE_Exceptions {
 			$message = str_replace(["&lt;{$tag}&gt;", "&lt;/{$tag}&gt;"], ["<{$tag}>", "</{$tag}>"], $message);
 		}
 
+		//allow links to docs
+		$message = preg_replace('/&lt;a href=&quot;https:\/\/docs\.expressionengine\.com(.*)&quot;&gt;(.*)&lt;\/a&gt;/i', '<a href="https://docs.expressionengine.com${1}">${2}</a>', $message);
+
 		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());
 		$partial_path = substr($syspath, 0, 15);

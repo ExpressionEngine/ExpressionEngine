@@ -210,16 +210,35 @@ class Fields extends Members\Members {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('custom_profile_fields');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('custom_member_fields')
+		);
+
 		ee()->cp->render('members/custom_profile_fields', $data);
 	}
 
 	public function create()
 	{
+		
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+			'' => lang('create_member_field')
+		);
+		
 		$this->form();
 	}
 
 	public function edit($id)
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+			'' => lang('edit_member_field')
+		);
+		
 		$this->form($id);
 	}
 
@@ -491,7 +510,6 @@ class Fields extends Members\Members {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
 		ee()->javascript->output('$(document).ready(function () {
 			EE.cp.fieldToggleDisable(null, "m_field_type");

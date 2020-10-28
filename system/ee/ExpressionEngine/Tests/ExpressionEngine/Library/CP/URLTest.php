@@ -32,12 +32,27 @@ class URLTest extends TestCase {
 	}
 
 	/**
+	 * @requires PHP 7.3
 	 * @dataProvider exceptionalDataProvider
-	 * @expectedException PHPUnit_Framework_Error
 	 */
 	public function testExceptions($path, $session_id, $qs, $exception)
 	{
-        $this->setExpectedException($exception);
+		if (version_compare(PHP_VERSION, '7.4', '<')) {
+			$this->expectException($exception);
+
+			new URL($path, $session_id, $qs);
+		} else {
+			$this->markTestSkipped('PHP 7.4 variation of this test will be used instead.');
+		}
+	}
+
+	/**
+	 * @requires PHP 7.4
+	 * @dataProvider exceptionalDataProvider74
+	 */
+	public function testExceptions74($path, $session_id, $qs, $exception)
+	{
+		$this->expectException($exception);
 
 		new URL($path, $session_id, $qs);
 	}
@@ -57,11 +72,22 @@ class URLTest extends TestCase {
 	public function exceptionalDataProvider()
 	{
 		return array(
-			array(array('foo'), '', '', 'InvalidArgumentException'),
-			array(new \StdClass(), '', '', 'PHPUnit_Framework_Error'),
-			array('foo', array('foo'), '', 'InvalidArgumentException'),
-			array('foo', new \StdClass(), '', 'PHPUnit_Framework_Error'),
-			array('foo', '', new \StdClass(), 'PHPUnit_Framework_Error'),
+			array(array('foo'), '', '', '\InvalidArgumentException'),
+			array(new \StdClass(), '', '', '\PHPUnit\Framework\Error\Error'),
+			array('foo', array('foo'), '', '\InvalidArgumentException'),
+			array('foo', new \StdClass(), '', '\PHPUnit\Framework\Error\Error'),
+			array('foo', '', new \StdClass(), '\PHPUnit\Framework\Error\Error'),
+		);
+	}
+
+	public function exceptionalDataProvider74()
+	{
+		return array(
+			array(array('foo'), '', '', '\InvalidArgumentException'),
+			array(new \StdClass(), '', '', '\Error'),
+			array('foo', array('foo'), '', '\InvalidArgumentException'),
+			array('foo', new \StdClass(), '', '\Error'),
+			array('foo', '', new \StdClass(), '\Error'),
 		);
 	}
 

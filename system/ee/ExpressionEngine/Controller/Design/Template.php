@@ -184,6 +184,12 @@ class Template extends AbstractDesignController {
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_new_template');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			ee('CP/URL')->make('design/manager/' . $group_name)->compile() => $group->group_name,
+			'' => lang('create_new_template')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -332,8 +338,9 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = $group->group_name . '/' . $template->template_name;
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
-			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => $group->group_name,
+			'' => lang('edit_template_title')
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -591,6 +598,11 @@ class Template extends AbstractDesignController {
 		$this->generateSidebar();
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('search_results')
+		);
 
 		ee()->cp->render('design/index', $vars);
 	}
@@ -1118,10 +1130,12 @@ class Template extends AbstractDesignController {
 				->with('Site')
 				->first();
 
-			$results[$template->getId()] = [
-				'label' => $template->getPath(),
-				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
-			];
+			if (!empty($template)) {
+				$results[$template->getId()] = [
+					'label' => $template->getPath(),
+					'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+				];
+			}
 		}
 
 		return $results;

@@ -10,8 +10,6 @@
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 
-			<?=ee('CP/Alert')->get('toolsets-form')?>
-
 			<?php $this->embed('ee:_shared/table', $table); ?>
 
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [

@@ -118,6 +118,10 @@ class Email extends Logs {
 			'form_url' => $this->base_url->compile(),
 		);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('view_email_logs')
+		);
+
 		ee()->cp->render('logs/email/list', $vars);
 	}
 
@@ -145,7 +149,8 @@ class Email extends Logs {
 
 		ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('logs/email')->compile() => lang('view_email_logs')
+			ee('CP/URL')->make('logs/email')->compile() => lang('view_email_logs'),
+			'' => lang('view')
 		);
 		ee()->view->email = $email;
 		ee()->cp->render('logs/email/detail');

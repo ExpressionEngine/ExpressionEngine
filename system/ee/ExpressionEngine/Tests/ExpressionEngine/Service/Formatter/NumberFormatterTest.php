@@ -18,12 +18,19 @@ require_once __DIR__.'/../../../../../ExpressionEngine/Boot/boot.common.php';
 
 class NumberFormatterTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->lang = m::mock('EE_Lang');
 		$this->sess = m::mock('EE_Session');
 
 		$this->lang->shouldReceive('load');
+	}
+
+	public function tearDown() : void
+	{
+		$this->factory = NULL;
+
+		m::close();
 	}
 
 	/**
@@ -85,11 +92,12 @@ class NumberFormatterTest extends TestCase {
 
 		$number = (string) $this->format($content, $opts)->currency($params);
 		$this->assertEquals($expected, $number);
+
 	}
 
 	public function currencyProvider()
 	{
-		return [
+		$currency = [
 			// with intl extension
 			[112358.13, NULL, NULL, '$112,358.13', 0b00000001],
 			[112358.13, NULL, NULL, '$112,358', 0b00000001, 0],
@@ -100,8 +108,9 @@ class NumberFormatterTest extends TestCase {
 			[112358.13, 'RUR', 'ru', '112 358,13 р.', 0b00000001],
 			[112358.13, 'UAH', 'uk', '112 358,13 ₴', 0b00000001],
 			[112358.13, 'UAH', 'en', (defined('INTL_ICU_VERSION') && version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH 112,358.13' : '₴1,234,567.89'), 0b00000001],
-			['fake', NULL, NULL, '$0.00', 0b00000001],
-
+			['fake', NULL, NULL, '$0.00', 0b00000001]
+		];
+		$no_intl = [
 			// no intl extension
 			[112358.13, NULL, NULL, '$112,358.13', 0],
 			[112358.13, NULL, NULL, '$112,358', 0, 0],
@@ -114,6 +123,10 @@ class NumberFormatterTest extends TestCase {
 			[112358.13, 'UAH', 'en', '112358.13', 0],
 			['fake', NULL, NULL, '$0.00', 0],
 		];
+		if (PHP_OS!="WINNT") {
+			$currency = array_merge($currency, $no_intl);
+		}
+		return $currency;
 	}
 
 	/**
@@ -123,6 +136,7 @@ class NumberFormatterTest extends TestCase {
 	{
 		$val = (string) $this->format($content, $opts)->duration();
 		$this->assertEquals($expected, $val);
+
 	}
 
 	public function durationProvider()
@@ -158,6 +172,7 @@ class NumberFormatterTest extends TestCase {
 
 		$number = (string) $this->format($content)->number_format($params);
 		$this->assertEquals($expected, $number);
+
 	}
 
 	public function numberFormatProvider()
@@ -178,6 +193,7 @@ class NumberFormatterTest extends TestCase {
 	{
 		$number = (string) $this->format($content, $opts)->ordinal(['locale' => $locale]);
 		$this->assertEquals($expected, $number);
+
 	}
 
 	public function ordinalProvider()
@@ -187,7 +203,7 @@ class NumberFormatterTest extends TestCase {
 			// with intl extension
 			[11235813, NULL, '11,235,813th', 0b00000001],
 			[11235813, 'de', '11.235.813.', 0b00000001],
-			[11235813, 'fr', '11 235 813e', 0b00000001],
+			[11235813, 'fr', "11"."\u{202F}"."235"."\u{202F}"."813e", 0b00000001],
 			['fake', NULL, '0th', 0b00000001],
 
 			// no intl extension
@@ -210,20 +226,13 @@ class NumberFormatterTest extends TestCase {
 
 		$number = (string) $this->format(11234813)->spellout($params);
 		$this->assertEquals($expected, $number);
+
 	}
 
 	public function testSpelloutNoIntl()
 	{
-		try
-		{
-			$number = (string) $this->format(11234813, 0)->spellout();
-		}
-		catch (\Exception  $e)
-		{
-			return;
-		}
-
-		$this->fail('Exception was not raised');
+		$this->expectException(\Exception::class);
+		$number = (string) $this->format(11234813, 0)->spellout();
 	}
 
 	public function spelloutProvider()
@@ -235,10 +244,6 @@ class NumberFormatterTest extends TestCase {
 			['de', NULL, 'elf Millionen zwei­hundert­vier­und­dreißig­tausend­acht­hundert­dreizehn'],
 			['fr', NULL, 'onze millions deux cent trente-quatre mille huit cent treize'],
 		];
-	}
-	public function tearDown()
-	{
-		$this->factory = NULL;
 	}
 
 	public function format($content, $options = 0b00000001)

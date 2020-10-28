@@ -46,9 +46,11 @@ class Columns extends Filter {
 			$value = parent::value();
 		}
 
+		$channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
+
 		$query = ee('Model')->get('EntryManagerView')
 			->filter('member_id', ee()->session->userdata('member_id'))
-			->filter('channel_id', (int) ee()->input->get_post('filter_by_channel'));
+			->filter('channel_id', $channel_id);
 		$view = $query->first();
 
 		if (!empty($view)) {

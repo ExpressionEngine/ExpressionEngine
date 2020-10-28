@@ -49,6 +49,10 @@ class DebugTools extends Utilities
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
+        ee()->view->cp_breadcrumbs = array(
+            '' => lang('debug_tools')
+        );
+
         return ee()->cp->render('utilities/debug-tools/index', $vars);
     }
 
@@ -112,6 +116,11 @@ class DebugTools extends Utilities
             ->perPage($vars['table']['limit'])
             ->render($base_url);
 
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
+            '' => lang('debug_tools_debug_tags')
+        );
+
         return ee()->cp->render('utilities/debug-tools/show_tags', $vars);
     }
 
@@ -126,6 +135,11 @@ class DebugTools extends Utilities
         $vars['unused_fieldtypes'] = $ftAdvisor->getUnusedFieldtypes();
         $vars['missing_fieldtypes'] = $ftAdvisor->getMissingFieldtypes();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
+            '' => lang('debug_tools_fieldtypes')
+        );
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
     }

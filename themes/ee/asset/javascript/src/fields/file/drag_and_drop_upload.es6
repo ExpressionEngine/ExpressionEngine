@@ -297,7 +297,7 @@ class DragAndDropUpload extends React.Component {
 
     let subheading = this.state.directory == 'all'
       ? EE.lang.file_dnd_choose_directory
-      : EE.lang.file_dnd_upload_to
+      : EE.lang.file_dnd_upload_to + ' '
 
     if (this.state.pendingFiles) {
       heading = EE.lang.file_dnd_choose_file_directory
@@ -312,7 +312,10 @@ class DragAndDropUpload extends React.Component {
           {this.state.files.length == 0 && <>
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
-                {subheading}:&nbsp;
+                {subheading}
+                {this.state.directory == 'all' && ':'}
+                {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
+                &nbsp;
                 {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
                         action={this.state.directory == 'all'}

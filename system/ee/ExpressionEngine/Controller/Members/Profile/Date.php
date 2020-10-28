@@ -36,7 +36,7 @@ class Date extends Settings {
 					'fields' => array(
 						'site_default' => array(
 							'type' => 'yes_no',
-							'value' => (empty($this->member->timezone)) ? 'y' : 'n',
+							'value' => (empty($this->member->timezone) && empty($this->member->date_format)) ? 'y' : 'n',
 							'group_toggle' => array(
 								'n' => 'localize'
 							)
@@ -150,6 +150,11 @@ class Date extends Settings {
 		ee()->view->cp_page_title = lang('date_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('date_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }

@@ -19,12 +19,12 @@ else
 {
 	if ( ! defined('BASEPATH'))
 	{
-		define('BASEPATH', SYSPATH.'ee/legacy/');
-		define('PATH_CACHE',  SYSPATH . 'user/cache/');
-		define('FILE_READ_MODE', 0644);
-		define('FILE_WRITE_MODE', 0666);
-		define('DIR_READ_MODE', 0755);
-		define('DIR_WRITE_MODE', 0777);
+		defined('BASEPATH') || define('BASEPATH', SYSPATH.'ee/legacy/');
+		defined('PATH_CACHE') || define('PATH_CACHE',  SYSPATH . 'user/cache/');
+		defined('FILE_READ_MODE') || define('FILE_READ_MODE', 0644);
+		defined('FILE_WRITE_MODE') || define('FILE_WRITE_MODE', 0666);
+		defined('DIR_READ_MODE') || define('DIR_READ_MODE', 0755);
+		defined('DIR_WRITE_MODE') || define('DIR_WRITE_MODE', 0777);
 
 		require __DIR__.'/ExpressionEngine/Updater/Boot/boot.common.php';
 	}
@@ -34,9 +34,7 @@ else
 $constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
 
 foreach ($constants as $k => $v) {
-	if ( ! defined($k)) {
-		define($k, $v);
-	}
+	defined($k) || define($k, $v);
 }
 
 /*

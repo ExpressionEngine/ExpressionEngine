@@ -10,6 +10,14 @@
 		</div>
 	</div>
 	<form action="<?=$action?>" method="post">
+		<?php if($show_advanced): ?>
+			<fieldset class="form-ctrls">
+				<label><input type="checkbox" name="database_backup" value="1"> <?=lang('update_should_get_database_backup')?></label>
+			</fieldset>
+			<fieldset class="form-ctrls">
+				<label><input type="checkbox" name="update_addons" value="1"> <?=lang('update_should_update_addons')?></label>
+			</fieldset>
+		<?php endif; ?>
 		<fieldset class="form-ctrls">
 			<input class="button button--primary button--large button--wide" type="submit" value="<?=lang('start_update')?>">
 		</fieldset>

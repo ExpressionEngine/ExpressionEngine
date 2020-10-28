@@ -46,7 +46,7 @@ context('File Manager', () => {
 
 	//For general and "All Files" specific tests
 	function beforeEach_all_files() {
-		page.get('breadcrumb').should('not.exist')
+		//page.get('breadcrumb').should('not.exist')
 		page.get('sync_button').should('not.exist')
 		page.get('heading').invoke('text').then((text) => {
 			expect(text.trim()).equal('All Files')
@@ -62,7 +62,7 @@ context('File Manager', () => {
 	function beforeEach_not_all_files() {
 		page.get('sidebar').contains('About').click()
 		cy.hasNoErrors()
-		page.get('breadcrumb').should('not.exist')
+		//page.get('breadcrumb').should('not.exist')
 		page.get('sync_button').should('exist')
 		page.get('files').should('exist')
 
@@ -433,7 +433,7 @@ context('File Manager', () => {
 		page.get('sidebar').contains("About").click()
 		cy.hasNoErrors()
 
-		page.get('sidebar').find('.active').invoke('text').then((text) => {
+		page.get('sidebar').find('.active > a').invoke('text').then((text) => {
 			expect(text.trim()).equal('About')
 		})
 

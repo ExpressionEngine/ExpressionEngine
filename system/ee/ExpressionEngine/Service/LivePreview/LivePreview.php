@@ -135,7 +135,6 @@ class LivePreview {
 			$template_id = $_POST['pages__pages_template_id'];
 		}
 
-		//if this if fronteditor request, we preview on originator uri
 		if (!empty($preview_url))
 		{
 			$site_index = str_ireplace(['http:', 'https:'], '', ee()->functions->fetch_site_index());

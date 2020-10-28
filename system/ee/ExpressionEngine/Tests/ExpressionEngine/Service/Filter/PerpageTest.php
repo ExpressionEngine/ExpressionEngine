@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Tests\Service;
+namespace ExpressionEngine\Tests\Service\Filter;
 
 use ExpressionEngine\Service\Filter\Perpage;
 use Mockery as m;
@@ -16,10 +16,12 @@ use PHPUnit\Framework\TestCase;
 
 class PerpageTest extends TestCase {
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		unset($_POST['perpage']);
 		unset($_GET['perpage']);
+
+		m::close();
 	}
 
 	public function testDefault()
@@ -31,10 +33,11 @@ class PerpageTest extends TestCase {
 		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
 		$url = m::mock('ExpressionEngine\Library\CP\URL');
 
-		$vf->shouldReceive('make->render');
-		$url->shouldReceive('setQueryStringVariable');
+		$vf->shouldReceive('make->render')->atLeast()->once();
+		$url->shouldReceive('removeQueryStringVariable', 'setQueryStringVariable')->atLeast()->once();
 		$url->shouldReceive('compile')->andReturn('foo', 'bar', 'baz', 'whatthefox', 'gibberish', 'everything');
 		$filter->render($vf, $url);
+
 	}
 
 	public function testPOST()

@@ -496,8 +496,6 @@ class Updater {
 	private function warnAboutBirthdayTag()
 	{
 		ee()->update_notices->setVersion('4.0');
-		ee()->update_notices->header('{birthday} member field variable is now a date type variable');
-		ee()->update_notices->item(' Checking for templates to review ...');
 
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
@@ -554,12 +552,6 @@ class Updater {
 
 			ee()->update_notices->item($notice);
 		}
-		else
-		{
-			ee()->update_notices->item('No templates contain the {birthday} variable.');
-		}
-
-		//ee()->update_notices->item('Done.');
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);

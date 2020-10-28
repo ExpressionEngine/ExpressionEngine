@@ -2165,25 +2165,32 @@ class Comment {
 	 */
 	function comment_subscribe()
 	{
-		// Membership is required
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			return;
-		}
+		ee()->lang->loadfile('comment');
 
 		$id		= ee()->input->get('entry_id');
+		$hash	= ee()->input->get('hash');
 		$type	= (ee()->input->get('type')) ? 'unsubscribe' : 'subscribe';
 		$ret	= ee()->input->get('ret');
 
-		if ( ! $id)
+
+		// Membership is required unless hash is set
+		if (ee()->session->userdata('member_id') == 0)
 		{
-			return;
+			if ($type == 'subscribe') {
+				return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+			}
+			elseif ($type == 'unsubscribe' && ! $hash) {
+				return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+			}
 		}
 
-		ee()->lang->loadfile('comment');
+
+		if ( ! $id)
+		{
+			return ee()->output->show_user_error('submission', 'invalid_subscription');
+		}
 
 		// Does entry exist?
-
 		ee()->db->select('title');
 		$query = ee()->db->get_where('channel_titles', array('entry_id' => $id));
 
@@ -2212,23 +2219,38 @@ class Comment {
 		}
 
 		// They check out- let them through
-		ee()->subscription->$type();
+		if ($type == 'unsubscribe') {
+			ee()->subscription->$type(FALSE, $hash);
+			$title = 'cmt_unsubscribe';
+			$content = 'you_have_been_unsubscribed';
+		}
+		else {
+			ee()->subscription->$type();
+			$title = 'cmt_subscribe';
+			$content = 'you_have_been_subscribed';
+		}
 
 		// Show success message
-
 		ee()->lang->loadfile('comment');
 
-		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
-		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
+		$redirect = ee()->functions->create_url($ret);
 
-		$return_link = ee()->functions->create_url($ret);
+		if ( ! $ret) {
+			$return_link = array($redirect,
+							stripslashes(ee()->config->item('site_name')));
+		}
+		else {
+			$return_link = array($redirect,
+				ee()->lang->line('cmt_return_to_comments'));
+		}
+
 
 		$data = array(
 			'title' 	=> ee()->lang->line($title),
 			'heading'	=> ee()->lang->line('thank_you'),
 			'content'	=> ee()->lang->line($content).' '.$entry_title,
-			'redirect'	=> $return_link,
-			'link'		=> array($return_link, ee()->lang->line('cmt_return_to_comments')),
+			'redirect'	=> $redirect,
+			'link'		=> $return_link,
 			'rate'		=> 3
 		);
 

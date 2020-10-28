@@ -20,27 +20,29 @@ context('Updater', () => {
   beforeEach(function(){
 
     cy.task('db:clear')
+    cy.task('cache:clear')
 
     cy.task('installer:enable')
     cy.task('installer:replace_config', {file: config})
     cy.task('installer:replace_database_config', {file: database})
 
     let installer_folder = '../../system/ee/installer';
+
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
-        if (files[item].indexOf('system/ee/installer') >= 0) {
+        cy.log(files[item]);
+        if (files[item].indexOf('system/ee/installer_') >= 0) {
           installer_folder = files[item];
-          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          cy.log(installer_folder);
+          cy.task('filesystem:delete', '../../system/ee/installer').then(()=>{
+            cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          })
         }
       }
     })
 
     cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
-    //@version = '2.20.0'
-    //cy.task('installer:version = @version
-
-    cy.hasNoErrors()
   })
 
   afterEach(function(){
@@ -67,15 +69,15 @@ context('Updater', () => {
   })
 
   it('shows an error when no database information exists at all', () => {
+    cy.wait(5000);
     cy.task('installer:delete_database_config').then(()=>{
       cy.task('db:seed').then(()=>{
-        page.load()
-        cy.hasNoErrors()
         page.load()
         page.get('header').invoke('text').then((text) => {
           expect(text).to.eq('Install Failed')
         })
         page.get('error').contains('Unable to locate any database connection information.')
+        cy.hasNoErrors()
       })
     })
   })
@@ -116,6 +118,7 @@ context('Updater', () => {
             app_version: '2.20.0'
           }
         }).then(()=>{
+          cy.wait(5000)
           test_update()
           test_templates()
         })
@@ -200,6 +203,7 @@ context('Updater', () => {
   })
 
   it('updates a core installation successfully and installs the member module', () => {
+    
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-3.0.5-core.php', options: {
@@ -239,7 +243,7 @@ context('Updater', () => {
         cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
           from_version = '5.3.0'
           expect_login = true
-          test_update()
+          test_update(false, expect_login)
           page.get('success_actions').should('not.exist')
 
         })
@@ -273,7 +277,10 @@ context('Updater', () => {
     })
   })
 
-  function test_update(mailinglist = false) {
+  function test_update(mailinglist = false, expect_login = false) {
+    cy.log('wait 5 sec');
+    cy.wait(5000)
+    
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)
@@ -282,6 +289,8 @@ context('Updater', () => {
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
       page.load()
+
+      //cy.screenshot({capture: 'fullPage'})
 
       // Wait a second and try loading the page again in case we're not seeing the
       // correct page

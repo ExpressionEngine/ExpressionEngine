@@ -123,9 +123,7 @@ class Select extends Query {
 
 		if ( ! empty($search))
 		{
-			$query->start_like_group();
 			$this->applySearch($query, $search);
-			$query->end_like_group();
 		}
 
 		// orders
@@ -723,28 +721,43 @@ class Select extends Query {
 		{
 			if (in_array($field, $this->searched_fields))
 			{
+				unset($search[$field]);
 				continue;
 			}
+		}
 
-			$field = $this->translateProperty($field);
-
-			$query->or_start_like_group();
-
-			foreach ($words as $word => $include)
+		if (!empty($search)) {
+			$query->start_like_group();
+			foreach ($search as $field => $words)
 			{
-				$fn = $include ? 'like' : 'not_like';
-				$query->$fn($field, $word);
-			}
 
-			$query->end_like_group();
+				$field = $this->translateProperty($field);
+
+				$query->or_start_like_group();
+
+				foreach ($words as $word => $include)
+				{
+					$fn = $include ? 'like' : 'not_like';
+					$query->$fn($field, $word);
+				}
+
+				$query->end_like_group();
+			}
 		}
 
 		if ( ! empty($this->additional_search))
 		{
 			// We need to add this WHERE inside the LIKE group else the query doesn't work
-			$query->or_where_in($this->additional_search[0], $this->additional_search[1]);
-			$where = array_pop($query->ar_where);
-			$query->ar_like[] = $where;
+			$fn = !empty($search) ? 'or_where_in' : 'where_in';
+			$query->$fn($this->additional_search[0], $this->additional_search[1]);
+			if (!empty($search)) {
+				$where = array_pop($query->ar_where);
+				$query->ar_like[] = $where;
+			}
+		}
+
+		if (!empty($search)) {
+			$query->end_like_group();
 		}
 	}
 

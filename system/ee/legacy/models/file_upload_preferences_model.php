@@ -26,15 +26,22 @@ class File_upload_preferences_model extends CI_Model
 	 */
 	function get_file_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE, $parameters = array())
 	{
-		// for admins, no specific filtering, just give them everything
-		if ( ! ee('Permission')->isSuperAdmin())
+		if ($group_id != 1)
 		{
-			$member = ee()->session->getMember();
-			if (empty($member)) {
-				return [];
+			// non admins need to first be checked for restrictions
+			// we'll add these into a where_in() check below
+			$this->db->select('upload_id');
+			$access = $this->db->get_where('upload_prefs_roles', array('role_id'=>$group_id));
+
+			if ($access->num_rows() > 0)
+			{
+				$allowed = array();
+				foreach($access->result() as $result)
+				{
+					$allowed[] = $result->upload_id;
+				}
+				$this->db->where_in('id', $allowed);
 			}
-			$assigned_upload_destinations = $member->getAssignedUploadDestinations()->pluck('id');
-			$this->db->where_in('id', $assigned_upload_destinations);
 		}
 
 		// Is there a specific upload location we're looking for?
@@ -177,7 +184,7 @@ class File_upload_preferences_model extends CI_Model
 		// There are no permission checks- I don't really think there should be
 
 		$this->db->where_in('upload_id', $ids);
-		$this->db->delete('upload_no_access');
+		$this->db->delete('upload_prefs_roles');
 
 		// get the name we're going to delete so that we can return it when we're done
 		$this->db->select('name');

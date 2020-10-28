@@ -10,36 +10,31 @@ class RteSettings extends ControlPanel {
             "headings": 'form h1',
 
             // Settings View
-            "rte_enabled": 'input[name=rte_enabled]',
-            "rte_enabled_toggle": '[data-toggle-for=rte_enabled]',
-            "default_tool_set": 'input[type!=hidden][name="rte_default_toolset_id"]',
+            "default_tool_set": 'input[type!=hidden][name="rte_default_toolset"]',
             "save_settings_button": 'input[value="Save Settings"]',
 
-            "create_new_button": 'div.tbl-ctrls form fieldset.tbl-search a.button.action',
-            "tool_sets": 'div.tbl-ctrls form div.table-responsive table tr',
-            "tool_set_name_header": 'div.tbl-ctrls form div.table-responsive table tr th:first-child',
-            "status_header": 'div.tbl-ctrls form div.table-responsive table tr th:nth-child(2)',
-            "manage_header": 'div.tbl-ctrls form div.table-responsive table tr th:nth-child(3)',
-            "checkbox_header": 'div.tbl-ctrls form div.table-responsive table tr th:nth-child(4)',
+            "create_new_button": 'a:contains("Create New")',
+            "tool_sets": '.table-responsive table tr',
+            "tool_set_name_header": '.table-responsive table tr th:first-child',
+            "manage_header": '.table-responsive table tr th:nth-child(2)',
+            "checkbox_header": '.table-responsive table tr th:nth-child(3)',
 
-            "tool_set_names": 'div.tbl-ctrls form div.table-responsive table tr td:first-child a',
-            "statuses": 'div.tbl-ctrls form div.table-responsive table tr td:nth-child(2)',
+            "tool_set_names": '.table-responsive table tr td:first-child a',
 
             // Tool Set View
             "tool_set_name": 'input[type!=hidden][name="toolset_name"]',
             "choose_tools": 'div[data-input-value="tools"] .field-inputs input[type="checkbox"]',
             "tool_set_save_and_close_button": '.ee-main__content .form-btns-top button[value="save_and_close"]',
-            "tool_set_save_button": '.ee-main__content .form-btns-top button[value="save"]'
+            "tool_set_save_button": '.ee-main__content .form-btns-top .button.button--primary'
         })
     }
 
     confirmSettings() {
-        this.get('breadcrumb').contains('Add-Ons')
-        //this.get('breadcrumb').contains('Rich Text Editor Configuration')
+        //this.get('breadcrumb').contains('Add-Ons')
+        this.get('breadcrumb').contains('Rich Text Editor')
 
         cy.get('h1').contains('Rich Text Editor')
-        this.get('rte_enabled').should('exist')
-        this.get('rte_enabled_toggle').should('exist')
+
         this.get('default_tool_set').should('exist')
         this.get('save_settings_button').should('exist')
         this.get('create_new_button').should('exist')
@@ -56,8 +51,6 @@ class RteSettings extends ControlPanel {
 
         this.get('headings').eq(0).contains('RTE Tool Set')
 
-        this.get('rte_enabled').should('exist')
-        this.get('rte_enabled_toggle').should('exist')
         this.get('default_tool_set').should('exist')
         this.get('create_new_button').should('exist')
         this.get('tool_sets').should('exist')

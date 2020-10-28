@@ -210,7 +210,7 @@ class JumpMenu extends AbstractJumpMenu
             'logout' => array(
                 'icon' => 'fa-sign-out-alt',
                 'command' => 'logout log_out',
-                'dynamic' => true,
+                'dynamic' => false,
                 'addon' => false,
                 'target' => 'login/logout'
             ),
@@ -388,51 +388,494 @@ class JumpMenu extends AbstractJumpMenu
             //settings
             'systemSettingsGeneral' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings general_settings site_name site_short_name site_online version_autocheck enable_msm show_ee_news language date_time_settings',
+                'command' => 'system_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/general',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Site name
+                    'fieldset-site_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site site_name',
+                        'command_title' => 'site_name'
+                    ),
+                    // Short name
+                    'fieldset-site_short_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site_short_name',
+                        'command_title' => 'site_short_name'
+                    ),
+                    // System on off
+                    'fieldset-is_system_on' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site_online',
+                        'command_title' => 'site_online'
+                    ),
+                    // New version check
+                    'fieldset-new_version_check' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'version_autocheck',
+                        'command_title' => 'version_autocheck'
+                    ),
+                    // MSM enabled
+                    'fieldset-multiple_sites_enabled' => array(
+                        'trail' => [
+                            'settings'
+                        ],
+                        'command' => 'enable_msm',
+                        'command_title' => 'enable_msm'
+                    ),
+                    // Show EE News
+                    'fieldset-show_ee_news' => array(
+                        'trail' => [
+                            'settings'
+                        ],
+                        'command' => 'show_ee_news',
+                        'command_title' => 'show_ee_news'
+                    ),
+                    // Default language
+                    'fieldset-deft_lang' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'timezone',
+                        'command_title' => 'timezone'
+                    ),
+                    // Date time format
+                    'fieldset-date_format-time_format' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'date_time_fmt',
+                        'command_title' => 'date_time_fmt'
+                    ),
+                    // Include Seconds
+                    'fieldset-include_seconds' => array(
+                        'trail' => [
+                            'settings',
+                             // 'general_settings'
+                        ],
+                        'command' => 'include_seconds',
+                        'command_title' => 'include_seconds'
+                    ),
+                )
             ),
             'systemSettingsUrls' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings url_path_settings base_url base_path site_index site_url cp_url themes_url themes_path member_segment_trigger category_segment_trigger category_url url_title_separator',
+                'command' => 'system_settings url_path_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/urls',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Base URL
+                    'fieldset-base_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'base_url',
+                        'command_title' => 'base_url'
+                    ),
+                    // Base Path
+                    'fieldset-base_path' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'base_path',
+                        'command_title' => 'base_path'
+                    ),
+                    // Site Index
+                    'fieldset-site_index' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'site_index',
+                        'command_title' => 'site_index'
+                    ),
+                    // Website root upload_directory
+                    'fieldset-site_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'site_url site_url_desc',
+                        'command_title' => 'site_url'
+                    ),
+                    // CP URL
+                    'fieldset-cp_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'cp_url cp_url_desc',
+                        'command_title' => 'cp_url'
+                    ),
+                    // Themes directory
+                    'fieldset-theme_folder_url' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'themes_url_desc themes_url',
+                        'command_title' => 'themes_url'
+                    ),
+                    // Themes path
+                    'fieldset-theme_folder_path' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'themes_path',
+                        'command_title' => 'themes_path'
+                    ),
+                    // Member Profile Trigger word
+                    'fieldset-profile_trigger' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'member_segment_trigger',
+                        'command_title' => 'member_segment_trigger'
+                    ),
+                    // Category URL Segment
+                    'fieldset-reserved_category_word' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'category_segment_trigger',
+                        'command_title' => 'category_segment_trigger'
+                    ),
+                    // Category URL
+                    'fieldset-use_category_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'category_url',
+                        'command_title' => 'category_url'
+                    ),
+                    // URL title separator
+                    'fieldset-word_separator' => array(
+                        'trail' => [
+                            'settings',
+                            // 'url_path_settings'
+                        ],
+                        'command' => 'url_title_separator',
+                        'command_title' => 'url_title_separator'
+                    )
+                )
             ),
             'systemSettingsEmail' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings outgoing_email webmaster_email webmaster_name email_charset mail_protocol email_newline smtp_options sending_options mail_format word_wrap',
+                'command' => 'system_settings outgoing_email sending_options',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/email',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Outgoing email address
+                    'fieldset-webmaster_email' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'webmaster_email webmaster_email_desc outgoing_email',
+                        'command_title' => 'webmaster_email'
+                    ),
+                    // Email sent from name
+                    'fieldset-webmaster_name' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'webmaster_name webmaster_name_desc outgoing_email',
+                        'command_title' => 'webmaster_name'
+                    ),
+                    // Email character encoding
+                    'fieldset-email_charset' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'email_charset outgoing_email',
+                        'command_title' => 'email_charset'
+                    ),
+                    // Email Protocal
+                    'fieldset-mail_protocol' => array(
+                        'trail' => [
+                            'settings',
+                            // 'outgoing_email'
+                        ],
+                        'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
+                        'command_title' => 'mail_protocol'
+                    ),
+                    // Email New Line
+                    'fieldset-email_newline' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'email_newline outgoing_email',
+                        'command_title' => 'email_newline'
+                    ),
+                    // Email Format
+                    'fieldset-mail_format' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'mail_format mail_format_desc outgoing_email',
+                        'command_title' => 'mail_format'
+                    ),
+                    // Email word wrap
+                    'fieldset-word_wrap' => array(
+                        'trail' => [
+                            'settings',
+                            'outgoing_email'
+                        ],
+                        'command' => 'word_wrap outgoing_email',
+                        'command_title' => 'word_wrap'
+                    ),
+                )
             ),
             'systemSettingsDebugging' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings debugging_output enable_errors show_profiler enable_devlog_alerts gzip_output force_query_string send_headers redirect_method caching_driver max_caches use_newrelic',
+                'command' => 'system_settings  debugging_output use_newrelic',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/debug-output',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Error Visibility
+                    'fieldset-fieldset-debug' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'enable_errors enable_errors_desc debug_0 debug_1 debug_2',
+                        'command_title' => 'enable_errors'
+                    ),
+                    // Enable debugging?
+                    'fieldset-show_profiler' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'show_profiler show_profiler_desc',
+                        'command_title' => 'show_profiler'
+                    ),
+                    // Enable Developer Log Alerts?
+                    'fieldset-enable_devlog_alerts' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'enable_devlog_alerts enable_devlog_alerts_desc',
+                        'command_title' => 'enable_devlog_alerts'
+                    ),
+                    // Enable GZIP compression?
+                    'fieldset-gzip_output' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'gzip_output',
+                        'command_title' => 'gzip_output'
+                    ),
+                    // Force URL query strings?
+                    'fieldset-force_query_string' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'force_query_string',
+                        'command_title' => 'force_query_string'
+                    ),
+                    // Use HTTP page headers?
+                    'fieldset-send_headers' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'send_headers',
+                        'command_title' => 'send_headers'
+                    ),
+                    // Redirection type
+                    'fieldset-redirect_method' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'redirect_method',
+                        'command_title' => 'redirect_method'
+                    ),
+                    // Caching Driver
+                    'fieldset-cache_driver' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'caching_driver',
+                        'command_title' => 'caching_driver'
+                    ),
+                    // Cachable URIs
+                    'fieldset-max_caches' => array(
+                        'trail' => [
+                            'settings',
+                            'debugging_output'
+                        ],
+                        'command' => 'max_caches max_caches_desc',
+                        'command_title' => 'max_caches'
+                    ),
+                )
             ),
             'systemSettingsContentDesign' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings content_and_design new_posts_clear_caches enable_sql_caching auto_assign_cat_parents image_resize_protocol image_library_path thumbnail_suffix enable_emoticons emoticon_url',
+                'command' => 'system_settings content_and_design      ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/content-design',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Clear cache for new entries?
+                    'fieldset-new_posts_clear_caches' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'new_posts_clear_caches new_posts_clear_caches_desc',
+                        'command_title' => 'new_posts_clear_caches'
+                    ),
+                    // Cache dynamic channel queries?
+                    'fieldset-enable_sql_caching' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_sql_caching',
+                        'command_title' => 'enable_sql_caching'
+                    ),
+                    // Assign category parents?
+                    'fieldset-auto_assign_cat_parents' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
+                        'command_title' => 'auto_assign_cat_parents'
+                    ),
+                    // Image Resizing -- Protocol
+                    'fieldset-image_resize_protocol' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'image_resize_protocol gd gd2 imagemagick netpbm image_resizing',
+                        'command_title' => 'image_resize_protocol'
+                    ),
+                    // Image Resizing -- Converter path
+                    'fieldset-image_library_path' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'image_library_path image_resizing',
+                        'command_title' => 'image_library_path'
+                    ),
+                    // Image Resizing -- Thumbnail suffix
+                    'fieldset-thumbnail_prefix' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'thumbnail_suffix thumbnail_suffix_desc image_resizing',
+                        'command_title' => 'thumbnail_suffix'
+                    ),
+                    // Enable emoticons?
+                    'fieldset-enable_emoticons' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_emoticons enable_emoticons_desc',
+                        'command_title' => 'enable_emoticons'
+                    ),
+                    // emoticons URL
+                    'fieldset-emoticon_url' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'emoticon_url emoticon_url_desc',
+                        'command_title' => 'emoticon_url_desc'
+                    )
+                )
             ),
             'systemSettingsComments' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings comment_settings enable_comments comment_word_censoring comment_moderation_override comment_edit_time_limit',
+                'command' => 'system_settings comment_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/comments',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable comment module?
+                    'fieldset-enable_comments' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'enable_comments',
+                        'command_title' => 'enable_comments'
+                    ),
+
+                    // Enable word censoring?
+                    'ffieldset-comment_word_censoring' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_word_censoring comment_word_censoring_desc',
+                        'command_title' => 'comment_word_censoring'
+                    ),
+                    // Moderate after comments expire?
+                    'fieldset-comment_moderation_override' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_moderation_override comment_moderation_override_desc',
+                        'command_title' => 'comment_moderation_override'
+                    ),
+                    // Comment edit time limit (in seconds)
+                    'fieldset-comment_edit_time_limit' => array(
+                        'trail' => [
+                            'settings',
+                            'comment_settings'
+                        ],
+                        'command' => 'comment_edit_time_limit comment_edit_time_limit_desc',
+                        'command_title' => 'comment_edit_time_limit'
+                    )
+                )
             ),
             'systemSettingsButtons' => array(
                 'icon' => 'fa-wrench',
@@ -444,27 +887,132 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsTemplate' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings template_settings strict_urls site_404 save_tmpl_revisions max_tmpl_revisions',
+                'command' => 'system_settings template_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/template',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable Strict URLs
+                    'fieldset-strict_urls' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'strict_urls',
+                        'command_title' => 'strict_urls'
+                    ),
+                    // 404 page
+                    'fieldset-site_404' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'site_404 site_404_desc',
+                        'command_title' => 'site_404'
+                    ),
+                    // Save Template Revisions
+                    'fieldset-save_tmpl_revisions' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'save_tmpl_revisions',
+                        'command_title' => 'save_tmpl_revisions'
+                    ),
+                    // Maximum Number of Revisions to Keep
+                    'fieldset-max_tmpl_revisions' => array(
+                        'trail' => [
+                            'settings',
+                            'template_settings'
+                        ],
+                        'command' => 'max_tmpl_revisions max_tmpl_revisions_desc',
+                        'command_title' => 'max_tmpl_revisions'
+                    ),
+                )
             ),
             'systemSettingsHitTracking' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings hit_tracking enable_online_user_tracking enable_hit_tracking enable_entry_view_tracking dynamic_tracking_disabling',
+                'command' => 'system_settings hit_tracking    ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/hit-tracking',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable online user tracking?
+                    'fieldset-enable_online_user_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_online_user_tracking enable_online_user_tracking_desc',
+                        'command_title' => 'enable_online_user_tracking'
+                    ),
+                    // Enable template hit tracking?
+                    'fieldset-enable_hit_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_hit_tracking enable_hit_tracking_desc',
+                        'command_title' => 'enable_hit_tracking'
+                    ),
+                    // Enable entry view tracking?
+                    'fieldset-enable_entry_view_tracking' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'enable_entry_view_tracking enable_entry_view_tracking_desc',
+                        'command_title' => 'enable_entry_view_tracking'
+                    ),
+                    // Suspend threshold?
+                    'fieldset-dynamic_tracking_disabling' => array(
+                        'trail' => [
+                            'settings',
+                            'hit_tracking'
+                        ],
+                        'command' => 'dynamic_tracking_disabling dynamic_tracking_disabling_desc',
+                        'command_title' => 'dynamic_tracking_disabling'
+                    ),
+                )
             ),
             'systemSettingsWordCensoring' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings word_censoring enable_censoring censor_replacement censored_words',
+                'command' => 'system_settings word_censoring ',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/word-censor',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable censorship?
+                    'fieldset-enable_censoring' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'enable_censoring enable_censoring_desc',
+                        'command_title' => 'enable_censoring'
+                    ),
+                    // Replacement characters
+                    'fieldset-censor_replacement' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'censor_replacement censor_replacement_desc',
+                        'command_title' => 'censor_replacement'
+                    ),
+                    // Words to censor
+                    'fieldset-censored_words' => array(
+                        'trail' => [
+                            'settings',
+                            'word_censoring'
+                        ],
+                        'command' => 'censored_words',
+                        'command_title' => 'censored_words'
+                    ),
+                )
             ),
             'systemSettingsMenuManager' => array(
                 'icon' => 'fa-wrench',
@@ -476,51 +1024,491 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsMembers' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings member_settings allow_member_registration req_mbr_activation approved_member_notification declined_member_notification require_terms_of_service allow_member_localization default_primary_role member_theme member_listing_settings new_member_notification mbr_notification_emails',
+                'command' => 'system_settings member_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/members',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    'fieldset-allow_member_registration' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'allow_member_registration allow_member_registration_desc',
+                        'command_title' => 'allow_member_registration'
+                    ),
+                    'fieldset-req_mbr_activation' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'req_mbr_activation req_mbr_activation_desc',
+                        'command_title' => 'req_mbr_activation'
+                    ),
+                    'fieldset-approved_member_notification' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'approved_member_notification approved_member_notification_desc',
+                        'command_title' => 'approved_member_notification'
+                    ),
+                    'fieldset-declined_member_notification' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'declined_member_notification declined_member_notification_desc',
+                        'command_title' => 'declined_member_notification'
+                    ),
+                    'fieldset-require_terms_of_service' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'require_terms_of_service require_terms_of_service_desc',
+                        'command_title' => 'require_terms_of_service'
+                    ),
+                    'fieldset-allow_member_localization' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'allow_member_localization allow_member_localization_desc',
+                        'command_title' => 'allow_member_localization'
+                    ),
+                    'fieldset-default_primary_role' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'default_primary_role default_primary_role_desc',
+                        'command_title' => 'default_primary_role'
+                    ),
+                    'fieldset-member_theme' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'member_theme member_theme_desc',
+                        'command_title' => 'member_theme'
+                    ),
+                    'fieldset-member_listing_settings' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'member_listing_settings member_listing_settings_desc',
+                        'command_title' => 'member_listing_settings'
+                    ),
+                    'fieldset-new_member_notification' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'new_member_notification new_member_notification_desc',
+                        'command_title' => 'new_member_notification'
+                    ),
+                    'fieldset-mbr_notification_emails' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'mbr_notification_emails mbr_notification_emails_desc',
+                        'command_title' => 'mbr_notification_emails'
+                    ),
+                )
             ),
             'systemSettingsMessages' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings messaging_settings prv_msg_max_chars prv_msg_html_format prv_msg_auto_links prv_msg_upload_url prv_msg_upload_path attachment_settings',
+                'command' => 'system_settings messaging_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/messages',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    'fieldset-prv_msg_max_chars' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'prv_msg_max_chars prv_msg_max_chars_desc',
+                        'command_title' => 'prv_msg_max_chars'
+                    ),
+                    'fieldset-prv_msg_html_format' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'prv_msg_html_format prv_msg_html_format_desc',
+                        'command_title' => 'prv_msg_html_format'
+                    ),
+                    'fieldset-prv_msg_auto_links' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'prv_msg_auto_links prv_msg_auto_links_desc',
+                        'command_title' => 'prv_msg_auto_links'
+                    ),
+                    'fieldset-prv_msg_upload_url' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'prv_msg_upload_url prv_msg_upload_url_desc',
+                        'command_title' => 'prv_msg_upload_url'
+                    ),
+                    'fieldset-prv_msg_upload_path' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'prv_msg_upload_path prv_msg_upload_path_desc',
+                        'command_title' => 'prv_msg_upload_path'
+                    ),
+                    'fieldset-attachment_settings' => array(
+                        'trail' => [
+                            'messaging_settings'
+                        ],
+                        'command' => 'attachment_settings attachment_settings_desc',
+                        'command_title' => 'attachment_settings'
+                    ),
+                )
             ),
             'systemSettingsAvatars' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings avatars avatar_url avatar_path avatar_max_width avatar_max_height avatar_max_kb',
+                'command' => 'system_settings avatars',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/avatars',
-                'permission' => 'can_access_sys_prefs'
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    'fieldset-avatar_url' => array(
+                        'trail' => [
+                            'settings',
+                            'avatar_settings'
+                        ],
+                        'command' => 'avatar_url avatar_url_desc',
+                        'command_title' => 'avatar_url'
+                    ),
+                    'fieldset-avatar_path' => array(
+                        'trail' => [
+                            'settings',
+                            'avatar_settings'
+                        ],
+                        'command' => 'avatar_path avatar_path_desc',
+                        'command_title' => 'avatar_path'
+                    ),
+                    'fieldset-avatar_max_width' => array(
+                        'trail' => [
+                            'settings',
+                            'avatar_settings'
+                        ],
+                        'command' => 'avatar_max_width avatar_max_width_desc',
+                        'command_title' => 'avatar_max_width'
+                    ),
+                    'fieldset-avatar_max_height' => array(
+                        'trail' => [
+                            'settings',
+                            'avatar_settings'
+                        ],
+                        'command' => 'avatar_max_height avatar_max_height_desc',
+                        'command_title' => 'avatar_max_height'
+                    ),
+                    'fieldset-avatar_max_kb' => array(
+                        'trail' => [
+                            'settings',
+                            'avatar_settings'
+                        ],
+                        'command' => 'avatar_max_kb avatar_max_kb_desc',
+                        'command_title' => 'avatar_max_kb'
+                    ),
+                )
             ),
             'systemSettingsSecurityPrivacy' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings security_privacy cp_session_type website_session_type share_analytics cookie_domain cookie_path cookie_prefix cookie_httponly cookie_secure require_cookie_consent allow_username_change un_min_len allow_multi_logins require_ip_for_login password_lockout password_lockout_interval require_secure_passwords pw_min_len allow_dictionary_pw name_of_dictionary_file deny_duplicate_data require_ip_for_posting xss_clean_uploads enable_rank_denial force_interstitial',
+                'command' => 'system_settings security_privacy',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/security-privacy',
-                'permission' => 'can_access_security_settings'
+                'permission' => 'can_access_security_settings',
+                'anchors' => array(
+                    'fieldset-cp_session_type' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'cp_session_type cp_session_type_desc',
+                        'command_title' => 'cp_session_type'
+                    ),
+                    'fieldset-website_session_type' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'website_session_type website_session_type_desc',
+                        'command_title' => 'website_session_type'
+                    ),
+                    'fieldset-share_analytics' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'share_analytics share_analytics_desc',
+                        'command_title' => 'share_analytics'
+                    ),
+                    'fieldset-cookie_domain' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'cookie_domain cookie_domain_desc',
+                        'command_title' => 'cookie_domain'
+                    ),
+                    'fieldset-cookie_path' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'cookie_path cookie_path_desc',
+                        'command_title' => 'cookie_path'
+                    ),
+                    'fieldset-cookie_prefix' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'cookie_prefix cookie_prefix_desc',
+                        'command_title' => 'cookie_prefix'
+                    ),
+                    'fieldset-cookie_httponly' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'cookie_httponly cookie_httponly_desc',
+                        'command_title' => 'cookie_httponly'
+                    ),
+                    'fieldset-cookie_secure' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'cookie_secure cookie_secure_desc',
+                        'command_title' => 'cookie_secure'
+                    ),
+                    'fieldset-require_cookie_consent' => array(
+                        'trail' => [
+                            'cookie_settings'
+                        ],
+                        'command' => 'require_cookie_consent require_cookie_consent_desc',
+                        'command_title' => 'require_cookie_consent'
+                    ),
+                    'fieldset-allow_username_change' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'allow_username_change allow_username_change_desc',
+                        'command_title' => 'allow_username_change'
+                    ),
+                    'fieldset-un_min_len' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'un_min_len un_min_len_desc',
+                        'command_title' => 'un_min_len'
+                    ),
+                    'fieldset-allow_multi_logins' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'allow_multi_logins allow_multi_logins_desc',
+                        'command_title' => 'allow_multi_logins'
+                    ),
+                    'fieldset-require_ip_for_login' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'require_ip_for_login require_ip_for_login_desc',
+                        'command_title' => 'require_ip_for_login'
+                    ),
+                    'fieldset-password_lockout' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'password_lockout password_lockout_desc',
+                        'command_title' => 'password_lockout'
+                    ),
+                    'fieldset-password_lockout_interval' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'password_lockout_interval password_lockout_interval_desc',
+                        'command_title' => 'password_lockout_interval'
+                    ),
+                    'fieldset-require_secure_passwords' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'require_secure_passwords require_secure_passwords_desc',
+                        'command_title' => 'require_secure_passwords'
+                    ),
+                    'fieldset-pw_min_len' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'pw_min_len pw_min_len_desc',
+                        'command_title' => 'pw_min_len'
+                    ),
+                    'fieldset-allow_dictionary_pw' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'allow_dictionary_pw allow_dictionary_pw_desc',
+                        'command_title' => 'allow_dictionary_pw'
+                    ),
+                    'fieldset-name_of_dictionary_file' => array(
+                        'trail' => [
+                            'member_security_settings'
+                        ],
+                        'command' => 'name_of_dictionary_file name_of_dictionary_file_desc',
+                        'command_title' => 'name_of_dictionary_file'
+                    ),
+                    'fieldset-deny_duplicate_data' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'deny_duplicate_data deny_duplicate_data_desc',
+                        'command_title' => 'deny_duplicate_data'
+                    ),
+                    'fieldset-require_ip_for_posting' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'require_ip_for_posting require_ip_for_posting_desc',
+                        'command_title' => 'require_ip_for_posting'
+                    ),
+                    'fieldset-xss_clean_uploads' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'xss_clean_uploads xss_clean_uploads_desc',
+                        'command_title' => 'xss_clean_uploads'
+                    ),
+                    'fieldset-enable_rank_denial' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'enable_rank_denial enable_rank_denial_desc',
+                        'command_title' => 'enable_rank_denial'
+                    ),
+                    'fieldset-force_interstitial' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'force_interstitial force_interstitial_desc',
+                        'command_title' => 'force_interstitial'
+                    ),
+                )
             ),
             'systemSettingsAccessThrottling' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings access_throttling enable_throttling banish_masked_ips max_page_loads time_interval lockout_time banishment_type banishment_url banishment_message',
+                'command' => 'system_settings access_throttling',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/throttling',
-                'permission' => 'can_access_security_settings'
+                'permission' => 'can_access_security_settings',
+                'anchors' => array(
+                    'fieldset-enable_throttling' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'enable_throttling enable_throttling_desc',
+                        'command_title' => 'enable_throttling'
+                    ),
+                    'fieldset-max_page_loads' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'max_page_loads max_page_loads_desc',
+                        'command_title' => 'max_page_loads'
+                    ),
+                    'fieldset-time_interval' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'time_interval time_interval_desc',
+                        'command_title' => 'time_interval'
+                    ),
+                    'fieldset-lockout_time' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'lockout_time lockout_time_desc',
+                        'command_title' => 'lockout_time'
+                    ),
+                    'fieldset-banishment_type' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'banishment_type banishment_type_desc',
+                        'command_title' => 'banishment_type'
+                    ),
+                    'fieldset-banishment_url' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'banishment_url banishment_url_desc',
+                        'command_title' => 'banishment_url'
+                    ),
+                    'fieldset-banishment_message' => array(
+                        'trail' => [
+                            'settings',
+                            'access_throttling'
+                        ],
+                        'command' => 'banishment_message banishment_message_desc',
+                        'command_title' => 'banishment_message'
+                    ),
+                )
             ),
             'systemSettingsCaptcha' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings captcha_settings require_captcha captcha_font captcha_rand captcha_require_members captcha_url captcha_path',
+                'command' => 'system_settings captcha_settings',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/captcha',
-                'permission' => 'can_access_security_settings'
+                'permission' => 'can_access_security_settings',
+                'anchors' => array(
+                    'fieldset-require_captcha' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'require_captcha require_captcha_desc',
+                        'command_title' => 'require_captcha'
+                    ),
+                    'fieldset-captcha_font' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'captcha_font captcha_font_desc',
+                        'command_title' => 'captcha_font'
+                    ),
+                    'fieldset-captcha_rand' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'captcha_rand captcha_rand_desc',
+                        'command_title' => 'captcha_rand'
+                    ),
+                    'fieldset-captcha_require_members' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'captcha_require_members captcha_require_members_desc',
+                        'command_title' => 'captcha_require_members'
+                    ),
+                    'fieldset-captcha_url' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'captcha_url captcha_url_desc',
+                        'command_title' => 'captcha_url'
+                    ),
+                    'fieldset-captcha_path' => array(
+                        'trail' => [
+                            'captcha_settings'
+                        ],
+                        'command' => 'captcha_path captcha_path_desc',
+                        'command_title' => 'captcha_path'
+                    ),
+                )
             ),
             'systemSettingsConsentRequests' => array(
                 'icon' => 'fa-wrench',
@@ -528,7 +1516,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/consents',
-                'permission' => 'can_manage_consents'
+                'permission' => 'can_manage_consents',
             ),
             //utilities
             'systemUtilitiesCommunicate' => array(
@@ -724,8 +1712,6 @@ class JumpMenu extends AbstractJumpMenu
     {
         ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
 
-        $items = self::$items;
-
         //load language for all the jumps
         ee()->lang->load('settings');
         ee()->lang->load('addons');
@@ -738,6 +1724,36 @@ class JumpMenu extends AbstractJumpMenu
         ee()->lang->load('design');
         ee()->lang->load('utilities');
         ee()->lang->load('logs');
+
+        $items = self::$items;
+
+        //take out anchors and make them separate items
+        foreach ($items[1] as $key => $item) {
+            if (isset($item['anchors'])) {
+                foreach ($item['anchors'] as $achor_key => $anchor) {
+                    $trail = '';
+                    if (isset($anchor['trail'])) {
+                        if (is_array($anchor['trail'])) {
+                            foreach ($anchor['trail'] as $tail) {
+                                $trail .= lang($tail) . ' &raquo; ';
+                            }
+                        } else {
+                            $trail = lang($anchor['trail']) . ' &raquo; ';
+                        }
+                    }
+                    $items[1][$key . '_' . $achor_key] = array(
+                        'icon' => $item['icon'],
+                        'command' => $anchor['command'],
+                        'command_title' => $trail . (isset($anchor['command_title']) ? lang($anchor['command_title']) : lang($anchor['command'])),
+                        'dynamic' => isset($item['dynamic']) ? $item['dynamic'] : false,
+                        'addon' => isset($item['addon']) ? $item['addon'] : false,
+                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $achor_key,
+                        'permission' => isset($item['permission']) ? $item['permission'] : null
+                    );
+                }
+                unset($items[1][$key]['acnchors']);
+            }
+        }
 
         //logs have dynamically build titles
 
@@ -832,7 +1848,7 @@ class JumpMenu extends AbstractJumpMenu
         //if this is multi-site install, add links
         if (ee()->config->item('multiple_sites_enabled') === 'y') {
             $site_list = ee()->session->userdata('assigned_sites');
-            if (count($site_list) > 1) {
+            if (!empty($site_list) && count($site_list) > 1) {
                 $items[1]['switchSite'] = array(
                     'icon' => 'fa-globe',
                     'command' => 'switch site msm',

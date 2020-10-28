@@ -19,10 +19,7 @@ use PHPUnit\Framework\TestCase;
 
 class EmitterTest extends TestCase {
 
-	public function tearDown()
-	{
-		m::close();
-	}
+	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 	public function testEmitsEvent()
 	{

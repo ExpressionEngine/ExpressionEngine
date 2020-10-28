@@ -16,6 +16,15 @@
 		?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>" class="app-modal-inner">
+		<script type="text/javascript">
+		var currentTheme = localStorage.getItem('theme');
+
+		// Restore the currently selected theme
+		// This is at the top of the body to prevent the default theme from flashing
+		if (currentTheme) {
+			document.body.dataset.theme = currentTheme;
+		}
+		</script>
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
 		</div>

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class TreeFactoryTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->tf = new TreeFactory();
 	}

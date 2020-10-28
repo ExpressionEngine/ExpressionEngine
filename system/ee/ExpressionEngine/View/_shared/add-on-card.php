@@ -8,7 +8,7 @@
 		<h2 class="add-on-card__title"><?= $addon['name'] ?> <span class="add-on-card__title-version"><?= $addon['version'] ?></span></h2>
 
 		<?php if (!empty($addon['description'])): ?>
-		<p class="add-on-card__desc"><?= $addon['description'] ?></p>
+		<p class="add-on-card__desc" title="<?= $addon['description'] ?>"><?= $addon['description'] ?></p>
 		<?php endif; ?>
 	</div>
 
@@ -20,8 +20,8 @@
 
 	<?php if (isset($addon['update']) && !empty($show_updates)) : ?>
 		<div class="add-on-card__button">
-		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary">
-			<?php echo sprintf(lang('update_to_version'), $addon['update']); ?>
+		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary button--small">
+			<?php echo sprintf(lang('update_to_version'), '<br />' . $addon['update']); ?>
 		</a>
 		</div>
 	<?php endif; ?>

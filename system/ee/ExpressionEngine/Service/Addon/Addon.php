@@ -313,6 +313,20 @@ class Addon {
 	}
 
 	/**
+	 * Get the *_upgrade class
+	 *
+	 * @return string The fqcn or $class
+	 */
+	public function getUpgraderClass()
+	{
+		$this->requireFile('upgrade');
+
+		$class = ucfirst($this->shortname).'_upgrade';
+
+		return $this->getFullyQualified($class);
+	}
+
+	/**
 	 * Get the *_mcp class
 	 *
 	 * @return string The fqcn or $class
@@ -473,6 +487,16 @@ class Addon {
 	}
 
 	/**
+	 * Has an upd.* file?
+	 *
+	 * @return bool TRUE of it does, FALSE if not
+	 */
+	public function hasUpgrader()
+	{
+		return $this->hasFile('upgrade');
+	}
+
+	/**
 	 * Has a ft.* file?
 	 *
 	 * @return bool TRUE of it does, FALSE if not
@@ -502,31 +526,35 @@ class Addon {
 	public function getJumps()
 	{
 		$class = $this->getJumpClass();
-		$jumpMenu = new $class;
+		$items = [];
+		try {
+			$jumpMenu = new $class;
 
-		$items = $jumpMenu->getItems();
+			$items = $jumpMenu->getItems();
 
-		foreach ($items as $key => $item)
-		{
-			// Prepend the add-on shortname to the item key to prevent command collisions.
-			$newKey = $this->shortname . '_' . ucfirst($key);
+			foreach ($items as $key => $item) {
+				// Prepend the add-on shortname to the item key to prevent command collisions.
+				$newKey = $this->shortname . '_' . ucfirst($key);
 
-			// Save the command under the new key.
-			$items[$newKey] = $item;
+				// Save the command under the new key.
+				$items[$newKey] = $item;
 
-			// Unset the old key so we don't end up with duplicates.
-			unset($items[$key]);
+				// Unset the old key so we don't end up with duplicates.
+				unset($items[$key]);
 
-			// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
-			$items[$newKey]['addon'] = true;
-			$items[$newKey]['command'] = $this->shortname . ' ' . $items[$newKey]['command'];
-			$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . $items[$newKey]['command_title'];
+				// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
+				$items[$newKey]['addon'] = true;
+				$items[$newKey]['command'] = $this->shortname . ' ' . lang($items[$newKey]['command']);
+				$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . lang($items[$newKey]['command_title']);
 
-			if ($item['dynamic'] === true) {
-				$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
-			} else {
-				$items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				if ($item['dynamic'] === true) {
+					$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				} else {
+					$items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				}
 			}
+		} catch (\Exception $e) {
+			//if add-on does not properly implement jumps, we don't want to take resposibility, so just skip that
 		}
 
 		return $items;

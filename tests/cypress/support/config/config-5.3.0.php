@@ -36,7 +36,7 @@ $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'ee-test',
 		'username' => 'root',
-		'password' => ''
+		'password' => 'root'
 	),
 );
 $config['encryption_key'] = '631cbbc6e1de577805226ce0d1cc6c144cfd6c86';

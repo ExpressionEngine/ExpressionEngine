@@ -145,6 +145,11 @@ class Ignore extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->cp_page_title = lang('blocked_members');
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('blocked_members')
+		]);
+
 		ee()->cp->render('account/ignore_list', $data);
 	}
 

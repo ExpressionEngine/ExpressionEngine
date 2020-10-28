@@ -25,12 +25,14 @@ if (isset($setting['columns']))
 }
 
 // Any fields required?
-foreach ($setting['fields'] as $field_name => $field)
-{
-	if (isset($field['required']) && $field['required'] == TRUE)
+if (isset($setting['fields']) && !empty($setting['fields'])) {
+	foreach ($setting['fields'] as $field_name => $field)
 	{
-		$fieldset_classes .= ' fieldset-required';
-		break;
+		if (isset($field['required']) && $field['required'] == TRUE)
+		{
+			$fieldset_classes .= ' fieldset-required';
+			break;
+		}
 	}
 }
 if (isset($setting['security']) && $setting['security'] == TRUE)
@@ -51,17 +53,21 @@ if ($grid)
 }
 else
 {
-	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']), 'fieldset-invalid');
+	if (isset($setting['fields']) && !empty($setting['fields'])) {
+		$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']), 'fieldset-invalid');
+	}
 }
 // If a validation result object is set, see if any of our fields have errors
 if (isset($errors))
 {
-	foreach (array_keys($setting['fields']) as $field)
-	{
-		if ($errors->hasErrors($field))
+	if (isset($setting['fields']) && !empty($setting['fields'])) {
+		foreach (array_keys($setting['fields']) as $field)
 		{
-			$fieldset_classes .= ' fieldset-invalid';
-			break;
+			if ($errors->hasErrors($field))
+			{
+				$fieldset_classes .= ' fieldset-invalid';
+				break;
+			}
 		}
 	}
 }
@@ -76,9 +82,14 @@ if (is_array($setting_group))
 	$setting_group = implode('|', $setting_group);
 }
 
+$fieldset_id = '';
+if (isset($setting['fields']) && !empty($setting['fields'])) {
+	$fieldset_id = ' id="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
+}
+
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
-<<?=$element?> id="fieldset-<?=implode('-', array_keys($setting['fields']))?>" class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+<<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
 		<label for="smth"><?=lang($setting['title'])?></label>
@@ -97,42 +108,44 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php
 			$count = 0;
 			$values = [];
-			foreach ($setting['fields'] as $field_name => $field)
-			{
-				$field_name = isset($field['name'])
-					? $field['name'] : $field_name;
-
-				$vars = array(
-					'field_name' => $field_name,
-					'field' => $field,
-					'setting' => $setting,
-					'grid' => $grid
-				);
-
-				// If there are multiple fields with the same name, such as
-				// radio options with fields in between, persist the value
-				// across them, otherwise the first value in each will be checked
-				if (isset($values[$field_name]) && ! isset($field['value']))
+			if (isset($setting['fields']) && !empty($setting['fields'])) {
+				foreach ($setting['fields'] as $field_name => $field)
 				{
-					$vars['field']['value'] = $values[$field_name];
-				}
-				elseif (isset($field['value']))
-				{
-					$values[$field_name] = $field['value'];
-				}
+					$field_name = isset($field['name'])
+						? $field['name'] : $field_name;
 
-				// Add top margin to sequential fields
-				if ($count > 0 && ! isset($field['margin_top']))
-				{
-					$vars['field']['margin_top'] = TRUE;
-				}
+					$vars = array(
+						'field_name' => $field_name,
+						'field' => $field,
+						'setting' => $setting,
+						'grid' => $grid
+					);
 
-				if ($field['type'] != 'hidden')
-				{
-					$count++;
-				}
+					// If there are multiple fields with the same name, such as
+					// radio options with fields in between, persist the value
+					// across them, otherwise the first value in each will be checked
+					if (isset($values[$field_name]) && ! isset($field['value']))
+					{
+						$vars['field']['value'] = $values[$field_name];
+					}
+					elseif (isset($field['value']))
+					{
+						$values[$field_name] = $field['value'];
+					}
 
-				$this->embed('ee:_shared/form/field', $vars);
+					// Add top margin to sequential fields
+					if ($count > 0 && ! isset($field['margin_top']))
+					{
+						$vars['field']['margin_top'] = TRUE;
+					}
+
+					if ($field['type'] != 'hidden')
+					{
+						$count++;
+					}
+
+					$this->embed('ee:_shared/form/field', $vars);
+				}
 			}
 		?>
 		<?php if (isset($setting['button'])): ?>

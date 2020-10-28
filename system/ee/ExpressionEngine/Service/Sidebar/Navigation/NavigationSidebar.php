@@ -42,7 +42,8 @@ class NavigationSidebar extends AbstractSidebar
             }
 
             $list = $this->addList(lang('menu_entries'));
-            $list->addItem(lang('view_all'), ee('CP/URL', 'publish/edit'));
+            $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+
             foreach ($cp_main_menu['channels']['all'] as $channel_name => $link) {
                 $url = isset($cp_main_menu['channels']['edit'][$channel_name]) ? $cp_main_menu['channels']['edit'][$channel_name] : '#';
                 $listitem = $list->addItem($channel_name, $url);

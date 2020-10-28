@@ -3,9 +3,11 @@
 import BulkEdit from '../../elements/pages/publish/BulkEdit';
 import Publish from '../../elements/pages/publish/Publish';
 import EntryManager from '../../elements/pages/publish/EntryManager';
+import Channel from '../../elements/pages/channel/Channel';
 
 const bulk_edit = new BulkEdit;
 const entry_manager = new EntryManager;
+const channel = new Channel;
 
 context('Bulk Edit', () => {
 
@@ -57,8 +59,7 @@ context('Bulk Edit', () => {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
 
-      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date',
-      'Make entry sticky?', 'Author', 'Allow comments?', 'Comment expiration date',  'Categories'])
+      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date', 'Author', 'Allow comments?', 'Comment expiration date',  'Categories'])
     })
 
     bulk_edit.get('fluid_fields').should('have.length', 0)
@@ -81,8 +82,7 @@ context('Bulk Edit', () => {
       let field_options = Cypress._.map($li, function(el) {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
-      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date',
-      'Make entry sticky?', 'Author'])
+      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date', 'Author'])
     })
 
     cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
@@ -95,7 +95,7 @@ context('Bulk Edit', () => {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
       expect(field_options).to.deep.equal(['Entry Status', 'Expiration date',
-      'Make entry sticky?', 'Author', 'Allow comments?', 'Comment expiration date',  'Categories'])
+      'Author', 'Allow comments?', 'Comment expiration date',  'Categories'])
     })
   })
 
@@ -154,7 +154,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').parent().find('a:contains("Entry Status")').click()
 
     // This channel has comments disabled
-    const expected_fields = ['Expiration date', 'Make entry sticky?', 'Author', 'Categories']
+    const expected_fields = ['Expiration date', 'Author', 'Categories']
 
     // Status should be removed from available options
     //bulk_edit.get('add_field').click()
@@ -249,23 +249,18 @@ context('Bulk Edit', () => {
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
-    bulk_edit.get('field_options').parent().find('a:contains("Make entry sticky?")').click()
+    bulk_edit.get('field_options').parent().find('a:contains("Allow comments?")').click()
     bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
-    bulk_edit.get('field_options').parent().find('a:contains("Allow comments?")').click()
-    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').click()
-
-    //bulk_edit.get('add_field').click()
-    bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Author")').click()
-    bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
+    bulk_edit.get('fluid_fields').eq(4).find('input[value="2"]').click()
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Categories")').click()
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]').click()
+    bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
 
     // Make sure fields retain values after removing an entry!
     cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
@@ -279,10 +274,9 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(1).find('input[type!=hidden][name=expiration_date]').should('have.value', '2/14/2018 4:00 PM')
     bulk_edit.get('fluid_fields').eq(2).find('input[type!=hidden][name=comment_expiration_date]').should('have.value', '2/14/2018 5:00 PM')
     bulk_edit.get('fluid_fields').eq(3).find('.toggle-btn').should('have.class', 'on')
-    bulk_edit.get('fluid_fields').eq(4).find('.toggle-btn').should('have.class', 'on')
+    bulk_edit.get('fluid_fields').eq(4).find('input[value="2"]:visible').should('be.checked')
+    bulk_edit.get('fluid_fields').eq(5).find('input[value="1"]:visible').should('not.be.checked')
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]:visible').should('be.checked')
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="1"]:visible').should('not.be.checked')
-    bulk_edit.get('fluid_fields').eq(6).find('input[value="2"]:visible').should('be.checked')
 
     //bulk_edit.get('save_all_button').click()
     cy.get('input').contains('Save All & Close').first().click()
@@ -303,9 +297,40 @@ context('Bulk Edit', () => {
       publish.get('wrap').find('input[value="2"]:visible').should('be.checked')
       publish.get('tab_links').eq(3).click() // Options tab
       publish.get('wrap').find('[data-input-value="status"] .select__button-label').contains('Closed')
-      publish.get('wrap').find('[data-toggle-for="sticky"]').should('have.class', 'on')
       publish.get('wrap').find('[data-toggle-for="allow_comments"]').should('have.class', 'on')
     })
+
+  })
+
+  it.only('should allow setting sticky on enabled channels', () => {
+    channel.load_edit_for_channel(1)
+    channel.get('settings_tab').click()
+    channel.get('sticky_enabled').click()
+    channel.get('save_button').click({force: true})
+    cy.contains('Channel Updated')
+    
+    entry_manager.load();
+    entry_manager.check_entry('Jason')
+
+    entry_manager.get('bulk_action').select('Bulk Edit')
+    entry_manager.get('action_submit_button').click()
+
+    bulk_edit.get('field_options').should('exist')
+
+    bulk_edit.get('field_options').contains('Add Make entry sticky?')
+
+    entry_manager.load()
+    
+    entry_manager.check_entry('Welcome to the Example Site!')
+    entry_manager.check_entry('Jason')
+
+    entry_manager.get('bulk_action').select('Bulk Edit')
+    entry_manager.get('action_submit_button').click()
+
+    bulk_edit.get('field_options').should('exist')
+
+    bulk_edit.get('field_options').should('not.contain', 'Add Make entry sticky?')
+    
 
   })
 

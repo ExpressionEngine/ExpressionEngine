@@ -74,15 +74,21 @@ abstract class AbstractChannels extends CP_Controller {
 		ee()->load->library('form_validation');
 
 		// This header is section-wide
-		ee()->view->header = array(
+		$header = array(
 			'title' => lang('channel_manager'),
-			'toolbar_items' => array(
-				'settings' => array(
+		);
+
+		if (ee('Permission')->hasAll('access_sys_prefs', 'can_admin_channels')) {
+			$header['toolbar_items'] = [
+				'settings' => [
 					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
-				)
-			),
-			'action_buttons' => [
+				]
+			];
+		}
+
+		if (ee('Permission')->has('can_create_channels')) {
+			$header['action_buttons'] = [
 				[
 					'text' => lang('import'),
 					'href' => '#',
@@ -92,8 +98,10 @@ abstract class AbstractChannels extends CP_Controller {
 					'text' => lang('new_channel'),
 					'href' => ee('CP/URL', 'channels/create')
 				]
-			]
-		);
+			];
+		}
+
+		ee()->view->header = $header;
 
 		ee()->javascript->set_global(
 			'sets.importUrl',

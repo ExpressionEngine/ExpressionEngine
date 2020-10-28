@@ -298,6 +298,9 @@ class EE_URI
         }
 
         if (! isset($base)) {
+            if (!defined('BASE')) {
+                define('BASE', EESELF . '?S=' . ee()->session->session_id() . '&amp;D=cp');
+            }
             $base = BASE;
         }
 

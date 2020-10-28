@@ -2,8 +2,13 @@ name: Run PHP Tests
 
 on:
   push:
-    branches-ignore:
-      - '**'
+    branches:
+      - testing/ee6-unit-testing
+      - testing/php8
+      - release/6.0.0
+  pull_request:
+    branches:
+      - release/6.0.0
 
 jobs:
     php-tests:
@@ -12,7 +17,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.1, 5.6]
+                php: [7.3]
                 os: [ubuntu-latest]
 
         name: P${{ matrix.php }} - ${{ matrix.os }}
@@ -30,7 +35,7 @@ jobs:
               uses: actions/checkout@v1
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v1
+              uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
@@ -40,18 +45,23 @@ jobs:
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
 
             - name: Install PHP dependencies
-              working-directory: system/ee/EllisLab/Tests/
+              working-directory: system/ee/ExpressionEngine/Tests/
               run: |
                 composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/EllisLab/Tests/vendor/bin/phplint ./ --exclude=system/ee/EllisLab/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
 
             - name: Run PHPUnit Tests
-              working-directory: system/ee/EllisLab/Tests/
+              working-directory: system/ee/ExpressionEngine/Tests/
               run: vendor/bin/phpunit --configuration=phpunit.xml
 
-            - name: Run Updater PHPUnit Tests
-              working-directory: system/ee/installer/updater/EllisLab/Tests/
-              run: vendor/bin/phpunit --configuration=phpunit.xml
+            - name: Install PHP dependencies for updater tests
+              working-directory: system/ee/installer/updater/ExpressionEngine/Tests/
+              run: |
+                composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
+
+#            - name: Run Updater PHPUnit Tests
+#              working-directory: system/ee/installer/updater/ExpressionEngine/Tests/
+#              run: vendor/bin/phpunit --configuration=phpunit.xml

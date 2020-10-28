@@ -31,7 +31,8 @@ class Runner {
 			'updateFiles',
 			'checkForDbUpdates',
 			'backupDatabase',
-			'updateDatabase'
+			'updateDatabase',
+			'updateAddons'
 		]);
 
 		$this->logger = $this->makeLoggerService();
@@ -255,6 +256,11 @@ class Runner {
 		}
 	}
 
+	public function updateAddons()
+	{
+		$this->makeAddonUpdaterService()->updateAddons();
+	}
+
 	/**
 	 * Overrides SteppableTrait's runStep to be a catch-all for exceptions
 	 */
@@ -344,6 +350,17 @@ class Runner {
 			$filesystem,
 			$verifier,
 			$this->logger
+		);
+	}
+
+	/**
+	 * Makes AddonUpgrade service
+	 */
+	protected function makeAddonUpdaterService()
+	{
+
+		return new Service\Updater\AddonUpdater(
+			ee()->config->item('app_version')
 		);
 	}
 

@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class PreflightTest extends TestCase {
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
@@ -22,12 +22,15 @@ class PreflightTest extends TestCase {
 		$this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->theme_paths);
 	}
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		$this->filesystem = NULL;
 		$this->config = NULL;
 		$this->logger = NULL;
 		$this->preflight = NULL;
+
+
+		Mockery::close();
 	}
 
 	public function testCheckDiskSpace()
@@ -54,7 +57,7 @@ class PreflightTest extends TestCase {
 		catch (UpdaterException $e)
 		{
 			$this->assertEquals(11, $e->getCode());
-			$this->assertContains('1234', $e->getMessage());
+			$this->assertStringContainsString('1234', $e->getMessage());
 		}
 	}
 

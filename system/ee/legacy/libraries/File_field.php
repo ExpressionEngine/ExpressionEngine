@@ -223,7 +223,7 @@ class File_field {
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'fields/file/cp',
+				'fields/file/control_panel',
 				'fields/file/file_field_drag_and_drop'
 			),
 		));

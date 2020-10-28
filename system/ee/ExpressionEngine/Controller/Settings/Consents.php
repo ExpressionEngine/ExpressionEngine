@@ -86,6 +86,10 @@ class Consents extends Settings {
 			),
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('consent_requests')
+		);
+
 		ee()->cp->render('settings/consents/index', $vars);
 	}
 
@@ -197,12 +201,20 @@ class Consents extends Settings {
 				$(this).ee_url_title("input[name=consent_name]");
 			});
 		');
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
+			'' => lang('create')
+		);
 
 		return $this->form();
 	}
 
 	public function newVersion($request_id)
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
+			'' => lang('edit')
+		);
 		return $this->form($request_id);
 	}
 
@@ -288,6 +300,10 @@ class Consents extends Settings {
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = sprintf(lang('consent_request_versions'), $request->title);
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings/consents')->compile() => lang('consent_requests'),
+			'' => lang('consent_list_versions')
+		);
 		ee()->cp->render('settings/consents/versions', $vars);
 	}
 
@@ -328,7 +344,6 @@ class Consents extends Settings {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_consent_request');
-			ee()->view->breadcrumb_title = lang('edit').' '.$request->title;
 		}
 
 		$vars['errors'] = NULL;

@@ -155,6 +155,27 @@ class ParseNode extends EE_TreeNode {
 	}
 
 	/**
+	 * @param   string  tagdata for the children to parse
+	 * @param   array   the current relationship entry row
+	 * @return string
+	 */
+	public function callback_tagdata_loop_start($tagdata, $row)
+	{
+		// -------------------------------------------
+		// 'relationship_entries_tagdata' hook.
+		//  - Take the related entry data and tag data, do what you wish
+		//
+		if (ee()->extensions->active_hook('relationship_entries_tagdata') === TRUE)
+		{
+			$tagdata = ee()->extensions->call('relationship_entries_tagdata', $tagdata, $row, $this);
+		}
+		//
+		// -------------------------------------------
+
+		return $tagdata;
+	}
+
+	/**
 	 * At the end of the channel entries parsing loop we need to recurse
 	 * into the child tags of our tree. The relationship_parser would need
 	 * to manually keep track of the stack as the parsing happens depth

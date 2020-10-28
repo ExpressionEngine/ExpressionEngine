@@ -96,7 +96,7 @@ context('SQL manager', () => {
 
 	it('should validate the table operations submission', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="select all"]').first().click()
+		cy.get('input[type="checkbox"][title="Select All"]').first().click()
 		cy.wait(500)
 		page.get('op_submit').click()
 		page.get('wrap').contains('You must select an action to perform on the selected tables.')
@@ -105,7 +105,7 @@ context('SQL manager', () => {
 
 	it('should repair the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="select all"]').first().click()
+		cy.get('input[type="checkbox"][title="Select All"]').first().click()
 		page.get('op_select').select('Repair')
 		page.get('op_submit').click()
 		cy.hasNoErrors()
@@ -132,7 +132,7 @@ context('SQL manager', () => {
 
 	it('should optimize the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="select all"]').first().click()
+		cy.get('input[type="checkbox"][title="Select All"]').first().click()
 		page.get('op_select').select('Optimize')
 		page.get('op_submit').click()
 		cy.hasNoErrors()
@@ -158,7 +158,7 @@ context('SQL manager', () => {
 
 	})
 
-	it.only('should allow viewing of table contents', () =>{
+	it('should allow viewing of table contents', () =>{
 
 
 		//page.get('manage_links').eq(0).click()AJ
@@ -166,9 +166,9 @@ context('SQL manager', () => {
 		cy.get('a[title="View"]').first().click()
 
 		cy.hasNoErrors()
-		cy.get('.breadcrumb > :nth-child(1)').contains('SQL Manager')
-		//cy.get('.breadcrumb > .last').contains('exp_actions Table')
-		//cy.get('.checklist > .last').contains(21)
+		cy.get('.breadcrumb').contains('SQL Manager')
+		cy.get('.title-bar').contains('exp_actions Table')
+		cy.get('.table-responsive').contains('register_member')
 
 	})
 

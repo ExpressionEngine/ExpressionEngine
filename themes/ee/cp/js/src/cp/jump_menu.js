@@ -71,6 +71,7 @@ EE.cp.JumpMenu = {
 			EE.cp.JumpMenu.currentFocus = 1;
 			jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
 			jumpContainer.document.querySelector('#jumpEntry2').value = '';
+			jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
 			EE.cp.JumpMenu._showJumpMenu(1);
 		});
 
@@ -126,6 +127,7 @@ EE.cp.JumpMenu = {
 		jumpContainer.document.querySelector('.jump-to').blur();
 		jumpContainer.document.querySelector('.jump-to').value = '';
 		jumpContainer.$('#jump-menu').hide();
+		jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
 
 		if ($('#jump-menu').hasClass('on-welcome')) {
 			$('.welcome-jump-instructions').fadeOut();

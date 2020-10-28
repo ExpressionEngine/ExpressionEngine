@@ -113,7 +113,10 @@ class RteHelper
                 "italic",
                 "strikethrough",
                 "underline",
+                "subscript",
+                "superscript",
                 "blockquote",
+                "code",
                 "heading",
                 "removeFormat",
                 "undo",
@@ -176,6 +179,8 @@ class RteHelper
      */
     public static function insertConfigJsById($configId = null)
     {
+        ee()->lang->loadfile('rte');
+        
         // starting point
         $baseConfig = static::defaultConfigSettings();
 
@@ -271,6 +276,21 @@ class RteHelper
                 $config['toolbar']->items = array_values($items);
             }
         }
+
+        $config['toolbar']->shouldNotGroupWhenFull = true;
+
+        //link
+        $config['link'] = (object) ['decorators' => [
+            'openInNewTab' => [
+                    'mode' => 'manual',
+                    'label' => lang('open_in_new_tab'),
+                    'attributes' => [
+                        'target' => '_blank',
+                        'rel' => 'noopener noreferrer'
+                    ]
+                ]
+            ]
+        ];
 
         // -------------------------------------------
         //  JSONify Config and Return
@@ -481,6 +501,7 @@ class RteHelper
         $pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
 
         if ($pages === false) {
+            $pages = [];
             $break = false;
             /**
              * `rte_autocomplete_pages` extension hook

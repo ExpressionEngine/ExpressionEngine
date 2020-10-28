@@ -179,6 +179,10 @@ class Msm extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('sites');
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('sites')
+		);
+
 		ee()->cp->render('msm/index', $vars);
 	}
 
@@ -188,10 +192,6 @@ class Msm extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
-		);
 
 		$errors = NULL;
 		$site = ee('Model')->make('Site');
@@ -285,6 +285,11 @@ class Msm extends CP_Controller {
 			});
 		');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('msm')->compile() => lang('sites'),
+			'' => lang('create_site')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -301,10 +306,6 @@ class Msm extends CP_Controller {
 		{
 			show_404();
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
-		);
 
 		$errors = NULL;
 		$result = $this->validateSite($site);
@@ -385,6 +386,12 @@ class Msm extends CP_Controller {
 		);
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('edit_site');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('msm')->compile() => lang('sites'),
+			'' => lang('edit_site')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

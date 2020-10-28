@@ -388,7 +388,7 @@ $(document).ready(function(){
 	function collapseFilterBar(container, collapse) {
 		$(container).find('.filter-bar').toggleClass('filter-bar--collapsed', collapse)
 
-		$('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
+		$(container).find('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
 	}
 
 	$('body').on('click', '.js-filter-bar-toggle button', function(e) {
@@ -410,7 +410,7 @@ $(document).ready(function(){
 			collapse = true
 		}
 
-		$('.js-filter-bar-toggle').toggle(collapse)
+		$('.js-filters-collapsible .js-filter-bar-toggle').toggle(collapse)
 
 		$('.js-filters-collapsible').each(function() {
 			collapseFilterBar(this, collapse)
