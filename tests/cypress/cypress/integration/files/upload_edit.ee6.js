@@ -41,7 +41,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('wrap').contains('Attention: Upload directory not saved')
     page.hasError(page.get('name'), page.messages.validation.required)
     //page.hasError(page.get('url'), url_error)
-    page.hasError(page.get('server_path'), page.messages.validation.required)
+    //page.hasError(page.get('server_path'), page.messages.validation.required)
 
     // AJAX validation
     page.load()
@@ -89,8 +89,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Error when left blank
     cy.route("POST", "**/files/uploads/**").as("ajax6");
-    page.get('url').clear()
-    page.get('url').trigger('blur')
+    page.get('url').clear().trigger('blur')
     cy.wait("@ajax6");
     page.hasErrorsCount(2)
     page.hasError(page.get('url'), page.messages.validation.required)
@@ -99,7 +98,7 @@ context('Upload Destination Create/Edit', () => {
     // Server path errors, path must both exist and be writable
     // Required:
     cy.route("POST", "**/files/uploads/**").as("ajax7");
-    page.get('server_path').trigger('blur')
+    page.get('server_path').clear().trigger('blur')
     cy.wait("@ajax7");
     page.hasErrorsCount(3)
     page.hasError(page.get('server_path'), page.messages.validation.required)
@@ -107,8 +106,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Resolve so can break again:
     cy.route("POST", "**/files/uploads/**").as("ajax8");
-    page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
-    page.get('server_path').trigger('blur')
+    page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false}).trigger('blur')
     cy.wait("@ajax8");
     page.hasErrorsCount(2)
     page.hasNoError(page.get('server_path'))
@@ -116,8 +114,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Invalid path:
     cy.route("POST", "**/files/uploads/**").as("ajax9");
-    page.get('server_path').clear().type('sdfsdf')
-    page.get('server_path').trigger('blur')
+    page.get('server_path').clear().type('sdfsdf').trigger('blur')
     cy.wait("@ajax9");
     page.hasErrorsCount(3)
     page.hasError(page.get('server_path'), page.messages.validation.invalid_path)
