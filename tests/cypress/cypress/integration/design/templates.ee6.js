@@ -221,9 +221,10 @@ context('Templates', () => {
 
                 cy.get('button').contains('Save').first().click()
 
-                //revering should keep the setting 
+                //reverting should keep the setting 
                 cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
                     cy.auth();
+                    cy.wait(1000)
                     editPage.load_edit_for_template('11')
 
                     editPage.get('settings_tab').click()
