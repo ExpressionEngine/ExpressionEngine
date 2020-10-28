@@ -81,7 +81,7 @@ class Updater {
 		if ( ! $notify_template)
 		{
 			$sites = ee('Model')->get('Site')->all();
-			require_once SYSPATH . 'ee/language/' . ee()->config->item('language') .z'/email_data.php';
+			require_once SYSPATH . 'ee/language/' . ee()->config->item('language') .'/email_data.php';
 
 			foreach ($sites as $site)
 			{
