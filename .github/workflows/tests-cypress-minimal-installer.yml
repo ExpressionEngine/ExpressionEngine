@@ -3,31 +3,21 @@ name: Run Cypress Installer Tests
 on:
   push:
     branches:
+      - design/6.0.0/cp
+      - testing/php8
+  pull_request:
+    branches:
       - release/6.0.0
 
 jobs:
     cypress-tests:
         runs-on: ${{ matrix.os }}
 
-        # services:
-        #     mysql:
-        #         image: mysql:5.7
-        #         env:
-        #             MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-        #             MYSQL_ROOT_PASSWORD: 'root'
-        #             MYSQL_DATABASE: 'ee-test'
-        #         ports:
-        #             - 3306/tcp
-        #         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.2, 7.1, 5.6]
+                php: [7.3]
                 os: [ubuntu-18.04]
-                include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -65,7 +55,7 @@ jobs:
                 sudo systemctl start mysql
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
-
+                
             - name: Install PHP dependencies
               working-directory: tests/cypress
               run: composer install
