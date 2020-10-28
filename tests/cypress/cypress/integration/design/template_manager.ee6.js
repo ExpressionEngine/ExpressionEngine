@@ -191,23 +191,25 @@ context('Template Manager', () => {
 
         it('shows PHP toggle when enabled', function() {
 
-            cy.eeConfig({ item: 'allow_php', value: 'y' })
+            cy.eeConfig({ item: 'allow_php', value: 'y' }).then((config) => {
 
-            cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+                cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
 
-            cy.get('button').contains('Settings').first().click()
-            let form = new TemplateEdit
-            form.get('name').clear().type('archives-and-stuff')
-            form.get('allow_php').click()
-            form.get('php_parse_stage').check('i')
+                cy.get('button').contains('Settings').first().click()
+                let form = new TemplateEdit
+                form.get('name').clear().type('archives-and-stuff')
+                form.get('allow_php').click()
+                form.get('php_parse_stage').check('i')
 
-            cy.get('button').contains('Save').first().click()
+                cy.get('button').contains('Save').first().click()
 
-            cy.get('button').contains('Settings').first().click()
+                cy.get('button').contains('Settings').first().click()
 
-            form.get('name').should('have.value', 'archives-and-stuff')
-            form.get('allow_php').should('have.class', 'on')
-            form.get('php_parse_stage').filter(':checked').should('have.value', 'i')
+                form.get('name').should('have.value', 'archives-and-stuff')
+                form.get('allow_php').should('have.class', 'on')
+                form.get('php_parse_stage').filter(':checked').should('have.value', 'i')
+
+            })
         })
 
         it('should validate the settings form', function() {

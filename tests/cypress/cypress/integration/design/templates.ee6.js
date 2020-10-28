@@ -211,21 +211,23 @@ context('Templates', () => {
         })
 
         it('not enabling PHP if not enabled globally', function() {
-            cy.eeConfig({ item: 'allow_php', value: 'n' })
+            cy.eeConfig({ item: 'allow_php', value: 'n' }).then((config) => {
 
-            editPage.load_edit_for_template('11')
-            
-            editPage.get('settings_tab').click()
-            editPage.get('allow_php').should('not.exist')
+                editPage.load_edit_for_template('11')
+                
+                editPage.get('settings_tab').click()
+                editPage.get('allow_php').should('not.exist')
 
-            cy.get('button').contains('Save').first().click()
+                cy.get('button').contains('Save').first().click()
 
-            //revering should keep the setting 
-            cy.eeConfig({ item: 'allow_php', value: 'y' })
-            editPage.load_edit_for_template('11')
+                //revering should keep the setting 
+                cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
+                    editPage.load_edit_for_template('11')
 
-            editPage.get('settings_tab').click()
-            editPage.get('allow_php').should('have.class', "on")
+                    editPage.get('settings_tab').click()
+                    editPage.get('allow_php').should('have.class', "on")
+                })
+            })
             
         })
 
