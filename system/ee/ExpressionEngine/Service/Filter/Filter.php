@@ -123,11 +123,11 @@ abstract class Filter {
 
 		if (isset($_POST[$this->name]) && ! empty($_POST[$this->name]))
 		{
-			$value = ee('Request')->post($this->name);
+			$value = $_POST[$this->name];
 		}
 		elseif (isset($_GET[$this->name]))
 		{
-			$value = ee('Request')->get($this->name);
+			$value = $_GET[$this->name];
 		}
 
 		return $value;
