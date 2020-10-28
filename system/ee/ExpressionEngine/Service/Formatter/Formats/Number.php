@@ -116,7 +116,8 @@ class Number extends Formatter {
 			setlocale(LC_MONETARY, $options['locale']);
 
 			$right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
-			$this->content = money_format("%.{$right_precision}n", (float) $this->content);
+			//@-suppressing because we don't want deprecation error - see above on 20/80 effort
+			$this->content = @money_format("%.{$right_precision}n", (float) $this->content);
 
 			// set the monetary locale back to normal
 			setlocale(LC_MONETARY, $sys_locale);
