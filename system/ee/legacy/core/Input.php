@@ -505,16 +505,18 @@ class EE_Input {
 			switch ($which) {
 				case 'ipv4':
 					$flag = FILTER_FLAG_IPV4;
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP, $flag);
 					break;
 				case 'ipv6':
 					$flag = FILTER_FLAG_IPV6;
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP, $flag);
 					break;
 				default:
-					$flag = '';
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP);
 					break;
 			}
 
-			return filter_var($ip, FILTER_VALIDATE_IP, $flag) !== FALSE;
+			return $filtered !== FALSE;
 		}
 
 		// If it's not we'll do it manually

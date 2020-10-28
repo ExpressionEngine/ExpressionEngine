@@ -133,7 +133,7 @@ class EE_Javascript {
 	 * @param	string	- Javascript code for mouse out
 	 * @return	string
 	 */
-	public function hover($element = 'this', $over, $out)
+	public function hover($element = 'this', $over = '', $out = '')
 	{
 		return $this->js->__hover($element, $over, $out);
 	}
