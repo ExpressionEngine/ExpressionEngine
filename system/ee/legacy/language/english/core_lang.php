@@ -141,6 +141,8 @@ If you made these changes, please accept the modifications on the control panel 
 
 'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="'.DOC_URL.'installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 
+'php72_intl_error' => 'Your `intl` PHP extentsion is out-of-date. Please ensure you have ICU 4.6 or newer installed',
+
 
 /* Member Groups */
 'banned' => 'Banned',
