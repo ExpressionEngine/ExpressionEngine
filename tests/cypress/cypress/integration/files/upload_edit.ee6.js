@@ -33,7 +33,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('cat_group').should('exist')
   })
 
-  it.only('should validate regular fields', () => {
+  it('should validate regular fields', () => {
     const url_error = 'This field must contain a valid URL.'
     page.submit()
     cy.hasNoErrors()
