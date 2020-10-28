@@ -4,7 +4,7 @@
 		<title><?=$title?></title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
-		<link href="<?=$theme_url?>/ee/cp/css/out.min.css" rel="stylesheet">
+		<link href="<?=$theme_url?>/ee/cp/css/common.min.css" rel="stylesheet">
 		<?php
 		if (isset($extra_header))
 		{
@@ -21,14 +21,14 @@
 		}
 		?>
 	</head>
-	<body>
+	<body class="installer-page">
 		<section class="flex-wrap">
 			<section class="wrap">
 				<?=$content?>
 			</div>
 			<section class="bar">
-				<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-				<p class="right">&copy;<?=date('Y')?> <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
+				<p style="float: left;"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
+				<p style="float: right;">&copy;<?=date('Y')?> <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
 			</section>
 		</section>
 
