@@ -84,11 +84,11 @@
           </label>
   			</fieldset>
   		<?php endif; ?>
-    </div>
-    <div class="panel-footer">
-      <div class="form-btns">
-  			<input class="button button--primary button--large button--wide" type="submit" value="<?=lang('start_update')?>">
+      <div class="panel-footer" style="margin: 25px -25px -20px;">
+        <div class="form-btns">
+    			<input class="button button--primary button--large button--wide" type="submit" value="<?=lang('start_update')?>">
+        </div>
       </div>
+  	</form>
     </div>
-	</form>
 </div>
