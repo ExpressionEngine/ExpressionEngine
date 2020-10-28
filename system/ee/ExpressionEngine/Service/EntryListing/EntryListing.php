@@ -204,15 +204,15 @@ class EntryListing {
 			->add($this->channel_filter)
 			->add($this->category_filter)
 			->add($this->status_filter)
-			->add('Date')
-			->add('Keyword')
-			->add('SearchIn', [
-					'titles' => lang('titles'),
-					'content' => lang('content'),
-					'titles_and_content' => lang('titles_and_content'),
-				],
-				$this->search_in
-			);
+			->add('Date');
+			// ->add('Keyword');
+			// ->add('SearchIn', [
+					// 'titles' => lang('titles'),
+					// 'content' => lang('content'),
+					// 'titles_and_content' => lang('titles_and_content'),
+				// ],
+				// $this->search_in
+			// );
 
 			if (in_array('Author', $this->extra_filters)) {
 				$this->author_filter = $this->createAuthorFilter($channel);
