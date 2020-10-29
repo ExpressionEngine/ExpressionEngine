@@ -820,6 +820,7 @@ class Api_channel_entries extends Api {
 				$valid_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
 			}
 
+			ee()->load->model('status_model');
 			$query = ee()->status_model->get_disallowed_statuses(ee()->session->userdata('group_id'));
 
 			if ($query->num_rows() > 0)
