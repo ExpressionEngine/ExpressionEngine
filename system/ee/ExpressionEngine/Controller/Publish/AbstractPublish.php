@@ -395,14 +395,13 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->session->set_flashdata('entry_id', $entry->entry_id);
 
-		$edit_entry_url = ee('CP/URL')->getCurrentUrl();
-		$edit_entry_url->path = 'publish/edit/entry/' . $entry->entry_id;
+		$edit_entry_url = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
 
 		$alert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
 			? ee('CP/Alert')->makeStandard()
 			: ee('CP/Alert')->makeInline('entry-form');
 
-		$lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url->compile(), ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+		$lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		$alert->asSuccess()
 			->withTitle(lang($action . '_entry_success'))
