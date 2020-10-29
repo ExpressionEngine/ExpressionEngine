@@ -207,7 +207,7 @@ class Group extends AbstractDesignController {
 							$new_template->site_id = ee()->config->item('site_id');
 							$new_template->hits = 0; // Reset hits
 							$new_template->Roles = $master_template->Roles;
-							if ( ! ee('Permission')->isSuperAdmin())
+							if (!ee('Config')->getFile()->getBoolean('allow_php') || !ee('Permission')->isSuperAdmin())
 							{
 								$new_template->allow_php = FALSE;
 							}

@@ -592,80 +592,133 @@ if ( ! function_exists('offline_template'))
 	function offline_template()
 	{
 return <<<EOF
-<html>
-<head>
+<!doctype html>
+<html dir="ltr">
+    <head>
+        <title>System Offline</title>
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 
-<title>System Offline</title>
+        <style type="text/css">
+:root, body {
+    --ee-panel-bg: #fff;
+    --ee-panel-border: #dfe0ef;
+    --ee-text-normal: #0d0d19;
+    --ee-main-bg: #f7f7fb;
+    --ee-link: #5D63F1;
+    --ee-link-hover: #171feb;
+}
 
-<style type="text/css">
+*, :after, :before {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+    font-size: 15px;
+    height: 100%;
+    line-height: 1.15;
+}
 
 body {
-background-color:	#ffffff;
-margin:				50px;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size:			11px;
-color:				#000;
-background-color:	#fff;
+    font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+    height: 100%;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ee-text-normal);
+    background: var(--ee-main-bg);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: var(--ee-panel-bg);
+    border: 1px solid var(--ee-panel-border);
+    border-radius: 6px;
+}
+.redirect {
+	max-width: 700px;
+	min-width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.panel-heading {
+    padding: 20px 25px;
+    position: relative;
+}
+
+.panel-body {
+    padding: 20px 25px;
+}
+
+.panel-body:after, .panel-body:before {
+    content: " ";
+    display: table;
+}
+
+.redirect p {
+    margin-bottom: 20px;
+}
+p {
+    line-height: 1.6;
+}
+a, blockquote, code, h1, h2, h3, h4, h5, h6, ol, p, pre, ul {
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    font-weight: inherit;
 }
 
 a {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-letter-spacing:		.09em;
-text-decoration:	none;
-color:			  #330099;
-background-color:	transparent;
-}
-
-a:visited {
-color:				#330099;
-background-color:	transparent;
+    color: var(--ee-link);
+    text-decoration: none;
+    -webkit-transition: color .15s ease-in-out;
+    -moz-transition: color .15s ease-in-out;
+    -o-transition: color .15s ease-in-out;
 }
 
 a:hover {
-color:				#000;
-text-decoration:	underline;
-background-color:	transparent;
+    color: var(--ee-link-hover);
 }
 
-#content  {
-border:				#999999 1px solid;
-padding:			22px 25px 14px 25px;
+h3 {
+    font-size: 1.35em;
+    font-weight: 500;
 }
 
-h1 {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-font-size:			14px;
-color:				#000;
-margin-top: 		0;
-margin-bottom:		14px;
+ol, ul {
+    padding-left: 0;
 }
 
-p {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		12px;
-margin-bottom: 		14px;
-color: 				#000;
+ol li, ul li {
+    list-style-position: inside;
 }
-</style>
 
-</head>
+.panel-footer {
+    padding: 20px 25px;
+    position: relative;
+}
 
-<body>
 
-<div id="content">
-
-<h1>System Offline</h1>
-
-<p>This site is currently offline</p>
-
-</div>
-
-</body>
-
+        </style>
+    </head>
+    <body>
+        <section class="flex-wrap">
+            <section class="wrap">
+                <div class="panel redirect">
+                    <div class="panel-heading">
+                        <h3>System Offline</h3>
+                    </div>
+					<div class="panel-body">
+					This site is currently offline
+                    </div>
+                </div>
+            </section>
+        </section>
+    </body>
 </html>
 EOF;
 	}
@@ -681,106 +734,140 @@ if ( ! function_exists('message_template'))
 	function message_template()
 	{
 return <<<EOF
-<html>
-<head>
+<!doctype html>
+<html dir="ltr">
+    <head>
+        <title>{title}</title>
+        <meta http-equiv="content-type" content="text/html; charset={charset}">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+        <meta name="referrer" content="no-referrer">
+        {meta_refresh}
+        <style type="text/css">
+:root, body {
+    --ee-panel-bg: #fff;
+    --ee-panel-border: #dfe0ef;
+    --ee-text-normal: #0d0d19;
+    --ee-main-bg: #f7f7fb;
+    --ee-link: #5D63F1;
+    --ee-link-hover: #171feb;
+}
 
-<title>{title}</title>
+*, :after, :before {
+    box-sizing: inherit;
+}
 
-<meta http-equiv='content-type' content='text/html; charset={charset}' />
-
-{meta_refresh}
-
-<style type="text/css">
+html {
+    box-sizing: border-box;
+    font-size: 15px;
+    height: 100%;
+    line-height: 1.15;
+}
 
 body {
-background-color:	#ffffff;
-margin:				50px;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size:			11px;
-color:				#000;
-background-color:	#fff;
+    font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+    height: 100%;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ee-text-normal);
+    background: var(--ee-main-bg);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: var(--ee-panel-bg);
+    border: 1px solid var(--ee-panel-border);
+    border-radius: 6px;
+}
+.redirect {
+	max-width: 700px;
+	min-width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.panel-heading {
+    padding: 20px 25px;
+    position: relative;
+}
+
+.panel-body {
+    padding: 20px 25px;
+}
+
+.panel-body:after, .panel-body:before {
+    content: " ";
+    display: table;
+}
+
+.redirect p {
+    margin-bottom: 20px;
+}
+p {
+    line-height: 1.6;
+}
+a, blockquote, code, h1, h2, h3, h4, h5, h6, ol, p, pre, ul {
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    font-weight: inherit;
 }
 
 a {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-letter-spacing:		.09em;
-text-decoration:	none;
-color:			  #330099;
-background-color:	transparent;
-}
-
-a:visited {
-color:				#330099;
-background-color:	transparent;
-}
-
-a:active {
-color:				#ccc;
-background-color:	transparent;
+    color: var(--ee-link);
+    text-decoration: none;
+    -webkit-transition: color .15s ease-in-out;
+    -moz-transition: color .15s ease-in-out;
+    -o-transition: color .15s ease-in-out;
 }
 
 a:hover {
-color:				#000;
-text-decoration:	underline;
-background-color:	transparent;
+    color: var(--ee-link-hover);
 }
 
-#content  {
-border:				#000 1px solid;
-background-color: 	#DEDFE3;
-padding:			22px 25px 14px 25px;
+h3 {
+    font-size: 1.35em;
+    font-weight: 500;
 }
 
-h1 {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-font-size:			14px;
-color:				#000;
-margin-top: 		0;
-margin-bottom:		14px;
+ol, ul {
+    padding-left: 0;
 }
 
-p {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		12px;
-margin-bottom: 		14px;
-color: 				#000;
+ol li, ul li {
+    list-style-position: inside;
 }
 
-ul {
-margin-bottom: 		16px;
+.panel-footer {
+    padding: 20px 25px;
+    position: relative;
 }
 
-li {
-list-style:			square;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		8px;
-margin-bottom: 		8px;
-color: 				#000;
-}
 
-</style>
+        </style>
+    </head>
+    <body>
+        <section class="flex-wrap">
+            <section class="wrap">
+                <div class="panel redirect">
+                    <div class="panel-heading">
+                        <h3>{heading}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {content}
 
-</head>
 
-<body>
-
-<div id="content">
-
-<h1>{heading}</h1>
-
-{content}
-
-<p>{link}</p>
-
-</div>
-
-</body>
-
+                    </div>
+                    <div class="panel-footer">
+                        {link}
+                    </div>
+                </div>
+            </section>
+        </section>
+    </body>
 </html>
 EOF;
 	}
