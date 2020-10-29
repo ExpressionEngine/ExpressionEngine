@@ -6,7 +6,7 @@ class Updater extends ControlPanel {
     this.url =  '/admin.php';
 
     this.selectors = Object.assign(this.selectors, {
-        "header" : 'h1',
+        "header" : 'h3',
         "updater_steps" : 'ul.updater-steps',
         "error" : 'div.issue, div.app-notice---error',
         "submit" : 'form input[type=submit]',
