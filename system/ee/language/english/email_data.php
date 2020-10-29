@@ -715,9 +715,6 @@ ol li, ul li {
 					<div class="panel-body">
 					This site is currently offline
                     </div>
-                    <div class="panel-footer">
-
-                    </div>
                 </div>
             </section>
         </section>
