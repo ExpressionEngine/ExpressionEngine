@@ -88,7 +88,7 @@ $lang = array(
 
 'create_entry_success' => 'Entry Created',
 
-'create_entry_success_desc' => 'The entry <b>%s</b> has been created.',
+'create_entry_success_desc' => 'The entry <a href=\'%1$s\'><b>%2$s</b></a> has been created.',
 
 'create_entry_with_channel_name' => 'New Entry: %s',
 
@@ -112,7 +112,7 @@ $lang = array(
 
 'edit_entry_success' => 'Entry Updated',
 
-'edit_entry_success_desc' => 'The entry <b>%s</b> has been updated.',
+'edit_entry_success_desc' => 'The entry <a href=\'%1$s\'><b>%2$s</b></a> has been updated.',
 
 'edit_entry_with_title' => 'Edit Entry: %s',
 
