@@ -24,6 +24,7 @@
 	<body class="installer-page">
 		<section class="flex-wrap">
 			<section class="wrap">
+				<div class="login__logo"><?=$logo?></div>
 				<?=$content?>
 			</div>
 			<section class="bar">
