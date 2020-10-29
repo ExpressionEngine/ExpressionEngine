@@ -14,7 +14,7 @@
 class Wizard extends CI_Controller
 {
 
-    public $version           = '6.0.0-b.2'; // The version being installed
+    public $version           = '6.0.0-b.3'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
     public $languages         = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -310,7 +310,7 @@ class Wizard extends CI_Controller
         if (! isset($config)) {
             // Is the email template file available? We'll check since we need
             // this later
-            if (! file_exists(EE_APPPATH . '/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
+            if (! file_exists(SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
                 $this->set_output('error', array('error' => lang('unreadable_email')));
                 return false;
             }
@@ -468,6 +468,7 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        ee()->functions->clear_caching('all');
 
         foreach (ee('Model')->get('Channel')->all() as $channel)
         {
@@ -878,7 +879,7 @@ class Wizard extends CI_Controller
         }
 
         // Load the email template
-        require_once EE_APPPATH . '/language/' . $this->userdata['deft_lang'] . '/email_data.php';
+        require_once SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php';
 
         // Install Database Tables!
         if (! $this->schema->install_tables_and_data()) {
@@ -1401,7 +1402,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        }
+        } 
 
         return $path;
     }
