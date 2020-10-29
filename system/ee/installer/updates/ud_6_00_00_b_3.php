@@ -17,7 +17,7 @@ namespace ExpressionEngine\Updater\Version_6_0_0_b_3;
 class Updater
 {
 
-    public $suffix = '';
+    public $version_suffix = '';
 
     /**
      * Do Update
@@ -28,6 +28,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'renameBlacklistModule',
+            'modifyPagesColumn'
         ]);
 
         foreach ($steps as $k => $v) {
@@ -93,6 +94,17 @@ class Updater
             ee()->smartforge->modify_column('whitelisted', $fields);
             ee()->smartforge->rename_table('whitelisted', 'allowedlist');
         }
+    }
+    
+    private function modifyPagesColumn()
+    {
+        $mod = ee()->smartforge->modify_column('sites', [
+            'site_pages' => [
+                'name' => 'site_pages',
+                'type' => 'MEDIUMTEXT',
+                'null' => false
+            ]
+        ]);
     }
 }
 
