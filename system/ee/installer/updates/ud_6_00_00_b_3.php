@@ -48,7 +48,7 @@ class Updater
                 'module_version' => '4.0.0'
             ]
         );
-        
+
         if (ee()->db->table_exists('blacklisted')) {
             $fields = array(
                 'blacklisted_id' => array(
@@ -95,6 +95,8 @@ class Updater
             ee()->smartforge->modify_column('whitelisted', $fields);
             ee()->smartforge->rename_table('whitelisted', 'allowedlist');
         }
+    }
+
     private function addAllowPhpConfig()
     {
         //any of templates use PHP?
@@ -105,7 +107,7 @@ class Updater
         }
         ee('Config')->getFile()->set('allow_php', $allow_php, true);
     }
-    
+
     private function modifyPagesColumn()
     {
         $mod = ee()->smartforge->modify_column('sites', [
