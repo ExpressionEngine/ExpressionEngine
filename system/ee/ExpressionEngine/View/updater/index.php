@@ -44,10 +44,10 @@
 			</div>
 		</div>
 
-		<p class="button button--secondary msg-choices warn-choices <?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('troubleshoot'), ee('CP/URL')->make('updater'))?></p>
-		<p class="button button--secondary warn-choices<?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('or_return_to_cp'), ee('CP/URL')->make('homepage'))?></p>
+		<p class="msg-choices warn-choices <?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('troubleshoot'), ee('CP/URL')->make('updater'))?></p>
+		<p class="warn-choices<?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('or_return_to_cp'), ee('CP/URL')->make('homepage'))?></p>
 
-		<p class="button button--secondary msg-choices issue-choices hidden"><a href="" rel="rollback"><?=sprintf(lang('rollback_to'), strip_tags($current_version))?></a></p>
+		<p class="msg-choices issue-choices hidden"><a href="" rel="rollback"><?=sprintf(lang('rollback_to'), strip_tags($current_version))?></a></p>
 		<p class="issue-choices hidden"><?=sprintf(lang('cannot_rollback'), DOC_URL.'installation/update.html')?></p>
 	</div>
   </div>
