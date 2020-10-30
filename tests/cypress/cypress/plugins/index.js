@@ -87,6 +87,12 @@ module.exports = (on, config) => {
     })
 
     on('task', {
+        'filesystem:createFile': (target) => {
+            return fs.createFile(target);
+        }
+    })
+
+    on('task', {
         'filesystem:delete': (target) => {
             return fs.delete(target);
         }

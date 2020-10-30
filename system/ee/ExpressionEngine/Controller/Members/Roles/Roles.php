@@ -1383,14 +1383,20 @@ class Roles extends AbstractRolesController {
 		foreach ($template_groups as $id => $name)
 		{
 			$templates = ee('Model')->get('Template')
-				->fields('template_id', 'template_name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('group_id', $id)
-				->all()
-				->getDictionary('template_id', 'template_name');
+				->all();
+			$children = [];
+			foreach ($templates as $template) {
+				$template_name = $template->template_name;
+				if ($template->enable_http_auth == 'y') {
+					$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+				}
+				$children[$template->getId()] = $template_name;
+			}
 			$template_access['choices']['template_group_' . $id] = [
 				'label' => $name,
-				'children' => $templates
+				'children' => $children
 			];
 		}
 
