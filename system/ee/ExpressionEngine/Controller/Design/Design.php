@@ -41,6 +41,9 @@ class Design extends AbstractDesignController {
 	{
 		$assigned_groups = NULL;
 
+		ee()->load->library('template');
+		ee()->template->sync_from_files();
+
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
@@ -97,9 +100,6 @@ class Design extends AbstractDesignController {
 		{
 			$this->export(ee()->input->post('selection'));
 		}
-
-		ee()->load->library('template');
-		ee()->template->sync_from_files();
 
 		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
 	    $this->base_url = $base_url;

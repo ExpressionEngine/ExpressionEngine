@@ -27,6 +27,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
+            'addAllowPhpConfig',
             'modifyPagesColumn'
         ]);
 
@@ -37,6 +38,17 @@ class Updater
         return true;
     }
 
+    private function addAllowPhpConfig()
+    {
+        //any of templates use PHP?
+        $allow_php = ee('Config')->getFile()->get('allow_php', 'n');
+        $query = ee()->db->select('template_id')->where('allow_php', 'y')->get('templates');
+        if ($query->num_rows() > 0) {
+            $allow_php = 'y';
+        }
+        ee('Config')->getFile()->set('allow_php', $allow_php, true);
+    }
+    
     private function modifyPagesColumn()
     {
         $mod = ee()->smartforge->modify_column('sites', [

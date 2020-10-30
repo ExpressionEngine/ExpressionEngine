@@ -13,6 +13,7 @@ context('Template Manager', () => {
     before(function() {
         cy.task('db:seed')
         cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+        cy.eeConfig({ item: 'allow_php', value: 'n' })
     })
 
     beforeEach(function() {
@@ -167,7 +168,6 @@ context('Template Manager', () => {
 
 
             cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
-            //cy.visit('admin.php?/cp/design/template/edit/1')
 
             cy.get('button').contains('Settings').first().click()
             let form = new TemplateEdit
@@ -175,13 +175,11 @@ context('Template Manager', () => {
             form.get('type').check('feed')
             form.get('enable_caching').click()
             form.get('refresh_interval').clear().type('5')
-            form.get('allow_php').click()
-            form.get('php_parse_stage').check('i')
+            form.get('allow_php').should('not.exist')
+            form.get('php_parse_stage').should('not.exist')
             form.get('hit_counter').clear().type('10')
 
-            //cy.get('.modal:visible form .form-btns input.button[type="submit"]').first().click()
             cy.get('button').contains('Save').first().click()
-            //page.get('templates').eq(0).find('td:nth-child(3) .toolbar .settings a').click()
 
             cy.get('button').contains('Settings').first().click()
 
@@ -189,9 +187,31 @@ context('Template Manager', () => {
             form.get('type').filter(':checked').should('have.value', 'feed')
             form.get('enable_caching').should('have.class', 'on')
             form.get('refresh_interval').should('have.value', '5')
-            form.get('allow_php').should('have.class', 'on')
-            form.get('php_parse_stage').filter(':checked').should('have.value', 'i')
             form.get('hit_counter').should('have.value', '10')
+        })
+
+        it('shows PHP toggle when enabled', function() {
+
+            cy.eeConfig({ item: 'allow_php', value: 'y' }).then((config) => {
+
+                cy.authVisit(page.url);
+                cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+
+                cy.get('button').contains('Settings').first().click()
+                let form = new TemplateEdit
+                form.get('name').clear().type('archives-and-stuff')
+                form.get('allow_php').click()
+                form.get('php_parse_stage').check('i')
+
+                cy.get('button').contains('Save').first().click()
+
+                cy.get('button').contains('Settings').first().click()
+
+                form.get('name').should('have.value', 'archives-and-stuff')
+                form.get('allow_php').should('have.class', 'on')
+                form.get('php_parse_stage').filter(':checked').should('have.value', 'i')
+
+            })
         })
 
         it('should validate the settings form', function() {
