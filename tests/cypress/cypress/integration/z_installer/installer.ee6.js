@@ -55,14 +55,14 @@ context('Installer', () => {
   })
 
   function install_complete() {
-    cy.wait(5000);
+    /*cy.wait(5000);
     cy.get('body').then(($body) => {
       if ($body.find('.login__title').length) {
         const header = 'login_header';
       } else {
         const header = 'header';
-      }
-      page.get(header).invoke('text').then((text) => {
+      }*/
+      page.get('login_header').invoke('text').then((text) => {
         expect(text).to.be.oneOf([ "Install Complete!", "Log In", "Log into Default Site" ])
         if (text == "Install Complete!") {
           install_success.get('updater_msg').contains("ExpressionEngine has been installed")
@@ -77,7 +77,7 @@ context('Installer', () => {
           cy.get('input[type=submit]').should('not.be.disabled');
         }
       })
-    })
+    //})
   }
 
   it('loads', () => {
