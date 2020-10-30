@@ -55,7 +55,7 @@ context('Installer', () => {
   })
 
   function install_complete() {
-    cy.wait(2000);
+    cy.wait(5000);
     cy.get('body').then(($body) => {
       if ($body.find('.login__title').length) {
         const header = 'login_header';

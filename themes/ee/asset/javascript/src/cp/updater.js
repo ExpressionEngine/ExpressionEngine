@@ -119,9 +119,9 @@ var Updater = {
 
 	_showError: function(error, severity) {
 
-		$('.box.updating').addClass('hidden');
+		$('.updating').addClass('hidden');
 
-		var issue_box = $('.box.updater-stopped'),
+		var issue_box = $('.updater-stopped'),
 			severity = this._updaterInPlace ? 'issue' : 'warn',
 			trace_link = $('.updater-fade', issue_box),
 			trace_container = $('.updater-stack-trace', issue_box),
