@@ -170,7 +170,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
     cy.log(`Changing EE Config - ${command}`)
 
     cy.exec(command).then((harvest) => {
-
+        cy.log(item + ' now is ' + harvest.stdout);
         return harvest.stdout;
     })
 })
