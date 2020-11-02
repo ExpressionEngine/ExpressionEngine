@@ -7,8 +7,6 @@ class Installer extends Updater {
 
     this.selectors = Object.assign(this.selectors, {
 
-      //section :install_form, Installer::Form, 'body'
-      //section :install_success, Installer::Success, 'body'
     })
   }
 

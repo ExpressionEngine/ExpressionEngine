@@ -186,7 +186,7 @@ class Api_template_structure extends Api {
 								'refresh'  				=> $row->refresh,
 								'no_auth_bounce'  		=> $row->no_auth_bounce,
 								'php_parse_location'	=> $row->php_parse_location,
-								'allow_php'  			=> (ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
+								'allow_php'  			=> (ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
 								'protect_javascript'	=> $row->protect_javascript,
 								'template_type' 		=> $row->template_type,
 								'template_data'  		=> $row->template_data,

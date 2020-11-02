@@ -322,18 +322,18 @@ context('Updater', () => {
 
       cy.hasNoErrors()
 
-      page.get('header').invoke('text').then((text) => {
-        if (text == "Update Complete!") {
-          page.get('success_actions').should('exist')
-          page.get('success_actions').first().invoke('text').then((text) => {
-            expect(text).to.eq('Log In')
-          })
-        } else {
+      cy.get('body').then(($body) => {
+        if ($body.find('.login__title').length) {
           cy.contains('Username');
           cy.contains('Password');
           cy.contains('Remind me');
 
           cy.get('input[type=submit]').should('not.be.disabled');
+        } else {
+          page.get('success_actions').should('exist')
+          page.get('success_actions').first().invoke('text').then((text) => {
+            expect(text).to.eq('Log In')
+          })
         }
       })
 

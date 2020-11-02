@@ -8,7 +8,7 @@ $lang = array(
 
 'allowed_roles' => 'Allowed roles',
 
-'allowed_roles_desc' => 'The following roles are allowed to access this template.',
+'allowed_roles_desc' => 'The following roles are allowed to access pages that are using this template.',
 
 'allowed_roles_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
@@ -134,7 +134,7 @@ $lang = array(
 
 'enable_php' => 'Allow PHP?',
 
-'enable_php_desc' => 'When enabled, you can use standard PHP within this template. <a href="'.DOC_URL.'templates/php.html" rel="external">Read about the implications before enabling</a>.',
+'enable_php_desc' => 'When enabled, you can use standard PHP within this template. <a href="'.DOC_URL.'templates/overview.html#php-in-templates" rel="external">Read about the implications before enabling</a>.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
@@ -560,9 +560,11 @@ $lang = array(
 
 'output' => 'Output',
 
-'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has <a href="'.DOC_URL.'templates/overview.html#php-in-templates" target="_blank" rel="external">security implications</a>.',
 
 'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
+
+'php_in_templates_config_warning' => 'You need to set <code>$config[\'allow_php\'] = \'y\';</code> in <code>config.php</code> file if you want to use this feature.',
 
 'preference' => 'Preference',
 
