@@ -26,7 +26,7 @@ class IpAddress extends ValidationRule {
 
 	protected function processParameters()
 	{
-		$flags = '';
+		$flags = 0;
 
 		foreach ($this->parameters as $flag)
 		{
