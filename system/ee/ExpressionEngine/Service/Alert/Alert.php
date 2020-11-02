@@ -84,7 +84,7 @@ class Alert {
 	 * @param EE_Lang $lang A EE_Lang object for loading language
 	 * @return self This returns a reference to itself
 	 */
-	public function __construct($type = 'alert', $name = '', AlertCollection $collection, View $view, EE_Lang $lang)
+	public function __construct($type = 'alert', $name = '', $collection, View $view, EE_Lang $lang)
 	{
 		$this->type = $type;
 		$this->name = $name;

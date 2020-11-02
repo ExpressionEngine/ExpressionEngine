@@ -24,7 +24,7 @@ class Members {
 	 *	@param 	int		member id being updated
 	 *	@return mixed
 	 */
-	public function upload_member_images($type = 'avatar', $id)
+	public function upload_member_images($type, $id)
 	{
 		// validate for unallowed blank values
 		if (empty($_POST))
@@ -37,6 +37,10 @@ class Members {
 			{
 				ee()->output->show_user_error('submission', lang('not_authorized'));
 			}
+		}
+
+		if (empty($type)) {
+			$type = 'avatar';
 		}
 
 		// Load the member model!

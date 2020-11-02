@@ -504,7 +504,7 @@ JSC;
 	/**
 	 * Generic image processing
 	 */
-	private function process_image($function = 'resize', $data, $params = array(), $tagdata = FALSE, $return_as_path = FALSE)
+	private function process_image($function = 'resize', $data = [], $params = array(), $tagdata = FALSE, $return_as_path = FALSE)
 	{
 		if (!in_array($function, ['resize', 'crop', 'rotate', 'webp'])) {
 			return false;
@@ -694,7 +694,7 @@ JSC;
 	 *
 	 * @access	public
 	 */
-	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
+	function replace_tag_catchall($file_info = [], $params = array(), $tagdata = FALSE, $modifier)
 	{
 		// These are single variable tags only, so no need for replace_tag
 		if ($modifier)
