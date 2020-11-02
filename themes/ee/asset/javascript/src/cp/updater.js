@@ -11,7 +11,7 @@ var Updater = {
 
 	init: function ()
 	{
-		this._lastStep = $('.box.updating .updater-step-work').text();
+		this._lastStep = $('.updating .updater-step-work').text();
 		this._updaterInPlace = false;
 		var that = this;
 
@@ -46,8 +46,8 @@ var Updater = {
 			return;
 		}
 
-		$('.box.updating').removeClass('hidden');
-		$('.box.updater-stopped').addClass('hidden');
+		$('.updating').removeClass('hidden');
+		$('.updater-stopped').addClass('hidden');
 
 		var that = this,
 			action = EE.BASE + '&C=updater&M=run&step='+step;
@@ -119,9 +119,9 @@ var Updater = {
 
 	_showError: function(error, severity) {
 
-		$('.box.updating').addClass('hidden');
+		$('.updating').addClass('hidden');
 
-		var issue_box = $('.box.updater-stopped'),
+		var issue_box = $('.updater-stopped'),
 			severity = this._updaterInPlace ? 'issue' : 'warn',
 			trace_link = $('.updater-fade', issue_box),
 			trace_container = $('.updater-stack-trace', issue_box),
@@ -140,7 +140,7 @@ var Updater = {
 			var list = $('<ul/>');
 			for (var i = 0; i < error.trace.length; i++) {
 				list.append(
-					$('<li/>').text(error.trace[i])
+					$('<li/>').html(error.trace[i])
 				);
 			}
 			trace_container.append(list);
@@ -154,6 +154,7 @@ var Updater = {
 
 	_showSuccess: function() {
 		$('.box').addClass('hidden');
-		$('.box.success').removeClass('hidden');
+		$('.panel').addClass('hidden');
+		$('.success').removeClass('hidden');
 	}
 }

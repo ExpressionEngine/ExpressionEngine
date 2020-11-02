@@ -1472,7 +1472,10 @@ class Wizard extends CI_Controller
 
         ee()->load->helper('language');
         ee()->load->view('container', array_merge(
-            array('content' => ee()->load->view($view, $data, true)),
+            array(
+                'content' => ee()->load->view($view, $data, true),
+                'logo' => ee()->load->view('ee-logo', [], true)
+            ),
             $data
         ));
     }
