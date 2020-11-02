@@ -215,8 +215,11 @@ context('Templates', () => {
 
                 cy.eeConfig({ item: 'allow_php' }).then((config2) => {
                     cy.auth();
+                    cy.wait(5000)
                     editPage.load_edit_for_template('11')
                     
+                    cy.log('allow_php is now ' + config2);
+
                     editPage.get('settings_tab').click()
                     editPage.get('allow_php').should('not.exist')
 
@@ -227,9 +230,9 @@ context('Templates', () => {
                         //cy.log(conf)
                         cy.eeConfig({ item: 'allow_php' }).then((config3) => {
                             cy.auth();
-                            cy.wait(1000)
+                            cy.wait(5000)
                             editPage.load_edit_for_template('11')
-                            //cy.log(conf)
+                            cy.log('allow_php is now ' + config2);
 
                             editPage.get('settings_tab').click()
                             editPage.get('allow_php').should('have.class', "on")
