@@ -205,15 +205,13 @@ class EntryListing {
 			->add($this->category_filter)
 			->add($this->status_filter)
 			->add('Date')
-			->add('Keyword')
+			->add('EntryKeyword')
 			->add('SearchIn', [
-				'titles' => lang('titles'),
-				'content' => lang('content'),
-				'titles_and_content' => lang('titles_and_content'),
+				'titles' => 'titles',
+				'titles_and_content' => 'titles_and_content',
 				],
 				$this->search_in
-			)
-			->add('EntryKeyword', $this->search_in);
+			);
 
 		if (in_array('Author', $this->extra_filters)) {
 			$this->author_filter = $this->createAuthorFilter($channel);
@@ -416,6 +414,7 @@ class EntryListing {
 
 		$author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
 		$author_filter->setPlaceholder(lang('filter_authors'));
+		$author_filter->setLabel(lang('author'));
 		$author_filter->useListFilter();
 		return $author_filter;
 	}
@@ -439,6 +438,7 @@ class EntryListing {
 
 		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->setPlaceholder(lang('filter_channels'));
+		$channel_filter->setLabel(lang('channel'));
 		$channel_filter->useListFilter(); // disables custom values
 		return $channel_filter;
 	}
@@ -486,6 +486,7 @@ class EntryListing {
 
 		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
 		$categories->setPlaceholder(lang('filter_categories'));
+		$categories->setLabel(lang('category'));
 		$categories->useListFilter(); // disables custom values
 		return $categories;
 	}
@@ -513,6 +514,7 @@ class EntryListing {
 		}
 
 		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', $status_options);
+		$status->setLabel(lang('status'));
 		$status->disableCustomValue();
 		return $status;
 	}

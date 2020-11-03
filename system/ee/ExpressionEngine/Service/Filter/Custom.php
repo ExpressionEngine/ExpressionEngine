@@ -46,6 +46,18 @@ class Custom extends Filter {
 	}
 
 	/**
+	 * Sets the label for this filter
+	 *
+	 * @param string $label The value to use for the label
+	 * @return self This returns a reference to itself
+	 */
+	public function setLabel($label)
+	{
+		$this->label = $label;
+		return $this;
+	}	
+
+	/**
 	 * Sets the default value for this filter
 	 *
 	 * @param string $value The value to use for the default value

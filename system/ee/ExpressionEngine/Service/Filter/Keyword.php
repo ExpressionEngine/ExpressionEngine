@@ -23,6 +23,7 @@ class Keyword extends Filter {
 		$this->name = 'filter_by_keyword';
 		$this->placeholder = lang('keyword_filter');
 		$this->list_class = 'filter-search-form';
+		$this->view = '_shared/filters/keyword';
 	}
 
 	/**
@@ -36,7 +37,7 @@ class Keyword extends Filter {
 			'placeholder' => $this->placeholder
 		];
 
-		return $view->make('_shared/filters/keyword')->render($filter);
+		return $view->make($this->view)->render($filter);
 	}
 
 }
