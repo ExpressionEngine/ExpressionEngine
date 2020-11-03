@@ -45,7 +45,7 @@ $(document).ready(function () {
 	}, 150));
 
 	// Selecting a channel filter
-	$('body').on('click', 'form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
+	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
 		var search = $('input[name="search"]').serialize();
 
