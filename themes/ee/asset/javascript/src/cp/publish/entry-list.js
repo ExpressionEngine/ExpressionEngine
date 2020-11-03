@@ -62,6 +62,22 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
+	$('body').on('click', 'form .filter-search-bar .filter-clear', function(event) {
+		var search = $('input[name="search"]').serialize();
+
+		$.ajax({
+			url: $(this).attr('href') + '&' + search,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data) {
+				replaceData(data);
+				sortableColumns();
+			}
+		});
+
+		event.preventDefault();
+	});
+
 	// ==================================
 	// column filter custom view selector
 	// ==================================
