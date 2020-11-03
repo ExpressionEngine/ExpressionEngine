@@ -60,7 +60,7 @@ abstract class AbstractDesign extends CP_Controller {
 	 */
 	protected function renderFilters(FilterFactory $filters)
 	{
-		//ee()->view->filters = $filters->render($this->base_url);
+		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
 		$this->perpage = $this->params['perpage'];
 		$this->page = ((int) ee()->input->get('page')) ?: 1;
