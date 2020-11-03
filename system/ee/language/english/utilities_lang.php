@@ -105,7 +105,7 @@ $lang = array(
 
 
 /* CP Translation */
-'cannot_access' => 'cannot be accessed',
+'cannot_access' => 'Language files cannot be accessed. Please <a href="'.DOC_URL.'/control-panel/utilities.html#language-files" rel="external">consult documentation</a> on placing the files into right folder.',
 
 'cannot_create_zip' => 'Cannot create a .zip file',
 

@@ -196,6 +196,16 @@ class Application {
 	}
 
 	/**
+	 * Set up class aliases
+	 *
+	 * @return void
+	 */
+	public function setClassAliases()
+	{
+		$this->forward('setClassAliases');
+	}
+
+	/**
 	 * @param String $path Root path for the provider namespace
 	 * @param String $file Name of the setup file
 	 * @param String $prefix Prefix for our service provider [optional]

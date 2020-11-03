@@ -165,8 +165,8 @@ class Translate extends Utilities {
 		$filename_end = '_lang.php';
 		$filename_end_len = strlen($filename_end);
 
-		$language_files = get_filenames($path);
-		$english_files = get_filenames(APPPATH.'language/english/');
+		$language_files = get_filenames($path) ?: [];
+		$english_files = get_filenames(SYSPATH.'ee/language/english/');
 
 		foreach ($english_files as $file)
 		{
