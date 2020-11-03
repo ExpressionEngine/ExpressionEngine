@@ -228,7 +228,7 @@ class FilterFactory {
 
 		foreach ($this->filters as $filter)
 		{
-			if (!in_array($filter->name, ['columns'])) {
+			if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in'])) {
 				continue;
 			}
 

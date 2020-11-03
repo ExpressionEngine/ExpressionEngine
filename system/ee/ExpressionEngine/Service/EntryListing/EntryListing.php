@@ -205,15 +205,13 @@ class EntryListing {
 			->add($this->category_filter)
 			->add($this->status_filter)
 			->add('Date')
-			->add('Keyword')
+			->add('EntryKeyword')
 			->add('SearchIn', [
-				'titles' => lang('titles'),
-				'content' => lang('content'),
-				'titles_and_content' => lang('titles_and_content'),
+				'titles' => 'titles',
+				'titles_and_content' => 'titles_and_content',
 				],
 				$this->search_in
-			)
-			->add('EntryKeyword', $this->search_in);
+			);
 
 		if (in_array('Author', $this->extra_filters)) {
 			$this->author_filter = $this->createAuthorFilter($channel);
