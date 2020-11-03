@@ -30,7 +30,7 @@
 		<?php endforeach; ?>
 		</div>
 	</div>
-	<?php if ($value): ?>
+	<?php if ($value && isset($url_without_filter)): ?>
 		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fas fa-times"></i></a>
 	<?php endif; ?>
 </div>
