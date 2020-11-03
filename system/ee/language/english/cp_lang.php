@@ -325,11 +325,11 @@ $lang = array(
 
 'search_in_filter' => 'search in',
 
-'columns_filter' => 'columns',
+'columns_filter' => 'Columns',
 
 'perpage_filter' => 'show',
 
-'date_filter' => 'date',
+'date_filter' => 'Date',
 
 'group_filter' => 'group',
 
