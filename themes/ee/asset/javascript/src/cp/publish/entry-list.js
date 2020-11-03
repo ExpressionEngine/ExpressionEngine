@@ -45,8 +45,24 @@ $(document).ready(function () {
 	}, 150));
 
 	// Selecting a channel filter
-	$('body').on('click', 'form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
+	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
+		var search = $('input[name="search"]').serialize();
+
+		$.ajax({
+			url: $(this).attr('href') + '&' + search,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data) {
+				replaceData(data);
+				sortableColumns();
+			}
+		});
+
+		event.preventDefault();
+	});
+
+	$('body').on('click', 'form .filter-search-bar .filter-clear', function(event) {
 		var search = $('input[name="search"]').serialize();
 
 		$.ajax({
@@ -70,7 +86,7 @@ $(document).ready(function () {
 	var loadViewRequest = null;
 	var viewColumns = [];
 	var viewColumnsChanged = false;
-	$('body').on('change', '.filter-bar div[rev="toggle-columns"] input', function(e){
+	$('body').on('change', '.filter-search-bar div[rev="toggle-columns"] input', function(e){
 		e.preventDefault();
 		if (saveViewRequest) {
 			saveViewRequest.abort();
@@ -79,7 +95,7 @@ $(document).ready(function () {
 			loadViewRequest.abort();
 		}
 
-		$('.filter-bar div[rev="toggle-columns"] input').each(function(el){
+		$('.filter-search-bar div[rev="toggle-columns"] input').each(function(el){
 			viewColumnsChanged = true;
 			if ($(this).is(':checked')) {
 				viewColumns.push($(this).val());
@@ -88,7 +104,7 @@ $(document).ready(function () {
 	});
 
 	$('body').on('click', function(e){
-		if ( $(e.target).closest('.filter-bar div[rev="toggle-columns"]').length === 0) {
+		if ( $(e.target).closest('.filter-search-bar div[rev="toggle-columns"]').length === 0) {
 			saveView();
 		}
 	});
@@ -107,7 +123,7 @@ $(document).ready(function () {
 				loadViewRequest.abort();
 			}
 
-			var _form = $('.filter-bar div[rev="toggle-columns"]').closest('form');
+			var _form = $('.filter-search-bar div[rev="toggle-columns"]').closest('form');
 			var _data = $('input[name!="columns[]"]', _form).serialize();
 
 			saveViewRequest = $.ajax({
@@ -142,7 +158,7 @@ $(document).ready(function () {
 
 	// Make the columns sortable
 	function sortableColumns() {
-		$('.filter-bar div[rev="toggle-columns"]').sortable({
+		$('.filter-search-bar div[rev="toggle-columns"]').sortable({
 			containment: false,
 			handle: '.dropdown-reorder', // Set drag handle to the top box
 			items: '.dropdown__item',			// Only allow these to be sortable
@@ -159,7 +175,7 @@ $(document).ready(function () {
 
 
 
-	$('.filter-bar #columns_view_choose').on('change', function() {
+	$('.filter-search-bar #columns_view_choose').on('change', function() {
 		var view = $(this).val();
 
 		$('#columns_view_new, #columns_view_options').hide();

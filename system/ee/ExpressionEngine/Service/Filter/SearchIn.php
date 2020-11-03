@@ -21,7 +21,7 @@ class SearchIn extends Filter {
 	public function __construct($options, $default)
 	{
 		$this->name = 'search_in';
-		$this->label = lang('search_in_filter');
+		$this->label = lang('search_titles_only');
 		$this->options = $options;
 		$this->default_value = $default;
 	}

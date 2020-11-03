@@ -280,7 +280,7 @@ context('Entry filtering', () => {
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
-		it('can Search in Content but not title',() => {
+		it.skip('can Search in Content but not title',() => {
 			cy.route("GET", "**/publish/edit**").as("ajax");
 
 			//Real quick add in a text field to one of our channels
@@ -322,7 +322,7 @@ context('Entry filtering', () => {
 
 		})
 
-		it('search by content and title', () => {
+		it.skip('search by content and title', () => {
 			cy.route("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
@@ -411,4 +411,3 @@ context('Entry filtering', () => {
 		})
 
 })
-
