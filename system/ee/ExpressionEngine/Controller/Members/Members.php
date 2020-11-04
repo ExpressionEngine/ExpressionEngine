@@ -1593,7 +1593,7 @@ class Members extends CP_Controller {
 
 	private function renderMemberTab($errors)
 	{
-		$section = [
+		$sections = [[
 			[
 				'title' => 'username',
 				'fields' => [
@@ -1636,10 +1636,33 @@ class Members extends CP_Controller {
 					]
 				]
 			]
-		];
+		]];
 
-		return ee('View')->make('_shared/form/section')
-				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+		foreach (ee('Model')->make('Member')->getDisplay()->getFields() as $field) {
+			if ($field->get('m_field_reg') == 'y' OR $field->isRequired()) {
+				$sections['custom_fields'][] = [
+					'title' => $field->getLabel(),
+					'desc' => '',
+					'fields' => [
+						$field->getName() => [
+							'type' => 'html',
+							'content' => $field->getForm(),
+							'required' => $field->isRequired(),
+						]
+					]
+				];
+			}
+		}
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
 	}
 
 	private function renderRolesTab($errors)
