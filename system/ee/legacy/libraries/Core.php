@@ -249,7 +249,7 @@ class EE_Core
 
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
-            'blacklist', 'channel', 'comment', 'commerce', 'email',
+            'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
              'rte', 'search', 'simple_commerce', 'spam', 'stats'
@@ -262,13 +262,18 @@ class EE_Core
             exit;
         }
 
-        // Security Checks: Throttle, Blacklist, File Integrity, and iFraming
+        // Security Checks: Throttle, Block and Allow, File Integrity, and iFraming
         if (REQ != 'CP') {
             ee()->load->library('throttling');
             ee()->throttling->run();
 
-            ee()->load->library('blacklist');
-            ee()->blacklist->_check_blacklist();
+            ee()->load->library('blockedlist');
+            ee()->blockedlist->_check_blockedlist();
+            //backwards compatibility
+            ee()->blacklist = (object) [
+                'blacklisted' => ee()->blockedlist->blocked,
+                'whitelisted' => ee()->blockedlist->allowed
+            ];
 
             ee()->load->library('file_integrity');
             ee()->file_integrity->create_bootstrap_checksum();

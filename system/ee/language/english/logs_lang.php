@@ -126,7 +126,6 @@ $lang = array(
 
 
 /* Throttle Log */
-'blacklist_all_ips' => 'Blacklist All IPs',
 
 'clear_throttle_logs' => 'Delete all Throttling Logs',
 

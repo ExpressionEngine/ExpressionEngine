@@ -326,10 +326,6 @@ $lang = array(
 
 'delete_comment' => 'Delete Comments',
 
-'delete_comment_confirm' => 'Are you sure you want to permanently delete this comment?',
-
-'delete_comments_confirm' => 'Are you sure you want to permanently delete these comments?',
-
 'delete_confirm' => 'Delete Confirm',
 
 'delete_entries_confirm' => 'Are you sure you want to permanently delete these entries?',

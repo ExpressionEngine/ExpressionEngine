@@ -76,9 +76,9 @@ $lang = array(
 
 'ee_blockedlist' => 'Download ExpressionEngine Blocked List',
 
-'ref_blockedlist_irretrievable' => 'Error: New blacklist was irretrievable.',
+'ref_blockedlist_irretrievable' => 'Error: New Blocked List was irretrievable.',
 
-'ref_view_blockedlist' => 'View Blacklist',
+'ref_view_blockedlist' => 'View Blocked List',
 
 'ref_no_blockedlist' => 'There is currently nothing listed to block',
 
