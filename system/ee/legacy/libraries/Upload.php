@@ -175,7 +175,7 @@ class EE_Upload
         }
 
         // Disallowed File Names
-        $disallowed_names = ee()->config->item('upload_file_name_blacklist');
+        $disallowed_names = ee()->config->item('upload_blocked_file_names') ?: ee()->config->item('upload_file_name_blacklist');
 
         if ($disallowed_names !== false) {
             if (! is_array($disallowed_names)) {
