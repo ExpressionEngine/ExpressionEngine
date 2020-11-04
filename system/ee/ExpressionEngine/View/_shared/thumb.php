@@ -40,7 +40,7 @@
 				</a>
 		<?php endforeach; ?>
 	</div>
-	<?php if (empty($files->elements) && isset($no_results)): ?>
+	<?php if (isset($no_results)): ?>
 		<div class="tbl-row no-results">
 			<div class="none">
 				<p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
