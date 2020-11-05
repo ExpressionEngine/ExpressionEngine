@@ -269,11 +269,6 @@ class EE_Core
 
             ee()->load->library('blockedlist');
             ee()->blockedlist->_check_blockedlist();
-            //backwards compatibility
-            ee()->blacklist = (object) [
-                'blacklisted' => ee()->blockedlist->blocked,
-                'whitelisted' => ee()->blockedlist->allowed
-            ];
 
             ee()->load->library('file_integrity');
             ee()->file_integrity->create_bootstrap_checksum();
