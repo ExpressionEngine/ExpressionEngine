@@ -700,14 +700,22 @@ class Comments extends AbstractPublishController {
 
 		ee()->load->helper('text');
 		$comment_names = array();
+		$approved = array();
+
 
 		foreach ($comments as $comment)
 		{
+			if ($status == 'o' && $comment->status == 'p') {
+				$approved[] = $comment->comment_id;
+			}
+
 			$comment->status = $status;
 			$comment->save();
 
 			$comment_names[] = ellipsize($comment->comment, 50);
 		}
+
+		$this->send_notification_emails($approved);
 
 		switch ($status)
 		{
@@ -728,6 +736,178 @@ class Comments extends AbstractPublishController {
 			->addToBody($comment_names)
 			->defer();
 	}
+
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Send Notification Emails
+	 *
+	 * @return	void
+	 */
+	public function send_notification_emails($comments)
+	{
+		if (empty($comments)) { return; }
+
+		// Load subscription class
+		ee()->load->library('subscription');
+
+		// Instantiate Typography class
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'parse_images'		=> FALSE,
+			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE
+		));
+
+
+		// Grab the required comments
+		ee()->db->select('comment, comment_id, author_id, name, email, comment_date, entry_id');
+		ee()->db->where_in('comment_id', $comments);
+		$query = ee()->db->get('comments');
+
+
+		// Sort based on entry
+		$entries = array();
+
+		foreach ($query->result() as $row)
+		{
+			if ( ! isset($entries[$row->entry_id]))
+			{
+				$entries[$row->entry_id] = array();
+			}
+
+			$entries[$row->entry_id][] = $row;
+		}
+
+
+		// Go through the entries and send subscriptions
+
+		foreach ($entries as $entry_id => $comments)
+		{
+			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+
+			// Grab them all
+			$subscriptions = ee()->subscription->get_subscriptions();
+
+			ee()->load->model('comment_model');
+			$recipients = ee()->comment_model->fetch_email_recipients($entry_id, $subscriptions);
+
+			if (count($recipients))
+			{
+				// Grab generic entry info
+
+				$action_id	= ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
+
+				ee()->db->select('channel_titles.site_id, channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
+				ee()->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id', 'left');
+				ee()->db->where('channel_titles.entry_id', $entry_id);
+				$results = ee()->db->get('channel_titles');
+
+				$overrides = ee()->config->get_cached_site_prefs($results->row('site_id'));
+				$channel_url = parse_config_variables($results->row('channel_url'), $overrides);
+				$comment_url = parse_config_variables($results->row('comment_url'), $overrides);
+
+				$com_url = ($comment_url  == '') ? $channel_url : $comment_url;
+
+
+				// Create an array of comments to add to the email
+
+				$comments_swap = array();
+
+				foreach ($comments as $c)
+				{
+					$comment_text = ee()->typography->parse_type(
+						$c->comment,
+						array(
+							'text_format'	=> 'none',
+							'html_format'	=> 'none',
+							'auto_links'	=> 'n',
+							'allow_img_url' => 'n'
+						)
+					);
+
+					$comments_swap[] = array(
+						'name_of_commenter'	=> $c->name,
+						'name'				=> $c->name,
+						'comment'			=> $comment_text,
+						'comment_id'		=> $c->comment_id,
+					);
+				}
+
+
+				$swap = array(
+					'channel_name'					=> $results->row('channel_title'),
+					'entry_title'					=> $results->row('title'),
+					'site_name'						=> stripslashes(ee()->config->item('site_name')),
+					'site_url'						=> ee()->config->item('site_url'),
+					'comment_url'					=> reduce_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
+					'channel_id'					=> $results->row('channel_id'),
+					'entry_id'						=> $results->row('entry_id'),
+					'url_title'						=> $results->row('url_title'),
+					'comment_url_title_auto_path'	=> reduce_double_slashes($com_url.'/'.$results->row('url_title')),
+
+					'comments'						=> $comments_swap
+				);
+
+				$template = ee()->functions->fetch_email_template('comments_opened_notification');
+
+				ee()->load->library('template', 'TMPL');
+
+
+				$email_tit = ee()->TMPL->parse_variables_row($template['title'], $swap);
+				$email_msg = ee()->TMPL->parse_variables_row($template['data'], $swap);
+
+				//	Send email
+				ee()->load->library('email');
+				ee()->email->wordwrap = true;
+
+				// Load the text helper
+				ee()->load->helper('text');
+
+				$sent = array();
+
+				foreach ($recipients as $val)
+				{
+					if ( ! in_array($val['0'], $sent))
+					{
+						$title	 = $email_tit;
+						$message = $email_msg;
+
+						$sub	= $subscriptions[$val['1']];
+						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
+
+						// Deprecate the {name} variable at some point
+						$title	 = str_replace('{name}', $val['2'], $title);
+						$message = str_replace('{name}', $val['2'], $message);
+
+						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
+						$message = str_replace('{name_of_recipient}', $val['2'], $message);
+
+						$title	 = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
+						$message = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
+
+						ee()->email->EE_initialize();
+						ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+						ee()->email->to($val['0']);
+						ee()->email->subject($title);
+						ee()->email->message(entities_to_ascii($message));
+						ee()->email->send();
+
+						$sent[] = $val['0'];
+					}
+				}
+			}
+		}
+
+		//var_dump($sent, $message); die;
+
+		return;
+	}
+
+
+
+
 }
 
 // EOF
