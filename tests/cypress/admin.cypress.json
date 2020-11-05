@@ -9,7 +9,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "@(utilities|site|settings|logs|channel|addons)/*.ee6.js",
+    "testFiles": "@(utilities|site|settings|logs|channel|addons)/*.spec.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

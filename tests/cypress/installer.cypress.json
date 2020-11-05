@@ -9,7 +9,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "z_installer/*.ee6.js",
+    "testFiles": "z_installer/*.spec.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
