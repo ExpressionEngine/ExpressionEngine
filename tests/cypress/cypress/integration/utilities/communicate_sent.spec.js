@@ -2,7 +2,7 @@ import CommunicateSent from '../../elements/pages/utilities/CommunicateSent';
 const page = new CommunicateSent
 const { _, $ } = Cypress
 
-context('Communicate Sent', () => {
+context.skip('Communicate Sent', () => {
 
 		
 

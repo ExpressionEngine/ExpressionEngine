@@ -5,6 +5,10 @@ import ThrottlingSettings from '../../elements/pages/settings/ThrottlingSettings
 const page = new ThrottlingSettings
 
 context('Access Throttling Settings', () => {
+  
+  before(function() {
+    cy.task('db:seed')
+  })
 
   beforeEach(function() {
     cy.auth();

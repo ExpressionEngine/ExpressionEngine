@@ -11,18 +11,17 @@ context('File Manager / Crop File', () => {
 
     before(function() {
         cy.task('db:seed')
-        cy.task('filesystem:delete', '/tmp/about')
+        cy.task('filesystem:delete',  Cypress.env("TEMP_DIR")+'/about')
             // Create backups of these folders so we can restore them after each test
-        cy.task('filesystem:create', '/tmp/about')
-        cy.task('filesystem:copy', { from: `${uploadDirectory}*`, to: '/tmp/about' })
-            // system('cp -r ' + upload_dir + '/* /tmp/about')
+        cy.task('filesystem:create',  Cypress.env("TEMP_DIR")+'/about')
+        cy.task('filesystem:copy', { from: `${uploadDirectory}*`, to:  Cypress.env("TEMP_DIR")+'/about' })
+    })
+
+    after(function() {
+        cy.task('filesystem:delete', Cypress.env("TEMP_DIR")+'/about')
     })
 
     beforeEach(function() {
-        cy.task('filesystem:delete', uploadDirectory)
-        cy.task('filesystem:create', uploadDirectory)
-        cy.task('filesystem:copy', { from: '/tmp/about', to: `${uploadDirectory}*` })
-        cy.exec(`chmod -R 777 ${uploadDirectory}`)
 
         cy.authVisit(page.url);
 
@@ -45,6 +44,13 @@ context('File Manager / Crop File', () => {
         page.get('crop_tab').should('exist')
         page.get('rotate_tab').should('exist')
         page.get('resize_tab').should('exist')
+    })
+
+    afterEach(function() {
+        cy.task('filesystem:delete', `${uploadDirectory}`)
+        cy.task('filesystem:create', `${uploadDirectory}`);
+        cy.task('filesystem:copy', { from: Cypress.env("TEMP_DIR")+'/about/*', to: `${uploadDirectory}` })
+        //FileUtils.chmod_R 0777, @upload_dir
     })
 
 
