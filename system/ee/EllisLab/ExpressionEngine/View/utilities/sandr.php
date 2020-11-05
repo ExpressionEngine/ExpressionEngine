@@ -40,11 +40,11 @@
 					<?php foreach ($replace_options as $label => $option): ?>
 						<option value="">----</option>
 						<?php if ( ! isset($option['choices'])): ?>
-							<option value="<?=$label?>"<?=set_select('replace_where', $label)?>><?=$option['name']?></option>
+							<option value="<?=$label?>"<?=set_select('replace_where', $label)?>><?=ee('Format')->make('Text', $option['name'])->convertToEntities()?></option>
 						<?php else: ?>
 							<option value=""><?=$option['name']?> <?=lang('choose_below')?></option>
 							<?php foreach ($option['choices'] as $value => $text): ?>
-							<option value="<?=$value?>" <?=set_select('replace_where', $value)?>>&nbsp;&nbsp;&nbsp;&nbsp;<?=$text?></option>
+							<option value="<?=$value?>" <?=set_select('replace_where', $value)?>>&nbsp;&nbsp;&nbsp;&nbsp;<?=ee('Format')->make('Text', $text)->convertToEntities()?></option>
 							<?php endforeach; ?>
 						<?php endif; ?>
 					<?php endforeach; ?>
