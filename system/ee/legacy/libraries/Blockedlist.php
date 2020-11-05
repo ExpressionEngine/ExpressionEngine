@@ -16,6 +16,23 @@ class EE_Blockedlist {
 	var $allowed = 'n';		// Is this request allowed
 	var $blocked = 'n';		// Is this request blocked.
 
+	public $whitelisted = 'n';
+	public $blacklisted = 'n';
+
+	public function deprecate()
+	{
+		$this->whitelisted = $this->allowed;
+		$this->blacklisted = $this->blocked;
+
+		ee()->load->library('logger');
+		$deprecated = array(
+			'function' => 'ee()->blacklist',
+			'deprecated_since' => '6.0.0',
+			'use_instead' => 'ee()->blockedlist->blocked and ee()->blockedlist->allowed'
+		);
+		ee()->logger->developer($deprecated, TRUE, 604800);
+	}
+
 
 	/**
 	 * Block and Allow Checker
