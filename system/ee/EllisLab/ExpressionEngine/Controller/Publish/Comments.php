@@ -696,6 +696,8 @@ class Comments extends AbstractPublishController {
 
 		$comments = ee('Model')->get('Comment', $comment_ids)
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('entry_id', 'asc')
+			->order('comment_id', 'asc')
 			->all();
 
 		ee()->load->helper('text');
@@ -706,7 +708,7 @@ class Comments extends AbstractPublishController {
 		foreach ($comments as $comment)
 		{
 			if ($status == 'o' && $comment->status == 'p') {
-				$approved[] = $comment->comment_id;
+				$approved[] = $comment;
 			}
 
 			$comment->status = $status;
@@ -737,8 +739,6 @@ class Comments extends AbstractPublishController {
 			->defer();
 	}
 
-
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -762,15 +762,16 @@ class Comments extends AbstractPublishController {
 
 
 		// Grab the required comments
-		ee()->db->select('comment, comment_id, author_id, name, email, comment_date, entry_id');
-		ee()->db->where_in('comment_id', $comments);
-		$query = ee()->db->get('comments');
+		//$query = ee()->db->get('comments');
+
+		ee()->load->library('template', 'TMPL');
+		$template = ee()->functions->fetch_email_template('comments_opened_notification');
 
 
 		// Sort based on entry
 		$entries = array();
 
-		foreach ($query->result() as $row)
+		foreach ($comments as $row)
 		{
 			if ( ! isset($entries[$row->entry_id]))
 			{
@@ -780,11 +781,18 @@ class Comments extends AbstractPublishController {
 			$entries[$row->entry_id][] = $row;
 		}
 
-
 		// Go through the entries and send subscriptions
 
 		foreach ($entries as $entry_id => $comments)
 		{
+			// Get rid of the last comment to this entry, as there are no new
+			// comments for the person who made it
+			array_pop($comments);
+			if (empty($comments))
+			{
+				continue;
+			}
+
 			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 
 			// Grab them all
@@ -814,6 +822,7 @@ class Comments extends AbstractPublishController {
 				// Create an array of comments to add to the email
 
 				$comments_swap = array();
+
 
 				foreach ($comments as $c)
 				{
@@ -850,9 +859,7 @@ class Comments extends AbstractPublishController {
 					'comments'						=> $comments_swap
 				);
 
-				$template = ee()->functions->fetch_email_template('comments_opened_notification');
 
-				ee()->load->library('template', 'TMPL');
 
 
 				$email_tit = ee()->TMPL->parse_variables_row($template['title'], $swap);
