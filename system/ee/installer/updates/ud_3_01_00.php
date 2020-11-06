@@ -146,11 +146,13 @@ class Updater {
 		// config file has precedence, otherwise do the per-site ones
 		if ( ! $avatar_path)
 		{
-			$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
+			$sites = ee()->db->get('sites');
 
-			foreach ($site_prefs as $site_id => $site)
+			foreach ($sites->result_array() as $site)
 			{
-				$avatar_path = $site->site_member_preferences->avatar_path;
+				$data = unserialize(base64_decode($site['site_member_preferences']));
+
+				$avatar_path = $data['avatar_path'];
 				$avatar_path = realpath($avatar_path);
 
 				if ( ! empty($avatar_path))
@@ -266,60 +268,60 @@ class Updater {
 
 	private function ensure_upload_directories_are_correct()
 	{
-		$site_prefs = ee('Model')->get('Site')->all()->indexBy('site_id');
+		$sites = ee()->db->get('sites');
 
-		foreach ($site_prefs as $site_id => $prefs)
+		foreach ($sites->result_array() as $site)
 		{
-			$member_prefs = $prefs->site_member_preferences;
+			$member_prefs = unserialize(base64_decode($site['site_member_preferences']));
 			$member_directories = array();
 
 			$member_directories['Avatars'] = array(
-				'server_path' => $member_prefs->avatar_path,
-				'url' => $member_prefs->avatar_url,
+				'server_path' => $member_prefs['avatar_path'],
+				'url' => $member_prefs['avatar_url'],
 				'allowed_types' => 'img',
-				'max_width' => $member_prefs->avatar_max_width,
-				'max_height' => $member_prefs->avatar_max_height,
-				'max_size' => $member_prefs->avatar_max_kb,
+				'max_width' => $member_prefs['avatar_max_width'],
+				'max_height' => $member_prefs['avatar_max_height'],
+				'max_size' => $member_prefs['avatar_max_kb'],
 			);
 
 			$member_directories['Default Avatars'] = array(
-				'server_path' => rtrim($member_prefs->avatar_path, '/').'/default/',
-				'url' => rtrim($member_prefs->avatar_url, '/').'/default/',
+				'server_path' => rtrim($member_prefs['avatar_path'], '/').'/default/',
+				'url' => rtrim($member_prefs['avatar_url'], '/').'/default/',
 				'allowed_types' => 'img',
-				'max_width' => $member_prefs->avatar_max_width,
-				'max_height' => $member_prefs->avatar_max_height,
-				'max_size' => $member_prefs->avatar_max_kb,
+				'max_width' => $member_prefs['avatar_max_width'],
+				'max_height' => $member_prefs['avatar_max_height'],
+				'max_size' => $member_prefs['avatar_max_kb'],
 			);
 
 			$member_directories['Member Photos'] = array(
-				'server_path' => $member_prefs->photo_path,
-				'url' => $member_prefs->photo_url,
+				'server_path' => $member_prefs['photo_path'],
+				'url' => $member_prefs['photo_url'],
 				'allowed_types' => 'img',
-				'max_width' => $member_prefs->photo_max_width,
-				'max_height' => $member_prefs->photo_max_height,
-				'max_size' => $member_prefs->photo_max_kb,
+				'max_width' => $member_prefs['photo_max_width'],
+				'max_height' => $member_prefs['photo_max_height'],
+				'max_size' => $member_prefs['photo_max_kb'],
 			);
 
 			$member_directories['Signature Attachments'] = array(
-				'server_path' => $member_prefs->sig_img_path,
-				'url' => $member_prefs->sig_img_url,
+				'server_path' => $member_prefs['sig_img_path'],
+				'url' => $member_prefs['sig_img_url'],
 				'allowed_types' => 'img',
-				'max_width' => $member_prefs->sig_img_max_width,
-				'max_height' => $member_prefs->sig_img_max_height,
-				'max_size' => $member_prefs->sig_img_max_kb,
+				'max_width' => $member_prefs['sig_img_max_width'],
+				'max_height' => $member_prefs['sig_img_max_height'],
+				'max_size' => $member_prefs['sig_img_max_kb'],
 			);
 
 			$member_directories['PM Attachments'] = array(
-				'server_path' => $member_prefs->prv_msg_upload_path,
-				'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
+				'server_path' => $member_prefs['prv_msg_upload_path'],
+				'url' => str_replace('avatars', 'pm_attachments', $member_prefs['avatar_url']),
 				'allowed_types' => 'img',
-				'max_size' => $member_prefs->prv_msg_attach_maxsize
+				'max_size' => $member_prefs['prv_msg_attach_maxsize']
 			);
 
 			$existing = ee('Model')->get('UploadDestination')
 				->fields('name')
 				->filter('name', 'IN', array_keys($member_directories))
-				->filter('site_id', $site_id)
+				->filter('site_id', $site['site_id'])
 				->all()
 				->pluck('name');
 
@@ -331,11 +333,14 @@ class Updater {
 			foreach ($member_directories as $name => $data)
 			{
 				$dir = ee('Model')->make('UploadDestination', $data);
-				$dir->site_id = $site_id;
+				$dir->site_id = $site['site_id'];
 				$dir->name = $name;
-				$dir->removeNoAccess();
+				//$dir->removeNoAccess(); //function not defined since 2.x, so not using it
 				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 				$dir->save();
+
+				ee()->db->where('upload_id', $dir->getId());
+				ee()->db->delete('upload_no_access');
 			}
 		}
 	}

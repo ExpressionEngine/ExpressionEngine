@@ -2,7 +2,6 @@
 
 $config['multiple_sites_enabled'] = 'y';
 $config['save_tmpl_files'] = 'n';
-$config['save_tmpl_files,'] = 'n,';
 $config['forum_is_installed'] = 'y';
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +23,7 @@ if (function_exists('opcache_reset'))
 
 $config['base_url'] = 'http://localhost:8888/';
 $config['site_url'] = $config['base_url'];
-$config['app_version'] = '5.3.0';
+$config['app_version'] = '5.4.0';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';

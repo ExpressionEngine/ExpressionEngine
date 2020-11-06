@@ -1218,7 +1218,7 @@ class Updater {
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->site_id = $site_id;
 			$directory->name = $name;
-			$directory->removeNoAccess();
+			//$dir->removeNoAccess(); //function not defined since 2.x, so not using it
 			$directory->setModule($module);
 
 			foreach ($dir as $property => $value)

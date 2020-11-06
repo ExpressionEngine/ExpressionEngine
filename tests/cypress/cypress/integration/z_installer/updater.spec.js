@@ -18,29 +18,36 @@ let expect_login = false;
 context('Updater', () => {
 
   beforeEach(function(){
-
+    // Delete existing config and create a new one
     cy.task('db:clear')
+    cy.task('cache:clear')
+    cy.task('installer:enable').then(() => {
 
-    cy.task('installer:enable')
-    cy.task('installer:replace_config', {file: config})
-    cy.task('installer:replace_database_config', {file: database})
-
-    let installer_folder = '../../system/ee/installer';
-    cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
-      for (const item in files) {
-        if (files[item].indexOf('system/ee/installer') >= 0) {
-          installer_folder = files[item];
-          cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+      let installer_folder = '../../system/ee/installer';
+      cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+        for (const item in files) {
+          cy.log(files[item]);
+          if (files[item].indexOf('system/ee/installer_') >= 0) {
+            installer_folder = files[item];
+            cy.log(installer_folder);
+            cy.task('filesystem:delete', '../../system/ee/installer').then(()=>{
+              cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+            })
+          }
         }
-      }
+        cy.task('installer:create_config').then((path)=>{
+          cy.log(path)
+          //cy.screenshot({capture: 'runner'})
+        })
+
+        cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
+
+        page.load()
+        cy.screenshot({capture: 'runner'})
+        cy.screenshot({capture: 'fullPage'})
+        cy.hasNoErrors()
+      })
     })
-
-    cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
-
-    //@version = '2.20.0'
-    //cy.task('installer:version = @version
-
-    cy.hasNoErrors()
   })
 
   afterEach(function(){
@@ -80,7 +87,7 @@ context('Updater', () => {
     })
   })
 
-  context('when updating from 2.x to 6.x', () => {
+  context('when updating from 2.x to 5.x', () => {
     beforeEach(function(){
 
       cy.task('db:load', '../../support/sql/database_2.10.1.sql')
@@ -274,6 +281,9 @@ context('Updater', () => {
   })
 
   function test_update(mailinglist = false) {
+    cy.log('wait 5 sec');
+    cy.wait(5000)
+    
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)

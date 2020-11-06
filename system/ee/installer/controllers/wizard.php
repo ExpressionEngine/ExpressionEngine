@@ -493,6 +493,18 @@ class Wizard extends CI_Controller {
 	 */
 	private function postflight()
 	{
+		ee()->functions->clear_caching('all');
+
+		foreach (ee('Model')->get('Channel')->all() as $channel)
+		{
+			$channel->updateEntryStats();
+		}
+
+		ee('Model')->get('ChannelLayout')
+			->with('Channel')
+			->all()
+			->synchronize();
+		
 		$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
 
 		return $advisor->postUpdateChecks();
