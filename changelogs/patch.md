@@ -5,13 +5,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#53) where previous month link was not clickable in Channel Form datepicker.
-   - Fixed a bug (#72) where Maximum rows limit was not respected in File Grid field.
-   - Fixed a bug (#283) where "field required" indicator was not showing a Grid column.
-   - Fixed a bug (#432) where parent entries were not fetched for relationship field inside grid.
-   - Fixed a bug (#450) where pagination on tables was not working correctly when performing search for html tags.
-   - Fixed a bug (#[457](https://github.com/ExpressionEngine/ExpressionEngine/issues/457)) where accented characters in variables were not truncated properly
+- Added <new feature>
+- Fixed a PHP 7.4 warning, `Trying to access array offset on value of type bool` that could occur when uploading images.
 
 
    - Fixed a PHP error that could occur on publish if Pages was installed and hidden via layouts.
