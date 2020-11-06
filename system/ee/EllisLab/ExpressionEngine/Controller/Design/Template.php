@@ -252,7 +252,7 @@ class Template extends AbstractDesignController {
     			{
     				$template->save();
     				// Save a new revision
-    				$template->saveNewTemplateRevision($template);
+    				$template->saveNewTemplateRevision();
 
     				ee('CP/Alert')->makeInline('shared-form')
     					->asSuccess()

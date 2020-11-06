@@ -1,6 +1,9 @@
 ---
-name: 🐛 Bug Report
+name: "\U0001F41B Bug Report"
 about: Report reproducible errors and problems
+title: ''
+labels: 'Bug: Unconfirmed'
+assignees: ''
 
 ---
 

@@ -27,7 +27,7 @@ if( ! function_exists( 'ee_get_encoding' ) )
 		if($encoding === null)
 		{
 
-			return ee()->config->item('charset') ?: 'utf8';
+			return ee()->config->item('charset') ?: 'UTF-8';
 
 		}
 

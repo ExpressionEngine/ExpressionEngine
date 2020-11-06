@@ -4549,7 +4549,7 @@ class EE_Template {
 
 					// do it!
 					$template_model = ee('Model')->make('Template', $data)->save();
-					$template_model->saveNewTemplateRevision($template_model);
+					$template_model->saveNewTemplateRevision();
 
 					// add to existing array so we don't try to create this template again
 					$existing[$group][] = $template_name;
@@ -4569,7 +4569,7 @@ class EE_Template {
 					 );
 
 					$template_model = ee('Model')->make('Template', $data)->save();
-					$template_model->saveNewTemplateRevision($template_model);
+					$template_model->saveNewTemplateRevision();
 				}
 
 				unset($existing[$group]);

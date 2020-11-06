@@ -238,7 +238,7 @@ class Template extends FileSyncedModel {
 	 *
 	 * @param	Template	$template	Saved template model object
 	 */
-	protected function saveNewTemplateRevision()
+	public function saveNewTemplateRevision()
 	{
 		if ( ! bool_config_item('save_tmpl_revisions'))
 		{
