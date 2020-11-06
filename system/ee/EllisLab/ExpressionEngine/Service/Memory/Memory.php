@@ -38,6 +38,11 @@ class Memory {
 
   		$info = @getimagesize($file_path);
 
+		if ( ! isset($info['channels']) OR ! isset($info[0]) OR ! isset($info[1])) {
+
+			return;
+		}
+
 		// assume 4 color channels to be safe if we don't have it
 		$channels = (isset($info['channels'])) ? $info['channels'] : 4;
 

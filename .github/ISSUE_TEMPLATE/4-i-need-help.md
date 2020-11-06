@@ -1,6 +1,9 @@
 ---
-name: ⁉️ I Need Help!
+name: "⁉️ I Need Help!"
 about: Questions, support, and similar "I need assistance" requests.
+title: ''
+labels: ''
+assignees: ''
 
 ---
 

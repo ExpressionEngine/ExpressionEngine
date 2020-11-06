@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '5.3.2';	// The version being installed
+	public $version           = '5.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -253,6 +253,8 @@ class Wizard extends CI_Controller {
 		{
 			if ($this->is_installed)
 			{
+				//remove the update notices from previous installations
+				$this->update_notices->clear();
 				return $this->update_form();
 			}
 			else
@@ -492,9 +494,6 @@ class Wizard extends CI_Controller {
 	private function postflight()
 	{
 		$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
-
-		//make sure all addons are loaded
-		ee('App')->setupAddons(PATH_THIRD);
 
 		return $advisor->postUpdateChecks();
 	}
@@ -1066,20 +1065,21 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH . '/user/cache/mailing_list.zip'));
+
 		// Try to rename automatically if there are no errors
-		if (!$this->rename_installer()) {
+		if ($this->rename_installer($template_variables)) {
+			ee()->load->helper('url');
+			redirect($cp_login_url);
+		} else {
+			if (!isset($template_variables['update_notices'])) {
+				$template_variables['update_notices'] = [];
+			}
 			array_unshift($template_variables['update_notices'], (object) [
 				'is_header' => false,
 				'message' => lang('success_delete')
 			]);
-		}
-
-		if (empty($template_variables['update_notices'])
-			&& empty($template_variables['errors'])
-			&& empty($template_variables['error_messages']))
-		{
-			ee()->load->helper('url');
-			redirect($cp_login_url);
 		}
 
 		// Are we back here from a input?
@@ -1643,11 +1643,10 @@ class Wizard extends CI_Controller {
 	{
 		$captcha_url = '{base_url}images/captchas/';
 
-		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path)
-		{
+		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path) {
 			$prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
-			$this->userdata[$path] = rtrim(realpath($prefix.$this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-			$this->userdata[$path] = str_replace($this->base_path, '{base_path}', $this->userdata[$path]);
+			$this->userdata[$path] = rtrim(realpath($prefix . $this->userdata[$path]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			$this->userdata[$path] = str_replace(str_replace('/', DIRECTORY_SEPARATOR, $this->base_path), '{base_path}', $this->userdata[$path]);
 		}
 
 		$config = array(
@@ -2229,16 +2228,17 @@ class Wizard extends CI_Controller {
 	 *
 	 * @return bool TRUE if we can rename, FALSE if we can't
 	 */
-	public function canRenameAutomatically()
+	public function canRenameAutomatically($template_variables)
 	{
 		if (version_compare($this->version, '3.0.0', '=')
-			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
-		{
+			&& file_exists(SYSPATH . 'user/cache/mailing_list.zip')) {
 			return FALSE;
 		}
 
-		if ( ! empty($template_variables['error_messages']))
-		{
+		if (!empty($template_variables['mailing_list'])
+			|| !empty($template_variables['update_notices'])
+			|| !empty($template_variables['errors'])
+			|| !empty($template_variables['error_messages'])) {
 			return FALSE;
 		}
 
@@ -2249,9 +2249,9 @@ class Wizard extends CI_Controller {
 	 * Rename the installer
 	 * @return void
 	 */
-	private function rename_installer()
+	private function rename_installer($template_variables)
 	{
-		if (TRUE || ! $this->canRenameAutomatically())
+		if (!$this->canRenameAutomatically())
 		{
 			return FALSE;
 		}
