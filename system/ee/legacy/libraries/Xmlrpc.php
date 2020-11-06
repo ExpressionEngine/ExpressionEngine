@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -485,7 +485,7 @@ class XML_RPC_Response
 		if ($array !== FALSE && is_array($array))
 		{
 
-			foreach ($array as $key) {
+			foreach ($array as $key => $val) {
 				if (is_array($array[$key]))
 				{
 					$array[$key] = $this->decode($array[$key]);
@@ -722,7 +722,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 		//  PARSE XML DATA
 		//-------------------------------------
 
-		if ( ! xml_parse($parser, $data, count($data)))
+		if ( ! xml_parse($parser, $data, strlen($data)))
 		{
 			$errstr = sprintf('XML error: %s at line %d',
 					xml_error_string(xml_get_error_code($parser)),
@@ -1322,7 +1322,7 @@ class XML_RPC_Values extends EE_Xmlrpc
 				$rs .= "<struct>\n";
 				reset($val);
 
-				foreach ($val as $key2 => $value2) {
+				foreach ($val as $key2 => $val2) {
 					$rs .= "<member>\n<name>{$key2}</name>\n";
 					$rs .= $this->serializeval($val2);
 					$rs .= "</member>\n";
@@ -1383,9 +1383,9 @@ class XML_RPC_Values extends EE_Xmlrpc
 
 	function scalarval()
 	{
-		reset($this->me);
+		return reset($this->me);
 
-		return is_array($this->me) ? $this->me[0] : false;
+		//return is_array($this->me) ? $this->me[0] : false;
 	}
 
 
