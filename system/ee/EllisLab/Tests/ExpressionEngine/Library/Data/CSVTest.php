@@ -88,11 +88,15 @@ class CSVTest extends TestCase {
 				'email' => 'support@ellislab.com',
 			));
 
-		$this->csv->save('/var/tmp/test.csv');
-		$this->assertFileExists('/var/tmp/test.csv');
+		$tmp_dir = "/var/tmp";
+		if (PHP_OS=="WINNT") {
+			$tmp_dir = "C:/tmp";
+		}
+		$this->csv->save($tmp_dir.'/test.csv');
+		$this->assertFileExists($tmp_dir.'/test.csv');
 		$this->assertEquals(
 			"\"name\",\"email\"\n\"EllisLab Team\",\"team@ellislab.com\"\n\"EllisLab Support\",\"support@ellislab.com\"\n",
-			file_get_contents('/var/tmp/test.csv')
+			file_get_contents($tmp_dir.'/test.csv')
 		);
 	}
 

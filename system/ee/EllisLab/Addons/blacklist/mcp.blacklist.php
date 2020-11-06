@@ -576,9 +576,9 @@ class Blacklist_mcp {
 		// Array of our returned info
 		$remote_info = ee()->xmlrpc->display_response();
 
-		$new['url'] 	= ( ! isset($remote_info['urls']) OR count($remote_info['urls']) == 0) 	? array() : explode('|',$remote_info['urls']);
-		$new['agent'] 	= ( ! isset($remote_info['agents']) OR count($remote_info['agents']) == 0) ? array() : explode('|',$remote_info['agents']);
-		$new['ip'] 		= ( ! isset($remote_info['ips']) OR count($remote_info['ips']) == 0) 		? array() : explode('|',$remote_info['ips']);
+		$new['url'] 	= ( ! isset($remote_info['urls']) OR strlen($remote_info['urls']) == 0) 	? array() : explode('|',$remote_info['urls']);
+		$new['agent'] 	= ( ! isset($remote_info['agents']) OR strlen($remote_info['agents']) == 0) ? array() : explode('|',$remote_info['agents']);
+		$new['ip'] 		= ( ! isset($remote_info['ips']) OR strlen($remote_info['ips']) == 0) 		? array() : explode('|',$remote_info['ips']);
 
 		//  Add current list
 		$query 			= ee()->db->get("{$listtype}listed");

@@ -24,6 +24,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 - Fixed a bug where unsaved entried were not pulled in for live preview when using `status="open|closed"` parameter.
 - Adds namespacing to v2 upgrades for ease of upgrading from v2 to v5
 - Adds CLI feature
+- Improved XSS filtering for CP clerts
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
