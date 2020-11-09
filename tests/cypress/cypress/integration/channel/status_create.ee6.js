@@ -100,7 +100,7 @@ context('Status Create/Edit', () => {
         page.get('highlight').should('have.value', '#FFFFFF')
     })
 
-    it('should reject XSS', function() {
+    it.only('should reject XSS', function() {
         page.load_create_for_status_group(1)
 
         page.get('status').clear().type(page.messages.xss_vector)
@@ -118,7 +118,12 @@ context('Status Create/Edit', () => {
         page.get('status_access').eq(0).click()
         page.get('status').clear().type('Open')
         //page.submit()AJ
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true})
+        cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true})
+
+        cy.contains('Cannot Create Status')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
+
+        page.get('status').should('have.value', 'Open')
     })
 
     it('should save a new status group and load edit form', function() {
