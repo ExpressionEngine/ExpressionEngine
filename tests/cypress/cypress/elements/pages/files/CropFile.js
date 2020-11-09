@@ -35,9 +35,9 @@ class CropFile extends FileManagerSection {
     }
     load() {
       cy.contains('Files').click()
-      cy.contains('About').click()
+      cy.get('.sidebar').contains('About').click()
       let filename = '';
-      page.get('div.box form div.tbl-wrap table tr:nth-child(2) td:first-child em').invoke('text').then((text) => { 
+      cy.get('div.box form div.tbl-wrap table tr:nth-child(2) td:first-child em').invoke('text').then((text) => { 
         filename = text.trim() 		
       })
       cy.get('div.box form div.tbl-wrap table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()

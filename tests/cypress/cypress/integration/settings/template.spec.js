@@ -67,14 +67,14 @@ context('Template Settings', () => {
 
   it('should save and load the settings', () => {
     page.get('strict_urls_toggle').click()
-    page.get('site_404_options').filter('[value=search/index]').check()
+    page.get('site_404_options').filter('[value=about/index]').check()
     page.get('save_tmpl_revisions_toggle').click()
     page.get('max_tmpl_revisions').clear().type('300')
     page.submit()
 
     page.get('wrap').contains('Preferences Updated')
     page.get('strict_urls').invoke('val').then((val) => { expect(val).to.be.equal('n') })
-    page.get('site_404').find('div.field-input-selected').contains('search/index')
+    page.get('site_404').find('div.field-input-selected').contains('about/index')
     page.get('save_tmpl_revisions').invoke('val').then((val) => { expect(val).to.be.equal('y') })
     page.get('max_tmpl_revisions').invoke('val').then((val) => { expect(val).to.be.equal('300') })
   })

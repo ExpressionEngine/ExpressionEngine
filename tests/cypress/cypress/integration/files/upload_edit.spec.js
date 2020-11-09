@@ -682,7 +682,7 @@ context('Upload Destination Create/Edit', () => {
 
     page.get('name').clear().type('New name upload dir')
     //page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false}) // Set a path that works for the environment
-    page.get('server_path').clear().type('{base_path}images/about/',parseSpecialCharSequences: false)
+    page.get('server_path').clear().type('{base_path}images/about/',parseSpecialCharSequences: false})
     page.submit()
 
     page.get('wrap').contains('Upload directory saved')

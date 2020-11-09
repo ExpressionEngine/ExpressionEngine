@@ -89,7 +89,7 @@ context('Upload Sync', () => {
 
 
     cy.wait(10000)
-    cy.visit(dir_link)
+    cy.visit('/admin.php?/cp/files/directory/2')
     // Make sure progress bar progressed in the proper increments
 
     // This was a nice idea, but it's too intermittent, the AJAX is
@@ -168,7 +168,7 @@ context('Upload Sync', () => {
 
     page.get('sync_button').click()
     cy.wait(10000)
-    cy.visit(dir_link)
+    cy.visit('/admin.php?/cp/files/directory/2')
     page.get('alert').should('exist')
     page.get('alert').contains('Upload directory synchronized')
 

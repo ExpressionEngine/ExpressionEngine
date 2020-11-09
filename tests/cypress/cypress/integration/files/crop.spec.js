@@ -1,9 +1,7 @@
 /// <reference types="Cypress" />
 
-import CategoryGroup from '../../elements/pages/channel/CategoryGroup';
-// page = CropFile.new
-// @return = FileManager.new
-const page = new CategoryGroup;
+import CropFile from '../../elements/pages/files/CropFile';
+const page = new CropFile;
 const { _, $ } = Cypress
 const uploadDirectory = '../../images/about/'
 
@@ -23,11 +21,13 @@ context('File Manager / Crop File', () => {
 
     beforeEach(function() {
 
-        cy.authVisit(page.url);
+        cy.auth();
+        cy.contains('Files').click()
+        cy.get('.sidebar').contains('About').click()
+        let filename = '';
+        cy.get('div.box form div.tbl-wrap table tr:nth-child(2) td:first-child em').invoke('text').as('file_name')
+        cy.get('div.box form div.tbl-wrap table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
 
-        // page = CropFile.new
-        // @return = FileManager.new
-        // @file_name = page.load
         cy.hasNoErrors()
 
         // Check that the heder data is intact
@@ -38,8 +38,12 @@ context('File Manager / Crop File', () => {
         page.get('sidebar').should('not.exist')
 
         page.get('breadcrumb').should('exist')
-        page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
-        page.get('heading').contains('Crop, Rotate & Resize "' + file_name + '"')
+        cy.get('@file_name').then((filename) => {
+            page.get('breadcrumb').contains('File Manager')
+            page.get('breadcrumb').contains('Edit "' + filename + '"')
+            page.get('breadcrumb').contains('Crop, Rotate & Resize "' + filename + '"')
+            page.get('heading').contains('Crop, Rotate & Resize "' + filename + '"')
+        })
 
         page.get('crop_tab').should('exist')
         page.get('rotate_tab').should('exist')
@@ -63,11 +67,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('requires crop width when cropping', function() {
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
-        wait_for_ajax
-        page.get('crop_width_input')
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
+        //wait_for_ajax
+        page.get('crop_width_input').clear()
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -78,11 +82,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('requires crop height when cropping', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_height_input')
+        page.get('crop_height_input').clear()
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -93,11 +97,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('requires crop x when cropping', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_height_input').type(5)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_x_input')
+        page.get('crop_x_input').clear()
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -108,11 +112,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('requires crop y when cropping', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_y_input')
+        page.get('crop_y_input').clear()
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -123,11 +127,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop width is a number', function() {
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_width_input').type('a')
+        page.get('crop_width_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -138,11 +142,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop height is a number', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_height_input').type('a')
+        page.get('crop_height_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -153,11 +157,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop x is a number', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_height_input').type(5)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_x_input').type('a')
+        page.get('crop_x_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -168,11 +172,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop y is a number', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_y_input').type('a')
+        page.get('crop_y_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -183,11 +187,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop width is greater than zero', function() {
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_width_input').type(0)
+        page.get('crop_width_input').clear().type(0)
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -198,11 +202,11 @@ context('File Manager / Crop File', () => {
     })
 
     it('validates that crop height is greater than zero', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
             // wait_for_ajax
-        page.get('crop_height_input').type(0)
+        page.get('crop_height_input').clear().type(0)
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -213,10 +217,10 @@ context('File Manager / Crop File', () => {
     })
 
     it('can crop an image', function() {
-        page.get('crop_width_input').type(5)
-        page.get('crop_height_input').type(5)
-        page.get('crop_x_input').type(0)
-        page.get('crop_y_input').type(0)
+        page.get('crop_width_input').clear().type(5)
+        page.get('crop_height_input').clear().type(5)
+        page.get('crop_x_input').clear().type(0)
+        page.get('crop_y_input').clear().type(0)
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -294,7 +298,7 @@ context('File Manager / Crop File', () => {
     it('width is optional when resizing', function() {
         page.get('resize_tab').click()
         page.get('resize_width_input')
-        page.get('resize_height_input').type(5)
+        page.get('resize_height_input').clear().type(5)
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -305,7 +309,7 @@ context('File Manager / Crop File', () => {
 
     it('height is optional when resizing', function() {
         page.get('resize_tab').click()
-        page.get('resize_width_input').type(5)
+        page.get('resize_width_input').clear().type(5)
         page.get('resize_height_input')
         page.get('save').click()
         cy.hasNoErrors()
@@ -317,8 +321,8 @@ context('File Manager / Crop File', () => {
 
     it('validates that resize width is a number', function() {
         page.get('resize_tab').click()
-        page.get('resize_width_input').type('a')
-        page.get('resize_height_input').type(5)
+        page.get('resize_width_input').clear().type('a')
+        page.get('resize_height_input').clear().type(5)
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -330,8 +334,8 @@ context('File Manager / Crop File', () => {
 
     it('validates that resize height is a number', function() {
         page.get('resize_tab').click()
-        page.get('resize_width_input').type(5)
-        page.get('resize_height_input').type('a')
+        page.get('resize_width_input').clear().type(5)
+        page.get('resize_height_input').clear().type('a')
         page.get('save').click()
         cy.hasNoErrors()
 
@@ -343,8 +347,8 @@ context('File Manager / Crop File', () => {
 
     it('can resize an image', function() {
         page.get('resize_tab').click()
-        page.get('resize_width_input').type(5)
-        page.get('resize_height_input').type(5)
+        page.get('resize_width_input').clear().type(5)
+        page.get('resize_height_input').clear().type(5)
         page.get('save').click()
         cy.hasNoErrors()
 
