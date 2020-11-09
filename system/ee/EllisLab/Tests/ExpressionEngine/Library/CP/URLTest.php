@@ -58,10 +58,10 @@ class URLTest extends TestCase {
 	{
 		return array(
 			array(array('foo'), '', '', 'InvalidArgumentException'),
-			array(new \StdClass(), '', '', 'InvalidArgumentException'),
+			array(new \StdClass(), '', '', 'PHPUnit_Framework_Error'),
 			array('foo', array('foo'), '', 'InvalidArgumentException'),
-			array('foo', new \StdClass(), '', 'InvalidArgumentException'),
-			array('foo', '', new \StdClass(), 'InvalidArgumentException'),
+			array('foo', new \StdClass(), '', 'PHPUnit_Framework_Error'),
+			array('foo', '', new \StdClass(), 'PHPUnit_Framework_Error'),
 		);
 	}
 

@@ -91,7 +91,7 @@ context('Template Partials', () => {
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
 
-            page.get('bulk_action').select('Delete')
+            page.get('bulk_action').select('Remove')
             page.get('action_submit_button').click()
 
             page.get('modal_submit_button').click()

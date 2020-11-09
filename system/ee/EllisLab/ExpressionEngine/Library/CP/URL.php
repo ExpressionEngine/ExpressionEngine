@@ -59,8 +59,7 @@ class URL implements \Serializable {
 	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '', $requested_uri = '', $encrypt_delegate = NULL)
 	{
 		// PHP 5.3 will not throw an error on array to string conversion
-		if (is_object($path) || is_array($path) || is_object($session_id) || is_array($session_id) || is_object($qs))
-		{
+		if (is_array($path) || is_array($session_id)) {
 			throw new \InvalidArgumentException("Invalid array to string conversion in " . get_called_class());
 		}
 
