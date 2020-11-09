@@ -250,7 +250,7 @@ class Template extends AbstractDesignController {
 
     			if ($result->isValid())
     			{
-    				$template->save();
+					$template->save();
     				// Save a new revision
     				$template->saveNewTemplateRevision();
 

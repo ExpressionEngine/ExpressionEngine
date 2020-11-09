@@ -265,7 +265,7 @@ class Alert {
 	 */
 	public function withTitle($title)
 	{
-		$this->title = ee()->security->xss_clean($title);
+		$this->title = ee('Security/XSS')->clean($title);
 		return $this;
 	}
 

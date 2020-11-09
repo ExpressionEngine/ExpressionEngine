@@ -58,7 +58,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'status' => 'required|unique',
+		'status' => 'required|unique|xss',
 		'highlight' => 'required|hexColor'
 	);
 
