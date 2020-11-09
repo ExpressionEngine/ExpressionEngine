@@ -374,19 +374,30 @@ context('File Manager / Crop File', () => {
     })
 
     it('shows an error if the file has no write permissions', function() {
-        cy.exec(`chmod 444 ${uploadDirectory}*.{gif,jpg,png}`)
-            // page.load
-        cy.hasNoErrors()
+        if (Cypress.platform === 'win32')
+        {
+            cy.log('skipped because of Windows platform')
+        }
+        else
+        {
+            cy.exec(`chmod 444 ${uploadDirectory}*.gif`)
+            cy.exec(`chmod 444 ${uploadDirectory}*.jpg`)
+            cy.exec(`chmod 444 ${uploadDirectory}*.png`)
+            cy.reload()
+                // page.load
+            cy.hasNoErrors()
 
-        page.hasAlert('error')
-        page.get('alert').contains("File Not Writable")
-        page.get('alert').contains("Cannot write to the file")
-        page.get('alert').contains("Check your file permissions on the server")
+            page.hasAlert('error')
+            page.get('alert').contains("File Not Writable")
+            page.get('alert').contains("Cannot write to the file")
+            page.get('alert').contains("Check your file permissions on the server")
+        }
     })
 
     it('shows an error if the file does not exist', function() {
-        cy.exec(`rm ${uploadDirectory}/*.{gif,jpg,png}`)
-            // page.load
+        cy.task('filesystem:delete', uploadDirectory+'\*')
+
+        cy.reload()
         cy.hasNoErrors()
 
         cy.contains("404")
@@ -397,7 +408,7 @@ context('File Manager / Crop File', () => {
 
     it('shows an error if the directory does not exist', function() {
         cy.task('filesystem:delete', uploadDirectory)
-            // page.load
+        cy.reload()
         cy.hasNoErrors()
 
         cy.contains("404")
