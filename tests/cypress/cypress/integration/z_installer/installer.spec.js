@@ -247,6 +247,9 @@ context('Installer', () => {
 
   context('when using invalid database credentials', () => {
     it('shows an error with no database credentials', () => {
+      cy.wait(5000) //just wait a bit if not everything is clean from previous test
+      page.load()
+      
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()

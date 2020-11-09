@@ -66,7 +66,7 @@ context('Upload Sync', () => {
   })
 
 
-  it.skip('shows the Upload Directory Sync page', () => {
+  it('shows the Upload Directory Sync page', () => {
     page.get('progress_bar').should('exist')
     page.get('sizes').should('not.exist') // No image manipulations yet
   })
@@ -223,9 +223,9 @@ context('Upload Sync', () => {
     })
 
     
-    it.skip('should apply image manipulations to new files', () => {
+    it('should apply image manipulations to new files', () => {
       // First we need to create the manipulations
-      new_upload.create_manipulation()
+      //new_upload.create_manipulation()
 
       page.load_sync_for_dir(2)
       page.get('sizes').should('exist')
@@ -238,6 +238,8 @@ context('Upload Sync', () => {
 
       page.get('sync_button').click()
 
+      cy.wait(20000)
+      cy.visit('/admin.php?/cp/files/directory/2')
       cy.hasNoErrors()
 
       // Make sure progress bar progressed in the proper increments

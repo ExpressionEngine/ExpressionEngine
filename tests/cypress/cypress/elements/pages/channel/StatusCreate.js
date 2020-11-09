@@ -10,30 +10,24 @@ class ChannelManager extends ControlPanel {
             "highlight": 'input[name=highlight]',
             "color_panel": 'div.minicolors-panel',
             "status_access": 'input[name="status_access[]"]',
+
+            "submit_buttons": ".app-modal:visible .form-btns .btn",
+            "status_names": '[data-input-value="statuses"] label .status-tag',
         })
     }
 
-    load() {
-        // self.open_dev_menu
-        cy.contains('Channel Manager').click()
-        cy.contains('Status Groups').click()
-        cy.contains('Create New').click()
-    }
-
     load_view_for_status_group(number) {
-        // self.open_dev_menu
-        cy.contains('Channel Manager').click()
-        cy.contains('Status Groups').click()
-
-        find('tbody tr:nth-child(' + number + ') li.txt-only a').click()
+        cy.visit('admin.php?/cp/channels')
+        cy.get('ul.tbl-list li:nth-child(' + number + ') .main a').first().click()
+        cy.get('.tabs a:contains("Statuses")').click()
     }
 
     load_create_for_status_group(number) {
-        cy.contains('Create New').click()
+        cy.contains('Add Status').click()
     }
 
     load_edit_for_status(number) {
-        find('tbody tr:nth-child(' + number + ') li.edit a').click()
+        cy.get('[data-input-value="statuses"] label:nth-child(' + number + ')>a').click()
     }
 
 }

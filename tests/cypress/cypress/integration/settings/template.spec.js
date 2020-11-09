@@ -67,7 +67,7 @@ context('Template Settings', () => {
 
   it('should save and load the settings', () => {
     page.get('strict_urls_toggle').click()
-    page.get('site_404').find('input[value="search/index"]').check()
+    page.get('site_404').find('input[value="about/index"]').check()
     page.get('save_tmpl_revisions_toggle').click()
     page.get('max_tmpl_revisions').clear().type('300')
     page.submit()

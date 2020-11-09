@@ -55,10 +55,12 @@ context('Template Variables', () => {
         page.hasErrors()
     })
 
-    it.skip('can create a new variable', function() {
+    it('can create a new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
+        cy.get('a').contains('Template Variable').first().click()
 
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 
@@ -70,7 +72,8 @@ context('Template Variables', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').click()
+        //form.get('save_button').first().click()
+        cy.get('input[value="Save Template Variable"]').first().click()
 
         cy.hasNoErrors()
 

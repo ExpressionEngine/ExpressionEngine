@@ -57,10 +57,11 @@ context('Template Partials', () => {
         page.hasErrors()
     })
 
-    it.skip('can create a new partial', function() {
+    it('can create a new partial', function() {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
-        page.get('create_new_button').click()
+        //page.get('create_new_button').click()
+        cy.get('a').contains('Create New').first().click()
 
         cy.hasNoErrors()
 
@@ -72,7 +73,8 @@ context('Template Partials', () => {
         form.get('contents').click()
         form.get('contents_editor').type('Lorem ipsum...')
 
-        form.get('save_button').click()
+        //form.get('save_button').first().click()
+        cy.get('input').contains('Save Partial').first().click()
 
         cy.hasNoErrors()
 
