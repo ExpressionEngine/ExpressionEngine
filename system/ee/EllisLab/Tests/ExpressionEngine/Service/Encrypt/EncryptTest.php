@@ -21,9 +21,7 @@ class EncryptTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->markTestSkipped(
-			'Looks like multibyte helper is not loaded properly for tests'
-		);
+
 	}
 
 	public function testEncodeWithDefaultKey()
