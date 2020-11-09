@@ -6,7 +6,7 @@ $lang = array(
 
 'any_date' => 'Custom Date Range',
 
-'blacklist' => 'Add IPs to Blacklist',
+'block_ips' => 'Add IPs to Blocked List',
 
 'choose_entry_for_comment_move' => 'Choose Entry for Comment Move',
 
@@ -99,10 +99,6 @@ $lang = array(
 'comments_moved' => 'Comments moved',
 
 'date_range' => 'Date Range',
-
-'delete_comment_confirm' => 'Are you sure you want to permanently delete this comment?',
-
-'delete_comments_confirm' => 'Are you sure you want to permanently delete these comments?',
 
 'delete_confirm' => 'Delete Comment Confirmation',
 

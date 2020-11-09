@@ -194,8 +194,6 @@ $lang = array(
 
 'batchmode_explanation' => 'Batch Mode breaks up large mailings into smaller groups, which get sent at intervals. Recommended if your site is hosted on a shared-hosting account.',
 
-'blacklist_all_ips' => 'Blacklist All IPs',
-
 'browse' => 'Browse',
 
 'cache_deleted' => 'Cache files have been deleted',

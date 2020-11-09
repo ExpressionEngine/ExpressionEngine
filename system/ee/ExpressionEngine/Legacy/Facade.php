@@ -22,6 +22,11 @@ class Facade {
 	protected $loaded = array();
 	protected $in_scope = 0;
 
+	// array of legacy objects that are deprecated and removed
+	private $deprecated = [
+		'blacklist' => 'blockedlist',
+	];
+
 	/**
 	 *
 	 */
@@ -115,6 +120,16 @@ class Facade {
 		if ($this->has($name))
 		{
 			return $this->loaded[$name];
+		}
+
+		if (array_key_exists($name, $this->deprecated)) {
+			$name = $this->deprecated[$name];
+			if ($this->has($name)) {
+				if (method_exists($this->loaded[$name], 'deprecate')) {
+					$this->loaded[$name]->deprecate();
+				}
+				return $this->loaded[$name];
+			}
 		}
 
 		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());

@@ -14,30 +14,14 @@ use ExpressionEngine\Library\CP\URL;
 use ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * Keyword Filter
+ * Entry Keyword Filter
  */
-class Keyword extends Filter {
+class EntryKeyword extends Keyword {
 
 	public function __construct()
 	{
-		$this->name = 'filter_by_keyword';
-		$this->placeholder = lang('keyword_filter');
-		$this->list_class = 'filter-search-form';
-		$this->view = '_shared/filters/keyword';
-	}
-
-	/**
-	 * @see Filter::render
-	 */
-	public function render(ViewFactory $view, URL $url)
-	{
-		$filter = [
-			'name'        => $this->name,
-			'value'       => str_replace('"', '&quot;', $this->value()),
-			'placeholder' => $this->placeholder
-		];
-
-		return $view->make($this->view)->render($filter);
+		parent::__construct();
+		$this->view = '_shared/filters/entrykeyword';
 	}
 
 }

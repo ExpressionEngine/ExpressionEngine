@@ -9,25 +9,42 @@
  */
 
 /**
- * Core Blacklist
+ * Core Blocked List
  */
-class EE_Blacklist {
+class EE_Blockedlist {
 
-	var $whitelisted = 'n';		// Is this request whitelisted
-	var $blacklisted = 'n';		// Is this request blacklisted.
+	var $allowed = 'n';		// Is this request allowed
+	var $blocked = 'n';		// Is this request blocked.
+
+	public $whitelisted = 'n';
+	public $blacklisted = 'n';
+
+	public function deprecate()
+	{
+		$this->whitelisted = $this->allowed;
+		$this->blacklisted = $this->blocked;
+
+		ee()->load->library('logger');
+		$deprecated = array(
+			'function' => 'ee()->blacklist',
+			'deprecated_since' => '6.0.0',
+			'use_instead' => 'ee()->blockedlist->blocked and ee()->blockedlist->allowed'
+		);
+		ee()->logger->developer($deprecated, TRUE, 604800);
+	}
 
 
 	/**
-	 * Blacklist Checker
+	 * Block and Allow Checker
 	 *
-	 * This function checks all of the available blacklists, such as urls,
+	 * This function checks all of the available blocked lists, such as urls,
 	 * IP addresses, and user agents. URLs are checked as both referrers and
 	 * in all $_POST'ed contents (such as comments).
 	 *
 	 * @access	private
 	 * @return	bool
 	 */
-	function _check_blacklist()
+	function _check_blockedlist()
 	{
 		// Check the referrer
 		// Since we already need to check all post values for illegal urls
@@ -47,8 +64,8 @@ class EE_Blacklist {
 			$_POST['HTTP_REFERER'] = $test_ref;
 		}
 
-		// No referrer, and no posted data - no need to blacklist.
-		// In other words, if your ip is blacklisted you can still see the
+		// No referrer, and no posted data - no need to block.
+		// In other words, if your ip is blocked you can still see the
 		// site, but you can not contribute content.
 		if (count($_POST) == 0)
 		{
@@ -56,7 +73,7 @@ class EE_Blacklist {
 		}
 
 		ee()->load->model('addons_model');
-		$installed = ee()->addons_model->module_installed('blacklist');
+		$installed = ee()->addons_model->module_installed('block_and_allow');
 
 		if ( ! $installed)
 		{
@@ -64,55 +81,55 @@ class EE_Blacklist {
 			return TRUE;
 		}
 
-		// Whitelisted Items
-		$whitelisted_ip		= array();
-		$whitelisted_url	= array();
-		$whitelisted_agent	= array();
+		// Allowed Items
+		$allowedlist_ip		= array();
+		$allowedlist_url	= array();
+		$allowedlist_agent	= array();
 
-		$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted
-										 WHERE whitelisted_value != ''");
+		$results = ee()->db->query("SELECT allowedlist_type, allowedlist_value FROM exp_allowedlist
+										 WHERE allowedlist_value != ''");
 
 		if ($results->num_rows() > 0)
 		{
 			foreach($results->result_array() as $row)
 			{
-				if ($row['whitelisted_type'] == 'url')
+				if ($row['allowedlist_type'] == 'url')
 				{
-					$whitelisted_url = explode('|', $row['whitelisted_value']);
+					$allowedlist_url = explode('|', $row['allowedlist_value']);
 				}
-				elseif($row['whitelisted_type'] == 'ip')
+				elseif($row['allowedlist_type'] == 'ip')
 				{
-					$whitelisted_ip = explode('|', $row['whitelisted_value']);
+					$allowedlist_ip = explode('|', $row['allowedlist_value']);
 				}
-				elseif($row['whitelisted_type'] == 'agent')
+				elseif($row['allowedlist_type'] == 'agent')
 				{
-					$whitelisted_agent = explode('|', $row['whitelisted_value']);
+					$allowedlist_agent = explode('|', $row['allowedlist_value']);
 				}
 			}
 		}
 
 		if (ee()->config->item('cookie_domain') !== FALSE && ee()->config->item('cookie_domain') != '')
 		{
-			$whitelisted_url[] = ee()->config->item('cookie_domain');
+			$allowedlist_url[] = ee()->config->item('cookie_domain');
 		}
 
 		$site_url = ee()->config->item('site_url');
 
-		$whitelisted_url[] = $site_url;
+		$allowedlist_url[] = $site_url;
 
 		if ( ! preg_match("#^http://\w+\.\w+\.\w*#", $site_url))
 		{
 			if (substr($site_url, 0, 7) == 'http://' AND substr($site_url, 0, 11) != 'http://www.')
 			{
-				$whitelisted_url[] = preg_replace("#^http://(.+?)#", "http://www.\\1", $site_url);
+				$allowedlist_url[] = preg_replace("#^http://(.+?)#", "http://www.\\1", $site_url);
 			}
 		}
 
 		// Domain Names Array
 		$domains = array('net','com','org','info', 'name','biz','us','de', 'uk');
 
-		// Blacklisted Checking
-		$query	= ee()->db->query("SELECT blacklisted_type, blacklisted_value FROM exp_blacklisted");
+		// blockedlist Checking
+		$query	= ee()->db->query("SELECT blockedlist_type, blockedlist_value FROM exp_blockedlist");
 
 		if ($query->num_rows() == 0)
 		{
@@ -122,11 +139,11 @@ class EE_Blacklist {
 
 		foreach($query->result_array() as $row)
 		{
-			if ($row['blacklisted_type'] == 'url' && $row['blacklisted_value'] != '' && $this->whitelisted != 'y')
+			if ($row['blockedlist_type'] == 'url' && $row['blockedlist_value'] != '' && $this->allowed != 'y')
 			{
-				$blacklist_values = explode('|', $row['blacklisted_value']);
+				$blocked_values = explode('|', $row['blockedlist_value']);
 
-				if ( ! is_array($blacklist_values) OR count($blacklist_values) == 0)
+				if ( ! is_array($blocked_values) OR count($blocked_values) == 0)
 				{
 					continue;
 				}
@@ -162,7 +179,7 @@ class EE_Blacklist {
 								$matches['0'][$i] = $value;
 							}
 
-							foreach($blacklist_values as $bad_url)
+							foreach($blocked_values as $bad_url)
 							{
 								if ($bad_url != '' && stristr($matches['0'][$i], $bad_url) !== FALSE)
 								{
@@ -170,30 +187,30 @@ class EE_Blacklist {
 
 									// Check Bad Against Whitelist - URLs
 
-									if ( is_array($whitelisted_url) && count($whitelisted_url) > 0)
+									if ( is_array($allowedlist_url) && count($allowedlist_url) > 0)
 									{
 										$parts = explode('?',$matches['0'][$i]);
 
-										foreach($whitelisted_url as $pure)
+										foreach($allowedlist_url as $pure)
 										{
 											if ($pure != '' && stristr($parts['0'], $pure) !== FALSE)
 											{
 												$bad = 'n';
-												$this->whitelisted = 'y';
+												$this->allowed = 'y';
 												break;
 											}
 										}
 									}
 
 									// Check Bad Against Whitelist - IPs
-									if ( is_array($whitelisted_ip) && count($whitelisted_ip) > 0)
+									if ( is_array($allowedlist_ip) && count($allowedlist_ip) > 0)
 									{
-										foreach($whitelisted_ip as $pure)
+										foreach($allowedlist_ip as $pure)
 										{
 											if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 											{
 												$bad = 'n';
-												$this->whitelisted = 'y';
+												$this->allowed = 'y';
 												break;
 											}
 										}
@@ -206,11 +223,11 @@ class EE_Blacklist {
 										// user who didn't take any actions.
 										if ($key == 'HTTP_REFERER')
 										{
-											$this->blacklisted = 'y';
+											$this->blocked = 'y';
 										}
 										else
 										{
-											exit('Action Denied: Blacklisted Item Found'."\n<br/>".$matches['0'][$i]);
+											exit('Action Denied: Blocked Item Found'."\n<br/>".$matches['0'][$i]);
 										}
 									}
 									else
@@ -223,29 +240,29 @@ class EE_Blacklist {
 					}
 				}
 			}
-			elseif($row['blacklisted_type'] == 'ip' && $row['blacklisted_value'] != '' && $this->whitelisted != 'y')
+			elseif($row['blockedlist_type'] == 'ip' && $row['blockedlist_value'] != '' && $this->allowed != 'y')
 			{
-				$blacklist_values = explode('|', $row['blacklisted_value']);
+				$blocked_values = explode('|', $row['blockedlist_value']);
 
-				if ( ! is_array($blacklist_values) OR count($blacklist_values) == 0)
+				if ( ! is_array($blocked_values) OR count($blocked_values) == 0)
 				{
 					continue;
 				}
 
-				foreach($blacklist_values as $bad_ip)
+				foreach($blocked_values as $bad_ip)
 				{
 					if ($bad_ip != '' && strpos(ee()->input->ip_address(), $bad_ip) === 0)
 					{
 						$bad = 'y';
 
-						if ( is_array($whitelisted_ip) && count($whitelisted_ip) > 0)
+						if ( is_array($allowedlist_ip) && count($allowedlist_ip) > 0)
 						{
-							foreach($whitelisted_ip as $pure)
+							foreach($allowedlist_ip as $pure)
 							{
 								if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 								{
 									$bad = 'n';
-									$this->whitelisted = 'y';
+									$this->allowed = 'y';
 									break;
 								}
 							}
@@ -253,53 +270,53 @@ class EE_Blacklist {
 
 						if ($bad == 'y')
 						{
-							$this->blacklisted = 'y';
+							$this->blocked = 'y';
 							break;
 						}
 						else
 						{
 							unset($_POST['HTTP_REFERER']);
-							return TRUE; // whitelisted, so end
+							return TRUE; // allowed, so end
 						}
 					}
 				}
 			}
-			elseif($row['blacklisted_type'] == 'agent' && $row['blacklisted_value'] != '' && ee()->input->user_agent() != '' && $this->whitelisted != 'y')
+			elseif($row['blockedlist_type'] == 'agent' && $row['blockedlist_value'] != '' && ee()->input->user_agent() != '' && $this->allowed != 'y')
 			{
-				$blacklist_values = explode('|', $row['blacklisted_value']);
+				$blocked_values = explode('|', $row['blockedlist_value']);
 
-				if ( ! is_array($blacklist_values) OR count($blacklist_values) == 0)
+				if ( ! is_array($blocked_values) OR count($blocked_values) == 0)
 				{
 					continue;
 				}
 
-				foreach($blacklist_values as $bad_agent)
+				foreach($blocked_values as $bad_agent)
 				{
 					if ($bad_agent != '' && stristr(ee()->input->user_agent(), $bad_agent) !== FALSE)
 					{
 						$bad = 'y';
 
-						if ( is_array($whitelisted_ip) && count($whitelisted_ip) > 0)
+						if ( is_array($allowedlist_ip) && count($allowedlist_ip) > 0)
 						{
-							foreach($whitelisted_ip as $pure)
+							foreach($allowedlist_ip as $pure)
 							{
 								if ($pure != '' && strpos(ee()->input->user_agent(), $pure) !== FALSE)
 								{
 									$bad = 'n';
-									$this->whitelisted = 'y';
+									$this->allowed = 'y';
 									break;
 								}
 							}
 						}
 
-						if ( is_array($whitelisted_agent) && count($whitelisted_agent) > 0)
+						if ( is_array($allowedlist_agent) && count($allowedlist_agent) > 0)
 						{
-							foreach($whitelisted_agent as $pure)
+							foreach($allowedlist_agent as $pure)
 							{
 								if ($pure != '' && strpos(ee()->input->agent, $pure) !== FALSE)
 								{
 									$bad = 'n';
-									$this->whitelisted = 'y';
+									$this->allowed = 'y';
 									break;
 								}
 							}
@@ -307,12 +324,12 @@ class EE_Blacklist {
 
 						if ($bad == 'y')
 						{
-							$this->blacklisted = 'y';
+							$this->blocked = 'y';
 						}
 						else
 						{
 							unset($_POST['HTTP_REFERER']);
-							return TRUE; // whitelisted, so end
+							return TRUE; // allowed, so end
 						}
 					}
 				}

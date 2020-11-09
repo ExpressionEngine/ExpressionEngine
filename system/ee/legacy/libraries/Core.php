@@ -69,7 +69,7 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20201028');
+        define('APP_BUILD', '20201103');
         define('APP_VER', '6.0.0-b.3');
         define('APP_VER_ID', 'b.3');
         define('SLASH', '&#47;');
@@ -249,7 +249,7 @@ class EE_Core
 
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
-            'blacklist', 'channel', 'comment', 'commerce', 'email',
+            'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
              'rte', 'search', 'simple_commerce', 'spam', 'stats'
@@ -262,13 +262,13 @@ class EE_Core
             exit;
         }
 
-        // Security Checks: Throttle, Blacklist, File Integrity, and iFraming
+        // Security Checks: Throttle, Block and Allow, File Integrity, and iFraming
         if (REQ != 'CP') {
             ee()->load->library('throttling');
             ee()->throttling->run();
 
-            ee()->load->library('blacklist');
-            ee()->blacklist->_check_blacklist();
+            ee()->load->library('blockedlist');
+            ee()->blockedlist->_check_blockedlist();
 
             ee()->load->library('file_integrity');
             ee()->file_integrity->create_bootstrap_checksum();

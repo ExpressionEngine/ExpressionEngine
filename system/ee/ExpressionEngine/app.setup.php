@@ -520,6 +520,8 @@ $setup = [
 			$config->setEnabledPrefixes($installed_prefixes);
 			$config->setModelDependencies($app->forward('getModelDependencies'));
 
+			$app->setClassAliases();
+
 			return new Model\DataStore($ee->make('Database'), $config);
 		},
 
