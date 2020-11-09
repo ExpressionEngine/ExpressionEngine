@@ -84,20 +84,22 @@ context('Template Partials', () => {
     })
 
     it('can remove a partial', function() {
-        page.get('partials').eq(1).find('td:nth-child(4) input').click()
+        page.get('partials').its('length').then((length) => {
+            page.get('partials').eq(1).find('td:nth-child(4) input').click()
 
 
-        page.get('bulk_action').should('exist')
-        page.get('action_submit_button').should('exist')
+            page.get('bulk_action').should('exist')
+            page.get('action_submit_button').should('exist')
 
-        page.get('bulk_action').select('Remove')
-        page.get('action_submit_button').click()
+            page.get('bulk_action').select('Delete')
+            page.get('action_submit_button').click()
 
-        page.get('modal_submit_button').click()
+            page.get('modal_submit_button').click()
 
-        cy.hasNoErrors()
+            cy.hasNoErrors()
 
-        page.hasAlert('success')
-        page.get('partials').its('length').should('eq', 12)
+            page.hasAlert('success')
+            page.get('partials').its('length').should('eq', length-1)
+        })
     })
 })

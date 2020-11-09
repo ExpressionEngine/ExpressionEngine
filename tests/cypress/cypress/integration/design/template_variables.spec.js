@@ -83,19 +83,21 @@ context('Template Variables', () => {
     })
 
     it('can remove a variable', function() {
-        page.get('variables').eq(0).find('td:nth-child(4) input').click()
+        page.get('variables').its('length').then((length) => {
+            page.get('variables').eq(0).find('td:nth-child(4) input').click()
 
-        page.get('bulk_action').should('exist')
-        page.get('action_submit_button').should('exist')
+            page.get('bulk_action').should('exist')
+            page.get('action_submit_button').should('exist')
 
-        page.get('bulk_action').select('Remove')
-        page.get('action_submit_button').click()
+            page.get('bulk_action').select('Delete')
+            page.get('action_submit_button').click()
 
-        page.get('modal_submit_button').click()
+            page.get('modal_submit_button').click()
 
-        cy.hasNoErrors()
+            cy.hasNoErrors()
 
-        page.hasAlert('success')
-        page.get('variables').its('length').should('eq', 13)
+            page.hasAlert('success')
+            page.get('variables').its('length').should('eq', length-1)
+        })
     })
 })

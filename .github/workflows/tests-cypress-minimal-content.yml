@@ -1,9 +1,6 @@
 name: Run Cypress Content Tests
 
 on:
-  push:
-    branches:
-      - feature/cypress-tests
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:

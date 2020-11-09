@@ -41,6 +41,8 @@ context('Installer', () => {
 
         cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
+        cy.wait(5000)
+
         page.load()
         cy.screenshot({capture: 'runner'})
         cy.screenshot({capture: 'fullPage'})
