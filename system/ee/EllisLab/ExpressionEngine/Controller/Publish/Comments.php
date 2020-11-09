@@ -764,7 +764,7 @@ class Comments extends AbstractPublishController {
 		// Grab the required comments
 		//$query = ee()->db->get('comments');
 
-		ee()->load->library('template', 'TMPL');
+		ee()->load->library('template', NULL, 'TMPL');
 		$template = ee()->functions->fetch_email_template('comments_opened_notification');
 
 
@@ -882,7 +882,7 @@ class Comments extends AbstractPublishController {
 						$message = $email_msg;
 
 						$sub	= $subscriptions[$val['1']];
-						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
+						$sub_qs	= 'entry_id='.$c->entry_id.'&hash='.$sub['hash'].'&type=unsubscribe';
 
 						// Deprecate the {name} variable at some point
 						$title	 = str_replace('{name}', $val['2'], $title);
