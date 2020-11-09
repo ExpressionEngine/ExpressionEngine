@@ -100,7 +100,7 @@ context('Status Create/Edit', () => {
         page.get('highlight').should('have.value', '#FFFFFF')
     })
 
-    it.only('should reject XSS', function() {
+    it('should reject XSS', function() {
         page.load_create_for_status_group(1)
 
         page.get('status').clear().type(page.messages.xss_vector)
