@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<members>
+	<member>
+		<username>brettb</username>
+		<screen_name>Brett Bretterson</screen_name>
+		<password type="md5">653132ffd94b986bf2bb806b3c67d190</password>
+		<email>brett@example.com</email>
+		<phone>123456789</phone>
+		<address>221b Baker St.</address>
+	</member>
+	<member>
+		<username>robr</username>
+		<screen_name>Robert Robertson</screen_name>
+		<password type="sha1">1b4395b877794a16a7f4db5747380dbaafc7ff18</password>
+		<email>robert@example.com</email>
+		<phone>123456789</phone>
+		<address>221b Baker St.</address>
+	</member>
+	<member>
+		<username>johnjacob</username>
+		<screen_name>John Jacob</screen_name>
+		<password type="text">bad_password</password>
+		<email>john.jacob@example.com</email>
+		<phone>123456789</phone>
+		<address>221b Baker St.</address>
+	</member>
+</members>

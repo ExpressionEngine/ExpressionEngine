@@ -81,11 +81,6 @@ class Updater {
 				)
 			)
 		);
-
-		ee('Model')->get('ChannelLayout')
-			->with('Channel')
-			->all()
-			->synchronize();
 	}
 
 }

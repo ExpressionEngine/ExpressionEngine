@@ -1,0 +1,23 @@
+{
+    "baseUrl": "http://localhost:8888/",
+    "video": false,
+    "trashAssetsBeforeRuns": false,
+    "taskTimeout": 120000,
+    "execTimeout": 120000,
+    "defaultCommandTimeout": 6000,
+    "animationDistanceThreshold": 20,
+    "requestTimeout": 20000,
+    "watchForFileChanges": false,
+    "chromeWebSecurity": false,
+    "testFiles": "z_installer/*.spec.js",
+    "env": {
+        "USER_EMAIL": "admin",
+        "USER_PASSWORD": "password",
+        "DB_HOST": "localhost",
+        "DB_USER": "root",
+        "DB_PASSWORD": "root",
+        "DB_DATABASE": "ee-test",
+        "DB_DUMP": "database.sql",
+        "TEMP_DIR": "/tmp"
+    }
+}

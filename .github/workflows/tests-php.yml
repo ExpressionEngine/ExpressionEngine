@@ -1,12 +1,17 @@
 name: Run PHP Tests
 
 on:
+  push:
+    branches:
+      - stability
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - stability
 
 jobs:
     php-tests:
+        if: github.event.pull_request.draft == false
         runs-on: ${{ matrix.os }}
 
         strategy:
