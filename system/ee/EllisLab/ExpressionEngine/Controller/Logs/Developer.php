@@ -65,7 +65,7 @@ class Developer extends Logs {
 			 *	) LIKE '%exp:foo:bar%';
 			 */
 
-			$deprecated_function	= str_replace('%s', "', function, '", lang('deprecated_function'));
+			$deprecated_function	= str_replace('%s', "', exp_developer_log.function, '", lang('deprecated_function'));
 			$deprecated_on_line		= str_replace('%s', "', file, '", lang('deprecated_on_line'));
 			$deprecated_on_line		= str_replace('%d', "', line, '", $deprecated_on_line);
 
