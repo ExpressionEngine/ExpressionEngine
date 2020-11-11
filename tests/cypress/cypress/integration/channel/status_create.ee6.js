@@ -58,7 +58,7 @@ context('Status Create/Edit', () => {
         // Duplicate status name
         page.get('status').clear().type('open')
         page.get('status').trigger('blur')
-        page.hasError(page.get('status'), 'This field must be unique.')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
 
 
         page.get('status').clear().type('Test')
