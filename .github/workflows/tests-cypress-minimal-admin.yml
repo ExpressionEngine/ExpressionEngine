@@ -34,10 +34,7 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  tools: phpstan
-
-            - name: Run PHPStan
-              run: phpstan analyse system
+                  ini-values: error_log = php_errors.log
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"

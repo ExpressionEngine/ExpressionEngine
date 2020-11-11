@@ -29,11 +29,12 @@ jobs:
               uses: actions/checkout@v2
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@verbose
+              uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
+                  ini-values: error_log = /var/log/php_errors.log
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
