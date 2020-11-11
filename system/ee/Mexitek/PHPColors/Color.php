@@ -435,7 +435,7 @@ class Color
      * @return string mixed HEX value
      * @throws Exception
      */
-    public function mix(string $hex2, int $amount = 0)
+    public function mix(string $hex2, $amount = 0)
     {
         $rgb2 = self::hexToRgb($hex2);
         $mixed = $this->mixRgb($this->_rgb, $rgb2, $amount);
