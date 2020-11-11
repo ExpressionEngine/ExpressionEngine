@@ -1,5 +1,11 @@
 {
     "require": {
         "fzaninotto/faker": "^1.9"
-    }
+    },
+    "repositories":[
+        {
+            "type": "vcs",
+            "url": "git@github.com:fzaninotto/Faker.git"
+        }
+    ]
 }
