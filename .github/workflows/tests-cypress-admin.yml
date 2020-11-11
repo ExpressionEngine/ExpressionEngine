@@ -93,4 +93,4 @@ jobs:
               if: failure()
               with:
                 name: error.log
-                path: /var/log/apache2/error.log
+                path: /var/log/php_errors.log
