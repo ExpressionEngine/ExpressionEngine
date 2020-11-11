@@ -18,7 +18,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}

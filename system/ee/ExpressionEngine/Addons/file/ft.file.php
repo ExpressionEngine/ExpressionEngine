@@ -694,7 +694,7 @@ JSC;
 	 *
 	 * @access	public
 	 */
-	function replace_tag_catchall($file_info = [], $params = array(), $tagdata = FALSE, $modifier)
+	function replace_tag_catchall($file_info = [], $params = array(), $tagdata = FALSE, $modifier = '')
 	{
 		// These are single variable tags only, so no need for replace_tag
 		if ($modifier)
