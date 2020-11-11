@@ -74,7 +74,7 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v1
+              uses: cypress-io/github-action@v2
               with:
                 browser: chrome
                 headless: true
@@ -82,8 +82,15 @@ jobs:
                 config-file: content.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v2
               if: failure()
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: error.log
+                path: /var/log/apache2/error.log
