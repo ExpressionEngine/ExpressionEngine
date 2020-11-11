@@ -405,7 +405,7 @@ class Color
      * @return string Darker HEX value
      * @throws Exception
      */
-    public function darken(int $amount = self::DEFAULT_ADJUST)
+    public function darken($amount = self::DEFAULT_ADJUST)
     {
         // Darken
         $darkerHSL = $this->darkenHsl($this->_hsl, $amount);
@@ -420,7 +420,7 @@ class Color
      * @return string Lighter HEX value
      * @throws Exception
      */
-    public function lighten(int $amount = self::DEFAULT_ADJUST)
+    public function lighten($amount = self::DEFAULT_ADJUST)
     {
         // Lighten
         $lighterHSL = $this->lightenHsl($this->_hsl, $amount);
@@ -449,7 +449,7 @@ class Color
      * @return array An array with a 'light' and 'dark' index
      * @throws Exception
      */
-    public function makeGradient(int $amount = self::DEFAULT_ADJUST)
+    public function makeGradient($amount = self::DEFAULT_ADJUST)
     {
         // Decide which color needs to be made
         if ($this->isLight()) {
@@ -471,7 +471,7 @@ class Color
      * @param int $lighterThan
      * @return boolean
      */
-    public function isLight($color = false, int $lighterThan = 130)
+    public function isLight($color = false, $lighterThan = 130)
     {
         // Get our color
         $color = ($color) ? $color : $this->_hex;
@@ -490,7 +490,7 @@ class Color
      * @param int $darkerThan
      * @return boolean
      */
-    public function isDark($color = false, int $darkerThan = 130)
+    public function isDark($color = false, $darkerThan = 130)
     {
         // Get our color
         $color = ($color) ? $color : $this->_hex;
@@ -595,7 +595,7 @@ class Color
      * @param int $amount
      * @return array $hsl
      */
-    private function darkenHsl(array $hsl, int $amount = self::DEFAULT_ADJUST)
+    private function darkenHsl(array $hsl, $amount = self::DEFAULT_ADJUST)
     {
         // Check if we were provided a number
         if ($amount) {
@@ -615,7 +615,7 @@ class Color
      * @param int $amount
      * @return array
      */
-    private function lightenHsl(array $hsl, int $amount = self::DEFAULT_ADJUST)
+    private function lightenHsl(array $hsl, $amount = self::DEFAULT_ADJUST)
     {
         // Check if we were provided a number
         if ($amount) {
@@ -637,7 +637,7 @@ class Color
      * @param int $amount ranged -100..0..+100
      * @return array
      */
-    private function mixRgb(array $rgb1, array $rgb2, int $amount = 0)
+    private function mixRgb(array $rgb1, array $rgb2, $amount = 0)
     {
         $r1 = ($amount + 100) / 100;
         $r2 = 2 - $r1;
