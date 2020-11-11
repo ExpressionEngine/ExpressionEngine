@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - design/6.0.0/cp
-      - testing/php8
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
