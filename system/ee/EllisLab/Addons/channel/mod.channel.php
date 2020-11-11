@@ -4200,7 +4200,7 @@ class Channel {
 	/**
 	  *  Category Sub-tree
 	  */
-	public function category_subtree($cdata = array(), $active_cat)
+	public function category_subtree($cdata = array(), $active_cat = null)
 	{
 		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty');
 
