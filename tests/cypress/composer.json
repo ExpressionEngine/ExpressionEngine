@@ -1,6 +1,7 @@
 {
+    "minimum-stability": "dev",
     "require": {
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "*"
     },
     "repositories":[
         {
