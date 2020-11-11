@@ -85,5 +85,5 @@ jobs:
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: error.log
-                path: /var/log/php_errors.log
+                name: error-log
+                path: /var/log/
