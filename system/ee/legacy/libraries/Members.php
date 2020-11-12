@@ -24,8 +24,12 @@ class Members {
 	 *	@param 	int		member id being updated
 	 *	@return mixed
 	 */
-	public function upload_member_images($type = 'avatar', $id)
+	public function upload_member_images($type, $id)
 	{
+		if (empty($type)) {
+			$type = 'avatar';
+		}
+		
 		// validate for unallowed blank values
 		if (empty($_POST))
 		{

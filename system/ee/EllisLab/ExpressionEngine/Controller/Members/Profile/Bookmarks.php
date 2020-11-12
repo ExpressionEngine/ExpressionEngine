@@ -204,8 +204,12 @@ class Bookmarks extends Settings {
 	 * @access private
 	 * @return void
 	 */
-	private function form($vars, $values = array(), $id)
+	private function form($vars, $values, $id)
 	{
+		if (empty($values)) {
+			$values = [];
+		}
+		
 		$name = isset($values['name']) ? $values['name']: '';
 		$channel_id = isset($values['channel']) ? $values['channel']: '';
 		$field = isset($values['field']) ? $values['field']: '';
