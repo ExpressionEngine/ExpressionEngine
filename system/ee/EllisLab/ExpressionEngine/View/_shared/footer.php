@@ -6,20 +6,22 @@
 						<?php
 						$version_class = 'app-about__version';
 						$update_available = isset($new_version);
+						$update_is_major_version = false;
 						$vital_update = $update_available && $new_version['security'];
 
-						if ( ! empty($version_identifier))
-						{
+						if ( ! empty($version_identifier)) {
 							$version_class .= ' app-about__version--dev';
-						}
-						elseif ($update_available)
-						{
-							if ($vital_update)
-							{
-								$version_class .= ' app-about__version--update-vital';
+						} elseif ($update_available) {
+							$version_major = explode('.', APP_VER, 2)[0];
+							$update_version_major = explode('.', $new_version['version'], 2)[0];
+
+							if (version_compare($version_major, $update_version_major, '<')) {
+								$update_is_major_version = true;
 							}
-							else
-							{
+
+							if ($vital_update) {
+								$version_class .= ' app-about__version--update-vital';
+							} else {
 								$version_class .= ' app-about__version--update';
 							}
 						}
@@ -52,15 +54,43 @@
 									<div class="app-about-info__status">
 										<?=lang('up_to_date')?>
 									</div>
-								<?php endif ?>
-								<div class="app-about-info__status app-about-info__status--update<?=$update_available && ! $vital_update ? '' : ' hidden'?>">
-									<?=lang('out_of_date_upgrade')?>
-									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
-								</div>
-								<div class="app-about-info__status app-about-info__status--update-vital<?=$update_available && $vital_update ? '' : ' hidden'?>">
-									<?=lang('out_of_date_recommended')?>
-									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
-								</div>
+								<?php else: ?>
+									<div class="app-about-info__status app-about-info__status--update<?=$vital_update ? '-vital' : ''?>">
+										<?php if ($vital_update): ?>
+											<?=lang('out_of_date_recommended')?>
+										<?php elseif ($update_is_major_version): ?>
+											<big><strong><?=lang('out_of_date_upgrade_major')?></strong></big>
+										<?php else: ?>
+											<?=lang('out_of_date_upgrade')?>
+										<?php endif; ?>
+
+										<div class="app-about-info__status--update_major_version <?=$update_is_major_version ? '' : 'hidden'?>">
+											<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name'=>'one_click_major_update_confirm'])?>
+												<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
+												<br>
+												<fieldset class="fieldset-required">
+													<div class="field-instruct">
+														<label><?=lang('one_click_major_update_instructions')?></label>
+														<em></em>
+													</div>
+													<div class="field-control">
+														<input type="password" name="password" value="" id="upgrade-confirm-password">
+													</div>
+												</fieldset>
+												<div class="app-about-info__status--update_credentials_error hidden">
+													<p><?=lang('one_click_major_update_confirm_error')?></p>
+												</div>
+												<div class="">
+													<?=form_submit('submit-upgrade', lang('btn_authenticate'), 'class="button" data-submit-text="'.lang('btn_authenticate').'" data-work-text="'.lang('authenticating').'"')?>
+												</div>
+											<?=form_close()?>
+										</div>
+
+										<div class="app-about-info__status--update_regular <?=$update_is_major_version ? 'hidden' : ''?>">
+											<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
+										</div>
+									</div>
+								<?php endif; ?>
 							<?php endif ?>
 							<a href="" class="app-about-info__close js-about-close">
 								<span class="icon--close"></span>
