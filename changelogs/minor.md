@@ -4,7 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-- Added relationship_entries_tagdata hook, which is functionally identical to the channel_entries_tagdata hook 
+- Added relationship_entries_tagdata hook, which is functionally identical to the channel_entries_tagdata hook
 - Fixed a bug (#383) where Moblog wasn't functioning.
 - Fixed a bug where checking for updates might produce an error.
 - Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
@@ -24,7 +24,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 - Fixed a bug where unsaved entried were not pulled in for live preview when using `status="open|closed"` parameter.
 - Adds namespacing to v2 upgrades for ease of upgrading from v2 to v5
 - Adds CLI feature
-- Improved XSS filtering for CP clerts
+- Improved XSS filtering for CP alerts
+- Adds password confirmation to one-click updates for major versions
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
