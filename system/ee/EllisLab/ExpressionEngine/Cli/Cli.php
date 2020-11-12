@@ -47,10 +47,12 @@ class Cli
     public $internalCommands = [
         'hello'           => Commands\CommandHelloWorld::class,
         'list'            => Commands\CommandListCommands::class,
-        'update'          => Commands\CommandUpdate::class,
-        'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
-        'run-update-hook' => Commands\CommandRunUpdateHook::class,
         'cache:clear'     => Commands\CommandClearCaches::class,
+        // These commands are removed from 5.4 and working in 6.0. 
+        // Don't use these.
+        // 'update'          => Commands\CommandUpdate::class,
+        // 'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
+        // 'run-update-hook' => Commands\CommandRunUpdateHook::class,
     ];
 
     /**
