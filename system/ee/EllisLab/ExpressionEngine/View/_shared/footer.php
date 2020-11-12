@@ -17,9 +17,7 @@
 
 							if (version_compare($version_major, $update_version_major, '<')) {
 								$update_is_major_version = true;
-							}
-
-							if ($vital_update) {
+							} elseif ($vital_update) {
 								$version_class .= ' app-about__version--update-vital';
 							} else {
 								$version_class .= ' app-about__version--update';
