@@ -466,7 +466,7 @@ class Fields extends AbstractFieldsController {
 		$field->field_order = ($field->field_order) ?: 0;
 		$field->site_id = (int) $field->site_id ?: 0;
 
-		$field->set(ee()->security->xss_clean($_POST));
+		$field->set(ee('Security/XSS')->clean($_POST));
 
 		if ($field->field_pre_populate)
 		{

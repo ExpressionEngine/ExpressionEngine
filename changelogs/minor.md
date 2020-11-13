@@ -4,7 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-- Added relationship_entries_tagdata hook, which is functionally identical to the channel_entries_tagdata hook 
+- Added relationship_entries_tagdata hook, which is functionally identical to the channel_entries_tagdata hook
 - Fixed a bug (#383) where Moblog wasn't functioning.
 - Fixed a bug where checking for updates might produce an error.
 - Fixed a bug where removing database record for template that is used as "No access redirect" would cause error
@@ -28,6 +28,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 - Updated PHPColors library
 - Updated some function definitions for PHP8 compatibility
 - Fixed a bug (#621) where config values set programmatically could have been reset by Channel Form.
+- Adds password confirmation to one-click updates for major versions
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

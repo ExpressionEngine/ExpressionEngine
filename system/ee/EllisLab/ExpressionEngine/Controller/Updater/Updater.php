@@ -119,5 +119,28 @@ class Updater extends CP_Controller {
 			'nextStep' => $next_step
 		];
 	}
+
+	public function authenticate()
+	{
+		$this->load->library('auth');
+
+		// Run through basic verifications: authenticate, username and
+		// password both exist, not banned, IP checking is okay, run hook
+		if ( ! ($verify_result = $this->auth->verify())) {
+			if (AJAX_REQUEST) {
+				$this->output->send_ajax_response(array(
+					'messageType'	=> 'failure',
+					'message'		=> $this->auth->errors
+				));
+			}
+		}
+
+		if (AJAX_REQUEST) {
+			$this->output->send_ajax_response(array(
+				'messageType'	=> 'success',
+				'message'		=> ''
+			));
+		}
+	}
 }
 // EOF

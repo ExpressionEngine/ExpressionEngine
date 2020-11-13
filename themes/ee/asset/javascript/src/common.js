@@ -315,20 +315,50 @@ $(document).ready(function(){
 			if ($('.app-about-info__update:visible').size() > 0) {
 				$.get(EE.cp.updateCheckURL, function(data) {
 					if (data.newVersionMarkup) {
-						$('.app-about-info__status, .app-about-info__update').hide()
-						$('.app-about-info__installed').after(data.newVersionMarkup)
+						$('.app-about-info__status, .app-about-info__update').hide();
+						$('.app-about-info__installed').after(data.newVersionMarkup);
 
 						if (data.isVitalUpdate) {
-							$('.app-about-info__status--update-vital').show()
+							$('.app-about-info__status--update-vital').show();
 						} else {
-							$('.app-about-info__status--update').show()
+							$('.app-about-info__status--update').show();
 						}
 					} else {
-						$('.app-about-info__update').hide()
+						$('.app-about-info__update').hide();
 					}
-				})
+				});
 			}
-		})
+		});
+
+		$('form[name="one_click_major_update_confirm"]').on('submit', function(e) {
+			e.preventDefault();
+			$('.app-about-info__status--update_credentials_error').hide();
+
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize(),
+				dataType: 'json',
+
+				success: function (result) {
+					if (result.messageType != 'success') {
+						$('.app-about-info__status--update_credentials_error').show();
+						console.log('Major Update Credential Error:', result.message);
+						return;
+					}
+
+					$('.app-about-info__status--update_major_version').hide();
+					$('.app-about-info__status--update_regular').show();
+				},
+
+				error: function (data) {
+					alert('Major Update Credential Error. See browser console for more information.');
+					console.log('Major Update Credential Error:', data.message);
+				}
+			});
+
+			return false;
+		});
 
 	// ====================
 	// modal windows -> WIP
@@ -743,8 +773,10 @@ $(document).ready(function(){
 					.siblings('.filter-submenu').hide();
 			}
 
-			if(!$(e.target).closest('.app-about').length){
-				$('.app-about-info:visible').hide()
+			// Close the version info popup if the user clicks anywhere else on the page
+			// except if it's a major version update (to fix issue with password managers).
+			if (!$(e.target).closest('.app-about').length && !$('.app-about-info__status--update_major_version:visible').length) {
+				$('.app-about-info:visible').hide();
 			}
 		});
 }); // close (document).ready
