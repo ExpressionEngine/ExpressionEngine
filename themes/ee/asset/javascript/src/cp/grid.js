@@ -919,11 +919,11 @@ Grid.Settings.prototype = {
  */
 EE.grid = function(field, settings) {
 	if (settings == undefined) {
-		settings = $(field).data('grid-settings');
-	}
-
-	if (!$(field).first().hasClass('grid-field')) {
-		settings = $(field).find('.grid-field__table').first().data('grid-settings');
+		if ($(field).is('[grid-settings]')) {
+			settings = $(field).data('grid-settings');
+		} else {
+			settings = $(field).find('.grid-field__table').first().data('grid-settings');
+		}
 	}
 
 	return new Grid.Publish(field, settings);
