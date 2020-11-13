@@ -27,6 +27,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 - Improved XSS filtering for CP clerts
 - Updated PHPColors library
 - Updated some function definitions for PHP8 compatibility
+- Fixed a bug (#621) where config values set programmatically could have been reset by Channel Form.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
