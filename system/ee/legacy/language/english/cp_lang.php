@@ -556,7 +556,7 @@ $lang = array(
 
 'authenticating' => 'authenticating...',
 
-'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/one-click-update-warnings" target="_blank">Read update warnings before continuing!</a><br><br>Enter your password to continue:',
+'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/v6/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br><br>Enter your password to continue:',
 
 'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
 
