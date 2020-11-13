@@ -216,18 +216,21 @@ class Blacklist_mcp {
 			show_error(lang('invalid_htaccess_path'));
 		}
 
-		flock($fp, LOCK_SH);
-		$data = @fread($fp, filesize($htaccess_path));
-		flock($fp, LOCK_UN);
-		fclose($fp);
+		$data = '';
+		$filesize = filesize($htaccess_path);
 
-		if (preg_match("/##EE Spam Block(.*?)##End EE Spam Block/s", $data, $match))
-		{
-			$data = str_replace($match['0'], '', $data);
+		if ($filesize > 0) {
+			flock($fp, LOCK_SH);
+			$data = @fread($fp, $filesize);
+			flock($fp, LOCK_UN);
+			fclose($fp);
+
+			if (preg_match("/##EE Spam Block(.*?)##End EE Spam Block/s", $data, $match)) {
+				$data = str_replace($match['0'], '', $data);
+			}
+
+			$data = trim($data);
 		}
-
-		$data = trim($data);
-
 		//  Current Blacklisted
 		$query 			= ee()->db->get('blacklisted');
 		$old['url']		= array();
