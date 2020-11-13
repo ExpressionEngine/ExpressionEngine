@@ -24,7 +24,9 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 - Fixed a bug where unsaved entried were not pulled in for live preview when using `status="open|closed"` parameter.
 - Adds namespacing to v2 upgrades for ease of upgrading from v2 to v5
 - Adds CLI feature
-- Improved XSS filtering for CP alerts
+- Improved XSS filtering for CP clerts
+- Updated PHPColors library
+- Updated some function definitions for PHP8 compatibility
 - Adds password confirmation to one-click updates for major versions
 
 EOF MARKER: This line helps prevent merge conflicts when things are

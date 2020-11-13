@@ -39,7 +39,7 @@ class Alert {
 	/**
 	 * @var string $name The name of the alert, used for identity
 	 */
-	protected $name;
+	protected $name = '';
 
 	/**
 	 * @var string $severity The severity of the alert (issue, warn, success, tip)
@@ -54,7 +54,7 @@ class Alert {
 	/**
 	 * @var string $type The type of alert (alert, inline, banner)
 	 */
-	protected $type;
+	protected $type = 'alert';
 
 	/**
 	 * @var AlertCollection $collection A collection of alerts for use with
@@ -84,7 +84,7 @@ class Alert {
 	 * @param EE_Lang $lang A EE_Lang object for loading language
 	 * @return self This returns a reference to itself
 	 */
-	public function __construct($type = 'alert', $name = '', AlertCollection $collection, View $view, EE_Lang $lang)
+	public function __construct($type, $name, $collection, View $view, EE_Lang $lang)
 	{
 		$this->type = $type;
 		$this->name = $name;

@@ -974,7 +974,7 @@ class EE_Form_validation {
 					$object = $this->CI;
 				}
 				// Check fieldtype for the callback
-				elseif (method_exists($this->_fieldtype, $rule))
+				elseif (!empty($this->_fieldtype) && method_exists($this->_fieldtype, $rule))
 				{
 					$object = $this->_fieldtype;
 				}

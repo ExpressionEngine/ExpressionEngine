@@ -401,7 +401,7 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 */
 if ( ! function_exists('log_message'))
 {
-	function log_message($level = 'error', $message, $php_error = FALSE)
+	function log_message($level = 'error', $message = '', $php_error = FALSE)
 	{
 		static $_log;
 
