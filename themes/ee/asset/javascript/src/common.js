@@ -741,12 +741,12 @@ $(document).ready(function(){
 
 		// Toggle the bulk actions
 		$('body').on('change', 'table tr td:last-child input[type=checkbox], table tr th:last-child input[type=checkbox]', function() {
-			if ($(this).parents('form').find('.bulk-action-bar').length > 0) {
+			if ($(this).parents('form').find('.bulk-action-bar').length > 0 || $(this).parents('form').find('.tbl-bulk-act').length > 0) {
 				$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 				if ($(this).parents('table').find('input:checked').length == 0) {
-					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar').addClass('hidden');
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
 				} else {
-					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar').removeClass('hidden');
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
 				}
 			}
 		});
@@ -779,9 +779,9 @@ $(document).ready(function(){
 
 			// Toggle the bulk actions
 			if (tableList.find('.list-item__checkbox input:checked').length == 0) {
-				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').addClass('hidden');
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
 			} else {
-				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').removeClass('hidden');
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
 			}
 		});
 
