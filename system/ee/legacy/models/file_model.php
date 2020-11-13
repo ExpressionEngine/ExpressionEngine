@@ -446,7 +446,7 @@ class File_model extends CI_Model {
 	 * @param string	table to select from
 	 * @return object
 	 */
-	function select_max($field, $as = NULL, $table)
+	function select_max($field, $as = NULL, $table = 'files')
 	{
 		$this->db->select_max($field, $as);
 

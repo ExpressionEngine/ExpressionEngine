@@ -145,7 +145,7 @@ class EE_Jquery extends EE_Javascript {
 	 * @param	string	- Javascript code for mouse out
 	 * @return	string
 	 */
-	function _hover($element = 'this', $over, $out)
+	function _hover($element = 'this', $over = '', $out = '')
 	{
 		$event = "\n\t$(" . $this->_prep_element($element) . ").hover(\n\t\tfunction()\n\t\t{\n\t\t\t{$over}\n\t\t}, \n\t\tfunction()\n\t\t{\n\t\t\t{$out}\n\t\t});\n";
 
@@ -626,7 +626,7 @@ class EE_Jquery extends EE_Javascript {
 	 * @return	string
 	 */
 
-	function _updater($container = 'this', $controller, $options = '')
+	function _updater($container = 'this', $controller = '', $options = '')
 	{
 		$container = $this->_prep_element($container);
 
