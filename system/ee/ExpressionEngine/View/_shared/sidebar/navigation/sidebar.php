@@ -8,9 +8,9 @@
 					<div class="dropdown__divider"></div>
 					<div class="dropdown__header"><?=lang('sites')?></div>
 
-					<?php 
+					<?php
 					if (!empty($cp_main_menu['sites'])) :
-					foreach ($cp_main_menu['sites'] as $site_name => $link): 
+					foreach ($cp_main_menu['sites'] as $site_name => $link):
 					?>
 						<a class="dropdown__link" href="<?=$link?>"><?=$site_name?></a>
 					<?php endforeach; ?>
@@ -19,7 +19,7 @@
 					<a class="dropdown__link" href="<?=ee('CP/URL', 'msm/create')?>"><i class="fas fa-plus"></i> <?=lang('add_site')?></a>
 				</div>
 				<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>"><i class="fas fa-cog"></i> <?=lang('name_your_site')?></a>
+					<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>"><i class="fas fa-desktop fa-fw"></i> <span class="ee-sidebar__collapsed-hidden"><?=lang('name_your_site')?></span></a>
 				<?php else: ?>
 					<a class="ee-sidebar__title" href="<?=ee()->config->item('site_url')?>" rel="external" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i> <?=ee()->config->item('site_name')?></span></a>
 				<?php endif ?>
