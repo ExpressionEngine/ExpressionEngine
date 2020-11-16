@@ -818,7 +818,11 @@ class Channel_form_lib
             )
         );
 
+        $this->compile_js();
+    }
 
+    public function compile_js()
+    {
         if ($this->datepicker) {
             $addt_js['date']['date_format'] = ee()->localize->get_date_format();
             $addt_js['lang']['date']['months']['full'] = array(
