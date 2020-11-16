@@ -112,9 +112,17 @@ class Unpacker {
 	{
 		$this->logger->log('Checking server requirements of new ExpressionEngine version');
 
-		$this->requirements->setClassPath(
-			$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
-		);
+		// Check to see if we're dealing with the update from 5 to 6 that removed the EllisLab namespace.
+		if (file_exists($this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php')) {
+			$this->requirements->setClassPath(
+				$this->getExtractedArchivePath().'/system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
+			);
+		} elseif (file_exists($this->getExtractedArchivePath().'/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php')) {
+			$this->requirements->setClassPath(
+				$this->getExtractedArchivePath().'/system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php'
+			);
+		}
+
 		$result = $this->requirements->check();
 
 		if ($result !== TRUE)
