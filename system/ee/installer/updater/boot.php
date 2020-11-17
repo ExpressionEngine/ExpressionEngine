@@ -31,7 +31,11 @@ else
 }
 
 // add EE constants
-$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
+if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Config/constants.php')) {
+	$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+} else {
+	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
+}
 
 foreach ($constants as $k => $v) {
 	defined($k) || define($k, $v);
