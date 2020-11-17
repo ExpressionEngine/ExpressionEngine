@@ -437,21 +437,42 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->isLivePreviewable()) {
 
-			$action_id = ee()->db->select('action_id')
-				->where('class', 'Channel')
-				->where('method', 'live_preview')
-				->get('actions');
-			$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
-			if (ee()->input->get('return')!='')
-			{
-				$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+			$lp_domain_mismatch = false;
+			$configured_site_url = explode('//', ee()->config->item('site_url'));
+			$configured_domain = explode('/', $configured_site_url[1]);
+
+			if ($_SERVER['HTTP_HOST'] != $configured_domain[0]) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
+			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && $configured_site_url[0] != 'https:') || (!ee('Request')->isEncrypted() && $configured_site_url[0] == 'https:'))) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
 			}
-			$modal_vars = [
-				'preview_url' => $preview_url,
-				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
-			];
-			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
-			ee('CP/Modal')->addModal('live-preview', $modal);
+
+			if ($lp_domain_mismatch) {
+				$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+					->asIssue()
+					->canClose()
+					->withTitle(lang('preview_cannot_display'))
+					->addToBody($lp_message);
+				ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+			} else {
+				$action_id = ee()->db->select('action_id')
+					->where('class', 'Channel')
+					->where('method', 'live_preview')
+					->get('actions');
+				$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
+				if (ee()->input->get('return')!='')
+				{
+					$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+				}
+				$modal_vars = [
+					'preview_url' => $preview_url,
+					'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+				];
+				$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
+				ee('CP/Modal')->addModal('live-preview', $modal);
+			}
 
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 
