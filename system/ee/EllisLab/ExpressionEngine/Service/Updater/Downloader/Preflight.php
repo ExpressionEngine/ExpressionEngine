@@ -111,7 +111,7 @@ class Preflight {
 
 		$theme_paths = array_map(function($path)
 		{
-			return rtrim($path, DIRECTORY_SEPARATOR).'/ee/';
+			return preg_replace("#/+#", "/", rtrim($path, DIRECTORY_SEPARATOR) . '/ee/');
 		}, $this->getThemePaths());
 
 		$paths = array_merge(
