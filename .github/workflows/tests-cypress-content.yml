@@ -74,7 +74,7 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v1
+              uses: cypress-io/github-action@v2
               with:
                 browser: chrome
                 headless: true
