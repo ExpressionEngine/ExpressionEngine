@@ -133,6 +133,8 @@ class Runner {
 	{
 		ee()->config->config['allow_extensions'] = 'n';
 
+		ee()->load->library('progress');
+
 		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
