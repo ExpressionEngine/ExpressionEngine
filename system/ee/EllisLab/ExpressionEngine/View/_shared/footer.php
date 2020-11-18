@@ -9,19 +9,23 @@
 						$update_is_major_version = false;
 						$vital_update = $update_available && $new_version['security'];
 
-						if ( ! empty($version_identifier)) {
-							$version_class .= ' app-about__version--dev';
-						} elseif ($update_available) {
+						if ($update_available) {
 							$version_major = explode('.', APP_VER, 2)[0];
 							$update_version_major = explode('.', $new_version['version'], 2)[0];
 
 							if (version_compare($version_major, $update_version_major, '<')) {
 								$update_is_major_version = true;
-							} elseif ($vital_update) {
+							}
+
+							if ($vital_update) {
 								$version_class .= ' app-about__version--update-vital';
 							} else {
 								$version_class .= ' app-about__version--update';
 							}
+						}
+
+						if ( ! empty($version_identifier)) {
+							$version_class .= ' app-about__version--dev';
 						}
 						?>
 
