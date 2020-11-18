@@ -34,6 +34,7 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
@@ -74,8 +75,15 @@ jobs:
                 config-file: admin.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v2
               if: failure()
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: error.log
+                path: /home/runner/php_errors.log
