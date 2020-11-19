@@ -352,6 +352,14 @@ class Cp {
 			);
 		}
 
+		if (ee('Filesystem')->exists(SYSPATH . 'ee/EllisLab')) {
+			$notices[] = sprintf(
+				lang('el_folder_present'),
+				SYSDIR . '/ee/EllisLab',
+				DOC_URL.'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
+			);
+		}
+
 		if ( ! empty($notices))
 		{
 			if ( ! $alert)
