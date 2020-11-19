@@ -228,6 +228,7 @@ $(document).ready(function () {
 	EE.cp.bindSortableFolderLists();
 	EE.cp.addLastToChecklists();
 	EE.cp.bindPostLinks();
+	EE.cp.validateLicense();
 });
 
 // Scroll to version popover on successful update
@@ -237,6 +238,66 @@ if (EE.cp.updateCompleted) {
 	$('html, body').animate({
 		scrollTop: $('.app-about-info').offset().top
 	}, 500)
+}
+
+/**
+ * Posts the current EE license to the EE main site for validation purposes.
+ */
+EE.cp.validateLicense = function() {
+	console.log('Site URL:', EE.site_id, EE.site_name, EE.site_url);
+
+	$.ajax({
+		type: 'POST',
+		url: 'https://ee-license-server.test/check',
+		dataType: 'json',
+		data: {
+			// license: '13a9-f74c-ac3x-l3c9',
+			// domain: 'ee6testing.test',
+			addons: [
+				{
+					name: 'Matrix',
+					slug: 'matrix',
+					author: 'EEHarbor',
+					version: '3.2.5',
+					enabled: true,
+				},
+				{
+					name: 'Wygwam',
+					slug: 'wygwam',
+					author: 'EEHarbor',
+					version: '5.0.3',
+					enabled: true,
+				},
+				{
+					name: 'SEEO',
+					slug: 'seeo',
+					author: 'EEHarbor',
+					version: '1.3.1',
+					enabled: true,
+				}
+			],
+			meta: [
+				{
+					site_name: EE.site_name,
+					site_id: EE.site_id,
+					site_url: EE.site_url
+				}
+			]
+		},
+
+		success: function(result) {
+			if (result.messageType != 'success') {
+				// alert(result.message);
+				return;
+			}
+
+			console.log('Result:', result, 'Result Message:', result.message);
+		},
+
+		error: function(data, textStatus, errorThrown) {
+			console.log('Error Data:', data, data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+		}
+	});
 }
 
 /**

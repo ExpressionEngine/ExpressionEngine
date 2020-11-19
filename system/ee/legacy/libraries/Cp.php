@@ -159,18 +159,33 @@ class Cp {
 		);
 
 		ee()->javascript->set_global(array(
-			'BASE'             => str_replace(AMP, '&', BASE),
-			'XID'              => CSRF_TOKEN,
-			'CSRF_TOKEN'       => CSRF_TOKEN,
-			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
-			'username'         => ee()->session->userdata('username'),
-			'router_class'     => ee()->router->class, // advanced css
-			'lang'             => $js_lang_keys,
-			'THEME_URL'        => $this->cp_theme_url,
-			'hasRememberMe'    => (bool) ee()->remember->exists(),
+			'BASE'              => str_replace(AMP, '&', BASE),
+			'XID'               => CSRF_TOKEN,
+			'CSRF_TOKEN'        => CSRF_TOKEN,
+			'PATH_CP_GBL_IMG'   => PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE'  => ee()->session->userdata('show_sidebar'),
+			'username'          => ee()->session->userdata('username'),
+			'router_class'      => ee()->router->class, // advanced css
+			'lang'              => $js_lang_keys,
+			'THEME_URL'         => $this->cp_theme_url,
+			'hasRememberMe'     => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'site_id'           => ee()->config->item('site_id'),
+			'site_name'         => ee()->config->item('site_name'),
+			'site_url'          => ee()->config->item('site_url'),
 		));
+
+		$site_id = ee()->session->flashdata('site_id');
+		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
+
+		// // echo '<div style="font-size:12px;color:#000;padding:10px 20px;border:1px solid #ccc;background-color:#ffffe6;">VARDUMP:<pre>';
+		// // var_dump($site_id, $sites);
+		// // echo '</pre></div>';
+		// // exit;
+		// echo '<div style="font-size:12px;color:#000;padding:10px 20px;border:1px solid #ccc;background-color:#ffffe6;">VARDUMP:<pre>';
+		// var_dump(BASE, ee()->config->item('site_url'), APP_BUILD, ee()->config->item('app_build'), APP_VER, ee()->config->item('app_version'), APP_NAME);
+		// echo '</pre></div>';
+		// // exit;
 
 		if (ee()->session->flashdata('update:completed'))
 		{
