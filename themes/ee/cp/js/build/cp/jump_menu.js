@@ -66,6 +66,7 @@ EE.cp.JumpMenu = {
       EE.cp.JumpMenu.currentFocus = 1;
       jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
       jumpContainer.document.querySelector('#jumpEntry2').value = '';
+      jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
 
       EE.cp.JumpMenu._showJumpMenu(1);
     });

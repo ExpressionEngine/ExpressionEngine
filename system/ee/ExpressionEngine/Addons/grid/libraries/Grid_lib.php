@@ -437,7 +437,7 @@ class Grid_lib {
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type, false);
 
 		// We'll store our final values and errors here
 		$final_values = array();

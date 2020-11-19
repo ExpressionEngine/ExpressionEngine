@@ -519,15 +519,17 @@ class Roles extends AbstractRolesController {
 
 		// template_group_access
 		$template_group_ids = [];
-		foreach (ee('Request')->post('template_group_access') as $value)
-		{
-			if (strpos($value, 'template_group_') === 0)
+		if (!empty(ee('Request')->post('template_group_access'))) {
+			foreach (ee('Request')->post('template_group_access') as $value)
 			{
-				$template_group_ids[] = str_replace('template_group_', '', $value);
-			}
-			else
-			{
-				$allowed_perms[] = $value;
+				if (strpos($value, 'template_group_') === 0)
+				{
+					$template_group_ids[] = str_replace('template_group_', '', $value);
+				}
+				else
+				{
+					$allowed_perms[] = $value;
+				}
 			}
 		}
 
@@ -538,20 +540,23 @@ class Roles extends AbstractRolesController {
 
 		// template_access
 		$template_ids = [];
-		foreach (ee('Request')->post('assigned_templates') as $value) {
-			if (is_numeric($value)) {
-				$template_ids[] = $value;
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value) {
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
 			}
 		}
 		if (!empty($template_ids)) {
 			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
 		}
 
-
-		foreach (ee('Request')->post('assigned_templates') as $value)
-		{
-			if (is_numeric($value)) {
-				$template_ids[] = $value;
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value)
+			{
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
 			}
 		}
 		if (!empty($template_ids)) {
@@ -1378,14 +1383,20 @@ class Roles extends AbstractRolesController {
 		foreach ($template_groups as $id => $name)
 		{
 			$templates = ee('Model')->get('Template')
-				->fields('template_id', 'template_name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('group_id', $id)
-				->all()
-				->getDictionary('template_id', 'template_name');
+				->all();
+			$children = [];
+			foreach ($templates as $template) {
+				$template_name = $template->template_name;
+				if ($template->enable_http_auth == 'y') {
+					$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+				}
+				$children[$template->getId()] = $template_name;
+			}
 			$template_access['choices']['template_group_' . $id] = [
 				'label' => $name,
-				'children' => $templates
+				'children' => $children
 			];
 		}
 

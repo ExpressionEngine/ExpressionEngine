@@ -31,6 +31,12 @@ class Filesystem {
         })
     }
 
+    createFile(target) {
+        target = path.resolve(target);
+        fs.writeFileSync(target, '');
+        return true;
+    }
+
     delete(target) {
         target = path.resolve(target);
         // console.log('FS Delete: ' + target);

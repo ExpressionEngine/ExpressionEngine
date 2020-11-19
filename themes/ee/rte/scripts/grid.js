@@ -25,6 +25,6 @@
         new Rte(id, config[0], config[1], cell);
     };
 
-    Grid.bind('Rte', 'display', onDisplay);
+    Grid.bind('rte', 'display', onDisplay);
 
 })(jQuery);

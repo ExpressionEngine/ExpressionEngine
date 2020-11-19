@@ -235,9 +235,9 @@ class Member_register extends Member {
 			);
 		}
 
-		// Blacklist/Whitelist Check
-		if (ee()->blacklist->blacklisted == 'y' &&
-			ee()->blacklist->whitelisted == 'n')
+		// Blocked/Allowed List Check
+		if (ee()->blockedlist->blocked == 'y' &&
+			ee()->blockedlist->allowed == 'n')
 		{
 			return ee()->output->show_user_error(
 				'general',

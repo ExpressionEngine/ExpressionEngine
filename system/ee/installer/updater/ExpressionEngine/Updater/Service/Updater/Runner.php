@@ -19,7 +19,7 @@ use ExpressionEngine\Updater\Service\Updater\Logger;
  * database, and updating the files and database
  */
 class Runner {
-	use \ExpressionEngine\Service\Updater\SteppableTrait {
+	use Service\Updater\SteppableTrait {
 		runStep as runStepParent;
 	}
 

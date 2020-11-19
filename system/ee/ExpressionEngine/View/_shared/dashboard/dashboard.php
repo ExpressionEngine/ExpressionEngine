@@ -1,3 +1,14 @@
+<a href="https://expressionengine.com/blog/expressionengine-6-public-beta-1" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
+  <img src="<?=URL_THEMES?>asset/img/beta-starburst.svg" class="beta-starburst" alt="v6">
+  <div class="v6-wrapper">
+    <img src="<?=URL_THEMES?>asset/img/ee-6.svg" class="v6 beta-puff-in-center" alt="v6">
+  </div>
+  <div class="beta-copy">
+    <img src="<?=URL_THEMES?>asset/img/ee-logotype-white.svg" class="logotype beta-slide-in-top" alt="ExpressionEngine">
+    <span class="beta-intro beta-slide-in-bottom">Welcome to the beta!</span>
+  </div>
+</a>
+
 <?php
 ee()->load->helper('text');
 $menu = ee()->menu->generate_menu();

@@ -374,6 +374,9 @@ JSC;
 	 */
 	public function replace_resize($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -395,6 +398,9 @@ JSC;
 	 */
 	public function replace_crop($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -421,6 +427,9 @@ JSC;
 	 */
 	public function replace_resize_crop($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$params['function'] = 'resize_crop';
 
 		$data['filename'] = $data['model_object']->file_name;
@@ -463,6 +472,9 @@ JSC;
 	 */
 	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -478,6 +490,9 @@ JSC;
 	 */
 	public function replace_webp($data, $params = array(), $tagdata = FALSE)
 	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
 		$data['filename'] = $data['model_object']->file_name;
 		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
 		$data['directory_url'] = $data['model_object']->UploadDestination->url;
@@ -526,12 +541,12 @@ JSC;
 				'source_image'		=> $data['source_image'],
 				'new_image'			=> $new_image_path,
 				'maintain_ratio'	=> isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
-				'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['master_dim'] : 'auto',
+				'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
 				'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
 				'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
 				'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
-				'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['auto', 'width', 'height'])) ? $params['angle'] : null,
+				'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
 			);
 			if (isset($params['width'])) {
 				$imageLibConfig['width'] = (int) $params['width'];
@@ -563,7 +578,7 @@ JSC;
 				'width' => $props['width'],
 				'height' => $props['height']
 			];
-			return ee()->TMPL->parse_variables_row($tagdata, $vars);
+			return ee()->TMPL->parse_variables($tagdata, [$vars]);
 		}
 	}
 

@@ -46,9 +46,11 @@ class Columns extends Filter {
 			$value = parent::value();
 		}
 
+		$channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
+
 		$query = ee('Model')->get('EntryManagerView')
 			->filter('member_id', ee()->session->userdata('member_id'))
-			->filter('channel_id', (int) ee()->input->get_post('filter_by_channel'));
+			->filter('channel_id', $channel_id);
 		$view = $query->first();
 
 		if (!empty($view)) {
@@ -81,7 +83,7 @@ class Columns extends Filter {
 		}
 		$options = array_merge($options, $this->options);
 		$filter = array(
-			'label'			=> $this->label,
+			'label'			=> '<i class=\'fas fa-columns\'></i>',
 			'value'			=> '',
 			'available_columns' => $options,
 			'selected_columns' => $selected

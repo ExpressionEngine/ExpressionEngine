@@ -2597,14 +2597,14 @@ while (--j >= 0)
 		// on the domain and not the entire string.
 		if (isset($parts['host']))
 		{
-			if (is_php('7.2'))
+			if (is_php('7.2') && !defined('INTL_IDNA_VARIANT_UTS46'))
 			{
-				$parts['host'] = idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
+				//this is edge case, but we had reports on this from real-world installs
+				//instead of showing error, we'll write useful message into developer log
+				ee()->load->library('logger');
+				ee()->logger->developer(lang('php72_intl_error'), true);
 			}
-			else
-			{
-				$parts['host'] = idn_to_ascii($parts['host']);
-			}
+			$parts['host'] = @idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
 		}
 
 		return $this->unparse_url($parts);

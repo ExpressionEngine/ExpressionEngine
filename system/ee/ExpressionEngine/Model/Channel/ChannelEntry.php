@@ -668,6 +668,10 @@ class ChannelEntry extends ContentModel {
 
 		$fields = $this->getCustomFields();
 
+		if (!$this->Channel->sticky_enabled) {
+			unset($fields['sticky']);
+		}
+
 		uasort($fields, function($a, $b) {
 			if ($a->getItem('field_order') == $b->getItem('field_order'))
 			{

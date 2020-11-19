@@ -408,10 +408,15 @@ abstract class AbstractFiles extends CP_Controller {
 			ee()->view->filters = $filters->render($reset_url);
 
 			$files = $files->limit($perpage)
-						->offset($offset)
-						->all();
+						->offset($offset);
 
-			$vars['files'] = $files;
+			if ($files->count() == 0) {
+				$vars['no_results'] = [
+					'text' => sprintf(lang('no_found'), lang('files'))
+				];
+			}
+
+			$vars['files'] = $files->all();
 		}
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)

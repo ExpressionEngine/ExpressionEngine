@@ -112,8 +112,8 @@ class Channels extends AbstractChannelsController {
 		$vars['create_url'] = ee('CP/URL', 'channels/create');
 		$vars['no_results'] = ['text' =>
 			sprintf(lang('no_found'), lang('channels'))
-			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
-			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
+			. (ee('Permission')->has('can_create_channels') ? ' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
+			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>' : '')];
 
 		ee()->view->cp_breadcrumbs = array(
 			'' => lang('channels')

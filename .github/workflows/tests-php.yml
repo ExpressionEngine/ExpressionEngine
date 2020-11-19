@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - testing/ee6-unit-testing
+      - testing/php8
+      - release/6.0.0
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - release/6.0.0
 
 jobs:
     php-tests:
+        if: github.event.pull_request.draft == false
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -33,7 +37,7 @@ jobs:
               uses: actions/checkout@v1
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v1
+              uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick

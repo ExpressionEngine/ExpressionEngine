@@ -16,11 +16,11 @@ context('Templates', () => {
         cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
     })
 
-    beforeEach(function() {
-        cy.authVisit(page.url);
-    })
-
     describe('Creating a template', function() {
+        before(function() {
+            cy.eeConfig({ item: 'allow_php', value: 'y' })
+        })
+        
         beforeEach(function() {
             cy.authVisit(`${createPage.url}/news`)
         })
@@ -102,6 +102,7 @@ context('Templates', () => {
 
     describe('Editing a template', function() {
         beforeEach(function() {
+            cy.auth()
             editPage.load_edit_for_template('11')
         })
 
@@ -208,6 +209,43 @@ context('Templates', () => {
 
             cy.hasNoErrors()
         })
+
+        it('not enabling PHP if not enabled globally', function() {
+            cy.eeConfig({ item: 'allow_php', value: 'n' }).then((config) => {
+
+                cy.eeConfig({ item: 'allow_php' }).then((config2) => {
+                    cy.auth();
+                    cy.wait(5000)
+                    editPage.load_edit_for_template('11')
+                    
+                    cy.log('allow_php is now ' + config2);
+
+                    editPage.get('settings_tab').click()
+                    editPage.get('allow_php').should('not.exist')
+
+                    cy.get('button').contains('Save').first().click()
+
+                    //reverting should keep the setting 
+                    cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
+                        //cy.log(conf)
+                        cy.eeConfig({ item: 'allow_php' }).then((config3) => {
+                            cy.auth();
+                            cy.wait(5000)
+                            editPage.load_edit_for_template('11')
+                            cy.log('allow_php is now ' + config2);
+
+                            editPage.get('settings_tab').click()
+                            editPage.get('allow_php').should('have.class', "on")
+                        })
+                        
+                    })
+                })
+                
+            })
+            
+        })
+
+
 
     })
 

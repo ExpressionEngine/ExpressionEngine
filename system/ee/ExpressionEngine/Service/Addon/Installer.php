@@ -18,6 +18,7 @@ class Installer
     public $addon;
     public $has_cp_backend = 'n';
     public $has_publish_fields = 'n';
+    public $version;
     public $actions = []; //module actions
     public $settings = []; //extension settings
     public $methods = []; //extensions methods
@@ -27,6 +28,7 @@ class Installer
         $caller = strtolower(str_replace(['_upd', '_ext'], '', get_class($this)));
         $this->addon = ee('Addon')->get($caller);
         $this->settings = $settings;
+        $this->version = $this->addon->getVersion();
     }
 
     /**

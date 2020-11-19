@@ -52,7 +52,8 @@ class Updater {
 				'addAddonIcons',
 				'migrateRte',
 				'addStickyChannelPreference',
-				'addMemberModuleActions'
+				'addMemberModuleActions',
+				'runStatsModuleUpdate',
 			]
 		);
 
@@ -1171,6 +1172,26 @@ class Updater {
 				'class' => 'Member',
 				'method' => $action
 			])->save();
+		}
+	}
+
+	private function runStatsModuleUpdate()
+	{
+		$stats = ee('Addon')->get('stats');
+		if ($stats && $stats->hasUpdate())
+		{
+			$class = $stats->getInstallerClass();
+			$UPD = new $class;
+
+			if ($UPD->update($stats->getInstalledVersion()) !== FALSE)
+			{
+				$module = ee('Model')->get('Module')
+					->filter('module_name', 'Stats')
+					->first();
+
+				$module->module_version = $stats->getVersion();
+				$module->save();
+			}
 		}
 	}
 

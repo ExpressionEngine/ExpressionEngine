@@ -395,13 +395,17 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->session->set_flashdata('entry_id', $entry->entry_id);
 
+		$edit_entry_url = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
+
 		$alert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
 			? ee('CP/Alert')->makeStandard()
 			: ee('CP/Alert')->makeInline('entry-form');
 
+		$lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+
 		$alert->asSuccess()
 			->withTitle(lang($action . '_entry_success'))
-			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
+			->addToBody($lang_string)
 			->defer();
 
 
@@ -556,7 +560,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'text'    => 'preview',
 				'class'   => 'action' . $extra_class,
 				'attrs'   => 'rel="live-preview" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 			$buttons[] = [
@@ -567,7 +570,6 @@ abstract class AbstractPublish extends CP_Controller {
 				'html'		=> '<i class="app-notice__icon"></i> ',
 				'class'   => 'action',
 				'attrs'   => 'rel="live-preview-setup" disabled="disabled"',
-				'working' => 'btn_previewing'
 			];
 		}
 

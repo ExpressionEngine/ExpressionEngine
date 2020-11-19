@@ -196,6 +196,16 @@ class Application {
 	}
 
 	/**
+	 * Set up class aliases
+	 *
+	 * @return void
+	 */
+	public function setClassAliases()
+	{
+		$this->forward('setClassAliases');
+	}
+
+	/**
 	 * @param String $path Root path for the provider namespace
 	 * @param String $file Name of the setup file
 	 * @param String $prefix Prefix for our service provider [optional]
@@ -219,6 +229,10 @@ class Application {
 			$provider = $this->registry->get($prefix);
 			if (strpos($provider->getPath(), 'Addons/pro/levelups') !== false) {
 			    return $provider;
+			}
+			//first-party add-ons have higher precedense as well
+			if (strpos($provider->getPath(), 'ExpressionEngine/Addons') !== false) {
+				return $provider;
 			}
 		}
 
