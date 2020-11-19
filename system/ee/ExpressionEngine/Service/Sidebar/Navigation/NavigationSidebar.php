@@ -83,52 +83,37 @@ class NavigationSidebar extends AbstractSidebar
 
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
-            if (ee('Permission')->can('access_design')) {
-                $section->addItem(lang('nav_design'), ee('CP/URL')->make('design'))->withIcon('drafting-compass');
+            if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites')) {
+                $section->addItem(lang('msm_manager'), ee('CP/URL')->make('msm'))->withIcon('globe');
             }
 
-            $tools = [];
             if (
                 ee('Permission')->can('admin_channels') &&
                 ee('Permission')->hasAny(
                     'can_create_channels',
                     'can_edit_channels',
-                    'can_delete_channels',
-                    'can_create_channel_fields',
-                    'can_edit_channel_fields',
-                    'can_delete_channel_fields',
-                    'can_create_statuses',
-                    'can_delete_statuses',
-                    'can_edit_statuses',
-                    'can_create_categories',
-                    'can_edit_categories',
-                    'can_delete_categories'
+                    'can_delete_channels'
                 )
             ) {
-                $sections = array(
-                    'channels' => 'channels',
-                    'channel_fields' => 'fields'
-                );
-
-                foreach ($sections as $name => $path) {
-                    if (
-                        ee('Permission')->hasAny(
-                            "can_create_{$name}",
-                            "can_edit_{$name}",
-                            "can_delete_{$name}"
-                        )
-                    ) {
-                        $name = $name == 'channel_fields' ? 'fields' : $name;
-                        $tools[$name] = ee('CP/URL')->make($path);
-                    }
-                }
+                $section->addItem(lang('channels'), ee('CP/URL')->make('channels'))->withIcon('sitemap');
             }
 
+            if (
+                ee('Permission')->hasAny(
+                    'can_create_channel_fields',
+                    'can_edit_channel_fields',
+                    'can_delete_channel_fields'
+                )
+            ) {
+                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('i-cursor');
+            }
+
+            if (ee('Permission')->can('access_design')) {
+                $section->addItem(lang('templates'), ee('CP/URL')->make('design'))->withIcon('file');
+            }
+
+            $tools = [];
             
-
-            if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites')) {
-                $tools['msm_manager'] = ee('CP/URL')->make('msm');
-            }
 
             if (ee('Permission')->can('access_utilities')) {
 
@@ -162,9 +147,9 @@ class NavigationSidebar extends AbstractSidebar
             }
 
             if (!empty($tools)) {
-                $item = $section->addItem(lang('nav_tools'), ee('CP/URL')->make('channels'))->withIcon('tools')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
+                $item = $section->addItem(lang('nav_tools'), current($tools))->withIcon('tools')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
                 $devMenu = $section->addList(lang('nav_tools'));
-                if (in_array(ee()->uri->segment(2), ['fields', 'channels', 'msm', 'utilities', 'logs'])) {
+                if (in_array(ee()->uri->segment(2), ['utilities', 'logs'])) {
                     $item->isActive();
                 }
                 
