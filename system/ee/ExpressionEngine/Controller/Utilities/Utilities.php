@@ -80,7 +80,15 @@ class Utilities extends CP_Controller {
 			->urlIsExternal();
 
 		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
-			$sidebar->addItem(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
+			$sidebar->addHeader(lang('manage_extensions'), ee('CP/URL')->make('utilities/extensions'));
+		}
+
+		if (ee('Permission')->isSuperAdmin()) {
+			$debug_tools = $sidebar->addHeader(lang('debug_tools'))
+				->addBasicList();
+			$debug_tools->addItem(lang('debug_tools_overview'), ee('CP/URL')->make('utilities/debug-tools'));
+			$debug_tools->addItem(lang('debug_tools_debug_tags'), ee('CP/URL')->make('utilities/debug-tools/debug-tags'));
+			$debug_tools->addItem(lang('debug_tools_fieldtypes'), ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes'));
 		}
 
 		if (ee('Permission')->hasAny('can_access_import', 'can_access_members'))

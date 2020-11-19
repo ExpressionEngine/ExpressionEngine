@@ -1,3 +1,14 @@
+<a href="https://expressionengine.com/blog/expressionengine-6-public-beta-1" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
+  <img src="<?=URL_THEMES?>asset/img/beta-starburst.svg" class="beta-starburst" alt="v6">
+  <div class="v6-wrapper">
+    <img src="<?=URL_THEMES?>asset/img/ee-6.svg" class="v6 beta-puff-in-center" alt="v6">
+  </div>
+  <div class="beta-copy">
+    <img src="<?=URL_THEMES?>asset/img/ee-logotype-white.svg" class="logotype beta-slide-in-top" alt="ExpressionEngine">
+    <span class="beta-intro beta-slide-in-bottom">Welcome to the beta!</span>
+  </div>
+</a>
+
 <?php
 ee()->load->helper('text');
 $menu = ee()->menu->generate_menu();
@@ -8,7 +19,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 			<div>
 				<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
-					<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="button button--secondary-alt"><?= lang('view_all') ?></a>
+					<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="button button--default button--small"><?= lang('view_all') ?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -16,23 +27,26 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<ul class="simple-list">
 			<?php
 			if(!empty($number_of_channels)):
-				$entries = ee('Model')->get('ChannelEntry')
-				->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
-				->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels())
-				->order('entry_date', 'DESC')
-				->limit(7)
-				->all();
+				$assigned_channels = ee()->functions->fetch_assigned_channels();
+				if (!empty($assigned_channels)):
+					$entries = ee('Model')->get('ChannelEntry')
+					->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
+					->filter('channel_id', 'IN', $assigned_channels)
+					->order('entry_date', 'DESC')
+					->limit(7)
+					->all();
 
 
-				foreach($entries as $entry): ?>
-				<li>
-					<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
-						<span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
-						<?= $entry->title; ?>
-					</a>
-				</li>
-				<?php endforeach; ?>
-			<?php endif; ?>
+					foreach($entries as $entry): ?>
+					<li>
+						<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
+              <?= $entry->title; ?>
+              <span class="meta-info float-right ml-s"><?= ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $entry->entry_date)?></span>
+						</a>
+					</li>
+					<?php endforeach;
+				endif;
+			endif; ?>
 		</ul>
 	</div>
 <?php endif; ?>
@@ -49,10 +63,10 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 					if ($pending_count > 0):
 					?>
-					<a href="<?=ee('CP/URL')->make('members/pending')?>" class="button button--secondary-alt"><?=$pending_count?> <?=lang('pending')?></a>
+					<a href="<?=ee('CP/URL')->make('members/pending')?>" class="button button--default button--small"><?=$pending_count?> <?=lang('pending')?></a>
 					<?php endif; ?>
 
-					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'members')?>"><?=lang('view_all')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'members')?>"><?=lang('view_all')?></a>
 				</div>
 			</div>
 		</div>
@@ -89,7 +103,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 			<div>
 				<?php if ($can_edit_comments): ?>
-					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -119,8 +133,8 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		</ul>
 
 		<?php if ($can_moderate_comments): ?>
-		<div class="widget__bottom-buttons">
-			<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="button">
+		<div class="widget__bottom-buttons button-group button-group-small">
+			<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="button button--default button--small">
 				<?php if ($number_of_pending_comments > 0): ?>
 				<i class="icon--caution icon-left"></i>
 				<?php endif ?>
@@ -128,7 +142,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 			</a>
 
 			<?php if ($spam_module_installed): ?>
-				<a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))?>" class="button">
+				<a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))?>" class="button button--default button--small">
 					<b><?=$number_of_spam_comments?></b> <?=lang('flagged_as_spam')?>
 				</a>
 			<?php endif ?>
@@ -145,7 +159,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 			<div>
 				<?php if ($can_moderate_spam): ?>
-					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'addons/settings/spam')?>"><?=lang('review_all')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'addons/settings/spam')?>"><?=lang('review_all')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -183,19 +197,19 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 			<h2 class="widget__title"><?=lang('eecms_news'); ?></h2>
 
 			<div>
-				<a class="button button--secondary-alt" href="<?=$url_rss?>" rel="external">RSS</a>
+				<a class="button button--default button--small" href="<?=$url_rss?>" rel="external">RSS</a>
 			</div>
 		</div>
 
 		<?php if (empty($news)): ?>
-			<p><?=lang('news_fetch_failure')?><a href="" class="button button--secondary-alt"><?=lang('retry')?></a></p>
+			<p><?=lang('news_fetch_failure')?><a href="" class="button button--default button--small"><?=lang('retry')?></a></p>
 		<?php else: ?>
 			<ul class="simple-list">
 				<?php for ($i = 0; $i < 6; $i++) { ?>
 				<li>
 					<a class="normal-link" href="<?=$news[$i]['link']?>" rel="external">
-						<span class="meta-info float-right ml-s"><?=$news[$i]['date']?></span>
-						<?=$news[$i]['title']?>
+            <?=$news[$i]['title']?>
+            <span class="meta-info float-right ml-s"><?=$news[$i]['date']?></span>
 					</a>
 				</li>
 				<?php } ?>
@@ -211,5 +225,5 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 		<p>Get <b>direct</b>, <b>fast</b>, <b>unlimited</b> support from the same team that builds your favorite CMS.</p>
 
-		<p><a href="https://expressionengine.com/support" target="_blank" class="button">Learn More</a></p>
+		<p><a href="https://expressionengine.com/support" target="_blank" class="button button--default">Learn More</a></p>
 	</div>

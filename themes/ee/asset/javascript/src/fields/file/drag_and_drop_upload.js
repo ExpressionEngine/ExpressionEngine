@@ -349,7 +349,7 @@ function (_React$Component) {
       var _this5 = this;
 
       var heading = this.props.multiFile ? EE.lang.file_dnd_drop_files : EE.lang.file_dnd_drop_file;
-      var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_upload_to;
+      var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_upload_to + ' ';
 
       if (this.state.pendingFiles) {
         heading = EE.lang.file_dnd_choose_file_directory;
@@ -367,7 +367,7 @@ function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, ":\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -378,7 +378,7 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
         },
-        buttonClass: "button--secondary-alt"
+        buttonClass: "button--default button--small"
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {
@@ -399,7 +399,7 @@ function (_React$Component) {
         className: "button-segment"
       }, React.createElement("a", {
         href: "#",
-        className: "button button--action m-link",
+        className: "button button--default button--small m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
@@ -408,7 +408,7 @@ function (_React$Component) {
         }
       }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
         href: "#",
-        className: "button button--action m-link",
+        className: "button button--default button--small m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
@@ -429,7 +429,7 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--action"
+        buttonClass: "button--default button--small"
       }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
@@ -442,7 +442,7 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--action"
+        buttonClass: "button--default button--small"
       }))));
     }
   }]);

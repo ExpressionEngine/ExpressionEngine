@@ -69,70 +69,68 @@ abstract class AbstractRoles extends CP_Controller {
 			$all_roles->isInactive();
 		}
 
-		$list = $sidebar->addHeader(lang('role_groups'));
+		if (ee('Permission')->isSuperAdmin()) {
+			$list = $sidebar->addHeader(lang('role_groups'));
 
-		$list = $list->addFolderList('role_groups')
-			->withNoResultsText(sprintf(lang('no_found'), lang('role_groups')));
-
-		if (ee('Permission')->can('delete_roles'))
-		{
-			$list->withRemoveUrl(ee('CP/URL')->make('members/roles/groups/remove', ee()->cp->get_url_state()))
-				->withRemovalKey('content_id');
-		}
-
-		$imported_groups = ee()->session->flashdata('imported_role_groups') ?: [];
-
-		$role_groups = ee('Model')->get('RoleGroup')
-			->order('name')
-			->all();
-
-		foreach ($role_groups as $group)
-		{
-			$name = ee('Format')->make('Text', $group->name)->convertToEntities();
-
-			$item = $list->addItem(
-				$name,
-				ee('CP/URL')->make('members/roles', ['group_id' => $group->getId()])
-			);
-
-			if (ee('Permission')->can('edit_roles'))
-			{
-				$item->withEditUrl(
-					ee('CP/URL')->make('members/roles/groups/edit/' . $group->getId())
-				);
-			}
+			$list = $list->addFolderList('role_groups')
+				->withNoResultsText(sprintf(lang('no_found'), lang('role_groups')));
 
 			if (ee('Permission')->can('delete_roles'))
 			{
-				$item->withRemoveConfirmation(
-					lang('role_group') . ': <b>' . $name . '</b>'
-				)->identifiedBy($group->getId());
+				$list->withRemoveUrl(ee('CP/URL')->make('members/roles/groups/remove', ee()->cp->get_url_state()))
+					->withRemovalKey('content_id');
 			}
 
-			if (in_array($group->getId(), $active_groups))
+			$imported_groups = ee()->session->flashdata('imported_role_groups') ?: [];
+
+			$role_groups = ee('Model')->get('RoleGroup')
+				->order('name')
+				->all();
+
+			foreach ($role_groups as $group)
 			{
-				$item->isActive();
-			}
-			else
-			{
-				$item->isInactive();
+				$name = ee('Format')->make('Text', $group->name)->convertToEntities();
+
+				$item = $list->addItem(
+					$name,
+					ee('CP/URL')->make('members/roles', ['group_id' => $group->getId()])
+				);
+
+				if (ee('Permission')->can('edit_roles'))
+				{
+					$item->withEditUrl(
+						ee('CP/URL')->make('members/roles/groups/edit/' . $group->getId())
+					);
+				}
+
+				if (ee('Permission')->can('delete_roles'))
+				{
+					$item->withRemoveConfirmation(
+						lang('role_group') . ': <b>' . $name . '</b>'
+					)->identifiedBy($group->getId());
+				}
+
+				if (in_array($group->getId(), $active_groups))
+				{
+					$item->isActive();
+				}
+				else
+				{
+					$item->isInactive();
+				}
+
+				if (in_array($group->getId(), $imported_groups))
+				{
+					$item->isSelected();
+				}
 			}
 
-			if (in_array($group->getId(), $imported_groups))
-			{
-				$item->isSelected();
-			}
+			$sidebar->addActionBar()
+				->withLeftButton(
+					lang('new'),
+					ee('CP/URL')->make('members/roles/groups/create')
+				);
 		}
-
-		$sidebar->addActionBar()
-			->withLeftButton(
-				lang('new'),
-				ee('CP/URL')->make('members/roles/groups/create')
-			);
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members')->compile() => lang('members'),
-		);
 
 		ee()->view->left_nav = $sidebar->render();
 	}

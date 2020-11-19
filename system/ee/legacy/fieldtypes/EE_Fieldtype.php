@@ -175,7 +175,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function row($key, $default = NULL)
 	{
-		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+		return (isset($this->row) && array_key_exists($key, $this->row)) ? $this->row[$key] : $default;
 	}
 
 	/**
@@ -1131,6 +1131,54 @@ abstract class EE_Fieldtype {
 		}
 
 		return $this->row('field_ft_'.$this->field_id) ?: $field_fmt;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnIdentifier()
+	{
+		return $this->field_name;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnLabel()
+	{
+		return '';
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function renderTableCell($data, $field_id, $entry)
+	{
+		$out = strip_tags($this->replace_tag($data));
+		if (strlen($out) > 255) {
+			$out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
+		}
+		return $out;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function getTableColumnConfig()
+	{
+		return [];
+	}
+
+	public function getEntryManagerColumnModels() {
+		return [];
+	}
+
+	public function getEntryManagerColumnFields() {
+		return [];
+	}
+
+	public function getEntryManagerColumnSortField() {
+		return '';
 	}
 }
 // END EE_Fieldtype class

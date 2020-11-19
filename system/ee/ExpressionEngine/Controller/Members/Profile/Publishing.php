@@ -42,33 +42,6 @@ class Publishing extends Profile {
 			)
 		);
 
-		if (ee('Addon')->get('rte')->isInstalled())
-		{
-			$vars['sections']['rte_settings'] = array(
-				array(
-					'title' => 'rte_enabled',
-					'desc' => 'rte_enabled_desc',
-					'fields' => array(
-						'rte_enabled' => array(
-							'type' => 'yes_no',
-							'value' => $this->member->rte_enabled
-						)
-					)
-				),
-				array(
-					'title' => 'rte_toolset',
-					'desc' => 'rte_toolset_desc',
-					'fields' => array(
-						'rte_toolset_id' => array(
-							'type' => 'radio',
-							'choices' => ee('Model')->get('rte:Toolset')->all()->getDictionary('toolset_id', 'name'),
-							'value' => $this->member->rte_toolset_id
-						),
-					)
-				)
-			);
-		}
-
 		if( ! empty($_POST))
 		{
 			if ($this->saveSettings($vars['sections']))
@@ -86,6 +59,11 @@ class Publishing extends Profile {
 		ee()->view->cp_page_title = lang('publishing_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('publishing_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }

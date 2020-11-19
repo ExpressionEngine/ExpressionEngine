@@ -4,7 +4,7 @@
 	</div>
 	<div class="app-notice__content">
 		<?php if ($alert->title): ?>
-			<p><b><?=$alert->title?></b></p>
+			<p class="alert__title"><?=$alert->title?></p>
 		<?php endif; ?>
 
 		<?=$alert->body?>
@@ -21,8 +21,9 @@
 		<?php endif; ?>
 	</div>
 	<?php if ($alert->has_close_button): ?>
-		<a href="#" class="app-notice__controls js-notice-dismiss">
-			<span class="app-notice__dismiss"></span>
+		<a href="#" class="app-notice__controls js-notice-dismiss alert__close">
+			<span class="app-notice__dismiss alert__close-icon"></span>
+			<span class="hidden"><?=lang('close')?></span>
 		</a>
 	<?php endif; ?>
 </div>

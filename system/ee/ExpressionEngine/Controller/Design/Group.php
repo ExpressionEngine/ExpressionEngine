@@ -207,7 +207,7 @@ class Group extends AbstractDesignController {
 							$new_template->site_id = ee()->config->item('site_id');
 							$new_template->hits = 0; // Reset hits
 							$new_template->Roles = $master_template->Roles;
-							if ( ! ee('Permission')->isSuperAdmin())
+							if (!ee('Config')->getFile()->getBoolean('allow_php') || !ee('Permission')->isSuperAdmin())
 							{
 								$new_template->allow_php = FALSE;
 							}
@@ -247,7 +247,7 @@ class Group extends AbstractDesignController {
 							)
 						)
 					),
-					array(
+					(sizeof($groups) > 1) ? array(
 						'title' => 'duplicate_group',
 						'desc' => 'duplicate_group_desc',
 						'fields' => array(
@@ -259,7 +259,7 @@ class Group extends AbstractDesignController {
 								]
 							)
 						)
-					),
+					) : '',
 					array(
 						'title' => 'make_default_group',
 						'desc' => 'make_default_group_desc',
@@ -302,6 +302,11 @@ class Group extends AbstractDesignController {
 
 		$this->generateSidebar();
 		ee()->view->cp_page_title = lang('create_new_template_group');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('create_new_template_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -506,6 +511,11 @@ class Group extends AbstractDesignController {
 
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('edit_template_group');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('edit_template_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

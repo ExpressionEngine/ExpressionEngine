@@ -24,4 +24,3 @@ $modal = ee('View')->make('ee:_shared/modal-form')->render([
 	'contents' => ''
 ]);
 ee('CP/Modal')->addModal('modal-form', $modal);
-?>

@@ -27,7 +27,7 @@ if( ! function_exists( 'ee_get_encoding' ) )
 		if($encoding === null)
 		{
 
-			return ee()->config->item('charset') ?: 'utf8';
+			return ee()->config->item('charset') ?: 'UTF-8';
 
 		}
 
@@ -71,10 +71,17 @@ if( ! function_exists('ee_mb_strlen'))
 
 	function ee_mb_strlen( $str, $encoding = null )
 	{
+		if (function_exists('mb_strlen')) {
+			if (!empty($encoding)) {
+				return mb_strlen($str, $encoding);
+			} else {
+				return mb_strlen($str);
+			}
+		}
 
 		$encoding = ee_get_encoding($encoding);
 
-		if($encoding === 'CP850' || $encoding === 'ASCII')
+		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
 		{
 
 			return strlen($str);
@@ -100,9 +107,17 @@ if( ! function_exists('ee_mb_strpos'))
 
 	function ee_mb_strpos($haystack, $needle, $offset = 0, $encoding = null)
 	{
+		if (function_exists('mb_strpos')) {
+			if (!empty($encoding)) {
+				return mb_strpos($haystack, $needle, $offset, $encoding);
+			} else {
+				return mb_strpos($haystack, $needle, $offset);
+			}
+		}
+
 		$encoding = ee_get_encoding($encoding);
 
-		if($encoding === 'CP850' || $encoding === 'ASCII')
+		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
 		{
 
 			return strpos($haystack, $needle, $offset);
@@ -137,9 +152,17 @@ if( ! function_exists( 'ee_mb_substr ') )
 
 	function ee_mb_substr($str, $start, $length = null, $encoding = null)
 	{
+		if (function_exists('mb_substr')) {
+			if (!empty($encoding)) {
+				return mb_substr($str, $start, $length, $encoding);
+			} else {
+				return mb_substr($str, $start, $length);
+			}
+		}
+	
 		$encoding = ee_get_encoding($encoding);
 
-		if('CP850' === $encoding || 'ASCII' === $encoding)
+		if('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv'))
 		{
 
 			return (string) substr($str, $start, null === $length ? 2147483647 : $length);

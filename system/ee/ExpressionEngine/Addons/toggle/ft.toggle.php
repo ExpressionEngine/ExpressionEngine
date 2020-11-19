@@ -11,9 +11,13 @@
 /**
  * Toggle Fieldtype
  */
-class Toggle_ft extends EE_Fieldtype {
+class Toggle_ft extends EE_Fieldtype
+{
 
-	var $info = array();
+	public $info = array(
+		'name' => 'Toggle',
+		'version' => '1.0.0'
+	);
 
 	var $has_array_data = FALSE;
 
@@ -107,14 +111,8 @@ class Toggle_ft extends EE_Fieldtype {
 
 		$data = (is_null($data) OR $data === '') ? $this->settings['field_default_value'] : $data;
 
-		if (REQ == 'CP' || REQ == 'ACTION')
+		if (REQ == 'CP')
 		{
-			ee()->cp->add_js_script([
-				'file' => [
-					'common'
-				]
-			]);
-			
 			return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
 				'field_name' => $this->field_name,
 				'value'      => $data,
@@ -267,6 +265,25 @@ class Toggle_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		switch (true) {
+			case ($data==='y'):
+				$out = lang('yes');
+				break;
+			case ($data==='n'):
+				$out = lang('no');
+				break;
+			case ($data===1):
+				$out = lang('on');
+				break;
+			case ($data===0):
+			default:
+				$out = lang('off');
+				break;
+		}
+		return $out;
 	}
 }
 

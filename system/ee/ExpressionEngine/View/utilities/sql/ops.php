@@ -1,5 +1,5 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
-
+<div class="panel">
 <div class="title-bar title-bar--large">
 	<h2 class="title-bar__title"><?=lang('sql_manager_abbr')?></h2>
 </div>
@@ -13,10 +13,11 @@
 
 			<div class="title-bar__extra-tools">
 				<div class="search-input">
-					<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+					<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 				</div>
 			</div>
 		</div>
 		<?php $this->embed('_shared/table', $table);?>
 	</form>
 	</div>
+</div>

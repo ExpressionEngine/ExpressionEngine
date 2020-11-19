@@ -13,8 +13,226 @@
  */
 class EE_Lang {
 
-	var $language	= array();
-	var $is_loaded	= array();
+	//ISO 639-1
+	public $language_codes = [
+		'Abkhazian' => 'ab',
+		'Afar' => 'aa',
+		'Afrikaans' => 'af',
+		'Akan' => 'ak',
+		'Albanian' => 'sq',
+		'Amharic' => 'am',
+		'Arabic' => 'ar',
+		'Aragonese' => 'an',
+		'Armenian' => 'hy',
+		'Assamese' => 'as',
+		'Avaric' => 'av',
+		'Avestan' => 'ae',
+		'Aymara' => 'ay',
+		'Azerbaijani' => 'az',
+		'Bambara' => 'bm',
+		'Bashkir' => 'ba',
+		'Basque' => 'eu',
+		'Belarusian' => 'be',
+		'Bengali' => 'bn',
+		'Bihari languages' => 'bh',
+		'Bislama' => 'bi',
+		'Bosnian' => 'bs',
+		'Breton' => 'br',
+		'Bulgarian' => 'bg',
+		'Burmese' => 'my',
+		'Catalan' => 'ca',
+		'Valencian' => 'ca',
+		'Central Khmer' => 'km',
+		'Chamorro' => 'ch',
+		'Chechen' => 'ce',
+		'Chichewa' => 'ny',
+		'Chewa' => 'ny',
+		'Nyanja' => 'ny',
+		'Chinese' => 'zh',
+		'Church Slavonic' => 'cu',
+		'Old Bulgarian' => 'cu',
+		'Old Church Slavonic' => 'cu',
+		'Chuvash' => 'cv',
+		'Cornish' => 'kw',
+		'Corsican' => 'co',
+		'Cree' => 'cr',
+		'Croatian' => 'hr',
+		'Czech' => 'cs',
+		'Danish' => 'da',
+		'Divehi' => 'dv',
+		'Dhivehi' => 'dv',
+		'Maldivian' => 'dv',
+		'Dutch' => 'nl',
+		'Flemish' => 'nl',
+		'Dzongkha' => 'dz',
+		'English' => 'en',
+		'Esperanto' => 'eo',
+		'Estonian' => 'et',
+		'Ewe' => 'ee',
+		'Faroese' => 'fo',
+		'Fijian' => 'fj',
+		'Finnish' => 'fi',
+		'French' => 'fr',
+		'Fulah' => 'ff',
+		'Gaelic' => 'gd',
+		'Scottish Gaelic' => 'gd',
+		'Scottish' => 'gd',
+		'Galician' => 'gl',
+		'Ganda' => 'lg',
+		'Georgian' => 'ka',
+		'German' => 'de',
+		'Gikuyu,' => 'ki',
+		'Kikuyu' => 'ki',
+		'Greek' => 'el',
+		'Greenlandic' => 'kl',
+		'Kalaallisut' => 'kl',
+		'Guarani' => 'gn',
+		'Gujarati' => 'gu',
+		'Haitian' => 'ht',
+		'Haitian Creole' => 'ht',
+		'Hausa' => 'ha',
+		'Hebrew' => 'he',
+		'Herero' => 'hz',
+		'Hindi' => 'hi',
+		'Hiri Motu' => 'ho',
+		'Hungarian' => 'hu',
+		'Icelandic' => 'is',
+		'Ido' => 'io',
+		'Igbo' => 'ig',
+		'Indonesian' => 'id',
+		'Interlingua' => 'ia',
+		'Interlingue' => 'ie',
+		'Inuktitut' => 'iu',
+		'Inupiaq' => 'ik',
+		'Irish' => 'ga',
+		'Italian' => 'it',
+		'Japanese' => 'ja',
+		'Javanese' => 'jv',
+		'Kannada' => 'kn',
+		'Kanuri' => 'kr',
+		'Kashmiri' => 'ks',
+		'Kazakh' => 'kk',
+		'Kinyarwanda' => 'rw',
+		'Komi' => 'kv',
+		'Kongo' => 'kg',
+		'Korean' => 'ko',
+		'Kwanyama' => 'kj',
+		'Kuanyama' => 'kj',
+		'Kurdish' => 'ku',
+		'Kyrgyz' => 'ky',
+		'Lao' => 'lo',
+		'Latin' => 'la',
+		'Latvian' => 'lv',
+		'Letzeburgesch' => 'lb',
+		'Luxembourgish' => 'lb',
+		'Limburgish' => 'li',
+		'Limburgan' => 'li',
+		'Limburger' => 'li',
+		'Lingala' => 'ln',
+		'Lithuanian' => 'lt',
+		'Luba-Katanga' => 'lu',
+		'Macedonian' => 'mk',
+		'Malagasy' => 'mg',
+		'Malay' => 'ms',
+		'Malayalam' => 'ml',
+		'Maltese' => 'mt',
+		'Manx' => 'gv',
+		'Maori' => 'mi',
+		'Marathi' => 'mr',
+		'Marshallese' => 'mh',
+		'Moldovan' => 'ro',
+		'Moldavian' => 'ro',
+		'Romanian' => 'ro',
+		'Mongolian' => 'mn',
+		'Nauru' => 'na',
+		'Navajo' => 'nv',
+		'Navaho' => 'nv',
+		'Northern Ndebele' => 'nd',
+		'Ndonga' => 'ng',
+		'Nepali' => 'ne',
+		'Northern Sami' => 'se',
+		'Norwegian' => 'no',
+		'Norwegian Bokmål' => 'nb',
+		'Bokmål' => 'nb',
+		'Norwegian Nynorsk' => 'nn',
+		'Nynorsk' => 'nn',
+		'Nuosu' => 'ii',
+		'Sichuan Yi' => 'ii',
+		'Occitan' => 'oc',
+		'Ojibwa' => 'oj',
+		'Oriya' => 'or',
+		'Oromo' => 'om',
+		'Ossetian' => 'os',
+		'Ossetic' => 'os',
+		'Pali' => 'pi',
+		'Panjabi' => 'pa',
+		'Punjabi' => 'pa',
+		'Pashto' => 'ps',
+		'Pushto' => 'ps',
+		'Persian' => 'fa',
+		'Polish' => 'pl',
+		'Portuguese' => 'pt',
+		'Quechua' => 'qu',
+		'Romansh' => 'rm',
+		'Rundi' => 'rn',
+		'Russian' => 'ru',
+		'Samoan' => 'sm',
+		'Sango' => 'sg',
+		'Sanskrit' => 'sa',
+		'Sardinian' => 'sc',
+		'Serbian' => 'sr',
+		'Shona' => 'sn',
+		'Sindhi' => 'sd',
+		'Sinhala' => 'si',
+		'Sinhalese' => 'si',
+		'Slovak' => 'sk',
+		'Slovenian' => 'sl',
+		'Somali' => 'so',
+		'Sotho, Southern' => 'st',
+		'South Ndebele' => 'nr',
+		'Spanish' => 'es',
+		'Castilian' => 'es',
+		'Sundanese' => 'su',
+		'Swahili' => 'sw',
+		'Swati' => 'ss',
+		'Swedish' => 'sv',
+		'Tagalog' => 'tl',
+		'Tahitian' => 'ty',
+		'Tajik' => 'tg',
+		'Tamil' => 'ta',
+		'Tatar' => 'tt',
+		'Telugu' => 'te',
+		'Thai' => 'th',
+		'Tibetan' => 'bo',
+		'Tigrinya' => 'ti',
+		'Tonga' => 'to',
+		'Tsonga' => 'ts',
+		'Tswana' => 'tn',
+		'Turkish' => 'tr',
+		'Turkmen' => 'tk',
+		'Twi' => 'tw',
+		'Uighur' => 'ug',
+		'Uyghur' => 'ug',
+		'Ukrainian' => 'uk',
+		'Urdu' => 'ur',
+		'Uzbek' => 'uz',
+		'Venda' => 've',
+		'Vietnamese' => 'vi',
+		'Volap_k' => 'vo',
+		'Walloon' => 'wa',
+		'Welsh' => 'cy',
+		'Western Frisian' => 'fy',
+		'Wolof' => 'wo',
+		'Xhosa' => 'xh',
+		'Yiddish' => 'yi',
+		'Yoruba' => 'yo',
+		'Zhuang' => 'za',
+		'Chuang' => 'za',
+		'Zulu' => 'zu'
+	];
+	public $language	= array();
+	public $addon_language	= array();
+	public $is_loaded	= array();
 
 
 	/**
@@ -70,6 +288,9 @@ class EE_Lang {
 	 */
 	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
+		//which scope should we load to? default is EE
+		$scope = 'ee';
+
 		// Clean up langfile
 		$langfile = str_replace('.php', '', $langfile);
 
@@ -96,11 +317,11 @@ class EE_Lang {
 			// Check custom languages first
 			SYSPATH.'user/language/'.$idiom.'/'.$langfile,
 			// Check if the user session language is English
-			BASEPATH.'language/'.$idiom.'/'.$langfile,
+			SYSPATH.'ee/language/'.$idiom.'/'.$langfile,
 			// Check their defined default language
 			SYSPATH.'user/language/'.$deft_lang.'/'.$langfile,
 			// Lastly render the english
-			BASEPATH.'language/english/'.$langfile
+			SYSPATH.'ee/language/english/'.$langfile
 		);
 
 		// If we're in the installer, add those lang files
@@ -114,17 +335,24 @@ class EE_Lang {
 		}
 
 		// if it's in an alternate location, such as a package, check there first
+		$alt_files = [];
 		if ($alt_path != '')
 		{
 			// Temporary! Rename your language files!
 			$third_party_old = 'lang.'.str_replace('_lang.', '.', $langfile);
 
-			array_unshift($paths, $alt_path.'language/english/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/english/'.$langfile);
-			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
-			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
-			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
+			$alt_files = [
+				$alt_path.'language/english/'.$third_party_old,
+				$alt_path.'language/english/'.$langfile,
+				$alt_path.'language/'.$deft_lang.'/'.$third_party_old,
+				$alt_path.'language/'.$idiom.'/'.$third_party_old,
+				$alt_path.'language/'.$deft_lang.'/'.$langfile,
+				$alt_path.'language/'.$idiom.'/'.$langfile
+			];
+
+			foreach ($alt_files as $file) {
+				array_unshift($paths, $file);
+			}
 		}
 
 		// if idiom and deft_lang are the same, don't check those paths twice
@@ -137,6 +365,9 @@ class EE_Lang {
 			if (file_exists($path) && include $path)
 			{
 				$success = TRUE;
+				if (in_array($path, $alt_files)) {
+					$scope = 'addon';
+				}
 				break;
 			}
 		}
@@ -158,8 +389,22 @@ class EE_Lang {
 		}
 
 		$this->is_loaded[] = $langfile;
-		$this->language = array_merge($this->language, $lang);
+
+		switch ($scope) {
+			case 'addon':
+				$this->addon_language = array_merge($this->addon_language, $lang);
+				break;
+			case 'ee':
+			default:
+				$this->language = array_merge($this->language, $lang);
+				break;
+		}
 		unset($lang);
+
+		if (isset($ee_lang)) {
+			$this->language = array_merge($this->language, $ee_lang);
+			unset($ee_lang);
+		}
 
 		log_message('debug', 'Language file loaded: language/'.$idiom.'/'.$langfile);
 		return TRUE;
@@ -177,7 +422,13 @@ class EE_Lang {
 	{
 		if ($which != '')
 		{
-			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];
+			if (isset($this->language[$which])) {
+				$line = $this->language[$which];
+			} elseif (isset($this->addon_language[$which])) {
+				$line = $this->addon_language[$which];
+			} else {
+				$line = $which;
+			}
 
 			if ($label != '')
 			{
@@ -213,6 +464,23 @@ class EE_Lang {
 		}
 
 		 return $dirs;
+	}
+
+	/**
+	 * Get language code
+	 *
+	 * @return String ISO 639-1 code for given language name in English or current user language
+	 */
+	public function code($language_name = null)
+	{
+		if (empty($language_name)) {
+			$language_name = ee()->session->get_language();
+		}
+		$language_name = ucwords($language_name);
+		if (isset($this->language_codes[$language_name])) {
+			return $this->language_codes[$language_name];
+		}
+		return 'en';
 	}
 }
 // END CLASS

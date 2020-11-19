@@ -59,6 +59,29 @@ class Channels extends Jumps
 		$this->sendResponse($response);
 	}
 
+	public function layouts()
+	{
+		$channels = $this->loadChannels(ee()->input->post('searchString'));
+
+		$response = array();
+
+		foreach ($channels as $channel) {
+			$id = $channel->getId();
+			$title = $channel->channel_title;
+
+			$response['viewLayouts' . $channel->getId()] = array(
+				'icon' => 'fa-object-group',
+				'command' => $channel->channel_title,
+				'command_title' => $channel->channel_title,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
+	}
+
 	public function field()
 	{
 		$fields = $this->loadChannelFields(ee()->input->post('searchString'));

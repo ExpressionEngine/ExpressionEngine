@@ -366,7 +366,7 @@ require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
 * @access	public
 * @return	void
 */
-	function show_exception(\Exception $e, $status_code = 500)
+	function show_exception($e, $status_code = 500)
 	{
 		$_error = load_class('Exceptions', 'core');
 		echo $_error->show_exception($e, $status_code);
@@ -401,7 +401,7 @@ require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
 */
 if ( ! function_exists('log_message'))
 {
-	function log_message($level = 'error', $message, $php_error = FALSE)
+	function log_message($level = 'error', $message = '', $php_error = FALSE)
 	{
 		static $_log;
 
@@ -651,6 +651,62 @@ if( ! function_exists('hash_equals'))
 			return !$ret;
 		}
 	}
+}
+
+/**
+ * CLI Shutdown handler
+ * @return bool|mixed
+ */
+function cliShutdownHandler()
+{
+    if (@is_array($error = @error_get_last())) {
+        return(@call_user_func_array('cliErrorHandler', $error));
+    }
+
+    return true;
+}
+
+/**
+ * CLI Error handler
+ * @param $type
+ * @param $message
+ * @param $file
+ * @param $line
+ */
+function cliErrorHandler($type, $message, $file, $line)
+{
+    if (! error_reporting()) {
+        return;
+    }
+
+    $errors = array(
+        0x0001 => 'E_ERROR',
+        0x0002 => 'E_WARNING',
+        0x0004 => 'E_PARSE',
+        0x0008 => 'E_NOTICE',
+        0x0010 => 'E_CORE_ERROR',
+        0x0020 => 'E_CORE_WARNING',
+        0x0040 => 'E_COMPILE_ERROR',
+        0x0080 => 'E_COMPILE_WARNING',
+        0x0100 => 'E_USER_ERROR',
+        0x0200 => 'E_USER_WARNING',
+        0x0400 => 'E_USER_NOTICE',
+        0x0800 => 'E_STRICT',
+        0x1000 => 'E_RECOVERABLE_ERROR',
+        0x2000 => 'E_DEPRECATED',
+        0x4000 => 'E_USER_DEPRECATED'
+    );
+
+    if (! @is_string($name = @array_search($type, @array_flip($errors)))) {
+        $name = 'E_UNKNOWN';
+    }
+
+    /** @var ConsoleService $consoleService */
+    echo "\033[0;31mThe following error occurred: \n\033[0m";
+    echo "\033[0;31m{$name}: {$message} \n\033[0m";
+    echo "File: {$file}\n";
+    echo "Line: {$line}\n";
+    echo '';
 }
 
 // EOF

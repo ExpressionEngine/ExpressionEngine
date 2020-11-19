@@ -150,7 +150,7 @@ class Reindex extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_data'))
+		if ( ! ee('Permission')->has('can_access_data'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -230,6 +230,10 @@ class Reindex extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('search_reindex');
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('search_reindex')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

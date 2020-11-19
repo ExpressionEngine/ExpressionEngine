@@ -93,8 +93,12 @@ class View {
 
 		$vars['blocks'] = $this->blocks;
 
+		$vars['ee_cp_viewmode'] = 'classic';
 		if (ee()->input->cookie('ee_cp_viewmode')) {
 			$vars['ee_cp_viewmode'] = ee()->input->cookie('ee_cp_viewmode');
+		}
+		if (ee()->input->cookie('collapsed_nav')) {
+			$vars['collapsed_nav'] = ee()->input->cookie('collapsed_nav');
 		}
 
 		$this->processing = $vars;
@@ -139,6 +143,7 @@ class View {
 		}
 
 		$buffer = ob_get_contents();
+
 		ob_end_clean();
 
 		return $buffer;
@@ -154,12 +159,18 @@ class View {
 	 */
 	public function embed($view, $vars = array(), $disable = array())
 	{
+		if (empty($vars)) {
+			$vars = array();
+		}
+
 		$vars = array_merge($this->processing, $vars);
 		$view = $this->make($view)->disable($disable);
 
 		ob_start();
 		echo $view->render($vars);
+
 		ob_end_flush();
+
 	}
 
 	/**

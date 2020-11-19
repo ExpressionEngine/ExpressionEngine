@@ -44,6 +44,11 @@ abstract class ListItem {
 	protected $class = array();
 
 	/**
+	 * @var string $attributes Extra attributes
+	 */
+	protected $attributes = '';
+
+	/**
 	 * Constructor: sets the text and url properties of the item
 	 *
 	 * @param string $text The text of the item
@@ -101,11 +106,24 @@ abstract class ListItem {
 	}
 
 	/**
+	 * Sets extra HTML attributes
+	 *
+	 * @param string $attributes Atrributes string
+	 * @return self This returns a reference to itself
+	 */
+	public function withAttributes($attributes)
+	{
+		$this->attributes = $attributes;
+
+		return $this;
+	}
+
+	/**
 	 * Adds a class to the class array
 	 *
 	 * @return self This returns a reference to itself
 	 */
-	protected function addClass($class)
+	public function addClass($class)
 	{
 		$this->class[$class] = TRUE;
 		return $this;
@@ -116,7 +134,7 @@ abstract class ListItem {
 	 *
 	 * @return self This returns a reference to itself
 	 */
-	protected function removeClass($class)
+	public function removeClass($class)
 	{
 		if (isset($this->class[$class]))
 		{
@@ -130,7 +148,7 @@ abstract class ListItem {
 	 *
 	 * @return string All the classes separated by spaces.
 	 */
-	protected function getClass()
+	public function getClass()
 	{
 		return implode(' ', array_keys($this->class));
 	}

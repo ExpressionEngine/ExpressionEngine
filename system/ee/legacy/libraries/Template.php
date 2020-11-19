@@ -2728,7 +2728,7 @@ class EE_Template {
 		$row = $query->row_array();
 
 		// Is PHP allowed in this template?
-		if ($row['allow_php'] == 'y')
+		if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y')
 		{
 			$this->parse_php = TRUE;
 
@@ -3599,7 +3599,7 @@ class EE_Template {
 		$last_time = isset($last['time']) ? $last['time'] : 0;
 		$time_gain = $time - $last_time;
 		$last_memory = isset($last['memory']) ? $last['memory'] : 0;
-		$memory_gain = $memory_usage - $last['memory'];
+		$memory_gain = $memory_usage - $last_memory;
 
 		$this->log[] = array(
 			'time' => $time,
@@ -4460,6 +4460,186 @@ class EE_Template {
 		}
 
 		return $this->annotations->create($data);
+	}
+
+	/**
+	 * Synchronize template
+	 *
+	 * @return void
+	 */
+	public function sync_from_files()
+	{
+		if (ee()->config->item('save_tmpl_files') != 'y')
+		{
+			return FALSE;
+		}
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('template_structure');
+
+		// Lazy load templates instead, this was looping the group query with it included
+
+		$groups = ee('Model')->get('TemplateGroup')
+			->with('Templates')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+		$group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
+
+		$existing = array();
+
+		foreach ($groups as $group)
+		{
+			$existing[$group->group_name.'.group'] = array_combine(
+				$group->Templates->pluck('template_name'),
+				$group->Templates->pluck('template_name')
+			);
+		}
+
+		$basepath = PATH_TMPL . ee()->config->item('site_short_name');
+		ee()->load->helper('directory');
+		$files = directory_map($basepath, 0, 1);
+
+		if ($files !== FALSE)
+		{
+			foreach ($files as $group => $templates)
+			{
+				if (substr($group, -6) != '.group')
+				{
+					continue;
+				}
+
+				$group_name = substr($group, 0, -6); // remove .group
+
+				// DB column limits template and group name to 50 characters
+				if (strlen($group_name) > 50)
+				{
+					continue;
+				}
+
+				$group_id = '';
+
+				if ( ! preg_match("#^[a-zA-Z0-9_\-]+$#i", $group_name))
+				{
+					continue;
+				}
+
+				// if the template group doesn't exist, make it!
+				if ( ! isset($existing[$group]))
+				{
+					if ( ! ee()->legacy_api->is_url_safe($group_name))
+					{
+						continue;
+					}
+
+					if (in_array($group_name, array('act', 'css')))
+					{
+						continue;
+					}
+
+					$data = array(
+						'group_name'		=> $group_name,
+						'is_site_default'	=> 'n',
+						'site_id'			=> ee()->config->item('site_id')
+					);
+
+					$new_group = ee('Model')->make('TemplateGroup', $data)->save();
+					$group_id = $new_group->group_id;
+
+					$existing[$group] = array();
+				}
+
+				// Grab group_id if we still don't have it.
+				if ($group_id == '')
+				{
+					$group_id = $group_ids_by_name[$group_name];
+				}
+
+				// if the templates don't exist, make 'em!
+				foreach ($templates as $template)
+				{
+					// Skip subdirectories (such as those created by svn)
+					if (is_array($template))
+					{
+						continue;
+					}
+					// Skip hidden ._ files
+					if (substr($template, 0, 2) == '._')
+					{
+						continue;
+					}
+					// If the last occurance is the first position?  We skip that too.
+					if (strrpos($template, '.') == FALSE)
+					{
+						continue;
+					}
+
+					$ext = strtolower(ltrim(strrchr($template, '.'), '.'));
+					if ( ! in_array('.'.$ext, ee()->api_template_structure->file_extensions))
+					{
+						continue;
+					}
+
+					$ext_length = strlen($ext) + 1;
+					$template_name = substr($template, 0, -$ext_length);
+					$template_type = array_search('.'.$ext, ee()->api_template_structure->file_extensions);
+
+					if (in_array($template_name, $existing[$group]))
+					{
+						continue;
+					}
+
+					if ( ! ee()->legacy_api->is_url_safe($template_name))
+					{
+						continue;
+					}
+
+					if (strlen($template_name) > 50)
+					{
+						continue;
+					}
+
+					$data = array(
+						'group_id'				=> $group_id,
+						'template_name'			=> $template_name,
+						'template_type'			=> $template_type,
+						'template_data'			=> file_get_contents($basepath.'/'.$group.'/'.$template),
+						'edit_date'				=> ee()->localize->now,
+						'last_author_id'		=> ee()->session->userdata['member_id'],
+						'site_id'				=> ee()->config->item('site_id')
+					 );
+
+					// do it!
+					try {
+						$template_model = ee('Model')->make('Template', $data)->save();
+						$template_model->saveNewTemplateRevision($template_model);
+					} catch (Exception $e) {
+						// if template has invalid characters that might be an issue with some databases, silently exiting here
+					}
+
+					// add to existing array so we don't try to create this template again
+					$existing[$group][] = $template_name;
+				}
+
+				// An index template is required- so we create it if necessary
+				if ( ! in_array('index', $existing[$group]))
+				{
+					$data = array(
+						'group_id'				=> $group_id,
+						'template_name'			=> 'index',
+						'template_data'			=> '',
+						'edit_date'				=> ee()->localize->now,
+						'save_template_file'	=> 'y',
+						'last_author_id'		=> ee()->session->userdata['member_id'],
+						'site_id'				=> ee()->config->item('site_id')
+					 );
+
+					$template_model = ee('Model')->make('Template', $data)->save();
+					$template_model->saveNewTemplateRevision($template_model);
+				}
+
+				unset($existing[$group]);
+			}
+		}
 	}
 
 	protected function getMemberVariables()

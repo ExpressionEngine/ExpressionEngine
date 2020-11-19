@@ -102,6 +102,11 @@ class Bookmarks extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('bookmarklets');
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('bookmarklets')
+		]);
+
 		ee()->cp->render('account/bookmarks', $data);
 	}
 
@@ -113,14 +118,13 @@ class Bookmarks extends Settings {
 	 */
 	public function create()
 	{
-		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_bookmarklet')
 		);
 
-		$id = count($this->bookmarks) ?: 1;
+		$id = count($this->bookmarks) ?: 0;
 
 		if ( ! empty($_POST))
 		{
@@ -131,6 +135,11 @@ class Bookmarks extends Settings {
 				'field' => ee()->input->post('field')
 			);
 		}
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			ee('CP/URL')->make($this->index_url, $this->query_string)->compile() => lang('bookmarklets'),
+			'' => lang('create')
+		]);
 
 		$this->form($vars, ! empty($_POST) ? $_POST : array(), $id);
 	}
@@ -144,7 +153,6 @@ class Bookmarks extends Settings {
 	 */
 	public function edit($id)
 	{
-		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
@@ -164,6 +172,11 @@ class Bookmarks extends Settings {
 			'channel' => $this->bookmarks[$id]->channel,
 			'field' => $this->bookmarks[$id]->field
 		);
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			ee('CP/URL')->make($this->index_url, $this->query_string)->compile() => lang('bookmarklets'),
+			'' => lang('edit')
+		]);
 
 		$this->form($vars, $values, $id);
 	}

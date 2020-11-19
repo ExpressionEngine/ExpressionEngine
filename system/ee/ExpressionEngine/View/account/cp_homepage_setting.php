@@ -1,23 +1,23 @@
 <div class="fields-select">
 	<ul class="field-inputs field-nested">
 		<li>
-			<label class="<?php if ($member->cp_homepage == ''): ?>act<?php endif ?>">
-				<input type="radio" name="cp_homepage" value=""<?php if ($member->cp_homepage == ''): ?> checked<?php endif ?>> <?=lang('member_group_default')?>
+			<label class="checkbox-label <?php if ($member->cp_homepage == ''): ?>act<?php endif ?>">
+				<input type="radio" name="cp_homepage" value=""<?php if ($member->cp_homepage == ''): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('member_group_default')?></div>
 			</label>
 		</li>
 		<li>
-			<label class="<?php if ($member->cp_homepage == 'overview'): ?>act<?php endif ?>">
-				<input type="radio" name="cp_homepage" value="overview"<?php if ($member->cp_homepage == 'overview'): ?> checked<?php endif ?>> <?=lang('cp_overview')?>
+			<label class="checkbox-label <?php if ($member->cp_homepage == 'overview'): ?>act<?php endif ?>">
+				<input type="radio" name="cp_homepage" value="overview"<?php if ($member->cp_homepage == 'overview'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('cp_overview')?></div>
 			</label>
 		</li>
 		<li>
-			<label class="<?php if ($member->cp_homepage == 'entries_edit'): ?>act<?php endif ?>">
-				<input type="radio" name="cp_homepage" value="entries_edit"<?php if ($member->cp_homepage == 'entries_edit'): ?> checked<?php endif ?>> <?=lang('edit_listing')?><?php if (bool_config_item('multiple_sites_enabled')): ?> &mdash; <i><?=lang('applies_to_all_sites')?></i><?php endif ?>
+			<label class="checkbox-label <?php if ($member->cp_homepage == 'entries_edit'): ?>act<?php endif ?>">
+				<input type="radio" name="cp_homepage" value="entries_edit"<?php if ($member->cp_homepage == 'entries_edit'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('edit_listing')?><?php if (bool_config_item('multiple_sites_enabled')): ?> &mdash; <i><?=lang('applies_to_all_sites')?></i><?php endif ?></div>
 			</label>
 		</li>
 		<li>
-		<label class="<?php if ($member->cp_homepage == 'publish_form'): ?>act<?php endif ?>">
-			<input type="radio" name="cp_homepage" value="publish_form"<?php if ($member->cp_homepage == 'publish_form'): ?> checked<?php endif ?>> <?=lang('publish_form')?>
+		<label class="checkbox-label <?php if ($member->cp_homepage == 'publish_form'): ?>act<?php endif ?>">
+			<input type="radio" name="cp_homepage" value="publish_form"<?php if ($member->cp_homepage == 'publish_form'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('publish_form')?></div>
 			<?php if (bool_config_item('multiple_sites_enabled')): ?>
 				&mdash; <i><?=lang('choose_channels_per_site')?></i>
 			<?php else: ?>
@@ -38,8 +38,8 @@
 		<?php endif ?>
 		</li>
 		<li>
-			<label class="<?php if ($member->cp_homepage == 'custom'): ?>act<?php endif ?>">
-				<input type="radio" name="cp_homepage" value="custom"<?php if ($member->cp_homepage == 'custom'): ?> checked<?php endif ?>> <?=lang('custom_uri')?>
+			<label class="checkbox-label <?php if ($member->cp_homepage == 'custom'): ?>act<?php endif ?>">
+				<input type="radio" name="cp_homepage" value="custom"<?php if ($member->cp_homepage == 'custom'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('custom_uri')?></div>
 			</label>
 		</li>
 	</ul>

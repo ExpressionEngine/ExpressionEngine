@@ -63,7 +63,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		if (ee('Permission')->can('can_admin_roles'))
+		if (ee('Permission')->can('admin_roles'))
 		{
 			$sidebar->addHeader(lang('member_settings'));
 
@@ -103,6 +103,7 @@ class Members extends CP_Controller {
 		$vars['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
+		$this->base_url->addQueryStringVariables($filter_values);
 
 		$page = ((int) ee('Request')->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
@@ -153,6 +154,11 @@ class Members extends CP_Controller {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('members')
+		);
+
 		ee()->cp->render('members/view_members', $vars);
 	}
 
@@ -244,6 +250,12 @@ class Members extends CP_Controller {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('pending')
+		);
+
 		ee()->cp->render('members/pending', $vars);
 	}
 
@@ -606,6 +618,12 @@ class Members extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('banned_members');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('banned')
+		);
+
 		ee()->cp->render('members/banned', $vars);
 	}
 
@@ -791,6 +809,12 @@ class Members extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('manage_bans');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('manage_bans')
+		);
+
 		ee()->cp->render('members/ban_settings', $vars);
 	}
 
@@ -871,18 +895,13 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
-			$can_edit_member = FALSE;
-
-			if (ee('Permission')->can('can_edit_members'))
+			if (!ee('Permission')->isSuperAdmin())
 			{
-				if (ee('Permission')->isSuperAdmin())
-				{
-					$can_edit_member = (bool) (ee()->session->userdata('group_id') == 1);
-				}
-				else
-				{
-					$can_edit_member = TRUE;
-				}
+				$can_operate_member = (bool) ($member->PrimaryRole->is_locked != 'y');
+			}
+			else
+			{
+				$can_operate_member = TRUE;
 			}
 
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
@@ -900,7 +919,7 @@ class Members extends CP_Controller {
 					$attrs['class'] = 'pending';
 
 					if (ee('Permission')->can('edit_members')) {
-						$group .= "<a class=\"success-link icon-right button button--small button--secondary-alt\" href=\"" . ee('CP/URL')->make('members/approve/' . $member->member_id) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"></i></a>";
+						$group .= "<a class=\"success-link icon-right button button--small button--default\" href=\"" . ee('CP/URL')->make('members/approve/' . $member->member_id) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"><span class=\"hidden\">" . lang('approve') . "</span></i></a>";
 					}
 					break;
 				default:
@@ -909,7 +928,7 @@ class Members extends CP_Controller {
 
 			$email = "<a class=\"text-muted\" href='" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if ($can_edit_member) {
+			if (ee('Permission')->can('edit_members') && $can_operate_member) {
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
 			else {
@@ -922,7 +941,7 @@ class Members extends CP_Controller {
 
 			$username_display = "
 			<div class=\"d-flex align-items-center\">
-			<img src=\"$avatar_url\" class=\"avatar-icon add-mrg-right\">
+			<img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
 			<div>$username_display</div>
 			</div>
 			";
@@ -948,7 +967,7 @@ class Members extends CP_Controller {
 					'data' => array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
 					),
-					'disabled' => ! $can_edit_member
+					'disabled' => !$can_operate_member || ($member->member_id == ee()->session->userdata('member_id'))
 				);
 			}
 
@@ -1269,40 +1288,29 @@ class Members extends CP_Controller {
 	 */
 	private function _super_admin_delete_check($member_ids)
 	{
-		if ( ! is_array($member_ids))
-		{
+		if ( ! is_array($member_ids)) {
 			$member_ids = array($member_ids);
 		}
 
-		$super_admins = ee()->db->select('COUNT(member_id) AS count')
-			->where('role_id', '1')
-			->where_in('member_id', $member_ids)
-			->get('members_roles')
-			->result();
+		$super_admins = 0;
+		foreach ($member_ids as $member_id) {
+			$member = ee('Model')->get('Member', $member_id)->first();
+			if (!ee('Permission')->isSuperAdmin()) {
+				if ($member->PrimaryRole->is_locked == 'y') {
+					show_error(lang('must_be_superadmin_to_delete_one'));
+				}
+			}
+			if ($member->PrimaryRole->getId() == 1) {
+				$super_admins++;
+			}
+		}
 
-		$super_admins = $super_admins[0]->count;
+		// You can't delete the only Super Admin
+		$total_super_admins = ee('Model')->get('Member')->filter('role_id', 1)->count();
 
-		if ($super_admins > 0)
+		if ($super_admins >= $total_super_admins)
 		{
-			// You must be a Super Admin to delete a Super Admin
-
-			if ( ! ee('Permission')->isSuperAdmin())
-			{
-				show_error(lang('must_be_superadmin_to_delete_one'));
-			}
-
-			// You can't delete the only Super Admin
-			$total_super_admins = ee()->db->select('COUNT(member_id) AS count')
-				->where('role_id', '1')
-				->get('members_roles')
-				->result();
-
-			$total_super_admins = $total_super_admins[0]->count;
-
-			if ($super_admins >= $total_super_admins)
-			{
-				show_error(lang('cannot_delete_super_admin'));
-			}
+			show_error(lang('cannot_delete_super_admin'));
 		}
 	}
 
@@ -1574,12 +1582,18 @@ class Members extends CP_Controller {
 				'working' => 'btn_saving'
 			]
 		];
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('create')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
 	private function renderMemberTab($errors)
 	{
-		$section = [
+		$sections = [[
 			[
 				'title' => 'username',
 				'fields' => [
@@ -1622,18 +1636,44 @@ class Members extends CP_Controller {
 					]
 				]
 			]
-		];
+		]];
 
-		return ee('View')->make('_shared/form/section')
-				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+		foreach (ee('Model')->make('Member')->getDisplay()->getFields() as $field) {
+			if ($field->get('m_field_reg') == 'y' OR $field->isRequired()) {
+				$sections['custom_fields'][] = [
+					'title' => $field->getLabel(),
+					'desc' => '',
+					'fields' => [
+						$field->getName() => [
+							'type' => 'html',
+							'content' => $field->getForm(),
+							'required' => $field->isRequired(),
+						]
+					]
+				];
+			}
+		}
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
 	}
 
 	private function renderRolesTab($errors)
 	{
-		$roles = ee('Model')->get('Role')
+		$allowed_roles = ee('Model')->get('Role')
 			->fields('role_id', 'name')
-			->order('name')
-			->all()
+			->order('name');
+		if ( ! ee('Permission')->isSuperAdmin()) {
+			$allowed_roles->filter('is_locked', 'n');
+		}
+		$roles = $allowed_roles->all()
 			->getDictionary('role_id', 'name');
 
 		$role_groups = ee('Model')->get('RoleGroup')
@@ -1664,7 +1704,12 @@ class Members extends CP_Controller {
 					'fields' => [
 						'role_groups' => [
 							'type' => 'checkbox',
-							'choices' => $role_groups
+							'choices' => $role_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('role_groups')),
+								'link_text' => lang('add_new'),
+								'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+							]
 						]
 					]
 				],

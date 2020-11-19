@@ -143,7 +143,8 @@ class Roles extends AbstractRolesController {
 					'value' => $role->getId(),
 					'data' => [
 						'confirm' => lang('role') . ': <b>' . ee('Format')->make('Text', $role->name)->convertToEntities() . '</b>'
-					]
+					],
+					'disabled' => in_array($role->getId(), [])//$this->getRestrictedRoles())
 				] : NULL
 			];
 		}
@@ -173,6 +174,11 @@ class Roles extends AbstractRolesController {
 		} else {
 			$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];
 		}
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			'' => lang('roles')
+		);
 
 		ee()->cp->render('members/roles/index', $vars);
 	}
@@ -309,6 +315,12 @@ class Roles extends AbstractRolesController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
+			'' => lang('create_new_role')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -426,6 +438,12 @@ class Roles extends AbstractRolesController {
 		ee()->view->cp_page_title = lang('edit_role');
 		ee()->view->extra_alerts = array('search-reindex');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles'),
+			'' => lang('edit_role')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -449,10 +467,10 @@ class Roles extends AbstractRolesController {
 		{
 			$settings[$key] = ee('Request')->post($key);
 		}
-
-		foreach (ee('Request')->post('include_members_in', []) as $key)
-		{
-			$settings[$key] = 'y';
+		if (!empty(ee('Request')->post('include_members_in'))) {
+			foreach (ee('Request')->post('include_members_in', []) as $key) {
+				$settings[$key] = 'y';
+			}
 		}
 
 		if ($role->isNew())
@@ -501,21 +519,48 @@ class Roles extends AbstractRolesController {
 
 		// template_group_access
 		$template_group_ids = [];
-		foreach (ee('Request')->post('template_group_access') as $value)
-		{
-			if (strpos($value, 'template_group_') === 0)
+		if (!empty(ee('Request')->post('template_group_access'))) {
+			foreach (ee('Request')->post('template_group_access') as $value)
 			{
-				$template_group_ids[] = str_replace('template_group_', '', $value);
-			}
-			else
-			{
-				$allowed_perms[] = $value;
+				if (strpos($value, 'template_group_') === 0)
+				{
+					$template_group_ids[] = str_replace('template_group_', '', $value);
+				}
+				else
+				{
+					$allowed_perms[] = $value;
+				}
 			}
 		}
 
 		if ( ! empty($template_group_ids))
 		{
 			$role->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $template_group_ids)->all();
+		}
+
+		// template_access
+		$template_ids = [];
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value) {
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
+			}
+		}
+		if (!empty($template_ids)) {
+			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
+		}
+
+		if (!empty(ee('Request')->post('assigned_templates'))) {
+			foreach (ee('Request')->post('assigned_templates') as $value)
+			{
+				if (is_numeric($value)) {
+					$template_ids[] = $value;
+				}
+			}
+		}
+		if (!empty($template_ids)) {
+			$role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
 		}
 
 		// Permissions
@@ -588,7 +633,7 @@ class Roles extends AbstractRolesController {
 			'role'        => $this->renderRoleTab($role, $errors),
 			'site_access' => $this->renderSiteAccessTab($role, $errors),
 			'cp_access'   => $this->renderCPAccessTab($role, $errors),
-			// 'fields'         => '',
+			'template_access'   => $this->renderTemplateAccessTab($role, $errors),
 		];
 	}
 
@@ -653,7 +698,12 @@ class Roles extends AbstractRolesController {
 					'role_groups' => [
 						'type' => 'checkbox',
 						'choices' => $role_groups,
-						'value' => $role->RoleGroups->pluck('group_id')
+						'value' => $role->RoleGroups->pluck('group_id'),
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('role_groups')),
+							'link_text' => lang('add_new'),
+							'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+						]
 					]
 				]
 			]
@@ -1108,7 +1158,7 @@ class Roles extends AbstractRolesController {
 						]
 					],
 					[
-						'title' => 'members',
+						'title' => lang('members'),
 						'desc' => 'allowed_actions_desc',
 						'group' => 'can_access_members',
 						'caution' => TRUE,
@@ -1232,18 +1282,6 @@ class Roles extends AbstractRolesController {
 							]
 						]
 					],
-					[
-						'title' => 'rte_toolsets',
-						'desc' => 'allowed_actions_desc',
-						'group' => 'can_access_addons',
-						'fields' => [
-							'rte_toolsets' => [
-								'type' => 'checkbox',
-								'choices' => $permissions['choices']['rte_toolsets'],
-								'value' => $permissions['values']['rte_toolsets']
-							]
-						]
-					],
 				]
 			],
 			'tools_utilities' => [
@@ -1328,6 +1366,86 @@ class Roles extends AbstractRolesController {
 
 		return $html;
 	}
+
+	private function renderTemplateAccessTab(Role $role, $errors)
+	{
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->fields('group_id', 'group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$template_access = [
+			'choices' => [],
+			'values' => []
+		];
+		foreach ($template_groups as $id => $name)
+		{
+			$templates = ee('Model')->get('Template')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', $id)
+				->all();
+			$children = [];
+			foreach ($templates as $template) {
+				$template_name = $template->template_name;
+				if ($template->enable_http_auth == 'y') {
+					$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+				}
+				$children[$template->getId()] = $template_name;
+			}
+			$template_access['choices']['template_group_' . $id] = [
+				'label' => $name,
+				'children' => $children
+			];
+		}
+
+		if ($role && !empty($role->getId())) {
+			$assigned_template_groups = $role->AssignedTemplateGroups;
+		} else {
+			$assigned_template_groups = ee('Model')->get('TemplateGroup')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
+		}
+		foreach ($assigned_template_groups as $template_group)
+		{
+			$template_access['values'][] = 'template_group_' . $template_group->getId();
+		}
+
+		if ($role && !empty($role->getId())) {
+			$assigned_templates = $role->AssignedTemplates;
+		} else {
+			$assigned_templates = ee('Model')->get('Template')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
+		}
+		foreach ($assigned_templates as $template)
+		{
+			$template_access['values'][] = $template->getId();
+		}
+
+
+		$section = [
+			[
+				'title' => 'assigned_templates',
+				'desc' => 'assigned_templates_desc',
+				'fields' => [
+					'assigned_templates' => [
+						'type' => 'checkbox',
+						'nested' => TRUE,
+						'auto_select_parents' => TRUE,
+						'choices' => $template_access['choices'],
+						'value' => $template_access['values'],
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+
+	}
+
 
 	private function getChannelAccess($channels, Role $role = NULL)
 	{
@@ -1587,11 +1705,6 @@ class Roles extends AbstractRolesController {
 					'can_edit_template_variables'   => lang('edit_template_variables'),
 					'can_delete_template_variables' => lang('delete_template_variables'),
 				],
-				'rte_toolsets' => [
-					'can_upload_new_toolsets' => lang('upload_new_toolsets'),
-					'can_edit_toolsets'       => lang('edit_toolsets'),
-					'can_delete_toolsets'     => lang('delete_toolsets')
-				],
 				'access_tools' => [
 					'can_access_comm' => [
 						'label' => lang('can_access_communicate'),
@@ -1708,9 +1821,10 @@ class Roles extends AbstractRolesController {
 			$role_ids = array($role_ids);
 		}
 
+		//TODO - this needs to be moved to model
 		//not all roles can be removed
+		$restricted = $this->getRestrictedRoles();
 		$need_to_stay = [];
-		$restricted = [1, 2, 3, 4, ee()->config->item('default_primary_role')];
 		foreach ($role_ids as $i=>$role_id) {
 			if (in_array($role_id, $restricted)) {
 				$need_to_stay[] = $role_id;
@@ -1719,7 +1833,6 @@ class Roles extends AbstractRolesController {
 		}
 
 		if (!empty($need_to_stay)) {
-
 			$role_names = ee('Model')->get('Role', $need_to_stay)->all()->pluck('name');
 
 			ee('CP/Alert')->makeInline('roles-error')
@@ -1728,15 +1841,41 @@ class Roles extends AbstractRolesController {
 				->addToBody(lang('roles_not_deleted_desc'))
 				->addToBody($role_names)
 				->defer();
+			return false;
+		}
 
+		$replacement_role_id = ee()->input->post('replacement');
+		if ($replacement_role_id == 'delete') {
+			$replacement_role_id = NULL;
+		}
+		if (!empty($replacement_role_id)) {
+			if (in_array($replacement_role_id, $restricted) || ee('Model')->get('Role', $replacement_role_id)->first() === null) {
+				ee('CP/Alert')->makeInline('roles-error')
+					->asIssue()
+					->withTitle(lang('roles_delete_error'))
+					->addToBody(lang('invalid_new_primary_role'))
+					->defer();
+				return false;
+			}
 		}
 
 		if (!empty($role_ids)) {
+			foreach ($role_ids as $role_id) {
+				if (ee()->input->post('replacement') == 'delete') {
+					if (!ee('Permission')->can('delete_members')) {
+						show_error(lang('unauthorized_access'), 403);
+					}
+					ee('Model')->get('Member')->filter('role_id', $role_id)->delete();
+				} elseif (!empty($replacement_role_id)) {
+					// Query builder for speed
+					ee('db')->where('role_id', $role_id)->update('members', ['role_id' => $replacement_role_id]);
+				}
+			}
+
 			$roles = ee('Model')->get('Role', $role_ids)->all();
-
 			$role_names = $roles->pluck('name');
-
 			$roles->delete();
+
 			ee('CP/Alert')->makeInline('roles')
 				->asSuccess()
 				->withTitle(lang('success'))
@@ -1744,11 +1883,58 @@ class Roles extends AbstractRolesController {
 				->addToBody($role_names)
 				->defer();
 
-			foreach ($role_names as $role_name)
-			{
+			foreach ($role_names as $role_name) {
 				ee()->logger->log_action(sprintf(lang('removed_role'), '<b>' . $role_name . '</b>'));
 			}
 		}
+	}
+
+	/**
+	 * Delete member role confirm
+	 *
+	 * Warning message shown when you try to delete a role
+	 *
+	 * @return	mixed
+	 */
+	public function confirm()
+	{
+		//  Only super admins can delete member groups
+		if ( ! ee('Permission')->can('delete_roles')) {
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$roles = ee()->input->post('selection');
+
+		$vars['roles'] = ee('Model')->get('Role', $roles)
+			->all()
+			->filter(function($role) {
+				return ee('Model')->get('Member')->filter('role_id', $role->getId())->count() > 0;
+			});
+
+		$vars['new_roles'] = [];
+		if (ee('Permission')->can('delete_members')) {
+			$vars['new_roles']['delete'] = lang('member_assignment_none');
+		}
+		$allowed_roles = ee('Model')->get('Role')
+			->fields('role_id', 'name')
+			->filter('role_id', 'NOT IN', array_merge($roles, [1 ,2, 3, 4]))
+			->order('name');
+		if ( ! ee('Permission')->isSuperAdmin()) {
+			$allowed_roles->filter('is_locked', 'n');
+		}
+		$vars['new_roles'] += $allowed_roles->all()
+			->getDictionary('role_id', 'name');
+
+		ee()->cp->render('members/delete_member_group_conf', $vars);
+	}
+
+	private function getRestrictedRoles()
+	{
+		$restricted = [1, 2, 3, 4, ee()->config->item('default_primary_role'), ee()->session->getMember()->role_id];
+		if ( ! ee('Permission')->isSuperAdmin()) {
+			$restricted = array_merge($restricted, ee('Model')->get('Role')->filter('is_locked', 'y')->all()->pluck('role_id'));
+		}
+		return $restricted;
 	}
 }
 

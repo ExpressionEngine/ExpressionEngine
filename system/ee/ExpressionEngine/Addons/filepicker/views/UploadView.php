@@ -23,7 +23,7 @@
 		?>
 	</head>
 	<body class="iframe">
-		<div class="box"><?=$content?></div>
+		<div class="box" style="margin: 20px;"><?=$content?></div>
 		<?=ee()->javascript->inline('var EE = window.parent.EE;');?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->cp->render_footer_js()?>

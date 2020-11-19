@@ -210,9 +210,9 @@ class File_field {
 
 		$fp_edit = clone $fp_link;
 		$fp_edit
-			->setHtml('<i class="fas fa-pen"></i>')
+			->setHtml('<i class="fas fa-pen"></i><span class="hidden">' . lang('edit') . '</span>')
 			->setAttribute('title', lang('edit'))
-			->setAttribute('class', 'file-field-filepicker button button--secondary-alt');
+			->setAttribute('class', 'file-field-filepicker button button--default');
 
 		$file = $this->getFileModelForFieldData($data);
 
@@ -223,7 +223,7 @@ class File_field {
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'fields/file/cp',
+				'fields/file/control_panel',
 				'fields/file/file_field_drag_and_drop'
 			),
 		));

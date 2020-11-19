@@ -58,7 +58,6 @@ class EE_Core
         define('PATH_PI', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_EXT', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_FT', SYSPATH . 'ee/ExpressionEngine/Addons/');
-        define('PATH_RTE', APPPATH . 'rte_tools/');
         define('PATH_THIRD', SYSPATH . 'user/addons/');
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
@@ -70,9 +69,9 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20200415');
-        define('APP_VER', '6.0.0');
-        define('APP_VER_ID', '');
+        define('APP_BUILD', '20201103');
+        define('APP_VER', '6.0.0-b.3');
+        define('APP_VER_ID', 'b.3');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -250,7 +249,7 @@ class EE_Core
 
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
-            'blacklist', 'channel', 'comment', 'commerce', 'email',
+            'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
              'rte', 'search', 'simple_commerce', 'spam', 'stats'
@@ -263,13 +262,13 @@ class EE_Core
             exit;
         }
 
-        // Security Checks: Throttle, Blacklist, File Integrity, and iFraming
+        // Security Checks: Throttle, Block and Allow, File Integrity, and iFraming
         if (REQ != 'CP') {
             ee()->load->library('throttling');
             ee()->throttling->run();
 
-            ee()->load->library('blacklist');
-            ee()->blacklist->_check_blacklist();
+            ee()->load->library('blockedlist');
+            ee()->blockedlist->_check_blockedlist();
 
             ee()->load->library('file_integrity');
             ee()->file_integrity->create_bootstrap_checksum();
@@ -467,6 +466,26 @@ class EE_Core
             $request = implode('/', $request);
             return 'CP: ' . $request;
         });
+
+        //show them post-update checks, again
+        if (ee()->input->get('after') == 'update') {
+            $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
+            $messages = $advisor->postUpdateChecks();
+            if (!empty($messages)) {
+                ee()->lang->load('utilities');
+                $alert = '';
+                foreach ($messages as $message) {
+                    $alert .= $message . BR;
+                }
+                $alert .= sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile());
+                ee('CP/Alert')
+                    ->makeBanner()
+                    ->asWarning()
+                    ->addToBody($alert)
+                    ->canClose()
+                    ->now();
+            }
+        }
     }
 
     /**

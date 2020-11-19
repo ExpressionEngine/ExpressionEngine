@@ -82,7 +82,7 @@ class Filepicker_mcp {
 		// directory filter
 		$requested = ee()->input->get('directory') ?: 'all';
 
-		$show = (empty($show) && $requested == 'all') ? 'all' : $show;
+		$show = empty($show) ? $requested : $show;
 
 		if ($show != 'all')
 		{
@@ -122,7 +122,7 @@ class Filepicker_mcp {
 			$total_files = $files->count();
 
 			$viewTypeService = new ViewType();
-			$type = $viewTypeService->determineViewType('all', 'table');
+			$type = $viewTypeService->determineViewType('all', 'list');
 
 		}
 		else
@@ -165,10 +165,10 @@ class Filepicker_mcp {
 		$has_filters = ee()->input->get('hasFilters');
 
 		$base_url = ee('CP/URL', $this->base_url);
-		$reset_url = clone $base_url;
 		$base_url->setQueryStringVariable('directories', $show);
 		$base_url->setQueryStringVariable('directory', $requested);
 		$base_url->setQueryStringVariable('viewtype', $type);
+		$reset_url = clone $base_url;
 
 		if ($has_filters !== '0')
 		{
@@ -200,7 +200,7 @@ class Filepicker_mcp {
 				}
 			}
 
-			$filters->add('ViewType', ['table', 'thumb'], $type);
+			$filters->add('ViewType', ['list', 'thumb'], $type);
 
 			$filters = $filters->add('Perpage', $total_files, 'show_all_files');
 

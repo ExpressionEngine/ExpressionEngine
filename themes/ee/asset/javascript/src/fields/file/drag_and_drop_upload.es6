@@ -297,7 +297,7 @@ class DragAndDropUpload extends React.Component {
 
     let subheading = this.state.directory == 'all'
       ? EE.lang.file_dnd_choose_directory
-      : EE.lang.file_dnd_upload_to
+      : EE.lang.file_dnd_upload_to + ' '
 
     if (this.state.pendingFiles) {
       heading = EE.lang.file_dnd_choose_file_directory
@@ -312,7 +312,10 @@ class DragAndDropUpload extends React.Component {
           {this.state.files.length == 0 && <>
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
-                {subheading}:&nbsp;
+                {subheading}
+                {this.state.directory == 'all' && ':'}
+                {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
+                &nbsp;
                 {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
                         action={this.state.directory == 'all'}
@@ -322,7 +325,7 @@ class DragAndDropUpload extends React.Component {
                         placeholder={EE.lang.file_dnd_filter_directories}
                         items={EE.dragAndDrop.uploadDesinations}
                         onSelect={(directory) => this.setDirectory(directory)}
-                        buttonClass="button--secondary-alt"
+                        buttonClass="button--default button--small"
                     />
                 }
             </div>
@@ -347,12 +350,12 @@ class DragAndDropUpload extends React.Component {
         {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
           <React.Fragment>
             <div className="button-segment">
-            <a href="#" className="button button--action m-link" rel="modal-file" onClick={(e) => {
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>
 
-            <a href="#" className="button button--action m-link" rel="modal-file" onClick={(e) => {
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
@@ -370,7 +373,7 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.chooseExisting(directory)}
               rel="modal-file"
               itemClass="m-link"
-              buttonClass="button--action"
+              buttonClass="button--default button--small"
             />
 
             <DropDownButton key={EE.lang.file_dnd_upload_new}
@@ -382,7 +385,7 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.uploadNew(directory)}
               rel="modal-file"
               itemClass="m-link"
-              buttonClass="button--action"
+              buttonClass="button--default button--small"
             />
           </div>
         )}

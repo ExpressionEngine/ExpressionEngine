@@ -53,13 +53,9 @@ var options = {
                 swatches: ['FA5252', 'FD7E14', 'FCC419', '40C057', '228BE6', 'BE4BDB', 'F783AC'],
 
                 onChange: function(newColor) {
-                    // Change background and border colors
-                    status_tag.style.backgroundColor = newColor;
+                    // Change colors
+                    status_tag.style.color = newColor;
                     status_tag.style.borderColor = newColor;
-
-                    // Set foreground color
-                    var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
-                    status_tag.style.color = foregroundColor;
                 }
             }, null), newContainer);
         });

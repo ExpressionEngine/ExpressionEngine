@@ -363,7 +363,7 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 	}
 
-	protected function listingsPage($files, $base_url, $view_type = 'table')
+	protected function listingsPage($files, $base_url, $view_type = 'list')
 	{
 		$vars = array();
 		$reset_url = clone $base_url;
@@ -381,7 +381,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 			->add('Keyword')
-			->add('ViewType', ['table', 'thumb'], $view_type)
+			->add('ViewType', ['list', 'thumb'], $view_type)
 			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -392,7 +392,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$base_url->addQueryStringVariables($filter_values);
 
-		if ($view_type === 'table') {
+		if ($view_type != 'thumb') {
 			$table = $this->buildTable($files, $perpage, $offset);
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
@@ -402,16 +402,21 @@ abstract class AbstractFiles extends CP_Controller {
 
 			$vars['table'] = $table->viewData($base_url);
 			$vars['form_url'] = $vars['table']['base_url'];
-		} elseif ($view_type === 'thumb') {
+		} else {
 			$vars['form_url'] = $base_url;
 
 			ee()->view->filters = $filters->render($reset_url);
 
 			$files = $files->limit($perpage)
-						->offset($offset)
-						->all();
+						->offset($offset);
 
-			$vars['files'] = $files;
+			if ($files->count() == 0) {
+				$vars['no_results'] = [
+					'text' => sprintf(lang('no_found'), lang('files'))
+				];
+			}
+
+			$vars['files'] = $files->all();
 		}
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)

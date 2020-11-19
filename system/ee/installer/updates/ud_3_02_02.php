@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_3_2_2;
+
 /**
  * Update
  */
@@ -22,7 +24,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'install_required_fieldtypes',
 			)

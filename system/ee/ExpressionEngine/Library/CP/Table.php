@@ -20,6 +20,8 @@ class Table {
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
+	const COL_SMALL = 6;
+	const COL_INFO = 7;
 
 	public $config = array();
 	protected $columns = array();
@@ -52,6 +54,7 @@ class Table {
 	 * 'checkbox_header' - For checkbox columns, will also show a checkbox in
 	 * 		the header when there is no data, i.e. when a table represents an
 	 * 		entity that can have actions applied to it (edge case setting)
+	 * 'show_add_button' - whether to show button to add new rows
 	 *
 	 * @param	array 	$config	See above for options
 	 */
@@ -138,11 +141,11 @@ class Table {
 		}
 		elseif (isset($_POST['search']))
 		{
-			$defaults['search'] = $_POST['search'];
+			$defaults['search'] = ee('Request')->post('search');
 		}
 		elseif (isset($_GET['search']))
 		{
-			$defaults['search'] = $_GET['search'];
+			$defaults['search'] = ee('Request')->get('search');
 		}
 		else
 		{
@@ -154,14 +157,19 @@ class Table {
 			$defaults['sort_col'] = $_GET[$sort_col];
 		}
 
-		if (isset($_GET[$sort_dir]))
+		if (isset($_GET[$sort_dir]) && in_array(ee('Request')->get($sort_dir), ['asc', 'desc']))
 		{
-			$defaults['sort_dir'] = $_GET[$sort_dir];
+			$defaults['sort_dir'] = ee('Request')->get($sort_dir);
 		}
 
-		if (isset($_GET['page']) && $_GET['page'] > 0)
+		if (isset($_GET['page']) && ee('Request')->get('page') > 0)
 		{
-			$defaults['page'] = $_GET['page'];
+			$defaults['page'] = (int) ee('Request')->get('page');
+		}
+
+		if (isset($_GET['perpage']) && ee('Request')->get('perpage') > 0)
+		{
+			$defaults['limit'] = (int) ee('Request')->get('perpage');
 		}
 
 		$defaults = array_map(function($value) {
@@ -207,6 +215,7 @@ class Table {
 		// Default settings for columns
 		$defaults = array(
 			'label'		=> NULL,
+			'name'      => NULL,
 			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
@@ -247,6 +256,11 @@ class Table {
 			if ( ! isset($settings['label']) && ! is_int($label))
 			{
 				$settings['label'] = $label;
+			}
+
+			if ( ! isset($settings['name']) && ! is_int($label))
+			{
+				$settings['name'] = $label;
 			}
 
 			$this->columns[] = $settings;
@@ -455,7 +469,7 @@ class Table {
 	 */
 	public function addActionButton($url, $text, $class = "submit")
 	{
-		$class = 'btn action ' . $class;
+		$class = 'button button--primary ' . $class;
 
 		$this->action_buttons[] = array(
 			'url' => $url,
@@ -675,6 +689,8 @@ class Table {
 	{
 		if ($base_url != NULL)
 		{
+			$base_url = clone $base_url;
+
 			if ($this->config['search'] === FALSE)
 			{
 				$this->config['search'] = '';

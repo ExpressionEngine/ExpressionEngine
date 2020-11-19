@@ -133,13 +133,16 @@ class DefaultChannelLayout extends DefaultLayout {
 				'field' => 'author_id',
 				'visible' => TRUE,
 				'collapsed' => FALSE
-			),
-			array(
+			)
+		);
+
+		if ($channel->sticky_enabled) {
+			$option_fields[] = array(
 				'field' => 'sticky',
 				'visible' => TRUE,
 				'collapsed' => FALSE
-			)
-		);
+			);
+		}
 
 		if (bool_config_item('enable_comments') && $channel->comment_system_enabled)
 		{
@@ -222,7 +225,7 @@ class DefaultChannelLayout extends DefaultLayout {
 		$fields = $tab->getFields();
 		if (count($fields) == 0)
 		{
-			$url = ee('CP/URL', 'channels/edit/' . $this->channel_id)->compile();
+			$url = ee('CP/URL', 'channels/edit/' . $this->channel_id)->compile() . '#tab=t-2';
 			$alert = ee('CP/Alert')->makeInline('empty-category-tab')
 				->asWarning()
 				->cannotClose()

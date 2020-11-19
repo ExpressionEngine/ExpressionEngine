@@ -66,8 +66,19 @@ EE.cp.JumpMenu = {
 		jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
 		jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false);
 
-		jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
-		jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(2); });
+		// jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
+		jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() {
+			EE.cp.JumpMenu.currentFocus = 1;
+			jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
+			jumpContainer.document.querySelector('#jumpEntry2').value = '';
+			jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
+			EE.cp.JumpMenu._showJumpMenu(1);
+		});
+
+		jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function() {
+			EE.cp.JumpMenu._showResults(2);
+		});
+
 		jumpContainer.document.querySelectorAll('.js-jump-menu-trigger').forEach(
 			function(triggerLink) {
 			  triggerLink.addEventListener("click", function (e) {
@@ -77,14 +88,50 @@ EE.cp.JumpMenu = {
 			})
 		});
 		jumpContainer.document.querySelector('.app-overlay').addEventListener("click", function() { jumpContainer.document.querySelector('.jump-to').blur(); });
+
+		// If the user clicked outside of the jump menu panels, close them.
+		document.addEventListener("click", (evt) => {
+			const jumpEntry = document.getElementById("jumpEntry1");
+			const jumpMenu = document.getElementById("jump-menu");
+			let targetElement = evt.target; // clicked element
+
+			do {
+				if (targetElement == jumpEntry || targetElement == jumpMenu) {
+					// This is a click inside. Do nothing, just return.
+					return;
+				}
+				// Go up the DOM
+				targetElement = targetElement.parentNode;
+			} while (targetElement);
+
+			// This is a click outside.
+			EE.cp.JumpMenu._closeJumpMenu();
+		});
 	},
 
 	_showJumpMenu: function(loadResults = '') {
-		jumpContainer.$('#jump-menu').trigger('modal:open');
-		jumpContainer.document.querySelector('#jump-menu .jump-to').focus();
+		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'82px' }).show();
+		jumpContainer.document.querySelector('.input--jump').focus();
+
+		if ($('#jump-menu').hasClass('on-welcome')) {
+			$('.welcome-jump-instructions').fadeIn();
+			$('.main-nav__account').fadeIn();
+		}
 
 		if (loadResults) {
 			EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, '');
+		}
+	},
+
+	_closeJumpMenu: function() {
+		jumpContainer.document.querySelector('.jump-to').blur();
+		jumpContainer.document.querySelector('.jump-to').value = '';
+		jumpContainer.$('#jump-menu').hide();
+		jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
+
+		if ($('#jump-menu').hasClass('on-welcome')) {
+			$('.welcome-jump-instructions').fadeOut();
+			$('.main-nav__account').fadeOut();
 		}
 	},
 
@@ -96,7 +143,7 @@ EE.cp.JumpMenu = {
 			} else if (e.key == 'Tab' && e.shiftKey) {
 				// If the user hit backspace on the secondary input field and it's empty, focus the top level field.
 				e.preventDefault();
-				jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+				jumpContainer.document.querySelector('#jumpEntry2').value = '';
 				jumpContainer.document.querySelector('#jumpEntry1').focus();
 			} else if (e.key == 'Backspace' && EE.cp.JumpMenu.currentFocus > 1) {
 				// If the user pressed Backspace, record the current value of the field before
@@ -120,8 +167,7 @@ EE.cp.JumpMenu = {
 			if (e.key == 'Escape') {
 				// Pressing ESC should close the jump menu. We blur the field to make sure
 				// subsequent keystrokes aren't entered into it just in case.
-				jumpContainer.document.querySelector('.jump-to').value = '';
-				jumpContainer.document.querySelector('.jump-to').blur();
+				EE.cp.JumpMenu._closeJumpMenu();
 			} else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
 				let numItems = jumpContainer.document.querySelectorAll('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link').length;
 
@@ -154,7 +200,7 @@ EE.cp.JumpMenu = {
 				}
 			} else if (EE.cp.JumpMenu.currentFocus > 1 && e.key == 'Backspace' && lastSearch == '') {
 				// If the user hit backspace on the secondary input field and it's empty, focus the top level field.
-				jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
+				// jumpContainer.document.querySelector('#jumpMenu1').style.display = 'block';
 				jumpContainer.document.querySelector('#jumpEntry1').focus();
 			} else if (e.key != 'Enter' && e.key != 'Shift' && e.key != 'Tab') {
 				// Check if we're on a sub-level as those will always be dynamic.
@@ -197,7 +243,7 @@ EE.cp.JumpMenu = {
 	 * @param  {string} commandKey The unique index for the selected command.
 	 */
 	handleDynamic: function(commandKey, searchString = '') {
-		jumpContainer.document.querySelector('#jumpMenu1').style.display = 'none';
+		// jumpContainer.document.querySelector('#jumpMenu1').style.display = 'none';
 
 		// Load the secondary input field and focus it. This also shows the secondary results box.
 		this._showResults(2);
@@ -314,7 +360,10 @@ EE.cp.JumpMenu = {
 		let resultsTarget = '#jumpMenuResults' + level;
 
 		// Show the first or secondary input box.
-		jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
+		if (level > 1) {
+			jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
+		}
+
 		jumpContainer.document.querySelector(entryInputTarget).focus();
 
 		// Reset the target results box to empty for our new results.

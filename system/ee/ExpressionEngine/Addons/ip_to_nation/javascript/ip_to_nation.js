@@ -13,7 +13,7 @@ var Ip2n_cp = {
 		var steps = EE.ip2n.steps,
 			that = this;
 
-		this.button = $('a.btn.action');
+		this.button = $('a.button.button--secondary.action');
 
 		this.button.on('click', function(e) {
 			e.preventDefault();

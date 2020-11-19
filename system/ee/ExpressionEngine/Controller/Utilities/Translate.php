@@ -128,6 +128,10 @@ class Translate extends Utilities {
 
 		ee()->view->cp_page_title = lang('cp_translations');
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('cp_translations')
+		);
+
 		ee()->cp->render('utilities/translate/languages', $vars);
 	}
 
@@ -161,8 +165,8 @@ class Translate extends Utilities {
 		$filename_end = '_lang.php';
 		$filename_end_len = strlen($filename_end);
 
-		$language_files = get_filenames($path);
-		$english_files = get_filenames(APPPATH.'language/english/');
+		$language_files = get_filenames($path) ?: [];
+		$english_files = get_filenames(SYSPATH.'ee/language/english/');
 
 		foreach ($english_files as $file)
 		{
@@ -235,6 +239,11 @@ class Translate extends Utilities {
 				htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
 			);
 		}
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('utilities/translate')->compile() => lang('cp_translations'),
+			'' => ucfirst($language)
+		);
 
 		ee()->cp->render('utilities/translate/list', $vars);
 	}
@@ -368,7 +377,9 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
+			ee('CP/URL')->make('utilities/translate')->compile() => lang('cp_translations'),
+			ee('CP/URL')->make('utilities/translate/' . $language)->compile() => ucfirst($language),
+			'' => lang('edit')
 		);
 
 		$vars['base_url'] = ee('CP/URL')->make('utilities/translate/' . $language . '/save/' . $file);

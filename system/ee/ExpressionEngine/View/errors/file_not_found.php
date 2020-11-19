@@ -6,7 +6,7 @@
 	<div class="four-o-four__body typography">
 		<p><?=lang('404_does_not_exist_desc')?></p>
 		<?php if (trim($url)): ?>
-			<p><b><?=lang('url')?>:</b> <?=$url?></p>
+			<p class="four-o-four__url"><b><?=lang('url')?>:</b> <code><?=$url?></code></p>
 		<?php endif; ?>
 	</div>
 	</div>

@@ -183,6 +183,9 @@ class Urls extends Settings {
 		ee()->view->cp_page_title_alt = lang('url_path_settings_title');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('url_path_settings')
+		);
 		ee()->cp->render('settings/form', $vars);
 	}
 }

@@ -38,7 +38,7 @@ class EE_Log {
 			$this->_threshold = $config['log_threshold'];
 		}
 
-		if ($config['log_date_format'] != '')
+		if (isset($config['log_date_format']) && $config['log_date_format'] != '')
 		{
 			$this->_date_fmt = $config['log_date_format'];
 		}

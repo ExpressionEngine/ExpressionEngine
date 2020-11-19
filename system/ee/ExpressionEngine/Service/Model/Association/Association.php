@@ -263,17 +263,6 @@ class Association {
 		$query = $this->facade->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->model);
 
-		// Hack for lazy loaded relationships to ensure that they're matched
-		// with a site_id if we know of one. Can't fall back on ee()->config
-		// here without breaking the fixtures :(
-		if ($this->relation->getTargetModel() == 'ee:MemberGroup')
-		{
-			if ($this->model->hasProperty('site_id') && $this->model->site_id)
-			{
-				$query->filter('site_id', $this->model->site_id);
-			}
-		}
-
 		$result = $query->all();
 
 		if ($result instanceOf Collection)

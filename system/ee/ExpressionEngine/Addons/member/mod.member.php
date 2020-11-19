@@ -827,6 +827,26 @@ class Member {
 	}
 
 	/**
+	 * Upload Avatar
+	 */
+	public function upload_avatar()
+	{
+		if ( ! class_exists('Member_images'))
+		{
+			require PATH_ADDONS.'member/mod.member_images.php';
+		}
+
+		$MI = new Member_images();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MI->{$key} = $value;
+		}
+
+		return $MI->upload_avatar();
+	}
+
+	/**
 	 * Photo Edit Form
 	 */
 	public function edit_photo()
@@ -1719,6 +1739,56 @@ class Member {
 	}
 
 	/**
+	 * Member Search Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
+	public function member_search_form()
+	{
+		$result_page = ee()->TMPL->fetch_param('result_page');
+
+		if (!empty($result_page) && substr($result_page, 0, 4) !== 'http' && substr($result_page, 0, 1) !== '/')
+		{
+			$result_page = '/' . $result_page;
+		}
+
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'result_page' => $result_page,
+										))
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		// Use the `result_page` as our action. If empty, it'll default to the ACT URL.
+		$data['action'] = (ee()->TMPL->fetch_param('result_page') && ee()->TMPL->fetch_param('result_page') != "") ? strtolower(ee()->TMPL->fetch_param('result_page')) : '';
+
+		// If the action is relative, make sure it has a leading slash so we don't append it to the current url.
+		if (!empty($data['action']) && substr($data['action'], 0, 4) !== 'http' && substr($data['action'], 0, 1) !== '/')
+		{
+			$data['action'] = '/' . $data['action'];
+		}
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
+	}
+
+	/**
 	 * Member Search Results
 	 */
 	public function member_search()
@@ -2407,7 +2477,7 @@ class Member {
 	/**
 	 * Custom Member Profile Data
 	 */
-	public function custom_profile_data()
+	public function custom_profile_data($typography = true)
 	{
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
@@ -2422,6 +2492,12 @@ class Member {
 		}
 
 		$results = $member->getValues() + ['group_title' => $member->PrimaryRole->name, 'primary_role_name' => $member->PrimaryRole->name];
+		unset($results['password']);
+		unset($results['unique_id']);
+		unset($results['crypt_key']);
+		unset($results['authcode']);
+		unset($results['salt']);
+
 		$default_fields = $results;
 
 		// Is there an avatar?
@@ -2602,7 +2678,7 @@ class Member {
 				}
 
 				//  {email}
-				if ($key == "email")
+				if ($key == "email" && $typography)
 				{
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}

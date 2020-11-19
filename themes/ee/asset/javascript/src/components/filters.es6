@@ -64,7 +64,7 @@ function FilterSearch (props) {
   return (
     <div className="filter-bar__item">
       <div className="search-input">
-        <input type="text" className="search-input__input" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+        <input type="text" className="search-input__input input--small" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
       </div>
     </div>
   )
@@ -105,7 +105,7 @@ class FilterSelect extends React.Component {
             <div className="dropdown__search">
               <form>
                 <div className="search-input">
-                  <input className="search-input__input" type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+                  <input className="search-input__input input--small" type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
                 </div>
               </form>
             </div>

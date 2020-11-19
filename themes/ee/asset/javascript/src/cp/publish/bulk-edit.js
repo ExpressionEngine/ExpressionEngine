@@ -151,7 +151,7 @@ EE.cp.BulkEdit = {
 			})
 
 		$('form', this.modal).on('submit', function() {
-			var buttons = that.formContainer.find('input.btn')
+			var buttons = that.formContainer.find('.button')
 			buttons.attr({
 				value: buttons.data('work-text'),
 				disabled: 'disabled'
@@ -260,7 +260,7 @@ EE.cp.BulkEdit = {
 		}
 
 		var itemCount = this.formContainer.find('.js-sorting-container .fluid__item').size(),
-			buttons = this.formContainer.find('input.btn')
+			buttons = this.formContainer.find('.button')
 
 		if (itemCount == 0) {
 			buttons.attr('disabled', 'disabled')

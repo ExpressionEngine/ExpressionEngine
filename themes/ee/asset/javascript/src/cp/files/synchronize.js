@@ -22,7 +22,7 @@ $(document).ready(function() {
 });
 
 EE.file_manager.sync_listen = function() {
-	$('.form-standard form input.btn').click(function(event) {
+	$('.form-standard form .button').click(function(event) {
 		event.preventDefault();
 
 		// Get array of files
@@ -34,7 +34,7 @@ EE.file_manager.sync_listen = function() {
 		EE.file_manager.update_progress(0);
 
 		// Disable sync button
-		$('input.btn', this).prop('disabled', true);
+		$('.button', this).prop('disabled', true);
 
 		// Remove any existing alerts
 		$('.app-notice--inline').remove();

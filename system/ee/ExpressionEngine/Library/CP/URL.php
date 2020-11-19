@@ -85,7 +85,7 @@ class URL implements \Serializable
 
     public function matchesTheRequestedURI()
     {
-        return (strpos($this->requested_uri, $this->path) !== false);
+        return (strpos($this->requested_uri, 'cp/' . $this->path) === 0);
     }
 
     /**
@@ -96,6 +96,18 @@ class URL implements \Serializable
     public function __toString()
     {
         return $this->compile();
+    }
+
+    /**
+     * Removes in the $qs array by passing its key
+     *
+     * @param string $key   The name of the query string variable
+     * @return self This returns a reference to itself
+     */
+    public function removeQueryStringVariable($key)
+    {
+        unset($this->qs[$key]);
+        return $this;
     }
 
     /**
@@ -159,7 +171,16 @@ class URL implements \Serializable
         // Remove AMP from the beginning of the query string if it exists
         $qs = preg_replace('#^' . AMP . '#', '', $qs);
 
-        return $this->base . $path . rtrim('&' . $qs, '&');
+        if (!empty($qs)) {
+            $qs = rtrim($qs, '&');
+            if (empty($path)) {
+                $path = '?';
+            } else {
+                $path .= '&';
+            }
+        }
+
+        return $this->base.$path.$qs;
     }
 
     /**

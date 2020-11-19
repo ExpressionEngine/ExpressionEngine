@@ -8,7 +8,7 @@
  */
 
 $(document).ready(function () {
-	$('input[name="perpage"]').on('change keyup', function(e){
+	$('body').on('change keyup', 'input[name="perpage"]', function(e){
 		var threshold = parseInt($(this).data('threshold'));
 		var value = parseInt($(this).val());
 		if (value >= threshold) {

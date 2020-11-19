@@ -1,12 +1,17 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
+<div class="panel">
 <?=form_open($table['base_url'])?>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+	<div class="panel-heading">
 
 	<div class="title-bar">
-		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
 		<?php if (isset($filters)) echo $filters; ?>
 	</div>
+
+</div>
+
+  <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 	<?php $this->embed('_shared/table', $table); ?>
 
@@ -52,6 +57,7 @@
 	</div>
 	<?php ee('CP/Modal')->endModal(); ?>
 <?php endforeach; ?>
+</div>
 
 <?php
 $modal_vars = array(

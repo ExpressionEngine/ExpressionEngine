@@ -50,7 +50,7 @@ class Factory {
 	 */
 	public function ajax(ValidationResult $result)
 	{
-		$field = ee()->input->post('ee_fv_field');
+		$field = str_replace('[]', '', ee()->input->post('ee_fv_field'));
 
 		if ($field && ee()->input->is_ajax_request())
 		{

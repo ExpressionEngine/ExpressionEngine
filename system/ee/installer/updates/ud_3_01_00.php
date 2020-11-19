@@ -8,6 +8,10 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_3_1_0;
+
+use Exception;
+
 /**
  * Update
  */
@@ -25,7 +29,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'move_avatars',
 				'update_member_data_column_names',
@@ -317,7 +321,7 @@ class Updater {
 			$existing = ee('Model')->get('UploadDestination')
 				->fields('name')
 				->filter('name', 'IN', array_keys($member_directories))
-				->filter('site_id', $site_id)
+				->filter('site_id', $site['site_id'])
 				->all()
 				->pluck('name');
 
@@ -329,8 +333,9 @@ class Updater {
 			foreach ($member_directories as $name => $data)
 			{
 				$dir = ee('Model')->make('UploadDestination', $data);
-				$dir->site_id = $site_id;
+				$dir->site_id = $site['site_id'];
 				$dir->name = $name;
+				//$dir->removeNoAccess(); //function not defined since 2.x, so not using it
 				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 				$dir->save();
 

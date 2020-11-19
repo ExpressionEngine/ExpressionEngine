@@ -90,7 +90,7 @@ class Settings extends Profile {
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
-		if (! $avatar_directory->exists())
+		if (empty($avatar_directory) || !$avatar_directory->exists())
 		{
 			$vars['sections']['avatar_settings'] = [
 				array(
@@ -188,6 +188,11 @@ class Settings extends Profile {
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+			'' => lang('personal_settings')
+		]);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

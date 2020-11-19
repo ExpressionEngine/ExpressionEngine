@@ -1,7 +1,11 @@
 <?php $this->extend('_templates/login'); ?>
 
+<div class="login__logo">
+    <?php $this->embed('ee:_shared/ee-logo')?>
+</div>
+
 <div class="login__content">
-	<h1 class="login__title"><?=lang('new_requirements')?> <i class="fas fa-redo-alt"></i></h1>
+<h1 class="login__title"><?=lang('new_requirements')?> <i class="fas fa-redo-alt"></i></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 	<?=form_open(ee('CP/URL')->make('login/update_un_pw'), array(), $hidden)?>
@@ -41,8 +45,10 @@
 				<?=form_password(array('dir' => 'ltr', 'name' => "new_password_confirm", 'id' => "new_password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</fieldset>
 		<?php endif; ?>
-		<fieldset class="last">
-			<?=form_submit('submit', lang('update'), 'class="btn" data-work-text="updating..."')?>
+		<fieldset class="last text-center">
+			<?=form_submit('submit', lang('update'), 'class="button button--primary button--large button--wide" data-work-text="updating..."')?>
 		</fieldset>
 	<?=form_close()?>
 </div>
+
+

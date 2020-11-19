@@ -1,11 +1,18 @@
+<div class="panel">
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
-			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/rank/')?>"><?=lang('create_new')?></a>
-			</fieldset>
-			<h1><?=$cp_heading?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php if (isset($filters)) echo $filters; ?>
+      <div class="panel-heading">
+        <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+        <div class="form-btns form-btns-top">
+          <div class="title-bar title-bar--large">
+      			<h3 class="title-bar__title"><?=$cp_heading?></h3>
+            <div class="title-bar__extra-tools">
+              <a class="button button--primary" href="<?=ee('CP/URL')->make('addons/settings/forum/create/rank/')?>"><?=lang('create_new')?></a>
+            </div>
+      			<?php if (isset($filters)) echo $filters; ?>
+          </div>
+        </div>
+      </div>
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
 			<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
@@ -26,6 +33,7 @@
 			<?php endif; ?>
 		<?=form_close()?>
 	</div>
+</div>
 
 <?php
 $modal_vars = array(

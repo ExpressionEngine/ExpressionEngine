@@ -1,14 +1,18 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
-
+<div class="panel">
 <div class="form-standard">
 	<?=form_open(ee('CP/URL')->make('utilities/sandr'), 'class="ajax-validate"')?>
-		<div class="title-bar">
-			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
+  <div class="panel-heading">
+    <div class="title-bar">
+			<h3 class="title-bar__title"><?=$cp_page_title?></h3>
 
 			<div class="title-bar__extra-tools">
 			<?=cp_form_submit('btn_sandr', 'btn_sandr_working')?>
 			</div>
 		</div>
+  </div>
+
+  <div class="panel-body">
 
 		<?=ee('CP/Alert')
 			->makeInline()
@@ -56,19 +60,23 @@
 				<?=form_error('replace_where')?>
 			</div>
 		</fieldset>
+    <fieldset class="fieldset-required <?=form_error_class('password_auth')?>">
+      <div class="field-instruct">
+        <label><?=lang('current_password')?></label>
+        <em><?=lang('sandr_password_desc')?></em>
+      </div>
+      <div class="field-control">
+        <input name="password_auth" type="password" value="">
+        <?=form_error('password_auth')?>
+      </div>
+    </fieldset>
+  </div>
+<div class="panel-footer">
+		<div class="form-btns">
 
-		<div class="form-btns form-btns-auth">
-			<fieldset class="fieldset-required <?=form_error_class('password_auth')?>">
-				<div class="field-instruct">
-					<label><?=lang('current_password')?></label>
-					<em><?=lang('sandr_password_desc')?></em>
-				</div>
-				<div class="field-control">
-					<input name="password_auth" type="password" value="">
-					<?=form_error('password_auth')?>
-				</div>
-			</fieldset>
 			<?=cp_form_submit('btn_sandr', 'btn_sandr_working')?>
 		</div>
+  </div>
 	</form>
+</div>
 </div>

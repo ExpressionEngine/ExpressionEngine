@@ -31,7 +31,6 @@
 				); ?>
 			<?php endif ?>
 			<div class="dialog__buttons">
-				<div class="button-group">
 					<?php
 					$btn_text = 'btn_confirm_and_delete';
 					$btn_working_text = 'btn_confirm_and_delete_working';
@@ -50,7 +49,6 @@
 
 					currentScript.previousElementSibling.classList.add('button--danger');
 					</script>
-				</div>
 			</div>
 		</div>
 		</form>

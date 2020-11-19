@@ -1,15 +1,16 @@
 <?php $this->extend('_templates/default-nav') ?>
-
+<div class="panel">
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-
+<div class="panel-heading">
 	<div class="title-bar">
-		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
 		<?php if (isset($filters)) echo $filters; ?>
 	</div>
-
-	<section>
+</div>
+<div class="panel-body">
+<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+  <section>
 		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a href="<?=ee('CP/URL')->make('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
 		<?php else: ?>
@@ -21,9 +22,9 @@
 
 				<div class="list-item">
 					<div class="list-item__content">
-						<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
+						<a href="" class="m-link float-right button button--default button--small" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
 
-						<div><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
+						<div style="margin-bottom: 20px;"><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
 
 						<div class="list-item__body">
 							<pre><code><?=lang('front_end_requests')?>: <?=$log->hits?></pre></code>
@@ -35,16 +36,18 @@
 				</div>
 
 				<?=$pagination?>
-
-				<fieldset class="bulk-action-bar">
+      </div>
+      <div class="panel-footer">
+				<div class="form-btns">
 					<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
-				</fieldset>
+				</div>
+      </div>
 			<?php endif; ?>
 		<?php endif; ?>
 	</section>
 <?=form_close()?>
 </div>
-
+</div>
 <?php
 if ( ! $disabled)
 {

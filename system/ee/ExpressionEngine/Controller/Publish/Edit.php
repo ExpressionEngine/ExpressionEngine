@@ -15,6 +15,7 @@ use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use Mexitek\PHPColors\Color;
+use ExpressionEngine\Library\CP\EntryManager;
 
 /**
  * Publish/Edit Controller
@@ -64,15 +65,36 @@ class Edit extends AbstractPublishController {
 
 		$base_url = ee('CP/URL')->make('publish/edit');
 
+		// Create the entry listing object which handles getting the entries
+		$extra_filters = [];
+		if (ee('Permission')->hasAny($this->permissions['others'])) {
+			$extra_filters[] = 'Author';
+		}
+		$extra_filters[] = 'Columns';
+
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
-			ee()->input->get_post('search_in') ?: 'titles',
-			ee('Permission')->hasAny($this->permissions['others'])
+			ee()->input->get_post('search_in') ?: 'titles_and_content',
+			false,
+			null, //ee()->input->get_post('view') ?: '',//view is not used atm
+			$extra_filters
 		);
 
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
+		$filter_values = $filters->values();
 		$channel_id = $entry_listing->channel_filter->value();
+
+		//which columns should we show
+		$selected_columns = $filter_values['columns'];
+		$selected_columns[] = 'checkbox';
+		// array_unshift($selected_columns, 'checkbox');
+
+		$columns = [];
+		foreach ($selected_columns as $column) {
+			$columns[$column] = EntryManager\ColumnFactory::getColumn($column);
+		}
+		$columns = array_filter($columns);
 
 		if ( ! ee('Permission')->hasAny($this->permissions['others']))
 		{
@@ -88,50 +110,29 @@ class Edit extends AbstractPublishController {
 			$vars['channels_exist']  = (bool)ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
 		}
 
-		$vars['filters'] = $filters->render($base_url);
+		$vars['filters'] = $filters->renderEntryFilters($base_url);
+		$vars['filters_search'] = $filters->renderSearch($base_url);
 		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
-		$filter_values = $filters->values();
-		$base_url->addQueryStringVariables($filter_values);
+		$base_url->addQueryStringVariables(
+			array_filter($filter_values,
+				function ($key) {
+					return ($key != 'columns');
+				},
+				ARRAY_FILTER_USE_KEY
+			)
+		);
 
+		// Create the table that displays the entries
 		$table = ee('CP/Table', array(
 			'sort_dir' => 'desc',
 			'sort_col' => 'column_entry_date',
 		));
 
-		$columns = array(
-			'column_entry_id',
-			'column_title' => array(
-				'encode' => FALSE
-			)
-		);
+		$column_renderer = new EntryManager\ColumnRenderer($columns);
+		$table_columns = $column_renderer->getTableColumnsConfig();
+		$table->setColumns($table_columns);
 
-		$show_comments_column = (
-			ee()->config->item('enable_comments') == 'y' OR
-			ee('Model')->get('Comment')
-				->filter('site_id', ee()->config->item('site_id'))
-				->count() > 0);
-
-		if ($show_comments_column)
-		{
-			$columns = array_merge($columns, array(
-				'column_comment_total' => array(
-					'encode' => FALSE
-				)
-			));
-		}
-
-		$columns = array_merge($columns, array(
-			'column_entry_date',
-			'column_status' => [
-				'encode' => FALSE
-			],
-			array(
-				'type'	=> Table::COL_CHECKBOX
-			)
-		));
-
-		$table->setColumns($columns);
 		if($vars['channels_exist'])
 		{
 			$table->setNoResultsText(lang('no_entries_exist'));
@@ -168,7 +169,15 @@ class Edit extends AbstractPublishController {
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
-		$entries->order(str_replace('column_', '', $table->sort_col), $table->sort_dir)
+		$sort_col = 'entry_id';
+		foreach($table_columns as $table_column) {
+			if ($table_column['label']==$table->sort_col) {
+				$sort_col = $table_column['name'];
+				break;
+			}
+		}
+		$sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+		$entries->order($sort_field, $table->sort_dir)
 			->limit($filter_values['perpage'])
 			->offset($offset);
 
@@ -180,19 +189,6 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			if (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-				|| (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
-					$entry->author_id == ee()->session->userdata('member_id')
-					)
-				)
-			{
-				$can_edit = TRUE;
-			}
-			else
-			{
-				$can_edit = FALSE;
-			}
-
 			// wW had a delete cascade issue that could leave entries orphaned and
 			// resulted in errors, so we'll sneakily use this controller to clean up
 			// for now.
@@ -202,93 +198,6 @@ class Edit extends AbstractPublishController {
 				continue;
 			}
 
-			$autosaves = $entry->Autosaves->count();
-
-			// Escape markup in title
-			$escaped_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
-
-			if ($can_edit)
-			{
-				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
-			}
-			else
-			{
-				$title = $escaped_title;
-			}
-
-			if ($autosaves)
-			{
-				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
-			}
-
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
-
-			if ($entry->comment_total > 0)
-			{
-				if (ee('Permission')->can('moderate_comments'))
-				{
-					$comments = '<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>';
-				}
-				else
-				{
-					$comments = $entry->comment_total;
-				}
-			}
-			else
-			{
-				$comments = '0';
-			}
-
-			if (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
-				|| (ee('Permission')->can('delete_self_entries_channel_id_' . $entry->channel_id) &&
-					$entry->author_id == ee()->session->userdata('member_id')
-					)
-				)
-			{
-				$can_delete = TRUE;
-			}
-			else
-			{
-				$can_delete = FALSE;
-			}
-
-			$disabled_checkbox = ! $can_edit && ! $can_delete;
-
-			// Display status highlight if one exists
-			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
-
-			if ($status)
-			{
-				$status = $status->renderTag();
-			}
-			else
-			{
-				$status = (in_array($entry->status, array('open', 'closed'))) ? lang($entry->status) : $entry->status;
-			}
-
-			$column = array(
-				$entry->entry_id,
-				$title,
-				ee()->localize->human_time($entry->entry_date),
-				$status,
-				array(
-					'name' => 'selection[]',
-					'value' => $entry->entry_id,
-					'disabled' => $disabled_checkbox,
-					'data' => array(
-						'title' => $escaped_title,
-						'channel-id' => $entry->Channel->getId(),
-						'confirm' => lang('entry') . ': <b>' . $escaped_title . '</b>'
-					)
-				)
-			);
-
-			if ($show_comments_column)
-			{
-				array_splice($column, 2, 0, array($comments));
-			}
-
 			$attrs = array();
 
 			if ($entry_id && $entry->entry_id == $entry_id)
@@ -296,17 +205,17 @@ class Edit extends AbstractPublishController {
 				$attrs = array('class' => 'selected');
 			}
 
-			if ($autosaves)
+			if ($entry->Autosaves->count())
 			{
 				$attrs = array('class' => 'auto-saved');
 			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,
-				'columns'	=> $column
+				'columns'	=> $column_renderer->getRenderedTableRowForEntry($entry)
 			);
-
 		}
+
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
@@ -348,11 +257,13 @@ class Edit extends AbstractPublishController {
 				'of'                    => lang('of'),
 				'clearAll'              => lang('clear_all'),
 				'removeFromSelection'   => lang('remove_from_selection'),
-			]
+			],
+			'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
 		]);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
+				'common',
 				'cp/confirm_remove',
 				'cp/publish/entry-list',
 				'components/bulk_edit_entries',
@@ -390,24 +301,35 @@ class Edit extends AbstractPublishController {
 			$edit_perms = [];
 			$del_perms  = [];
 
-			foreach ($entries->all()->pluck('channel_id') as $channel_id)
+			foreach ($entries->all()->pluck('channel_id') as $entry_channel_id)
 			{
-				$edit_perms[] = 'can_edit_self_entries_channel_id_' . $channel_id;
-				$edit_perms[] = 'can_edit_other_entries_channel_id_' . $channel_id;
+				$edit_perms[] = 'can_edit_self_entries_channel_id_' . $entry_channel_id;
+				$edit_perms[] = 'can_edit_other_entries_channel_id_' . $entry_channel_id;
 
-				$del_perms[] = 'can_delete_all_entries_channel_id_' . $channel_id;
-				$del_perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
+				$del_perms[] = 'can_delete_all_entries_channel_id_' . $entry_channel_id;
+				$del_perms[] = 'can_delete_self_entries_channel_id_' . $entry_channel_id;
 			}
 
 			$vars['can_edit']   = (empty($edit_perms)) ? FALSE : ee('Permission')->hasAny($edit_perms);
 			$vars['can_delete'] = (empty($del_perms)) ? FALSE : ee('Permission')->hasAny($del_perms);
 		}
 
+		ee()->cp->add_js_script([
+			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
+			'ui' => 'sortable'
+		]);
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('entries')
+		);
+
 		if (AJAX_REQUEST)
 		{
 			return array(
 				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
-				'url' => $vars['form_url']->compile()
+				'url' => $vars['form_url']->compile(),
+				'viewManager_saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
 			);
 		}
 
@@ -603,7 +525,8 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
+			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+			'' => lang('edit_entry')
 		);
 
 		if (ee('Request')->get('modal_form') == 'y')

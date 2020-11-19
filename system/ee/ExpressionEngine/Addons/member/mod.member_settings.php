@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -11,9 +12,8 @@
 /**
  * Member Management Settings
  */
-class Member_settings extends Member {
-
-
+class Member_settings extends Member
+{
 	/** ----------------------------------------
 	/**  Member Profile - Menu
 	/** ----------------------------------------*/
@@ -37,15 +37,6 @@ class Member_settings extends Member {
 		else
 		{
 			$menu = $this->_deny_if('enable_photos', $menu);
-		}
-
-		if (ee()->config->item('enable_avatars') == 'y')
-		{
-			$menu = $this->_allow_if('enable_avatars', $menu);
-		}
-		else
-		{
-			$menu = $this->_deny_if('enable_avatars', $menu);
 		}
 
 
@@ -100,10 +91,17 @@ class Member_settings extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if ( ! ee('Permission')->can('view_profiles'))
+		if (! ee('Permission')->can('view_profiles'))
 		{
-			return ee()->output->show_user_error('general',
-					array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
+		}
+
+		// Get the member_id from the tag param if we have one, otherwise, default back to the legacy `profile_segment/[member_id]` format.
+		$member_id = ee()->TMPL->fetch_param('member_id');
+
+		if (! empty($member_id))
+		{
+			$this->cur_id = (int) $member_id;
 		}
 
 		// No member id, no view
@@ -119,8 +117,6 @@ class Member_settings extends Member {
 		{
 			$not_in[] = 2;
 		}
-
-		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
 			->with(['PrimaryRole' => 'RoleSettings'])
@@ -153,13 +149,21 @@ class Member_settings extends Member {
 		/**  Fetch the template
 		/** ----------------------------------------*/
 
-		$content = $this->_load_element('public_profile');
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$content = ee()->TMPL->tagdata;
+		} else {
+			$content = $this->_load_element('public_profile');
+		}
 
 		/** ----------------------------------------
 		/**  Is there an avatar?
 		/** ----------------------------------------*/
 
-		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
+		if ($row['avatar_filename']  != '')
 		{
 			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;
@@ -475,8 +479,8 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  Format URLs
 			/** ----------------------------------------*/
-// need exception
-/*
+			// need exception
+			/*
 
 
 			if ($key == 'url')
@@ -487,7 +491,7 @@ class Member_settings extends Member {
 				}
 			}
 
-*/
+			*/
 
 			/** ----------------------------------------
 			/**  "last_visit"
@@ -552,6 +556,11 @@ class Member_settings extends Member {
 			/** ----------------------*/
 
 			if ($key == "member_group")
+			{
+				$content = $this->_var_swap_single($val, $member->PrimaryRole->name , $content);
+			}
+
+			if ($key == "member_role")
 			{
 				$content = $this->_var_swap_single($val, $member->PrimaryRole->name , $content);
 			}
@@ -840,7 +849,32 @@ class Member_settings extends Member {
 		/**  Build the custom profile fields
 		/** ----------------------------------------*/
 
-		$tmpl = $this->_load_element('custom_profile_fields');
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('edit_profile_form');
+		}
+
+		// Find out if we have sub-tag data for our `custom_profile_fields` tag. If not, use the legacy speciality template.
+		if (strpos($template, '{/custom_profile_fields}') !== FALSE)
+		{
+			$custom_profile_fields_tag_length = strlen(LD . 'custom_profile_fields' . RD);
+
+			// Find the starting and ending position of our subtag and calculate the difference so we can grab it.
+			$custom_profile_fields_start = strpos($template, LD . 'custom_profile_fields' . RD) + $custom_profile_fields_tag_length;
+			$custom_profile_fields_end = strpos($template, LD . '/custom_profile_fields' . RD);
+			$custom_profile_fields_diff = $custom_profile_fields_end - $custom_profile_fields_start;
+
+			$profile_fields_template = substr($template, $custom_profile_fields_start, $custom_profile_fields_diff);
+		}
+		else
+		{
+			$profile_fields_template = $this->_load_element('custom_profile_fields');
+		}
 
 		/** ----------------------------------------
 		/**  Fetch the field definitions
@@ -859,7 +893,7 @@ class Member_settings extends Member {
 
 		$query = ee()->db->query($sql);
 
-//		$result_row = $result->row_array()
+		//		$result_row = $result->row_array()
 
 		$this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
@@ -874,7 +908,7 @@ class Member_settings extends Member {
 					continue;
 				}
 
-				$temp = $tmpl;
+				$temp = $profile_fields_template;
 
 				/** ----------------------------------------
 				/**  Assign the data to the field
@@ -905,14 +939,58 @@ class Member_settings extends Member {
 		/**  Build the output data
 		/** ----------------------------------------*/
 
+		//if we used templates tags, parse fields
+		if (! empty($tagdata)) {
+			$template = $this->custom_profile_data(false);
+
+			//and add some more variables
+			$template = ee()->TMPL->swap_var_single(
+				'timezone_menu',
+				ee()->localize->timezone_menu(ee()->session->userdata('timezone'), 'timezone'),
+				$template
+			);
+			$template = ee()->TMPL->swap_var_single(
+				'language_menu',
+				$this->get_language_listing(ee()->session->get_language()),
+				$template
+			);
+		}
+
+		if (! empty($custom_profile_fields_diff))
+		{
+			$custom_profile_fields_start = strpos($template, LD . 'custom_profile_fields' . RD);
+			$custom_profile_fields_end = strpos($template, LD . '/custom_profile_fields' . RD) + $custom_profile_fields_tag_length + 1;
+			$custom_profile_fields_diff = $custom_profile_fields_end - $custom_profile_fields_start;
+
+			$template = substr_replace($template, $r, $custom_profile_fields_start, $custom_profile_fields_diff);
+		}
+		else
+		{
+			$template = str_replace(LD."custom_profile_fields".RD, $r, $template);
+		}
+
+		//if we run EE template parser, do some things differently
+		if (! empty($tagdata)) {
+			return ee()->functions->form_declaration(array(
+				'hidden_fields' => array(
+					'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+					'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+				)
+			)) . $template . '</form>';
+		}
+
 		return  $this->_var_swap(
-			$this->_load_element('edit_profile_form'),
+			$template,
 			array(
 				'form_declaration'		=> ee()->functions->form_declaration(
-					array('action' => $this->_member_path('update_profile'))
+					array(
+						'action' => $this->_member_path('update_profile'),
+						'hidden_fields' => array(
+							'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1'
+						)
+					)
 				),
-				'path:update_profile'	=> $this->_member_path('update_profile'),
-				'custom_profile_fields'	=> $r
+				'path:update_profile'	=> $this->_member_path('update_profile')
 			)
 		);
 	}
@@ -932,7 +1010,6 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function update_profile()
 	{
-		ee()->load->model('member_model');
 
 		/** -------------------------------------
 		/**  Safety....
@@ -943,10 +1020,10 @@ class Member_settings extends Member {
 		}
 
 		/** ----------------------------------------
-		/**  Blacklist/Whitelist Check
+		/**  Blocked/Allowed List Check
 		/** ----------------------------------------*/
 
-		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
+		if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n')
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
@@ -963,7 +1040,6 @@ class Member_settings extends Member {
 		 $errors = array();
 
 		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-		//$member->set($data);
 
 		 if ($query->num_rows() > 0)
 		 {
@@ -1001,14 +1077,136 @@ class Member_settings extends Member {
 
 		unset($_POST['HTTP_REFERER']);
 
+		//if this request initiated from regular EE template, we'll process some additional stuff here
+		 if (REQ === 'ACTION') {
+
+			//email update
+			if (ee()->input->post('email')!='' && ee()->input->post('email') != $member->email) {
+				$validator = ee('Validation')->make();
+				$validator->setRule('current_password', 'authenticated');
+
+				$member->email = ee()->input->post('email');
+			}
+
+			//preferences
+			$checkboxes = ['accept_admin_email', 'accept_user_email', 'notify_by_default', 'notify_of_pm', 'accept_messages', 'display_signatures', 'parse_smileys', 'site_default'];
+			foreach ($checkboxes as $checkbox) {
+				if (in_array(ee()->input->post($checkbox), ['y', 'n'])) {
+					$member->{$checkbox} = ee()->input->post($checkbox);
+				}
+			}
+
+			//localization settings
+			if (ee()->config->item('allow_member_localization') == 'y')
+			{
+				if (!empty($_POST['language'])) {
+					$language_pack_names = array_keys(ee()->lang->language_pack_names());
+					if ( ! in_array($data['language'], $language_pack_names))
+					{
+						return ee()->output->show_user_error('general', array(lang('invalid_action')));
+					}
+					$member->language = ee()->security->sanitize_filename($_POST['language']);
+				}
+				if (!empty($_POST['timezone'])) {
+					foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key)
+					{
+						if (ee()->input->post('site_default') == 'y')
+						{
+							$member->{$key} = NULL;
+						}
+						else
+						{
+							$member->{$key} = ee()->input->post($key);
+						}
+					}
+				}
+			}
+
+			//notepad
+			if (ee()->input->post('notepad')!='') {
+				$member->notepad = ee()->input->post('notepad');
+			}
+
+			// username & password
+			$need_validation = false;
+			if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username')!='')
+			{
+				$member->username = ee()->input->post('username');
+				$need_validation = true;
+			}
+
+			if (ee()->input->post('screen_name') != '')
+			{
+				$need_validation = true;
+				$member->screen_name = ee()->input->post('screen_name');
+			}
+
+			// set password, and confirmation if needed
+			if (ee()->input->post('password'))
+			{
+				$need_validation = true;
+				$member->password = ee()->input->post('password');
+			}
+
+			if (!isset($validator) && $need_validation) {
+				$validator = ee('Validation')->make();
+				$validator->setRule('current_password', 'authenticated');
+			}
+
+			if (ee()->input->post('password'))
+			{
+				$validator->setRule('password_confirm', 'matches[password]');
+			}
+
+		}
+
 		$result = $member->validate();
+
+		if (ee()->input->post('password')) {
+			$password_confirm = $validator->validate($_POST);
+
+			// Add password confirmation failure to main result object
+			if ($password_confirm->failed())
+			{
+				$rules = $password_confirm->getFailed();
+				foreach ($rules as $field => $rule)
+				{
+					$result->addFailed($field, $rule[0]);
+				}
+			}
+		}
 
 		if ($result->failed())
 		{
 			return ee()->output->show_user_error('general', $result->renderErrors());
 		}
 
+		// if the password was set, need to hash it before saving and kill all other sessions
+		if (ee()->input->post('password'))
+		{
+			$member->hashAndUpdatePassword($member->password);
+		}
+
 		$member->save();
+
+		$return = ee()->input->get_post('RET');
+
+		if (! empty($return))
+		{
+			if (is_numeric($return)) {
+				$return_link = ee()->functions->form_backtrack($return);
+			} else {
+				$return_link = $return;
+			}
+
+			// Make sure it's an actual URL.
+			if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+				$return_link = '/' . $return_link;
+			}
+
+			ee()->functions->redirect($return_link);
+			exit;
+		}
 
 		/** -------------------------------------
 		/**  Success message
@@ -1027,7 +1225,7 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function edit_preferences()
 	{
-		$query = ee()->db->query("SELECT display_avatars, display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 	 	$element = $this->_load_element('edit_preferences');
 
@@ -1049,7 +1247,6 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_preferences'))
 				),
 				'path:update_edit_preferences'	=> $this->_member_path('update_preferences'),
-				'state:display_avatars'			=> ($query->row('display_avatars')  == 'y') ? " checked='checked'" : '',
 				'state:accept_messages'			=> ($query->row('accept_messages')  == 'y') ? " checked='checked'" : '',
 				'state:display_signatures'		=> ($query->row('display_signatures')  == 'y') ? " checked='checked'" : '',
 				'state:parse_smileys'			=> ($query->row('parse_smileys')  == 'y') ? " checked='checked'" : ''
@@ -1079,7 +1276,6 @@ class Member_settings extends Member {
 
 		$data = array(
 						'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
-						'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
 						'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
 						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
 					  );
@@ -1116,10 +1312,25 @@ class Member_settings extends Member {
 	{
 		$query = ee()->db->query("SELECT email, accept_admin_email, accept_user_email, notify_by_default, notify_of_pm, smart_notifications FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		return $this->_var_swap($this->_load_element('email_prefs_form'),
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('email_prefs_form');
+		}
+
+		return $this->_var_swap($template,
 			array(
 				'form_declaration' 				=> ee()->functions->form_declaration(
-					array('action' => $this->_member_path('update_email'))
+					array(
+						'action' => $this->_member_path('update_email'),
+						'hidden_fields' => array(
+							'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1'
+						)
+					)
 				),
 				'path:update_email_settings'	=>	$this->_member_path('update_email'),
 				'email'							=>	$query->row('email') ,
@@ -1148,10 +1359,10 @@ class Member_settings extends Member {
 		}
 
 		/** ----------------------------------------
-		/**  Blacklist/Whitelist Check
+		/**  Blocked/Allowed List Check
 		/** ----------------------------------------*/
 
-		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
+		if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n')
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
@@ -1165,9 +1376,10 @@ class Member_settings extends Member {
 
 		// this action requires password confirmation
 		ee()->load->library('auth');
-		$password = ee()->auth->hash_password(ee()->input->post('password'), $member->salt);
 
-		if ($password['password'] != $member->password)
+		$sess = ee()->auth->authenticate_username($member->username, ee()->input->post('password'));
+
+		if (! $sess)
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_password')));
 		}
@@ -1190,6 +1402,25 @@ class Member_settings extends Member {
 
 		$member->save();
 
+		$return = ee()->input->get_post('RET');
+
+		if (! empty($return))
+		{
+			if (is_numeric($return)) {
+				$return_link = ee()->functions->form_backtrack($return);
+			} else {
+				$return_link = $return;
+			}
+
+			// Make sure it's an actual URL.
+			if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+				$return_link = '/' . $return_link;
+			}
+
+			ee()->functions->redirect($return_link);
+			exit;
+		}
+
 		// success
 		return $this->_var_swap($this->_load_element('success'),
 			array(
@@ -1209,11 +1440,26 @@ class Member_settings extends Member {
 	{
 		$query = ee()->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('username_password_form');
+		}
+
 		return $this->_var_swap(
-			$this->_load_element('username_password_form'),
+			$template,
 			array(
 				'form_declaration' 				=> ee()->functions->form_declaration(
-					array('action' => $this->_member_path('update_userpass'))
+					array(
+						'action' => $this->_member_path('update_userpass'),
+						'hidden_fields' => array(
+							'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1'
+						)
+					)
 				),
 				'row:username_form'				=>
 					(ee('Permission')->isSuperAdmin() OR ee()->config->item('allow_username_change') == 'y') ?
@@ -1295,6 +1541,25 @@ class Member_settings extends Member {
 		}
 
 		$member->save();
+
+		$return = ee()->input->get_post('RET');
+
+		if (! empty($return))
+		{
+			if (is_numeric($return)) {
+				$return_link = ee()->functions->form_backtrack($return);
+			} else {
+				$return_link = $return;
+			}
+
+			// Make sure it's an actual URL.
+			if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+				$return_link = '/' . $return_link;
+			}
+
+			ee()->functions->redirect($return_link);
+			exit;
+		}
 
 		/** -------------------------------------
 		/**  Success message

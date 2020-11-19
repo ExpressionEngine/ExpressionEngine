@@ -29,6 +29,7 @@ class Channel extends StructureModel {
 		'channel_allow_img_urls'     => 'boolString',
 		'channel_auto_link_urls'     => 'boolString',
 		'channel_notify'             => 'boolString',
+		'sticky_enabled'             => 'boolString',
 		'comment_system_enabled'     => 'boolString',
 		'comment_require_membership' => 'boolString',
 		'comment_moderate'           => 'boolString',
@@ -108,9 +109,9 @@ class Channel extends StructureModel {
 
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
-		'channel_title'              => 'required|unique[site_id]|xss',
-		'channel_name'               => 'required|unique[site_id]|alphaDash',
-		'channel_url'                => 'xss',
+		'channel_title'              => 'required|maxLength[100]|unique[site_id]|xss',
+		'channel_name'               => 'required|maxLength[40]|unique[site_id]|alphaDash',
+		'channel_url'                => 'maxLength[100]|xss',
 		'preview_url'                => 'xss|validatePreviewURL',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
@@ -119,6 +120,7 @@ class Channel extends StructureModel {
 		'channel_allow_img_urls'     => 'enum[y,n]',
 		'channel_auto_link_urls'     => 'enum[y,n]',
 		'channel_notify'             => 'enum[y,n]',
+		'sticky_enabled'             => 'enum[y,n]',
 		'comment_system_enabled'     => 'enum[y,n]',
 		'comment_require_membership' => 'enum[y,n]',
 		'comment_moderate'           => 'enum[y,n]',
@@ -182,6 +184,7 @@ class Channel extends StructureModel {
 	protected $channel_notify = FALSE;
 	protected $channel_notify_emails;
 	protected $comment_url;
+	protected $sticky_enabled = false;
 	protected $comment_system_enabled = TRUE;
 	protected $comment_require_membership = FALSE;
 	protected $comment_moderate = FALSE;
@@ -567,6 +570,11 @@ class Channel extends StructureModel {
 	 */
 	public function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'entry_date')
 			->filter('channel_id', $this->getId());

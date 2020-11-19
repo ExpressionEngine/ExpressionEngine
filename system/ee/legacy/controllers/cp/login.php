@@ -42,7 +42,8 @@ class Login extends CP_Controller {
 			$member = ee('Model')->get('Member')
 				->filter('member_id', ee()->session->userdata('member_id'))
 				->first();
-			return $this->functions->redirect($member->getCPHomepageURL());
+			$homepageUrl = $member->getCPHomepageURL() . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
+			return $this->functions->redirect($homepageUrl);
 		}
 
 		// If an ajax request ends up here the user is probably logged out
@@ -105,7 +106,7 @@ class Login extends CP_Controller {
 		}
 
 		// Normal login button state
-		$this->view->btn_class = 'button button--action button--large button--wide';
+		$this->view->btn_class = 'button button--primary button--large button--wide';
 		$this->view->btn_label = lang('login');
 		$this->view->btn_disabled = '';
 
@@ -253,6 +254,8 @@ class Login extends CP_Controller {
 			$return_path = $member->getCPHomepageURL();
 		}
 
+		$return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
+
 		// If there is a URL= parameter in the return URL folks could end up anywhere
 		// so if we see that we'll ditch everything we were told and just go to `/`
 		if (strpos($return_path, '&URL=') !== FALSE
@@ -260,6 +263,8 @@ class Login extends CP_Controller {
 		{
 			$return_path = ee('CP/URL')->make('/')->compile();
 		}
+
+		ee('CP/JumpMenu')->primeCache();
 
 		$this->functions->redirect($return_path);
 	}
@@ -565,7 +570,7 @@ class Login extends CP_Controller {
 				->cannotClose()
 				->now();
 
-			return $this->forgotten_password_form();
+			return $this->index();
 		}
 
 		$member_id = $query->row('member_id');
@@ -632,7 +637,7 @@ class Login extends CP_Controller {
 				->now();
 		}
 
-		$this->forgotten_password_form();
+		$this->index();
 	}
 
 	/**

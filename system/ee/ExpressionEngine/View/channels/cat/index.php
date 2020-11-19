@@ -1,14 +1,23 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
-	<?=form_open($table['base_url'])?>
-		<?php if ($can_create_categories):?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/groups/create')?>"><?=lang('create_new')?></a>
-		</fieldset>
-		<?php endif; ?>
-		<h1><?=$cp_page_title?></h1>
-		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<?php if (isset($filters)) echo $filters; ?>
+<div class="panel">
+  <?=form_open($table['base_url'])?>
+
+    <div class="panel-heading">
+      <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+      <div class="form-btns form-btns-top">
+        <div class="title-bar title-bar--large">
+          <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+          <?php if ($can_create_categories):?>
+          <div class="title-bar__extra-tools">
+            <a class="button button--primary" href="<?=ee('CP/URL')->make('categories/groups/create')?>"><?=lang('create_new')?></a>
+          </div>
+          <?php endif; ?>
+      		<?php if (isset($filters)) echo $filters; ?>
+        </div>
+      </div>
+    </div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ($can_delete_categories): ?>
@@ -28,6 +37,7 @@
 		]); ?>
 		<?php endif; ?>
 	</form>
+</div>
 
 
 <?php

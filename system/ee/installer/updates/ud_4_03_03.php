@@ -47,7 +47,7 @@ class Updater {
 		$valid = ee()->admin_model->get_xml_encodings();
 
 		// Get the current channel_lang setting for each channel
-		$channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_lang');
+		$channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_lang')->all()->getDictionary('channel_id', 'channel_lang');
 
 		foreach ($channels as $channel_id => $lang)
 		{

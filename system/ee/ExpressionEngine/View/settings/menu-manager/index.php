@@ -1,18 +1,21 @@
-<?php $this->extend('_templates/default-nav'); ?>
 
+<?php $this->extend('_templates/default-nav'); ?>
+<div class="panel">
 	<?=form_open($table['base_url'])?>
 
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-		<div class="title-bar">
-			<h2 class="title-bar__title">
-				<?=$cp_page_title?>
-			</h2>
+    <div class="panel-heading">
+      <div class="title-bar">
+  			<h3 class="title-bar__title">
+  				<?=$cp_page_title?>
+  			</h3>
 
-			<div class="title-bar__extra-tools">
-				<a class="button button--small button--action" href="<?=ee('CP/URL')->make('settings/menu-manager/create-set')?>"><?=lang('new')?></a>
-			</div>
-		</div>
+  			<div class="title-bar__extra-tools">
+  				<a class="button button--primary" href="<?=ee('CP/URL')->make('settings/menu-manager/create-set')?>"><?=lang('new')?></a>
+  			</div>
+  		</div>
+    </div>
 
 
 		<?php $this->embed('_shared/table', $table); ?>
@@ -32,8 +35,9 @@
 			'modal' => true
 		]); ?>
 	</form>
-
+</div>
 <?php
+
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-delete',

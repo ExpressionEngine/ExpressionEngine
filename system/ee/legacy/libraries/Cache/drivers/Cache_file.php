@@ -270,7 +270,7 @@ class EE_Cache_file extends CI_Driver {
 		// For locally-cached items, separate by site name
 		if ($scope == Cache::LOCAL_SCOPE)
 		{
-			$key = ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR . $key;
+			$key = (!empty(ee()->config->item('site_short_name')) ? ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR : '') . $key;
 		}
 
 		return $key;

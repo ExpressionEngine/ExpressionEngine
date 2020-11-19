@@ -33,14 +33,16 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 				<span class="mr-s"></span>
 			<?php endif; ?>
 
-			<ul class="toolbar">
-				<?php if (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y'): ?>
-				<li class="upload"><a class="m-link textarea-field-filepicker" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a></li>
-				<?php endif; ?>
-				<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
-				<li class="emoji"><a href="" title="<?=lang('open_emoji')?>"></a></li>
-				<?php endif; ?>
-			</ul>
+			<div class="button-toolbar toolbar">
+        <div class="button-group button-group-xsmall">
+  				<?php if (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y'): ?>
+  				<a class="m-link textarea-field-filepicker html-upload button button--default" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a>
+  				<?php endif; ?>
+  				<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
+  				<a href="" title="<?=lang('open_emoji')?>" class="emoji button button--default"></a>
+  				<?php endif; ?>
+  			</div>
+      </div>
 			</div>
 		<?php endif ?>
 

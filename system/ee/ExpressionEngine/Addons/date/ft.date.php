@@ -96,6 +96,8 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function display_field($field_data)
 	{
+		ee()->lang->loadfile('content');
+		
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
 
 		if ( ! is_numeric($field_data))
@@ -346,6 +348,13 @@ class Date_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		if ($data==0) {
+			return '';
+		}
+		return ee()->localize->human_time($data);
 	}
 }
 

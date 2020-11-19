@@ -205,14 +205,14 @@ $(document).ready(function () {
 				sheets = $('form .tab-wrap div.tab');
 				sheets.eq(-1).sortable(sortable_options_for_sheets);
 
-				$('.modal-add-new-tab .m-close').trigger('click');
+				$('.modal-add-new-tab .js-modal-close').trigger('click');
 			}
 		}
 
 		e.preventDefault();
 	});
 
-	$('.modal-add-new-tab .m-close').on('click', function(e) {
+	$('.modal-add-new-tab .js-modal-close').on('click', function(e) {
 		$('.modal-add-new-tab input[name="tab_name"]').val('');
 		$('.modal-add-new-tab .setting-field em').remove();
 		$('.modal-add-new-tab input[name="tab_name"]').parents('fieldset').removeClass('invalid');

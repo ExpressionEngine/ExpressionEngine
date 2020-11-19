@@ -69,7 +69,7 @@ case 'text':
 
 			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 
-	<?php if ($margin_top OR $margin_left): ?>
+	<?php if (!empty($class)): ?>
 		</div>
 	<?php endif ?>
 <?php break;
@@ -203,7 +203,7 @@ case 'slider': ?>
 <?php break;
 
 case 'action_button': ?>
-	<a class="btn tn action <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+	<a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
 
 case 'html':

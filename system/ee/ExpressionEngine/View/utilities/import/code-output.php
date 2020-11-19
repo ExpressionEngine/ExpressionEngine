@@ -13,7 +13,7 @@
 		</div>
 	</fieldset>
 	<fieldset class="form-ctrls">
-		<input class="btn" type="submit" value="<?=lang('btn_download_file')?>">
+		<input class="button button--primary" type="submit" value="<?=lang('btn_download_file')?>">
 		<!--<a class="btn action" href="#"><?=lang('btn_copy_to_clipboard')?></a>-->
 	</fieldset>
 </form>

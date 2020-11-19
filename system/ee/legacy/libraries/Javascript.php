@@ -133,7 +133,7 @@ class EE_Javascript {
 	 * @param	string	- Javascript code for mouse out
 	 * @return	string
 	 */
-	public function hover($element = 'this', $over, $out)
+	public function hover($element = 'this', $over = '', $out = '')
 	{
 		return $this->js->__hover($element, $over, $out);
 	}
@@ -702,17 +702,7 @@ class EE_Javascript {
 	{
 		$this->js->_compile($view_var, $script_tags);
 
-		$global_js = $this->inline('
-			document.documentElement.className += "js";
-
-			var EE = '.json_encode($this->global_vars).';
-
-			if (typeof console === "undefined" || ! console.log) {
-				console = { log: function() { return false; }};
-			}
-		');
-
-		ee()->view->cp_global_js = $global_js;
+		ee()->view->cp_global_js = $this->get_global();
 	}
 
 	/**
@@ -726,7 +716,9 @@ class EE_Javascript {
 		return $this->inline('
 			document.documentElement.className += "js";
 
-			var EE = '.json_encode($this->global_vars).';
+			if (typeof EE == "undefined" || ! EE) {
+				var EE = '.json_encode($this->global_vars).';
+			}
 
 			if (typeof console === "undefined" || ! console.log) {
 				console = { log: function() { return false; }};

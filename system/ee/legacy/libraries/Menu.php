@@ -15,6 +15,8 @@ use  ExpressionEngine\Service\Sidebar\Sidebar;
  */
 class EE_Menu {
 
+	public static $menu;
+
 	/**
 	 * Constructor
 	 *
@@ -35,11 +37,15 @@ class EE_Menu {
 	 */
 	public function generate_menu()
 	{
+		if (isset(static::$menu)) {
+			return static::$menu;
+		}
+
 		$menu = array();
 
 		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
-		$menu['develop']  = $this->_develop_menu();
+		//$menu['develop']  = $this->_develop_menu(); //commenting this out as it's not used anymore anywhere
 		$menu['custom']   = NULL;
 
 		$custom = ee('CP/CustomMenu');
@@ -94,7 +100,9 @@ class EE_Menu {
 
 		$menu['custom'] = $custom;
 
-		return $menu;
+		static::$menu = $menu;
+
+		return static::$menu;
 	}
 
 	/**
@@ -290,52 +298,6 @@ class EE_Menu {
 		}
 
 		return $menu;
-	}
-
-	/**
-	 * Future home of quick links
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	private function _quicklinks()
-	{
-		$quicklinks = array();
-
-		return $quicklinks;
-
-		// CP-TODO: Combine quick_links and quick_tabs in updater, make this
-		// method return something
-
-		// OLD CODE FOR GETTING THESE LIINKS:
-
-		$quicklinks = $this->member_model->get_member_quicklinks(
-			ee()->session->userdata('member_id')
-		);
-
-		if (isset(ee()->session->userdata['quick_tabs']) && ee()->session->userdata['quick_tabs'] != '')
-		{
-			foreach (explode("\n", ee()->session->userdata['quick_tabs']) as $row)
-			{
-				$x = explode('|', $row);
-
-				$title = (isset($x['0'])) ? $x['0'] : '';
-				$link  = (isset($x['1'])) ? $x['1'] : '';
-
-				// Look to see if the session is in the link; if so, it was
-				// it was likely stored the old way which made for possibly
-				// broken links, like if it was saved with index.php but is
-				// being accessed through admin.php
-				if (strstr($link, '?S=') === FALSE)
-				{
-					$link = BASE.AMP.$link;
-				}
-
-				$tabs[$title] = $link;
-			}
-		}
-
-		return $tabs;
 	}
 
 	/**

@@ -164,14 +164,19 @@ class Date extends Filter {
 				$this->value();
 		}
 
+		// Create a filter URL without this filter (per-filter clear).
+		$url_without_filter = clone $url;
+		$url_without_filter->removeQueryStringVariable($this->name);
+
 		$filter = array(
-			'label'			=> $this->label,
-			'name'			=> $this->name,
-			'value'			=> $value,
-			'custom_value'  => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
-			'placeholder'	=> $this->placeholder,
-			'options'		=> $options,
-			'timestamp'		=> $this->timestamp
+			'label'              => $this->label,
+			'name'               => $this->name,
+			'value'              => $value,
+			'custom_value'       => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
+			'placeholder'        => $this->placeholder,
+			'options'            => $options,
+			'timestamp'          => $this->timestamp,
+			'url_without_filter' => $url_without_filter,
 		);
 		return $view->make('_shared/filters/date')->render($filter);
 	}

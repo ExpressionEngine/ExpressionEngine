@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class AddonsTest extends TestCase {
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass() : void
 	{
 		require_once(APPPATH.'core/Controller.php');
 	}
@@ -34,7 +34,7 @@ class AddonsTest extends TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('index', 'install', 'manual', 'settings', 'update'), $controller_methods);
+		$this->assertEquals(array('index', 'install', 'manual', 'remove', 'settings', 'update'), $controller_methods);
 	}
 
 }

@@ -171,14 +171,28 @@ class Homepage extends CP_Controller {
 	public function toggleViewmode() {
 		$viewmode = ee()->input->cookie('ee_cp_viewmode');
 
-		// If it doesn't exist, or it's set to jumpmenu, flip the sidebar on.
-		if (empty($viewmode) || $viewmode == 'jumpmenu') {
-			ee()->input->set_cookie('ee_cp_viewmode', 'classic', 99999999);
+		// If it doesn't exist, or it's set to classic, flip the sidebar off.
+		if (empty($viewmode) || $viewmode == 'classic') {
+			$viewmode = 'jumpmenu';
 		} else {
-			ee()->input->set_cookie('ee_cp_viewmode', 'jumpmenu', 99999999);
+			$viewmode = 'classic';
 		}
 
+		ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 99999999);
+
 		ee()->functions->redirect(ee('CP/URL')->make('homepage'));
+	}
+
+	/**
+	 * Toggles the sidebar navigation to/from collapsed state
+	 *
+	 * @return void
+	 */
+	public function toggleSidebarNav() {
+
+		ee()->input->set_cookie('collapsed_nav', (int) ee()->input->get('collapsed'), 99999999);
+
+		ee()->output->send_ajax_response(['success']);
 	}
 
 }

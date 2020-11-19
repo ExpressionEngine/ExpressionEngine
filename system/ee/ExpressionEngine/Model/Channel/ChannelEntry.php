@@ -605,6 +605,11 @@ class ChannelEntry extends ContentModel {
 
 	private function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 
@@ -662,6 +667,10 @@ class ChannelEntry extends ContentModel {
 		$this->usesCustomFields();
 
 		$fields = $this->getCustomFields();
+
+		if (!$this->Channel->sticky_enabled) {
+			unset($fields['sticky']);
+		}
 
 		uasort($fields, function($a, $b) {
 			if ($a->getItem('field_order') == $b->getItem('field_order'))

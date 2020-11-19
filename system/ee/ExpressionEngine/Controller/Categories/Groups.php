@@ -88,7 +88,7 @@ class Groups extends AbstractCategoriesController {
 	 */
 	private function form($group_id = NULL)
 	{
-		$this->generateSidebar();
+		$this->generateSidebar($group_id);
 
 		if (is_null($group_id))
 		{
@@ -251,7 +251,10 @@ class Groups extends AbstractCategoriesController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories'), lang('category_manager'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('categories')->compile() => lang('categories'),
+			'' => is_null($group_id) ? lang('create_category_group') : lang('edit_category_group')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

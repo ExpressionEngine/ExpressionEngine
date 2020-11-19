@@ -51,7 +51,7 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
-			`site_pages` TEXT NOT NULL ,
+			`site_pages` MEDIUMTEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`)
 		)";
@@ -342,8 +342,6 @@ class EE_Schema {
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
-			rte_enabled char(1) NOT NULL DEFAULT 'y',
-			rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
@@ -445,7 +443,7 @@ class EE_Schema {
 		)";
 
 		// Member Custom Fields
-		// Stores the defenition of each field
+		// Stores the definition of each field
 
 		$Q[] = "CREATE TABLE exp_member_fields (
 			m_field_id int(4) unsigned NOT NULL auto_increment,
@@ -520,6 +518,7 @@ class EE_Schema {
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
 			channel_notify_emails varchar(255) NULL DEFAULT NULL,
+			sticky_enabled char(1) NOT NULL default 'n',
 			comment_url varchar(80) NULL DEFAULT NULL,
 			comment_system_enabled char(1) NOT NULL default 'y',
 			comment_require_membership char(1) NOT NULL default 'n',
@@ -1343,7 +1342,7 @@ class EE_Schema {
 			`sort` int(5) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`item_id`),
 			KEY `set_id` (`set_id`)
-			)";
+	  	)";
 
 		$Q[] = "CREATE TABLE `exp_dashboard_layouts` (
   			`layout_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1386,7 +1385,7 @@ class EE_Schema {
 			`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_id` int(10) unsigned NOT NULL,
 			`request` mediumtext,
-			`request_format` tinytext,
+			`request_format` varchar(255) NOT NULL DEFAULT '',
 			`create_date` int(10) NOT NULL DEFAULT '0',
 			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
@@ -1399,7 +1398,7 @@ class EE_Schema {
 			`consent_request_version_id` int(10) unsigned NOT NULL,
 			`member_id` int(10) unsigned NOT NULL,
 			`request_copy` mediumtext,
-			`request_format` tinytext,
+			`request_format` varchar(255) NOT NULL DEFAULT '',
 			`consent_given` char(1) NOT NULL DEFAULT 'n',
 			`consent_given_via` varchar(32) DEFAULT NULL,
 			`expiration_date` int(10) DEFAULT NULL,
@@ -1426,6 +1425,16 @@ class EE_Schema {
 			`value` text,
 			PRIMARY KEY (`config_id`),
 			KEY `site_key` (`site_id`,`key`)
+		);";
+
+		// entry manager
+		$Q[] = "CREATE TABLE `exp_entry_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`channel_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`)
 		);";
 
 		// Default menu set

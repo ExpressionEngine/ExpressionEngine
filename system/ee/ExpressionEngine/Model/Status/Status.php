@@ -125,12 +125,11 @@ class Status extends Model {
 		if ( ! in_array($this->status, array('open', 'closed')) && $this->highlight != '')
 		{
 			$highlight = new Color($this->highlight);
-			$foreground = ($highlight->isLight()) ? $highlight->darken(80) : $highlight->lighten(80);
 
 			$status_component_style = [
-				'background-color' => '#' . $this->highlight,
+				'background-color' => 'var(--ee-bg-blank)',
 				'border-color' => '#' . $this->highlight,
-				'color' => '#' . $foreground,
+				'color' => '#' . $this->highlight,
 			];
 		}
 

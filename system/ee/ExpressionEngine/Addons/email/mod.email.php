@@ -485,8 +485,8 @@ class Email {
 
 		$error = array();
 
-		// Blacklist/Whitelist Check
-		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
+		// Blocked/Allowed List Check
+		if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n')
 		{
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}

@@ -437,7 +437,7 @@ class Grid_lib {
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type, false);
 
 		// We'll store our final values and errors here
 		$final_values = array();
@@ -678,7 +678,9 @@ class Grid_lib {
 			// Check to see if the fieldtype accepts Grid as a content type;
 			// also, temporarily exlcude Relationships for content types
 			// other than channel
-			if ( ! $fieldtype->accepts_content_type('grid') ||
+			if (empty($fieldtype) ||
+				! method_exists($fieldtype, 'accepts_content_type') ||
+				! $fieldtype->accepts_content_type('grid') ||
 				($this->content_type != 'channel' && $field_short_name == 'relationship'))
 			{
 				unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);

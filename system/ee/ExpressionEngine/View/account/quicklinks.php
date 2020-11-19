@@ -1,15 +1,17 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
 <?=form_open($form_url)?>
-	<div class="title-bar">
-		<h2 class="title-bar__title">
+  <div class="panel-heading">
+  <div class="title-bar">
+		<h3 class="title-bar__title">
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
-		</h2>
+		</h3>
 		<?php if (isset($filters)) echo $filters; ?>
 		<div class="title-bar__extra-tools">
-			<a class="button button--small button--action" href="<?=$new?>"><?= lang('create_new') ?></a>
+			<a class="button button--primary" href="<?=$new?>"><?= lang('create_new') ?></a>
 		</div>
 	</div>
+  </div>
 
 
 	<?= $table; ?>
@@ -30,6 +32,7 @@
 		'modal' => true
 	]); ?>
 <?=form_close()?>
+</div>
 
 <?php
 

@@ -246,7 +246,7 @@ class Spam_mcp {
 					'fields' => array(
 						'update_training' => array(
 							'type' => 'html',
-							'content' => "<a class='btn tn action update' href='" . ee('CP/URL', 'addons/settings/spam/') . "'>" .  lang('update_training') . "</a>"
+							'content' => "<a class='button button--secondary tn update' href='" . ee('CP/URL', 'addons/settings/spam/') . "'>" .  lang('update_training') . "</a>"
 						)
 					)
 				),

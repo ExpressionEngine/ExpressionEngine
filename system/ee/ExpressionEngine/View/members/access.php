@@ -1,13 +1,14 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
-
+<div class="panel">
 <?=form_open($base_url, 'class="tbl-ctrls"')?>
-
+<div class="panel-heading">
 <div class="app-notice-wrap">
 	<?=ee('CP/Alert')->getAllInlines()?>
 </div>
 
 <div class="title-bar">
 	<?php if (isset($filters)) echo $filters; ?>
+</div>
 </div>
 
 <?php $i = 0; ?>
@@ -65,3 +66,4 @@
 </div>
 
 </form>
+</div>

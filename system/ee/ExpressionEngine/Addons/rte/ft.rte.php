@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,163 +9,695 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-/**
- * Rich Text Fieldtype
- */
-class Rte_ft extends EE_Fieldtype {
+use ExpressionEngine\Addons\Rte\RteHelper;
 
-	var $info = array(
-		'name'		=> 'Rich Text Editor',
-		'version'	=> '1.0.1'
-	);
+class Rte_ft extends EE_Fieldtype
+{
+    public $has_array_data = true;
 
-	var $has_array_data = FALSE;
+    public $entry_manager_compatible = true;
 
-	/**
-	 * Accept all content types.
-	 *
-	 * @param string  The name of the content type
-	 * @return bool   Accepts all content types
-	 */
-	public function accepts_content_type($name)
-	{
-		return TRUE;
-	}
+    public $info = [
+        'name' => 'Rich Text Editor',
+        'version' => '2.0.0'
+    ];
 
-	function validate($data)
-	{
-		ee()->load->library('rte_lib');
 
-		if (($this->settings['field_required'] === TRUE || $this->settings['field_required'] === 'y') && ee()->rte_lib->is_empty($data))
-		{
-			return lang('required');
-		}
+    /**
+     * Implements EntryManager\ColumnInterface
+     */
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $out = strip_tags(str_replace('&nbsp;', ' ', $this->replace_excerpt($data, [])));
+        if (strlen($out) > 255) {
+            $out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
+        }
+        return html_entity_decode($out);
+    }
 
-		return TRUE;
-	}
+    // --------------------------------------------------------------------
 
-	function display_field($data)
-	{
-		ee()->load->library('rte_lib');
+    /**
+     * Display Field Settings.
+     *
+     * @param  $settings
+     *
+     * @return array $formFields Ready to be used in the EE Shared Form View
+     */
+    public function display_settings($settings)
+    {
+        $settings = $this->_fieldSettings($settings);
 
-		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings);
-	}
+        return array(
+            'field_options_rte' => array(
+                'label' => 'field_options',
+                'group' => 'rte',
+                'settings' => $settings
+            )
+        );
+    }
 
-	function grid_display_field($data)
-	{
-		ee()->load->library('rte_lib');
+    /**
+     * Display Grid cell settings.
+     *
+     * @param  $settings
+     *
+     * @return array $formFields Ready to be used in the EE Shared Form View
+     */
+    public function grid_display_settings($settings)
+    {
+        return array('field_options' => $this->_fieldSettings($settings));
+    }
 
-		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
-	}
+    // --------------------------------------------------------------------
 
-	function save($data)
-	{
-		ee()->load->library('rte_lib');
+    /**
+     * Save Field Settings.
+     *
+     * @param @settings
+     *
+     * @return array $settings
+     */
+    public function save_settings($settings)
+    {
+        $settings = ee('Request')->post('rte');
 
-		return ee()->rte_lib->save_field($data);
-	}
+        // Give it the full width
+        $settings['field_wide'] = true;
 
-	function replace_tag($data, $params = '', $tagdata = '')
-	{
-		// Experimental parameter, do not use
-		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
-		{
-			return ee()->functions->encode_ee_tags($data);
-		}
+        $settings['field_fmt'] = 'none';
+        $settings['field_show_fmt'] = 'n';
 
-		if (ee('LivePreview')->hasEntryData())
-		{
-			$entry_data = ee('LivePreview')->getEntryData();
+        return $settings;
+    }
 
-			if ($entry_data['entry_id'] == $this->content_id)
-			{
-				$data = $this->save($data);
-			}
-		}
+    /**
+     * Save Grid cell settings.
+     *
+     * @param @settings
+     *
+     * @return array $settings
+     */
+    public function grid_save_settings($settings)
+    {
+        $settings = $settings['rte'];
 
-		ee()->load->library('typography');
-		$str = ee()->typography->parse_type(
-			ee()->functions->encode_ee_tags(
-				ee()->typography->parse_file_paths($data)
-			),
-			array(
-				'text_format'	=> 'xhtml',
-				'html_format'	=> $this->row('channel_html_formatting', 'all'),
-				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
-				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
-			)
-		);
+        return $settings;
+    }
 
-		// remove non breaking spaces. typography likes to throw those
-		// in when a list is indented.
-		return str_replace('&nbsp;', ' ', $str);
-	}
+    /**
+     * Modify DB column
+     *
+     * @param Array $data
+     * @return Array
+     */
+    public function settings_modify_column($data)
+    {
+        return $this->get_column_type($data);
+    }
 
-	function display_settings($data)
-	{
-		$settings = array(
-			array(
-				'title' => 'textarea_height',
-				'desc' => 'textarea_height_desc',
-				'fields' => array(
-					'field_ta_rows' => array(
-						'type' => 'text',
-						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
-					)
-				)
-			),
-			array(
-				'title' => 'field_text_direction',
-				'fields' => array(
-					'field_text_direction' => array(
-						'type' => 'radio',
-						'choices' => array(
-							'ltr' => lang('field_text_direction_ltr'),
-							'rtl' => lang('field_text_direction_rtl')
-						),
-						'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr',
-					)
-				)
-			)
-		);
+    /**
+     * Modify DB grid column
+     *
+     * @param array $data The field data
+     * @return array  [column => column_definition]
+     */
+    public function grid_settings_modify_column($data)
+    {
+        return $this->get_column_type($data, true);
+    }
 
-		if ($this->content_type() == 'grid')
-		{
-			return array('field_options' => $settings);
-		}
+    /**
+     * Helper method for column definitions
+     *
+     * @param array $data The field data
+     * @param bool  $grid Is grid field?
+     * @return array  [column => column_definition]
+     */
+    protected function get_column_type($data, $grid = false)
+    {
+        $column = ($grid) ? 'col' : 'field';
 
-		return array('field_options_rte' => array(
-			'label' => 'field_options',
-			'group' => 'rte',
-			'settings' => $settings
-		));
-	}
+        $settings = ($grid) ? $data : $data[$column . '_settings'];
+        $field_content_type = isset($settings['db_column_type']) ? $settings['db_column_type'] : 'text';
 
-	function save_settings($data)
-	{
-		return array(
-			'field_show_fmt' => 'n',
-			'field_ta_rows' => isset($data['field_ta_rows']) ? $data['field_ta_rows'] : 6
-		);
-	}
+        $fields = [
+            $column . '_id_' . $data[$column . '_id'] => [
+                'type' => $field_content_type,
+                'null' => true
+            ]
+        ];
 
-	function grid_save_settings($data)
-	{
-		return $data;
-	}
+        return $fields;
+    }
 
-	/**
-	 * Update the fieldtype
-	 *
-	 * @param string $version The version being updated to
-	 * @return boolean TRUE if successful, FALSE otherwise
-	 */
-	public function update($version)
-	{
-		return TRUE;
-	}
+    // --------------------------------------------------------------------
+
+    /**
+     * Display the field.
+     *
+     * @param string $data field data
+     *
+     * @return string $field
+     */
+    public function display_field($data)
+    {
+        RteHelper::includeFieldResources();
+        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+
+        $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
+        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? true : false;
+
+        if (strpos($id, '_new_') === false) {
+            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
+        }
+
+        // pass the data through form_prep() if this is Channel Form
+        if (REQ == 'PAGE') {
+            $data = form_prep($data, $this->field_name);
+        }
+
+        // convert file tags to URLs
+        RteHelper::replaceFileTags($data);
+
+        // convert site page tags to URLs
+        RteHelper::replacePageTags($data);
+
+        //Third party conversion
+        RteHelper::replaceExtraTags($data);
+
+        if (ee()->extensions->active_hook('rte_before_display')) {
+            $data = ee()->extensions->call('rte_before_display', $this, $data);
+        }
+
+        ee()->load->helper('form');
+
+        $field = array(
+            'name' => $this->field_name,
+            'value' => $data,
+            'id' => $id,
+            'rows' => 10,
+            'data-config' => $configHandle,
+            'class' => 'rte-textarea',
+            'data-defer' => ($defer ? 'y' : 'n')
+        );
+        return form_textarea($field);
+    }
+
+    /**
+     * Display the field in a Grid cell
+     *
+     * @param string $data field data
+     *
+     * @return string $field
+     */
+    public function grid_display_field($data)
+    {
+        RteHelper::includeFieldResources();
+        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+
+        // get the cache
+        if (! isset(ee()->session->cache['rte'])) {
+            ee()->session->cache['rte'] = array();
+        }
+        $cache =& ee()->session->cache['rte'];
+
+        if (! isset($cache['displayed_grid_cols'])) {
+            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/grid.js"></script>');
+            $cache['displayed_grid_cols'] = array();
+        }
+
+        if (! isset($cache['displayed_grid_cols'][$this->settings['col_id']])) {
+            $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
+
+            ee()->javascript->output('Rte.gridColConfigs.col_id_' . $this->settings['col_id'] . ' = ["' . $configHandle . '", ' . $defer . '];');
+
+            $cache['displayed_grid_cols'][$this->settings['col_id']] = true;
+        }
+
+        // convert file tags to URLs
+        RteHelper::replaceFileTags($data);
+
+        // convert asset tags to URLs
+        RteHelper::replaceExtraTags($data);
+
+        // convert site page tags to URLs
+        RteHelper::replacePageTags($data);
+
+        if (ee()->extensions->active_hook('rte_before_display')) {
+            $data = ee()->extensions->call('rte_before_display', $this, $data);
+        }
+
+        ee()->load->helper('form');
+
+        $field = array(
+            'name' => $this->field_name,
+            'value' => $data,
+            'rows' => 10,
+            'data-config' => $configHandle
+        );
+        return form_textarea($field);
+    }
+
+    /**
+     * Display the field for Low Variables
+     *
+     * @param mixed $data field data
+     *
+     * @return string $field
+     */
+    public function var_display_field($data)
+    {
+        // Low Variables doesn't mix in the fieldtype's global settings,
+        // so we'll do it manually here
+        $this->settings = array_merge($this->settings, RteHelper::getGlobalSettings());
+
+        return $this->display_field($data);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Validate the posted data.
+     *
+     * @param mixed $data
+     *
+     * @return mixed $result Error message in case of failed validation.
+     */
+    public function validate($data)
+    {
+        // is this a required field?
+        if ($this->settings['field_required'] == 'y' && ! $data) {
+            return lang('required');
+        }
+
+        return true;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Save the field.
+     *
+     * @param string $data
+     *
+     * @return string $data
+     */
+    public function save($data)
+    {
+        // Trim out any whitespace/empty tags
+        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', $data);
+        $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', $data);
+
+        // Remove any ?cachebuster:X query strings
+        $data = preg_replace('/\?cachebuster:\d+/', '', $data);
+
+        // Entitize curly braces within codeblocks
+        $data = preg_replace_callback('/<code>(.*?)<\/code>/s', function ($matches) {
+            return str_replace(array("{","}"), array("&#123;","&#125;"), $matches[0]);
+        }, $data);
+
+        // Remove Firebug 1.5.2+ div
+        $data = preg_replace('/<div firebugversion=(.|\t|\n|\s)*<\\/div>/', '', $data);
+
+        // Decode double quote entities (&quot;)
+        //  - Eventually CKEditor will stop converting these in the first place
+        //    http://dev.ckeditor.com/ticket/6645
+        $data = str_replace('&quot;', '"', $data);
+
+        // Convert file URLs to tags
+        RteHelper::replaceFileUrls($data);
+
+        // Convert page URLs to tags
+        RteHelper::replacePageUrls($data);
+
+        if (ee()->extensions->active_hook('rte_before_save')) {
+            $data = ee()->extensions->call('rte_before_save', $this, $data);
+        }
+
+        return $data;
+    }
+
+    public function save_cell($data)
+    {
+        return $this->save($data);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Pre-process the data before displaying.
+     *
+     * @param string $data
+     *
+     * @return string $data
+     */
+    public function pre_process($data)
+    {
+        $entrySiteId = (isset($this->row['entry_site_id']) ? $this->row['entry_site_id'] : null);
+
+        // convert file tags to URLs
+        RteHelper::replaceFileTags($data);
+
+        // convert site page tags to URLs
+        RteHelper::replacePageTags($data, $entrySiteId);
+
+        // convert asset tags to URLs
+        RteHelper::replaceExtraTags($data);
+
+        ee()->load->library('typography');
+
+        $tmp_encode_email = ee()->typography->encode_email;
+        ee()->typography->encode_email = false;
+
+        $tmp_convert_curly = ee()->typography->convert_curly;
+        ee()->typography->convert_curly = false;
+
+        $data = ee()->typography->parse_type($data, array(
+            'text_format'   => 'none',
+            'html_format'   => 'all',
+            'auto_links'    => (isset($this->row['channel_auto_link_urls']) ? $this->row['channel_auto_link_urls'] : 'n'),
+            'allow_img_url' => (isset($this->row['channel_allow_img_urls']) ? $this->row['channel_allow_img_urls'] : 'y')
+        ));
+
+        ee()->typography->encode_email = $tmp_encode_email;
+        ee()->typography->convert_curly = $tmp_convert_curly;
+
+        // use normal quotes
+        $data = str_replace('&quot;', '"', $data);
+
+        return $data;
+    }
+
+    /**
+     * Replace the {fieldname} tag in template.
+     *
+     * @param string $data field data
+     * @param array  $params field parameters
+     * @param string $tagdata template data
+     *
+     * @return string $data parsed template data
+     */
+    public function replace_tag($data, $params = array(), $tagdata = false)
+    {
+        // return images only?
+        if (isset($params['images_only']) && $params['images_only'] == 'yes') {
+            $data = $this->_parseImages($data, $params, $tagdata);
+        } elseif (isset($params['text_only']) && $params['text_only'] == 'yes') {
+            // Text only?
+            // Strip out the HTML tags
+            $data = preg_replace('/<[^<]+?>/', '', $data);
+        } else {
+            // Remove images?
+            if (isset($params['remove_images']) && $params['remove_images'] == 'yes') {
+                $data = preg_replace('/<img(.*)>/Ums', '', $data);
+            }
+        }
+
+        if (ee()->extensions->active_hook('rte_before_replace')) {
+            $data = ee()->extensions->call('rte_before_replace', $this, $data);
+        }
+
+        // convert file tags to URLs
+        RteHelper::replaceFileTags($data);
+
+        // convert site page tags to URLs
+        RteHelper::replacePageTags($data);
+
+        // convert asset tags to URLs
+        RteHelper::replaceExtraTags($data);
+
+        // added 01/15/2018 for additional transcribe support
+        if (ee()->extensions->active_hook('rte_before_replace_end')) {
+            $data = ee()->extensions->call('rte_before_replace_end', $this, $data);
+        }
+
+        return $data;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Replace the {fieldname:has_excerpt} tag.
+     *
+     * @param string $data field data
+     *
+     * @return string $result 'y'|''
+     */
+    public function replace_has_excerpt($data)
+    {
+        return (strpos($data, '<div class="readmore') !== false) ? 'y' : '';
+    }
+
+    /**
+     * Replace the {fieldname:excerpt} tag.
+     *
+     * @param string $data field data
+     * @param array  $params field parameters
+     *
+     * @return string $data The excerpt
+     */
+    public function replace_excerpt($data, $params)
+    {
+        if (($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
+            $data = substr($data, 0, $read_more_tag_pos);
+        }
+
+        return $this->replace_tag($data, $params);
+    }
+
+    /**
+     * Replace Extended Tag
+     *
+     * @param string $data field data
+     * @param array  $params field parameters
+     *
+     * @return string $data The part after the excerpt
+     */
+    public function replace_extended($data, $params)
+    {
+        if (($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
+            $data = substr($data, $read_more_tag_pos);
+        } else {
+            $data = '';
+        }
+
+        return $this->replace_tag($data, $params);
+    }
+
+    /**
+     * Display Low Variable field value.
+     *
+     * @param string $data field data
+     *
+     * @return string $data
+     */
+    public function var_display_tag($data)
+    {
+        return $this->replace_tag($this->pre_process($data));
+    }
+
+    /**
+     * Returns true if content type is accepted.
+     *
+     * @param string $name
+     *
+     * @return bool $result
+     */
+    public function accepts_content_type($name)
+    {
+        return true;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Returns field settings as array of form fields ready for EE Shared Form View.
+     *
+     * @param array $settings pre-existing setting values
+     *
+     * @return array $formFields
+     */
+    private function _fieldSettings($settings)
+    {
+        $settings = array_merge([
+            'toolset_id' => ee()->config->item('rte_default_toolset'),
+            'defer'     => 'n'
+        ], $settings);
+
+        // load the language file
+        ee()->lang->loadfile('rte');
+
+        $configModels = ee('Model')->get('rte:Toolset')->all();
+        $configOptions = array();
+        foreach ($configModels as $model) {
+            $configOptions[$model->toolset_id] = $model->toolset_name;
+        }
+
+        if (!empty($configOptions)) {
+            $configFields = array(
+                'rte[toolset_id]' => array(
+                    'type'    => 'select',
+                    'choices' => $configOptions,
+                    'value'   => $settings['toolset_id']
+                ),
+                array(
+                    'type'    => 'html',
+                    'content' => '(<a href="' . ee('CP/URL')->make('addons/settings/rte')->compile() . '">' . lang('rte_edit_configs') . '</a>)'
+                )
+            );
+        } else {
+            $configFields = array(
+                array(
+                    'type'    => 'html',
+                    'content' => '<a href="' . ee('CP/URL')->make('addons/settings/rte/edit_toolset')->compile() . '">' . lang('rte_create_config') . '</a>'
+                )
+            );
+        }
+
+        $settings = array(
+            array(
+                'title' => lang('rte_editor_config'),
+                'fields' => $configFields
+            ),
+            array(
+                'title' => lang('rte_defer'),
+                'fields' => array(
+                    'rte[defer]' => array(
+                        'type' => 'yes_no',
+                        'value' => (isset($settings['defer']) && $settings['defer'] == 'y') ? 'y' : 'n'
+                    )
+                )
+            ),
+            array(
+                'title' => 'db_column_type',
+                'desc' => 'db_column_type_desc',
+                'fields' => array(
+                    'rte[db_column_type]' => array(
+                        'type' => 'radio',
+                        'choices' => [
+                            'text' => lang('TEXT'),
+                            'mediumtext' => lang('MEDIUMTEXT')
+                        ],
+                        'value' => isset($settings['db_column_type']) ? $settings['db_column_type'] : 'text'
+                    )
+                )
+            )
+        );
+
+        return $settings;
+    }
+
+    /**
+     * Return just the information about images in the field data.
+     *
+     * @param string $data field data
+     * @param array  $params field parameters
+     * @param string $tagdata template string
+     *
+     * @return string $html resulting template string
+     */
+    private function _parseImages($data, $params, $tagdata)
+    {
+        $images = array();
+
+        if ($tagdata) {
+            $p = !empty($params['var_prefix']) ? rtrim($params['var_prefix'], ':') . ':' : '';
+        }
+
+        // find all the image tags
+        preg_match_all('/<img(.*)>/Ums', $data, $img_matches, PREG_SET_ORDER);
+
+        foreach ($img_matches as $i => $img_match) {
+            if ($tagdata) {
+                $img = array();
+
+                // find all the attributes
+                preg_match_all('/\s([\w-]+)=([\'"])([^\2]*?)\2/', $img_match[1], $attr_matches, PREG_SET_ORDER);
+
+                foreach ($attr_matches as $attr_match) {
+                    $img[$p . $attr_match[1]] = $attr_match[3];
+                }
+
+                // ignore image if it doesn't have a source
+                if (empty($img[$p . 'src'])) {
+                    continue;
+                }
+
+                // find all the styles
+                if (! empty($img[$p . 'style'])) {
+                    $styles = array_filter(explode(';', trim($img[$p . 'style'])));
+
+                    foreach ($styles as $style) {
+                        $style = explode(':', $style, 2);
+                        $img[$p . 'style:' . trim($style[0])] = trim($style[1]);
+                    }
+                }
+
+                // use the width and height styles if they're set
+                if (! empty($img[$p . 'style:width']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p . 'style:width'], $width_match)) {
+                    $img[$p . 'width'] = $width_match[1];
+                    if ($width_match[2] == '%') {
+                        $img[$p . 'width'] .= '%';
+                    }
+                }
+
+                if (! empty($img[$p . 'style:height']) && preg_match('/(\d+?\.?\d+)(px|%)/', $img[$p . 'style:height'], $height_match)) {
+                    $img[$p . 'height'] = $height_match[1];
+                    if ($height_match[2] == '%') {
+                        $img[$p . 'height'] .= '%';
+                    }
+                }
+
+                $images[] = $img;
+            } else {
+                $images[] = $img_match[0];
+            }
+        }
+
+        // ignore if there were no valid images
+        if (! $images) {
+            return;
+        }
+
+        if ($tagdata) {
+            // get the absolute number of files before we run the filters
+            $constants[$p . 'absolute_total_images'] = (!empty($images) ? count($images) : 0);
+        }
+
+        // offset and limit params
+        if (isset($params['offset']) || isset($params['limit'])) {
+            $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
+            $limit  = isset($params['limit'])  ? (int) $params['limit']  : (!empty($images) ? count($images) : 0);
+
+            $images = array_splice($images, $offset, $limit);
+        }
+
+        // ignore if there are no post-filter images
+        if (! $images) {
+            return;
+        }
+
+        if ($tagdata) {
+            // get the filtered number of files
+            $constants[$p . 'total_images'] = (!empty($images) ? count($images) : 0);
+
+            // parse {total_images} and {absolute_total_images} first, since they'll never change
+            $tagdata = ee()->TMPL->parse_variables_row($tagdata, $constants);
+
+            // now parse all
+            $r = ee()->TMPL->parse_variables($tagdata, $images);
+        } else {
+            $delimiter = isset($params['delimiter']) ? $params['delimiter'] : '<br />';
+            $r = implode($delimiter, $images);
+        }
+
+        // backspace param
+        if (!empty($params['backspace'])) {
+            $chop = strlen($r) - $params['backspace'];
+            $r = substr($r, 0, $chop);
+        }
+
+        return $r;
+    }
 }
-
-// END Rte_ft class
-
-// EOF

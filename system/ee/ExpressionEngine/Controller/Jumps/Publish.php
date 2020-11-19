@@ -108,6 +108,10 @@ class Publish extends Jumps
 
 	private function loadChannels($searchString = false, $can_create = false)
 	{
+		if (empty(ee()->functions->fetch_assigned_channels())) {
+			return [];
+		}
+		
 		$channels = ee('Model')->get('Channel')
 			->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
 

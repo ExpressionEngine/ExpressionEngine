@@ -98,8 +98,7 @@ class Notifications {
 		// parse {base_url}, etc.
 		$overrides = ee()->config->get_cached_site_prefs($comment->site_id);
 		$path = parse_config_variables($path, $overrides);
-
-		$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
+		$action_id  = ee()->functions->fetch_action_id('Comment', 'comment_subscribe');
 
 		$filtered_cp_link = ee('CP/URL')->make('publish/comments', ['comment_id' => $comment->comment_id], ee()->config->item('cp_url'));
 
@@ -119,7 +118,7 @@ class Notifications {
 			'location'     => $comment->location,
 			'name'         => $comment->name,
 			'name_of_commenter' => $comment->name,
-			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription_id}&hash={hash}',
+			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$comment->entry_id.'&hash={hash}&type=unsubscribe',
 			'site_name'    => stripslashes(ee()->config->item('site_name')),
 			'site_url'     => ee()->config->item('site_url'),
 			'url'          => $comment->url,

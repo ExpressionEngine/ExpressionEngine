@@ -8,10 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+use ExpressionEngine\Library\CP\Table;
+
 /**
  * Relationship Fieldtype
  */
-class Relationship_ft extends EE_Fieldtype {
+class Relationship_ft extends EE_Fieldtype implements ColumnInterface {
 
 	public $info = array(
 		'name'		=> 'Relationships',
@@ -1026,6 +1029,49 @@ class Relationship_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function getTableColumnConfig() {
+		return [
+			'encode'	=> false,
+			'type'	=> Table::COL_INFO
+		];
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		$links = [];
+
+		if ($entry && $field_id) {
+			$wheres = array(
+				'parent_id'     => $entry->getId(),
+				'field_id'      => $field_id,
+				'grid_col_id'   => 0,
+				'grid_field_id' => 0,
+				'grid_row_id'   => 0,
+				'fluid_field_data_id' => 0
+			);
+			$related = ee()->db
+				->select('entry_id, title, channel_id, author_id, order')
+				->from($this->_table)
+				->join('channel_titles', 'channel_titles.entry_id=' . $this->_table . '.child_id', 'left')
+				->where($wheres)
+				->order_by('order')
+				->get();
+
+			foreach ($related->result() as $row) {
+				$title = ee('Format')->make('Text', $row->title)->convertToEntities();
+
+				if ((ee('Permission')->can('edit_other_entries_channel_id_' . $row->channel_id)
+					|| (ee('Permission')->can('edit_self_entries_channel_id_' . $row->channel_id) &&
+					$row->author_id == ee()->session->userdata('member_id'))))
+				{
+					$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $row->entry_id);
+					$title = '<a href="' . $edit_link . '">' . $title . '</a>';
+				}
+				$links[] = $title;
+			}
+		}
+		return implode('<br />', $links);
 	}
 }
 

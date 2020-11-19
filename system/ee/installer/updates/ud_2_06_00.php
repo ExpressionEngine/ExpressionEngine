@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_2_6_0;
+
 /**
  * Update
  */
@@ -31,7 +33,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_add_template_name_to_dev_log',
 				'_drop_dst',
@@ -420,13 +422,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	{
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->set('template', new Installer_Template());
+		ee()->set('template', new \Installer_Template());
 
 		// Since we don't have consistent destructors,
 		// we'll keep this here.
 		$installer_config = ee()->config;
 		ee()->remove('config');
-		ee()->set('config', new MSM_Config());
+		ee()->set('config', new \MSM_Config());
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.

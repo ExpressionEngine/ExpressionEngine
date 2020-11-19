@@ -60,13 +60,15 @@ class Buttons extends Settings {
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
 					'title' => lang($button->tag_name),
+		  'class' => 'button button--default button--small',
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => strtolower(lang('edit'))
+					'title' => strtolower(lang('edit')),
+		  'class' => 'button button--default button--small'
 				)
 			));
 
@@ -144,6 +146,9 @@ class Buttons extends Settings {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('html_buttons');
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('html_buttons')
+		);
 		ee()->cp->render('account/buttons', $data);
 	}
 
@@ -178,7 +183,10 @@ class Buttons extends Settings {
 
 		$vars['cp_page_title'] = lang('create_html_button');
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings/buttons')->compile() => lang('html_buttons'),
+			'' => lang('create_html_button')
+		);
 
 		$this->form($vars, $values);
 	}
@@ -200,7 +208,10 @@ class Buttons extends Settings {
 
 		$this->button = ee('Model')->get('HTMLButton', $id)->first();
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('settings/buttons')->compile() => lang('html_buttons'),
+			'' => lang('edit_html_button')
+		);
 
 		$this->form($vars, $this->button->getValues());
 	}

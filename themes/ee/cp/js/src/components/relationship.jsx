@@ -169,7 +169,7 @@ class Relationship extends React.Component {
             return notInSelected && allowedChannel && filterName
         })
 
-        let showAddButton = ((this.props.limit > this.state.selected.length) && this.props.can_add_items)
+        let showAddButton = ((this.props.limit > this.state.selected.length) && (this.props.multi || this.state.selected.length==0))
 
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
@@ -194,7 +194,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-fw fa-trash-alt"></i></button>
+                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fas fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -215,13 +215,13 @@ class Relationship extends React.Component {
                 }
 
                 <div style={{display: showAddButton ? 'block' : 'none' }}>
-				<button type="button" className="js-dropdown-toggle button button--secondary-alt"><i class="fas fa-plus icon-left"></i> {EE.relationship.lang.relateEntry}</button>
+				<button type="button" className="js-dropdown-toggle button button--default"><i class="fas fa-plus icon-left"></i> {EE.relationship.lang.relateEntry}</button>
                     <div className="dropdown js-dropdown-auto-focus-input">
                         <div className="dropdown__search d-flex">
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
+                                        <input type="text" class="search-input__input input--small" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
                                 <div className="filter-bar__item">
@@ -233,13 +233,14 @@ class Relationship extends React.Component {
                                         buttonClass="filter-bar__button"
                                     />
                                 </div>
+                                {this.props.can_add_items &&
                                 <div className="filter-bar__item">
                                     {props.channels.length == 1 &&
-                                    <button type="button" className="button button--primary" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
+                                    <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary">New Entry <i class="fas fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fas fa-caret-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (
@@ -250,6 +251,7 @@ class Relationship extends React.Component {
                                     </div>
                                     }
                                 </div>
+                                }
                             </div>
                         </div>
 
@@ -257,7 +259,7 @@ class Relationship extends React.Component {
                         {
                             dropdownItems.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="float-right meta-info">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

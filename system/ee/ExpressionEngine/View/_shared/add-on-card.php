@@ -8,20 +8,20 @@
 		<h2 class="add-on-card__title"><?= $addon['name'] ?> <span class="add-on-card__title-version"><?= $addon['version'] ?></span></h2>
 
 		<?php if (!empty($addon['description'])): ?>
-		<p class="add-on-card__desc"><?= $addon['description'] ?></p>
+		<p class="add-on-card__desc" title="<?= $addon['description'] ?>"><?= $addon['description'] ?></p>
 		<?php endif; ?>
 	</div>
 
 	<?php if (!$addon['installed']) : ?>
 	<div class="add-on-card__button">
-		<a href="" data-post-url="<?= $addon['install_url'] ?>" class="button button--primary"><?= lang('install') ?></a>
+		<a href="" data-post-url="<?= $addon['install_url'] ?>" class="button button--primary button--small"><?= lang('install') ?></a>
 	</div>
 	<?php else: ?>
 
 	<?php if (isset($addon['update']) && !empty($show_updates)) : ?>
 		<div class="add-on-card__button">
-		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary">
-			<?php echo sprintf(lang('update_to_version'), $addon['update']); ?>
+		<a href="" data-post-url="<?=$addon['update_url']?>" class="button button--primary button--small">
+			<?php echo sprintf(lang('update_to_version'), '<br />' . $addon['update']); ?>
 		</a>
 		</div>
 	<?php endif; ?>
@@ -40,7 +40,7 @@
 		<?php endif; ?>
 
 		<?php if (ee('Permission')->hasAll('can_admin_addons') && $addon['installed']) : ?>
-			<a class="dropdown__link dropdown__link--danger" href="" data-post-url="<?= $addon['remove_url'] ?>"><?= lang('uninstall') ?></a>
+			<a class="dropdown__link dropdown__link--danger m-link" href="" rel="modal-confirm-remove" data-action-url="<?= $addon['remove_url'] ?>" data-confirm="<?= $addon['name'] ?>"><?= lang('uninstall') ?></a>
 		<?php endif; ?>
 	</div>
 

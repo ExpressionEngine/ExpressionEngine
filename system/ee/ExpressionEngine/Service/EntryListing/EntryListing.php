@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2020, Pack et Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,6 +14,7 @@ use Serializable;
 use BadMethodCallException;
 use InvalidArgumentException;
 use ExpressionEngine\Service\View\View;
+use ExpressionEngine\Library\CP\EntryManager;
 
 /**
  * CP Entry Listing Service
@@ -57,9 +58,24 @@ class EntryListing {
 	protected $allowed_channels;
 
 	/**
-	 * @var boolean $include_author_filter Whether this user can edit others' entries
+	 * @var array $extra_filters More filters to include
 	 */
-	protected $include_author_filter;
+	protected $extra_filters;
+
+	/**
+	 * @var boolean $include_views_filter Whether to include the views selector on the entry manager
+	 */
+	protected $include_views_filter;
+
+	/**
+	 * @var boolean $include_column_filter Whether to include the column selector on the entry manager
+	 */
+	protected $include_column_filter;
+
+	/**
+	 * @var int $view ID of the Entry Listing view to use
+	 */
+	protected $view_id;
 
 	/**
 	 * @var int $now Timestamp of current time, used to filter entries by date
@@ -72,7 +88,7 @@ class EntryListing {
 	protected $search_in;
 
 	/**
-	 * @var string $search_value Search critera to filter entries by
+	 * @var string $search_value Search criteria to filter entries by
 	 */
 	protected $search_value;
 
@@ -98,10 +114,10 @@ class EntryListing {
 	 * request, skips $allowed_channels check
 	 * @param array $allowed_channels IDs of channels this user is allowed to access
 	 * @param int $now Timestamp of current time, used to filter entries by date
-	 * @param string $search_value Search critera to filter entries by
+	 * @param string $search_value Search criteria to filter entries by
 	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE)
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE, $view_id = NULL, $extra_filters = [])
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
@@ -109,7 +125,11 @@ class EntryListing {
 		$this->now = $now;
 		$this->search_value = $search_value;
 		$this->search_in = $search_in;
-		$this->include_author_filter = $include_author_filter;
+		$this->extra_filters = $extra_filters;
+		$this->view_id = $view_id;
+		if ($include_author_filter && !in_array('Author', $this->extra_filters)) {
+			$this->extra_filters[] = 'Author';
+		}
 
 		$this->setupFilters();
 		$this->setupEntries();
@@ -185,20 +205,30 @@ class EntryListing {
 			->add($this->category_filter)
 			->add($this->status_filter)
 			->add('Date')
-			->add('Keyword')
+			->add('EntryKeyword')
 			->add('SearchIn', [
-					'titles' => lang('titles'),
-					'content' => lang('content'),
-					'titles_and_content' => lang('titles_and_content'),
+				'titles' => 'titles',
+				'titles_and_content' => 'titles_and_content',
 				],
 				$this->search_in
 			);
 
-			if ($this->include_author_filter)
-			{
-				$this->author_filter = $this->createAuthorFilter($channel);
-				$this->filters->add($this->author_filter);
-			}
+		if (in_array('Author', $this->extra_filters)) {
+			$this->author_filter = $this->createAuthorFilter($channel);
+			$this->filters->add($this->author_filter);
+		}
+
+		if (in_array('Columns', $this->extra_filters)) {
+			$this->filters->add('Columns', $this->createColumnFilter($channel), $channel, $this->view_id);
+		}
+	}
+
+	/**
+	 * Add extra filters
+	 */
+	public function addFilter(string $filter, $args = null)
+	{
+		$this->filters->add($filter, $args);
 	}
 
 	/**
@@ -208,11 +238,37 @@ class EntryListing {
 	protected function setupEntries()
 	{
 		$entries = ee('Model')->get('ChannelEntry')
-			->with('Channel', 'Author')
-			->fields('entry_id', 'title', 'Author.screen_name', 'Author.username', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'author_id', 'comment_total', 'entry_date', 'status')
+			->with('Autosaves', 'Channel')
+			->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status')
 			->filter('site_id', $this->site_id);
 
-		// We need to filter by Channel first (if necissary) as that will
+		if (in_array('Columns', $this->extra_filters)) {
+			$columns = array_map(function($identifier) {
+				return EntryManager\ColumnFactory::getColumn($identifier);
+			}, $this->filters->values()['columns']);
+			foreach ($columns as $column) {
+				if (!empty($column)) {
+					if (!empty($column->getEntryManagerColumnModels())) {
+						foreach ($column->getEntryManagerColumnModels() as $with) {
+							if (!empty($with)) {
+								$entries->with($with);
+							}
+						}
+					}
+					if (!empty($column->getEntryManagerColumnFields())) {
+						foreach ($column->getEntryManagerColumnFields() as $field) {
+							if (!empty($field)) {
+								$entries->fields($field);
+							}
+						}
+					} else {
+						$entries->fields($column->getTableColumnIdentifier());
+					}
+				}
+			}
+		}
+
+		// We need to filter by Channel first (if necessary) as that will
 		// impact the entry count for the perpage filter
 		$channel_id = $this->channel_filter->value();
 
@@ -321,8 +377,6 @@ class EntryListing {
 			}
 		}
 
-		$entries->with('Autosaves', 'Author', 'Channel');
-
 		$this->entries = $entries;
 	}
 
@@ -360,12 +414,22 @@ class EntryListing {
 
 		$author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
 		$author_filter->setPlaceholder(lang('filter_authors'));
+		$author_filter->setLabel(lang('author'));
 		$author_filter->useListFilter();
 		return $author_filter;
 	}
 
 	/**
-	 * Creates a channel fllter
+	 * Creates a column filter
+	 */
+	private function createColumnFilter($channel = NULL)
+	{
+		// Gather data for column selection tool
+		return $this->getColumnChoices(EntryManager\ColumnFactory::getAvailableColumns($channel));
+	}
+
+	/**
+	 * Creates a channel filter
 	 */
 	public function createChannelFilter()
 	{
@@ -374,6 +438,7 @@ class EntryListing {
 
 		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->setPlaceholder(lang('filter_channels'));
+		$channel_filter->setLabel(lang('channel'));
 		$channel_filter->useListFilter(); // disables custom values
 		return $channel_filter;
 	}
@@ -397,7 +462,7 @@ class EntryListing {
 	}
 
 	/**
-	 * Creates a category fllter
+	 * Creates a category filter
 	 */
 	private function createCategoryFilter($channel = NULL)
 	{
@@ -421,12 +486,13 @@ class EntryListing {
 
 		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
 		$categories->setPlaceholder(lang('filter_categories'));
+		$categories->setLabel(lang('category'));
 		$categories->useListFilter(); // disables custom values
 		return $categories;
 	}
 
 	/**
-	 * Creates a category fllter
+	 * Creates a status filter
 	 */
 	private function createStatusFilter($channel = NULL)
 	{
@@ -448,9 +514,35 @@ class EntryListing {
 		}
 
 		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', $status_options);
+		$status->setLabel(lang('status'));
 		$status->disableCustomValue();
 		return $status;
 	}
-}
 
+	/**
+	 * Formats column data for use in selection UI
+	 *
+	 * @param array[Column]
+	 * @return array Identifier => Label
+	 */
+	private function getColumnChoices($columns)
+	{
+		$column_choices = [];
+
+		foreach ($columns as $column)
+		{
+			$identifier = $column->getTableColumnIdentifier();
+
+			// This column is mandatory, not optional
+			if ($identifier == 'checkbox')
+			{
+				continue;
+			}
+
+			$column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+		}
+
+		return $column_choices;
+	}
+}
 // EOF

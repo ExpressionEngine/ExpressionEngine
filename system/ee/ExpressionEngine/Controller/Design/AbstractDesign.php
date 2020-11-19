@@ -483,6 +483,14 @@ abstract class AbstractDesign extends CP_Controller {
 			{
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 			}
+			
+			if (ee('Config')->getFile()->getBoolean('allow_php') && $template->allow_php == 'y') {
+				$template_name = '<i class="fab fa-php fa-lg icon-left" title="' . lang('enable_php') . '"></i>' . $template_name;
+			}
+
+			if ($template->enable_http_auth == 'y') {
+				$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -591,41 +599,6 @@ abstract class AbstractDesign extends CP_Controller {
 		return $vars;
 	}
 
-	/**
-	 * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
-	 *
-	 * @param	Template	$template	Saved template model object
-	 */
-	protected function saveNewTemplateRevision($template)
-	{
-		if ( ! bool_config_item('save_tmpl_revisions'))
-		{
-			return;
-		}
-
-		// Create the new version
-		$version = ee('Model')->make('RevisionTracker');
-		$version->Template = $template;
-		$version->item_table = 'exp_templates';
-		$version->item_field = 'template_data';
-		$version->item_data = $template->template_data;
-		$version->item_date = ee()->localize->now;
-		$version->Author = $template->LastAuthor;
-		$version->save();
-
-		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
-		$versions = ee('Model')->get('RevisionTracker')
-			->filter('item_id', $template->getId())
-			->filter('item_field', 'template_data')
-			->order('item_date', 'desc')
-			->limit(ee()->config->item('max_tmpl_revisions'))
-			->all();
-
-		// Reassign versions and delete the leftovers
-		$template->Versions = $versions;
-		$template->save();
-	}
-
 	protected function removeTemplates($template_ids)
 	{
 		$group_ids = [];
@@ -633,7 +606,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		foreach ($this->assigned_template_groups as $group_id)
 		{
-			if (ee('Permission')->can('can_delete_templates_template_group_id_' . $group_id))
+			if (ee('Permission')->can('delete_templates_template_group_id_' . $group_id))
 			{
 				$authorized = TRUE;
 				$group_ids[] = $group_id;

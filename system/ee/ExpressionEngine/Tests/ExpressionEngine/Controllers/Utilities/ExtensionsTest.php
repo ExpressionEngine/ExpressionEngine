@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class ExtensionsTest extends TestCase {
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass() : void
 	{
 		require_once(APPPATH.'core/Controller.php');
 	}

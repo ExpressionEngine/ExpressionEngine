@@ -1,0 +1,99 @@
+name: Run Tests (Old)
+
+on:
+  push:
+    branches-ignore:
+      - '**'
+jobs:
+    php-tests:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                php: [7.1]
+                os: [ubuntu-latest]
+
+        name: P${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v1
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v1
+              with:
+                php-version: '7.1'
+                extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                ini-values: phar.readonly=Off,date.timezone=America/New_York
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
+
+            - name: Setup Permissions
+              run: |
+                cp tests/docker/ExpressionEngineUpdate.pub system/ee/EllisLab/ExpressionEngine
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/rspec/support/tmp
+                sudo chmod -R 777 tests/rspec/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+                cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+                mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
+
+            - name: Setup Ruby
+              uses: actions/setup-ruby@v1
+              with:
+                ruby-version: '2.4'
+
+            - name: Install System dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get -yqq install xvfb g++ qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x libmysqlclient-dev
+
+            - name: Cache Ruby Dependencies
+              uses: actions/cache@v1
+              with:
+                path: tests/rspec/vendor/bundle
+                key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-gems-
+
+            - name: Install Ruby dependencies
+              run: |
+                gem install bundler
+                bundle install --no-deployment --gemfile=tests/rspec/Gemfile --jobs 4 --retry 3 --path=vendor/bundle
+
+            - name: Start webserver
+              run: php -S localhost:8888 &
+
+            - name: Configure MySQL
+              run: |
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Run RSpec tests
+              working-directory: tests/rspec
+              run: xvfb-run -a bundle exec rspec -c -fd -fh -o screenshots/rspec.html tests/z_installer/test_installer.rb
+
+            - name: Archive RSpec output
+              uses: actions/upload-artifact@v1
+              if: failure()
+              with:
+                name: rspec
+                path: tests/rspec/screenshots/rspec.html
+
+            - name: Compress Screenshots
+              working-directory: tests/rspec
+              if: failure()
+              run: zip -r screenshots.zip screenshots
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v1
+              if: failure()
+              with:
+                name: rspec-files
+                path: tests/rspec/screenshots.zip

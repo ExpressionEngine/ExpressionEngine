@@ -24,6 +24,8 @@ class Member_model extends CI_Model {
 	 */
 	function get_username($id = '', $field = 'screen_name')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
 		if ($id == '')
 		{
 			// no id, return false
@@ -61,6 +63,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_upload_groups()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->select('group_id, group_title');
 		$this->db->from('member_groups');
 		$this->db->where("group_id != '1' AND group_id != '2' AND group_id != '3' AND group_id != '4'");
@@ -84,6 +89,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		// Is a unique order by specified
 		$add_orderby = TRUE;
 
@@ -143,6 +151,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_count($group_id = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$member_ids = array();
 
 		if ($group_id != '')
@@ -190,6 +201,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_all_member_fields($additional_where = array(), $restricted = TRUE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		// Extended profile fields
 		$this->db->from('member_fields');
 
@@ -226,6 +240,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_all_member_data($id)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->from('member_data');
 		$this->db->where('member_id', $id);
 
@@ -244,6 +261,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_data($member_id = FALSE, $fields = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if (count($fields) >= 1)
 		{
 			$this->db->select($fields);
@@ -264,6 +284,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_ignore_list($member_id = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$query = $this->get_member_data($this->id, array('ignore_list'));
 
 		$ignored = ($query->row('ignore_list')	== '') ? array('') : explode('|', $query->row('ignore_list'));
@@ -286,6 +309,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_quicklinks($member_id = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member', \$member_id)->first()->getQuicklinks()");
+
 		$quicklinks_query = $this->get_member_data($member_id, array('quick_links'))->row('quick_links');
 
 		$i = 1;
@@ -322,6 +348,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_emails($additional_fields = array(), $additional_where = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($additional_fields))
 		{
 			$additional_fields = array($additional_fields);
@@ -388,20 +417,13 @@ class Member_model extends CI_Model {
 		// ---------------------------------------------------------------
 
 		// Insert into the main table
-		$this->db->insert('members', $data);
+		$member = ee('Model')->make('Member');
+		$member->set(array_merge($data, $cdata));
+		$member->validate();
+		$member->save();
 
 		// grab insert id
-		$member_id = $this->db->insert_id();
-
-		// Create a record in the custom field table
-		if ($cdata)
-		{
-			$this->db->insert('member_data', array_merge(array('member_id' => $member_id), $cdata));
-		}
-		else
-		{
-			$this->db->insert('member_data', array('member_id' => $member_id));
-		}
+		$member_id = $member->getId();
 
 		// ---------------------------------------------------------------
 		// 'member_create_end' hook.
@@ -493,6 +515,8 @@ class Member_model extends CI_Model {
 	function update_member_group($member_group_id = '')
 	{
 		// for later use
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
 	}
 
 	/**
@@ -507,6 +531,9 @@ class Member_model extends CI_Model {
 	 */
 	function update_member_data($member_id = '', $data = array(), $additional_where = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! isset($additional_where[0]))
 		{
 			$additional_where = array($additional_where);
@@ -544,6 +571,9 @@ class Member_model extends CI_Model {
 	 */
 	function delete_member($member_ids = array(), $heir_id = NULL)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		// ---------------------------------------------------------------
 		// 'member_delete' hook.
 		// - Provides an opportunity for extra code to be executed upon
@@ -572,6 +602,8 @@ class Member_model extends CI_Model {
 	 */
 	public function update_member_entry_stats($member_ids = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member', \$member_id)->first()->updateAuthorStats()");
 		// Make $member_ids an array if we need to
 		if ( ! is_array($member_ids))
 		{
@@ -608,6 +640,9 @@ class Member_model extends CI_Model {
 	 */
 	function delete_from_authorlist($member_ids = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($member_ids))
 		{
 			$member_ids = array($member_ids);
@@ -629,6 +664,9 @@ class Member_model extends CI_Model {
 	 */
 	function update_authorlist($member_ids = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($member_ids))
 		{
 			$member_ids = array($member_ids);
@@ -651,6 +689,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_author_groups($channel_id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->select('role_settings.role_id');
 		$this->db->join("channel_member_roles", "role_settings.role_id = channel_member_roles.role_id", 'left');
 		$this->db->where('role_settings.include_in_authorlist', 'y');
@@ -679,6 +720,8 @@ class Member_model extends CI_Model {
 	 */
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0.0', "ee('Member')->getAuthors()");
 		// Please don't combine these two queries. Mysql won't hit an index
 		// on any combination that I've tried; except with a subquery which
 		// is close enough to what we have here. -pk
@@ -731,6 +774,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_groups($additional_fields = array(), $additional_where = array(), $limit = '', $offset = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($additional_fields))
 		{
 			$additional_fields = array($additional_fields);
@@ -746,7 +792,7 @@ class Member_model extends CI_Model {
 			$this->db->select(implode(',', $additional_fields));
 		}
 
-		$this->db->select("role_id, name");
+		$this->db->select("roles.role_id AS group_id, roles.name AS group_title");
 		$this->db->from("roles");
 		$this->db->join("role_settings", "roles.role_id = role_settings.role_id", 'inner');
 		$this->db->where("role_settings.site_id", $this->config->item('site_id'));
@@ -776,7 +822,7 @@ class Member_model extends CI_Model {
 			}
 		}
 
-		$this->db->order_by('role_id, name');
+		$this->db->order_by('roles.role_id, roles.name');
 
 		return $this->db->get();
 	}
@@ -793,27 +839,18 @@ class Member_model extends CI_Model {
 	 */
 	function delete_member_group($group_id = '', $reassign_group = FALSE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ($reassign_group !== FALSE)
 		{
 			// reassign current members to new group
-			$this->db->set(array('group_id'=>$reassign_group));
-			$this->db->where('group_id', $group_id);
+			$this->db->set(array('role_id'=>$reassign_group));
+			$this->db->where('role_id', $group_id);
 			$this->db->update('members');
 		}
 
-		$sites = ee('Model')->get('Site')
-			->fields('site_id')
-			->all()
-			->pluck('site_id');
-
-		foreach ($sites as $site_id)
-		{
-			$groups = ee('Model')->get('MemberGroup')
-				->filter('group_id', $group_id)
-				->filter('site_id', $site_id)
-				->all()
-				->delete();
-		}
+		ee('Model')->get('Role', $group_id)->delete();
 	}
 
 	/**
@@ -825,6 +862,9 @@ class Member_model extends CI_Model {
 	 */
 	function count_members($group_id = '', $search_value = '', $search_field = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->_prep_search_query($group_id, $search_value, $search_field);
 		return $this->db->count_all_results('members');
 	}
@@ -838,6 +878,9 @@ class Member_model extends CI_Model {
 	 */
 	function count_records($table = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		return $this->db->count_all($table);
 	}
 
@@ -850,6 +893,9 @@ class Member_model extends CI_Model {
 	 */
 	function count_member_entries($member_ids = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($member_ids))
 		{
 			$member_ids = array($member_ids);
@@ -874,6 +920,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members_group_ids($member_ids = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($member_ids))
 		{
 			$member_ids = array($member_ids);
@@ -912,6 +961,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_custom_member_fields($member_id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ($member_id != '')
 		{
 			$this->db->where('m_field_id', $member_id);
@@ -933,6 +985,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_by_screen_name($screen_name = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->select('member_id');
 		$this->db->from('members');
 		$this->db->where('screen_name', $screen_name);
@@ -951,6 +1006,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_ip_members($ip_address = '', $limit = 10, $offset = 0)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->select('member_id, username, screen_name, ip_address, email, join_date');
 		$this->db->like('ip_address', $ip_address, 'both');
 		$this->db->from('members');
@@ -972,6 +1030,8 @@ class Member_model extends CI_Model {
 	 */
 	function get_group_members($group_id, $order_by = 'join_date')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
 
 		$this->db->select('member_id, username, screen_name, email, join_date');
 		$this->db->where('group_id', $group_id);
@@ -992,6 +1052,8 @@ class Member_model extends CI_Model {
 	 */
 	function check_duplicate($value = '', $field = 'username')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
 
 		$this->db->like($field, $value);
 		$this->db->from('members');
@@ -1021,6 +1083,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_theme_list($path = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ($path == '')
 		{
 			return;
@@ -1057,6 +1122,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_profile_templates($path = PATH_MBR_THEMES)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$themes = array();
 		$this->load->helper('directory');
 
@@ -1085,6 +1153,9 @@ class Member_model extends CI_Model {
 	 */
 	function insert_group_layout($member_groups = array(), $channel_id = '', $layout_info = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($member_groups))
 		{
 			$member_groups = array($member_groups);
@@ -1132,6 +1203,9 @@ class Member_model extends CI_Model {
 	 */
 	function delete_group_layout($member_group = '', $channel_id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->db->where("site_id", $this->config->item('site_id'));
 		$this->db->where("channel_id", $channel_id);
 
@@ -1155,6 +1229,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_group_layout($member_group = '', $channel_id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$this->load->model('layout_model');
 
 		return $this->layout_model->get_layout_settings(array(
@@ -1176,6 +1253,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_all_group_layouts($channel_id = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		if ( ! is_array($channel_id))
 		{
 			$channel_id = array($channel_id);
@@ -1210,6 +1290,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_notepad_content($id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Model')->get('Member')");
+
 		$id = $id ? $id : $this->session->userdata('member_id');
 
 		$this->db->select('notepad');
@@ -1234,6 +1317,9 @@ class Member_model extends CI_Model {
 	 */
 	function can_access_module($module, $group_id = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated("ee('Permission')");
+
 		// Superadmin sees all
 		if (ee('Permission')->isSuperAdmin())
 		{

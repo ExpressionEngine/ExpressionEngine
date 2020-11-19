@@ -140,8 +140,8 @@ class Pages_tab {
 	public function validate($entry, $values)
 	{
 		$validator = ee('Validation')->make(array(
-			'pages_template_id' => 'validTemplate|validHasTemplate',
-			'pages_uri' => 'validURI|validHasTemplate|validSegmentCount|notDuplicated',
+			'pages_template_id' => 'whenURI[pages_uri]|required|validTemplate',
+			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
 		));
 
 		$validator->defineRule('validTemplate', $this->makeValidTemplateRule($values));
@@ -149,6 +149,17 @@ class Pages_tab {
 		$validator->defineRule('validSegmentCount', $this->makeValidSegmentCountRule());
 		$validator->defineRule('notDuplicated', $this->makeNotDuplicatedRule($entry));
 		$validator->defineRule('validHasTemplate', $this->makeValidHasTemplateRule($values));
+
+		$data = $_POST;
+		$validator->defineRule('whenURI', function($key, $value, $parameters, $rule) use ($data)
+		{
+			if (empty($data['pages__pages_uri']) OR $data['pages__pages_uri'] == lang('example_uri')) {
+				return $rule->skip();
+			}
+
+			return TRUE;
+
+		});
 
 		return $validator->validate($values);
 	}

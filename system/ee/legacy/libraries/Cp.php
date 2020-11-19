@@ -72,8 +72,6 @@ class Cp {
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
-		ee()->load->model('member_model'); // for screen_name, quicklinks
-
 		ee()->lang->loadfile($langfile, '', FALSE);
 
 		// Meta-refresh tag
@@ -117,7 +115,7 @@ class Cp {
 			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
-			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
+			'cp_quicklinks'			=> $this->_get_quicklinks($member->getQuicklinks()),
 
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE,	// for conditional use in view files
@@ -173,6 +171,7 @@ class Cp {
 			'site_id'           => ee()->config->item('site_id'),
 			'site_name'         => ee()->config->item('site_name'),
 			'site_url'          => ee()->config->item('site_url'),
+			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
 		$site_id = ee()->session->flashdata('site_id');
@@ -256,10 +255,7 @@ class Cp {
 
 		$this->_notices();
 
-		$formatted_version = formatted_version(APP_VER);
-		ee()->view->formatted_version = strpos($formatted_version, '-') !== FALSE
-			? substr($formatted_version, 0, strpos($formatted_version, '-'))
-			: $formatted_version;
+		ee()->view->formatted_version = formatted_version(APP_VER);
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 
@@ -438,10 +434,10 @@ class Cp {
 					)
 				);
 
-				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
+				$button .= '<input class="button button--primary" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
-				$alert->addToBody($button);
+				$alert->addToBody($button, '', false);
 
 				return $alert->now();
 			}
@@ -573,7 +569,7 @@ class Cp {
 		$mtimes = array();
 
 		if ($include_common) {
-			ee()->cp->add_js_script([
+			$this->add_js_script([
 				'file' => [
 					'common'
 				]
@@ -770,26 +766,6 @@ class Cp {
 	 */
 	private function _get_quicklinks($quick_links)
 	{
-		$i = 1;
-
-		$quicklinks = array();
-
-		if ( ! empty($quick_links))
-		{
-			foreach (explode("\n", $quick_links) as $row)
-			{
-				$x = explode('|', $row);
-
-				$quicklinks[$i]['title'] = (isset($x[0])) ? $x[0] : '';
-				$quicklinks[$i]['link'] = (isset($x[1])) ? $x[1] : '';
-				$quicklinks[$i]['order'] = (isset($x[2])) ? $x[2] : '';
-
-				$i++;
-			}
-		}
-
-		$quick_links = $quicklinks;
-
 		$len = strlen(ee()->config->item('cp_url'));
 
 		$link = array();

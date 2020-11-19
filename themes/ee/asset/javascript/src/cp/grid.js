@@ -58,7 +58,7 @@ Grid.Publish = function(field, settings) {
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.find('.grid-field__table tbody');
-	this.addButtonToolbar = $('a[rel=add_row]', this.parentContainer);
+	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
 
@@ -66,7 +66,7 @@ Grid.Publish = function(field, settings) {
 	this.cellSelector = 'td';
 	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'a[rel=remove_row]';
+	this.deleteButtonsSelector = '[rel=remove_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -189,6 +189,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		
 		// File Grid minimum row count validated on server
 		if (this.isFileGrid) {
 			return
@@ -198,9 +199,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		var rowsCount = this._getRows().size(),
 			neededRows = 0;
 
-		if (typeof(this.settings)!=='undefined') 
+		if (typeof(this.settings)!=='undefined')
 		{
-			this.settings.grid_min_rows - rowsCount;
+			neededRows = this.settings.grid_min_rows - rowsCount;
 		}
 
 		// Show empty field message if field is empty and no rows are needed
@@ -225,6 +226,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
+		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
 		if (this.header) {
@@ -237,6 +239,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				// Show add button if row count is below the max rows setting,
 				// and only if there are already other rows present
 				this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
+				if (this.isFileGrid) {
+					this.root.closest('.js-file-grid').find('div[data-file-grid-react]').toggle(rowCount < this.settings.grid_max_rows && rowCount >= 0);
+				}
 			}
 
 			if (this.settings.grid_min_rows !== '') {
@@ -249,7 +254,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
 		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
-		$(this.reorderHandleContainerSelector, this.rowContainer).parent().toggleClass('sort-cancel', rowCount == 1);
 
 		// Inside File Grid? Hide Grid completely if there are no rows
 		if (this.isFileGrid) {
@@ -348,7 +352,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', 'a[rel=remove_row]', function(event) {
+		this.root.on('click', that.deleteButtonsSelector, function(event) {
 			event.preventDefault();
 
 			var row = $(this).closest(that.rowSelector);
@@ -863,7 +867,6 @@ Grid.Settings.prototype = {
 
 				if ($(this).prop('checked')) {
 					new_input.attr('checked', 'checked');
-					console.log(new_input);
 				}
 			}
 			// Handle textareas

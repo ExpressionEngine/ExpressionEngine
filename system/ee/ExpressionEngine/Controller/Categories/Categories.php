@@ -99,6 +99,11 @@ class Categories extends AbstractCategoriesController {
 			'can_delete_categories' => ee('Permission')->can('delete_categories')
 		);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('categories'),
+			//'' => $cat_group->group_name
+		);
+
 		ee()->cp->render('channels/cat/list', $data);
 	}
 
@@ -299,7 +304,7 @@ class Categories extends AbstractCategoriesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->generateSidebar();
+		$this->generateSidebar($group_id);
 
 		//  Check discrete privileges when editig (we have no discrete create
 		//  permissions)
@@ -549,8 +554,11 @@ class Categories extends AbstractCategoriesController {
 			return ee()->cp->render('_shared/form', $vars);
 		}
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories'), lang('category_manager'));
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories/group/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('categories')->compile() => lang('categories'),
+			//ee('CP/URL')->make('categories/group/' . $cat_group->group_id)->compile() => $cat_group->group_name,
+			'' => is_null($category_id) ? lang('create_category') : lang('edit_category')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

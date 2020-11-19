@@ -52,6 +52,14 @@ class Extensions extends Utilities {
 	 */
 	public function index()
 	{
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
+
 		if (ee()->input->post('bulk_action') == 'enable')
 		{
 			$this->enable(ee()->input->post('selection'));
@@ -61,7 +69,7 @@ class Extensions extends Utilities {
 			$this->disable(ee()->input->post('selection'));
 		}
 
-		ee()->view->cp_page_title = lang('debug_extensions');
+		ee()->view->cp_page_title = lang('manage_extensions');
 		ee()->view->cp_heading = lang('manage_addon_extensions');
 
 		$vars = array();
@@ -153,6 +161,10 @@ class Extensions extends Utilities {
 				htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
 			);
 		}
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('manage_extensions')
+		);
 
 		ee()->cp->render('utilities/extensions', $vars);
 	}

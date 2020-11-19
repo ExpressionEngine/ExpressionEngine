@@ -2,11 +2,11 @@
 <div class="file-preview-modal">
 	<div class="file-preview-modal__preview">
 		<div class="title-bar">
-			<h3 class="title-bar__title"><?= lang('preview'); ?></h3>
 
 			<div class="title-bar__extra-tools">
 				<div class="button-group">
 					<a class="button button--large filter-bar__button" href="<?=$download_url?>" title="<?=lang('download')?>"><i class="fas fa-download"></i></a>
+					<a class="button button--large filter-bar__button" href="<?=ee('CP/URL')->make('files/file/crop/' . $file->file_id)?>" title="<?=lang('btn_crop')?>"><i class="fas fa-crop"></i></a>
 					<a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('open')?>"><i class="fas fa-link"></i></a>
 				</div>
 			</div>

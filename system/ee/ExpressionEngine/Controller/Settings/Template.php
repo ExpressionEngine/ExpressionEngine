@@ -116,7 +116,9 @@ class Template extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('design'), lang('template_manager'));
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('template_settings')
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}

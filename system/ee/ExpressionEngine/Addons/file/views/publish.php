@@ -14,13 +14,13 @@
 				<?=$file_info['filename']?></b>.<?=$file_info['extension']?>
 			<?php endif ?>
 		</div>
-		<div class="list-item__secondary">File Size</div>
+		<!--<div class="list-item__secondary">File Size</div>-->
 	</div>
 	<div class="list-item__content-right">
 		<div class="fields-upload-tools">
-			<div class="button-group">
+			<div class="button-group button-group-small">
 				<?=$fp_edit?>
-				<a href="" class="remove button button--secondary-alt" title="<?=lang('remove')?>"><i class="fa fa-times"></i></a>
+				<a href="" class="remove button button--default" title="<?=lang('remove')?>"><i class="fa fa-times"></i></a>
 			</div>
 		</div>
 	</div>

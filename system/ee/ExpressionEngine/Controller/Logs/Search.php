@@ -129,6 +129,10 @@ class Search extends Logs {
 			'form_url' => $this->base_url->compile(),
 		);
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('view_search_log')
+		);
+
 		ee()->cp->render('logs/search', $vars);
 	}
 }

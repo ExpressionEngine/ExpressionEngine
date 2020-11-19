@@ -235,6 +235,45 @@ class Template extends FileSyncedModel {
 	}
 
 	/**
+	 * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
+	 *
+	 * @param	Template	$template	Saved template model object
+	 */
+	public function saveNewTemplateRevision()
+	{
+		if ( ! bool_config_item('save_tmpl_revisions'))
+		{
+			return;
+		}
+
+		// Create the new version
+		$version = ee('Model')->make('RevisionTracker');
+		$version->Template = $this;
+		$version->item_table = 'exp_templates';
+		$version->item_field = 'template_data';
+		$version->item_data = $this->template_data;
+		$version->item_date = ee()->localize->now;
+		if (!empty($this->LastAuthor)) {
+			$version->Author = $this->LastAuthor;
+		} else {
+			$version->item_author_id = 0;
+		}
+		$version->save();
+
+		// Now, rotate template revisions based on 'max_tmpl_revisions' config item
+		$versions = ee('Model')->get('RevisionTracker')
+			->filter('item_id', $this->getId())
+			->filter('item_field', 'template_data')
+			->order('item_date', 'desc')
+			->limit(ee()->config->item('max_tmpl_revisions'))
+			->all();
+
+		// Reassign versions and delete the leftovers
+		$this->Versions = $versions;
+		$this->save();
+	}
+
+	/**
 	 * Validates the template name checking for reserved names.
 	 */
 	public function validateTemplateName($key, $value, $params, $rule)

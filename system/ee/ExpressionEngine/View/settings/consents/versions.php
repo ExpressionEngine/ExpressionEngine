@@ -1,9 +1,13 @@
 <?php $this->extend('_templates/default-nav'); ?>
-
+<div class="panel">
 <?=form_open($form_url)?>
-       <h1>
+  <div class="panel-heading">
+    <div class="title-bar title-bar--large">
+      <h3 class="title-bar__title">
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
-       </h1>
+      </h3>
+    </div>
+  </div>
 
        <?php $this->embed('_shared/table', $table); ?>
 
@@ -27,3 +31,4 @@
 		</div>
 	<?php ee('CP/Modal')->endModal(); ?>
 <?php endforeach; ?>
+</div>

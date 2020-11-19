@@ -9,11 +9,13 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * File Fieldtype
  */
-class File_ft extends EE_Fieldtype {
+class File_ft extends EE_Fieldtype implements ColumnInterface {
 
 	var $info = array(
 		'name'		=> 'File',
@@ -357,6 +359,226 @@ JSC;
 			}
 
 			return $full_path;
+		}
+	}
+
+	/**
+	 * Resize an image
+	 *
+	 * Supported parameters:
+	 *  - width
+	 *  - height
+	 *  - quality (0-100)
+	 *  - maintain_ratio (y / n)
+	 *  - master_dim (width / height)
+	 */
+	public function replace_resize($data, $params = array(), $tagdata = FALSE)
+	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
+		$data['filename'] = $data['model_object']->file_name;
+		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
+		$data['directory_url'] = $data['model_object']->UploadDestination->url;
+		$data['source_image'] = $data['model_object']->getAbsolutePath();
+
+		return $this->process_image('resize', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Crop an image
+	 *
+	 * Supported parameters:
+	 *  - width
+	 *  - height
+	 *  - quality (0-100)
+	 *  - maintain_ratio (y / n)
+	 *  - x
+	 *  - y
+	 */
+	public function replace_crop($data, $params = array(), $tagdata = FALSE)
+	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
+		$data['filename'] = $data['model_object']->file_name;
+		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
+		$data['directory_url'] = $data['model_object']->UploadDestination->url;
+		$data['source_image'] = $data['model_object']->getAbsolutePath();
+
+		return $this->process_image('crop', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Resize and then crop
+	 *
+	 * Supported parameters:
+	 *  - resize:width
+	 *  - resize:height
+	 *  - resize:quality (0-100)
+	 *  - resize:maintain_ratio (y / n)
+	 *  - resize:master_dim (width / height)
+	 *  - crop:width
+	 *  - crop:height
+	 *  - crop:quality (0-100)
+	 *  - crop:maintain_ratio (y / n)
+	 *  - crop:x
+	 *  - crop:y
+	 */
+	public function replace_resize_crop($data, $params = array(), $tagdata = FALSE)
+	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
+		$params['function'] = 'resize_crop';
+
+		$data['filename'] = $data['model_object']->file_name;
+		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
+		$data['directory_url'] = $data['model_object']->UploadDestination->url;
+		$data['source_image'] = $data['model_object']->getAbsolutePath();
+
+		$params_copy = $params;
+		foreach ($params as $key => $val) {
+			$clean_key = explode(':', $key);
+			if ($clean_key[0] == 'resize' && isset($clean_key[1])) {
+				$params[$clean_key[1]] = $val;
+			}
+		}
+
+		unset($params['wrap']);
+
+		$data['source_image'] = $resized = $this->process_image('resize', $data, $params, false, true);
+
+		$params = $params_copy;
+		foreach ($params as $key => $val) {
+			$clean_key = explode(':', $key);
+			if ($clean_key[0] == 'crop' && isset($clean_key[1])) {
+				$params[$clean_key[1]] = $val;
+			}
+		}
+
+		$out = $this->process_image('crop', $data, $params, $tagdata);
+
+		@unlink($resized);
+
+		return $out;
+	}
+
+	/**
+	 * Rotate an image
+	 *
+	 * Supported parameters:
+	 *  - angle (90, 180, 270, vrt, hor)
+	 */
+	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
+	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
+		$data['filename'] = $data['model_object']->file_name;
+		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
+		$data['directory_url'] = $data['model_object']->UploadDestination->url;
+		$data['source_image'] = $data['model_object']->getAbsolutePath();
+
+		return $this->process_image('rotate', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Convert to webp
+	 *
+	 * Supported parameters same as for resize
+	 */
+	public function replace_webp($data, $params = array(), $tagdata = FALSE)
+	{
+		if (empty($data) || !isset($data['model_object'])) {
+			return $this->replace_tag($data, $params, $tagdata);
+		}
+		$data['filename'] = $data['model_object']->file_name;
+		$data['directory_path'] = $data['model_object']->UploadDestination->server_path;
+		$data['directory_url'] = $data['model_object']->UploadDestination->url;
+		$data['source_image'] = $data['model_object']->getAbsolutePath();
+
+		return $this->process_image('webp', $data, $params, $tagdata);
+	}
+
+	/**
+	 * Generic image processing
+	 */
+	private function process_image($function = 'resize', $data, $params = array(), $tagdata = FALSE, $return_as_path = FALSE)
+	{
+		if (!in_array($function, ['resize', 'crop', 'rotate', 'webp'])) {
+			return false;
+		}
+
+		if (!$data['model_object']->isImage()) {
+			return ee()->TMPL->no_results();
+		}
+
+		ee()->load->library('image_lib');
+		$filename = ee()->image_lib->explode_name($data['filename']);
+		if ($function == 'webp') {
+			$filename['ext'] = '.webp';
+		}
+		$new_image = $filename['name'] . '_' . md5(serialize($params)) . $filename['ext'];
+		$new_image_dir = rtrim($data['directory_path'], '/') . '/_' . $function . DIRECTORY_SEPARATOR;
+		if (!is_dir($new_image_dir)) {
+			mkdir($new_image_dir);
+			if (!file_exists($new_image_dir . 'index.html')) {
+				$f = fopen($new_image_dir . 'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
+				fwrite($f, 'Directory access is forbidden.');
+				fclose($f);
+			}
+		} elseif (!is_really_writable($new_image_dir)) {
+			return false;
+		}
+
+		$new_image_path = $new_image_dir . $new_image;
+		$new_image_url = rtrim($data['directory_url'], '/') . '/_' . $function . '/' . rawurlencode($new_image);
+		if (!file_exists($new_image_path)) {
+			$imageLibConfig = array(
+				'image_library'		=> ee()->config->item('image_resize_protocol'),
+				'library_path'		=> ee()->config->item('image_library_path'),
+				'source_image'		=> $data['source_image'],
+				'new_image'			=> $new_image_path,
+				'maintain_ratio'	=> isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
+				'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
+
+				'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
+				'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
+				'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
+				'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
+			);
+			if (isset($params['width'])) {
+				$imageLibConfig['width'] = (int) $params['width'];
+			}
+			if (isset($params['height'])) {
+				$imageLibConfig['height'] = (int) $params['height'];
+			}
+			ee()->image_lib->clear();
+			ee()->image_lib->initialize($imageLibConfig);
+
+			if (!ee()->image_lib->$function()) {
+				if (ee()->config->item('debug') == 2 OR (ee()->config->item('debug') == 1 AND ee('Permission')->isSuperAdmin())) {
+					return ee()->image_lib->display_errors();
+				}
+				return ee()->TMPL->no_results();
+			}
+		}
+
+		if (!$tagdata) {
+			if (isset($params['wrap']))
+			{
+				return $this->_wrap_it($data, $params['wrap'], $new_image_url);
+			}
+			return ($return_as_path ? $new_image_path : $new_image_url);
+		} else {
+			$props = ee()->image_lib->get_image_properties($new_image_path, true);
+			$vars = [
+				'url' => $new_image_url,
+				'width' => $props['width'],
+				'height' => $props['height']
+			];
+			return ee()->TMPL->parse_variables($tagdata, [$vars]);
 		}
 	}
 
@@ -752,6 +974,19 @@ JSC;
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+	public function getTableColumnConfig()
+	{
+		return [
+			'encode'	=> false
+		];
+	}
+
+	public function renderTableCell($data, $field_id, $entry) {
+		$field_data = $this->pre_process($data);
+		$out = '<a href="' . $this->replace_tag($field_data) . '" target="_blank">'.$field_data['title'].'</a>';
+		return $out;
 	}
 }
 

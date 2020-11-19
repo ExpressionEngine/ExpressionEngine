@@ -1,17 +1,22 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="box table-list-wrap">
+<div class="box panel">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 
-			<div class="app-notice-wrap">
+
+
+      <div class="panel-heading">
+        <div class="form-btns form-btns-top">
+          <div class="title-bar title-bar--large">
+    				<h3 class="title-bar__title"><?=$cp_page_title?></h3>
+          </div>
+        </div>
+			</div>
+      <div class="panel-body">
+      <div class="app-notice-wrap">
 				<?=ee('CP/Alert')->getAllInlines()?>
 			</div>
-
-			<div class="title-bar">
-				<h2 class="title-bar__title"><?=$cp_page_title?></h2>
-			</div>
-
 			<?php $this->embed('_shared/table-list', ['data' => $roles]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 
@@ -25,12 +30,14 @@
 					[
 						'value' => "remove",
 						'text' => lang('delete'),
-						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete" '
 					]
 				],
-				'modal' => true
+				'modal' => true,
+				'ajax_url' => ee('CP/URL')->make('/members/roles/confirm')
 			]); ?>
 			<?php endif; ?>
+    </div>
 		</form>
 	</div>
 </div>

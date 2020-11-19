@@ -243,8 +243,12 @@ $(document).ready(function(){
 		});
 
 
+    // Clicking icons in Jump input focuses input
+    $('.jump-focus').click(function() {
+      $("#jumpEntry1").focus();
+    })
 
-	// Side bar toggle
+  // Side bar toggle
 	// -------------------------------------------------------------------
 
 	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
@@ -273,6 +277,9 @@ $(document).ready(function(){
 			$('.main-nav__mobile-menu').addClass('hidden');
 			$('.ee-wrapper-overflow').removeClass('is-mobile');
 		}
+    if( $('.ee-sidebar').hasClass('ee-sidebar__collapsed') && window.innerWidth < 1000) {
+      $('.ee-wrapper').addClass('sidebar-hidden__collapsed');
+    }
 	}, 100)
 
 	// Update the sidebar visibility on page load, and when the window width changes
@@ -288,6 +295,24 @@ $(document).ready(function(){
 		} else {
 			$('.ee-wrapper').toggleClass('sidebar-hidden');
 		}
+	})
+
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.sidebar-toggle').on('click', function (e) {
+		e.preventDefault();
+		let isHidden = $('.ee-sidebar').hasClass('ee-sidebar__collapsed');
+
+		if (isHidden) {
+			$('.ee-sidebar').removeClass('ee-sidebar__collapsed');
+			$(this).removeClass('sidebar-toggle__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-right').addClass('fa-angle-left');
+		} else {
+			$('.ee-sidebar').addClass('ee-sidebar__collapsed');
+			$(this).addClass('sidebar-toggle__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
+		}
+		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
 	// Toggle Developer Menu
@@ -317,7 +342,7 @@ $(document).ready(function(){
 
 	function updateMenuText(newTheme) {
 		if ($('.js-dark-theme-toggle').length) {
-			$('.js-dark-theme-toggle').text(newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme);
+			$('.js-dark-theme-toggle').html('<i class="fas fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
 		}
 	}
 
@@ -360,22 +385,14 @@ $(document).ready(function(){
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 
-	$('.js-filters-collapsable').each(function() {
-		var button = '<div class="title-bar__filter-toggle-button js-filter-bar-toggle">'
-		+ '<button type="button" class="filter-bar__button"><i class="fas fa-sm fa-filter"></i> Filters</button>'
-		+ '</div>'
-
-		$(button).insertAfter($(this).find('.title-bar__title'))
-	})
-
 	function collapseFilterBar(container, collapse) {
 		$(container).find('.filter-bar').toggleClass('filter-bar--collapsed', collapse)
 
-		$('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
+		$(container).find('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
 	}
 
-	$('.js-filter-bar-toggle button',).on('click', function(e) {
-		var container = $(this).closest('.js-filters-collapsable')
+	$('body').on('click', '.js-filter-bar-toggle button', function(e) {
+		var container = $(this).closest('.js-filters-collapsible')
 
 		var filterBar = $('.filter-bar', container)
 
@@ -393,11 +410,11 @@ $(document).ready(function(){
 			collapse = true
 		}
 
-		$('.js-filter-bar-toggle').toggle(collapse)
+		$('.js-filters-collapsible .js-filter-bar-toggle').toggle(collapse)
 
-		$('.js-filters-collapsable').each(function() {
+		$('.js-filters-collapsible').each(function() {
 			collapseFilterBar(this, collapse)
-			$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
+			//$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
 		})
 	})
 
@@ -405,7 +422,7 @@ $(document).ready(function(){
 	window.addEventListener('resize', function () { updateFilterBars() })
 	updateFilterBars()
 
-	// Tabs and Scrolls
+	// Tabs
 	// -------------------------------------------------------------------
 
 		//Load initial tab, if requested
@@ -630,7 +647,7 @@ $(document).ready(function(){
 					$('body').css('overflow','hidden');
 				}
 
-				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+				var button = $('.form-ctrls .button', this);
 				button.removeClass('work');
 				button.val(button.data('submit-text'));
 			}
@@ -871,6 +888,13 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '.js-toggle-link', function(e) {
+			e.preventDefault()
+
+			var rel = $(this).attr('rel')
+			$('div[rev='+rel+']').toggle()
+		})
+
 	// =============
 	// filter-bar
 	// =============
@@ -950,7 +974,7 @@ $(document).ready(function(){
 
 							// Make sure the app notice has a close button
 							if (!alert.find('.app-notice__controls').length) {
-								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span></a>`).insertAfter(alert.find('.app-notice__content'))
+								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a>`).insertAfter(alert.find('.app-notice__content'))
 							}
 						})
 					}

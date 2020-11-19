@@ -1,29 +1,88 @@
 <?php if (isset($buttons)): ?>
-	<?php foreach ($buttons as $button): ?>
-		<?php
-			$class = 'btn';
-
-			$disabled = '';
-			$button_text = lang($button['text']);
-			$button_html = isset($button['html']) ? $button['html'] : '';
-
-			if ((ee()->has('form_validation') && ee()->form_validation->errors_exist())
-				OR (isset($errors) && $errors->isNotValid()))
-			{
-				$class = 'btn disable';
-				$disabled = 'disabled="disabled"';
-				$button_text = lang('btn_fix_errors');
+	<?php
+		$submits = [];
+		foreach ($buttons as $i => $button) {
+			if (strpos($button['value'], 'save')===0) {
+				$submits[] = $button;
+				unset($buttons[$i]);
 			}
+		}
+	?>
+	<?php foreach ($buttons as $button) :
+		if (empty($submits)) {
+			$class = 'button button--primary';
+		} else {
+			$class = 'button button--secondary';
+		}
 
-			if (isset($button['class']))
-			{
-				$class .= ' ' . $button['class'];
-			}
+		$disabled = '';
+		$button_text = lang($button['text']);
+		$button_html = isset($button['html']) ? $button['html'] : '';
 
-			$button['attrs'] = (isset($button['attrs'])) ? $button['attrs'] : '';
-		?>
-		<button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_html?><?=$button_text?></button>
+		if (empty($submits) && ((ee()->has('form_validation') && ee()->form_validation->errors_exist())
+			OR (isset($errors) && $errors->isNotValid())))
+		{
+			$class .= ' disable';
+			$disabled = 'disabled="disabled"';
+			$button_text = lang('btn_fix_errors');
+		}
+
+		if (isset($button['class']))
+		{
+			$class .= ' ' . $button['class'];
+		}
+
+		$button['attrs'] = (isset($button['attrs'])) ? $button['attrs'] : '';
+	?>
+		<button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=isset($button['working']) ? lang($button['working']) : lang($button['text'])?>"><?=$button_html?><?=$button_text?></button>
 	<?php endforeach; ?>
+
+	<?php
+		if (!empty($submits)) :
+	?>
+	<div class="button-group">
+	<?php foreach ($submits as $i => $button) :
+		if ($i == 0) {
+			$class = 'button button--primary';
+		} else {
+			$class = 'button button__within-dropdown'; // buttons inside dropdown
+		}
+
+		$disabled = '';
+		$button_text = lang($button['text']);
+		$button_html = isset($button['html']) ? $button['html'] : '';
+
+		if ((ee()->has('form_validation') && ee()->form_validation->errors_exist())
+			OR (isset($errors) && $errors->isNotValid()))
+		{
+			$class .= ' disable';
+			$disabled = 'disabled="disabled"';
+			$button_text = lang('btn_fix_errors');
+		}
+
+		if (isset($button['class']))
+		{
+			$class .= ' ' . $button['class'];
+		}
+
+		$button['attrs'] = (isset($button['attrs'])) ? $button['attrs'] : '';
+	?>
+		<button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_html?><?=$button_text?></button>
+		<?php if ($i == 0 && count($submits) > 1) : ?>
+		<button type="button" class="<?=$class?> dropdown-toggle js-dropdown-toggle saving-options" data-dropdown-pos="bottom-end">
+			<i class="fas fa-angle-down"></i>
+		</button>
+		<div class="dropdown">
+			<div class="dropdown__scroll">
+		<?php endif; ?>
+
+		<?php if (count($submits) > 1 && $i == count($submits)-1) : ?>
+			</div>
+		</div>
+		<?php endif; ?>
+	<?php endforeach; ?>
+	</div>
+	<?php endif; ?>
 <?php else: ?>
 	<?=cp_form_submit($save_btn_text, $save_btn_text_working, NULL, (isset($errors) && $errors->isNotValid()))?>
 <?php endif; ?>

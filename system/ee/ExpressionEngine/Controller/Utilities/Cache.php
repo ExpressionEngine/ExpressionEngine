@@ -73,6 +73,11 @@ class Cache extends Utilities {
 		ee()->view->base_url = ee('CP/URL')->make('utilities/cache');
 		ee()->view->save_btn_text = 'btn_clear_caches';
 		ee()->view->save_btn_text_working = 'btn_clear_caches_working';
+
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('cache_manager')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }

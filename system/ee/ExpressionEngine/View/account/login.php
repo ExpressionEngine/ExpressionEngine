@@ -1,15 +1,15 @@
 <?php $this->extend('_templates/login'); ?>
 
-	<!-- <div class="login__logo">
-		<img src="/logo.png" alt="">
-	</div> -->
+	<div class="login__logo">
+        <?php $this->embed('ee:_shared/ee-logo')?>
+	</div>
 
 <div class="login__content">
 	<h1 class="login__title"><?=$header?></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 
-	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path))?>
+	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => ee()->input->get_post('after')))?>
 		<fieldset>
 			<div class="field-instruct">
 				<?=lang('username', 'username')?>
@@ -24,9 +24,9 @@
 		</fieldset>
 		<?php if ($cp_session_type == 'c'):?>
 		<fieldset>
-			<label for="remember_me" class="small-checkbox-label">
-				<input type="checkbox" class="checkbox--small" name="remember_me" value="1" id="remember_me" tabindex="3">
-				<?=lang('remember_me')?>
+			<label for="remember_me" class="checkbox-label">
+				<input type="checkbox" class="checkbox" name="remember_me" value="1" id="remember_me" tabindex="3">
+				<div class="checkbox-label__text"><?=lang('remember_me')?></div>
 			</label>
 		</fieldset>
 		<?php endif;?>

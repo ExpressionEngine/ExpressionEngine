@@ -70,7 +70,7 @@ $setup = [
 			return new CustomMenu\Menu;
 		},
 
-		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE)
+		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE, $view_id = NULL, $extra_filters = [])
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
@@ -79,7 +79,9 @@ $setup = [
 				ee()->localize->now,
 				$search_value,
 				$search_in,
-				$include_author_filter
+				$include_author_filter,
+				$view_id,
+				$extra_filters
 			);
 		},
 
@@ -444,6 +446,12 @@ $setup = [
 			return new Sidebar\Sidebar($view);
 		},
 
+		'CP/NavigationSidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Navigation\NavigationSidebar($view);
+		},
+
 		'Config' => function($ee)
 		{
 			return new Config\Factory($ee);
@@ -511,6 +519,8 @@ $setup = [
 			$config->setModelAliases($app->getModels());
 			$config->setEnabledPrefixes($installed_prefixes);
 			$config->setModelDependencies($app->forward('getModelDependencies'));
+
+			$app->setClassAliases();
 
 			return new Model\DataStore($ee->make('Database'), $config);
 		},
@@ -660,9 +670,14 @@ $setup = [
 			'Role' => 'Model\Role\Role',
 			'RoleGroup' => 'Model\Role\RoleGroup',
 			'RoleSetting' => 'Model\Role\RoleSetting',
+			'MemberGroup' => 'Model\Role\MemberGroup',
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',
+
+			// ..\EntryManager
+			'EntryManagerView'       => 'Model\EntryManager\View',
+			'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
 	),
 
 	'cookies.necessary' => [
@@ -687,7 +702,9 @@ $setup = [
 		'notify_me',
 		'save_info',
 		'tracker',
-		'viewtype'
+		'viewtype',
+		'ee_cp_viewmode',
+		'collapsed_nav'
 	],
 ];
 

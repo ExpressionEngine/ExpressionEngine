@@ -1,7 +1,7 @@
 <!doctype html>
-<html>
+<html lang="<?=ee()->lang->code()?>" dir="ltr">
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<meta name="modal-title" content="<?=isset($modal_title) ? $modal_title : ''?>">
 		<?=ee()->view->head_link('css/common.min.css'); ?>
@@ -16,6 +16,15 @@
 		?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>" class="app-modal-inner">
+		<script type="text/javascript">
+		var currentTheme = localStorage.getItem('theme');
+
+		// Restore the currently selected theme
+		// This is at the top of the body to prevent the default theme from flashing
+		if (currentTheme) {
+			document.body.dataset.theme = currentTheme;
+		}
+		</script>
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
 		</div>

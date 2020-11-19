@@ -184,6 +184,12 @@ class Template extends AbstractDesignController {
 		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_new_template');
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			ee('CP/URL')->make('design/manager/' . $group_name)->compile() => $group->group_name,
+			'' => lang('create_new_template')
+		);
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -237,7 +243,7 @@ class Template extends AbstractDesignController {
     				}
     				else
     				{
-    					ee()->output->send_ajax_response('success');
+    					ee()->output->send_ajax_response(['success']);
     				}
     				exit;
     			}
@@ -246,7 +252,7 @@ class Template extends AbstractDesignController {
     			{
     				$template->save();
     				// Save a new revision
-    				$this->saveNewTemplateRevision($template);
+    				$template->saveNewTemplateRevision($template);
 
     				ee('CP/Alert')->makeInline('shared-form')
     					->asSuccess()
@@ -332,8 +338,9 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = $group->group_name . '/' . $template->template_name;
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
-			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => $group->group_name,
+			'' => lang('edit_template_title')
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -459,7 +466,7 @@ class Template extends AbstractDesignController {
     				}
     				else
     				{
-    					ee()->output->send_ajax_response('success');
+    					ee()->output->send_ajax_response(['success']);
     				}
     				exit;
     			}
@@ -591,6 +598,11 @@ class Template extends AbstractDesignController {
 		$this->generateSidebar();
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('design')->compile() => lang('templates'),
+			'' => lang('search_results')
+		);
 
 		ee()->cp->render('design/index', $vars);
 	}
@@ -857,9 +869,12 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderSettingsPartial(TemplateModel $template, $errors)
 	{
-		$sections = array(
-			array(
-				ee('CP/Alert')->makeInline('permissions-warn')
+		$sections = [
+			0 => []
+		];
+		if (ee('Permission')->isSuperAdmin()) {
+			if (ee('Config')->getFile()->getBoolean('allow_php')) {
+				$sections[0][] = ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('php_in_templates_warning'))
 					->addToBody(
@@ -867,82 +882,91 @@ class Template extends AbstractDesignController {
 						'caution'
 					)
 					->cannotClose()
-					->render(),
-				array(
-					'title' => 'template_name',
-					'desc' => 'alphadash_desc',
-					'fields' => array(
-						'template_name' => array(
-							'type' => 'text',
-							'value' => $template->template_name,
-							'required' => TRUE
-						)
+					->render();
+			} else {
+				$sections[0][] = ee('CP/Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('php_in_templates_warning'))
+					->addToBody(lang('php_in_templates_config_warning'))
+					->cannotClose()
+					->render();
+			}
+		}
+		$sections[0][] = array(
+			'title' => 'template_name',
+			'desc' => 'alphadash_desc',
+			'fields' => array(
+				'template_name' => array(
+					'type' => 'text',
+					'value' => $template->template_name,
+					'required' => TRUE
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'template_type',
+			'fields' => array(
+				'template_type' => array(
+					'type' => 'radio',
+					'choices' => $this->getTemplateTypes(),
+					'value' => $template->template_type
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'enable_caching',
+			'desc' => 'enable_caching_desc',
+			'fields' => array(
+				'cache' => array(
+					'type' => 'yes_no',
+					'value' => $template->cache
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'refresh_interval',
+			'desc' => 'refresh_interval_desc',
+			'fields' => array(
+				'refresh' => array(
+					'type' => 'text',
+					'value' => $template->refresh
+				)
+			)
+		);
+		if (ee('Permission')->isSuperAdmin() && ee('Config')->getFile()->getBoolean('allow_php')) {
+			$sections[0][] = array(
+				'title' => 'enable_php',
+				'desc' => 'enable_php_desc',
+				'caution' => TRUE,
+				'fields' => array(
+					'allow_php' => array(
+						'type' => 'yes_no',
+						'value' => $template->allow_php
 					)
-				),
-				array(
-					'title' => 'template_type',
-					'fields' => array(
-						'template_type' => array(
-							'type' => 'radio',
-							'choices' => $this->getTemplateTypes(),
-							'value' => $template->template_type
-						)
+				)
+			);
+			$sections[0][] = array(
+				'title' => 'parse_stage',
+				'desc' => 'parse_stage_desc',
+				'fields' => array(
+					'php_parse_location' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'i' => 'input',
+							'o' => 'output'
+						),
+						'value' => $template->php_parse_location
 					)
-				),
-				array(
-					'title' => 'enable_caching',
-					'desc' => 'enable_caching_desc',
-					'fields' => array(
-						'cache' => array(
-							'type' => 'yes_no',
-							'value' => $template->cache
-						)
-					)
-				),
-				array(
-					'title' => 'refresh_interval',
-					'desc' => 'refresh_interval_desc',
-					'fields' => array(
-						'refresh' => array(
-							'type' => 'text',
-							'value' => $template->refresh
-						)
-					)
-				),
-				array(
-					'title' => 'enable_php',
-					'desc' => 'enable_php_desc',
-					'caution' => TRUE,
-					'fields' => array(
-						'allow_php' => array(
-							'type' => 'yes_no',
-							'value' => $template->allow_php
-						)
-					)
-				),
-				array(
-					'title' => 'parse_stage',
-					'desc' => 'parse_stage_desc',
-					'fields' => array(
-						'php_parse_location' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'i' => 'input',
-								'o' => 'output'
-							),
-							'value' => $template->php_parse_location
-						)
-					)
-				),
-				array(
-					'title' => 'hit_counter',
-					'desc' => 'hit_counter_desc',
-					'fields' => array(
-						'hits' => array(
-							'type' => 'text',
-							'value' => $template->hits
-						)
-					)
+				)
+			);
+		}
+		$sections[0][] = array(
+			'title' => 'hit_counter',
+			'desc' => 'hit_counter_desc',
+			'fields' => array(
+				'hits' => array(
+					'type' => 'text',
+					'value' => $template->hits
 				)
 			)
 		);
@@ -1118,10 +1142,12 @@ class Template extends AbstractDesignController {
 				->with('Site')
 				->first();
 
-			$results[$template->getId()] = [
-				'label' => $template->getPath(),
-				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
-			];
+			if (!empty($template)) {
+				$results[$template->getId()] = [
+					'label' => $template->getPath(),
+					'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+				];
+			}
 		}
 
 		return $results;

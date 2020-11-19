@@ -213,7 +213,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
-		'role_id'         => 'required|isNatural|validateRoleId',
+		'role_id'         => 'required|isNatural|validateRoles',
 		'username'        => 'required|unique|validateUsername',
 		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
@@ -222,6 +222,7 @@ class Member extends ContentModel {
 		'date_format'     => 'validateDateFormat',
 		'time_format'     => 'enum[12,24]',
 		'include_seconds' => 'enum[y,n]',
+		'roles'           => 'validateRoles'
 	);
 
 	protected static $_events = array(
@@ -295,8 +296,6 @@ class Member extends ContentModel {
 	protected $quick_tabs;
 	protected $show_sidebar;
 	protected $pmember_id;
-	protected $rte_enabled;
-	protected $rte_toolset_id;
 	protected $cp_homepage;
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
@@ -533,6 +532,11 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		// open, non-expired entries only
 		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
@@ -664,21 +668,29 @@ class Member extends ContentModel {
 	/**
 	 * Ensures the group ID exists and the member has permission to add to the group
 	 */
-	public function validateRoleId($key, $role_id)
+	public function validateRoles($key, $role_id)
 	{
 		$roles = $this->getModelFacade()->get('Role');
 
-		if ( ! ee('Permission')->isSuperAdmin())
-		{
+		if ( ! ee('Permission')->isSuperAdmin()) {
 			$roles->filter('is_locked', 'n');
 		}
 
-		if ( ! in_array($role_id, $roles->all()->pluck('role_id')))
-		{
-			return 'invalid_role_id';
+		//we're not checking additional roles when checking primary role
+		//however, for additional roles we'll need both
+		if ($key=='role_id') {
+			if ( ! in_array($role_id, $roles->all()->pluck('role_id'))) {
+				return lang('invalid_role_id');
+			}
+			return true;
 		}
 
-		return TRUE;
+		$additional_roles = $this->Roles->pluck('role_id');
+		if (count(array_intersect($additional_roles, $roles->all()->pluck('role_id'))) != count($additional_roles)) {
+			return lang('invalid_role_id');
+		}
+
+		return true;
 	}
 
 	/**
@@ -925,6 +937,36 @@ class Member extends ContentModel {
 			return ee()->config->slash_item('sig_img_url').$this->sig_img_filename;
 		}
 		return '';
+	}
+
+	/**
+	 * Get quick links for this member
+	 *
+	 * @return Array CP quick link
+	 */
+	public function getQuicklinks()
+	{
+		$quick_links = $this->quick_links;
+
+		$i = 1;
+
+		$quicklinks = array();
+
+		if ( ! empty($quick_links))
+		{
+			foreach (explode("\n", $quick_links) as $row)
+			{
+				$x = explode('|', $row);
+
+				$quicklinks[$i]['title'] = (isset($x['0'])) ? $x['0'] : '';
+				$quicklinks[$i]['link'] = (isset($x['1'])) ? $x['1'] : '';
+				$quicklinks[$i]['order'] = (isset($x['2'])) ? $x['2'] : '';
+
+				$i++;
+			}
+		}
+
+		return $quicklinks;
 	}
 
 	/**

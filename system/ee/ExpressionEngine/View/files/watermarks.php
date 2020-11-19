@@ -1,15 +1,21 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
-	<?=form_open($table['base_url'])?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('files/watermarks/create')?>"><?=lang('create_new')?></a>
-		</fieldset>
+<div class="box panel">
+  <div class="tbl-ctrls">
+  <?=form_open($table['base_url'])?>
+  <div class="panel-heading">
+<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+    <div class="form-btns form-btns-top">
+      <div class="title-bar title-bar--large">
+        <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+        <div class="title-bar__extra-tools">
+          <a class="button button--primary" href="<?=ee('CP/URL')->make('files/watermarks/create')?>"><?=lang('create_new')?></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-		<div class="title-bar">
-			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
-		</div>
 
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
@@ -28,6 +34,8 @@
 			'modal' => true
 		]); ?>
 	</form>
+</div>
+</div>
 <?php
 
 $modal_vars = array(

@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_3_0_0;
+
 /**
  * Update
  */
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_move_database_information',
 				'_update_email_cache_table',
@@ -384,7 +386,7 @@ class Updater {
 		foreach ($sites as $site)
 		{
 			ee()->remove('config');
-			ee()->set('config', new MSM_Config());
+			ee()->set('config', new \MSM_Config());
 
 			ee()->config->site_prefs('', $site['site_id']);
 
@@ -644,7 +646,7 @@ class Updater {
 			$all_site_ids[] = $site->site_id;
 		}
 
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		foreach ($all_site_ids as $site_id)
 		{
@@ -1216,6 +1218,7 @@ class Updater {
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->site_id = $site_id;
 			$directory->name = $name;
+			//$dir->removeNoAccess(); //function not defined since 2.x, so not using it
 			$directory->setModule($module);
 
 			foreach ($dir as $property => $value)
@@ -1224,9 +1227,6 @@ class Updater {
 			}
 
 			$directory->save();
-
-			ee()->db->where('upload_id', $directory->getId());
-			ee()->db->delete('upload_no_access');
 		}
 
 		return TRUE;
@@ -1268,7 +1268,7 @@ class Updater {
 	 */
 	private function _remove_referrer_module_artifacts()
 	{
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
 
 		ee()->smartforge->drop_table('referrers');
@@ -1334,7 +1334,7 @@ class Updater {
 		ee()->smartforge->drop_table('mailing_list_queue');
 		ee()->smartforge->drop_table('email_cache_ml');
 
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->remove_config_item(array(
 			'mailinglist_enabled',
 			'mailinglist_notify',
@@ -1409,7 +1409,7 @@ class Updater {
 	 */
 	private function _remove_cp_theme_config()
 	{
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->remove_config_item(array('cp_theme'));
 
 		ee()->smartforge->drop_column('members', 'cp_theme');

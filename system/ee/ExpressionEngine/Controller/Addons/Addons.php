@@ -176,6 +176,14 @@ class Addons extends CP_Controller {
 			'third' => lang('third_party_addons')
 		);
 
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
+
 		$vars = array(
 			'tables' => array(
 				'first' => NULL,
@@ -232,6 +240,10 @@ class Addons extends CP_Controller {
 			'file' => ['cp/confirm_remove', 'cp/add-ons'],
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			'' => lang('addons')
+		);
+
 		ee()->cp->render('addons/index', $vars);
 	}
 
@@ -256,11 +268,10 @@ class Addons extends CP_Controller {
 			}
 
 			$addon = $this->getExtension($name);
-			$addon = array_merge($addon, $this->getJumpMenu($name));
+			//$addon = array_merge($addon, $this->getJumpMenu($name));
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
-			$addon['icon_url'] = $info->getIconUrl();
 
 			if ( ! empty($addon))
 			{
@@ -275,7 +286,7 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-
+				$addon['icon_url'] = $info->getIconUrl();
 
 				$addons[$name] = $addon;
 			}
@@ -354,21 +365,30 @@ class Addons extends CP_Controller {
 			{
 				ee()->api_channel_fields->include_handler($addon);
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
-				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
-				{
-					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
+				$update_ft = false;
+				if (!method_exists($FT, 'update')) {
+					$update_ft = true;
+				} else {
+					if ($FT->update($fieldtype['version']) !== FALSE)
 					{
-						$model = ee('Model')->get('Fieldtype')
-							->filter('name', $addon)
-							->first();
-
-						$model->version = $addon_info->getVersion();
-						$model->save();
-
-						if ( ! isset($updated[$party][$addon]))
+						if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 						{
-							$updated[$party][$addon] = $fieldtype['name'];
+							$update_ft = true;
 						}
+					}
+				}
+				if ($update_ft)
+				{
+					$model = ee('Model')->get('Fieldtype')
+						->filter('name', $addon)
+						->first();
+
+					$model->version = $addon_info->getVersion();
+					$model->save();
+
+					if ( ! isset($updated[$party][$addon]))
+					{
+						$updated[$party][$addon] = $fieldtype['name'];
 					}
 				}
 			}
@@ -745,7 +765,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addons')
 		);
 
 		if (is_null($method))
@@ -784,14 +804,22 @@ class Addons extends CP_Controller {
 					ee()->view->cp_heading = $data['heading'];
 				}
 
-				if (isset($data['breadcrumb']))
-				{
+				$self_link = ee('CP/URL')->make('addons/settings/' . $addon)->compile();
+				if (isset($data['breadcrumb'])) {
+					if (!isset($data['breadcrumb'][$self_link])) {
+						$breadcrumb[$self_link] = $module['name'];
+					}
 					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
+				} else {
+					$breadcrumb[$self_link] = $module['name'];
 				}
+				
+				
 			}
 			else
 			{
 				$vars['_module_cp_body'] = $data;
+				$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $module['name'];
 			}
 		}
 		else
@@ -807,6 +835,7 @@ class Addons extends CP_Controller {
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
+				$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $fieldtype['name'];
 				ee()->view->cp_heading = $fieldtype['name'] . ' ' . lang('configuration');
 			}
 			else
@@ -822,6 +851,7 @@ class Addons extends CP_Controller {
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
+					$breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $extension['name'];
 					ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
 				}
 			}
@@ -834,6 +864,7 @@ class Addons extends CP_Controller {
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
 		ee()->view->cp_page_title = ee()->view->cp_heading;
+		ee()->view->body_class = 'add-on-layout';
 
 		ee()->cp->render('addons/settings', $vars);
 	}
@@ -965,8 +996,12 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('addons')->compile() => lang('addon_manager')
+			ee('CP/URL')->make('addons')->compile() => lang('addons'),
+			ee('CP/URL')->make('addons/settings/' . $addon)->compile() => $info->getName(),
+			'' => lang('manual')
 		);
+
+		ee()->view->body_class = 'add-on-layout';
 
 		ee()->cp->render('addons/manual', $vars);
 	}

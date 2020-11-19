@@ -209,7 +209,7 @@ function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
-      var showAddButton = this.props.limit > this.state.selected.length && this.props.can_add_items;
+      var showAddButton = this.props.limit > this.state.selected.length && (this.props.multi || this.state.selected.length == 0);
       var channelFilterItems = props.channels.map(function (channel) {
         return {
           label: channel.title,
@@ -250,7 +250,7 @@ function (_React$Component) {
           onClick: function onClick() {
             return _this3.deselect(item.value);
           },
-          className: "button button--small button--secondary-alt"
+          className: "button button--small button--default"
         }, React.createElement("i", {
           "class": "fas fa-fw fa-trash-alt"
         })))));
@@ -270,7 +270,7 @@ function (_React$Component) {
         }
       }, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--secondary-alt"
+        className: "js-dropdown-toggle button button--default"
       }, React.createElement("i", {
         "class": "fas fa-plus icon-left"
       }), " ", EE.relationship.lang.relateEntry), React.createElement("div", {
@@ -285,7 +285,7 @@ function (_React$Component) {
         className: "search-input"
       }, React.createElement("input", {
         type: "text",
-        "class": "search-input__input",
+        "class": "search-input__input input--small",
         onChange: this.handleSearch,
         placeholder: EE.relationship.lang.search
       }))), React.createElement("div", {
@@ -298,17 +298,17 @@ function (_React$Component) {
           return _this3.channelFilterChange(value);
         },
         buttonClass: "filter-bar__button"
-      })), React.createElement("div", {
+      })), this.props.can_add_items && React.createElement("div", {
         className: "filter-bar__item"
       }, props.channels.length == 1 && React.createElement("button", {
         type: "button",
-        className: "button button--primary",
+        className: "button button--primary button--small",
         onClick: function onClick() {
           return _this3.openPublishFormForChannel(_this3.props.channels[0]);
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--primary"
+        className: "js-dropdown-toggle button button--primary button--small"
       }, "New Entry ", React.createElement("i", {
         "class": "fas fa-caret-down icon-right"
       })), React.createElement("div", {
@@ -333,7 +333,7 @@ function (_React$Component) {
           },
           className: "dropdown__link"
         }, item.label, " ", React.createElement("span", {
-          className: "float-right meta-info"
+          className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
         "class": "dropdown__header text-center"

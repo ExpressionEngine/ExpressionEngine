@@ -29,8 +29,6 @@ class MemberPreferences extends CustomType {
 	protected $default_member_group;
 	protected $profile_trigger;
 	protected $member_theme;
-	protected $enable_avatars;
-	protected $allow_avatar_uploads;
 	protected $avatar_url;
 	protected $avatar_path;
 	protected $avatar_max_width;

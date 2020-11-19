@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class FileTest extends TestCase {
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass() : void
 	{
 		require_once(APPPATH.'core/Controller.php');
 	}
@@ -34,7 +34,7 @@ class FileTest extends TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('crop', 'download', 'edit', 'view'), $controller_methods);
+		$this->assertEquals(array('crop', 'download', 'view'), $controller_methods);
 	}
 
 }

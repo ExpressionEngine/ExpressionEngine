@@ -24,6 +24,9 @@ class Stats {
 
 		// Limit stats by channel
 		// You can limit the stats by any combination of channels
+
+		if(! isset( ee()->TMPL ) ) return;
+
 		if ($channel_name = ee()->TMPL->fetch_param('channel'))
 		{
 			$sql = "SELECT	total_entries,
@@ -214,6 +217,94 @@ class Stats {
 		}
 
 		$this->return_data = ee()->TMPL->tagdata;
+	}
+
+	/**
+	 * Process all stats in a separate call
+	 * @return null
+	 */
+	public function sync_stats()
+	{
+
+		// Get last updated
+		$site_id = ee()->config->item('site_id');
+		$now = ee()->localize->now;
+		$lastRun = ee()->cache->get('ee-stats-cache-last-run');
+
+		if(!$lastRun) {
+			$lastRun = 0;
+		}
+
+		$entriesUpdated = ee('Model')
+						->get('ChannelEntry')
+						->filter('edit_date', '>=', $lastRun)
+						->all();
+
+		// If nothing has been updated, then we'll skip this.
+		if($entriesUpdated->count() == 0) {
+			ee()->cache->save(
+				'ee-stats-cache-last-run',
+				ee()->localize->now,
+				0
+			);
+
+			return;
+		}
+
+		// Update entry stats
+		$entries = ee('Model')->get('ChannelEntry')
+			->fields('entry_date', 'channel_id')
+			->filter('site_id', $site_id)
+			->filter('entry_date', '<=', $now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$total_entries = $entries->count();
+
+		$entry = $entries->first();
+
+		$last_entry_date = ($entry) ? $entry->entry_date : 0;
+
+		$stats = ee('Model')->get('Stats')
+					->filter('site_id', $site_id)
+					->first();
+
+		$stats->total_entries = $total_entries;
+		$stats->last_entry_date = $last_entry_date;
+		$stats->save();
+
+		$authorsToUpdate = $channelsToUpdate = [];
+		
+		// Sync channel entries
+		foreach (array_unique($entriesUpdated->asArray()) as $entry) {
+			$authorsToUpdate[] = $entry->Author;
+			$channelsToUpdate[] = $entry->Channel;
+		}
+		
+		// Sync author stats
+		foreach (array_unique($authorsToUpdate) as $author) {
+			if(null !== $author) {
+				$author->updateAuthorStats();
+			}
+		}
+		// Sync channel stats
+		foreach (array_unique($channelsToUpdate) as $channel) {
+			if(null !== $channel) {
+				$channel->updateEntryStats();				
+			}
+		}
+		
+		// Save this as last run
+		ee()->cache->save(
+			'ee-stats-cache-last-run',
+			ee()->localize->now,
+			0
+		);
+
 	}
 
 }

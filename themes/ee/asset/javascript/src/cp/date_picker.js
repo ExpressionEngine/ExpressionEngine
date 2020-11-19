@@ -148,7 +148,9 @@ EE.cp.datePicker = {
 					parent = $(this.element).closest('form');
 				}
 
-				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button></div></div>');
+				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button></div></div>');
+				_picker.appendTo(parent);
+				var _pickerWidth = _picker.width();
 
 				// listen for clicks on elements classed with .date-picker-next
 				$('.date-picker-clip-inner').on('click', '.date-picker-next', function(e){
@@ -156,7 +158,7 @@ EE.cp.datePicker = {
 
 					// animate the scrolling of .date-picker-clip forwards
 					// to the next .date-picker-item
-					$('.date-picker-clip').animate({ scrollLeft: '+=280' }, 200);
+					$('.date-picker-clip').animate({ scrollLeft: '+='+(_pickerWidth+10) }, 200);
 					// stop page from reloading
 					// the source window and appending # to the URI
 					e.preventDefault();
@@ -168,7 +170,7 @@ EE.cp.datePicker = {
 
 					// animate the scrolling of .date-picker-clip backwards
 					// to the previous .date-picker-item
-					$('.date-picker-clip').animate({ scrollLeft: '-=280' }, 200);
+					$('.date-picker-clip').animate({ scrollLeft: '-='+(_pickerWidth+10) }, 200);
 					// stop page from reloading
 					// the source window and appending # to the URI
 					e.preventDefault();
@@ -214,7 +216,6 @@ EE.cp.datePicker = {
 				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
-					console.log('fafa');
 
 
 					var d = new Date();
@@ -439,7 +440,7 @@ $(document).ready(function () {
 	EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
 
 	// Date fields inside a Grid need to be bound when a new row is added
-	if (Grid !== undefined)
+	if (typeof Grid !== 'undefined')
 	{
 		Grid.bind('date', 'display', function(cell)
 		{

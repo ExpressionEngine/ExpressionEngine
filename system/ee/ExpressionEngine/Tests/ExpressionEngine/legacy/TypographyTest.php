@@ -13,7 +13,7 @@ class TypographyTest extends TestCase {
 
 	private $typography;
 
-	public function setUp()
+	public function setUp() : void
 	{
 		$this->typography = new TypographyStub();
 	}
@@ -23,16 +23,16 @@ class TypographyTest extends TestCase {
 		$str = $this->typography->markdown(CODE_FENCE);
 
 		// Make sure we've removed all code fences
-		$this->assertNotContains('~~~', $str);
-		$this->assertNotContains('```', $str);
+		$this->assertStringNotContainsString('~~~', $str);
+		$this->assertStringNotContainsString('```', $str);
 
 		// The ~~``~~ turns to code (`` => <code>)
-		$this->assertContains('~~<code>~~', $str);
-		$this->assertContains('~~</code>~~', $str);
+		$this->assertStringContainsString('~~<code>~~', $str);
+		$this->assertStringContainsString('~~</code>~~', $str);
 
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('&lt;?php', $str);
-		$this->assertContains('?&gt;', $str);
+		$this->assertStringContainsString('&lt;?php', $str);
+		$this->assertStringContainsString('?&gt;', $str);
 	}
 
 	public function testCodeBlock()
@@ -40,11 +40,11 @@ class TypographyTest extends TestCase {
 		$str = $this->typography->markdown(CODE_FENCE);
 
 		// Should contain no tabs
-		$this->assertNotContains("\t", $str);
+		$this->assertStringNotContainsString("\t", $str);
 
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('&lt;?php', $str);
-		$this->assertContains('?&gt;', $str);
+		$this->assertStringContainsString('&lt;?php', $str);
+		$this->assertStringContainsString('?&gt;', $str);
 	}
 
 	public function testCodeBlockAndFence()
@@ -52,19 +52,19 @@ class TypographyTest extends TestCase {
 		$str = $this->typography->markdown(CODE_BLOCK_AND_FENCE);
 
 		// Should contain no tabs
-		$this->assertNotContains("\t", $str);
+		$this->assertStringNotContainsString("\t", $str);
 
 		// Make sure we've removed all code fences
-		$this->assertNotContains('~~~', $str);
-		$this->assertNotContains('```', $str);
+		$this->assertStringNotContainsString('~~~', $str);
+		$this->assertStringNotContainsString('```', $str);
 
 		// The ~~``~~ turns to code (`` => <code>)
-		$this->assertContains('~~<code>~~', $str);
-		$this->assertContains('~~</code>~~', $str);
+		$this->assertStringContainsString('~~<code>~~', $str);
+		$this->assertStringContainsString('~~</code>~~', $str);
 
 		// Must contain unaffected opening and close php tags
-		$this->assertContains('&lt;?php', $str);
-		$this->assertContains('?&gt;', $str);
+		$this->assertStringContainsString('&lt;?php', $str);
+		$this->assertStringContainsString('?&gt;', $str);
 	}
 
 	public function testSmartyPants()
@@ -72,23 +72,23 @@ class TypographyTest extends TestCase {
 		$str = $this->typography->markdown(SMARTYPANTS);
 
 		// The em and en dashes should be where you'd expect them
-		$this->assertContains("dashes&#8212;they", $str);
-		$this->assertContains("thoughts&#8212;with", $str);
-		$this->assertContains("2004&#8211;2014", $str);
+		$this->assertStringContainsString("dashes&#8212;they", $str);
+		$this->assertStringContainsString("thoughts&#8212;with", $str);
+		$this->assertStringContainsString("2004&#8211;2014", $str);
 
 		// Fancy quotes should be around "fancy quotes" and 'there'
-		$this->assertContains("&#8220;fancy quotes&#8221;", $str);
-		$this->assertContains("&#8216;there&#8217;", $str);
+		$this->assertStringContainsString("&#8220;fancy quotes&#8221;", $str);
+		$this->assertStringContainsString("&#8216;there&#8217;", $str);
 
 		// Test WITHOUT SmartyPants
 		$str = $this->typography->markdown(SMARTYPANTS, array('smartypants' => FALSE));
 
 		// dashes and quotes should not be converted
-		$this->assertContains("dashes---they", $str);
-		$this->assertContains("thoughts---with", $str);
-		$this->assertContains("2004--2014", $str);
-		$this->assertContains("\"fancy quotes\"", $str);
-		$this->assertContains("'there'", $str);
+		$this->assertStringContainsString("dashes---they", $str);
+		$this->assertStringContainsString("thoughts---with", $str);
+		$this->assertStringContainsString("2004--2014", $str);
+		$this->assertStringContainsString("\"fancy quotes\"", $str);
+		$this->assertStringContainsString("'there'", $str);
 	}
 
 	public function testNoMarkup()
@@ -96,15 +96,15 @@ class TypographyTest extends TestCase {
 		$str = $this->typography->markdown(MARKDOWN, array('no_markup' => TRUE));
 
 		// Make sure markup is not parsed
-		$this->assertNotContains('<div', $str);
-		$this->assertNotContains('<span>really</span>', $str);
-		$this->assertNotContains('<em>just</em>', $str);
+		$this->assertStringNotContainsString('<div', $str);
+		$this->assertStringNotContainsString('<span>really</span>', $str);
+		$this->assertStringNotContainsString('<em>just</em>', $str);
 	}
 
 	public function testLinksWithSpaces()
 	{
 		$str = $this->typography->markdown(MARKDOWN);
-		$this->assertContains('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
+		$this->assertStringContainsString('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
 	}
 
 	public function testEmoticonConversionOn()

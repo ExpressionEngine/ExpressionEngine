@@ -31,7 +31,7 @@
 				); ?>
 			<?php endif ?>
 			<div class="dialog__buttons">
-				<div class="button-group form-btns">
+				<div class="form-btns">
 					<?php
 					$btn_text = 'btn_confirm_and_remove';
 					$btn_working_text = 'btn_confirm_and_remove_working';

@@ -60,7 +60,7 @@ function FileUploadProgressTable(props) {
     })))), React.createElement("div", {
       className: "list-item__content-right"
     }, file.error && React.createElement("a", {
-      className: "button button--secondary-alt",
+      className: "button button--default",
       href: "#",
       onClick: function onClick(e) {
         return props.onFileErrorDismiss(e, file);
@@ -145,7 +145,7 @@ function (_React$Component) {
 
       return React.createElement("a", {
         href: "#",
-        className: "button button--secondary-alt m-link",
+        className: "button button--default m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           return _this2.resolveConflict(e, _this2.props.file);

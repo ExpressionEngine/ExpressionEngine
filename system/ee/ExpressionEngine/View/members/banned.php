@@ -1,17 +1,19 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box snap mb table-list-wrap">
+<div class="box snap mb panel">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
-
+  <div class="panel-heading">
 		<div class="app-notice-wrap">
 			<?=ee('CP/Alert')->get('view-members')?>
 		</div>
-
-		<div class="title-bar">
-			<h2 class="title-bar__title"><?=lang('banned_members')?></h2>
-			<?php if (isset($filters)) echo $filters; ?>
-		</div>
+    <div class="form-btns form-btns-top">
+      <div class="title-bar title-bar--large">
+  			<h3 class="title-bar__title"><?=lang('banned_members')?></h3>
+  			<?php if (isset($filters)) echo $filters; ?>
+      </div>
+    </div>
+	</div>
 
 		<?php $this->embed('_shared/table', $table); ?>
 

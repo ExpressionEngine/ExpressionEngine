@@ -83,10 +83,15 @@ class Member_auth extends Member {
 	 */
 	public function member_login()
 	{
-		// If they are already logged in then send them away.
-		if (ee()->session->userdata('member_id') !== 0)
-		{
-			return ee()->functions->redirect(ee()->functions->fetch_site_index());
+
+		$return = ee()->input->get_post('RET');
+
+		if (empty($return)) {
+			$return_link = ee()->functions->fetch_site_index();
+		} elseif (is_numeric($return)) {
+			$return_link = ee()->functions->form_backtrack($return);
+		} else {
+			$return_link = $return;
 		}
 
 		ee()->load->library('auth');
@@ -145,21 +150,31 @@ class Member_auth extends Member {
 		{
 			// Multiple Site Login
 			$incoming = $this->_do_multi_auth($sites, $multi);
-			$success = '_build_multi_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
+
+			// Figure out return
+			if  ( ! $return_link = ee()->input->get('RET'))
+			{
+				$return_link = $sites[ee()->input->get('orig')];
+			}
+			else
+			{
+				$return_link = base64_decode(strtr($return_link, '_-', '/='));
+			}
 		}
 		else
 		{
 			// Regular Login
 			$incoming = $this->_do_auth($username, $password);
-			$success = '_build_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
+
+			$return_link = reduce_double_slashes(ee()->functions->form_backtrack());
 		}
 
 		// Set login state
@@ -188,7 +203,7 @@ class Member_auth extends Member {
 			->where('session_id', ee()->session->userdata('session_id'))
 			->update('sessions');
 
-		$this->$success($sites_array);
+		return ee()->functions->redirect($return_link);
 	}
 
 	/**
@@ -402,92 +417,6 @@ class Member_auth extends Member {
 		}
 	}
 
-	private function _build_multi_success_message($sites)
-	{
-		// Figure out return
-		if  ( ! $ret = ee()->input->get('RET'))
-		{
-			$ret = $sites[ee()->input->get('orig')];
-		}
-		else
-		{
-			$ret = base64_decode(strtr($ret, '_-', '/='));
-		}
-
-		// That was our last site, show the success message
-
-		$data = array(
-			'title' 	=> lang('mbr_login'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_in'),
-			'redirect'	=> $ret,
-			'link'		=> array($ret, lang('back'))
-		);
-
-		// Pull preferences for the original site
-		$orig_id = ee()->input->get('orig_site_id');
-
-		if (is_numeric($orig_id))
-		{
-			ee()->db->select('site_name, site_id');
-			$query = ee()->db->get_where('sites', array(
-				'site_id' => (int) $orig_id
-			));
-
-			if ($query->num_rows() == 1)
-			{
-				$final_site_id = $query->row('site_id');
-				$final_site_name = $query->row('site_name');
-
-				ee()->config->site_prefs($final_site_name, $final_site_id);
-			}
-		}
-
-		ee()->output->show_message($data);
-	}
-
-	/**
-	 * Build Success Message
-	 */
-	private function _build_success_message($sites)
-	{
-		// Build success message
-		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
-
-		$return = reduce_double_slashes(ee()->functions->form_backtrack());
-
-		// Is this a forum request?
-		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
-		{
-			if (ee()->input->get_post('board_id') !== FALSE &&
-				is_numeric(ee()->input->get_post('board_id')))
-			{
-				$query = ee()->db->select('board_label')
-					->where('board_id', (int) ee()->input->get_post('board_id'))
-					->get('forum_boards');
-			}
-			else
-			{
-				$query = ee()->db->select('board_label')
-					->where('board_id', (int) 1)
-					->get('forum_boards');
-			}
-
-			$site_name	= $query->row('board_label') ;
-		}
-
-		// Build success message
-		$data = array(
-			'title' 	=> lang('mbr_login'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_in'),
-			'redirect'	=> $return,
-			'link'		=> array($return, $site_name)
-		);
-
-		ee()->output->show_message($data);
-	}
-
 	/**
 	 * Update online user stats
 	 */
@@ -532,16 +461,30 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
-		// Check CSRF Token
-		$token = FALSE;
-		if ( ! $token) $token = ee()->input->get('csrf_token');
-		if ( ! $token) $token = ee()->input->get('XID');
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
 
-		if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
+		// Determine where we need to return to in case of success or error.
+		$return_link = ee()->functions->determine_return(true);
+		$return_error_link = ee()->functions->determine_error_return();
+
+		// If they are already logged out then send them away.
+		if (ee()->session->userdata('member_id') === 0)
 		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->functions->redirect($return_link);
 		}
 
+		// If this is a GET request, they're using the `path="logout"` tag so check the CSRF Token.
+		if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			$token = FALSE;
+			if ( ! $token) $token = ee()->input->get('csrf_token');
+			if ( ! $token) $token = ee()->input->get('XID');
+
+			if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
+			{
+				return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			}
+		}
 		// Kill the session and cookies
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		ee()->db->where('ip_address', ee()->input->ip_address());
@@ -564,10 +507,6 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		// Is this a forum redirect?
-		$name = '';
-		unset($url);
-
 		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
@@ -584,23 +523,149 @@ class Member_auth extends Member {
 					->get('forum_boards');
 			}
 
-			$url = $query->row('board_forum_url') ;
-			$name = $query->row('board_label') ;
+			$forum_return_link = $query->row('board_forum_url') ;
+
+			if (! empty($forum_return_link))
+			{
+				$return_link = parse_config_variables($forum_return_link);
+			}
+		}
+
+		return ee()->functions->redirect($return_link);
+	}
+
+	public function send_username()
+	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
+		// Is user banned?
+		if (ee()->session->userdata('is_banned') === TRUE)
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+		}
+
+		// Error trapping
+		if ( ! $address = ee()->input->post('email'))
+		{
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+		}
+
+		ee()->load->helper('email');
+		if ( ! valid_email($address))
+		{
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+		}
+
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
+		{
+			if (ee()->input->get_post('board_id') !== FALSE &&
+				is_numeric(ee()->input->get_post('board_id')))
+			{
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
+					->where('board_id', (int) ee()->input->get_post('board_id'))
+					->get('forum_boards');
+			}
+			else
+			{
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
+					->where('board_id', (int) 1)
+					->get('forum_boards');
+			}
+
+			$return		= parse_config_variables($query->row('board_forum_url'));
+			$site_name	= $query->row('board_label') ;
+			$board_id	= $query->row('board_id') ;
+		}
+		else
+		{
+			$site_name	= stripslashes(ee()->config->item('site_name'));
+			$return 	= ee()->config->item('site_url');
+		}
+
+		$forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
+
+		$address = strip_tags($address);
+
+		$memberQuery = ee()->db->select('member_id, username, screen_name')
+			->where('email', $address)
+			->get('members');
+
+		if ($memberQuery->num_rows() == 0)
+		{
+			// Build success message
+			$data = array(
+				'title' 	=> lang('mbr_passwd_email_sent'),
+				'heading'	=> lang('thank_you'),
+				'content'	=> lang('forgotten_username_email_sent'),
+				'link'		=> array($return, $site_name)
+			);
+
+			ee()->output->show_message($data);
+		}
+
+		$member_id = $memberQuery->row('member_id');
+		$username  = $memberQuery->row('username');
+		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+
+		$template = ee()->functions->fetch_email_template('forgot_username_instructions');
+
+		if (! empty($protected['email_template']))
+		{
+			$email_template = ee()->TMPL->fetch_template_from_path($protected['email_template']);
+		} else {
+			$email_template = $template['data'];
+		}
+
+		// Check if we have a password reset subject param, otherwise, use the one from the default template.
+		if (! empty($protected['email_subject']))
+		{
+			$email_subject = $protected['email_subject'];
+		} else {
+			$email_subject = $template['title'];
+		}
+
+		// Build the email message
+		$swap = array(
+			'name'		=> $name,
+			'username'  => $username,
+			'site_name'	=> $site_name,
+			'site_url'	=> $return
+		);
+
+		// _var_swap calls string replace on $template[] for each key in
+		// $swap.  If the key doesn't exist then no swapping happens.
+		$email_subject = $this->_var_swap($email_subject, $swap);
+		$email_msg = $this->_var_swap($email_template, $swap);
+
+		// Instantiate the email class
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = ee()->config->item('mail_format');
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($address);
+		ee()->email->subject($email_subject);
+		ee()->email->message($email_msg);
+
+		if ( ! ee()->email->send())
+		{
+			return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
 		}
 
 		// Build success message
-		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: parse_config_variables($url);
-		$name	= ( ! isset($url)) ? stripslashes(ee()->config->item('site_name'))	: $name;
-
 		$data = array(
-			'title' 	=> lang('mbr_login'),
+			'title' 	=> lang('mbr_username_email_sent'),
 			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_out'),
-			'redirect'	=> $url,
-			'link'		=> array($url, $name)
+			'content'	=> lang('forgotten_email_sent'),
+			'link'		=> array($return, $site_name)
 		);
 
-		ee()->output->show_message($data);
+		// If we have a success return link, go to that, otherwise, output the standard message.
+		ee()->output->show_message($data, true, $return_success_link);
 	}
 
 	/**
@@ -659,28 +724,35 @@ class Member_auth extends Member {
 	 */
 	public function send_reset_token()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
 		// if this user is logged in, then send them away.
 		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return ee()->functions->redirect(ee()->functions->fetch_site_index());
+			return ee()->functions->redirect($return_success_link);
 		}
 
 		// Is user banned?
 		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
 		}
 
 		// Error trapping
 		if ( ! $address = ee()->input->post('email'))
 		{
-			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
 		}
 
 		ee()->load->helper('email');
 		if ( ! valid_email($address))
 		{
-			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
 		}
 
 		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
@@ -745,42 +817,77 @@ class Member_auth extends Member {
 
 		if ($requests >= $max_requests_in_a_day)
 		{
-			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')));
+			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')), '', $return_error_link);
 		}
 
 		// Create a new DB record with the temporary reset code
-		$rand = ee()->functions->random('alnum', 8);
-		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => ee()->localize->now);
+		$resetcode = ee()->functions->random('alnum', 8);
+		$data = array('member_id' => $member_id, 'resetcode' => $resetcode, 'date' => ee()->localize->now);
 		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
+
+		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
+
+		// Determine if they have a forgot password member template or if we should use the default.
+		if (! empty($protected['password_reset_url']))
+		{
+			$reset_url = trim(strtolower($protected['password_reset_url']));
+
+			// Make sure it's an actual URL.
+			if (substr($reset_url, 0, 4) !== 'http') {
+				$reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
+			}
+		}
+		else
+		{
+			$reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+		}
+
+		// Add the reset code and possible forum_id to the reset pass url.
+		$reset_url .= '?id=' . $resetcode . $forum_id;
+
+		if (! empty($protected['email_template']))
+		{
+			$email_template = ee()->TMPL->fetch_template_and_parse_from_path($protected['email_template']);
+		} else {
+			$email_template = $template['data'];
+		}
+
+		// Check if we have a password reset subject param, otherwise, use the one from the default template.
+		if (! empty($protected['email_subject']))
+		{
+			$email_subject = $protected['email_subject'];
+		} else {
+			$email_subject = $template['title'];
+		}
 
 		// Build the email message
 		$swap = array(
 			'name'		=> $name,
-			'username'    => $username,
-			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
+			'username'  => $username,
+			'reset_url'	=> $reset_url,
 			'site_name'	=> $site_name,
 			'site_url'	=> $return
 		);
 
-		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
-
 		// _var_swap calls string replace on $template[] for each key in
 		// $swap.  If the key doesn't exist then no swapping happens.
-		$email_tit = $this->_var_swap($template['title'], $swap);
-		$email_msg = $this->_var_swap($template['data'], $swap);
+		$email_subject = $this->_var_swap($email_subject, $swap);
+		$email_msg = $this->_var_swap($email_template, $swap);
 
 		// Instantiate the email class
 		ee()->load->library('email');
 		ee()->email->wordwrap = true;
+		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
 		ee()->email->to($address);
-		ee()->email->subject($email_tit);
+		ee()->email->subject($email_subject);
 		ee()->email->message($email_msg);
 
 		if ( ! ee()->email->send())
 		{
-			return ee()->output->show_user_error('submission', array(lang('error_sending_email')));
+			return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
 		}
+
 
 		// Build success message
 		$data = array(
@@ -790,7 +897,8 @@ class Member_auth extends Member {
 			'link'		=> array($return, $site_name)
 		);
 
-		ee()->output->show_message($data);
+		// If we have a success return link, go to that, otherwise, output the standard message.
+		ee()->output->show_message($data, true, $return_success_link);
 	}
 
 	/**
@@ -880,6 +988,13 @@ class Member_auth extends Member {
 	 */
 	public function process_reset_password()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
 		// if the user is logged in, then send them away
 		if (ee()->session->userdata('member_id') !== 0)
 		{
@@ -889,12 +1004,12 @@ class Member_auth extends Member {
 		// If the user is banned, send them away.
 		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
 		}
 
 		if ( ! ($resetcode = ee()->input->get_post('resetcode')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')), '', $return_error_link);
 		}
 
 		// We'll use this in a couple of places to determine whether a token is still valid
@@ -909,18 +1024,25 @@ class Member_auth extends Member {
 
 		if ($member_id_query->num_rows() === 0)
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
+		}
+
+		// If we're here, the reset code was in the URL properly so make sure it's on the error_link
+		// as the native EE backtracker doesn't append querystrings.
+		if (! empty($return_error_link) && strpos($return_error_link, 'id=') === FALSE)
+		{
+			$return_error_link .= '?id=' . $resetcode;
 		}
 
 		// Ensure the passwords match.
 		if ( ! ($password = ee()->input->get_post('password')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')), '', $return_error_link);
 		}
 
 		if ( ! ($password_confirm = ee()->input->get_post('password_confirm')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')), '', $return_error_link);
 		}
 
 		// Validate the password, using EE_Validate. This will also
@@ -939,7 +1061,7 @@ class Member_auth extends Member {
 		$VAL->validate_password();
 		if (count($VAL->errors) > 0)
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors, '', $return_error_link);
 		}
 
 		// Update the database with the new password.  Apply the appropriate salt first.
@@ -1011,7 +1133,7 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		ee()->output->show_message($data);
+		ee()->output->show_message($data, true, $return_success_link);
 	}
 
 	/**

@@ -42,5 +42,5 @@
 			<?php endforeach ?>
 		<?php endforeach ?>
 	</div>
-	<a class="btn action add-mrg-left" rel="add_row" href=""><?=lang('add_a_row')?></a>
+	<a class="button button--default button--small" rel="add_row" href=""><?=lang('add_a_row')?></a>
 </div>

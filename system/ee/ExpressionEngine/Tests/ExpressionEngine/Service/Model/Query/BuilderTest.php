@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class BuilderTest extends TestCase {
 
-	public function tearDown()
+	public function tearDown() : void
 	{
 		m::close();
 	}

@@ -144,14 +144,15 @@ class Member_images extends Member {
 	 */
 	public function edit_avatar()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
 
-		// Fetch the avatar template
-		$template = $this->_load_element('edit_avatar');
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('edit_avatar');
+		}
 
 		// Does the current user have an avatar?
 		$query = ee()->db->select("avatar_filename, avatar_width, avatar_height")
@@ -163,6 +164,7 @@ class Member_images extends Member {
 			$template = $this->_deny_if('avatar', $template);
 			$template = $this->_allow_if('no_avatar', $template);
 
+			$avatar_filename = '';
 			$cur_avatar_url = '';
 			$avatar_width 	= '';
 			$avatar_height 	= '';
@@ -182,19 +184,23 @@ class Member_images extends Member {
 
 			$cur_avatar_url	= $avatar_url.$query->row('avatar_filename');
 
+			$avatar_filename = $query->row('avatar_filename');
 			$avatar_width 	= $query->row('avatar_width') ;
 			$avatar_height 	= $query->row('avatar_height') ;
 		}
 
+		//if it's EE template request, parse some variables
+		if (! empty($tagdata)) {
+			$template = $this->_var_swap($template, [
+				'avatar_url' => $cur_avatar_url,
+				'avatar_filename' => $avatar_filename,
+				'avatar_width' => $avatar_width,
+				'avatar_height' => $avatar_height
+			]);
+		}
+
 		// Can users upload their own images?
-		if (ee()->config->item('allow_avatar_uploads') == 'y')
-		{
-			$template = $this->_allow_if('can_upload_avatar', $template);
-		}
-		else
-		{
-			$template = $this->_deny_if('can_upload_avatar', $template);
-		}
+		$template = $this->_allow_if('can_upload_avatar', $template);
 
 		// Are there pre-installed avatars?
 
@@ -206,60 +212,7 @@ class Member_images extends Member {
 
 		$extensions = array('.gif', '.jpg', '.jpeg', '.png');
 
-		if ( ! @is_dir($avatar_path) OR ! $fp = @opendir($avatar_path))
-		{
-			$template = $this->_deny_if('installed_avatars', $template);
-		}
-		else
-		{
-			$tmpl = $this->_load_element('avatar_folder_list');
-
-		 	$folders = '';
-
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (is_dir($avatar_path.$file) AND $file != 'uploads' AND $file != '.' AND $file != '..' AND $file != '_thumbs')
-				{
-					if ($np = @opendir($avatar_path.$file))
-					{
-						while (FALSE !== ($innerfile = readdir($np)))
-						{
-							if (FALSE !== ($pos = strpos($innerfile, '.')))
-							{
-								if (in_array(substr($innerfile, $pos), $extensions))
-								{
-									$name = ucwords(str_replace("_", " ", $file));
-
-									$temp = $tmpl;
-
-									$temp = str_replace('{path:folder_path}', $this->_member_path('browse_avatars/'.$file.'/'), $temp);
-									$temp = str_replace('{folder_name}', $name, $temp);
-
-									$folders .= $temp;
-
-									break;
-								}
-							}
-						}
-
-						closedir($np);
-					}
-				}
-			}
-
-			closedir($fp);
-
-			if ($folders == '')
-			{
-				$template = $this->_deny_if('installed_avatars', $template);
-			}
-			else
-			{
-				$template = $this->_allow_if('installed_avatars', $template);
-			}
-
-			$template = str_replace('{include:avatar_folder_list}', $folders, $template);
-		}
+		$template = $this->_deny_if('installed_avatars', $template);
 
 		// Set the default image meta values
 		$max_kb = (ee()->config->item('avatar_max_kb') == '' OR ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
@@ -268,6 +221,17 @@ class Member_images extends Member {
 		$max_size = str_replace('%x', $max_w, lang('max_image_size'));
 		$max_size = str_replace('%y', $max_h, $max_size);
 		$max_size .= ' - '.$max_kb.'KB';
+
+		//if we run EE template parser, do some things differently
+		if (! empty($tagdata)) {
+			return ee()->functions->form_declaration(array(
+				'enctype'		=> 'multi',
+				'hidden_fields' => array(
+					'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+					'ACT' => ee()->functions->fetch_action_id('Member', 'upload_avatar')
+				)
+			)) . $template . '</form>';
+		}
 
 		// Finalize the template
 		return $this->_var_swap($template,
@@ -291,12 +255,6 @@ class Member_images extends Member {
 	 */
 	public function browse_avatars()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
-
 		// Define the paths and get the images
 		$avatar_path = ee()->config->slash_item('avatar_path').ee()->security->sanitize_filename($this->cur_id).'/';
 		$avatar_url = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
@@ -397,12 +355,6 @@ class Member_images extends Member {
 	 */
 	public function select_avatar()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
-
 		if (ee()->input->get_post('avatar') === FALSE OR
 			ee()->input->get_post('folder') === FALSE)
 		{
@@ -433,15 +385,16 @@ class Member_images extends Member {
 		$height	= $vals['1'];
 
 		// Update DB
-		ee()->load->model('member_model');
-		ee()->member_model->update_member(
-			ee()->session->userdata('member_id'),
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$member->set(
 			array(
 				'avatar_filename' => $avatar,
 				'avatar_width' => $width,
 				'avatar_height' => $height
 			)
 		);
+		$member->validate();
+		$member->save();
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
@@ -535,6 +488,25 @@ class Member_images extends Member {
 					return call_user_func_array(array($this, '_trigger_error'), $upload[1]);
 					break;
 			}
+		}
+
+		$return = ee()->input->get_post('RET');
+
+		if (! empty($return))
+		{
+			if (is_numeric($return)) {
+				$return_link = ee()->functions->form_backtrack($return);
+			} else {
+				$return_link = $return;
+			}
+
+			// Make sure it's an actual URL.
+			if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+				$return_link = '/' . $return_link;
+			}
+
+			ee()->functions->redirect($return_link);
+			exit;
 		}
 
 		// Success message
