@@ -79,7 +79,7 @@ class NavigationSidebar extends AbstractSidebar
 
         $this->addCustomSection();
 
-        if (ee('Permission')->hasAny('access_design', 'access_addons', 'admin_sites', 'access_utilities', 'admin_channels', 'access_logs', 'access_sys_prefs')) {
+        if (ee('Permission')->hasAny('can_access_design', 'can_access_addons', 'can_admin_sites', 'can_access_utilities', 'can_admin_channels', 'can_access_logs', 'can_access_sys_prefs')) {
 
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
