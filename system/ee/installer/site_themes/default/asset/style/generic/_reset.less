@@ -1,0 +1,114 @@
+/*
+	_reset.less
+	-------------
+	define browser normalization
+	-------------
+*/
+
+// prevent text size adjust, without disabling zoom
+html{ -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+
+// block HTML5 elements
+article, aside, details, figcaption, figure,footer,
+header, hgroup, main, menu, nav, section, summary, figure img{ display: block; }
+
+// browser normalization. only include for elements actually being used
+address, body, button,
+fieldset, figure, h1, h2, h3, h4, h5, h6, html,
+input, ol, p, pre, section, select, ul{ margin: 0; padding: 0; }
+
+// IE grossness
+a{ background-color: transparent; }
+
+// drop outlines off form fields and links
+a, input:focus, textarea:focus, select{ outline: 0; }
+
+// drop borders off linked images and fieldset
+a img, fieldset{ border: 0; }
+
+// set the cursor for abbr
+abbr{ cursor: help; }
+
+// set address to normal
+address{ font-style: normal; }
+
+// set the base font
+body{ font: normal normal @font-base @fam-sans; }
+
+// override the base font-family for code and pre
+code, kbd, pre, samp{ font-family: @fam-mono; }
+
+// make sure elements inherit the right font stuff
+button, input, optgroup, select, textarea, td, th{ font: inherit; }
+
+// insure italic styling for em, i, and strong
+em, i, strong, dfn{ font-style: italic; }
+
+// insure bold weight for b, and strong
+b, strong{ font-weight: bold; }
+
+// insure a strike through appearance for del
+del{ text-decoration: line-through; }
+
+// remove the underline for ins
+ins{ text-decoration: none; }
+
+// insure proper line height control for sub and sup
+sub, sup{ line-height: 0; position: relative; vertical-align: baseline; }
+
+// position sup
+sup{ top: -0.25em; }
+
+// position sub
+sub{ bottom: -0.25em; }
+
+// set images to a max width for responsible design
+img{ max-width: 100%; }
+
+// set tables to 100% width and get rid of cell spacing and padding
+table{ border-collapse: separate; border-spacing: 0; width: 100%; }
+
+// set th to text align left
+th{ text-align: left; }
+
+// remove padding from table cells
+th, td{ padding: 0; }
+
+// set the top and bottom margin of common block elements to @v-gutter
+address, blockquote, dl, figure, ol, p, ul, table{ margin: @v-gutter 0; }
+
+// remove margins from tables inside figures
+figure table{ margin: 0; }
+
+// set the left margin, and bullet position of unordered lists
+ul{ list-style-position: inside; margin-left: @v-gutter + 20; }
+
+// set the left margin, and bullet position of ordered lists
+ol{ list-style-position: outside; margin-left: @v-gutter + 37; }
+
+// set the line height for paragraphs and list items to @line-height
+address, li, p{ line-height: @line-height; }
+
+// give tables, and form elements a boxsizing
+input, table, textarea{ .boxsize; }
+
+// web-kit iOS fixes
+input:not([type='checkbox']):not([type='radio']), textarea{ -webkit-appearance: none; }
+
+// reset buttons
+button{
+	border: 0;
+	line-height: 1;
+	overflow: visible;
+	text-transform: none;
+	-webkit-appearance: none;
+}
+
+// reset buttons for FireFox
+button::-moz-focus-inner,
+input::-moz-focus-inner{ border: 0; margin: 0; padding: 0; }
+
+// responsibility
+@media screen and (min-width: @min-width){
+	figure{ &:first-child{ margin-top: 0; } }
+}

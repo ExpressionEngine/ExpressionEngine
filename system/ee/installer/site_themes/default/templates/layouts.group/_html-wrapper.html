@@ -1,0 +1,61 @@
+<!doctype html>
+<html dir="ltr" lang="{lang}">
+	<head>
+		<meta charset="utf-8">
+		<title>{layout:title}{site_name}</title>
+		<meta name="viewport" content="initial-scale=1">
+
+		<!-- meta data -->
+		{if layout:meta_author}<meta name="author" content="{layout:meta_author}">{/if}
+		{if layout:meta_description}<meta name="description" content="{layout:meta_description}">{/if}
+
+		<!-- open graph common -->
+		<meta property="og:site_name" content="{site_name}">
+		<meta property="og:type" content="website">
+		<meta property="og:image" content="{theme_user_folder_url}site/default/asset/img/og/default.jpg"> {!-- square, 50*50 min --}
+
+		{if layout:og_title != ''}
+			<!-- open graph per page -->
+			<meta property="og:title" content="{layout:og_title}">
+			<meta property="og:url" content="{layout:og_url}">
+			<meta property="og:description" content="{layout:og_description}">
+		{/if}
+
+		<link href="{theme_user_folder_url}site/default/asset/style/default.min.css" title="common-styles" rel="stylesheet">
+		<!-- <link href="{theme_user_folder_url}site/default/asset/style/debug.min.css" title="common-styles" rel="stylesheet"> -->
+	</head>
+	<body>
+		<header class="full">
+			<section class="row pad">
+				<section class="w-8">
+					<h1><a href="{homepage}"><b>{site_name}</b> Website</a></h1>
+				</section>
+				<section class="w-8">
+					{!-- creates a small menu link on smaller devices --}
+					<a class="small-menu" href="#"></a>
+					{!-- appears in both header and footer, so a snippet is used to keep it DRY --}
+					{snp_main_nav}
+				</section>
+			</section>
+		</header>
+
+		{layout:breadcrumbs}
+
+		<div class="content">
+			{layout:contents}
+		</div>
+
+		<footer class="full">
+			<section class="footer-content">
+				{!-- appears in both header and footer, so a snippet is used to keep it DRY --}
+				{snp_main_nav}
+				<p>&copy;{current_time format='%Y'}, all rights reserved. Built with <a href="https://expressionengine.com/" rel="external">ExpressionEngine&reg;</a></p>
+			</section>
+		</footer>
+		</section>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" ></script>
+		<script src="{theme_user_folder_url}site/default/asset/js/default.min.js" ></script>
+		<script src="{theme_user_folder_url}site/default/asset/js/plugins/cycle2.min.js"></script>
+		{layout:scripts}
+	</body>
+</html>

@@ -1,0 +1,19 @@
+/*
+	_code.less
+	-------------
+	define code
+*/
+
+@code-bg: lighten(@yellow,35%);
+@code-border: lighten(@yellow,5%);
+@code-inline-pad: 1px 3px;
+
+code{
+	p &{
+		background-color: @off-white;
+		border: 1px solid @light-gray;
+		padding: @code-inline-pad;
+		white-space: nowrap;
+			&:hover{ background-color: @code-bg; border-color: @code-border; }
+	}
+}

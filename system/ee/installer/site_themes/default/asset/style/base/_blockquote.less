@@ -1,0 +1,25 @@
+/*
+	_blockquote.less
+	-------------
+	define blockquote
+*/
+
+@blockquote-indent: 32px;
+
+blockquote{
+	border-left: 5px solid @light-gray;
+	// allows floated elements to display correctly
+	// when next to a blockquote.
+	display: table;
+	margin-left: @blockquote-indent;
+	padding: 0 0 0 @v-gutter;
+		p{
+			font-family: @fam-serif;
+			font-size: @font-lrg;
+			line-height: 1.7;
+			margin: 0 0 10px;
+				&:last-child{ margin-bottom: 0; }
+		}
+		code{ font-size: @font-sm; font-style: normal; }
+		cite{ color: @gray; font-style: normal; }
+}

@@ -1,0 +1,63 @@
+{layout='layouts/_html-wrapper'}
+
+{!-- page vars (prefix p_) --}
+{preload_replace:p_url='blog'}
+{preload_replace:p_url_entry='entry'}
+{!-- channel vars (prefix ch_) --}
+{preload_replace:ch='blog'}
+{preload_replace:ch_disable='category_fields|member_data'}
+
+{layout:set name='scripts'}{/layout:set}
+
+<section class="row content home pad">
+	<section class="w-16">
+		<figure class="cycle-slideshow"
+			data-cycle-fx="scrollHorz"
+			data-cycle-pause-on-hover="true"
+			data-cycle-speed="500"
+			data-cycle-prev=".prev-slide"
+    		data-cycle-next=".next-slide"
+		>
+			{!-- slideshow images from a specific directory, and category --}
+			{exp:file:entries directory_id='8' dynamic='no' limit='5' disable='pagination' category='not 25'}
+				<img src="{file_url}" alt="{file_name:attr_safe}"{if count == 1} class="act"{/if}>
+				{if count == 1}
+					<div class="slide-ctrls">
+						<a class="prev-slide" href="#"></a>
+						<a class="next-slide" href="#"></a>
+					</div>
+				{/if}
+			{/exp:file:entries}
+		</figure>
+		<h1>Recent Blog Posts <a class="btn all" href="{path='{p_url}'}">All Posts</a></h1>
+	</section>
+	<section class="w-8">
+		<div class="entries">
+			{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='4'}
+				{!-- listing as a snippet, as it's used through more than one template --}
+				{snp_blog_list}
+				{!-- no results --}
+				{if no_results}
+					<div class="alert warn no-results">
+						<p>{gv_entries_none}</p>
+					</div>
+				{/if}
+			{/exp:channel:entries}
+		</div>
+	</section>
+	<section class="w-8">
+		<div class="entries">
+			{!-- using the offset='' parameter here to start the listing on the 5th item. which allows us to split it into two columns without any wonky math --}
+			{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='4' offset='4'}
+				{!-- listing as a snippet, as it's used through more than one template --}
+				{snp_blog_list}
+				{!-- no results --}
+				{if no_results}
+					<div class="alert warn no-results">
+						<p>{gv_entries_none}</p>
+					</div>
+				{/if}
+			{/exp:channel:entries}
+		</div>
+	</section>
+</section>
