@@ -818,7 +818,7 @@ class Channel_form_lib
             )
         );
 
-        $this->compile_js();
+        $this->compile_js($addt_js, $markItUp);
     }
 
     public function compile_js()
