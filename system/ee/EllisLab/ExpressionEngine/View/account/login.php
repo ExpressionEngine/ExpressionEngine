@@ -3,7 +3,7 @@
 <div class="box">
 	<h1><b><?=$header?></b><span class="icon-locked"></span></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
-	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path))?>
+	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => ee()->input->get_post('after')))?>
 		<fieldset>
 			<?=lang('username', 'username')?>
 			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => USERNAME_MAX_LENGTH, 'tabindex' => 1))?>

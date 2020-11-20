@@ -17,7 +17,7 @@ class Consent_upd {
 	{
 		ee()->load->dbforge();
 		$addon = ee('Addon')->get('consent');
-		$this->version = $addon->getVersion();
+		$this->version = $addon ? $addon->getVersion() : '1.0.0';
 	}
 
 	/**

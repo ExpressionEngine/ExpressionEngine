@@ -176,7 +176,7 @@ function (_React$Component) {
       directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
         return thisDirectory.value == directory;
       });
-      return directory.label;
+      return directory ? directory.label : directory;
     }
   }, {
     key: "bindDragAndDropEvents",
@@ -228,7 +228,6 @@ function (_React$Component) {
       return new Promise(function (resolve, reject) {
         var formData = new FormData();
         formData.append('directory', _this3.state.directory);
-        formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);

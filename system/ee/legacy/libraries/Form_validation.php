@@ -39,6 +39,7 @@ class EE_Form_validation {
 
 		// Automatically load the form helper
 		ee()->load->helper('form');
+		ee()->load->helper('multibyte');
 
 		// Set the character encoding in MB.
 		if (function_exists('mb_internal_encoding'))
@@ -376,7 +377,7 @@ class EE_Form_validation {
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_username', str_replace('%x', $len, ee()->lang->line('username_too_short')));
+			$this->set_message('valid_username', str_replace('%d', $len, ee()->lang->line('username_too_short')));
 			return FALSE;
 		}
 
@@ -973,7 +974,7 @@ class EE_Form_validation {
 					$object = $this->CI;
 				}
 				// Check fieldtype for the callback
-				elseif (method_exists($this->_fieldtype, $rule))
+				elseif (!empty($this->_fieldtype) && method_exists($this->_fieldtype, $rule))
 				{
 					$object = $this->_fieldtype;
 				}
@@ -1610,12 +1611,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) < $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) < $val) ? FALSE : TRUE;
 
-		return (strlen($str) < $val) ? FALSE : TRUE;
 	}
 
 	/**
@@ -1633,12 +1630,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) > $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) > $val) ? FALSE : TRUE;
 
-		return (strlen($str) > $val) ? FALSE : TRUE;
 	}
 
 	/**
@@ -1656,12 +1649,8 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($str) != $val) ? FALSE : TRUE;
-		}
+		return (ee_mb_strlen($str) != $val) ? FALSE : TRUE;
 
-		return (strlen($str) != $val) ? FALSE : TRUE;
 	}
 
 	/**

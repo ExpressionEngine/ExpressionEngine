@@ -60,6 +60,8 @@ $lang = array(
 
 'cmt_subscribe' => 'Subscribe to this comment',
 
+'cmt_must_be_logged_in' => 'This page is only accessible to logged-in users.',
+
 'cmt_too_large' => 'The comment you submitted contains %n characters. Only %x characters are allowed.',
 
 'cmt_unsubscribe' => 'Un-subscribe from this comment',

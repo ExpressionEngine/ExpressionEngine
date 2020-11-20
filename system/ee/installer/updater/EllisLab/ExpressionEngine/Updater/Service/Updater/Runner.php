@@ -31,7 +31,8 @@ class Runner {
 			'updateFiles',
 			'checkForDbUpdates',
 			'backupDatabase',
-			'updateDatabase'
+			'updateDatabase',
+			'updateAddons'
 		]);
 
 		$this->logger = $this->makeLoggerService();
@@ -132,6 +133,8 @@ class Runner {
 	{
 		ee()->config->config['allow_extensions'] = 'n';
 
+		ee()->load->library('progress');
+
 		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
@@ -144,6 +147,10 @@ class Runner {
 			$this->makeLoggerService()->log($log_message);
 
 			// Legacy logger lib to log versions to update_log table
+			if (ee()->load->is_loaded('logger') === false) {
+				ee()->load->library('logger');
+			}
+			
 			ee()->logger->updater($log_message);
 
 			$db_updater->runStep($step);
@@ -208,11 +215,14 @@ class Runner {
 	public function selfDestruct($rollback = NULL)
 	{
 		$config = ee('Config')->getFile();
-		$config->set('is_system_on', 'y', TRUE);
+		$config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), TRUE);
 		$config->set('app_version', APP_VER, TRUE);
 
 		// Legacy logger lib to log to update_log table
-		ee()->load->library('logger');
+		if (ee()->load->is_loaded('logger') === false) {
+			ee()->load->library('logger');
+		}
+
 		ee()->logger->updater('Update complete. Now running version ' . APP_VER);
 
 		$working_dir = $this->makeUpdaterService()->path();
@@ -246,6 +256,11 @@ class Runner {
 				))
 				->defer();
 		}
+	}
+
+	public function updateAddons()
+	{
+		$this->makeAddonUpdaterService()->updateAddons();
 	}
 
 	/**
@@ -337,6 +352,17 @@ class Runner {
 			$filesystem,
 			$verifier,
 			$this->logger
+		);
+	}
+
+	/**
+	 * Makes AddonUpgrade service
+	 */
+	protected function makeAddonUpdaterService()
+	{
+
+		return new Service\Updater\AddonUpdater(
+			ee()->config->item('app_version')
 		);
 	}
 

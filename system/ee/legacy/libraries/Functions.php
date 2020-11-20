@@ -1248,16 +1248,16 @@ class EE_Functions {
 				if (strncasecmp($parts[0], 'not ', 4) == 0)
 				{
 					$parts[0] = substr($parts[0], 4);
-					$not = 'NOT';
+					$not = 'NOT ';
 				}
 
 				if ($null === TRUE)
 				{
-					$sql .= "AND ({$prefix}{$field} {$not} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
+					$sql .= "AND ({$prefix}{$field} {$not}IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 				}
 				else
 				{
-					$sql .= "AND {$prefix}{$field} {$not} IN ('".implode("','", $parts)."')";
+					$sql .= "AND {$prefix}{$field} {$not}IN ('".implode("','", $parts)."')";
 				}
 			}
 		}
@@ -1814,7 +1814,7 @@ class EE_Functions {
 		$str = str_replace("%uFFD4", "\'",		$str);
 		$str = str_replace("%uFFD5", "\'",		$str);
 
-		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/","'&#'.base_convert('\\1',16,10).';'", $str);
 
 		$str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 

@@ -72,7 +72,11 @@ class Runner {
 		$unpacker->moveUpdater();
 
 		$this->logger->log('Taking the site offline');
-		ee('Config')->getFile()->set('is_system_on', 'n', TRUE);
+
+		// We'll save the current system on setting
+		$config = ee('Config')->getFile();
+		$config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'));
+		$config->set('is_system_on', 'n', TRUE);
 	}
 
 	public function rollback()
@@ -87,7 +91,7 @@ class Runner {
 	{
 		if (REQ == 'CLI')
 		{
-			stdout($this->getLanguageForStep($step).'...', CLI_STDOUT_BOLD);
+			$this->stdout($this->getLanguageForStep($step).'...');
 		}
 
 		try
@@ -121,5 +125,22 @@ class Runner {
 		ee()->lang->loadfile('updater');
 		return lang($step.'_step');
 	}
+
+	private function stdout($message) {
+		$text_color = '[1;37m';
+
+		$arrow_color = '[0;34m';
+		$text_color = '[1;37m';
+
+		if (REQ == 'CLI' && ! empty($message))
+		{
+			$message = "\033".$arrow_color."==> \033" . $text_color . strip_tags($message) . "\033[0m\n";
+
+			$stdout = fopen('php://stdout', 'w');
+			fwrite($stdout, $message);
+			fclose($stdout);
+		}
+	}
+
 }
 // EOF

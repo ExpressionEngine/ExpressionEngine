@@ -876,8 +876,8 @@ class Uploads extends AbstractFilesController {
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
 		if (
-			($current_files = ee()->input->post('files')) === FALSE AND
-			$db_sync != 'y'
+			($current_files = ee()->input->post('files')) === FALSE
+			&& $db_sync != 'y'
 		)
 		{
 			return FALSE;
@@ -1046,6 +1046,7 @@ class Uploads extends AbstractFilesController {
 					'file_size'				=> filesize($file_path_name),
 					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
 				);
+
 				ee()->file_model->save_file($file_data);
 
 				continue;
@@ -1063,6 +1064,11 @@ class Uploads extends AbstractFilesController {
 
 			$image_dimensions = ee()->filemanager->get_image_dimensions($file_path);
 
+			// This may not be an image, in which case
+			$imageDimensionsToWrite = is_array($image_dimensions)
+						? $image_dimensions['height'] . ' ' . $image_dimensions['width']
+						: ' ';
+
 			$file_data = array(
 				'upload_location_id'	=> $id,
 				'site_id'				=> $this->config->item('site_id'),
@@ -1071,13 +1077,18 @@ class Uploads extends AbstractFilesController {
 				'file_size'				=> $file['size'],
 				'uploaded_by_member_id'	=> ee()->session->userdata('member_id'),
 				'modified_by_member_id' => ee()->session->userdata('member_id'),
-				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width'],
+				'file_hw_original'		=> $imageDimensionsToWrite,
 				'upload_date'			=> $file['date'],
 				'modified_date'			=> $file['date']
 			);
 
-
-			$saved = ee()->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
+			$saved = ee()->filemanager
+						->save_file(
+							$this->_upload_dirs[$id]['server_path'] . $file['name'],
+							$id,
+							$file_data,
+							FALSE
+						);
 
 			if ( ! $saved['status'])
 			{

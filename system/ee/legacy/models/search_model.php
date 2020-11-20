@@ -288,7 +288,7 @@ class Search_model extends CI_Model {
 
 					if (count($keyword_clauses))
 					{
-						$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+						$where_clause .= " AND (" . join(' AND ', $keyword_clauses);
 					}
 					else
 					{

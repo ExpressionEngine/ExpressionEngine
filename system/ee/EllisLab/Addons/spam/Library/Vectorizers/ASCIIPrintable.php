@@ -26,17 +26,28 @@ class ASCIIPrintable implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
-		$length = mb_strlen($source);
+
+		$length = ee_mb_strlen($source);
+
 		if ($length !== 0)
 		{
+
 			$ratio = $non_ascii / $length;
+
 		}
 		else
 		{
+
 			$ratio = 1;
+
 		}
+
 		return $ratio;
+
 	}
 
 }

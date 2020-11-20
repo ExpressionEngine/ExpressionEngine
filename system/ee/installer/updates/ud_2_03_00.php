@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_2_3_0;
+
 /**
  * Update
  */
@@ -22,7 +24,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_update_session_table',
 				'_fix_emoticon_config',

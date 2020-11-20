@@ -15,7 +15,7 @@ function load_php_version {
 
 	source ~/.phpbrew/bashrc
 	echo "Loading PHP ${PHP_VERSION} ..."
-	phpbrew use php-$PHP_VERSION
+	phpbrew use $PHP_VERSION
 	# Prevent other PHPs from loading
 	echo "" > /etc/apache2/mods-available/php5.load
 	echo "" > /etc/apache2/mods-available/php7.load
@@ -28,7 +28,9 @@ while [[ $# > 0 ]]
 	key="$1"
 
 	# Default PHP version
-	PHP_VERSION="7.1.11"
+	# PHP_VERSION="5.6.0"
+	#PHP_VERSION="7.2.11"
+	PHP_VERSION="7.4.1"
 
 	case $key in
 		-p|--php)
@@ -70,7 +72,9 @@ function setup_permissions {
 }
 
 ARTIFACTS_DIR="/app/artifacts/${PHP_VERSION}"
-mkdir -p $ARTIFACTS_DIR
+if [ ! -d $ARTIFACTS_DIR ]; then
+	mkdir -p $ARTIFACTS_DIR;
+fi
 
 function start_apache_mysql {
 	# https://github.com/docker/for-linux/issues/72

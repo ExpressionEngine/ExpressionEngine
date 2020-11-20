@@ -33,6 +33,8 @@ class Rte {
 		$include 		= explode(',', ee()->input->get('include', TRUE));
 
 		// all allowed includes default to FALSE
+		$includes = [];
+
 		foreach (array('jquery', 'jquery_ui') as $allowed)
 		{
 			$includes[$allowed] = in_array($allowed, $include);

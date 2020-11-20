@@ -112,7 +112,7 @@ class Fluid_field_parser {
 	 */
 	private function getPossibleFields(array $field_channel_fields)
 	{
-		$cache_key = 'ChannelFields/' . implode($field_channel_fields, ',') . '/field_name';
+		$cache_key = 'ChannelFields/' . implode(',', $field_channel_fields) . '/field_name';
 
 		if (($possible_fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
 		{

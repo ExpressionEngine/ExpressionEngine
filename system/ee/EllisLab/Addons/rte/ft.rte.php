@@ -125,6 +125,20 @@ class Rte_ft extends EE_Fieldtype {
 						'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr',
 					)
 				)
+			),
+			array(
+				'title' => 'db_column_type',
+				'desc' => 'db_column_type_desc',
+				'fields' => array(
+					'db_column_type' => array(
+						'type' => 'radio',
+						'choices' => [
+							'text' => lang('TEXT'),
+							'mediumtext' => lang('MEDIUMTEXT')
+						],
+						'value' => isset($data['db_column_type']) ? $data['db_column_type'] : 'text'
+					)
+				)
 			)
 		);
 
@@ -144,6 +158,7 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return array(
 			'field_show_fmt' => 'n',
+			'db_column_type' => isset($data['db_column_type']) ? $data['db_column_type'] : 'text',
 			'field_ta_rows' => isset($data['field_ta_rows']) ? $data['field_ta_rows'] : 6
 		);
 	}
@@ -162,6 +177,52 @@ class Rte_ft extends EE_Fieldtype {
 	public function update($version)
 	{
 		return TRUE;
+	}
+
+		/**
+	 * Modify DB column
+	 *
+	 * @param Array $data
+	 * @return Array
+	 */
+	public function settings_modify_column($data)
+	{
+		return $this->get_column_type($data);
+	}
+
+	/**
+	 * Modify DB grid column
+	 *
+	 * @param array $data The field data
+	 * @return array  [column => column_definition]
+	 */
+	public function grid_settings_modify_column($data)
+	{
+		return $this->get_column_type($data, TRUE);
+	}
+
+	/**
+	 * Helper method for column definitions
+	 *
+	 * @param array $data The field data
+	 * @param bool  $grid Is grid field?
+	 * @return array  [column => column_definition]
+	 */
+	protected function get_column_type($data, $grid = FALSE)
+	{
+		$column = ($grid) ? 'col' : 'field';
+
+		$settings = ($grid) ? $data : $data[$column . '_settings'];
+		$field_content_type = isset($settings['db_column_type']) ? $settings['db_column_type'] : 'text';
+
+		$fields = [
+			$column . '_id_' . $data[$column . '_id'] => [
+				'type'		=> $field_content_type,
+				'null'		=> TRUE
+			]
+		];
+
+		return $fields;
 	}
 }
 

@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_2_0;
+
 /**
  * Update
  */
@@ -25,7 +27,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'drop_cp_search_table',
 				'add_url_field',

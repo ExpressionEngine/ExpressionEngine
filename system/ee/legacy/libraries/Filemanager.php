@@ -215,6 +215,7 @@ class Filemanager {
 	 */
 	function security_check($file_path, $prefs)
 	{
+
 		ee()->load->helper(array('file', 'xss'));
 		ee()->load->library('mime_type');
 
@@ -304,18 +305,33 @@ class Filemanager {
 	 */
 	function get_image_dimensions($file_path)
 	{
-		if (function_exists('getimagesize'))
-		{
-			$D = @getimagesize($file_path);
 
-			$image_size = array(
-				'height'	=> $D['1'],
-				'width'	=> $D['0']
-				);
+		if( ! file_exists($file_path)) {
 
-			return $image_size;
+			return FALSE;
+
 		}
 
+		// PHP7.4 does not come with GD JPEG processing by default
+		// So, we need to run this check.
+		if (function_exists('getimagesize'))
+		{
+			$imageSize = @getimagesize($file_path);
+
+			if($imageSize && is_array($imageSize)) {
+
+				$imageSizeParsed = [
+					'height'	=> $imageSize['1'],
+					'width'	=> $imageSize['0']
+				];
+
+				return $imageSizeParsed;
+
+			}
+
+		}
+
+		// The file is either not an image, or there was an error.
 		return FALSE;
 	}
 
@@ -1260,7 +1276,7 @@ class Filemanager {
 				return FALSE;
 			}
 
-			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			$resized_path = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 			// Does the thumb image exist
 			if (file_exists($resized_path.$prefs['file_name']))

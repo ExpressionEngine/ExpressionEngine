@@ -26,17 +26,28 @@ class Punctuation implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$punctuation = preg_match_all('/[!-~]/u', $source, $matches);
-		$characters  = mb_strlen($source);
+
+		$characters  = ee_mb_strlen($source);
+
 		if ($characters !== 0)
 		{
+
 			$ratio = $punctuation / $characters;
+
 		}
 		else
 		{
+
 			$ratio = 1;
+
 		}
+
 		return $ratio;
+
 	}
 
 }

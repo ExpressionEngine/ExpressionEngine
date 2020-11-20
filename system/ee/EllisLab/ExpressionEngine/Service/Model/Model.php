@@ -68,6 +68,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	protected $_foreign_keys = array();
 
 	/**
+	 * @var check if entry has saved already. Used in hooks
+	 */
+	protected $_has_saved = false;
+
+	/**
 	 * @var Type names and their corresponding classes
 	 */
 	protected static $_type_classes = array(
@@ -85,7 +90,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 
-		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
+		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\ColumnObject\Timestamp',
 
 		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
 		'base64Array' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
@@ -600,6 +605,9 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		foreach ($forwarded as $event => $hook)
 		{
+
+			if(!$this->hookShouldTrigger($hook)) continue; 
+
 			$this->on($event, function() use ($trigger, $hook, $that)
 			{
 				$addtl_args = func_get_args();
@@ -608,6 +616,31 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 				call_user_func_array($trigger, array_merge($args, $addtl_args));
 			});
 		}
+	}
+
+	/**
+	 * checks if designated hook should fitre
+	 * @param  string $hook    Name of hook
+	 * @return boolean
+	 */
+	protected function hookShouldTrigger($hook)
+	{
+		$process = true;
+		switch ($hook) {
+			case 'before_channel_entry_delete':
+				$process = false;
+				break;
+			case 'after_channel_entry_save':
+				if($this->_has_saved) {
+					$process = false;
+				}
+				$this->_has_saved = true;
+				break;
+			default:
+				$process = true;
+				break;
+		}
+		return $process;
 	}
 
 	/**

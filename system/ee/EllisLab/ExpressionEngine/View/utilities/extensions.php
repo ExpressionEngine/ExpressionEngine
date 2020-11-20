@@ -5,7 +5,7 @@
 		<h1><?=$cp_heading?></h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php $this->embed('_shared/table', $table); ?>
-		<? if (isset($pagination)) echo $pagination; ?>
+		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ($table['total_rows'] > 0): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">

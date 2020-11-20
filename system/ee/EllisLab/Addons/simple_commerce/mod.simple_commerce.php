@@ -556,15 +556,14 @@ class Simple_commerce {
 
 		foreach ($_POST as $key => $value)
 		{
-			// str_replace("\n", "\r\n", $value)
-			// put line feeds back to CR+LF as that's how PayPal sends them out
-			// otherwise multi-line data will be rejected as INVALID
-			// Note: get_magic_quotes_gpc FALSE as of PHP 5.4.0
-			$stripped = (get_magic_quotes_gpc()) ? stripslashes(str_replace("\n", "\r\n", $value)) : str_replace("\n", "\r\n", $value);
+
+			$stripped = str_replace("\n", "\r\n", $value);
+
 			$postdata .= "&$key=".urlencode($stripped);
+
 		}
 
-		$ch=curl_init();
+		$ch = curl_init();
 		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
 		curl_setopt($ch,CURLOPT_URL,$url);
 		curl_setopt($ch,CURLOPT_POST,1);
@@ -612,8 +611,10 @@ class Simple_commerce {
 			// put line feeds back to CR+LF as that's how PayPal sends them out
 			// otherwise multi-line data will be rejected as INVALID
 			// Note: get_magic_quotes_gpc FALSE as of PHP 5.4.0
-			$stripped = (get_magic_quotes_gpc()) ? stripslashes(str_replace("\n", "\r\n", $value)) : str_replace("\n", "\r\n", $value);
+			$stripped = str_replace("\n", "\r\n", $value);
+
 			$postdata .= "&$key=".urlencode($stripped);
+
 		}
 
 		$info = '';

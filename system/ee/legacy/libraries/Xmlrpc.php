@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -231,9 +231,11 @@ class EE_Xmlrpc {
 			}
 			elseif(is_array($value['0']) && ($value['1'] == 'struct' OR $value['1'] == 'array'))
 			{
-				while (list($k) = each($value['0']))
-				{
+
+				foreach ($value[0] as $k) {
+
 					$value['0'][$k] = $this->values_parsing($value['0'][$k], TRUE);
+
 				}
 
 				$temp = new XML_RPC_Values($value['0'], $value['1']);
@@ -482,8 +484,8 @@ class XML_RPC_Response
 	{
 		if ($array !== FALSE && is_array($array))
 		{
-			while (list($key) = each($array))
-			{
+
+			foreach ($array as $key => $val) {
 				if (is_array($array[$key]))
 				{
 					$array[$key] = $this->decode($array[$key]);
@@ -530,28 +532,38 @@ class XML_RPC_Response
 		elseif($kind == 'array')
 		{
 			reset($xmlrpc_val->me);
-			list($a,$b) = each($xmlrpc_val->me);
-			$size = count($b);
 
-			$arr = array();
+			foreach ($xmlrpc_val->me as $b) {
 
-			for($i = 0; $i < $size; $i++)
-			{
-				$arr[] = $this->xmlrpc_decoder($xmlrpc_val->me['array'][$i]);
+				$size = count($b);
+
+				$arr = array();
+
+				for($i = 0; $i < $size; $i++)
+				{
+					$arr[] = $this->xmlrpc_decoder($xmlrpc_val->me['array'][$i]);
+				}
+
+				return $arr;
+				
 			}
-			return $arr;
+
 		}
 		elseif($kind == 'struct')
 		{
 			reset($xmlrpc_val->me['struct']);
 			$arr = array();
 
-			while(list($key,$value) = each($xmlrpc_val->me['struct']))
-			{
+			foreach ($xmlrpc_val->me['struct'] as $key => $value) {
+
 				$arr[$key] = $this->xmlrpc_decoder($value);
+
 			}
+			
 			return $arr;
+
 		}
+
 	}
 
 
@@ -673,7 +685,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 		//-------------------------------------
 
 		$parser = xml_parser_create($this->xmlrpc_defencoding);
-		$parser_name = (string) $parser;
+		$parser_name = spl_object_hash($parser);
 
 		$this->xh[$parser_name]					= array();
 		$this->xh[$parser_name]['isf']			= 0;
@@ -710,7 +722,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 		//  PARSE XML DATA
 		//-------------------------------------
 
-		if ( ! xml_parse($parser, $data, count($data)))
+		if ( ! xml_parse($parser, $data, strlen($data)))
 		{
 			$errstr = sprintf('XML error: %s at line %d',
 					xml_error_string(xml_get_error_code($parser)),
@@ -818,7 +830,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
 	function open_tag($the_parser, $name, $attrs)
 	{
-		$parser_name = (string) $the_parser;
+		$parser_name = spl_object_hash($the_parser);
 
 		// If invalid nesting, then return
 		if ($this->xh[$parser_name]['isf'] > 1) return;
@@ -922,7 +934,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
 	function closing_tag($the_parser, $name)
 	{
-		$parser_name = (string) $the_parser;
+		$parser_name = spl_object_hash($the_parser);
 
 		if ($this->xh[$parser_name]['isf'] > 1) return;
 
@@ -1068,7 +1080,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
 	function character_data($the_parser, $data)
 	{
-		$parser_name = (string) $the_parser;
+		$parser_name = spl_object_hash($the_parser);
 
 		if ($this->xh[$parser_name]['isf'] > 1) return; // XML Fault found already
 
@@ -1096,8 +1108,9 @@ class XML_RPC_Message extends EE_Xmlrpc
 	{
 		if ($array !== FALSE && is_array($array))
 		{
-			while (list($key) = each($array))
-			{
+
+			foreach ($array as $key) {
+
 				if (is_array($array[$key]))
 				{
 					$array[$key] = $this->output_parameters($array[$key]);
@@ -1111,6 +1124,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 			}
 
 			$parameters = $array;
+
 		}
 		else
 		{
@@ -1146,7 +1160,8 @@ class XML_RPC_Message extends EE_Xmlrpc
 		elseif($kind == 'array')
 		{
 			reset($param->me);
-			list($a,$b) = each($param->me);
+
+			$b = array_values($param->me);
 
 			$arr = array();
 
@@ -1163,13 +1178,16 @@ class XML_RPC_Message extends EE_Xmlrpc
 
 			$arr = array();
 
-			while(list($key,$value) = each($param->me['struct']))
-			{
+			foreach ($param->me['struct'] as $key => $value) {
+
 				$arr[$key] = $this->decode_message($value);
+
 			}
 
 			return $arr;
+
 		}
+
 	}
 
 }
@@ -1303,8 +1321,8 @@ class XML_RPC_Values extends EE_Xmlrpc
 				// struct
 				$rs .= "<struct>\n";
 				reset($val);
-				while(list($key2, $val2) = each($val))
-				{
+
+				foreach ($val as $key2 => $val2) {
 					$rs .= "<member>\n<name>{$key2}</name>\n";
 					$rs .= $this->serializeval($val2);
 					$rs .= "</member>\n";
@@ -1353,16 +1371,21 @@ class XML_RPC_Values extends EE_Xmlrpc
 		$ar = $o->me;
 		reset($ar);
 
-		list($typ, $val) = each($ar);
-		$rs = "<value>\n".$this->serializedata($typ, $val)."</value>\n";
+		$rs = '';
+
+		foreach ($ar as $typ => $val) {
+			$rs .= "<value>\n".$this->serializedata($typ, $val)."</value>\n";
+		}
+
 		return $rs;
+
 	}
 
 	function scalarval()
 	{
-		reset($this->me);
-		list($a,$b) = each($this->me);
-		return $b;
+		return reset($this->me);
+
+		//return is_array($this->me) ? $this->me[0] : false;
 	}
 
 

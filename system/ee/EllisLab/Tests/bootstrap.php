@@ -18,6 +18,7 @@ define('DOC_URL', 'http://our.doc.url/');
 // application constants
 define('AMP', '&amp;');
 define('SELF', 'index.php');
+define('EESELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 

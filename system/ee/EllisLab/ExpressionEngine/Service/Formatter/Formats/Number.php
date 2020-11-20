@@ -11,6 +11,7 @@
 namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
+use NumberFormatter;
 
 /**
  * Formatter\Number
@@ -105,6 +106,7 @@ class Number extends Formatter {
 		// This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
 		// localization formatting lookup tables. The 100% solution is easily achieved by ensuring
 		// that the intl extension is loaded in PHP, handled above.
+		// NOTE: `money_format` is deprecated in PHP7.4
 		if (function_exists('money_format'))
 		{
 			// grab the current monetary locale to reset after formatting

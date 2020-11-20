@@ -273,7 +273,7 @@ class Moblog {
 		/** ------------------------------
 		/**  Got Mail?
 		/** ------------------------------*/
-
+		$this->pop_newline = "\r\n";
 		if ( ! $line = $this->pop_command("STAT"))
 		{
 			$this->message_array[] = 'unable_to_retrieve_emails';
@@ -816,10 +816,7 @@ class Moblog {
 				$matches[1] = trim($matches[1]);
 
 				ee()->db->select('field_id');
-				ee()->db->from('channel_fields, channels');
-				ee()->db->where('channels.field_group', 'channel_fields.group_id');
-				ee()->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
-				ee()->db->where('channel_fields.group_id', $query->row('field_group'));
+				ee()->db->from('channel_fields');
 				ee()->db->where('(channel_fields.field_name = "'.$matches[1].'" OR '.ee()->db->dbprefix('channel_fields').'.field_label = "'.$matches[1].'")', NULL, FALSE);
 
 				/* -------------------------------------
@@ -932,7 +929,7 @@ class Moblog {
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
 
-		ee()->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
+		ee()->db->select();
 		$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 
 		if ($query->num_rows() == 0)
@@ -976,6 +973,7 @@ class Moblog {
 						'status'			=> ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
 						'allow_comments'	=> $query->row('deft_comments')
 					 );
+		$entry = ee('Model')->make('ChannelEntry');
 
 		// Remove ignore text
 
@@ -1014,9 +1012,7 @@ class Moblog {
 		if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches))
 		{
 			ee()->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
-			ee()->db->from('channels, channel_fields');
-			ee()->db->where('channels.field_group = '.ee()->db->dbprefix('channel_fields').'.group_id', NULL, FALSE);
-			ee()->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
+			ee()->db->from('channel_fields');
 
 			/* -------------------------------------
 			/*  Hidden Configuration Variable
@@ -1038,9 +1034,9 @@ class Moblog {
 
 				foreach($results->result_array() as $row)
 				{
-					$field_name[$row['field_id']]	= $row['field_name'];
-					$field_label[$row['field_id']]	= $row['field_label'];
-					$field_format[$row['field_id']] = $row['field_fmt'];
+					$field_name[$row['field_name']]	= $row['field_name'];
+					$field_label[$row['field_name']]	= $row['field_label'];
+					$field_format[$row['field_name']] = $row['field_fmt'];
 				}
 
 				unset($results);
@@ -1051,7 +1047,6 @@ class Moblog {
 
 					if ($key = array_search($x['0'],$field_name) OR $key = array_search($x['0'],$field_label))
 					{
-
 
 						$format = ( ! isset($x['1']) OR ! stristr($x['1'],"format")) ? $field_format[$key] : preg_replace("/format\=[\"\'](.*?)[\'\"]/","$1",trim($x['1']));
 
@@ -1086,7 +1081,7 @@ class Moblog {
 
 		if( ! preg_match_all("/".LD.$tag."(.*?)".RD."(.*?)".LD.'\/'.$tag.RD."/s", $this->template, $matches))
 		{
-			$this->parse_field($this->moblog_array['moblog_field_id'],$this->template, $query->row('field_group') );
+			$this->parse_field($this->moblog_array['moblog_field_id'], $this->template);
 		}
 		else
 		{
@@ -1097,13 +1092,13 @@ class Moblog {
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
 
-				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') );
+				$this->parse_field($params, $matches['2'][$i]);
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
 
 			if (trim($this->template) != '')
 			{
-				$this->parse_field($this->moblog_array['moblog_field_id'],$this->template, $query->row('field_group') );
+				$this->parse_field($this->moblog_array['moblog_field_id'], $this->template);
 			}
 		}
 
@@ -1131,10 +1126,12 @@ class Moblog {
 				$combined_data = $value['data'];
 				$combined_data = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim($combined_data)) : trim($combined_data);
 
-				$data['field_id_'.$key] = $combined_data;
+				$data[$key] = $combined_data;
 				$data['field_ft_'.$key] = $value['format'];
 			}
 		}
+
+		$entry->set($data);
 
 
 		$data['category'] = array();
@@ -1165,6 +1162,8 @@ class Moblog {
 			$data['category'] = array_unique($data['category']);
 		}
 
+		$entry->Categories->set($data['category']);
+
 		// forgive me, please.
 
 		// ...
@@ -1180,13 +1179,15 @@ class Moblog {
 		ee()->session->userdata['can_edit_other_entries'] = 'y';
 
 		// Insert the Entry
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_entries');
-		ee()->legacy_api->instantiate('channel_fields');
 
-		ee()->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
+		// Max URL title length, minus uniqid length, minus separator
+		$url_title = substr(ee('Format')->make('Text', $data['title'])->urlSlug()->compile(), 0, URL_TITLE_MAX_LENGTH-23-1);
 
-		$result = ee()->api_channel_entries->save_entry($data, $data['channel_id']);
+		$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
+
+		$entry->url_title = uniqid($url_title . $separator, TRUE);
+
+		$result = $entry->save();
 
 		if ($result)
 		{
@@ -1223,7 +1224,7 @@ class Moblog {
 	 * 	@param
 	 *	@param string
 	 */
-	function parse_field($params, $field_data, $field_group)
+	function parse_field($params, $field_data)
 	{
 		$field_id = '1';
 		$format = 'none';
@@ -1283,7 +1284,6 @@ class Moblog {
 				$xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
 				ee()->db->select('field_id');
-				ee()->db->where('group_id', $field_group);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
 
 				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
@@ -1297,6 +1297,9 @@ class Moblog {
 				$format		= $params['format'];
 			}
 		}
+
+		$field_name_q = ee()->db->select('field_name')->from('channel_fields')->where('field_id', $field_id)->get();
+		$field_name = $field_name_q->row('field_name');
 
 		$dir_id = $this->moblog_array['moblog_upload_directory'];
 
@@ -1490,9 +1493,8 @@ class Moblog {
 		/** ------------------------------*/
 
 		$field_data = str_replace(array('{text}', '{sender_email}'), array($this->body, $this->sender_email), $field_data);
-
-		$this->entry_data[$field_id]['data'] 	= ( ! isset($this->entry_data[$field_id])) ? $field_data : $this->entry_data[$field_id]['data']."\n".$field_data;
-		$this->entry_data[$field_id]['format'] 	= $format;
+		$this->entry_data[$field_name]['data'] 	= ( ! isset($this->entry_data[$field_name])) ? $field_data : $this->entry_data[$field_name]['data']."\n".$field_data;
+		$this->entry_data[$field_name]['format'] 	= $format;
 	}
 
 	/**

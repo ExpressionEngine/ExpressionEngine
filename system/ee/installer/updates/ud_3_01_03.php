@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_1_3;
+
 /**
  * Update
  */
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'update_memberlist_order_by',
 				'update_site_ids_for_categories'
@@ -46,7 +48,7 @@ class Updater {
 	 */
 	private function update_memberlist_order_by()
 	{
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->update_site_prefs(array('memberlist_order_by' => 'member_id'), 'all');
 	}
 

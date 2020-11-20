@@ -41,7 +41,7 @@ class EE_Core {
 		}
 
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
+		if (function_exists("set_time_limit") == TRUE)
 		{
 			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
@@ -72,8 +72,8 @@ class EE_Core {
 
 		// application constants
 		define('APP_NAME',		'ExpressionEngine');
-		define('APP_BUILD',		'20190928');
-		define('APP_VER',		'5.3.0');
+		define('APP_BUILD',		'20200422');
+		define('APP_VER',		'5.4.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -486,6 +486,28 @@ class EE_Core {
 			$request = implode('/', $request);
 			return 'CP: '.$request;
 		});
+
+
+		//show them post-update checks, again
+		if (ee()->input->get('after') == 'update')
+		{
+			$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
+			$messages = $advisor->postUpdateChecks();
+			if (!empty($messages)) {
+				ee()->lang->load('utilities');
+				$alert = '';
+				foreach ($messages as $message) {
+					$alert .= $message . BR;
+				}
+				$alert .= sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile());
+				ee('CP/Alert')
+					->makeBanner()
+					->asWarning()
+					->addToBody($alert)
+					->canClose()
+					->now();
+			}
+		}
 	}
 
 	/**

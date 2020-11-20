@@ -5,7 +5,7 @@ return array(
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'Moblog',
 	'description' => '',
-	'version'     => '3.2.0',
+	'version'     => '3.3.0',
 	'namespace'   => 'EllisLab\Addons\Moblog',
 	'settings_exist' => TRUE,
 	'models' => array(

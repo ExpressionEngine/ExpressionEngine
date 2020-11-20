@@ -208,34 +208,95 @@ class EE_Input {
 			$data['httponly'] = ( ! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
 		}
 
-		//  Turn httponly into a true boolean.
-		$data['httponly'] = ($data['httponly'] == 'y' ? TRUE : FALSE);
+		// Turn httponly into a true boolean.
+		$data['httponly'] = get_bool_from_string($data['httponly']);
 
 		// Deal with secure cookies.
-		$data['secure_cookie'] = (bool_config_item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = bool_config_item('cookie_secure');
 
-		if ($data['secure_cookie'])
-		{
-			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
-			if ( ! $req OR $req == 'off')
-			{
-				return FALSE;
+		if ($data['secure_cookie']) {
+			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false;
+
+			if (!$req || $req === 'off') {
+				return false;
 			}
 		}
+
+		$data = $this->validateCookieData($data);
 
 		/* -------------------------------------------
 		/* 'set_cookie_end' hook.
 		/*  - Take control of Cookie setting routine
 		/*  - Added EE 2.5.0
 		*/
-			ee()->extensions->call('set_cookie_end', $data);
-			if (ee()->extensions->end_script === TRUE) return;
+		$hookResponse = ee()->extensions->call('set_cookie_end', $data);
+
+		// Only accept hook response if it includes valid data. At minimum it should return name, value, expire.
+		if (is_array($hookResponse) && empty(array_diff_key(array_flip(['expire', 'name', 'value']), $hookResponse))) {
+			$data = array_replace($data, $hookResponse);
+		}
+
+		if (ee()->extensions->end_script === true) {
+			return false;
+		}
 		/*
 		/* -------------------------------------------*/
 
+		$data = $this->validateCookieData($data);
 
-		return setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'],
-			$data['path'], $data['domain'], $data['secure_cookie'], $data['httponly']);
+		if (PHP_VERSION_ID < 70300) {
+			// Older versions of PHP do not support an array as the 3rd parameter,
+			// thus the SameSite setting must be hacked in with the path option.
+			return setcookie($data['prefix'].$data['name'], $data['value'],
+				$data['expire'],
+				$data['path'] . '; SameSite=' . $data['samesite'],
+				$data['domain'],
+				$data['secure_cookie'],
+				$data['httponly']
+			);
+		}
+
+		return setcookie($data['prefix'].$data['name'], $data['value'], [
+			'expires' => $data['expire'],
+			'path' => $data['path'],
+			'domain' => $data['domain'],
+			'secure' => $data['secure_cookie'],
+			'httponly' => $data['httponly'],
+			'samesite' => $data['samesite'],
+		]);
+	}
+
+	/**
+	 * Validate the cookie settings to maintain data integrity.
+	 * SameSite explained: https://web.dev/samesite-cookies-explained
+	 * Allow default setting for all site cookies, then allow for overrides when this method is called.
+	 * Cookies without a SameSite attribute will be treated as SameSite=Lax.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	private function validateCookieData($data = [])
+	{
+		// Set a default value if undefined
+		if (!isset($data['samesite'])) {
+			$data['samesite'] = 'Lax';
+		}
+
+		// Allow site administrators to override EE and/or 3rd part add-on cookies.
+		// There is nothing wrong with wanting all cookies to be Strict.
+		$data['samesite'] = ee()->config->item('cookie_samesite') ?: $data['samesite'];
+
+		// Don't allow invalid values for samesite
+		if (!in_array($data['samesite'], ['Lax', 'None', 'Strict'])) {
+			$data['samesite'] = 'Lax';
+		}
+
+		// Cookies with SameSite=None must also specify Secure, meaning they require a secure context.
+		if ($data['samesite'] === 'None') {
+			$data['secure_cookie'] = true;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -444,16 +505,18 @@ class EE_Input {
 			switch ($which) {
 				case 'ipv4':
 					$flag = FILTER_FLAG_IPV4;
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP, $flag);
 					break;
 				case 'ipv6':
 					$flag = FILTER_FLAG_IPV6;
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP, $flag);
 					break;
 				default:
-					$flag = '';
+					$filtered = filter_var($ip, FILTER_VALIDATE_IP);
 					break;
 			}
 
-			return filter_var($ip, FILTER_VALIDATE_IP, $flag) !== FALSE;
+			return $filtered !== FALSE;
 		}
 
 		// If it's not we'll do it manually
@@ -829,7 +892,8 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					global $$global;
+					global ${$global};
+
 					$$global = NULL;
 				}
 			}
@@ -839,7 +903,8 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						global $$key;
+						global ${$key};
+
 						$$key = NULL;
 					}
 				}
@@ -966,12 +1031,6 @@ class EE_Input {
 			return $new_array;
 		}
 
-		// We strip slashes if magic quotes is on to keep things consistent
-		if (get_magic_quotes_gpc())
-		{
-			$str = stripslashes($str);
-		}
-
 		// Clean UTF-8 if supported
 		if (UTF8_ENABLED === TRUE)
 		{
@@ -979,7 +1038,7 @@ class EE_Input {
 		}
 
 		// Remove control characters
-		$str = remove_invisible_characters($str);
+		$str = remove_invisible_characters($str, FALSE);
 
 		// Should we filter the input data?
 		if ($this->_enable_xss === TRUE)

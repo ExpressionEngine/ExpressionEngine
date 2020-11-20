@@ -125,42 +125,6 @@ if (!is_callable('random_bytes')) {
         $RandomCompatUrandom = false;
     }
 
-    /**
-     * mcrypt_create_iv()
-     *
-     * We only want to use mcypt_create_iv() if:
-     *
-     * - random_bytes() hasn't already been defined
-     * - the mcrypt extensions is loaded
-     * - One of these two conditions is true:
-     *   - We're on Windows (DIRECTORY_SEPARATOR !== '/')
-     *   - We're not on Windows and /dev/urandom is readabale
-     *     (i.e. we're not in a chroot jail)
-     * - Special case:
-     *   - If we're not on Windows, but the PHP version is between
-     *     5.6.10 and 5.6.12, we don't want to use mcrypt. It will
-     *     hang indefinitely. This is bad.
-     *   - If we're on Windows, we want to use PHP >= 5.3.7 or else
-     *     we get insufficient entropy errors.
-     */
-    if (
-        !is_callable('random_bytes')
-        &&
-        // Windows on PHP < 5.3.7 is broken, but non-Windows is not known to be.
-        (DIRECTORY_SEPARATOR === '/' || PHP_VERSION_ID >= 50307)
-        &&
-        // Prevent this code from hanging indefinitely on non-Windows;
-        // see https://bugs.php.net/bug.php?id=69833
-        (
-            DIRECTORY_SEPARATOR !== '/' ||
-            (PHP_VERSION_ID <= 50609 || PHP_VERSION_ID >= 50613)
-        )
-        &&
-        extension_loaded('mcrypt')
-    ) {
-        // See random_bytes_mcrypt.php
-        require_once $RandomCompatDIR . '/random_bytes_mcrypt.php';
-    }
     $RandomCompatUrandom = null;
 
     /**

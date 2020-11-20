@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_2_1_5;
+
 /**
  * Update
  */
@@ -52,7 +54,7 @@ class Updater {
 		// Add a MySQL index or three to help performance
 		$steps[] = '_do_add_indexes';
 
-		$steps = new ProgressIterator($steps);
+		$steps = new \ProgressIterator($steps);
 
 		foreach ($steps as $k => $v)
 		{

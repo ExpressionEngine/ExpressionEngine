@@ -3603,7 +3603,7 @@ SCRIPT;
 	private function switch_site($site_id)
 	{
 		ee()->config->set_item('site_id', $site_id);
-		ee()->config->site_prefs('', $site_id);
+		ee()->config->get_cached_site_prefs($site_id);
 	}
 }
 

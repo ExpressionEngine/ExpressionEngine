@@ -211,7 +211,7 @@ class Rte_mcp {
 		ee()->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('default_toolset'),
-			'required|is_numeric|enum[' . implode($toolids, ',') . ']'
+			'required|is_numeric|enum[' . implode(',', $toolids) . ']'
 		);
 
 		if (ee()->form_validation->run())

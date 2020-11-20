@@ -479,6 +479,16 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		/**
+		 * we're placing the hook call here, so it would be called a bit earlier,
+		 * when all data are still present
+		 */
+		if (ee()->extensions->active_hook('before_channel_entry_delete'))
+		{
+			$entry = ee('Model')->get('ChannelEntry', $this->entry_id)->first();
+			ee()->extensions->call('before_channel_entry_delete', $entry, $entry->getValues());
+		}
+
 		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
@@ -605,6 +615,11 @@ class ChannelEntry extends ContentModel {
 
 	private function updateEntryStats()
 	{
+
+		if(ee()->config->item('ignore_entry_stats') == 'y') {
+			return;
+		}
+
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 

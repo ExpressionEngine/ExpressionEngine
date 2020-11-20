@@ -948,19 +948,19 @@ class EE_Image_lib {
 
 		if ($this->wm_vrt_alignment == 'B')
 		{
-			$this->wm_vrt_offset = $this->wm_vrt_offset * -1;
-			$y_padding = $y_padding * -1;
+			$this->wm_vrt_offset = ((int) $this->wm_vrt_offset) * -1;
+			$y_padding = ((int) $y_padding) * -1;
 		}
 
 		if ($this->wm_hor_alignment == 'R')
 		{
-			$this->wm_hor_offset = $this->wm_hor_offset * -1;
-			$x_padding = $x_padding * -1;
+			$this->wm_hor_offset = ((int) $this->wm_hor_offset) * -1;
+			$x_padding = ((int) $x_padding) * -1;
 		}
 
 		//  Set the base x and y axis values
-		$x_axis = $this->wm_hor_offset + $x_padding;
-		$y_axis = $this->wm_vrt_offset + $y_padding;
+		$x_axis = ((int) $this->wm_hor_offset) + ((int) $x_padding);
+		$y_axis = ((int) $this->wm_vrt_offset) + ((int) $y_padding);
 
 		//  Set the vertical position
 		switch ($this->wm_vrt_alignment)
@@ -1008,7 +1008,7 @@ class EE_Image_lib {
 		{
 			// set our RGB value from above to be transparent and merge the images with the specified opacity
 			imagecolortransparent($wm_img, imagecolorat($wm_img, $this->wm_x_transp, $this->wm_y_transp));
-			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, $this->wm_opacity);
+			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, (int) $this->wm_opacity);
 		}
 
 		//  Output the image
@@ -1533,15 +1533,9 @@ class EE_Image_lib {
 	 */
 	function gd_loaded()
 	{
-		if ( ! extension_loaded('gd'))
-		{
-			if (! function_exists('dl') OR ! @dl('gd.so'))
-			{
-				return FALSE;
-			}
-		}
 
-		return TRUE;
+		return extension_loaded('gd');
+
 	}
 
 	/**

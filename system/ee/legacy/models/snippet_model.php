@@ -131,7 +131,7 @@ class Snippet_Entity {
 	 */
 	public function __get($name)
 	{
-		if ( strpos('_', $name) === 0  OR ! property_exists($this, $name))
+		if ( strpos('_', strval($name)) === 0  OR ! property_exists($this, $name))
 		{
 			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}
@@ -146,7 +146,7 @@ class Snippet_Entity {
 	 */
 	public function __set($name, $value)
 	{
-		if ( strpos('_', $name) === 0 OR ! property_exists($this, $name))
+		if ( strpos('_', strval($name)) === 0 OR ! property_exists($this, $name))
 		{
 			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}

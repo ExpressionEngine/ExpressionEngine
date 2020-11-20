@@ -146,7 +146,6 @@ class DragAndDropUpload extends React.Component {
     return new Promise((resolve, reject) => {
       let formData = new FormData()
       formData.append('directory', this.state.directory)
-      formData.append('file', file)
       formData.append('csrf_token', EE.CSRF_TOKEN)
 
       let xhr = new XMLHttpRequest()
