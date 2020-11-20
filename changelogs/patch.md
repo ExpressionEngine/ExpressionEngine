@@ -7,7 +7,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Bullet list below, e.g.
 - Added <new feature>
 - Fixed the consent form's return behavior.
-
+- Fixed "Select Dropdown" "Populate the menu from another channel field" not showing any field options.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
