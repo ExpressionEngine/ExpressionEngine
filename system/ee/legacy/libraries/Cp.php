@@ -236,6 +236,12 @@ class Cp {
 			$new_version = ee()->el_pings->getUpgradeInfo())
 		{
 			ee()->view->new_version = $new_version;
+			$version_major = explode('.', APP_VER, 2)[0];
+			$update_version_major = explode('.', $new_version['version'], 2)[0];
+
+			if (version_compare($version_major, $update_version_major, '<')) {
+				ee()->view->major_update = true;
+			}
 		}
 
 		$this->_notices();
