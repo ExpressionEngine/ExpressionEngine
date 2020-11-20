@@ -278,10 +278,14 @@ class General extends Settings {
 			// New version available
 			if (!empty($version_info) && version_compare(ee()->config->item('app_version'), $version_info['version'], '<'))
 			{
+				$version_major = explode('.', APP_VER, 2)[0];
+				$update_version_major = explode('.', $version_info['version'], 2)[0];
+
 				if (AJAX_REQUEST)
 				{
 					return [
 						'isVitalUpdate' => $version_info['security'],
+						'isMajorUpdate' => version_compare($version_major, $update_version_major, '<'),
 						'newVersionMarkup' => ee('View')->make('ee:_shared/_new_version')->render($version_info)
 					];
 				}
