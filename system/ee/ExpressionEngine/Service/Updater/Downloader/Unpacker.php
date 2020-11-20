@@ -118,7 +118,7 @@ class Unpacker {
 		// Check to see if we're dealing with the update from 5 to 6 that removed the EllisLab namespace.
 		if (file_exists($el_req_path)) {
 			$this->requirements->setClassPath($el_req_path);
-		} elseif (file_exists($ee_req_path)) {
+		} else {
 			$this->requirements->setClassPath($ee_req_path);
 		}
 		
