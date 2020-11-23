@@ -121,8 +121,6 @@ context('Member Group List', () => {
       page.get('alert_success').contains('Success');
       page.get('alert_success').contains('The following roles were deleted')
       page.get('alert_success').contains('Moderators');
-
-      })
       
     }) 
 
