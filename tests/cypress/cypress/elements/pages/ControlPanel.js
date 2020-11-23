@@ -8,7 +8,7 @@ class ControlPanel {
             "main_menu": "div.ee-sidebar__items",
             "global_menu": "div.ee-sidebar .ee-sidebar__title",
 
-            'dev_menu': '.ee-sidebar__item[title="Developer"]',
+            'dev_menu': '.ee-sidebar__item[title="Tools"]',
             'members_btn': '.ee-sidebar__item:contains("Members")',
 
             "submit_buttons": '.form-btns .button',

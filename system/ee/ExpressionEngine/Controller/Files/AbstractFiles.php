@@ -70,6 +70,10 @@ abstract class AbstractFiles extends CP_Controller {
 			{
 				$watermark_header->isActive();
 			}
+
+			if (ee('Model')->get('File')->count()) {
+				$sidebar->addItem(lang('export_all'), ee('CP/URL')->make('files/export'))->withIcon('download');
+			}
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
@@ -141,14 +145,6 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$toolbar_items = [];
-
-		if (ee('Model')->get('File')->count())
-		{
-			$toolbar_items['export'] = [
-				'href'  => ee('CP/URL')->make('files/export'),
-				'title' => lang('export_all')
-			];
-		}
 
 		if ($active !== NULL)
 		{

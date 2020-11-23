@@ -1,12 +1,6 @@
-			<?php $cp_main_menu = ee()->menu->generate_menu(); $current_page = ee()->uri->segment(2); ?>
-			<div class="ee-sidebar <?=$class?> <?php if (!isset($ee_cp_viewmode) || $ee_cp_viewmode!='classic') : ?> hidden<?php endif; ?><?php if (isset($collapsed_nav) && $collapsed_nav=='1') : ?> ee-sidebar__collapsed<?php endif; ?>">
-				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
-				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i><span class="ee-sidebar__collapsed-hidden"> <?=ee()->config->item('site_name')?></span></span><span class="ee-sidebar__title-down-arrow ee-sidebar__collapsed-hidden"><i class="fas fa-angle-down"></i></span></a>
+        <div class="ee-sidebar__items">
+					<?=$sidebar?>
 
-				<div class="dropdown dropdown--accent">
-					<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
-					<div class="dropdown__divider"></div>
-					<div class="dropdown__header"><?=lang('sites')?></div>
 
 					<?php
 					if (!empty($cp_main_menu['sites'])) :
@@ -81,17 +75,16 @@
 							$update_available = isset(ee()->view->new_version);
 							$vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
 
-							if ( ! empty($version_identifier))
-							{
-								$version_class .= ' ee-sidebar__version--dev';
-							}
-							elseif ($update_available)
-							{
+							if ($update_available) {	
 								if ($vital_update) {
 									$version_class .= ' ee-sidebar__version--update-vital';
 								} else {
 									$version_class .= ' ee-sidebar__version--update';
 								}
+							}
+
+							if ( ! empty($version_identifier)) {
+								$version_class .= ' ee-sidebar__version--dev';
 							}
 						?>
 
@@ -126,8 +119,3 @@
 					</div>
 
 				</div>
-			</div>
-
-
-
-

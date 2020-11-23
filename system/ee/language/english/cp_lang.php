@@ -23,6 +23,10 @@ $lang = array(
 
 'nav_developer_tools' => 'Developer Tools',
 
+'nav_tools' => 'Tools',
+
+'nav_design' => 'Design',
+
 'template_manager' => 'Templates',
 
 'utilities' => 'Utilities',
@@ -474,6 +478,8 @@ $lang = array(
 
 'auto_br' => 'Auto line break',
 
+'btn_authenticate' => 'Authenticate',
+
 'btn_authenticate_and_save' => 'Authenticate &amp; Save',
 
 'btn_canceling' => 'Canceling...',
@@ -617,6 +623,10 @@ $lang = array(
 
 'authenticating' => 'authenticating...',
 
+'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
+
+'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
+
 'checking_for_updates' => 'Checking for updates...',
 
 'download' => 'download',
@@ -638,6 +648,8 @@ $lang = array(
 'out_of_date_recommended' => 'Recommended Upgrade',
 
 'out_of_date_upgrade' => 'New version found',
+
+'out_of_date_upgrade_major' => 'New major version available',
 
 'owned_by' => 'Owned by',
 
