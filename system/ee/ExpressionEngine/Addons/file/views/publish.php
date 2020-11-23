@@ -1,12 +1,8 @@
 <input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>">
 
 <div class="fields-upload-chosen list-item <?php if ( ! $file) echo " hidden";?>">
-	<div class="fields-upload-chosen-file list-item__content-left">
-		<figure class="<?php if ( ! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
-			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ( ! $is_image): ?> hidden<?php endif ?>">
-		</figure>
-	</div>
-	<div class="fields-upload-chosen-name list-item__content">
+
+  <div class="fields-upload-chosen-name">
 		<div>
 			<?php if ($title): ?>
 				<?=$title?>
@@ -16,7 +12,8 @@
 		</div>
 		<!--<div class="list-item__secondary">File Size</div>-->
 	</div>
-	<div class="list-item__content-right">
+
+  <div class="fields-upload-chosen-controls">
 		<div class="fields-upload-tools">
 			<div class="button-group button-group-small">
 				<?=$fp_edit?>
@@ -24,6 +21,13 @@
 			</div>
 		</div>
 	</div>
+
+  <div class="fields-upload-chosen-file">
+		<figure class="<?php if ( ! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
+			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ( ! $is_image): ?> hidden<?php endif ?>">
+		</figure>
+	</div>
+
 </div>
 
 <?php
