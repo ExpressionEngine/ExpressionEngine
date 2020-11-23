@@ -23,6 +23,10 @@ $lang = array(
 
 'nav_developer_tools' => 'Developer Tools',
 
+'nav_tools' => 'Tools',
+
+'nav_design' => 'Design',
+
 'template_manager' => 'Templates',
 
 'utilities' => 'Utilities',
