@@ -244,38 +244,17 @@ if (EE.cp.updateCompleted) {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	console.log('Site URL:', EE.site_id, EE.site_name, EE.site_url);
+	if (! EE.cp.lvUrl) {
+		return;
+	}
 
 	$.ajax({
 		type: 'POST',
-		url: 'https://ee-license-server.test/check',
+		url: EE.cp.lvUrl,
 		dataType: 'json',
 		data: {
-			// license: '13a9-f74c-ac3x-l3c9',
-			// domain: 'ee6testing.test',
-			addons: [
-				{
-					name: 'Matrix',
-					slug: 'matrix',
-					author: 'EEHarbor',
-					version: '3.2.5',
-					enabled: true,
-				},
-				{
-					name: 'Wygwam',
-					slug: 'wygwam',
-					author: 'EEHarbor',
-					version: '5.0.3',
-					enabled: true,
-				},
-				{
-					name: 'SEEO',
-					slug: 'seeo',
-					author: 'EEHarbor',
-					version: '1.3.1',
-					enabled: true,
-				}
-			],
+			license: EE.cp.licenseKey,
+			addons: JSON.parse(EE.cp.installedAddons),
 			meta: [
 				{
 					site_name: EE.site_name,
@@ -287,11 +266,17 @@ EE.cp.validateLicense = function() {
 
 		success: function(result) {
 			if (result.messageType != 'success') {
-				// alert(result.message);
+				console.log('License Result Failure:', result);
 				return;
 			}
 
-			console.log('Result:', result, 'Result Message:', result.message);
+			for (var addon of result.addons) {
+				if (addon.status == 'expired') {
+					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left orange shadow">Expired</div>');
+				} else if (addon.status == 'invalid') {
+					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left red shadow">Unlicensed</div>'); // "Invalid" status
+				}
+			}
 		},
 
 		error: function(data, textStatus, errorThrown) {

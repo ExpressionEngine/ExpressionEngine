@@ -174,18 +174,6 @@ class Cp {
 			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
-		$site_id = ee()->session->flashdata('site_id');
-		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
-
-		// // echo '<div style="font-size:12px;color:#000;padding:10px 20px;border:1px solid #ccc;background-color:#ffffe6;">VARDUMP:<pre>';
-		// // var_dump($site_id, $sites);
-		// // echo '</pre></div>';
-		// // exit;
-		// echo '<div style="font-size:12px;color:#000;padding:10px 20px;border:1px solid #ccc;background-color:#ffffe6;">VARDUMP:<pre>';
-		// var_dump(BASE, ee()->config->item('site_url'), APP_BUILD, ee()->config->item('app_build'), APP_VER, ee()->config->item('app_version'), APP_NAME);
-		// echo '</pre></div>';
-		// // exit;
-
 		if (ee()->session->flashdata('update:completed'))
 		{
 			ee()->javascript->set_global('cp.updateCompleted', TRUE);
@@ -208,6 +196,25 @@ class Cp {
 			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
 			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
 		));
+
+		if (! empty(ee()->config->item('lv_url'))) {
+			$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
+
+			$installed_modules_js = [];
+			foreach ($installed_modules->result() as $installed_module) {
+				$installed_modules_js[] = [
+					'name' => $installed_module->module_name,
+					'slug' => strtolower($installed_module->module_name),
+					'version' => $installed_module->module_version,
+				];
+			}
+
+			ee()->javascript->set_global(array(
+				'cp.licenseKey' => '123412341234',
+				'cp.lvUrl' => ee()->config->item('lv_url'),
+				'cp.installedAddons' => json_encode($installed_modules_js)
+			));
+		}
 
 		$js_scripts['file'][] = 'cp/jump_menu';
 
