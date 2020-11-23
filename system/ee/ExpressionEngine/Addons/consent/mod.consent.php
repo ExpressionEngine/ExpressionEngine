@@ -58,7 +58,7 @@ class Consent {
 			'class'  => ee()->TMPL->form_class,
 			'hidden_fields' => [
 				'ACT' => ee()->functions->fetch_action_id('Consent', 'submitConsent'),
-				'RET' => ee('Encrypt')->encode(ee()->TMPL->fetch_param('return')),
+				'RET' => ee('Encrypt')->encode(ee()->TMPL->fetch_param('return', ee()->uri->uri_string())),
 				'consent_names' => ee('Encrypt')->encode(json_encode($requests->pluck('consent_name'))),
 			]
 		];
