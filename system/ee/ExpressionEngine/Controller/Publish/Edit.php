@@ -236,6 +236,15 @@ class Edit extends AbstractPublishController {
 				'choices' => $channel_id ? NULL : $choices
 			] : NULL
 		);
+		
+		if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
+			$base_url->addQueryStringVariables(
+				array(
+					'sort_dir' => $table->sort_dir,
+					'sort_col' => $table->sort_col
+				)
+			);
+		}
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])

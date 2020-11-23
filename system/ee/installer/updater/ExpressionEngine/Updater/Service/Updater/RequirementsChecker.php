@@ -173,8 +173,14 @@ class RequirementsChecker
 			}
 		}
 
+		// Check to see if we're upgrading from EE5 or EE6+.
 		// random_compat requirement is processed differently
-		require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
+		if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php')) {
+			require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
+		} else {
+			require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
+		}
+
 		try {
 			random_bytes(1);
 		} catch (Exception $e) {
