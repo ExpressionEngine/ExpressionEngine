@@ -377,7 +377,7 @@ class EE_Form_validation {
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_username', str_replace('%x', $len, ee()->lang->line('username_too_short')));
+			$this->set_message('valid_username', str_replace('%d', $len, ee()->lang->line('username_too_short')));
 			return FALSE;
 		}
 
@@ -974,7 +974,7 @@ class EE_Form_validation {
 					$object = $this->CI;
 				}
 				// Check fieldtype for the callback
-				elseif (method_exists($this->_fieldtype, $rule))
+				elseif (!empty($this->_fieldtype) && method_exists($this->_fieldtype, $rule))
 				{
 					$object = $this->_fieldtype;
 				}

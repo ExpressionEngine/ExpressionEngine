@@ -493,6 +493,8 @@ class Member_memberlist extends Member {
 
 		// Check to see if the old style pagination exists
 		// @deprecated 2.8
+		ee()->load->library('pagination');
+
 		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
@@ -524,8 +526,6 @@ class Member_memberlist extends Member {
 			ee()->pagination->initialize($config);
 		}
 
-		// Start running pagination
-		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
 		$pagination->basepath = $this->_member_path('memberlist').$path;

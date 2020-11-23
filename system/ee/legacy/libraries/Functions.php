@@ -1248,16 +1248,16 @@ class EE_Functions {
 				if (strncasecmp($parts[0], 'not ', 4) == 0)
 				{
 					$parts[0] = substr($parts[0], 4);
-					$not = 'NOT';
+					$not = 'NOT ';
 				}
 
 				if ($null === TRUE)
 				{
-					$sql .= "AND ({$prefix}{$field} {$not} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
+					$sql .= "AND ({$prefix}{$field} {$not}IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 				}
 				else
 				{
-					$sql .= "AND {$prefix}{$field} {$not} IN ('".implode("','", $parts)."')";
+					$sql .= "AND {$prefix}{$field} {$not}IN ('".implode("','", $parts)."')";
 				}
 			}
 		}

@@ -678,7 +678,9 @@ class Grid_lib {
 			// Check to see if the fieldtype accepts Grid as a content type;
 			// also, temporarily exlcude Relationships for content types
 			// other than channel
-			if ( ! $fieldtype->accepts_content_type('grid') ||
+			if (empty($fieldtype) ||
+				! method_exists($fieldtype, 'accepts_content_type') ||
+				! $fieldtype->accepts_content_type('grid') ||
 				($this->content_type != 'channel' && $field_short_name == 'relationship'))
 			{
 				unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);

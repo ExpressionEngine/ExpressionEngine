@@ -127,10 +127,6 @@ class Updater {
 			)
 		);
 
-		foreach (ee('Model')->get('Channel')->all() as $channel)
-		{
-			$channel->updateEntryStats();
-		}
 	}
 
 	/**

@@ -246,6 +246,7 @@ class EE_Relationship_data_parser {
 
 		$config = array(
 			'callbacks' => array(
+				'tagdata_loop_start' => array($node, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end' => array($node, 'callback_tagdata_loop_end')
 			),
 			'disable' => array(

@@ -77,6 +77,7 @@ $lang = array(
 
 'yes' => 'Yes',
 
+'required_fields' => 'Required Fields',
 
 /* Errors */
 'captcha_incorrect' => 'You did not submit the word exactly as it appears in the image',

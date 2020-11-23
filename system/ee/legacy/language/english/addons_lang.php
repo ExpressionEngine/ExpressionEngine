@@ -137,6 +137,8 @@ $lang = array(
 
 'extensions_disabled_desc' => 'Extensions have been disabled.',
 
+'extensions_disabled_message' => 'Extensions have been disabled in system configuration, therefore they are not present in this list.',
+
 'extensions_disabled_warning' => 'In order to install this add-on you need to enable extensions. Do you want to enable extensions?',
 
 'extensions_enabled' => 'Extensions Enabled',

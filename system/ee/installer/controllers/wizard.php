@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '5.3.2';	// The version being installed
+	public $version           = '5.4.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -33,9 +33,11 @@ class Wizard extends CI_Controller {
 	public $header            = '';
 	public $subtitle          = '';
 
-	private $current_step = 1;
-	private $steps        = 3;
-	private $addon_step   = FALSE;
+	private $current_step 			= 1;
+	private $steps        			= 3;
+	private $addon_step   			= FALSE;
+	private $shouldBackupDatabase	= FALSE;
+	private $shouldUpgradeAddons 	= FALSE;
 
 	public $now;
 	public $year;
@@ -148,6 +150,7 @@ class Wizard extends CI_Controller {
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
 		define('DOC_URL', 'https://docs.expressionengine.com/v5/');
+		define('AMP', '&amp;');
 
 		// Third party constants
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
@@ -223,6 +226,7 @@ class Wizard extends CI_Controller {
 		$this->day   = gmdate('d', $this->now);
 
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
+		ee('App')->setupAddons(PATH_THIRD);
 	}
 
 	/**
@@ -249,6 +253,8 @@ class Wizard extends CI_Controller {
 		{
 			if ($this->is_installed)
 			{
+				//remove the update notices from previous installations
+				$this->update_notices->clear();
 				return $this->update_form();
 			}
 			else
@@ -441,6 +447,20 @@ class Wizard extends CI_Controller {
 				->count_all_results('members');
 			$type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
 
+			//Perform post-flight checks
+			if ($type == 'update') {
+				$postflight_messages = $this->postflight();
+				if (!empty($postflight_messages)) {
+					ee()->lang->loadfile('utilities');
+					foreach ($postflight_messages as $message) {
+						$vars['update_notices'][] = (object) [
+							'is_header' => false,
+							'message' => $message . '<br>' . sprintf(lang('debug_tools_instruction'), ee('CP/URL')->make('utilities/debug-tools')->compile())
+						];
+					}
+				}
+			}
+
 			$this->is_installed = TRUE;
 			$this->show_success($type, $vars);
 			return FALSE;
@@ -465,6 +485,29 @@ class Wizard extends CI_Controller {
 
 		// Onward!
 		return TRUE;
+	}
+
+	/**
+	 * Post-flight Tests - guide to any further actions needed
+	 * @return Array
+	 */
+	private function postflight()
+	{
+		ee()->functions->clear_caching('all');
+
+		foreach (ee('Model')->get('Channel')->all() as $channel)
+		{
+			$channel->updateEntryStats();
+		}
+
+		ee('Model')->get('ChannelLayout')
+			->with('Channel')
+			->all()
+			->synchronize();
+		
+		$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
+
+		return $advisor->postUpdateChecks();
 	}
 
 	/**
@@ -1034,13 +1077,21 @@ class Wizard extends CI_Controller {
 	{
 		$cp_login_url = $this->userdata['cp_url'].'?/cp/login&return=&after='.$type;
 
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH . '/user/cache/mailing_list.zip'));
+
 		// Try to rename automatically if there are no errors
-		if ($this->rename_installer()
-			&& empty($template_variables['errors'])
-			&& empty($template_variables['error_messages']))
-		{
+		if ($this->rename_installer($template_variables)) {
 			ee()->load->helper('url');
 			redirect($cp_login_url);
+		} else {
+			if (!isset($template_variables['update_notices'])) {
+				$template_variables['update_notices'] = [];
+			}
+			array_unshift($template_variables['update_notices'], (object) [
+				'is_header' => false,
+				'message' => lang('success_delete')
+			]);
 		}
 
 		// Are we back here from a input?
@@ -1143,6 +1194,7 @@ class Wizard extends CI_Controller {
 	{
 		$this->title = sprintf(lang('update_title'), $this->installed_version, $this->version);
 		$vars['action'] = $this->set_qstr('do_update');
+		$vars['show_advanced'] = ee()->config->item('updater_allow_advanced') === 'y';
 		$this->set_output('update_form', $vars);
 	}
 
@@ -1152,6 +1204,10 @@ class Wizard extends CI_Controller {
 	 */
 	private function do_update()
 	{
+		// On first call, we can set addons to upgrade and back up the db
+		$this->shouldBackupDatabase = ee()->input->post('database_backup');
+		$this->shouldUpgradeAddons = ee()->input->post('update_addons');
+
 		// Make sure the current step is the correct number
 		$this->current_step = ($this->addon_step) ? 3 : 2;
 
@@ -1162,6 +1218,11 @@ class Wizard extends CI_Controller {
 
 		// if any of the underlying code uses caching, make sure we do nothing
 		ee()->config->set_item('cache_driver', 'dummy');
+
+		if($this->shouldBackupDatabase) {
+			$this->backupDatabase();
+			$this->shouldBackupDatabase = false;
+		}
 
 		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
@@ -1313,6 +1374,8 @@ class Wizard extends CI_Controller {
 		{
 			$this->refresh = FALSE;
 		}
+
+		$this->runAddonUpdaterHook($next_version);
 
 		$this->title = sprintf(lang('updating_title'), $this->version);
 		$this->subtitle = sprintf(lang('running_updates'), $next_version);
@@ -1592,11 +1655,10 @@ class Wizard extends CI_Controller {
 	{
 		$captcha_url = '{base_url}images/captchas/';
 
-		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path)
-		{
+		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path) {
 			$prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
-			$this->userdata[$path] = rtrim(realpath($prefix.$this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-			$this->userdata[$path] = str_replace($this->base_path, '{base_path}', $this->userdata[$path]);
+			$this->userdata[$path] = rtrim(realpath($prefix . $this->userdata[$path]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			$this->userdata[$path] = str_replace(str_replace('/', DIRECTORY_SEPARATOR, $this->base_path), '{base_path}', $this->userdata[$path]);
 		}
 
 		$config = array(
@@ -2178,16 +2240,17 @@ class Wizard extends CI_Controller {
 	 *
 	 * @return bool TRUE if we can rename, FALSE if we can't
 	 */
-	public function canRenameAutomatically()
+	public function canRenameAutomatically($template_variables)
 	{
 		if (version_compare($this->version, '3.0.0', '=')
-			&& file_exists(SYSPATH.'user/cache/mailing_list.zip'))
-		{
+			&& file_exists(SYSPATH . 'user/cache/mailing_list.zip')) {
 			return FALSE;
 		}
 
-		if ( ! empty($template_variables['error_messages']))
-		{
+		if (!empty($template_variables['mailing_list'])
+			|| !empty($template_variables['update_notices'])
+			|| !empty($template_variables['errors'])
+			|| !empty($template_variables['error_messages'])) {
 			return FALSE;
 		}
 
@@ -2198,9 +2261,9 @@ class Wizard extends CI_Controller {
 	 * Rename the installer
 	 * @return void
 	 */
-	private function rename_installer()
+	private function rename_installer($template_variables)
 	{
-		if (TRUE || ! $this->canRenameAutomatically())
+		if (!$this->canRenameAutomatically($template_variables))
 		{
 			return FALSE;
 		}
@@ -2227,9 +2290,108 @@ class Wizard extends CI_Controller {
 			|| $_SERVER['SERVER_PORT'] == '443')
 		{
 			return TRUE;
-}
+		}
 
 		return FALSE;
+	}
+
+	private function runAddonUpdaterHook($version)
+	{
+
+		if( ! $this->shouldUpgradeAddons ) {
+
+			return;
+
+		}
+
+		$addons = ee('Addon')->all();
+
+		$results = [];
+
+		foreach ($addons as $name => $info)
+		{
+			$info = ee('Addon')->get($name);
+
+			// If it's built in, we'll skip it
+			if ($info->get('built_in')) {
+				continue;
+			}
+
+			// If it doesn't have an upgrader, there's nothing to do
+			if( ! $info->hasUpgrader() ) {
+				continue;
+			}
+
+			try {
+
+				$upgrader = $info->getUpgraderClass();
+
+				$success = (new $upgrader)->upgrade($version);
+
+			} catch (\Exception $e) {
+
+				$success = false;
+
+			}
+
+			$results[$name] = $success;
+
+		}
+
+		return $results;
+
+	}
+
+	private function backupDatabase()
+	{
+
+		if ( ! ee('Filesystem')->isWritable(PATH_CACHE)) {
+
+			return false;
+
+		}
+
+		$table_name = null;
+		$offset = 0;
+
+		$date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+		$file_path = PATH_CACHE.ee()->db->database.'_'.$date.'.sql';
+
+		// Some tables might be resource-intensive, do what we can
+		@set_time_limit(0);
+		@ini_set('memory_limit','512M');
+
+		$backup = ee('Database/Backup', $file_path);
+
+		// Beginning a new backup
+		try {
+			$backup->startFile();
+			$backup->writeDropAndCreateStatements();
+		} catch (Exception $e) {
+			return false;
+		}
+
+		$returned = true;
+
+		do {
+
+			try {
+				$returned = $backup->writeTableInsertsConservatively($table_name, $offset);
+			} catch (Exception $e) {
+				return false;
+			}
+
+			if ($returned !== false) {
+				$table_name = $returned['table_name'];
+				$offset     = $returned['offset'];
+			}
+
+		} while ($returned !== false);
+
+		$backup->endFile();
+
+		return true;
+
 	}
 }
 

@@ -39,7 +39,7 @@ class Alert {
 	/**
 	 * @var string $name The name of the alert, used for identity
 	 */
-	protected $name;
+	protected $name = '';
 
 	/**
 	 * @var string $severity The severity of the alert (issue, warn, success, tip)
@@ -54,7 +54,7 @@ class Alert {
 	/**
 	 * @var string $type The type of alert (alert, inline, banner)
 	 */
-	protected $type;
+	protected $type = 'alert';
 
 	/**
 	 * @var AlertCollection $collection A collection of alerts for use with
@@ -84,7 +84,7 @@ class Alert {
 	 * @param EE_Lang $lang A EE_Lang object for loading language
 	 * @return self This returns a reference to itself
 	 */
-	public function __construct($type = 'alert', $name = '', AlertCollection $collection, View $view, EE_Lang $lang)
+	public function __construct($type, $name, $collection, View $view, EE_Lang $lang)
 	{
 		$this->type = $type;
 		$this->name = $name;
@@ -129,9 +129,10 @@ class Alert {
 	 * @param string|array $item The item to display. If it's an array it will
 	 *  be rendred as a list.
 	 * @param string $class An optional CSS class to add to the item
+	 * @param string $xss_filter Apply XSS filtering to the message
 	 * @return self This returns a reference to itself
 	 */
-	public function addToBody($item, $class = NULL)
+	public function addToBody($item, $class = NULL, $xss_filter = true)
 	{
 		if ($class)
 		{
@@ -150,13 +151,13 @@ class Alert {
 			$this->body .= '<ul>';
 			foreach ($item as $i)
 			{
-				$this->body .= '<li>' . $i . '</li>';
+				$this->body .= '<li>' . ($xss_filter ? ee('Security/XSS')->clean($i) : $i) . '</li>';
 			}
 			$this->body .= '</ul>';
 		}
 		else
 		{
-			$this->body .= '<p' . $class . '>' . $item . '</p>';
+			$this->body .= '<p' . $class . '>' . ($xss_filter ? ee('Security/XSS')->clean($item) : $item) . '</p>';
 		}
 		return $this;
 	}
@@ -264,7 +265,7 @@ class Alert {
 	 */
 	public function withTitle($title)
 	{
-		$this->title = $title;
+		$this->title = ee('Security/XSS')->clean($title);
 		return $this;
 	}
 

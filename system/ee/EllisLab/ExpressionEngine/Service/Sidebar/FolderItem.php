@@ -64,7 +64,7 @@ class FolderItem extends ListItem {
 	 * @param string $name The name of the folder list this item belongs to
 	 * @param string $removal_key The data attribute name to use when removing an item
 	 */
-	public function __construct($text, $url = NULL, $name, $removal_key)
+	public function __construct($text, $url, $name, $removal_key)
 	{
 		parent::__construct($text, $url);
 

@@ -30,12 +30,28 @@ class Logger extends File {
 	{
 		if (REQ == 'CLI' && CLI_VERBOSE)
 		{
-			stdout($message);
+			$this->stdout($message);
 		}
 
 		$message = '['.date('Y-M-d H:i:s O').'] ' . $message;
 
 		parent::log($message);
+	}
+
+	private function stdout($message) {
+		$text_color = '[1;37m';
+
+		$arrow_color = '[0;34m';
+		$text_color = '[1;37m';
+
+		if (REQ == 'CLI' && ! empty($message))
+		{
+			$message = "\033".$arrow_color."==> \033" . $text_color . strip_tags($message) . "\033[0m\n";
+
+			$stdout = fopen('php://stdout', 'w');
+			fwrite($stdout, $message);
+			fclose($stdout);
+		}
 	}
 }
 

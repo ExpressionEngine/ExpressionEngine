@@ -139,8 +139,17 @@ class ChannelField extends FieldModel {
 	{
 		parent::set($data);
 
-		$field = $this->getField($this->getSettingsValues());
-		$this->setProperty('field_settings', $field->saveSettingsForm($data));
+		$old_field_type = $this->getBackup('field_type');
+
+		if ( ! empty($old_field_type) && $old_field_type != $this->getFieldType())
+		{
+			$this->setProperty('field_settings', array());
+		}
+		else
+		{
+			$field = $this->getField($this->getSettingsValues());
+			$this->setProperty('field_settings', $field->saveSettingsForm($data));
+		}
 
 		return $this;
 	}

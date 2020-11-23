@@ -317,6 +317,8 @@ class EE_Typography {
 		//	}
 		$chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 
+		$chunks = ($chunks === FALSE) ? (array) $str : $chunks;
+
 		// Build our finalized string.  We cycle through the array, skipping tags, and processing the contained text
 		$str = '';
 		$process = TRUE;
@@ -2597,11 +2599,11 @@ while (--j >= 0)
 		{
 			if (is_php('7.2'))
 			{
-				$parts['host'] = idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
+				$parts['host'] = @idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0);
 			}
 			else
 			{
-				$parts['host'] = idn_to_ascii($parts['host']);
+				$parts['host'] = @idn_to_ascii($parts['host']);
 			}
 		}
 

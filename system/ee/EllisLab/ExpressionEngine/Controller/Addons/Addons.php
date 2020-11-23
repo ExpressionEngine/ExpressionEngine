@@ -23,6 +23,11 @@ class Addons extends CP_Controller {
 	var $params			= array();
 	var $base_url;
 
+	private $addonProviders = [
+		'EllisLab',
+		'Packet Tide',
+	];
+
 	public $assigned_modules = array();
 
 	/**
@@ -176,6 +181,14 @@ class Addons extends CP_Controller {
 			'first' => lang('addons'),
 			'third' => lang('third_party_addons')
 		);
+
+		if (ee()->config->item('allow_extensions') == 'n') {
+			ee('CP/Alert')->makeInline('extensions')
+				->asWarning()
+				->withTitle(lang('extensions_disabled'))
+				->addToBody(lang('extensions_disabled_message'))
+				->now();
+		}
 
 		$vars = array(
 			'tables' => array(
@@ -474,9 +487,14 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
+				$party = (in_array($addon['developer'], $this->addonProviders))
+							? 'first'
+							: 'third';
+				
 				$addons[$party][$name] = $addon;
+
 			}
+
 		}
 
 		return $addons;
@@ -1596,8 +1614,12 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	private function getModuleSettings($name, $method = "index", $parameters)
+	private function getModuleSettings($name, $method, $parameters)
 	{
+		if (empty($method)) {
+			$method = 'index';
+		}
+		
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
 		$info = ee('Addon')->get($name);

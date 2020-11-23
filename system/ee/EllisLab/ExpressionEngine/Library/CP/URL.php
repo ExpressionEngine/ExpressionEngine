@@ -59,8 +59,7 @@ class URL implements \Serializable {
 	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '', $requested_uri = '', $encrypt_delegate = NULL)
 	{
 		// PHP 5.3 will not throw an error on array to string conversion
-		if (is_array($path) || is_array($session_id))
-		{
+		if (is_array($path) || is_array($session_id)) {
 			throw new \InvalidArgumentException("Invalid array to string conversion in " . get_called_class());
 		}
 
@@ -166,7 +165,16 @@ class URL implements \Serializable {
 		// Remove AMP from the beginning of the query string if it exists
 		$qs = preg_replace('#^'.AMP.'#', '', $qs);
 
-		return $this->base.$path.rtrim('&'.$qs, '&');
+		if (!empty($qs)) {
+			$qs = rtrim($qs, '&');
+			if (empty($path)) {
+				$path = '?';
+			} else {
+				$path .= '&';
+			}
+		}
+
+		return $this->base.$path.$qs;
 	}
 
 	/**
