@@ -1851,7 +1851,7 @@ class Roles extends AbstractRolesController {
 
 		if (!empty($replacement_role_id)) {
 			$allowed_roles = ee('Model')->get('Role')
-				->filter('role_id', 'NOT IN', array_merge($roles, [1 ,2, 3, 4]));
+				->filter('role_id', 'NOT IN', array_merge($role_ids, [1 ,2, 3, 4]));
 			if (!ee('Permission')->isSuperAdmin()) {
 				$allowed_roles->filter('is_locked', 'n');
 			}
