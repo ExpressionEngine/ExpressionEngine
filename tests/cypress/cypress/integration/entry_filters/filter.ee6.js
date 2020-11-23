@@ -179,22 +179,19 @@ context('Entry filtering', () => {
 		})
 
 		it('can sort by search bar (Searching in Titles)', () =>{
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.route("POST", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchBar').clear().type('Channel{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',2)
 
 			entry.get('SearchBar').clear().type('Contact{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Discover{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
