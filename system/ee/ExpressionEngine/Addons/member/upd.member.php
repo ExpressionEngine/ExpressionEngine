@@ -46,7 +46,7 @@ class Member_upd extends Installer
             'method' => 'update_un_pw'
         ],
         [
-            'method' => 'member_search'
+            'method' => 'do_member_search'
         ],
         [
             'method' => 'member_delete'
@@ -65,6 +65,15 @@ class Member_upd extends Installer
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function update($current = '')
+    {
+        if (version_compare($current, '2.2.1', '<')) {
+            ee()->db->where('method', 'member_search');
+            ee()->db->update('actions', ['method' => 'do_member_search']);
+        }
+        return true;
     }
 }
 // END CLASS

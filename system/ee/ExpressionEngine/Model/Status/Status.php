@@ -141,6 +141,23 @@ class Status extends Model {
 
 		return ee('View')->make('_shared/status-tag')->render($vars);
 	}
+
+	/**
+	 * Override of the parent validateUnique to alter the lang key if it's a failure.
+	 *
+	 * @param String $key    Property name
+	 * @param String $value  Property value
+	 * @param Array  $params Rule parameters
+	 * @return Mixed String if error, TRUE if success
+	 */
+	public function validateUnique($key, $value, array $params = array())
+	{
+		$valid = parent::validateUnique($key, $value, $params);
+		if ($valid !== true) {
+			return 'duplicate_status_name';
+		}
+		return $valid;
+	}
 }
 
 // EOF

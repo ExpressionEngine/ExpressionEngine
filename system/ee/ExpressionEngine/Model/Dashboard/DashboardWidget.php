@@ -76,7 +76,7 @@ class DashboardWidget extends Model {
 		return !in_array($source, $parameters) ? TRUE : $rule->skip();
 	}
 
-	public function validWidgetSources($key, $value, $parameters=[], $rule)
+	public function validWidgetSources($key, $value, $parameters, $rule)
 	{
 		if ($value=='template') return TRUE;
 

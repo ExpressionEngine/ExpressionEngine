@@ -58,7 +58,7 @@ context('Status Create/Edit', () => {
         // Duplicate status name
         page.get('status').clear().type('open')
         page.get('status').trigger('blur')
-        page.hasError(page.get('status'), 'This field must be unique.')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
 
 
         page.get('status').clear().type('Test')
@@ -118,7 +118,12 @@ context('Status Create/Edit', () => {
         page.get('status_access').eq(0).click()
         page.get('status').clear().type('Open')
         //page.submit()AJ
-        cy.get('button[value="save"]').filter(':visible').first().click({force:true})
+        cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true})
+
+        cy.contains('Cannot Create Status')
+        page.hasError(page.get('status'), 'A status already exists with the same name.')
+
+        page.get('status').should('have.value', 'Open')
     })
 
     it('should save a new status group and load edit form', function() {
