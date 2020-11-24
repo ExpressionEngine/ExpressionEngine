@@ -10,7 +10,13 @@
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
-require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
+// Check to see if we're upgrading from EE5 or EE6+.
+// random_compat requirement is processed differently
+if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php')) {
+	require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
+} else {
+	require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
+}
 
 /**
  * Common Functions

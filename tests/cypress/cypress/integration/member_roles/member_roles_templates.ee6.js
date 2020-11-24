@@ -48,8 +48,7 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   page.open_dev_menu()
-    	cy.contains('Templates').click()
+		cy.get('.ee-sidebar__item[title="Templates"]').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -98,8 +97,7 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   page.open_dev_menu()
-	   cy.contains('Templates').click()
+	   cy.get('.ee-sidebar__item[title="Templates"]').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -150,8 +148,7 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   page.open_dev_menu()
-	   cy.contains('Templates').click()
+	   cy.get('.ee-sidebar__item[title="Templates"]').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
@@ -194,8 +191,7 @@ context('Test Templates roles ', () => {
 	   cy.get('.ee-sidebar').should('not.contain','Files')
 	   cy.get('.ee-sidebar').should('not.contain','Members')
 
-	   page.open_dev_menu()
-	   cy.contains('Templates').click()
+	   cy.get('.ee-sidebar__item[title="Templates"]').click()
 
 	   cy.get('.box').contains('No Template Groups found')
 	   cy.get('.box').contains('Messages')
