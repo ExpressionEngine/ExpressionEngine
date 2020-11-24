@@ -287,7 +287,7 @@ class Category_model extends CI_Model {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function update_category_group($group_id = '', $data)
+	function update_category_group($group_id = '', $data = [])
 	{
 		$this->db->where('group_id', $group_id);
 		$this->db->update('category_groups', $data);
