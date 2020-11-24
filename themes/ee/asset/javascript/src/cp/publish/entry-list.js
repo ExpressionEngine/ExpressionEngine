@@ -9,7 +9,9 @@
 
 $(document).ready(function () {
 
+	var searching = null;
 	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
+	var form_selector = '.ee-main__content > .container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
 		$('.ee-main__content > .container').html(data.html);
 
@@ -22,58 +24,92 @@ $(document).ready(function () {
 		window.history.pushState(null, '', data.url);
 	}
 
-	// Submitting the search form
-	$('body').on('submit', '.ee-main__content > .container > .tbl-ctrls > form', function(event) {
-		$.ajax({
-			url: $(this).attr('action'),
-			data: $(this).serialize(),
-			type: 'POST',
+	function searchEntries(type = 'GET', url = null) 
+	{
+		if (searching) {
+			searching.abort();
+		}
+
+		var _form = $(form_selector);
+
+		if (url === null) {
+			url = _form.attr('action');
+		}
+
+		var data = {};
+		if (type != 'GET') {
+			data = $('input[name!="columns[]"]', _form).serialize();
+		}
+		
+		searching = $.ajax({
+			url: url,
+			type: type,
+			data: data,
 			dataType: 'json',
-			success: replaceData
+			error: function(response) {
+				searching = null;
+			},
+			success: function(response) {
+				searching = null;
+				replaceData(response);
+				sortableColumns();
+			}
 		});
+	}
+
+	// Submitting the search form
+	$('body').on('submit', form_selector, function(event) {
 
 		event.preventDefault();
+
+		var url = $(this).attr('action');
+		url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + $('input[name="filter_by_keyword"]').val() + '$2');
+
+		searchEntries('POST', url)
+
 	});
 
 	// Typing into the search form
-	$('body').on('keyup', 'input[name="search"]', _.debounce(function() {
+	$('body').on('keyup', 'input[name="filter_by_keyword"]', _.debounce(function() {
 		if (location.protocol === 'https:' &&
 			navigator.userAgent.indexOf('Safari') > -1) {
 			return;
 		}
-		$(this).closest('form').submit();
+
+		var val = $(this).val();
+		//only submit when search is empty or min. 3 chars
+		if (val.length == 0 || val.length >= 3) {
+			var url = $(form_selector).attr('action');
+			url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
+
+			searchEntries('POST', url)
+		}
+
 	}, 150));
+
+	//changind the search scope
+	$('body').on('change', 'input[name="search_in"]', function() {
+
+		if ($('input[name="filter_by_keyword"]').val()!='') {
+			searchEntries('POST');
+		}
+	
+	});
 
 	// Selecting a channel filter
 	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
-		var search = $('input[name="search"]').serialize();
+		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		$.ajax({
-			url: $(this).attr('href') + '&' + search,
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				replaceData(data);
-				sortableColumns();
-			}
-		});
+		searchEntries('GET', $(this).attr('href') + '&' + search)
 
 		event.preventDefault();
 	});
 
 	$('body').on('click', 'form .filter-search-bar .filter-clear', function(event) {
-		var search = $('input[name="search"]').serialize();
+		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		$.ajax({
-			url: $(this).attr('href') + '&' + search,
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				replaceData(data);
-				sortableColumns();
-			}
-		});
+		searchEntries('GET', $(this).attr('href') + '&' + search)
 
 		event.preventDefault();
 	});

@@ -29,7 +29,7 @@ context('Entry filtering', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
-		  	cy.get('a').filter(':visible').contains('Channel').click({force:true})
+		  	cy.get('a.dropdown__link').filter(':visible').contains('Channel').click({force:true})
 		  	cy.get('input[name="title"]').type('Channel Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Channel Entry has been created')
@@ -37,7 +37,7 @@ context('Entry filtering', () => {
 		  	cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
-		  	cy.get('a').contains('Contact').click({force:true})
+		  	cy.get('a.dropdown__link').contains('Contact').click({force:true})
 		  	cy.get('input[name="title"]').type('Contact Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Contact Entry has been created')
@@ -46,7 +46,7 @@ context('Entry filtering', () => {
 		  	cy.visit('admin.php?/cp/publish/edit')
 		  	cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 		  	cy.wait(500)
-		  	cy.get('a').contains('Discover').click({force:true})
+		  	cy.get('a.dropdown__link').contains('Discover').click({force:true})
 		  	cy.get('input[name="title"]').type('Discover Entry')
 		  	cy.get('button').contains('Save').eq(0).click()
 		  	cy.get('p').contains('The entry Discover Entry has been created')
@@ -86,7 +86,7 @@ context('Entry filtering', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('button[data-dropdown-pos = "bottom-end"]').contains('New').first().click()
 			cy.wait(500)
-			cy.get('a').filter(':visible').contains('Channel').click({force:true})
+			cy.get('a.dropdown__link').filter(':visible').contains('Channel').click({force:true})
 			cy.get('input[name="title"]').type('Another Entry in Channel')
 			cy.get('button').contains('Save').eq(0).click()
 			cy.get('p').contains('has been created')
@@ -179,22 +179,19 @@ context('Entry filtering', () => {
 		})
 
 		it('can sort by search bar (Searching in Titles)', () =>{
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.route("POST", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			entry.get('SearchBar').clear().type('Channel{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',2)
 
 			entry.get('SearchBar').clear().type('Contact{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('SearchBar').clear().type('Discover{enter}')
-			//cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.wait(5000)
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
