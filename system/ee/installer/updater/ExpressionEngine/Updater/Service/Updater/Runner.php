@@ -29,6 +29,7 @@ class Runner {
 	{
 		$this->setSteps([
 			'updateFiles',
+			'addLegacyFiles',
 			'checkForDbUpdates',
 			'backupDatabase',
 			'updateDatabase',
@@ -132,6 +133,8 @@ class Runner {
 	public function updateDatabase($step = NULL)
 	{
 		ee()->config->config['allow_extensions'] = 'n';
+
+		ee()->load->library('progress');
 
 		$db_updater = $this->makeDatabaseUpdaterService();
 
@@ -262,6 +265,14 @@ class Runner {
 	}
 
 	/**
+	 * Copies over legacy files needed when upgrading to different major version
+	 */
+	public function addLegacyFiles()
+	{
+		$this->makeLegacyFilesService()->addFiles();
+	}
+
+	/**
 	 * Overrides SteppableTrait's runStep to be a catch-all for exceptions
 	 */
 	public function runStep($step)
@@ -363,6 +374,17 @@ class Runner {
 			ee()->config->item('app_version')
 		);
 	}
+
+	/**
+	 * Makes LegacyFiles service
+	 */
+	protected function makeLegacyFilesService()
+	{
+		return new Service\Updater\LegacyFiles(
+			ee()->config->item('app_version'),
+			$this->logger
+		);
+	}	
 
 	/**
 	 * Makes Updater\Logger service

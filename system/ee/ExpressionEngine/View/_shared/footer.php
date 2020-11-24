@@ -41,6 +41,32 @@
 					<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
 					<div class="app-about__status-version"></div>
 				</div>
+				<div class="app-about__status app-about__status--update-major hidden">
+					<?=lang('out_of_date_upgrade_major')?>
+
+					<div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
+						<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name'=>'one_click_major_update_confirm'])?>
+							<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
+							<fieldset>
+								<label><?=lang('one_click_major_update_instructions')?></label>
+								<div class="field-control">
+									<input type="password" name="password" value="" id="upgrade-confirm-password">
+								</div>
+							</fieldset>
+							<div class="app-about__status--update_credentials_error hidden">
+								<p><?=lang('one_click_major_update_confirm_error')?></p>
+							</div>
+							<div class="">
+								<?=form_submit('submit-upgrade', lang('btn_authenticate'), 'class="button button--primary" data-submit-text="'.lang('btn_authenticate').'" data-work-text="'.lang('authenticating').'"')?>
+							</div>
+						<?=form_close()?>
+					</div>
+
+					<div class="app-about__status--update_regular <?=isset(ee()->view->major_update) ? 'hidden' : ''?>">
+						<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
+					</div>
+					<div class="app-about__status-version"></div>
+				</div>
 			<?php endif ?>
 		</div>
 

@@ -500,6 +500,9 @@ $(document).ready(function(){
 						if (data.isVitalUpdate) {
 							$('.app-about__status--update-vital').removeClass('hidden');
 							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup);
+						} else if (data.isMajorUpdate) {
+							$('.app-about__status--update-major').removeClass('hidden');
+							$('.app-about__status--update-major .app-about__status-version').html(data.newVersionMarkup);
 						} else {
 							$('.app-about__status--update').removeClass('hidden');
 							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup);
@@ -512,7 +515,37 @@ $(document).ready(function(){
 					$('.app-about__status--checking').addClass('hidden');
 				})
 			}
-		})
+		});
+
+		$('form[name="one_click_major_update_confirm"]').on('submit', function(e) {
+			e.preventDefault();
+			$('.app-about__status--update_credentials_error').hide();
+
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize(),
+				dataType: 'json',
+
+				success: function (result) {
+					if (result.messageType != 'success') {
+						$('.app-about__status--update_credentials_error').show();
+						console.log('Major Update Credential Error:', result.message);
+						return;
+					}
+
+					$('.app-about__status--update_major_version').hide();
+					$('.app-about__status--update_regular').show();
+				},
+
+				error: function (data) {
+					alert('Major Update Credential Error. See browser console for more information.');
+					console.log('Major Update Credential Error:', data.message);
+				}
+			});
+
+			return false;
+		});
 
 	// ====================
 	// modal windows -> WIP
@@ -741,12 +774,12 @@ $(document).ready(function(){
 
 		// Toggle the bulk actions
 		$('body').on('change', 'table tr td:last-child input[type=checkbox], table tr th:last-child input[type=checkbox]', function() {
-			if ($(this).parents('form').find('.bulk-action-bar').length > 0) {
+			if ($(this).parents('form').find('.bulk-action-bar').length > 0 || $(this).parents('form').find('.tbl-bulk-act').length > 0) {
 				$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 				if ($(this).parents('table').find('input:checked').length == 0) {
-					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar').addClass('hidden');
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
 				} else {
-					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar').removeClass('hidden');
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
 				}
 			}
 		});
@@ -779,9 +812,9 @@ $(document).ready(function(){
 
 			// Toggle the bulk actions
 			if (tableList.find('.list-item__checkbox input:checked').length == 0) {
-				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').addClass('hidden');
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
 			} else {
-				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').removeClass('hidden');
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
 			}
 		});
 

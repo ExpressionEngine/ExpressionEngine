@@ -9,7 +9,7 @@
                 </div>
             </div>
         <?php else: ?>
-            <div class="filter-bar__item <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
+            <div class="filter-search-bar__item <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
                 <?=$filter['html']?>
             </div>
         <?php endif; ?>
