@@ -1,5 +1,7 @@
 import MemberGroups from '../../elements/pages/members/MemberGroups';
 import MemberCreate from '../../elements/pages/members/MemberCreate';
+import AddonManager from '../../elements/pages/addons/AddonManager';
+const addonManager = new AddonManager;
 const page = new MemberGroups;
 const member = new MemberCreate;
 
@@ -99,18 +101,26 @@ context('Test Member roles Addons ', () => {
 	   cy.contains('Statistics')
 
 
-	   cy.get(':nth-child(1) > .add-on-card__cog > .fas').click()
-	   cy.get('a').contains('Uninstall')
+	   addonManager.get('addons').eq(1).then((addon_card) => {
+		const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
+		cy.log(addon_name);
+		let btn = addon_card.find('.js-dropdown-toggle')
+		btn.click()
+		btn.next('.dropdown').find('a:contains("Uninstall")').click()
 
-	   cy.get('.main-nav__title > h1').click()
+		/*page.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
+		cy.hasNoErrors()*/
+		
+		/*page.get('modal_submit_button').click()*/
 
-	   cy.get(':nth-child(2) > .add-on-card__cog > .fas').click()
-	   cy.get('a').contains('Uninstall')
+		cy.get('.button--danger').click();
+		// The filter should not change
+		page.hasAlert()
 
-	   cy.get('.main-nav__title > h1').click()
+		page.get('alert').contains("Add-Ons Uninstalled")
+		page.get('alert').contains(addon_name);
 
-	   cy.get(':nth-child(3) > .add-on-card__cog > .fas').click()
-	   cy.get('a').contains('Uninstall')
+	})
 
 	})
 
