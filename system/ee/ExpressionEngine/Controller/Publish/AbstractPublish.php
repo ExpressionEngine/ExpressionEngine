@@ -553,7 +553,7 @@ abstract class AbstractPublish extends CP_Controller {
 		$configured_site_url = explode('//', ee()->config->item('site_url'));
 		$configured_domain = explode('/', $configured_site_url[1]);
 
-		if (($_SERVER['HTTP_HOST'] != $configured_domain[0]) || ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && $configured_site_url[0] != 'https:') || (!ee('Request')->isEncrypted() && $configured_site_url[0] == 'https:')))) {
+		if (($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) || ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:')))) {
 			$has_preview_button  = FALSE;
 		}
 

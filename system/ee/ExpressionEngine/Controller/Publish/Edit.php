@@ -441,10 +441,10 @@ class Edit extends AbstractPublishController {
 			$configured_site_url = explode('//', ee()->config->item('site_url'));
 			$configured_domain = explode('/', $configured_site_url[1]);
 
-			if ($_SERVER['HTTP_HOST'] != $configured_domain[0]) {
+			if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
 				$lp_domain_mismatch = true;
 				$lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
-			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && $configured_site_url[0] != 'https:') || (!ee('Request')->isEncrypted() && $configured_site_url[0] == 'https:'))) {
+			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
 				$lp_domain_mismatch = true;
 				$lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
 			}
