@@ -622,6 +622,12 @@ $lang = array(
 
 'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
 
+'preview_cannot_display' => 'Live Preview cannot be displayed',
+
+'preview_domain_mismatch_desc' => "Your Site URL is set to use <code>%1\$s</code> but you are accessing Control Panel from <code>%2\$s</code>.",
+
+'preview_protocol_mismatch_desc' => "Your Site URL is set to use <code>%1\$s</code> but you are accessing Control Panel with <code>%2\$s</code>.",
+
 'publish' => 'Publish',
 
 'publish_another_entry' => 'Publish Another Entry',
