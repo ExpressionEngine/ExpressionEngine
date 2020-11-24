@@ -1878,7 +1878,7 @@ class Wizard extends CI_Controller
 
             // Send version to update class and let it do any required work
             if (in_array($module, $this->native_modules)) {
-                $path = EE_APPPATH . '/modules/' . $module . '/';
+                $path = SYSPATH . 'ee/ExpressionEngine/Addons/' . $module . '/';
             } else {
                 $path = PATH_THIRD . $module . '/';
             }
