@@ -8,6 +8,7 @@ if (file_exists(SYSPATH.'ee/ExpressionEngine/Boot/boot.php') &&
 	isset($_GET['step']) &&
 	(strpos($_GET['step'], 'backupDatabase') === 0 OR
 		strpos($_GET['step'], 'updateDatabase') === 0 OR
+		$_GET['step'] == 'addLegacyFiles' OR
 		$_GET['step'] == 'checkForDbUpdates' OR
 		$_GET['step'] == 'restoreDatabase' OR
 		strpos($_GET['step'], 'selfDestruct') === 0))
@@ -31,7 +32,11 @@ else
 }
 
 // add EE constants
-$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
+if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Config/constants.php')) {
+	$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+} else {
+	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
+}
 
 foreach ($constants as $k => $v) {
 	defined($k) || define($k, $v);

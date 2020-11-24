@@ -18,7 +18,7 @@
             config = Rte.gridColConfigs['col_id_' + cell.data('column-id')],
             id = cell.parents('.grid-field').attr('id')+'_'+rowId+'_'+cell.data('column-id')+'_'+Math.floor(Math.random()*100000000);
 
-        id = id.replace(/\[/, '_').replace(/\]/, '');
+        id = id.replace(/\[/g, '_').replace(/\]/g, '');
 
         $textarea.attr('id', id);
 

@@ -17,6 +17,7 @@
  * ------------------------------------------------------
  */
 	defined('BASEPATH') || define('BASEPATH', SYSPATH.'ee/legacy/');
+	defined('EESELF') || define('EESELF', SELF);
 
 	// load user configurable constants
 	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';

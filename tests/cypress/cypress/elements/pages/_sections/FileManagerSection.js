@@ -8,7 +8,7 @@ class FileManagerSection extends ControlPanel {
 			// Title/header box elements
 			'manager_title': '.title-bar .title-bar__title',
 			'title_toolbar': '.main-nav__toolbar .button--action',
-			'download_all': 'a.icon--export',
+			'download_all': 'a:contains("Export All Files")',
 			// phrase_search, 'fieldset.tbl-search input[type!=hidden][name=search]',
 			// search_submit_button, 'fieldset.tbl-search input.submit',
 			'upload_new_file_button': '.main-nav__toolbar .js-dropdown-toggle',
