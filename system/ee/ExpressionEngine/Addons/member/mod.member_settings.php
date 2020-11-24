@@ -971,12 +971,28 @@ class Member_settings extends Member
 
 		//if we run EE template parser, do some things differently
 		if (! empty($tagdata)) {
-			return ee()->functions->form_declaration(array(
+			ee()->load->add_package_path(PATH_ADDONS . 'channel');
+			ee()->load->library('channel_form/channel_form_lib');
+			ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
+			ee()->channel_form_lib->compile_js();
+			
+			
+			$return = ee()->functions->form_declaration(array(
+				'id' => 'cform',
 				'hidden_fields' => array(
 					'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
 					'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
 				)
 			)) . $template . '</form>';
+			//make head appear by default
+			if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
+				$return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
+			} elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'y')) {
+				// Head should only be there if the param is there
+				$return .= ee()->channel_form_lib->head;
+			}
+			ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+			return $return;
 		}
 
 		return  $this->_var_swap(

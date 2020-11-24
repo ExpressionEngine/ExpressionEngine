@@ -1848,8 +1848,14 @@ class Roles extends AbstractRolesController {
 		if ($replacement_role_id == 'delete') {
 			$replacement_role_id = NULL;
 		}
+
 		if (!empty($replacement_role_id)) {
-			if (in_array($replacement_role_id, $restricted) || ee('Model')->get('Role', $replacement_role_id)->first() === null) {
+			$allowed_roles = ee('Model')->get('Role')
+				->filter('role_id', 'NOT IN', array_merge($role_ids, [1 ,2, 3, 4]));
+			if (!ee('Permission')->isSuperAdmin()) {
+				$allowed_roles->filter('is_locked', 'n');
+			}
+			if (!in_array($replacement_role_id, $allowed_roles->all()->pluck('role_id')) || ee('Model')->get('Role', $replacement_role_id)->first() === null) {
 				ee('CP/Alert')->makeInline('roles-error')
 					->asIssue()
 					->withTitle(lang('roles_delete_error'))

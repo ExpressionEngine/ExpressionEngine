@@ -1805,7 +1805,7 @@ class Member {
 			$MM->{$key} = $value;
 		}
 
-		return $MM->memberlist();
+		return $MM->member_search();
 	}
 
 	/**
