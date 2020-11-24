@@ -42,7 +42,7 @@ class Color
      * @param string $hex
      * @throws Exception
      */
-    public function __construct(string $hex)
+    public function __construct($hex)
     {
         $color = self::sanitizeHex($hex);
         $this->_hex = $color;
@@ -56,7 +56,7 @@ class Color
      * @return array HSL associative array
      * @throws Exception
      */
-    public static function hexToHsl(string $color)
+    public static function hexToHsl($color)
     {
         // Sanity check
         $color = self::sanitizeHex($color);
@@ -121,7 +121,7 @@ class Color
      * @return string HEX string
      * @throws Exception "Bad HSL Array"
      */
-    public static function hslToHex(array $hsl = array())
+    public static function hslToHex($hsl = array())
     {
         // Make sure it's HSL
         if (empty($hsl) || !isset($hsl["H"], $hsl["S"], $hsl["L"])) {
@@ -168,7 +168,7 @@ class Color
      * @return array RGB associative array
      * @throws Exception
      */
-    public static function hexToRgb(string $color)
+    public static function hexToRgb($color)
     {
         // Sanity check
         $color = self::sanitizeHex($color);
@@ -192,7 +192,7 @@ class Color
      * @return string Hex string
      * @throws Exception "Bad RGB Array"
      */
-    public static function rgbToHex(array $rgb = array())
+    public static function rgbToHex($rgb = array())
     {
         // Make sure it's RGB
         if (empty($rgb) || !isset($rgb["R"], $rgb["G"], $rgb["B"])) {
@@ -219,7 +219,7 @@ class Color
      * @return string rgb(r,g,b) string
      * @throws Exception "Bad RGB Array"
      */
-    public static function rgbToString(array $rgb = array())
+    public static function rgbToString($rgb = array())
     {
         // Make sure it's RGB
         if (empty($rgb) || !isset($rgb["R"], $rgb["G"], $rgb["B"])) {
@@ -238,7 +238,7 @@ class Color
      * @param string $color_name
      * @return string
      */
-    public static function nameToHex(string $color_name)
+    public static function nameToHex($color_name)
     {
         $colors = array(
             'aliceblue' => 'F0F8FF',
@@ -435,7 +435,7 @@ class Color
      * @return string mixed HEX value
      * @throws Exception
      */
-    public function mix(string $hex2, $amount = 0)
+    public function mix($hex2, $amount = 0)
     {
         $rgb2 = self::hexToRgb($hex2);
         $mixed = $this->mixRgb($this->_rgb, $rgb2, $amount);
@@ -595,7 +595,7 @@ class Color
      * @param int $amount
      * @return array $hsl
      */
-    private function darkenHsl(array $hsl, $amount = self::DEFAULT_ADJUST)
+    private function darkenHsl($hsl, $amount = self::DEFAULT_ADJUST)
     {
         // Check if we were provided a number
         if ($amount) {
@@ -615,7 +615,7 @@ class Color
      * @param int $amount
      * @return array
      */
-    private function lightenHsl(array $hsl, $amount = self::DEFAULT_ADJUST)
+    private function lightenHsl($hsl, $amount = self::DEFAULT_ADJUST)
     {
         // Check if we were provided a number
         if ($amount) {
@@ -637,7 +637,7 @@ class Color
      * @param int $amount ranged -100..0..+100
      * @return array
      */
-    private function mixRgb(array $rgb1, array $rgb2, $amount = 0)
+    private function mixRgb($rgb1, $rgb2, $amount = 0)
     {
         $r1 = ($amount + 100) / 100;
         $r2 = 2 - $r1;
@@ -656,7 +656,7 @@ class Color
      * @param float $vH
      * @return float
      */
-    private static function hueToRgb(float $v1, float $v2, float $vH)
+    private static function hueToRgb($v1, $v2, $vH)
     {
         if ($vH < 0) {
             ++$vH;
@@ -687,7 +687,7 @@ class Color
      * @return string
      * @throws Exception
      */
-    private static function sanitizeHex(string $hex)
+    private static function sanitizeHex($hex)
     {
         // Strip # sign if it is present
         $color = str_replace("#", "", $hex);
@@ -720,7 +720,7 @@ class Color
      * @param string $name
      * @return mixed|null
      */
-    public function __get(string $name)
+    public function __get($name)
     {
         switch (strtolower($name)) {
             case 'red':
@@ -756,7 +756,7 @@ class Color
      * @param mixed $value
      * @throws Exception
      */
-    public function __set(string $name, $value)
+    public function __set($name, $value)
     {
         switch (strtolower($name)) {
             case 'red':

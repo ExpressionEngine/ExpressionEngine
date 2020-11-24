@@ -1021,7 +1021,7 @@ class Member_memberlist extends Member {
 			$template = ee()->functions->form_declaration(array(
 				'hidden_fields' => array(
 					'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
-					'RET' => str_replace($search_path, '', $result_page),
+					'RET' => ee()->TMPL->fetch_param('return')!='' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
 					'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
 				)
 			)) . $template . '</form>';

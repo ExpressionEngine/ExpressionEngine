@@ -228,6 +228,7 @@ $(document).ready(function () {
 	EE.cp.bindSortableFolderLists();
 	EE.cp.addLastToChecklists();
 	EE.cp.bindPostLinks();
+	EE.cp.validateLicense();
 });
 
 // Scroll to version popover on successful update
@@ -237,6 +238,51 @@ if (EE.cp.updateCompleted) {
 	$('html, body').animate({
 		scrollTop: $('.app-about-info').offset().top
 	}, 500)
+}
+
+/**
+ * Posts the current EE license to the EE main site for validation purposes.
+ */
+EE.cp.validateLicense = function() {
+	if (! EE.cp.lvUrl) {
+		return;
+	}
+
+	$.ajax({
+		type: 'POST',
+		url: EE.cp.lvUrl,
+		dataType: 'json',
+		data: {
+			license: EE.cp.licenseKey,
+			addons: JSON.parse(EE.cp.installedAddons),
+			meta: [
+				{
+					site_name: EE.site_name,
+					site_id: EE.site_id,
+					site_url: EE.site_url
+				}
+			]
+		},
+
+		success: function(result) {
+			if (result.messageType != 'success') {
+				console.log('License Result Failure:', result);
+				return;
+			}
+
+			for (var addon of result.addons) {
+				if (addon.status == 'expired') {
+					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left orange shadow">Expired</div>');
+				} else if (addon.status == 'invalid') {
+					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left red shadow">Unlicensed</div>'); // "Invalid" status
+				}
+			}
+		},
+
+		error: function(data, textStatus, errorThrown) {
+			console.log('Error Data:', data, data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+		}
+	});
 }
 
 /**

@@ -10,17 +10,16 @@
 							$update_available = isset(ee()->view->new_version);
 							$vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
 
-							if ( ! empty($version_identifier))
-							{
-								$version_class .= ' ee-sidebar__version--dev';
-							}
-							elseif ($update_available)
-							{
+							if ($update_available) {	
 								if ($vital_update) {
 									$version_class .= ' ee-sidebar__version--update-vital';
 								} else {
 									$version_class .= ' ee-sidebar__version--update';
 								}
+							}
+
+							if ( ! empty($version_identifier)) {
+								$version_class .= ' ee-sidebar__version--dev';
 							}
 						?>
 

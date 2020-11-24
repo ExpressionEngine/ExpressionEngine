@@ -6,7 +6,7 @@
 
 $config['save_tmpl_files'] = 'n';
 
-$config['app_version'] = '6.0.0-b.3';
+$config['app_version'] = '6.0.0-b.4';
 $config['encryption_key'] = '4b9e521eb02751d8466a3e9b764524aff14b91ad';
 $config['session_crypt_key'] = '1f307a8afe66e692c2689508a5d9f783606379a8';
 $config['base_path'] = $_SERVER['DOCUMENT_ROOT'];

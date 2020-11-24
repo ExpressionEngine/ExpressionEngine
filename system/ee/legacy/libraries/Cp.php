@@ -157,17 +157,20 @@ class Cp {
 		);
 
 		ee()->javascript->set_global(array(
-			'BASE'             => str_replace(AMP, '&', BASE),
-			'XID'              => CSRF_TOKEN,
-			'CSRF_TOKEN'       => CSRF_TOKEN,
-			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
-			'username'         => ee()->session->userdata('username'),
-			'router_class'     => ee()->router->class, // advanced css
-			'lang'             => $js_lang_keys,
-			'THEME_URL'        => $this->cp_theme_url,
-			'hasRememberMe'    => (bool) ee()->remember->exists(),
+			'BASE'              => str_replace(AMP, '&', BASE),
+			'XID'               => CSRF_TOKEN,
+			'CSRF_TOKEN'        => CSRF_TOKEN,
+			'PATH_CP_GBL_IMG'   => PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE'  => ee()->session->userdata('show_sidebar'),
+			'username'          => ee()->session->userdata('username'),
+			'router_class'      => ee()->router->class, // advanced css
+			'lang'              => $js_lang_keys,
+			'THEME_URL'         => $this->cp_theme_url,
+			'hasRememberMe'     => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'site_id'           => ee()->config->item('site_id'),
+			'site_name'         => ee()->config->item('site_name'),
+			'site_url'          => ee()->config->item('site_url'),
 			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
@@ -193,6 +196,25 @@ class Cp {
 			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
 			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
 		));
+
+		if (! empty(ee()->config->item('lv_url'))) {
+			$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
+
+			$installed_modules_js = [];
+			foreach ($installed_modules->result() as $installed_module) {
+				$installed_modules_js[] = [
+					'name' => $installed_module->module_name,
+					'slug' => strtolower($installed_module->module_name),
+					'version' => $installed_module->module_version,
+				];
+			}
+
+			ee()->javascript->set_global(array(
+				'cp.licenseKey' => '123412341234',
+				'cp.lvUrl' => ee()->config->item('lv_url'),
+				'cp.installedAddons' => json_encode($installed_modules_js)
+			));
+		}
 
 		$js_scripts['file'][] = 'cp/jump_menu';
 
