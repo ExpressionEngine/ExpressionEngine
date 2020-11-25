@@ -140,6 +140,16 @@ class Member {
 			ee()->load->library('template', NULL, 'TMPL');
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
+
+		if (empty(ee()->TMPL->tagdata)) {
+			ee()->load->library('logger');
+			ee()->logger->developer('Member profile templates are now legacy and not recommended to use. Please use regular templates and {exp:member:...} tags.', TRUE, 60*60*24*30);
+
+			if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
+				ee()->logger->developer('Someone tried to access legacy member template, but those are not enabled in config.php', TRUE, 60*60*24*30);
+				return ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+			}
+		}
 	}
 
 	/**

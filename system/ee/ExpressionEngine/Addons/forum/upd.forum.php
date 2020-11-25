@@ -461,6 +461,8 @@ class Forum_upd {
 			ee()->config->set_item('forum_is_installed', 'y');
 		}
 
+		ee('Config')->getFile()->set('legacy_member_templates', 'y', true);
+
 		ee()->load->library('layout');
 		ee()->layout->add_layout_tabs($this->tabs(), 'forum');
 
