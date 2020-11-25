@@ -102,7 +102,6 @@ class MimeType {
 		// Set a default
 		$mime = 'application/octet-stream';
 
-		ee('Memory')->setMemoryForImageManipulation($path);
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		if ($finfo !== FALSE)
 		{
