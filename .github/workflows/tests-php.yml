@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - testing/ee6-unit-testing
-      - testing/php8
-      - release/6.0.0
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:

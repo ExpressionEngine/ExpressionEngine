@@ -105,7 +105,7 @@ class MimeType {
 		$finfo = finfo_open(FILEINFO_MIME);
 		if ($finfo !== FALSE)
 		{
-			$fres = finfo_file($finfo, $path);
+			$fres = finfo_file($finfo, $path, FILEINFO_MIME);
 			if ( ($fres !== FALSE)
 				&& is_string($fres)
 				&& (strlen($fres)>0))

@@ -1,4 +1,4 @@
-name: Run Cypress Admin Tests
+name: Run Cypress PHP8 Tests
 
 on:
   push:
