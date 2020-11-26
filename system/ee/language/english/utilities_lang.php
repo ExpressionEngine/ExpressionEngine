@@ -13,6 +13,8 @@ $lang = array(
 
 'communicate' => 'Communicate',
 
+'general_utilities' => 'General Utilities',
+
 'cp_translation' => '<abbr title="Control Panel">CP</abbr> Translation',
 
 'cp_translations' => 'CP Translations',
