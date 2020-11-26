@@ -250,7 +250,7 @@ abstract class AbstractFiles extends CP_Controller {
 				unset($toolbar['crop']);
 			}
 
-			if ( ! $file->isImage())
+			if ( ! $file->isEditableImage())
 			{
 				unset($toolbar['view']);
 				unset($toolbar['crop']);

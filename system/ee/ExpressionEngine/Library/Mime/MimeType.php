@@ -102,7 +102,6 @@ class MimeType {
 		// Set a default
 		$mime = 'application/octet-stream';
 
-		ee('Memory')->setMemoryForImageManipulation($path);
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		if ($finfo !== FALSE)
 		{
@@ -115,6 +114,14 @@ class MimeType {
 			}
 
 			@finfo_close($finfo);
+		}
+
+		//try another method to get mime
+		if ($mime == 'application/octet-stream') {
+			$file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
+			if (strpos($file_opening, 'RIFF' === 0) && strpos($file_opening, 'WEBPVP8' !== false)) {
+				$mime = 'image/webp';
+			}
 		}
 
 		// A few files are identified as plain text, which while true is not as
