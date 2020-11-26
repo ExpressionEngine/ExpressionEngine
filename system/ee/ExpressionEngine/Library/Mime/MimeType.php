@@ -99,7 +99,22 @@ class MimeType {
 			throw new Exception("File " . $path . " does not exist.");
 		}
 
-		$mime = mime_content_type($path) ?: 'application/octet-stream';;
+		// Set a default
+		$mime = 'application/octet-stream';
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		if ($finfo !== FALSE)
+		{
+			$fres = @finfo_file($finfo, $path);
+			if ( ($fres !== FALSE)
+				&& is_string($fres)
+				&& (strlen($fres)>0))
+			{
+				$mime = $fres;
+			}
+
+			@finfo_close($finfo);
+		}
 
 		// A few files are identified as plain text, which while true is not as
 		// helpful as which type of plain text files they are.
