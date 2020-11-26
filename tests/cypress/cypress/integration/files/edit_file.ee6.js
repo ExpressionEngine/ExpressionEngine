@@ -28,7 +28,7 @@ context('File Manager / Edit File', () => {
     cy.get('button').contains('Upload').first().click()
     cy.get('a[class="dropdown__link"]').contains('About').filter(':visible').first().click()
     const fileName = 'pictureUpload.png'
-    page.submit(fileName, 'image/png', 'input[name="file"]') 
+    cy.get('input[name="file"]').attachFile(fileName)
     cy.get('input[value="Upload File"]').filter(':visible').first().click()
     cy.hasNoErrors()
 
