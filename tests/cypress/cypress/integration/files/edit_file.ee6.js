@@ -7,6 +7,9 @@ const filemanager = new FileManager;
 
 context('File Manager / Edit File', () => {
 
+  before(function() {
+    cy.task('db:seed')
+  })
 
   beforeEach(function() {
     cy.auth();
