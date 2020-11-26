@@ -102,7 +102,7 @@ class MimeType {
 		// Set a default
 		$mime = 'application/octet-stream';
 
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$finfo = finfo_open(FILEINFO_MIME);
 		if ($finfo !== FALSE)
 		{
 			$fres = @finfo_file($finfo, $path);
@@ -110,7 +110,8 @@ class MimeType {
 				&& is_string($fres)
 				&& (strlen($fres)>0))
 			{
-				$mime = $fres;
+				$mimeinfo = explode(';', $fres);
+				$mime = $mimeinfo[0];
 			}
 
 			@finfo_close($finfo);
