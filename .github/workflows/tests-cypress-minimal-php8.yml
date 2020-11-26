@@ -66,7 +66,7 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: content.cypress.json
+                config-file: files.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2

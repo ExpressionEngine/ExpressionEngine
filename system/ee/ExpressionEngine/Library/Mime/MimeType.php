@@ -105,7 +105,7 @@ class MimeType {
 		$finfo = finfo_open(FILEINFO_MIME);
 		if ($finfo !== FALSE)
 		{
-			$fres = @finfo_file($finfo, $path);
+			$fres = finfo_file($finfo, $path);
 			if ( ($fres !== FALSE)
 				&& is_string($fres)
 				&& (strlen($fres)>0))
@@ -114,7 +114,7 @@ class MimeType {
 				$mime = $mimeinfo[0];
 			}
 
-			@finfo_close($finfo);
+			finfo_close($finfo);
 		}
 
 		// A few files are identified as plain text, which while true is not as
