@@ -8,7 +8,7 @@
 							<div class="file-card__preview-icon-text"><?=lang('file_not_found')?></div>
 						</div>
 					<?php else: ?>
-						<?php if ($file->isImage()): ?>
+						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
 							<?php if (ee('Thumbnail')->get($file)->missing): ?>
 								<div class="file-card__preview-icon">
 									<i class="fas fa-lg fa-exclamation-triangle"></i>

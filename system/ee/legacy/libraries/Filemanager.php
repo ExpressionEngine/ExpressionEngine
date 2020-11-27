@@ -297,6 +297,18 @@ class Filemanager {
 			return false;
 		}
 
+		$imageMimes = [
+			'image/gif', // .gif
+			'image/jpeg', // .jpg, .jpe, .jpeg
+			'image/pjpeg', // .jpg, .jpe, .jpeg
+			'image/png', // .png
+			'image/x-png', // .png
+			'image/webp' // .webp
+		];
+		if (!in_array($mime, $imageMimes)) {
+			return false;
+		}
+
 		return TRUE;
 	}
 
