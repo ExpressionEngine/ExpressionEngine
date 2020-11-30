@@ -174,9 +174,6 @@ class OneToOneModelTest extends TestCase {
 
 	}
 
-	/**
-	* @group failing
-	*/
 	public function testSetParentWithChildShouldDisassociateExisting()
 	{
 		$parent = new $this->parentClass;
@@ -227,9 +224,6 @@ class OneToOneModelTest extends TestCase {
 
 	}
 
-	/**
-	* @group failing
-	*/
 	public function testSetChildWithParentShouldDisassociateExisting()
 	{
 		$parent = new $this->parentClass;
@@ -367,9 +361,6 @@ class OneToOneModelTest extends TestCase {
 
 	}
 
-	/**
-	* @group failing
-	*/
 	public function testSetParentWithChildAndBackToNull()
 	{
 		$parent = new $this->parentClass;
