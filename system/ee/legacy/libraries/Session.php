@@ -434,23 +434,23 @@ class EE_Session {
 			$cp_expire = ee()->localize->now - $this->cpan_session_len;
 			$user_expire = ee()->localize->now - $this->user_session_len;
 
-			// Delete only the CP sessions that have expired.
+			// Get only the CP sessions that have expired.
 			$admin_results = ee()->db->where('admin_sess', 1)
 				->where('last_activity < ', $cp_expire)
 				->get('sessions');
 
-			// Loop through the old sessions and delete their security_hash data.
+			// Loop through the old sessions and delete their session and security_hash data.
 			foreach ($admin_results->result() as $row) {
 				ee()->db->where('session_id', $row->session_id);
 				ee()->db->delete(array('security_hashes', 'sessions'));
 			}
 
-			// Delete only the user sessions that have expired.
+			// Get only the user sessions that have expired.
 			$user_results = ee()->db->where('admin_sess', 0)
 				->where('last_activity < ', $user_expire)
 				->get('sessions');
 
-			// Loop through the old sessions and delete their security_hash data.
+			// Loop through the old sessions and delete their session and security_hash data.
 			foreach ($user_results->result() as $row) {
 				ee()->db->where('session_id', $row->session_id);
 				ee()->db->delete(array('security_hashes', 'sessions'));
