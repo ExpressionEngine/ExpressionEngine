@@ -427,14 +427,22 @@ class EE_Session {
 	 */
 	public function delete_old_sessions()
 	{
-		$expire = ee()->localize->now - $this->session_length;
-
 		srand(time());
 
 		if ((rand() % 100) < $this->gc_probability)
 		{
-			ee()->db->where('last_activity < ', $expire)
-						 ->delete('sessions');
+			$cp_expire = ee()->localize->now - $this->cpan_session_len;
+			$user_expire = ee()->localize->now - $this->user_session_len;
+
+			// Delete only the CP sessions that have expired.
+			ee()->db->where('admin_sess', 1)
+				->where('last_activity < ', $cp_expire)
+				->delete('sessions');
+
+			// Delete only the user sessions that have expired.
+			ee()->db->where('admin_sess', 0)
+				->where('last_activity < ', $user_expire)
+				->delete('sessions');
 		}
 	}
 
