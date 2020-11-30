@@ -258,6 +258,7 @@ class OneToOneModelTest extends TestCase {
 
 		$this->assertNull($parent->SetChild);
 		$this->assertNull($child->SetParent);
+		$this->assertNull($new_child->SetParent);
 
 		$child->SetParent = $parent;
 
