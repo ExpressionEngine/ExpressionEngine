@@ -119,6 +119,7 @@ function (_React$Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.bindSortable();
+      EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
     }
   }, {
     key: "componentDidUpdate",
@@ -126,6 +127,8 @@ function (_React$Component) {
       if (this.state.selected !== prevState.selected) {
         // Refresh the sortable items when the selected items change
         this.bindSortable();
+
+        EE.cp.formValidation._sendAjaxRequest($(ReactDOM.findDOMNode(this).parentNode).find('input[type=hidden]').first());
       }
     }
   }, {
