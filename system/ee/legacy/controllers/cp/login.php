@@ -210,6 +210,16 @@ class Login extends CP_Controller {
 		}
 
 		$incoming->start_session(TRUE);
+		
+		
+		/* -------------------------------------------
+		/* 'cp_member_login_success' hook.
+		 */
+		ee()->extensions->call('cp_member_login_success', $member_id);
+		/*
+	    /* -------------------------------------------*/
+		
+		
 
 		// Redirect the user to the CP home page
 		// ----------------------------------------------------------------
