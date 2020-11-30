@@ -974,6 +974,7 @@ class Moblog {
 						'allow_comments'	=> $query->row('deft_comments')
 					 );
 		$entry = ee('Model')->make('ChannelEntry');
+		$entry->channel_id = $channel_id;
 
 		// Remove ignore text
 
@@ -1034,9 +1035,9 @@ class Moblog {
 
 				foreach($results->result_array() as $row)
 				{
-					$field_name[$row['field_name']]	= $row['field_name'];
-					$field_label[$row['field_name']]	= $row['field_label'];
-					$field_format[$row['field_name']] = $row['field_fmt'];
+					$field_name[$row['field_id']]	= $row['field_name'];
+					$field_label[$row['field_id']]	= $row['field_label'];
+					$field_format[$row['field_id']] = $row['field_fmt'];
 				}
 
 				unset($results);
@@ -1126,7 +1127,7 @@ class Moblog {
 				$combined_data = $value['data'];
 				$combined_data = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim($combined_data)) : trim($combined_data);
 
-				$data[$key] = $combined_data;
+				$data['field_id_'.$key] = $combined_data;
 				$data['field_ft_'.$key] = $value['format'];
 			}
 		}
@@ -1297,9 +1298,6 @@ class Moblog {
 				$format		= $params['format'];
 			}
 		}
-
-		$field_name_q = ee()->db->select('field_name')->from('channel_fields')->where('field_id', $field_id)->get();
-		$field_name = $field_name_q->row('field_name');
 
 		$dir_id = $this->moblog_array['moblog_upload_directory'];
 
@@ -1493,8 +1491,8 @@ class Moblog {
 		/** ------------------------------*/
 
 		$field_data = str_replace(array('{text}', '{sender_email}'), array($this->body, $this->sender_email), $field_data);
-		$this->entry_data[$field_name]['data'] 	= ( ! isset($this->entry_data[$field_name])) ? $field_data : $this->entry_data[$field_name]['data']."\n".$field_data;
-		$this->entry_data[$field_name]['format'] 	= $format;
+		$this->entry_data[$field_id]['data'] 	= ( ! isset($this->entry_data[$field_id])) ? $field_data : $this->entry_data[$field_id]['data']."\n".$field_data;
+		$this->entry_data[$field_id]['format'] 	= $format;
 	}
 
 	/**
