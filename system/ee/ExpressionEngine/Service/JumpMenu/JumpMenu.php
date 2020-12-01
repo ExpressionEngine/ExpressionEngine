@@ -1559,6 +1559,30 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/extensions',
                 'permission' => 'can_access_utilities'
             ),
+            'systemUtilitiesDebugTools' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools',
+                'permission' => 'is_super_admin'
+            ),
+            'systemUtilitiesDebugToolsTags' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_debug_tags',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/debug-tags',
+                'permission' => 'is_super_admin'
+            ),
+            'systemUtilitiesDebugToolsFieldtypes' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_fieldtypes',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/debug-fieldtypes',
+                'permission' => 'is_super_admin'
+            ),
             'systemUtilitiesFileConverter' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities member_tools import_converter',
