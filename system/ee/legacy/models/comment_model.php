@@ -99,7 +99,6 @@ class Comment_model extends CI_Model {
 			if (count($subscribed_emails))
 			{
 				$this->db->select('DISTINCT(email), name, entry_id');
-				$this->db->where('status', 'o');
 				$this->db->where('entry_id', $entry_id);
 				$this->db->where_in('email', $subscribed_emails);
 

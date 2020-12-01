@@ -785,13 +785,6 @@ class Comments extends AbstractPublishController {
 
 		foreach ($entries as $entry_id => $comments)
 		{
-			// Get rid of the last comment to this entry, as there are no new
-			// comments for the person who made it
-			array_pop($comments);
-			if (empty($comments))
-			{
-				continue;
-			}
 
 			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 
@@ -805,7 +798,7 @@ class Comments extends AbstractPublishController {
 			{
 				// Grab generic entry info
 
-				$action_id	= ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
+				$action_id	= ee()->functions->fetch_action_id('Comment', 'comment_subscribe');
 
 				ee()->db->select('channel_titles.site_id, channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
 				ee()->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id', 'left');
@@ -860,8 +853,6 @@ class Comments extends AbstractPublishController {
 				);
 
 
-
-
 				$email_tit = ee()->TMPL->parse_variables_row($template['title'], $swap);
 				$email_msg = ee()->TMPL->parse_variables_row($template['data'], $swap);
 
@@ -872,42 +863,33 @@ class Comments extends AbstractPublishController {
 				// Load the text helper
 				ee()->load->helper('text');
 
-				$sent = array();
-
 				foreach ($recipients as $val)
 				{
-					if ( ! in_array($val['0'], $sent))
-					{
-						$title	 = $email_tit;
-						$message = $email_msg;
+					$title	 = $email_tit;
+					$message = $email_msg;
 
-						$sub	= $subscriptions[$val['1']];
-						$sub_qs	= 'entry_id='.$c->entry_id.'&hash='.$sub['hash'].'&type=unsubscribe';
+					$sub	= $subscriptions[$val['1']];
+					$sub_qs	= 'entry_id='.$c->entry_id.'&hash='.$sub['hash'].'&type=unsubscribe';
 
-						// Deprecate the {name} variable at some point
-						$title	 = str_replace('{name}', $val['2'], $title);
-						$message = str_replace('{name}', $val['2'], $message);
+					// Deprecate the {name} variable at some point
+					$title	 = str_replace('{name}', $val['2'], $title);
+					$message = str_replace('{name}', $val['2'], $message);
 
-						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
-						$message = str_replace('{name_of_recipient}', $val['2'], $message);
+					$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
+					$message = str_replace('{name_of_recipient}', $val['2'], $message);
 
-						$title	 = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
-						$message = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
+					$title	 = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
+					$message = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
 
-						ee()->email->EE_initialize();
-						ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-						ee()->email->to($val['0']);
-						ee()->email->subject($title);
-						ee()->email->message(entities_to_ascii($message));
-						ee()->email->send();
-
-						$sent[] = $val['0'];
-					}
+					ee()->email->EE_initialize();
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+					ee()->email->to($val['0']);
+					ee()->email->subject($title);
+					ee()->email->message(entities_to_ascii($message));
+					ee()->email->send();
 				}
 			}
 		}
-
-		//var_dump($sent, $message); die;
 
 		return;
 	}
