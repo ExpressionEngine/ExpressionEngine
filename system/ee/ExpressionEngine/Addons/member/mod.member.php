@@ -2775,6 +2775,66 @@ class Member {
 	}
 
 	/**
+	 * Member roles list
+	 */
+	public function roles()
+	{
+		$member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->first();
+
+		if (!$member) {
+			return ee()->TMPL->no_results();
+		}
+
+		$roles = $member->getAllRoles()->getDictionary('role_id', 'name');
+
+		$vars = [];
+		$i = 0;
+		foreach ($roles as $id => $role) {
+			$vars[$i++] = [
+				'role_id' => $id,
+				'name' => $role,
+				'is_primary_role' => ($id == $member->PrimaryRole->getId()),
+				'primary_role_id' => $member->PrimaryRole->getId(),
+				'primary_role_name' => $member->PrimaryRole->name
+			];
+		}
+
+		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+	}
+
+	/**
+	 * Check member role assignment
+	 */
+	public function has_role()
+	{
+		if (ee()->TMPL->fetch_param('role_id') == '') {
+			return ee()->TMPL->no_results();
+		}
+		
+		$member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->first();
+
+		if (!$member) {
+			return ee()->TMPL->no_results();
+		}
+
+		$roles = $member->getAllRoles()->pluck('role_id');
+
+		if (in_array(ee()->TMPL->fetch_param('role_id'), $roles)) {
+			return ee()->TMPL->tagdata;
+		}
+
+		return ee()->TMPL->no_results();
+	}	
+
+	/**
 	 * Parse a custom member field
 	 *
 	 * @param	int		$field_id	Member field ID
