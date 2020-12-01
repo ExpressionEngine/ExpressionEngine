@@ -14,7 +14,7 @@
 class Wizard extends CI_Controller
 {
 
-    public $version           = '6.0.0-b.4'; // The version being installed
+    public $version           = '6.0.0-rc.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
     public $languages         = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -1649,7 +1649,7 @@ class Wizard extends CI_Controller
             'mbr_notification_emails'   => '',
             'require_terms_of_service'  => 'y',
             'default_primary_role'      => '5',
-            'profile_trigger'           => 'member',
+            'profile_trigger'           => 'member' . $this->now,
             'member_theme'              => 'default',
             'avatar_url'                => '{base_url}' . $this->userdata['avatar_url'],
             'avatar_path'               => $this->userdata['avatar_path'],

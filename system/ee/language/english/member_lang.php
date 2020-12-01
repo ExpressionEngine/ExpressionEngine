@@ -605,6 +605,7 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 
 'yun_len' => 'Your username is currently %s characters long',
 
+'legacy_member_templates_not_enabled' => 'This page is not accessible because <a href="'.DOC_URL.'member/profile-templates.html" target="_blank" rel="external">legacy member templates</a> are not enabled.',
 
 /* Used Primarily in the Member_auth::forgot_password() through Member_auth::process_reset_password() call chain */
 'mbr_missing_confirm' => 'You must confirm your new password.',

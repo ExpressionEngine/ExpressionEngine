@@ -7,6 +7,10 @@ if (is_string($setting))
 	return;
 }
 
+if (empty($setting)) {
+	return;
+}
+
 $grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
 // Gather classes needed to set on the fieldset
