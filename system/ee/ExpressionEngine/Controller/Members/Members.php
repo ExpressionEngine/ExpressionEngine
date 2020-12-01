@@ -1420,32 +1420,6 @@ class Members extends CP_Controller {
 
 		$vars['errors'] = NULL;
 
-		$vars = [
-			'sections' => [],
-			'tabs'     => [
-				'member' => $this->renderMemberTab($vars['errors']),
-				'roles'  => $this->renderRolesTab($vars['errors']),
-			]
-		];
-
-		if ( ! ee('Session')->isWithinAuthTimeout())
-		{
-			$vars['sections']['secure_form_ctrls'] = array(
-				array(
-					'title' => 'your_password',
-					'desc' => 'your_password_desc',
-					'group' => 'verify_password',
-					'fields' => array(
-						'verify_password' => array(
-							'type'      => 'password',
-							'required'  => TRUE,
-							'maxlength' => PASSWORD_MAX_LENGTH
-						)
-					)
-				)
-			);
-		}
-
 		if ( ! empty($_POST))
 		{
 			$member = ee('Model')->make('Member');
@@ -1453,7 +1427,7 @@ class Members extends CP_Controller {
 			// Separate validator to validate confirm_password and verify_password
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
-				'confirm_password' => 'matches[password]',
+				'confirm_password' => 'required|matches[password]',
 				'verify_password'  => 'whenGroupIdIs['.implode(',', ee('Permission')->rolesThatCan('access_cp')).']|authenticated[useAuthTimeout]'
 			));
 
@@ -1554,6 +1528,32 @@ class Members extends CP_Controller {
 					->addToBody(lang('member_not_created_desc'))
 					->now();
 			}
+		}
+
+		$vars = array_merge($vars, [
+			'sections' => [],
+			'tabs'     => [
+				'member' => $this->renderMemberTab($vars['errors']),
+				'roles'  => $this->renderRolesTab($vars['errors']),
+			]
+		]);
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
+				array(
+					'title' => 'your_password',
+					'desc' => 'your_password_desc',
+					'group' => 'verify_password',
+					'fields' => array(
+						'verify_password' => array(
+							'type'      => 'password',
+							'required'  => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
+					)
+				)
+			);
 		}
 
 		ee()->view->base_url = $this->base_url;

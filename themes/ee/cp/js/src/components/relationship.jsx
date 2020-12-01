@@ -31,13 +31,15 @@ class Relationship extends React.Component {
 	}
 
 	componentDidMount() {
-		this.bindSortable()
+        this.bindSortable()
+        EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
 	}
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.selected !== prevState.selected) {
             // Refresh the sortable items when the selected items change
             this.bindSortable()
+            EE.cp.formValidation._sendAjaxRequest($(ReactDOM.findDOMNode(this).parentNode).find('input[type=hidden]').first());
         }
     }
 
