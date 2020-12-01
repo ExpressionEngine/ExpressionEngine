@@ -349,7 +349,7 @@ class Groups extends AbstractCategoriesController {
 				'fields' => array(
 					'can_edit_categories' => array(
 						'type' => 'checkbox',
-						'choices' => $can_edit_categories,
+						'choices' => $can_edit_categories ? ee('Model')->get('Role')->filter('role_id', 'IN', $can_edit_categories)->all()->getDictionary('role_id', 'name') : [],
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
 							'text' => 'cat_group_no_roles_found'
@@ -364,7 +364,7 @@ class Groups extends AbstractCategoriesController {
 				'fields' => array(
 					'can_delete_categories' => array(
 						'type' => 'checkbox',
-						'choices' => $can_delete_categories,
+						'choices' => $can_delete_categories ? ee('Model')->get('Role')->filter('role_id', 'IN', $can_delete_categories)->all()->getDictionary('role_id', 'name') : [],
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
 							'text' => 'cat_group_no_roles_found'

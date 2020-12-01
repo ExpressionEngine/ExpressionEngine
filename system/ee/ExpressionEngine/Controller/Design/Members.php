@@ -32,6 +32,10 @@ class Members extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
+			show_error(lang('unauthorized_access'), 403);
+		}
+
 		$this->stdHeader();
 
 		ee()->lang->loadfile('specialty_tmp');
