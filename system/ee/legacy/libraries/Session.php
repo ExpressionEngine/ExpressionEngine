@@ -431,7 +431,6 @@ class EE_Session {
 
 		if ((rand() % 100) < $this->gc_probability)
 		{
-			echo 'DELETED';
 			$sessions_to_delete = [];
 			$cp_expire = ee()->localize->now - $this->cpan_session_len;
 			$user_expire = ee()->localize->now - $this->user_session_len;
