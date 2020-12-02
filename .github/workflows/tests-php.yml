@@ -5,7 +5,6 @@ on:
     branches:
       - testing/ee6-unit-testing
       - testing/php8
-      - release/6.0.0
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
@@ -19,7 +18,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3]
+                php: [7.3, 7.4, 8.0]
                 os: [ubuntu-latest]
 
         name: P${{ matrix.php }} - ${{ matrix.os }}

@@ -10,6 +10,7 @@
 //
 //
 // require('@4tw/cypress-drag-drop')
+import 'cypress-file-upload';
 
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
