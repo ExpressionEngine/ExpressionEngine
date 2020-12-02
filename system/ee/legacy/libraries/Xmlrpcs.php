@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -495,48 +495,29 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
 	function do_multicall($call)
 	{
-		if ($call->kindOf() != 'struct'){
-
+		if ($call->kindOf() != 'struct') {
 			return $this->multicall_error('notstruct');
-		}
-		elseif ( ! $methName = $call->me['struct']['methodName'])
-		{
+		} elseif ( ! $methName = $call->me['struct']['methodName']) {
 			return $this->multicall_error('nomethod');
 		}
 
-		$tempArray = $methName->me;
-
-		$scalar_type = key($tempArray);
-		$scalar_value = current($tempArray);
-		
+		list($scalar_value, $scalar_type) = array(reset($methName->me), key($methName->me));
 		$scalar_type = $scalar_type == $this->xmlrpcI4 ? $this->xmlrpcInt : $scalar_type;
 
-		if ($methName->kindOf() != 'scalar' OR $scalar_type != 'string')
-		{
+		if ($methName->kindOf() != 'scalar' OR $scalar_type != 'string') {
 			return $this->multicall_error('notstring');
-		}
-		elseif ($scalar_value == 'system.multicall')
-		{
+		} elseif ($scalar_value == 'system.multicall') {
 			return $this->multicall_error('recursion');
-		}
-		elseif ( ! $params = $call->me['struct']['params'])
-		{
+		} elseif ( ! $params = $call->me['struct']['params']) {
 			return $this->multicall_error('noparams');
-		}
-		elseif ($params->kindOf() != 'array')
-		{
+		} elseif ($params->kindOf() != 'array') {
 			return $this->multicall_error('notarray');
 		}
 
-		$tempArray = $params->me;
-
-		$a = key($tempArray);
-		$b = current($tempArray);
-
-		$numParams = count($b);
+		list($b, $a) = array(reset($params->me), key($params->me));
 
 		$msg = new XML_RPC_Message($scalar_value);
-		for ($i = 0; $i < $numParams; $i++)
+		for ($i = 0, $numParams = count($b); $i < $numParams; $i++)
 		{
 			$msg->params[] = $params->me['array'][$i];
 		}
