@@ -2245,7 +2245,7 @@ class Comment {
 
 		ee()->load->library('subscription');
 		ee()->subscription->init('comment', array('entry_id' => $id), TRUE);
-		$subscribed = ee()->subscription->is_subscribed(FALSE);
+		$subscribed = ee()->subscription->is_subscribed(FALSE, $hash);
 
 		if ($type == 'subscribe' && $subscribed == TRUE)
 		{

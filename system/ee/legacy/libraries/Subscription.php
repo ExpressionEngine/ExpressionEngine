@@ -43,8 +43,24 @@ class EE_Subscription {
 	 * @param	mixed	identifiers
 	 * @return	bool
 	 */
-	function is_subscribed($identifiers = FALSE)
+	function is_subscribed($identifiers = FALSE, $hash = FALSE)
 	{
+		//Specify a hash? Check if it's valid
+		if ($hash)
+		{
+			ee()->db->where('hash', $hash);
+			ee()->db->where($this->publisher);
+			ee()->db->limit(1);
+			$query = ee()->db->get($this->table);
+
+			if ($query->num_rows() > 0)
+			{
+				return TRUE;
+			}
+
+			return FALSE;
+		}
+
 		$user = $this->_prep($identifiers);
 
 		if ( ! $user)
@@ -204,6 +220,7 @@ class EE_Subscription {
 		if ($hash != '')
 		{
 			ee()->db->where('hash', $hash);
+			ee()->db->delete($this->table);
 		}
 		else
 		{
