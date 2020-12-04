@@ -1318,7 +1318,7 @@ class Simple_commerce_mcp {
 				ee('CP/Alert')->makeInline('ipn-notice')
 					->asWarning()
 					->cannotClose()
-					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNIntro/'))
+					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/docs/api-basics/notifications/ipn/IPNIntro/'))
 					->render(),
 				array(
 					'title' => 'commerce_ipn_url',
