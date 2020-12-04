@@ -203,7 +203,6 @@ class Cp {
 			$installed_modules_js = [];
 			foreach ($installed_modules->result() as $installed_module) {
 				$installed_modules_js[] = [
-					// 'name' => $installed_module->module_name,
 					'slug' => strtolower($installed_module->module_name),
 					'version' => $installed_module->module_version,
 				];
