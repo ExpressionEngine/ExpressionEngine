@@ -265,17 +265,51 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			if (result.messageType != 'success') {
-				console.log('License Result Failure:', result);
-				return;
+			var validLicense = true;
+
+			switch (result.messageType) {
+				case 'success':
+					break;
+
+				case 'missing_license_key':
+					validLicense = false;
+					break;
+
+				case 'invalid_license_key':
+					validLicense = false;
+					break;
+
+				case 'invalid_domain':
+					validLicense = false;
+					break;
+
+				default:
+					console.log('Unknown Status: ' + result.messageType);
 			}
 
+			var validAddons = true;
+
+			// @todo Clean all this up and extract the styles to the proper location.
 			for (var addon of result.addons) {
-				if (addon.status == 'expired') {
+				if (addon.status == 'update_available') {
+					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left blue shadow" style="font-size:9px;">Update Available</div>');
+					if (window.location.href.indexOf(addon.slug) !== -1) {
+						$('body.add-on-layout .main-nav__title').css('position', 'relative').append('<a style="display:inline-block;vertical-align:middle;margin-left:15px;border: 2px solid #39d;background-color:#fff;font-weight:bold;color: #39d;padding: 2px 10px 1px 10px;border-radius: 5px;font-size: 12px;vertical-align: middle;" href="https://expressionengine.com/licenses#update-available" target="_blank">Update Available</a>').children('h1').css({ 'display': 'inline-block', 'vertical-align': 'middle' });
+					}
+				} else if (addon.status == 'expired') {
 					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left orange shadow">Expired</div>');
+					if (window.location.href.indexOf(addon.slug) !== -1) {
+						$('body.add-on-layout .main-nav__title').css('position', 'relative').append('<a style="display:inline-block;vertical-align:middle;margin-left:15px;background-color:#e82;font-weight:bold;color: #fff;padding: 2px 10px 1px 10px;border-radius: 5px;font-size: 12px;vertical-align: middle;" href="https://expressionengine.com/licenses" target="_blank">License Expired</a>').children('h1').css({ 'display':'inline-block', 'vertical-align':'middle' });
+					}
 				} else if (addon.status == 'invalid') {
+					validAddons = false;
 					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left red shadow">Unlicensed</div>'); // "Invalid" status
+					$('.global-alerts').append('<div class="app-notice-license app-notice app-notice--banner app-notice---error" style="display: flex;"><div class="app-notice__tag"><span class="app-notice__icon"></span></div><div class="app-notice__content"><p>Unlicensed Add-on: <b>' + addon.name + '</b> does not have a valid license. <a href="https://expressionengine.com/licenses" target="_blank">More Info</a></p></div><a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a></div>');
 				}
+			}
+
+			if (!validLicense && !validAddons) {
+				// console.log('Invalid License and Invalid Add-ons');
 			}
 		},
 
