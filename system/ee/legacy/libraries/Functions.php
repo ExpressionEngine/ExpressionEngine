@@ -894,7 +894,7 @@ class EE_Functions {
 		}
 		else
 		{
-			if ( ! @include(APPPATH.'language/'.$user_lang.'/email_data.php'))
+			if ( ! @include(SYSPATH.'ee/language/'.$user_lang.'/email_data.php'))
 			{
 				return array('title' => $query->row('data_title') , 'data' => $query->row('template_data') );
 			}

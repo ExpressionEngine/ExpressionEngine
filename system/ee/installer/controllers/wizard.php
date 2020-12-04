@@ -1910,7 +1910,7 @@ class Wizard extends CI_Controller
      */
     private function default_channel_entry()
     {
-        return read_file(APPPATH . 'language/' . $this->userdata['deft_lang'] . '/channel_entry_lang.php');
+        return read_file(SYSPATH.'ee/language/' . $this->userdata['deft_lang'] . '/channel_entry_lang.php');
     }
 
     /**
