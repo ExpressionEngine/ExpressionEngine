@@ -159,7 +159,7 @@ class MimeType {
 
 		$finfo = @finfo_open(FILEINFO_MIME_TYPE);
 
-		if ($finfo !== FALSE && !is_array($buffer))
+		if ($finfo !== FALSE && (!is_array($buffer) && !is_object($buffer))
 		{
 			$fres = @finfo_buffer($finfo, $buffer);
 			if ( ($fres !== FALSE)
