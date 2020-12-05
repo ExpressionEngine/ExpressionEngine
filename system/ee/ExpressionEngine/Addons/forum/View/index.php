@@ -23,6 +23,7 @@
       				<?php endif; ?>
       				</i>
       			</h3>
+
             <div class="title-bar__extra-tools">
               <a class="button button--primary" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('new_category')?></a>
             </div>
@@ -31,8 +32,8 @@
 
   			<fieldset class="tbl-filter">
   				<ul class="toolbar">
-  					<li class="mods"><a href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
-  					<li class="admin"><a href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
+  					<li><a class="mods" href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
+  					<li><a class="admin"  href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
   				</ul>
   			</fieldset>
       </div>
