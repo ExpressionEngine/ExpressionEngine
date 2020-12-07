@@ -6,8 +6,8 @@ define('EE_START', microtime(true));
 $system_path = realpath(dirname($_SERVER['SCRIPT_FILENAME'])) . '/system';
 
 if (PHP_SAPI !== 'cli') {
-    header('HTTP/1.1 503 Service Unavailable.', true, '503');
-    exit("Invalid request\n");
+    header('HTTP/1.1 404 Not Found.', true, '404');
+    exit("Not Found\n");
 }
 
 // Error Reporting
