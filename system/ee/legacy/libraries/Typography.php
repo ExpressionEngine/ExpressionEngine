@@ -810,7 +810,7 @@ class EE_Typography {
 					else
 					{
 						if (isset($this->text_fmt_plugins[$prefs['text_format']]) &&
-							(file_exists(PATH_ADDONS.'pi.'.$prefs['text_format'].'.php') OR
+							(file_exists(PATH_ADDONS.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php') OR
 							file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
 						{
 							$this->text_format = $prefs['text_format'];
