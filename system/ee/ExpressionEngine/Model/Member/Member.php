@@ -300,6 +300,16 @@ class Member extends ContentModel {
 	protected $cp_homepage_channel;
 	protected $cp_homepage_custom;
 
+	public function get__group_id()
+	{
+		return $this->getProperty('role_id');
+	}
+
+	public function set__group_id($group_id)
+	{
+		$this->setProperty('role_id', $group_id);
+	}
+
 	/**
 	 * Support for legacy `group_id` property
 	 */
