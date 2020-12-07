@@ -122,7 +122,7 @@ class BooleanExpressionTest extends TestCase {
 
 	/**
 	* @requires PHP 8
-	* @dataProvider falseyDataProvider
+	* @dataProvider falseyDataProvider8
 	*/
 	public function testFalseyEqualsEmptyString8($token)
 	{
