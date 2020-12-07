@@ -3913,7 +3913,7 @@ class Forum_mcp extends CP_Controller {
 			return;
 		}
 
-		require_once SYSPATH.'ee/language/'.ee()->config->item('deft_lang').'/email_data.php';
+		require_once SYSPATH.'ee/language/english/email_data.php';
 
 		$data = array(
 			'site_id'			=> $site_id,
