@@ -69,6 +69,10 @@ function (_React$Component) {
       _this.props.onToggleAll(checked);
     });
 
+    _defineProperty(_assertThisInitialized(_this), "handleInputChange", function (event) {
+      _this.handleClick();
+    });
+
     _this.state = {
       checked: false
     };
@@ -79,9 +83,9 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       return React.createElement("label", {
-        className: (this.props.checkAll ? "ctrl-all" : "ctrl-all") + (this.state.checked ? " act" : ""),
-        onClick: this.handleClick
+        className: (this.props.checkAll ? "ctrl-all" : "ctrl-all") + (this.state.checked ? " act" : "")
       }, React.createElement("span", null, this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all), React.createElement("input", {
+        onChange: this.handleInputChange,
         value: this.state.checked,
         type: "checkbox",
         "class": "checkbox--small"

@@ -34,27 +34,25 @@ class FilterToggleAll extends React.Component {
 
   handleClick = () => {
     // Clear all will always be "unchecked" to the parent
-    if ( ! this.props.checkAll) {
+    if (!this.props.checkAll) {
       this.props.onToggleAll(false)
       return
     }
 
-    let checked = ! this.state.checked
-    this.setState({
-      checked: checked
-    })
+    let checked = !this.state.checked
+    this.setState({ checked: checked })
     this.props.onToggleAll(checked)
+  }
+
+  handleInputChange = (event) => {
+    this.handleClick()
   }
 
   render () {
     return (
-        <label className={
-            (this.props.checkAll ? "ctrl-all" : "ctrl-all")
-            + (this.state.checked ? " act" : "")
-          }
-          onClick={this.handleClick}>
+        <label className={(this.props.checkAll ? "ctrl-all" : "ctrl-all") + (this.state.checked ? " act" : "")}>
             <span>{this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all}</span>
-            <input value={this.state.checked} type="checkbox" class="checkbox--small" />
+            <input onChange={this.handleInputChange} value={this.state.checked} type="checkbox" class="checkbox--small" />
         </label>
     )
   }
