@@ -629,12 +629,20 @@ class Roles extends AbstractRolesController {
 			'file' => array('cp/form_group'),
 		));
 
-		return [
-			'role'        => $this->renderRoleTab($role, $errors),
-			'site_access' => $this->renderSiteAccessTab($role, $errors),
-			'cp_access'   => $this->renderCPAccessTab($role, $errors),
-			'template_access'   => $this->renderTemplateAccessTab($role, $errors),
-		];
+		if ($role->getId() != 1) {
+			$tabs = [
+				'role'        => $this->renderRoleTab($role, $errors),
+				'site_access' => $this->renderSiteAccessTab($role, $errors),
+				'cp_access'   => $this->renderCPAccessTab($role, $errors),
+				'template_access'   => $this->renderTemplateAccessTab($role, $errors),
+			];
+		} else {
+			$tabs = [
+				'role' => $this->renderRoleTab($role, $errors)
+			];
+		}
+
+		return $tabs;
 	}
 
 	private function renderRoleTab(Role $role, $errors)
@@ -680,34 +688,39 @@ class Roles extends AbstractRolesController {
 						'value' => $role->description
 					]
 				]
-			],
-			[
-				'title' => 'security_lock',
-				'desc' => 'lock_description',
-				'fields' => [
-					'is_locked' => [
-						'type' => 'yes_no',
-						'value' => $role->is_locked,
+			]
+		];
+		
+		if ($role->getId() != 1) {
+			$section = array_merge($section, [
+				[
+					'title' => 'security_lock',
+					'desc' => 'lock_description',
+					'fields' => [
+						'is_locked' => [
+							'type' => 'yes_no',
+							'value' => $role->is_locked,
+						]
 					]
-				]
-			],
-			[
-				'title' => 'role_groups',
-				'desc' => 'role_groups_desc',
-				'fields' => [
-					'role_groups' => [
-						'type' => 'checkbox',
-						'choices' => $role_groups,
-						'value' => $role->RoleGroups->pluck('group_id'),
-						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('role_groups')),
-							'link_text' => lang('add_new'),
-							'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+				],
+				[
+					'title' => 'role_groups',
+					'desc' => 'role_groups_desc',
+					'fields' => [
+						'role_groups' => [
+							'type' => 'checkbox',
+							'choices' => $role_groups,
+							'value' => $role->RoleGroups->pluck('group_id'),
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('role_groups')),
+								'link_text' => lang('add_new'),
+								'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+							]
 						]
 					]
 				]
-			]
-		];
+			]);
+		}
 
 		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
