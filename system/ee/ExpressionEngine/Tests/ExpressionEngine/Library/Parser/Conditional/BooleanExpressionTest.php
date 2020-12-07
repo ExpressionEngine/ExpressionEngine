@@ -93,6 +93,7 @@ class BooleanExpressionTest extends TestCase {
 	}
 
 	/**
+	 * @requires PHP 8
 	 * @dataProvider falseyDataProvider8
 	 */
 	public function testFalseyEqualsZero8($token)
@@ -108,6 +109,22 @@ class BooleanExpressionTest extends TestCase {
 	* @dataProvider falseyDataProvider
 	*/
 	public function testFalseyEqualsEmptyString($token)
+	{
+		if (version_compare(PHP_VERSION, '8', '>=')) {
+			$this->markTestSkipped('PHP 8.0 variation of this test will be used instead.');
+		}
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\StringLiteral(''));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	* @requires PHP 8
+	* @dataProvider falseyDataProvider
+	*/
+	public function testFalseyEqualsEmptyString8($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
