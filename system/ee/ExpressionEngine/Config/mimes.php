@@ -32,6 +32,7 @@ return array(
 	'application/powerpoint', // .ppt
 	'application/smil', // .smi, .smil
 	'application/vnd.mif', // .mif
+	'application/vnd.ms-office', // generic MS Office document
 	'application/vnd.ms-excel', // .csv, .xls
 	'application/vnd.ms-excel.addin.macroEnabled.12', // .xlam
 	'application/vnd.ms-excel.sheet.binary.macroEnabled.12', // .xlsm

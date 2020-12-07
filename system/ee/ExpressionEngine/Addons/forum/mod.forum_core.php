@@ -728,7 +728,7 @@ class Forum_Core extends Forum {
 
 		if (is_array($group_id))
 		{
-			$in_admin = array_intersect($role_ids, $this->admin_groups);
+			$in_admin = array_intersect($group_id, $this->admin_groups);
 			if ( ! empty($in_admin))
 			{
 				return TRUE;
@@ -1897,7 +1897,7 @@ class Forum_Core extends Forum {
 
 		$tquery = ee()->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
 									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
+							  		 m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
 							FROM (exp_forums f, exp_forum_topics t, exp_members m)
 							LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
 							WHERE f.forum_id = t.forum_id
@@ -2514,7 +2514,7 @@ class Forum_Core extends Forum {
 			t.body, t.status, t.announcement, t.thread_views, t.parse_smileys,
 			t.topic_date AS date, t.topic_edit_date AS edit_date,
 			t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-			m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
+			m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
 			m.total_forum_posts, m.email, m.accept_user_email,
 			m.signature, m.sig_img_filename, m.sig_img_width,
 			m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
@@ -2890,7 +2890,7 @@ class Forum_Core extends Forum {
 			}
 
 			$pquery = ee()->db->query("SELECT p.post_id, p.forum_id, p.author_id, p.ip_address, p.body, p.parse_smileys, p.post_date AS date, p.post_edit_date AS edit_date, p.post_edit_author AS edit_author_id, em.screen_name AS edit_author,
-				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
+				m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
 				f.forum_display_edit_date
 				FROM (exp_forum_posts p, exp_members m, exp_forums f)
 				LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
@@ -3481,7 +3481,7 @@ class Forum_Core extends Forum {
 				{
 					foreach ($mod_query->result_array() as $mod)
 					{
-						if ($mod['mod_member_id'] == $row['author_id'] OR $mod['mod_group_id'] == $row['group_id'])
+						if ($mod['mod_member_id'] == $row['author_id'] OR $mod['mod_group_id'] == $row['role_id'])
 						{
 							$rank_class = 'rankModerator';
 							$rank_title = lang('moderator');
@@ -3878,7 +3878,7 @@ class Forum_Core extends Forum {
 						'rank_title'				=> $rank_title,
 						'include:post_attachments'	=> $attachments,
 						'checked'					=> $checked,
-						'lang:ban_member'			=> ($row['group_id'] == 2) ? lang('member_is_banned') : lang('ban_member'),
+						'lang:ban_member'			=> ($row['role_id'] == 2) ? lang('member_is_banned') : lang('ban_member'),
 						'path:ban_member'			=> $this->forum_path('ban_member/'.$row['author_id']),
 						'path:delete_post'			=> $this->forum_path('/'.(($is_topic == TRUE) ? 'deletetopic' : 'deletereply').'/'.$row['post_id'].'/'),
 						'path:edit_post'			=> $this->forum_path('/'.(($is_topic == TRUE) ? 'edittopic' : 'editreply').'/'.$row['post_id'].'/'),
@@ -8102,14 +8102,14 @@ class Forum_Core extends Forum {
 		// Reinstate the user
 		if ($_POST['action'] == 'reinstate')
 		{
-			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->config->item('default_primary_role')."' WHERE member_id = '{$this->current_id}'");
+			ee()->db->query("UPDATE exp_members SET role_id = '".ee()->config->item('default_primary_role')."' WHERE member_id = '{$this->current_id}'");
 			$ban_msg = lang('user_account_reinstated');
 			$banned_user_ips = '';
 		}
 		elseif ($_POST['action'] == 'suspend')
 		{
 			// Suspend the user
-			ee()->db->query("UPDATE exp_members SET group_id = '2' WHERE member_id = '{$this->current_id}'");
+			ee()->db->query("UPDATE exp_members SET role_id = '2' WHERE member_id = '{$this->current_id}'");
 			$ban_msg = lang('user_account_suspended');
 		}
 		else
@@ -8291,8 +8291,8 @@ class Forum_Core extends Forum {
 			$back	= (preg_match("/.*backspace=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : '';
 
 			ee()->db->select('screen_name, member_id');
-			ee()->db->where('group_id != 2');
-			ee()->db->where('group_id != 4');
+			ee()->db->where('role_id != 2');
+			ee()->db->where('role_id != 4');
 			ee()->db->order_by('member_id', 'DESC');
 			ee()->db->limit($limit);
 			$query = ee()->db->get('members');

@@ -8,7 +8,7 @@
 							<div class="file-card__preview-icon-text"><?=lang('file_not_found')?></div>
 						</div>
 					<?php else: ?>
-						<?php if ($file->isImage()): ?>
+						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
 							<?php if (ee('Thumbnail')->get($file)->missing): ?>
 								<div class="file-card__preview-icon">
 									<i class="fas fa-lg fa-exclamation-triangle"></i>
@@ -35,7 +35,7 @@
 
 					<div class="file-card__info">
 						<div class="file-card__info-name"><?=$file->title?></div>
-						<div class="file-card__info-subtitle"><?php if ($file->isImage()) { ee()->load->library('image_lib'); $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE); echo "{$image_info['width']} x {$image_info['height']} - "; }; ?><?=ee('Format')->make('Number', $file->file_size)->bytes();?></div>
+						<div class="file-card__info-subtitle"><?php if ($file->isEditableImage()) { ee()->load->library('image_lib'); $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE); echo "{$image_info['width']} x {$image_info['height']} - "; }; ?><?=ee('Format')->make('Number', $file->file_size)->bytes();?></div>
 					</div>
 				</a>
 		<?php endforeach; ?>

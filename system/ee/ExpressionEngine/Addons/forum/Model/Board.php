@@ -287,6 +287,12 @@ class Board extends Model {
 		$this->setRawProperty('board_upload_path', $this->addTrailingSlash($path));
 	}
 
+    // Clean XSS from board label when saved
+    protected function set__board_label($boardLabel)
+    {
+        $this->setRawProperty('board_label', ee('Security/XSS')->clean($boardLabel));
+    }
+
 	private function addTrailingSlash($value)
 	{
 		if (isset($value)

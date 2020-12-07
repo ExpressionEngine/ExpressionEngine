@@ -10,12 +10,16 @@
 $(document).ready(function () {
 
 	var searching = null;
-	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
-	var form_selector = '.ee-main__content > .container > .panel > .tbl-ctrls > form';
+	if (typeof(EE.viewManager)!=='undefined') {
+		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
+	}
+	var form_selector = '.ee-main__content .container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
-		$('.ee-main__content > .container').html(data.html);
+		$(form_selector).parents('.container').first().html(data.html);
 
-		saveDefaultUrl = data.viewManager_saveDefaultUrl;
+		if (typeof(EE.viewManager)!=='undefined') {
+			saveDefaultUrl = data.viewManager_saveDefaultUrl;
+		}
 
 		if (jQuery().toggle_all) {
 			$('table').toggle_all();
@@ -33,9 +37,9 @@ $(document).ready(function () {
 		var _form = $(form_selector);
 
 		if (url === null) {
-			url = _form.attr('action');
+			url = typeof(_form.data('search-url'))!='undefined' ? _form.data('search-url') : _form.attr('action');
 		}
-
+		
 		var data = {};
 		if (type != 'GET') {
 			data = $('input[name!="columns[]"]', _form).serialize();
@@ -62,7 +66,7 @@ $(document).ready(function () {
 
 		event.preventDefault();
 
-		var url = $(this).attr('action');
+		var url = typeof($(this).data('search-url'))!='undefined' ? $(this).data('search-url') : $(this).attr('action');
 		url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + $('input[name="filter_by_keyword"]').val() + '$2');
 
 		searchEntries('POST', url)
@@ -79,7 +83,7 @@ $(document).ready(function () {
 		var val = $(this).val();
 		//only submit when search is empty or min. 3 chars
 		if (val.length == 0 || val.length >= 3) {
-			var url = $(form_selector).attr('action');
+			var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
 			url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
 
 			searchEntries('POST', url)
