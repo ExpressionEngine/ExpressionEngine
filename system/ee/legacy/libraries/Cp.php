@@ -203,14 +203,15 @@ class Cp {
 			$installed_modules_js = [];
 			foreach ($installed_modules->result() as $installed_module) {
 				$installed_modules_js[] = [
-					'name' => $installed_module->module_name,
 					'slug' => strtolower($installed_module->module_name),
 					'version' => $installed_module->module_version,
 				];
 			}
 
+			// Grab the site's license key, license URL, and list of installed
+			// add-ons to send to the license validation service.
 			ee()->javascript->set_global(array(
-				'cp.licenseKey' => '123412341234',
+				'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
 				'cp.lvUrl' => ee()->config->item('lv_url'),
 				'cp.installedAddons' => json_encode($installed_modules_js)
 			));
