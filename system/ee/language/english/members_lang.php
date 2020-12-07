@@ -910,6 +910,8 @@ $lang = array(
 
 'invalid_characters' => 'The field name you submitted contains invalid characters',
 
+'invalid_characters_in_username' => 'Your username cannot use the following characters: | " \' ! < > { }',
+
 'is_field_cp_reg' => 'Is field visible in the control panel\'s administrative registration page?',
 
 'is_field_public' => 'Show in profile?',
