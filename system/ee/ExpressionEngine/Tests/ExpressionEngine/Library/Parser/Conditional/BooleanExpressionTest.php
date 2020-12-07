@@ -122,7 +122,7 @@ class BooleanExpressionTest extends TestCase {
 
 	/**
 	* @requires PHP 8
-	* @dataProvider falseyDataProvider8
+	* @dataProvider falseyDataProvider8minimal
 	*/
 	public function testFalseyEqualsEmptyString8($token)
 	{
@@ -171,6 +171,13 @@ class BooleanExpressionTest extends TestCase {
 		return array(
 			array(new Token\Number(0)),
 			array(new Token\Number(0.0)),
+			array(new Token\Boolean('FALSE')),
+		);
+	}
+
+	public function falseyDataProvider8minimal()
+	{
+		return array(
 			array(new Token\Boolean('FALSE')),
 		);
 	}
