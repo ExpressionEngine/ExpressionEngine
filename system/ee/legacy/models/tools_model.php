@@ -367,7 +367,7 @@ class Tools_model extends CI_Model {
 	{
 		$this->load->helper('file');
 
-		$path = SYSPATH.'ee/language/'.$language_directory;
+		$path = APPPATH.'language/'.$language_directory;
 		$ext_len = strlen('.php');
 
 		$filename_end = '_lang.php';

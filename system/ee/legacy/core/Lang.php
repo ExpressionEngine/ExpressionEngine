@@ -329,8 +329,8 @@ class EE_Lang {
 		{
 			array_unshift(
 				$paths,
-				SYSPATH.'ee/language/'.$idiom.'/'.$langfile,
-				SYSPATH.'ee/language/'.$deft_lang.'/'.$langfile
+				APPPATH.'language/'.$idiom.'/'.$langfile,
+				APPPATH.'language/'.$deft_lang.'/'.$langfile
 			);
 		}
 
