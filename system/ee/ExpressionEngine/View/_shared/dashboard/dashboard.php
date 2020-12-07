@@ -5,7 +5,7 @@
   </div>
   <div class="beta-copy">
     <img src="<?=URL_THEMES?>asset/img/ee-logotype-white.svg" class="logotype beta-slide-in-top" alt="ExpressionEngine">
-    <span class="beta-intro beta-slide-in-bottom">Welcome to the beta!</span>
+    <span class="beta-intro beta-slide-in-bottom">Welcome to the release candidate!</span>
   </div>
 </a>
 
