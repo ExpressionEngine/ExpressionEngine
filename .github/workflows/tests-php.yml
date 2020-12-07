@@ -56,7 +56,7 @@ jobs:
 
             - name: Run PHPUnit Tests
               working-directory: system/ee/ExpressionEngine/Tests/
-              run: vendor/bin/phpunit --configuration=phpunit.xml
+              run: vendor/bin/phpunit --verbose --debug --configuration=phpunit.xml
 
             - name: Install PHP dependencies for updater tests
               working-directory: system/ee/installer/updater/ExpressionEngine/Tests/
