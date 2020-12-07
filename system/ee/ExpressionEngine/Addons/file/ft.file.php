@@ -519,7 +519,7 @@ JSC;
 		if ($function == 'webp') {
 			$filename['ext'] = '.webp';
 		}
-		$new_image = $filename['name'] . '_' . md5(serialize($params)) . $filename['ext'];
+		$new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
 		$new_image_dir = rtrim($data['directory_path'], '/') . '/_' . $function . DIRECTORY_SEPARATOR;
 		if (!is_dir($new_image_dir)) {
 			mkdir($new_image_dir);

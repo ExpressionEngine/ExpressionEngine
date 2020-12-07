@@ -121,6 +121,27 @@ class File extends Model {
 	}
 
 	/**
+	 * Uses the file's mime-type to determine if the file is an editable image or not.
+	 *
+	 * @return bool TRUE if the file is an editable image, FALSE otherwise
+	 */
+	public function isEditableImage()
+	{
+		$imageMimes = [
+			'image/gif', // .gif
+			'image/jpeg', // .jpg, .jpe, .jpeg
+			'image/pjpeg', // .jpg, .jpe, .jpeg
+			'image/png', // .png
+			'image/x-png', // .png
+		];
+		if (defined('IMAGETYPE_WEBP')) {
+			$imageMimes[] = 'image/webp'; // .webp
+		}
+		return (in_array($this->mime_type, $imageMimes));
+	}
+
+
+	/**
 	 * Uses the file's mime-type to determine if the file is an SVG or not.
 	 *
 	 * @return bool TRUE if the file is an SVG, FALSE otherwise
@@ -205,6 +226,19 @@ class File extends Model {
 
 			if (file_exists($file))
 			{
+				unlink($file);
+			}
+		}
+
+		// Remove front-end manipulations
+		$manipulations =  ['resize', 'crop', 'rotate', 'webp'];
+		foreach ($manipulations as $manipulation)
+		{
+			$ext = strrchr($this->file_name, '.');
+			$basename = ($ext === false) ? $this->file_name : substr($this->file_name, 0, -strlen($ext));
+			$pattern = rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/' . $basename . '_' . $manipulation . '_*';
+
+			foreach (glob($pattern) as $file) {
 				unlink($file);
 			}
 		}
