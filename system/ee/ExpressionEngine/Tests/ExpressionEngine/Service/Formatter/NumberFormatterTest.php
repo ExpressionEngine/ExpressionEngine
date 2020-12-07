@@ -23,7 +23,7 @@ class NumberFormatterTest extends TestCase {
 		if (version_compare(PHP_VERSION, '8', '>=')) {
 			$this->markTestSkipped('`intl` not yet supported in PHP8 GitHub actions runner');
 		}
-		
+
 		$this->lang = m::mock('EE_Lang');
 		$this->sess = m::mock('EE_Session');
 
