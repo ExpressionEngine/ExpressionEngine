@@ -32,8 +32,8 @@
 
   			<fieldset class="tbl-filter">
   				<ul class="toolbar">
-  					<li><a class="mods" href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
-  					<li><a class="admin"  href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
+  					<li><a class="mods" href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"> <?=lang('moderators')?></a></li>
+  					<li><a class="admin"  href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"> <?=lang('administrators')?></a></li>
   				</ul>
   			</fieldset>
       </div>
