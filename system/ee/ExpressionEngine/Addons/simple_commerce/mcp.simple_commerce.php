@@ -204,14 +204,19 @@ class Simple_commerce_mcp {
 	public function createItem()
 	{
 		ee()->lang->load('content');
+		
 
 		$base_url = ee('CP/URL')->make('addons/settings/simple_commerce/create-item');
-		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entry_listing = ee('CP/EntryListing',
+			ee()->input->get_post('filter_by_keyword'),
+			ee()->input->get_post('search_in') ?: 'titles_and_content'
+		);
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$count = $entries->count();
 
-		$vars['filters'] = $filters->render($base_url);
+		$vars['filters'] = $filters->renderEntryFilters($base_url);
+		$vars['filters_search'] = $filters->renderSearch($base_url);
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
@@ -277,6 +282,11 @@ class Simple_commerce_mcp {
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/add-items');
+		$vars['base_url'] = $base_url;
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/publish/entry-list'),
+		));
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
@@ -284,6 +294,13 @@ class Simple_commerce_mcp {
 			->render($base_url);
 
 		$this->items_nav->isActive();
+		
+		if (AJAX_REQUEST) {
+			ee()->output->send_ajax_response([
+				'html' =>  ee('View')->make('simple_commerce:entry_list')->render($vars),
+				'url' => $base_url->compile()
+			]);
+		}
 
 		return array(
 			'heading' => sprintf(lang('create_new_item_step'), 1),
@@ -307,7 +324,13 @@ class Simple_commerce_mcp {
 
 		if ( ! ee()->input->post('items') && (empty($entry_ids) OR ee()->input->post('bulk_action') != 'add_item'))
 		{
-			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/create-item', ee()->cp->get_url_state()));
+			$request_data = ee()->cp->get_url_state();
+			foreach ($_POST as $key => $val) {
+				if (!empty($val)) {
+					$request_data[$key] = ee('Security/XSS')->clean($val);
+				}
+			}
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/simple_commerce/create-item', $request_data));
 		}
 
 		$forms = array();

@@ -1,9 +1,9 @@
 <?=form_open($form_url)?>
 	<?php $i = 1;
 	foreach ($forms as $form): ?>
-		<div class="box<?php if ($i < count($forms)): ?> mb<?php endif ?>">
-			<h1><?=$form['form_title']?></h1>
-			<div class="settings">
+		<div class="panel box<?php if ($i < count($forms)): ?> mb<?php endif ?>">
+			<h1 class="panel-heading"><?=$form['form_title']?></h1>
+			<div class="panel-body settings">
 				<?=ee('CP/Alert')->get('item-form-'.$form['entry_id'])?>
 				<?php
 				foreach ($form['sections'] as $name => $settings)
