@@ -37,10 +37,9 @@
   				</ul>
   			</fieldset>
       </div>
-
+			<div class="table-responsive table-responsive--collapsible">
 			<?php if (empty($categories)): ?>
-      <div class="table-responsive table-responsive--collapsible">
-      <table cellspacing="0" class="empty">
+			<table cellspacing="0" class="empty">
 				<tr class="no-results">
 					<td><?=sprintf(lang('no_found'), lang('categories'))?> <a href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
 				</tr>
@@ -67,8 +66,8 @@
 					],
 					'modal' => true
 				]); ?>
-      </div>
 			<?php endif; ?>
+			</div>
 		<?php endif; ?>
 
 		<?=form_close();?>
