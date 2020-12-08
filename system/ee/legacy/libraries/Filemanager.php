@@ -667,7 +667,7 @@ class Filemanager {
 		}
 
 		$member = ee()->session->getMember();
-		$assigned_upload_destinations = $member->getAssignedUploadDestinations()->indexBy('id');
+		$assigned_upload_destinations = $member ? $member->getAssignedUploadDestinations()->indexBy('id') : [];
 
 		return isset($assigned_upload_destinations[$dir_id]);
 	}

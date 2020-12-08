@@ -1017,7 +1017,10 @@ class EE_Functions {
 	 */
 	public function fetch_assigned_channels($all_sites = FALSE)
 	{
-		return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+		if (ee()->session->getMember()) {
+			return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+		}
+		return [];
 	}
 
 	/**
