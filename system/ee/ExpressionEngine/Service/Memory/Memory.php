@@ -36,7 +36,16 @@ class Memory {
 			return;
 		}
 
-  		$info = @getimagesize($file_path);
+		//do not proceed if the file is not an image
+		try {
+			$info = getimagesize($file_path);
+		} catch (Exception $e) {
+			return false;
+		}
+
+		if ($info === false) {
+			return false;
+		}
 
 		// assume 4 color channels to be safe if we don't have it
 		$channels = (isset($info['channels'])) ? $info['channels'] : 4;

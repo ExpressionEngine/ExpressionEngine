@@ -23,6 +23,7 @@
       				<?php endif; ?>
       				</i>
       			</h3>
+
             <div class="title-bar__extra-tools">
               <a class="button button--primary" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('new_category')?></a>
             </div>
@@ -31,15 +32,14 @@
 
   			<fieldset class="tbl-filter">
   				<ul class="toolbar">
-  					<li class="mods"><a href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
-  					<li class="admin"><a href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
+  					<li><a class="mods" href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"> <?=lang('moderators')?></a></li>
+  					<li><a class="admin"  href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"> <?=lang('administrators')?></a></li>
   				</ul>
   			</fieldset>
       </div>
-
+			<div class="table-responsive table-responsive--collapsible">
 			<?php if (empty($categories)): ?>
-      <div class="table-responsive table-responsive--collapsible">
-      <table cellspacing="0" class="empty">
+			<table cellspacing="0" class="empty">
 				<tr class="no-results">
 					<td><?=sprintf(lang('no_found'), lang('categories'))?> <a href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
 				</tr>
@@ -66,8 +66,8 @@
 					],
 					'modal' => true
 				]); ?>
-      </div>
 			<?php endif; ?>
+			</div>
 		<?php endif; ?>
 
 		<?=form_close();?>

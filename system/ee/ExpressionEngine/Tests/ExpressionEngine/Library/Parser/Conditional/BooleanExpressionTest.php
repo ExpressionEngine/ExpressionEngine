@@ -82,6 +82,22 @@ class BooleanExpressionTest extends TestCase {
 	 */
 	public function testFalseyEqualsZero($token)
 	{
+		if (version_compare(PHP_VERSION, '8', '>=')) {
+			$this->markTestSkipped('PHP 8.0 variation of this test will be used instead.');
+		}
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\Number(0));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	 * @requires PHP 8
+	 * @dataProvider falseyDataProvider8
+	 */
+	public function testFalseyEqualsZero8($token)
+	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
 		$this->expr->add(new Token\Number(0));
@@ -93,6 +109,22 @@ class BooleanExpressionTest extends TestCase {
 	* @dataProvider falseyDataProvider
 	*/
 	public function testFalseyEqualsEmptyString($token)
+	{
+		if (version_compare(PHP_VERSION, '8', '>=')) {
+			$this->markTestSkipped('PHP 8.0 variation of this test will be used instead.');
+		}
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\StringLiteral(''));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	* @requires PHP 8
+	* @dataProvider falseyDataProvider8minimal
+	*/
+	public function testFalseyEqualsEmptyString8($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
@@ -130,6 +162,22 @@ class BooleanExpressionTest extends TestCase {
 			array(new Token\StringLiteral('')),
 			array(new Token\Number(0)),
 			array(new Token\Number(0.0)),
+			array(new Token\Boolean('FALSE')),
+		);
+	}
+
+	public function falseyDataProvider8()
+	{
+		return array(
+			array(new Token\Number(0)),
+			array(new Token\Number(0.0)),
+			array(new Token\Boolean('FALSE')),
+		);
+	}
+
+	public function falseyDataProvider8minimal()
+	{
+		return array(
 			array(new Token\Boolean('FALSE')),
 		);
 	}

@@ -116,6 +116,14 @@ class MimeType {
 			@finfo_close($finfo);
 		}
 
+		//try another method to get mime
+		if ($mime == 'application/octet-stream') {
+			$file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
+			if (strpos($file_opening, 'RIFF' === 0) && strpos($file_opening, 'WEBPVP8' !== false)) {
+				$mime = 'image/webp';
+			}
+		}
+
 		// A few files are identified as plain text, which while true is not as
 		// helpful as which type of plain text files they are.
 		if ($mime == 'text/plain')
@@ -158,7 +166,8 @@ class MimeType {
 		$mime = 'application/octet-stream';
 
 		$finfo = @finfo_open(FILEINFO_MIME_TYPE);
-		if ($finfo !== FALSE)
+
+		if ($finfo !== FALSE && !is_array($buffer) && !is_object($buffer))
 		{
 			$fres = @finfo_buffer($finfo, $buffer);
 			if ( ($fres !== FALSE)

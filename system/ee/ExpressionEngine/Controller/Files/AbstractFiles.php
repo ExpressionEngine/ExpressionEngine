@@ -250,7 +250,7 @@ abstract class AbstractFiles extends CP_Controller {
 				unset($toolbar['crop']);
 			}
 
-			if ( ! $file->isImage())
+			if ( ! $file->isEditableImage())
 			{
 				unset($toolbar['view']);
 				unset($toolbar['crop']);
@@ -403,14 +403,14 @@ abstract class AbstractFiles extends CP_Controller {
 
 			ee()->view->filters = $filters->render($reset_url);
 
-			$files = $files->limit($perpage)
-						->offset($offset);
-
 			if ($files->count() == 0) {
 				$vars['no_results'] = [
 					'text' => sprintf(lang('no_found'), lang('files'))
 				];
 			}
+
+			$files = $files->limit($perpage)
+						->offset($offset);
 
 			$vars['files'] = $files->all();
 		}

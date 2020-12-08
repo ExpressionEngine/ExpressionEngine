@@ -519,7 +519,7 @@ class EE_Image_lib {
 
 		//if we are converting, change image type
 		if ($action == 'webp') {
-			$this->image_type = 4;
+			$this->image_type = 18; //IMAGETYPE_WEBP
 		}
 
 		//  Show the image
@@ -644,15 +644,15 @@ class EE_Image_lib {
 		//  Build the resizing command
 		switch ($this->image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 						$cmd_in		= 'giftopnm';
 						$cmd_out	= 'ppmtogif';
 				break;
-			case 2 :
+			case IMAGETYPE_JPEG :
 						$cmd_in		= 'jpegtopnm';
 						$cmd_out	= 'ppmtojpeg';
 				break;
-			case 3 :
+			case IMAGETYPE_PNG :
 						$cmd_in		= 'pngtopnm';
 						$cmd_out	= 'ppmtopng';
 				break;
@@ -860,7 +860,7 @@ class EE_Image_lib {
 	function image_preserve_alpha($new_img, $src_img)
 	{
 		// Preserve transparancies for GIFs and PNGs
-		if ($this->image_type == 1 || $this->image_type == 3)
+		if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG)
 		{
 			$src_alpha_index = imagecolortransparent($src_img);
 
@@ -882,7 +882,7 @@ class EE_Image_lib {
 				imagefill($new_img, 0, 0, $alpha_index);
 				imagecolortransparent($new_img, $alpha_index);
 			}
-			else if ($this->image_type == 3)
+			else if ($this->image_type == IMAGETYPE_PNG)
 			{
 				imagealphablending($new_img, false);
 
@@ -1234,7 +1234,7 @@ class EE_Image_lib {
 
 		switch ($image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 				if ( ! function_exists('imagecreatefromgif'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_gif_not_supported'));
@@ -1243,7 +1243,7 @@ class EE_Image_lib {
 
 				return imagecreatefromgif($path);
 				break;
-			case 2 :
+			case IMAGETYPE_JPEG :
 				if ( ! function_exists('imagecreatefromjpeg'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_jpg_not_supported'));
@@ -1252,7 +1252,7 @@ class EE_Image_lib {
 
 				return imagecreatefromjpeg($path);
 				break;
-			case 3 :
+			case IMAGETYPE_PNG :
 				if ( ! function_exists('imagecreatefrompng'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
@@ -1261,7 +1261,7 @@ class EE_Image_lib {
 
 				return imagecreatefrompng($path);
 				break;
-			case 4 :
+			case 18 : //IMAGETYPE_WEBP
 				if ( ! function_exists('imagecreatefromwebp'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
@@ -1290,7 +1290,7 @@ class EE_Image_lib {
 	{
 		switch ($this->image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 				if ( ! function_exists('imagegif'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_gif_not_supported'));
@@ -1303,7 +1303,7 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
-			case 2	:
+			case IMAGETYPE_JPEG	:
 				if ( ! function_exists('imagejpeg'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_jpg_not_supported'));
@@ -1316,7 +1316,7 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
-			case 3	:
+			case IMAGETYPE_PNG	:
 				if ( ! function_exists('imagepng'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
@@ -1338,7 +1338,7 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
-			case 4	:
+			case 18	://IMAGETYPE_WEBP
 				if ( ! function_exists('imagewebp'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
@@ -1374,16 +1374,16 @@ class EE_Image_lib {
 
 		switch ($this->image_type)
 		{
-			case 1:
+			case IMAGETYPE_GIF:
 				imagegif($resource);
 				break;
-			case 2:
+			case IMAGETYPE_JPEG:
 				imagejpeg($resource, '', $this->quality);
 				break;
-			case 3:
+			case IMAGETYPE_PNG:
 				imagepng($resource);
 				break;
-			case 4:
+			case 18: //IMAGETYPE_WEBP
 				imagewebp($resource);
 				break;
 			default:
@@ -1467,7 +1467,7 @@ class EE_Image_lib {
 
 		$vals = @getimagesize($path);
 
-		$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png', '4' => 'webp');
+		$types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
 
 		$mime = (isset($types[$vals['2']])) ? 'image/'.$types[$vals['2']] : 'image/jpg';
 
