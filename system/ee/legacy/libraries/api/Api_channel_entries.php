@@ -805,9 +805,12 @@ class Api_channel_entries extends Api {
 				->Statuses
 				->getDictionary('status_id', 'status');
 
-			$assigned_statusues = ee()->session->getMember()
-				->getAssignedStatuses()
-				->getDictionary('status_id', 'status');
+			$assigned_statusues = [];
+			if (ee()->session->getMember()) {
+				$assigned_statusues = ee()->session->getMember()
+					->getAssignedStatuses()
+					->getDictionary('status_id', 'status');
+			}
 
 			foreach ($valid_statuses as $status_id => $status)
 			{

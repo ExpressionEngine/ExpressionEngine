@@ -1328,9 +1328,11 @@ class Member_model extends CI_Model {
 
 		$assigned_modules = [];
 
-		foreach (ee()->session->getMember()->getAssignedModules()->pluck('module_name') as $assigned_module)
-		{
-			$assigned_modules[] = strtolower($assigned_module);
+		if (ee()->session->getMember()) {
+			foreach (ee()->session->getMember()->getAssignedModules()->pluck('module_name') as $assigned_module)
+			{
+				$assigned_modules[] = strtolower($assigned_module);
+			}
 		}
 
 		return in_array(strtolower($module), $assigned_modules);
