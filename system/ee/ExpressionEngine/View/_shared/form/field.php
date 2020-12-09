@@ -175,11 +175,11 @@ case 'multiselect': ?>
 case 'image': ?>
 	<figure class="file-chosen <?=$class?>">
 		<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
-		<ul class="toolbar">
+		<ul class="toolbar button-group">
 			<?php if( ! array_key_exists('edit', $field) || $field['edit']): ?>
-			<li class="edit"><a href="" title="edit"></a></li>
+			<li class="edit"><a class="edit button button--default button--xsmall" href="" title="edit"></a></li>
 			<?php endif; ?>
-			<li class="remove"><a href="" title="remove"></a></li>
+			<li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
 		</ul>
 		<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 	</figure>
