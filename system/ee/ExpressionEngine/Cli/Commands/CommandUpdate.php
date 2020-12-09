@@ -171,12 +171,12 @@ class CommandUpdate extends Cli {
 	 */
 	private function initUpgrade()
 	{
-
 		$this->getCurrentVersion();
 
 		defined('CLI_VERBOSE') || define('CLI_VERBOSE', $this->option('-v', false));
 		defined('PATH_CACHE') || define('PATH_CACHE',  SYSPATH . 'user/cache/');
 		defined('PATH_THIRD') || define('PATH_THIRD',  SYSPATH . 'user/addons/');
+		defined('PATH_THEMES') || define('PATH_THEMES',  SYSPATH . '../themes/');
 		defined('APP_VER') || define('APP_VER', $this->currentVersion);
 		defined('IS_CORE') ||define('IS_CORE', FALSE);
 		defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
@@ -212,6 +212,12 @@ class CommandUpdate extends Cli {
 		ee()->lang->loadfile('installer');
 		ee()->load->library('progress');
 		ee()->load->model('installer_template_model', 'template_model');
+
+		if(!isset(ee()->addons)) {
+			ee()->load->library('addons');
+			ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
+			ee('App')->setupAddons(PATH_THIRD);
+		}
 
 		$this->getUpgradeInfo();
 
@@ -353,9 +359,17 @@ class CommandUpdate extends Cli {
 	protected function runUpgrade()
 	{
 
-		return $this->updateType == 'local'
-				? $this->upgradeFromLocalVersion()
-				: $this->upgradeFromDownloadedVersion();
+		try {
+			$result = $this->updateType == 'local'
+					? $this->upgradeFromLocalVersion()
+					: $this->upgradeFromDownloadedVersion();
+		} catch (\Exception $e) {
+			$this->fail([
+				'Updater failed',
+				$e->getMessage(),
+				$e->getTraceAsString(),
+			]);
+		}
 
 	}
 
@@ -407,10 +421,25 @@ class CommandUpdate extends Cli {
 			}
 
 			if (($status = $UD->do_update()) === false) {
-				$this->fail('Failed on version ' . $next_version);
+				$errors = isset($UD->errors)
+							? $UD->errors
+							: [];
+
+				$errorText = array_merge(
+					[
+						'Failed on version ' . $next_version
+					],
+					$errors
+				);
+
+				$this->fail($errorText);
 			}
 
 			$currentVersionKey--;
+
+			if(!isset($upgradeMap[$currentVersionKey])) {
+				$this->fail('Updater failed because of missing version (' . $currentVersionKey . '). Please update the UpgradeMap.');
+			}
 
 			ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
 			ee()->config
