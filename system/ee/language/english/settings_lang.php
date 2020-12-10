@@ -383,7 +383,7 @@ $lang = array(
 
 'save_tmpl_revisions' => 'Save template revisions?',
 
-'save_tmpl_revisions_desc' => 'When enabled, ExpressionEngine will save up to <b>5</b> template revisions in the database.',
+'save_tmpl_revisions_desc' => 'When enabled, ExpressionEngine will save template revisions in the database, up to the maximum specified.',
 
 'site_404' => '404 page',
 
