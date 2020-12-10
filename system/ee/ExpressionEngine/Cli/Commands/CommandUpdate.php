@@ -426,5 +426,17 @@ class CommandUpdate extends Cli {
 		$this->runUpdater();
 	}
 
+	protected function postFlightCheck()
+	{
+		$version = $this->getCurrentVersion();
+		$versionNamingMap = UpgradeMap::$versionNaming;
+
+		if(isset($versionNamingMap[$version])) {
+			ee()->config
+				->_update_config([
+					'app_version'	=> $versionNamingMap[$version]
+				]);
+		}
+	}
 
 }
