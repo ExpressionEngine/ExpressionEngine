@@ -83,7 +83,6 @@ class CommandUpdate extends Cli {
 
 		// Advanced param checks
 		$this->checkAdvancedParams();
-
 		$this->info("There is a new version of ExpressionEngine available: {$this->updateVersion}\n");
 
 		if(! $this->defaultToYes) {
@@ -93,36 +92,28 @@ class CommandUpdate extends Cli {
 		}
 
 		$this->runUpgrade();
-
+		$this->postFlightCheck();
 		$this->complete('Success! Create something awesome!');
 
 	}
 
 	protected function runUpdater($step = null, $microapp = false, $noBootstrap = false, $rollback = false)
 	{
-
 		try
 		{
 			if ($microapp) {
-
 				return $this->updaterMicroapp($step);
-
 			}
 
 			if ($rollback) {
-
 				return $this->updaterMicroapp('rollback');
-
 			}
 
 			$this->runUpdater($step, true, true); //'update --microapp --no-bootstrap');
 
 		} catch (\Exception $e) {
-
 			$this->fail("{$e->getCode()}: {$e->getMessage()}");
-
 		}
-
 	}
 
 	/**
@@ -140,9 +131,7 @@ class CommandUpdate extends Cli {
 		$runner = new \ExpressionEngine\Updater\Service\Updater\Runner();
 
 		if ( ! $step ) {
-
 			$step = $runner->getFirstStep();
-
 		}
 
 		$runner->runStep($step);
@@ -152,17 +141,11 @@ class CommandUpdate extends Cli {
 		// Perform each step as its own command so we can control the scope of
 		// files loaded into the app's memory
 		if (($next_step = $runner->getNextStep()) !== false) {
-
 			if ($next_step == 'rollback') {
-
 				return $this->runUpdater(null, false, false, true); // 'upgrade --rollback'
-
 			}
-
 			$this->runUpdater($next_step, true, $next_step == 'updateFiles');
-
 		}
-
 	}
 
 	/**
@@ -194,8 +177,16 @@ class CommandUpdate extends Cli {
 		ee()->load->driver('cache');
 
 		// Load database
-		$databaseConfig = ee()->config->item('database');
+		// If this is running form an earlier version of EE < 3.0.0
+		// We'll load the DB the old fashioned way
+		$db_config_path = SYSPATH.'/user/config/database.php';
+		if (is_file($db_config_path)) {
+			require $db_config_path;
+			ee()->config->_update_dbconfig($db[$active_group]);
+		}
 
+		// Load the database
+		$databaseConfig = ee()->config->item('database');
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->dbprefix = isset($databaseConfig['expressionengine']['dbprefix'])
@@ -225,13 +216,10 @@ class CommandUpdate extends Cli {
 
 	private function getCurrentVersion()
 	{
-
 		$version = ee()->config->item('app_version');
-
 		$this->currentVersion = (strpos($version, '.') == false)
             ? $version = implode('.', str_split($version, 1))
             : $version;
-
 	}
 
 	/**
@@ -259,9 +247,7 @@ class CommandUpdate extends Cli {
 	 */
 	private function autoload($dir)
 	{
-
 	    foreach ( scandir( $dir ) as $file ) {
-
 	    	if ( is_dir( $dir . $file ) && substr( $file, 0, 1 ) == '.' ) {
 	    		continue;
 	    	}
@@ -276,9 +262,7 @@ class CommandUpdate extends Cli {
 			{
 				include $dir . $file;
 			}
-
 	    }
-
 	}
 
 	/**
@@ -287,28 +271,18 @@ class CommandUpdate extends Cli {
 	 */
 	private function checkAdvancedParams()
 	{
-
 		if($this->option('--force-addon-upgrades', false)) {
-
 			$this->write("<<red>>You have indicated you want to upgrade all addons.<<reset>>");
-
 			if($this->defaultToYes || $this->confirm('Are you sure? This may be a destructive action.') ) {
-
 				defined('CLI_UPDATE_FORCE_ADDON_UPDATE') || define('CLI_UPDATE_FORCE_ADDON_UPDATE', $this->option('--force-addon-upgrades', false));
-
 			} else {
-
 				$this->write('<<red>>Addon update halted<<reset>>');
-
 			}
-
 		}
-
 	}
 
 	private function getUpgradeInfo()
 	{
-
 		return $this->doesInstallerFolderExist()
 				? $this->getUpgradeVersionFromLocal()
 				: $this->getUpgradeVersionFromCurl();
@@ -317,16 +291,12 @@ class CommandUpdate extends Cli {
 
 	private function doesInstallerFolderExist()
 	{
-
 		$path = SYSPATH . '/ee/installer';
-
 		return file_exists($path) && is_dir($path);
-
 	}
 
 	private function getUpgradeVersionFromLocal()
 	{
-
 		$this->autoload(SYSPATH . 'ee/installer/controllers/');
 
 		if(! class_exists('Wizard')) {
@@ -339,26 +309,19 @@ class CommandUpdate extends Cli {
 
 		$this->updateType = 'local';
 		$this->updateVersion = $wizard['version'];
-
 	}
 
 	private function getUpgradeVersionFromCurl()
 	{
-
 		$this->info('Getting upgrade information from ExpressionEngine.com');
-
 		ee()->load->library('el_pings');
-
 		$version_file = ee()->el_pings->get_version_info(true);
-
 		$this->updateType == 'curl';
 		$this->updateVersion = $version_file['latest_version'];
-
 	}
 
 	protected function runUpgrade()
 	{
-
 		try {
 			$result = $this->updateType == 'local'
 					? $this->upgradeFromLocalVersion()
@@ -370,12 +333,10 @@ class CommandUpdate extends Cli {
 				$e->getTraceAsString(),
 			]);
 		}
-
 	}
 
 	protected function upgradeFromLocalVersion()
 	{
-
 		// We have to initialize differently for local files
 		require_once SYSPATH . 'ee/installer/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
 
@@ -404,12 +365,10 @@ class CommandUpdate extends Cli {
 		}
 
 		$currentVersionKey = array_search($next_version, $upgradeMap);
-
 		$end_version = $this->updateVersion;
 
 		// This will loop through all versions of EE
 		do {
-
 			$this->info('Updating to version ' . $next_version);
 
 			// Instantiate the updater class
@@ -458,19 +417,14 @@ class CommandUpdate extends Cli {
 
 	protected function upgradeFromDownloadedVersion()
 	{
-
 		try {
-
 			ee('Updater/Runner')->run();
-
 		} catch (\Exception $e) {
-
 			$this->fail("{$e->getCode()}: {$e->getMessage()}\n\n\n{$e->getTraceAsString()}");
-
 		}
 
 		$this->runUpdater();
-
 	}
+
 
 }
