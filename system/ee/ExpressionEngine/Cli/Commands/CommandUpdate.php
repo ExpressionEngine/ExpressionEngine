@@ -61,6 +61,7 @@ class CommandUpdate extends Cli {
 	protected $shouldBootstrap;
 	protected $step;
 	protected $defaultToYes;
+	protected $avatarPath;
 
 	public $currentVersion;
 	public $updateType;
@@ -184,6 +185,9 @@ class CommandUpdate extends Cli {
 			require $db_config_path;
 			ee()->config->_update_dbconfig($db[$active_group]);
 		}
+
+		// We alsoneed to check the avatar path
+		$this->setAvatarPath();
 
 		// Load the database
 		$databaseConfig = ee()->config->item('database');
@@ -424,6 +428,26 @@ class CommandUpdate extends Cli {
 		}
 
 		$this->runUpdater();
+	}
+
+	protected function setAvatarPath()
+	{
+		if (version_compare($this->currentVersion, '3.0.0', '<'))
+		{
+			if( ! ee()->config->item('avatar_path')) {			
+				$this->info('Your update process will fail without a set avatar path.');
+				$guess = ee()->config->item('base_path') ?
+						: rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
+						SYSPATH . '../images/avatars';
+				$result = $this->confirm('Use ' . $guess . '?')
+						? $guess
+						: $this->ask('Enter full avatar path');
+				
+				ee()->config->_update_config([
+					'avatar_path' => $result,
+				]);
+			}
+		}
 	}
 
 	protected function postFlightCheck()
