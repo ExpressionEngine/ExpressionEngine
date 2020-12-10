@@ -137,6 +137,9 @@ class Status extends AbstractChannelsController {
 			->order('name')
 			->all()
 			->getDictionary('role_id', 'name');
+		foreach ($status->Roles->getDictionary('role_id', 'name') as $role_id => $name) {
+			$roles[$role_id] = $name;
+		}
 
 		// Create the status example
 		$status_style = '';
