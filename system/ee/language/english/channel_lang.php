@@ -326,10 +326,6 @@ $lang = array(
 
 'enable_versioning_desc' => 'When enabled, ExpressionEngine will save revisions of each entry for this channel.',
 
-'extra_publish_controls' => 'Show extra publish controls?',
-
-'extra_publish_controls_desc' => 'When enabled, a second set of publish controls will appear at the top of the publish form for this channel.',
-
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
 'invalid_url_title_prefix' => 'This field cannot contain spaces.',

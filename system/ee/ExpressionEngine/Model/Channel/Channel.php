@@ -39,7 +39,6 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'boolString',
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
-		'extra_publish_controls'     => 'boolString',
 		'search_excerpt'             => 'int'
 	);
 
@@ -178,7 +177,6 @@ class Channel extends StructureModel {
 	protected $channel_require_membership = TRUE;
 	protected $channel_max_chars;
 	protected $channel_html_formatting = 'all';
-	protected $extra_publish_controls = FALSE;
 	protected $channel_allow_img_urls = TRUE;
 	protected $channel_auto_link_urls = FALSE;
 	protected $channel_notify = FALSE;
