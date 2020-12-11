@@ -57,7 +57,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('.grid-field__table tbody');
+	this.rowContainer = this.root.find('.grid-field__table > tbody');
 	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
