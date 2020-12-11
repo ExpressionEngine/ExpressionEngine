@@ -1990,19 +1990,18 @@ class Comment {
 		}
 
 		// update their subscription
+		ee()->load->library('subscription');
+		ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+		$comment_identifier = ($cmtr_id = ee()->session->userdata('member_id')) ?  ee()->session->userdata('member_id') : $cmtr_email;
+
 		if ($notify == 'y')
 		{
-			ee()->load->library('subscription');
-			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+			ee()->subscription->subscribe($comment_identifier);
 
-			if ($cmtr_id = ee()->session->userdata('member_id'))
-			{
-				ee()->subscription->subscribe($cmtr_id);
-			}
-			else
-			{
-				ee()->subscription->subscribe($cmtr_email);
-			}
+		}
+		else
+		{
+			ee()->subscription->unsubscribe($comment_identifier);
 		}
 
 		// send notifications
