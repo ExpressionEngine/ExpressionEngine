@@ -16,6 +16,7 @@ namespace ExpressionEngine\Library\Curl;
 abstract class Request {
 
 	protected $headers = array();
+	protected $headersLowercase = array();
 
 	public function __construct($url, $data, $callback = NULL)
 	{
