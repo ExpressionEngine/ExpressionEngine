@@ -227,6 +227,8 @@ function (_React$Component) {
     value: function bindNestable() {
       var _this3 = this;
 
+      // Make sure the draggable container is positioned relatively so that the nestable drag item is positioned correctly
+      this.container.parentNode.style.position = 'relative';
       $(this.container).nestable({
         listNodeName: 'ul',
         listClass: 'field-nested',
