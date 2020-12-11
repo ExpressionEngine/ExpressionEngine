@@ -639,7 +639,7 @@ $lang = array(
 
 'login' => 'Log In',
 
-'new_ticket' => 'New Ticket',
+'new_ticket' => 'Get Support',
 
 'not_entered' => 'not entered',
 
