@@ -46,7 +46,9 @@ class Updater {
 	 */
 	public function install_required_modules()
 	{
-		ee()->load->library('addons');
+		if(!isset(ee()->addons)) {
+			ee()->load->library('addons');
+		}
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
 		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
