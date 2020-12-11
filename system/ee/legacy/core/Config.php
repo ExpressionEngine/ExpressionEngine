@@ -848,6 +848,7 @@ class EE_Config {
 
 		// Let's get this shindig started
 		$msm_values = $new_values;
+
 		foreach ($site_ids as $site_id)
 		{
 			// If we don't do this, then only the first site will have the new changes.
@@ -888,9 +889,13 @@ class EE_Config {
 
 					$config->value = $new_values[$key];
 					$config->save();
+
+					if($key == 'is_system_on') {
+						$isSystemOn = $new_values[$key];
+					}
+
 					unset($new_values[$key]);
 				}
-
 				// Add any new configs to the DB
 				if ( ! empty($new_values))
 				{
@@ -905,6 +910,9 @@ class EE_Config {
 								'key' => $key,
 								'value' => $value
 							])->save();
+							if($key == 'is_system_on') {
+								$isSystemOn = $new_values[$key];
+							}
 							unset($new_values[$key]);
 						}
 					}
@@ -923,6 +931,11 @@ class EE_Config {
 			{
 				$new_values[$key] = $val;
 			}
+		}
+
+		// Shim writing is system on to config file
+		if(isset($isSystemOn)) {
+			$new_values['is_system_on'] = $isSystemOn;
 		}
 
 		// Update config file with remaining values
