@@ -421,7 +421,6 @@ class Edit extends AbstractPublishController {
 			'form_title' => lang('edit_entry'),
 			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
-			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),
 			'in_modal_context' => $sequence_editing
 		);
