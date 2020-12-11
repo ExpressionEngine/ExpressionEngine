@@ -22,6 +22,7 @@ class Grid_lib {
 	public $fluid_field_data_id = 0;
 	public $in_modal_context = FALSE;
 	public $settings_form_field_name;
+	public $field_type = 'grid';
 
 	protected $_fieldtypes = [];
 	protected $_validated = [];
@@ -44,7 +45,7 @@ class Grid_lib {
 	public function display_field($grid, $data)
 	{
 		// Get columns just for this field
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type, true, $this->field_type);
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
@@ -437,7 +438,7 @@ class Grid_lib {
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type, false);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type, false, $this->field_type);
 
 		// We'll store our final values and errors here
 		$final_values = array();
@@ -752,7 +753,7 @@ class Grid_lib {
 		// other columns in the DB to see which we should delete
 		$col_ids = array();
 
-		$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE);
+		$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE, $this->field_type);
 
 		$col_search_settings_changed = FALSE;
 

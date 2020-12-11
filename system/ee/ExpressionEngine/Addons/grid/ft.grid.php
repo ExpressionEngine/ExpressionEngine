@@ -856,6 +856,10 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 		ee()->grid_lib->in_modal_context = $this->get_setting('in_modal_context');
 		ee()->grid_lib->settings_form_field_name = $this->settings_form_field_name;
+
+		$reflection = new \ReflectionClass($this);
+		$caller_class = strtolower($reflection->getShortName());
+		ee()->grid_lib->field_type = substr($caller_class, 0, strrpos($caller_class, '_ft'));
 	}
 
 	/**

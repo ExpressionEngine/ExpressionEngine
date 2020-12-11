@@ -670,7 +670,7 @@ class Grid_model extends CI_Model {
 	 * @param	boolean	When FALSE, skip the cache and get a fresh set of columns
 	 * @return	array	Settings from grid_columns table
 	 */
-	public function get_columns_for_field($field_ids, $content_type, $cache = TRUE)
+	public function get_columns_for_field($field_ids, $content_type, $cache = TRUE, $field_type = 'grid')
 	{
 		$multi_column = is_array($field_ids);
 
@@ -715,6 +715,14 @@ class Grid_model extends CI_Model {
 		{
 			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
 			$this->_columns[$content_type][$column['field_id']][$column['col_id']] = $column;
+		}
+
+		//hack to make file column required for file field
+		//the file is always the first column
+		if ($field_type == 'file_grid') {
+			$column = $columns[array_keys($columns)[0]];
+			$this->_columns[$content_type][$column['field_id']][$column['col_id']]['col_required'] = 'y';
+			$this->_columns[$content_type][$column['field_id']][$column['col_id']]['settings']['field_required'] = 'y';
 		}
 
 		foreach ($field_ids as $field_id)
