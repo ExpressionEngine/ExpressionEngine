@@ -375,7 +375,7 @@ JSC;
 	public function replace_resize($data, $params = array(), $tagdata = FALSE)
 	{
 		//this could be the name of pre-saved manipulation, check if params are set
-		if (empty($params) || (count($params)==1 && $params[0] == 'wrap')) {
+		if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
 			return $this->replace_tag_catchall($data, $params, $tagdata, 'resize');
 		}
 		
@@ -404,7 +404,7 @@ JSC;
 	public function replace_crop($data, $params = array(), $tagdata = FALSE)
 	{
 		//this could be the name of pre-saved manipulation, check if params are set
-		if (empty($params) || (count($params)==1 && $params[0] == 'wrap')) {
+		if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
 			return $this->replace_tag_catchall($data, $params, $tagdata, 'crop');
 		}
 		
