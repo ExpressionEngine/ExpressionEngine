@@ -137,8 +137,18 @@ class Status extends AbstractChannelsController {
 			->order('name')
 			->all()
 			->getDictionary('role_id', 'name');
-		foreach ($status->Roles->getDictionary('role_id', 'name') as $role_id => $name) {
-			$roles[$role_id] = $name;
+		//also include roles that are normally restricted, but can create entries on this site
+		$can_create_entries = ee('Permission')->rolesThatHave('can_create_entries', null, true);
+		if (!empty($can_create_entries)) {
+			$extra_roles = ee('Model')->get('Role')
+				->filter('role_id', 'IN', $can_create_entries)
+				->filter('role_id', 'NOT IN', [1])
+				->order('name')
+				->all()
+				->getDictionary('role_id', 'name');
+			foreach ($extra_roles as $role_id => $name) {
+				$roles[$role_id] = $name;
+			}
 		}
 
 		// Create the status example

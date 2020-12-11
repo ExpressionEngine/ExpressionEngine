@@ -135,7 +135,7 @@ context('Status Create/Edit', () => {
         page.get('status').clear().type('Test')
         page.get('highlight').clear().type('333')
         page.get('status').trigger('mousedown')
-        page.get('status_access').click()
+        page.get('status_access').first().click()
         //page.submit()AJ
         cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true})
 
