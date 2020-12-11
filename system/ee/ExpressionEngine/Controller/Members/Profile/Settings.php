@@ -221,9 +221,9 @@ class Settings extends Profile {
 			unlink($existing);
 		}
 
-		// If nothing was chosen, there's nothing left to do but remove the current avatar filename from the member.
+		// If nothing was chosen, keep the current avatar.
 		if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-			$this->member->avatar_filename = '';
+			$this->member->avatar_filename = ee()->input->post('avatar_filename');
 
 			return TRUE;
 		}

@@ -231,7 +231,6 @@ class Publish extends AbstractPublishController {
 			'form_title' => lang('new_entry'),
 			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
-			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),
 			'header' => [
 				'title' => lang('new_entry'),

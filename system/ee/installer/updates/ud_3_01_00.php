@@ -239,12 +239,16 @@ class Updater {
 	private function update_collation_config()
 	{
 		$db_config = ee()->config->item('database');
-		$config = $db_config['expressionengine'];
 
-		if (isset($config['dbcollat']) && $config['dbcollat'] == 'utf8_general_ci')
-		{
-			$config['dbcollat'] = 'utf8_unicode_ci';
-			ee()->config->_update_dbconfig($config);
+		// If coming from the CLI, this will have already been taken care of.
+		if(isset($db_config['expressionengine'])) {
+			$config = $db_config['expressionengine'];
+
+			if (isset($config['dbcollat']) && $config['dbcollat'] == 'utf8_general_ci')
+			{
+				$config['dbcollat'] = 'utf8_unicode_ci';
+				ee()->config->_update_dbconfig($config);
+			}
 		}
 	}
 

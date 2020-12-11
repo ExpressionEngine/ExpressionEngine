@@ -10,7 +10,9 @@
 				<span class="float-right"><?=$ee_build_date?></span>
 			</div>
 
+			<?php if (ee('Permission')->can('access_footer_new_ticket')): ?>
 			<a href="https://expressionengine.com/support" class="dropdown__link app-about__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></a>
+			<?php endif ?>
 
 			<?php if (ee('Permission')->can('access_footer_report_bug')): ?>
 				<a href="https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=1-EE6-bug-report.md" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
@@ -21,8 +23,6 @@
 			<?php if ($show_news_button): ?>
 				<a href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" class="dropdown__link app-about__link app-about__whats-new-link" rel="external"><i class="fas fa-gift fa-fw"></i> <?=lang('whats_new')?></a>
 			<?php endif ?>
-
-
 
 			<?php if (ee('Permission')->isSuperAdmin()): ?>
 				<div class="app-about__status app-about__status--checking">

@@ -53,7 +53,6 @@ class Channel extends ControlPanel {
             "search_excerpt": 'div[data-input-value="search_excerpt"] input[type="radio"]',
 
             "channel_html_formatting": 'input[type!=hidden][name=channel_html_formatting]',
-            "extra_publish_controls": '[data-toggle-for=extra_publish_controls]',
             "channel_allow_img_urls": '[data-toggle-for=channel_allow_img_urls]',
             "channel_auto_link_urls": '[data-toggle-for=channel_auto_link_urls]',
 

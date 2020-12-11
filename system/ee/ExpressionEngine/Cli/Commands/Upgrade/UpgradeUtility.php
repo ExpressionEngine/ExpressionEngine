@@ -9,7 +9,7 @@ class UpgradeUtility
 
 	public static function run()
 	{
-		self::install_modules();
+		// self::install_modules();
 		self::remove_installer_directory();
 	}
 
@@ -40,10 +40,12 @@ class UpgradeUtility
 	protected static function remove_installer_directory()
 	{
 
+		$filesystem = new Filesystem;
+
 		$installerPath = SYSPATH . 'ee/installer';
 
-		if(is_dir($installerPath)) {
-			rmdir($installerPath);
+		if($filesystem->isDir($installerPath)) {
+			$filesystem->deleteDir($installerPath);
 		}
 
 	}

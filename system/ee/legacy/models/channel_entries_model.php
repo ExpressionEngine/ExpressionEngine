@@ -20,7 +20,7 @@ class Channel_entries_model extends CI_Model {
 	public function get_entry_data(array $entries)
 	{
 		$entry_data = ee('Model')->get('ChannelEntry', $entries)
-			->with('Channel', 'Author')
+			->with('Channel', 'Author', 'Categories')
 			->all()
 			->getModChannelResultsArray();
 
