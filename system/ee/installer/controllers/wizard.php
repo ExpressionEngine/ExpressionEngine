@@ -1618,7 +1618,7 @@ class Wizard extends CI_Controller
             'xml_lang'                  => 'en',
             'send_headers'              => 'y',
             'gzip_output'               => 'n',
-            'is_system_on'              => 'y',
+            'is_system_on'              => ee()->config->getBoolean('is_system_on_before_updater_file') ? 'y' : 'n',
             'allow_extensions'          => 'y',
             'date_format'               => '%n/%j/%Y',
             'time_format'               => '12',
