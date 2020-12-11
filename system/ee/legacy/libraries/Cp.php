@@ -197,25 +197,23 @@ class Cp {
 			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
 		));
 
-		if (! empty(ee()->config->item('lv_url'))) {
-			$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
+		$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
 
-			$installed_modules_js = [];
-			foreach ($installed_modules->result() as $installed_module) {
-				$installed_modules_js[] = [
-					'slug' => strtolower($installed_module->module_name),
-					'version' => $installed_module->module_version,
-				];
-			}
-
-			// Grab the site's license key, license URL, and list of installed
-			// add-ons to send to the license validation service.
-			ee()->javascript->set_global(array(
-				'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
-				'cp.lvUrl' => ee()->config->item('lv_url'),
-				'cp.installedAddons' => json_encode($installed_modules_js)
-			));
+		$installed_modules_js = [];
+		foreach ($installed_modules->result() as $installed_module) {
+			$installed_modules_js[] = [
+				'slug' => strtolower($installed_module->module_name),
+				'version' => $installed_module->module_version,
+			];
 		}
+
+		// Grab the site's license key, license URL, and list of installed
+		// add-ons to send to the license validation service.
+		ee()->javascript->set_global(array(
+			'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+			'cp.lvUrl' => 'https://updates.expressionengine.com/check',
+			'cp.installedAddons' => json_encode($installed_modules_js)
+		));
 
 		$js_scripts['file'][] = 'cp/jump_menu';
 
