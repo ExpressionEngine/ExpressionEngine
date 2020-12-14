@@ -570,7 +570,7 @@ class File {
 		if (file_exists($path) && is_file($path)) {
 			ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
 		} else {
-			$path = PATH_THEMES . 'asset/img/default-addon-on-icon.png';
+			$path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
 		}
 		$mime = ee()->mime_type->ofFile($path);
 		if ($mime=='image/svg') $mime = 'image/svg+xml';

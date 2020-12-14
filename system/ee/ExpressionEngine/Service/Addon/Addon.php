@@ -833,7 +833,7 @@ class Addon {
 				->get('actions');
 			$url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'addon='.$this->shortname . AMP . 'file=' . $mask;
 		} else {
-			if (empty($default)) $default = 'default-addon-on-icon.png';
+			if (empty($default)) $default = 'default-addon-icon.svg';
 			$url = URL_THEMES . 'asset/img/'.$default;
 		}
 
