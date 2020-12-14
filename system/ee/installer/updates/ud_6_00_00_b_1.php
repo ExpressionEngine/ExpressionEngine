@@ -557,13 +557,11 @@ class Updater {
 			'can_edit_member_groups'   => 'can_edit_roles',
 		];
 
-		$channels = ee()->db->get('channels');
-
-		$template_groups = ee()->db->get('template_groups');
-
 		$groups = ee()->db->get('member_groups');
 
 		foreach ($groups->result() as $group) {
+			$assigned_channels = ee()->db->where('group_id', $group->group_id)->get('channel_member_groups');
+			$template_groups = ee()->db->where('group_id', $group->group_id)->get('template_member_groups');
 			foreach ($permissions as $permission) {
 				// Since we assume "no" we only need to store "yes"
 				if ($group->$permission == 'y') {
@@ -578,7 +576,7 @@ class Updater {
 			foreach ($entry_permissions as $permission) {
 				// Since we assume "no" we only need to store "yes"
 				if ($group->$permission == 'y') {
-					foreach ($channels->result() as $row) {
+					foreach ($assigned_channels->result() as $row) {
 						$insert[] = [
 							'role_id'   => $group->group_id,
 							'site_id'    => $group->site_id,
@@ -591,18 +589,19 @@ class Updater {
 				// Since we assume "no" we only need to store "yes"
 				if ($group->$permission == 'y') {
 					foreach ($template_groups->result() as $row) {
-						$insert[] = [
-							'role_id'   => $group->group_id,
-							'site_id'    => $group->site_id,
-							'permission' => $permission . '_channel_id_' . $row->group_id
-						];
 						if ($permission == 'can_create_new_templates') {
 							$insert[] = [
 								'role_id'   => $group->group_id,
 								'site_id'    => $group->site_id,
-								'permission' => 'manage_settings_template_channel_id_' . $row->group_id
+								'permission' => 'can_manage_settings_template_group_id_' . $row->template_group_id
 							];
+							$permission = 'can_create_templates';
 						}
+						$insert[] = [
+							'role_id'   => $group->group_id,
+							'site_id'    => $group->site_id,
+							'permission' => $permission . '_template_group_id_' . $row->template_group_id
+						];
 					}
 				}
 			}

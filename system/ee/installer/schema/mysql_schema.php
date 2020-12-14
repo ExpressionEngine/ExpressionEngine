@@ -1619,7 +1619,7 @@ class EE_Schema {
 				'can_admin_mbr_templates',
 				'can_ban_users',
 				'can_admin_addons',
-				'can_create_new_templates',
+				'can_create_templates',
 				'can_edit_templates',
 				'can_delete_templates',
 				'can_create_template_groups',
