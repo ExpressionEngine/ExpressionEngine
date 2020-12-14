@@ -36,7 +36,7 @@ class NavigationSidebar extends AbstractSidebar
         $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('home');
 
         if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->can('admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
-            $section = $this->addSection(lang('general'));
+            $section = $this->addSection(lang('nav_content'));
 
             if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries')) {
                 $item = $section->addItem(lang('menu_entries'), ee('CP/URL', 'publish/edit'))->withIcon('newspaper')->addClass('js-dropdown-hover')->withAttributes('data-dropdown-use-root="true" data-dropdown-pos="right-start"');
@@ -113,7 +113,7 @@ class NavigationSidebar extends AbstractSidebar
             }
 
             $tools = [];
-            
+
 
             if (ee('Permission')->can('access_utilities')) {
 
@@ -152,7 +152,7 @@ class NavigationSidebar extends AbstractSidebar
                 if (in_array(ee()->uri->segment(2), ['utilities', 'logs'])) {
                     $item->isActive();
                 }
-                
+
                 foreach ($tools as $name => $link) {
                     $devMenu->addItem(lang($name), $link);
                 }
