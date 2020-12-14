@@ -245,6 +245,10 @@ class Provider extends InjectionBindingDecorator {
 			foreach ($aliases as $origClassName => $aliasClassName) {
 				if (is_numeric($origClassName)) {
 					$origClassName = $aliasClassName;
+					if (strpos($aliasClassName, 'ExpressionEngine\Addons')===0) {
+						$replace_once = 1;
+						$aliasClassName = str_replace('ExpressionEngine\Addons', 'Addons', $aliasClassName, $replace_once);
+					}
 					$aliasClassName = 'EllisLab\\' . $aliasClassName;
 				}
 				if (!class_exists($aliasClassName)) {
