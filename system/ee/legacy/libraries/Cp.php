@@ -210,6 +210,7 @@ class Cp {
 		// Grab the site's license key, license URL, and list of installed
 		// add-ons to send to the license validation service.
 		ee()->javascript->set_global(array(
+			'cp.appVer' => APP_VER,
 			'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
 			'cp.lvUrl' => 'https://updates.expressionengine.com/check',
 			'cp.installedAddons' => json_encode($installed_modules_js)
