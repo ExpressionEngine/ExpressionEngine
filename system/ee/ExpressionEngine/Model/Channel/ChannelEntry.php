@@ -1198,6 +1198,12 @@ class ChannelEntry extends ContentModel {
 					$status_options[] = $status->getSelectOptionComponent();
 				}
 			}
+		} else {
+			//fallback to guest assigned statuses
+			foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status)
+			{
+				$status_options[] = $status->getSelectOptionComponent();
+			}
 		}
 
 		$field_items = [];
