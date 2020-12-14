@@ -81,10 +81,13 @@ class Autoloader {
 
 			if (strpos($class, $prefix) === 0) {
 				// Are they looking for an EllisLab namespaced class
-				if ($prefix == 'EllisLab\ExpressionEngine') {
+				if ($prefix == 'EllisLab\ExpressionEngine' || $prefix == 'EllisLab\Addons') {
 					$el_class = $class;
-					$class = str_replace($prefix, 'ExpressionEngine', $class);
-
+					if ($prefix == 'EllisLab\ExpressionEngine') {
+						$class = str_replace($prefix, 'ExpressionEngine', $class);
+					} elseif ($prefix == 'EllisLab\Addons') {
+						$class = str_replace($prefix, 'ExpressionEngine\Addons', $class);
+					}
 					// Alias the class name to the legacy namespaced class
 					class_alias($class, $el_class);
 				}
