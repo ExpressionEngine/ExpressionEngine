@@ -470,26 +470,6 @@ class Member_images extends Member {
 
 		$upload = ee()->members->upload_member_images($type, ee()->session->userdata('member_id'));
 
-		if (is_array($upload))
-		{
-			switch ($upload[0])
-			{
-				case 'success':
-					$edit_image = $upload[1];
-					$updated = $upload[2];
-					break;
-				case 'redirect':
-					return ee()->functions->redirect($this->_member_path($upload[1][0]));
-					break;
-				case 'var_swap':
-					return $this->_var_swap($this->_load_element($upload[1][0]), $upload[1][1]);
-					break;
-				case 'error':
-					return call_user_func_array(array($this, '_trigger_error'), $upload[1]);
-					break;
-			}
-		}
-
 		$return = ee()->input->get_post('RET');
 
 		if (! empty($return))
@@ -504,7 +484,30 @@ class Member_images extends Member {
 			if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
 				$return_link = '/' . $return_link;
 			}
+		}
 
+		if (is_array($upload))
+		{
+			switch ($upload[0])
+			{
+				case 'success':
+					$edit_image = $upload[1];
+					$updated = $upload[2];
+					break;
+				case 'redirect':
+					return ee()->functions->redirect(!empty($return) ? $return_link : $this->_member_path($upload[1][0]));
+					break;
+				case 'var_swap':
+					return $this->_var_swap($this->_load_element($upload[1][0]), $upload[1][1]);
+					break;
+				case 'error':
+					return call_user_func_array(array($this, '_trigger_error'), $upload[1]);
+					break;
+			}
+		}
+
+		if (! empty($return))
+		{
 			ee()->functions->redirect($return_link);
 			exit;
 		}

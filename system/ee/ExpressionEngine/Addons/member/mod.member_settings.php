@@ -1117,7 +1117,7 @@ class Member_settings extends Member
 			{
 				if (!empty($_POST['language'])) {
 					$language_pack_names = array_keys(ee()->lang->language_pack_names());
-					if ( ! in_array($data['language'], $language_pack_names))
+					if ( ! in_array(ee()->input->post('language'), $language_pack_names))
 					{
 						return ee()->output->show_user_error('general', array(lang('invalid_action')));
 					}
