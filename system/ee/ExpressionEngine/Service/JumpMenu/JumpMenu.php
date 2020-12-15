@@ -1727,37 +1727,6 @@ class JumpMenu extends AbstractJumpMenu
 
         $items = self::$items;
 
-        //take out anchors and make them separate items
-        foreach ($items[1] as $key => $item) {
-            if (isset($item['anchors'])) {
-                foreach ($item['anchors'] as $achor_key => $anchor) {
-                    if (empty($anchor)) {
-                        continue;
-                    }
-                    $trail = '';
-                    if (isset($anchor['trail'])) {
-                        if (is_array($anchor['trail'])) {
-                            foreach ($anchor['trail'] as $tail) {
-                                $trail .= lang($tail) . ' &raquo; ';
-                            }
-                        } else {
-                            $trail = lang($anchor['trail']) . ' &raquo; ';
-                        }
-                    }
-                    $items[1][$key . '_' . $achor_key] = array(
-                        'icon' => $item['icon'],
-                        'command' => $anchor['command'],
-                        'command_title' => $trail . (isset($anchor['command_title']) ? lang($anchor['command_title']) : lang($anchor['command'])),
-                        'dynamic' => isset($item['dynamic']) ? $item['dynamic'] : false,
-                        'addon' => isset($item['addon']) ? $item['addon'] : false,
-                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $achor_key,
-                        'permission' => isset($item['permission']) ? $item['permission'] : null
-                    );
-                }
-                unset($items[1][$key]['acnchors']);
-            }
-        }
-
         //logs have dynamically build titles
 
         $items[1] = array_merge($items[1], [
@@ -1976,6 +1945,37 @@ class JumpMenu extends AbstractJumpMenu
 
                 //include addon's own jumps
                 $items[1] = array_merge($items[1], $info->getJumps());
+            }
+        }
+
+        //take out anchors and make them separate items
+        foreach ($items[1] as $key => $item) {
+            if (isset($item['anchors'])) {
+                foreach ($item['anchors'] as $achor_key => $anchor) {
+                    if (empty($anchor)) {
+                        continue;
+                    }
+                    $trail = '';
+                    if (isset($anchor['trail'])) {
+                        if (is_array($anchor['trail'])) {
+                            foreach ($anchor['trail'] as $tail) {
+                                $trail .= lang($tail) . ' &raquo; ';
+                            }
+                        } else {
+                            $trail = lang($anchor['trail']) . ' &raquo; ';
+                        }
+                    }
+                    $items[1][$key . '_' . $achor_key] = array(
+                        'icon' => $item['icon'],
+                        'command' => $anchor['command'],
+                        'command_title' => $trail . (isset($anchor['command_title']) ? lang($anchor['command_title']) : lang($anchor['command'])),
+                        'dynamic' => isset($item['dynamic']) ? $item['dynamic'] : false,
+                        'addon' => isset($item['addon']) ? $item['addon'] : false,
+                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $achor_key,
+                        'permission' => isset($item['permission']) ? $item['permission'] : null
+                    );
+                }
+                unset($items[1][$key]['anchors']);
             }
         }
 
