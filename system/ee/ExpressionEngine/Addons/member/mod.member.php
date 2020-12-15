@@ -141,7 +141,7 @@ class Member {
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
 
-		if (empty(ee()->TMPL->tagdata)) {
+		if ($this->member_template == true && !ee('Request')->isPost()) {
 			ee()->load->library('logger');
 			ee()->logger->developer('Member profile templates are now legacy and not recommended to use. Please use regular templates and {exp:member:...} tags.', TRUE, 60*60*24*30);
 
