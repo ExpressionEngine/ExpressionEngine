@@ -28,6 +28,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'removeExtraPubishControlSetting',
+            'addPostInstallMessageTemplate',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -40,6 +41,24 @@ class Updater
     private function removeExtraPubishControlSetting()
     {
         ee()->smartforge->drop_column('channels', 'extra_publish_controls');
+    }
+
+    protected function addPostInstallMessageTemplate()
+    {
+        $sites = ee('Model')->get('Site')->all();
+        require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+
+        foreach ($sites as $site) {
+            ee('Model')->make('SpecialtyTemplate')
+                ->set([
+                    'template_name' => 'post_install_message_template',
+                    'template_type' => 'system',
+                    'template_subtype' => null,
+                    'data_title' => '',
+                    'template_data' => post_install_message_template(),
+                    'site_id' => $site->site_id,
+                ])->save();
+        }
     }
 
 }
