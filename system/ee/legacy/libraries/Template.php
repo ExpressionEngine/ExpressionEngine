@@ -2237,7 +2237,31 @@ class EE_Template {
 		// Does the first segment exist?  No?  Show the default template
 		if (ee()->uri->segment(1) === FALSE)
 		{
-			return $this->fetch_template('', 'index', TRUE);
+			$default_template = $this->fetch_template('', 'index', TRUE);
+
+			if ($default_template === false) {
+				$this->log_item('Processing Default Template as 404 Page');
+
+				$tmpl_query = ee()->db->select('template_data')
+					->from('specialty_templates')
+					->where('site_id', ee()->config->item('site_id'))
+					->where('template_name', 'post_install_message_template')
+					->get();
+				if ($tmpl_query->num_rows() == 0) {
+					return false;
+				}
+
+				$this->template_type = "404";
+				$this->layout_vars = array(); // Reset Layout vars
+				$this->parse($tmpl_query->row('template_data'));
+				$out = $this->parse_globals($this->final_template);
+				ee()->output->out_type = "404";
+				ee()->output->set_output($out);
+				ee()->output->_display();
+				exit;
+			}
+			
+			return $default_template;
 		}
 
 		// Is only the pagination showing in the URI?

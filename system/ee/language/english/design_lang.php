@@ -308,6 +308,8 @@ $lang = array(
 
 'system_message_templates' => 'System Message Templates',
 
+'post_install_message_template' => 'Post-install Message',
+
 
 /* System Templates -> Email */
 'comments' => 'Comments',
