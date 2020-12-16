@@ -972,7 +972,7 @@ return <<<EOF
               <i class="fas fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
-    			<p>If this is your first time using ExpressionEngine CMS, make sure to <a href="https://docs.expressionengine.com/latest/index.html">check out the documentation</a>.</p>
+    			<p>If this is your first time using ExpressionEngine CMS, make sure to <a href="https://docs.expressionengine.com/latest/getting-started/the-big-picture.html">check out the documentation</a> to get started.</p>
     		</div>
   		</div>
   	</div>
