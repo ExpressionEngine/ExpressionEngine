@@ -1174,8 +1174,9 @@ class ChannelEntry extends ContentModel {
 		$all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
 		$status_options = array();
+		$member = ee()->session->getMember();
 
-		if ( ! count($all_statuses))
+		if (!count($all_statuses) || empty($member))
 		{
 			$status_options = [
 				[
@@ -1189,7 +1190,6 @@ class ChannelEntry extends ContentModel {
 			];
 		}
 
-		$member = ee()->session->getMember();
 		if (!empty($member)) {
 			$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
 
