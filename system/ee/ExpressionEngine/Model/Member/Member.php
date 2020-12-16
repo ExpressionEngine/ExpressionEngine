@@ -1101,7 +1101,7 @@ class Member extends ContentModel {
 		if ($roles === FALSE)
 		{
 			$roles = $this->Roles->indexBy('name');
-			if (!empty($this->PrimaryRole)) {
+			if (isset($this->PrimaryRole->name)) {
 				$roles[$this->PrimaryRole->name] = $this->PrimaryRole;
 			}
 
