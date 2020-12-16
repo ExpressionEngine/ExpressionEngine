@@ -1174,9 +1174,8 @@ class ChannelEntry extends ContentModel {
 		$all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
 		$status_options = array();
-		$member = ee()->session->getMember();
 
-		if (!count($all_statuses) || empty($member))
+		if ( ! count($all_statuses))
 		{
 			$status_options = [
 				[
@@ -1190,11 +1189,12 @@ class ChannelEntry extends ContentModel {
 			];
 		}
 
-		if (!empty($member)) {
-			$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
+		$member = ee()->session->getMember();
+		if (!empty($member) || $this->Channel->ChannelFormSettings->allow_guest_posts == 'y') {
+			$assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
 
 			foreach ($all_statuses as $status) {
-				if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses)) {
+				if ($this->Channel->ChannelFormSettings->allow_guest_posts == 'y' || ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses)) {
 					$status_options[] = $status->getSelectOptionComponent();
 				}
 			}
