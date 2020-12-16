@@ -133,7 +133,7 @@ class Status extends AbstractChannelsController {
 		}
 
 		$roles = ee('Model')->get('Role')
-			->filter('role_id', 'NOT IN', array(1,2,4))
+			->filter('role_id', 'NOT IN', array(1,2,3,4))
 			->order('name')
 			->all()
 			->getDictionary('role_id', 'name');
