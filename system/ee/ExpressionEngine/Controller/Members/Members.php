@@ -1300,7 +1300,7 @@ class Members extends CP_Controller {
 					show_error(lang('must_be_superadmin_to_delete_one'));
 				}
 			}
-			if ($member->PrimaryRole->getId() == 1) {
+			if ($member->role_id == 1) {
 				$super_admins++;
 			}
 		}

@@ -1101,7 +1101,9 @@ class Member extends ContentModel {
 		if ($roles === FALSE)
 		{
 			$roles = $this->Roles->indexBy('name');
-			$roles[$this->PrimaryRole->name] = $this->PrimaryRole;
+			if (isset($this->PrimaryRole->name)) {
+				$roles[$this->PrimaryRole->name] = $this->PrimaryRole;
+			}
 
 			foreach ($this->RoleGroups as $role_group)
 			{
