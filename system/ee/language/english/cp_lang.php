@@ -19,6 +19,8 @@ $lang = array(
 
 'msm_manager' => 'Sites',
 
+'nav_content' => 'Content',
+
 'nav_developer' => 'Developer',
 
 'nav_developer_tools' => 'Developer Tools',

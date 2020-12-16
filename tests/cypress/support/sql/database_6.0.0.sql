@@ -1962,7 +1962,7 @@ INSERT INTO `exp_permissions` (`permission_id`, `role_id`, `site_id`, `permissio
 	(67, 1, 1, 'can_edit_roles'),
 	(68, 1, 1, 'can_create_members'),
 	(69, 1, 1, 'can_edit_members'),
-	(70, 1, 1, 'can_create_new_templates'),
+	(70, 1, 1, 'can_create_templates'),
 	(71, 1, 1, 'can_edit_templates'),
 	(72, 1, 1, 'can_delete_templates'),
 	(73, 1, 1, 'can_create_template_groups'),

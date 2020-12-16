@@ -253,6 +253,7 @@ EE.cp.validateLicense = function() {
 		url: EE.cp.lvUrl,
 		dataType: 'json',
 		data: {
+			appVer: EE.cp.appVer,
 			license: EE.cp.licenseKey,
 			addons: JSON.parse(EE.cp.installedAddons),
 			meta: [
