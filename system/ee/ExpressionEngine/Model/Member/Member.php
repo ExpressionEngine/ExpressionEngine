@@ -1279,7 +1279,7 @@ class Member extends ContentModel {
 
 	public function isPending()
 	{
-		return $this->role_id == 3 || in_array(3, $this->getAllRoles()->pluck('role_id'));
+		return $this->role_id == 4 || in_array(4, $this->getAllRoles()->pluck('role_id'));
 	}
 
 	/**
