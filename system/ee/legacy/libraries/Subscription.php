@@ -221,36 +221,34 @@ class EE_Subscription {
 		{
 			ee()->db->where('hash', $hash);
 			ee()->db->delete($this->table);
+			return;
 		}
-		else
+
+		$user = $this->_prep($identifiers);
+
+		if ( ! $user)
 		{
-			$user = $this->_prep($identifiers);
+			return;
+		}
 
-			if ( ! $user)
-			{
-				return;
-			}
+		list($member_ids, $emails) = $user;
 
-			list($member_ids, $emails) = $user;
+		if ( ! count($member_ids) && ! count($emails))
+		{
+			return;
+		}
 
-			if ( ! count($member_ids) && ! count($emails))
-			{
-				return;
-			}
+		$func = 'where_in';
 
+		if (count($member_ids))
+		{
+			ee()->db->where_in('member_id', $member_ids);
+			$func = 'or_where_in';
+		}
 
-			$func = 'where_in';
-
-			if (count($member_ids))
-			{
-				ee()->db->where_in('member_id', $member_ids);
-				$func = 'or_where_in';
-			}
-
-			if (count($emails))
-			{
-				ee()->db->$func('email', $emails);
-			}
+		if (count($emails))
+		{
+			ee()->db->$func('email', $emails);
 		}
 
 		ee()->db->where($this->publisher);
