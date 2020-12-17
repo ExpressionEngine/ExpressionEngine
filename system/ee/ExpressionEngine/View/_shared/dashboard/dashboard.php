@@ -1,4 +1,4 @@
-<a href="https://expressionengine.com/blog/expressionengine-6-public-beta-1" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
+<a href="https://expressionengine.com/blog/expressionengine-6-official-release" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
   <img src="<?=URL_THEMES?>asset/img/beta-starburst.svg" class="beta-starburst" alt="v6">
   <div class="v6-wrapper">
     <img src="<?=URL_THEMES?>asset/img/ee-6.svg" class="v6 beta-puff-in-center" alt="v6">
