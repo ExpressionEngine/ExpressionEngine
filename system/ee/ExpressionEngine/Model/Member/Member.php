@@ -1101,7 +1101,7 @@ class Member extends ContentModel {
 		if ($roles === FALSE)
 		{
 			$roles = $this->Roles->indexBy('name');
-			if (isset($this->PrimaryRole->name)) {
+			if (is_object($this->PrimaryRole)) {
 				$roles[$this->PrimaryRole->name] = $this->PrimaryRole;
 			}
 
@@ -1279,7 +1279,7 @@ class Member extends ContentModel {
 
 	public function isPending()
 	{
-		return $this->role_id == 3 || in_array(3, $this->getAllRoles()->pluck('role_id'));
+		return $this->role_id == 4 || in_array(4, $this->getAllRoles()->pluck('role_id'));
 	}
 
 	/**
