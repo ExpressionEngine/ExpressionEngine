@@ -47,7 +47,7 @@ $lang = array(
 
     // Share Analytics
     'share_analytics' => 'I want to share analytics with the ExpressionEngine Development Team',
-    'share_analytics_desc' => 'Packet Tide asks users to help improve ExpressionEngine by occasionally <a href="' . DOC_URL . 'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
+    'share_analytics_desc' => 'Packet Tide asks users to help improve ExpressionEngine by occasionally <a href="' . DOC_URL . 'control-panel/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
 
     'start_installation'         => 'Install',
 
