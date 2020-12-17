@@ -1190,11 +1190,12 @@ class ChannelEntry extends ContentModel {
 		}
 
 		$member = ee()->session->getMember();
-		if (!empty($member) || (isset($this->Channel->ChannelFormSettings->allow_guest_posts) && $this->Channel->ChannelFormSettings->allow_guest_posts == 'y')) {
+		$channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
+		if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
 			$assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
 
 			foreach ($all_statuses as $status) {
-				if (ee('Permission')->isSuperAdmin() || (isset($this->Channel->ChannelFormSettings->allow_guest_posts) && $this->Channel->ChannelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
+				if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
 					$status_options[] = $status->getSelectOptionComponent();
 				}
 			}
