@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -122,9 +122,18 @@ class Auth {
 
 		if ($authed !== FALSE)
 		{
-			if (in_array($authed->member('group_id'), $not_allowed_groups))
+			$member = ee('Model')->get('Member', $authed->member('member_id'))->first();
+
+			$authed = FALSE;
+
+			foreach ($member->getAllRoles()->pluck('role_id') as $role_id)
 			{
-				$authed = FALSE;
+				// If they have even a single Role that is allowed, then they are allowed
+				if ( ! in_array($role_id, $not_allowed_groups))
+				{
+					$authed = TRUE;
+					break;
+				}
 			}
 		}
 
@@ -428,7 +437,7 @@ class Auth {
 			return FALSE;
 		}
 
-		if (in_array($member->row('group_id'), $always_disallowed))
+		if (in_array($member->row('role_id'), $always_disallowed))
 		{
 			return ee()->output->show_user_error('general', lang('mbr_account_not_active'));
 		}
@@ -581,6 +590,7 @@ class Auth_result {
 
 	private $group;
 	private $member;
+	private $permissions = [];
 	private $session_id;
 	private $remember_me = FALSE;
 	private $anon = FALSE;
@@ -663,7 +673,18 @@ class Auth_result {
 	 */
 	public function has_permission($perm)
 	{
-		return ($this->group($perm) === 'y');
+		if (empty($this->permissions))
+		{
+			$member = ee('Model')->get('Member', $this->member('member_id'))->first();
+
+			$this->permissions = ee('Model')->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('role_id', 'IN', $member->getAllRoles()->pluck('role_id'))
+				->all()
+				->getDictionary('permission', 'permission_id');
+		}
+
+		return (array_key_exists($perm, $this->permissions));
 	}
 
 	/**
@@ -673,7 +694,7 @@ class Auth_result {
 	 */
 	public function is_banned()
 	{
-		if ($this->member('group_id') != 1)
+		if ($this->member('role_id') != 1)
 		{
 			return ee()->session->ban_check();
 		}

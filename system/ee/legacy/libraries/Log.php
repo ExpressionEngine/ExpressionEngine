@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -38,7 +38,7 @@ class EE_Log {
 			$this->_threshold = $config['log_threshold'];
 		}
 
-		if ($config['log_date_format'] != '')
+		if (isset($config['log_date_format']) && $config['log_date_format'] != '')
 		{
 			$this->_date_fmt = $config['log_date_format'];
 		}

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -199,34 +199,6 @@ class Addons_installer {
 	}
 
 	/**
-	 * RTE Tool Installer
-	 *
-	 * @access	private
-	 * @param String $tool The name of the tool, with or without spaces, but
-	 *     without _rte at the end
-	 */
-	function install_rte_tool($tool)
-	{
-		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
-		ee()->load->model('rte_tool_model');
-		ee()->rte_tool_model->add($tool);
-	}
-
-	/**
-	 * RTE Tool Uninstaller
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	void
-	 */
-	function uninstall_rte_tool($tool)
-	{
-		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
-		ee()->load->model('rte_tool_model');
-		ee()->rte_tool_model->delete($tool);
-	}
-
-	/**
 	 * Module Install Setup
 	 *
 	 * Contains common code for install and uninstall routines
@@ -237,7 +209,7 @@ class Addons_installer {
 	 */
 	function _module_install_setup($module)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee('Permission')->can('admin_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -284,7 +256,7 @@ class Addons_installer {
 	 */
 	function _extension_install_setup($extension, $instantiate = TRUE)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_extensions'))
+		if ( ! ee('Permission')->can('access_extensions'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

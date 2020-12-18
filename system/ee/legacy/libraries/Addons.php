@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,8 +42,7 @@ class EE_Addons {
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
 			'plugins'		=> 'pi',
-			'fieldtypes'	=> 'ft',
-			'rte_tools'		=> 'rte'
+			'fieldtypes'	=> 'ft'
 		);
 
 		if ( ! is_array($this->_map))
@@ -57,11 +56,10 @@ class EE_Addons {
 				'modules'		=> array(),
 				'extensions'	=> array(),
 				'plugins'		=> array(),
-				'fieldtypes'	=> array(),
-				'rte_tools'		=> array()
+				'fieldtypes'	=> array()
 			);
 
-			foreach (array(PATH_THIRD, PATH_ADDONS, PATH_RTE) as $path)
+			foreach (array(PATH_THIRD, PATH_ADDONS) as $path)
 			{
 				if (($map = directory_map($path, 2)) !== FALSE)
 				{
@@ -80,7 +78,7 @@ class EE_Addons {
 		// And now first party addons - will override any third party packages of the same name.
 		// We can be a little more efficient here and only check the directory they asked for
 
-		static $_fp_read = array('extensions', 'modules', 'fieldtypes', 'rte_tools');
+		static $_fp_read = array('extensions', 'modules', 'fieldtypes');
 
 		// is_package calls this function with a blank key to skip
 		// first party - we'll do that right here instead of checking
@@ -148,8 +146,7 @@ class EE_Addons {
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
 			'plugins'		=> 'pi',
-			'fieldtypes'	=> 'ft',
-			'rte_tools'		=> 'rte'
+			'fieldtypes'	=> 'ft'
 		);
 
 		// First party is plural, third party is singular
@@ -159,8 +156,7 @@ class EE_Addons {
 			'modules'		=> 'module',
 			'extensions'	=> 'extension',
 			'plugins'		=> 'plugin',
-			'fieldtypes'	=> 'fieldtype',
-			'rte_tools'		=> 'rte_tool'
+			'fieldtypes'	=> 'fieldtype'
 		);
 
    		$type = ($type == '') ? '' : $type.'/';
@@ -313,25 +309,6 @@ class EE_Addons {
 				}
 			}
 		}
-		elseif ($type == 'rte_tools')
-		{
-			$query = ee()->db->get_where('rte_tools');
-
-			if ($query->num_rows() > 0)
-			{
-				$files = $this->get_files('rte_tools');
-
-				foreach($query->result_array() as $row)
-				{
-					$name = strtolower(substr($row['class'], 0, -4));
-
-					if (isset($files[$name]))
-					{
-						$_installed[$type][$name] = array_merge($files[$name], $row);
-					}
-				}
-			}
-		}
 
 		return $_installed[$type];
 	}
@@ -348,7 +325,7 @@ class EE_Addons {
 
 		foreach ($modules as $module)
 		{
-			$path = SYSPATH.'ee/EllisLab/Addons/'.$module.'/';
+			$path = SYSPATH.'ee/ExpressionEngine/Addons/'.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{

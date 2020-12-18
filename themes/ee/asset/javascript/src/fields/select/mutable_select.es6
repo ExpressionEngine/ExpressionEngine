@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -45,7 +45,7 @@ class MutableSelectField {
   }
 
   bindEdit () {
-    this.field.parent().on('click', 'label > a', (e) => {
+    this.field.parent().on('click', 'label > a, label a.flyout-edit', (e) => {
       e.preventDefault()
       let itemId = $(e.target).closest('[data-id]').data('id')
       this.openForm(this.options.editUrl.replace('###', itemId))

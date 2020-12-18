@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ function toggleFields(fields, show, key) {
 		var fieldset = $(field).closest('fieldset');
 
 		if (fieldset.hasClass('fieldset-invalid')) {
-			if (fieldset.find('input:visible').not('input.btn').size() == 0) {
+			if (fieldset.find('input:visible').not('input.button').size() == 0) {
 				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
@@ -103,12 +103,12 @@ function toggleSections(sections, show, key) {
 
 			// if we're showing this section, but the field is hidden
 			// from another toggle, then don't show it
-			if (group) {
+			if (group && group != key) {
 				hidden[group] = ! show;
 			}
 
-			if (show && group) {
-				toggleFields(field, states[group], key);
+			if (show && group && hidden[group] != undefined) {
+				toggleFields(field, hidden[group], key);
 			} else {
 				toggleFields(field, show, key);
 			}
@@ -143,7 +143,7 @@ EE.cp.form_group_toggle = function(element) {
 			states[data] = (key == value);
 		}
 		toggleFields(field_targets, hidden[data] ? false : (key == value));
-		toggleSections(section_targets, states[data]);
+		toggleSections(section_targets, states[data], data);
 	};
 
 	// Hide all the toggled fields and sections
@@ -163,6 +163,7 @@ EE.cp.form_group_toggle = function(element) {
 EE.cp.fieldToggleDisable = function(context, fieldName) {
 	$('fieldset :input:hidden', context)
 		.not('.filter-item__search input')
+		.not('.search-input__input')
 		.not('.fields-grid-item:visible :input') // Don't disable collapsed Grid settings
 		.not('.fields-grid-setup:visible .fields-grid-item.hidden :input') // Don't disable phantom Grid columns
 		.attr('disabled', true);

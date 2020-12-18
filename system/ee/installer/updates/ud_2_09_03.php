@@ -4,9 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+namespace ExpressionEngine\Updater\Version_2_9_3;
 
 /**
  * Update
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_extract_cache_driver_config',
 				'_recompile_template_routes',
@@ -124,7 +126,7 @@ class Updater {
 
 		foreach ($query->result() as $template)
 		{
-			$ee_route = new EE_Route($template->route, $template->route_required == 'y');
+			$ee_route = new \EE_Route($template->route, $template->route_required == 'y');
 			$compiled = $ee_route->compile();
 			$data = array('route_parsed' => $compiled);
 			ee()->template_model->update_template_route($template->template_id, $data);
@@ -151,7 +153,7 @@ class Updater {
 
 		// Update the site preferences
 		$sites = ee()->db->select('site_id')->get('sites');
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		if ($sites->num_rows() > 0)
 		{

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1569,7 +1569,7 @@ class Api_channel_fields extends Api {
 					$chunk_offset = strrpos($chunk, $tag);
 					$chunk = substr($chunk, $chunk_offset);
 					$chunk = strstr($chunk, LD.$field_name);
-					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.$modifier.RD));
 				}
 
 				$params = ee('Variables/Parser')->parseTagParameters($params);
@@ -1597,7 +1597,7 @@ class Api_channel_fields extends Api {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseVariableProperties()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::parseVariableProperties()
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{

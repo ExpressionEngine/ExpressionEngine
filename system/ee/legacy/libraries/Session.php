@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -90,6 +90,7 @@ class EE_Session {
 	public $cache				= array();
 
 	private $session_model      = NULL;
+	private $member_model       = NULL;
 
 	/**
 	 * Session Class Constructor
@@ -331,7 +332,6 @@ class EE_Session {
 		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
 	}
 
-
 	/**
 	 * Check password lockout
 	 */
@@ -364,18 +364,21 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE, $can_debug = FALSE)
 	{
-		$member = ee('Model')->get('Member', $member_id)->first();
+		if ( ! is_object($this->member_model) || $this->member_model->member_id != $member_id)
+		{
+			$this->member_model = ee('Model')->get('Member', $member_id)->first();
+		}
 
-		if ($this->access_cp == TRUE OR $member->MemberGroup->can_access_cp == 'y')
+		if ($this->access_cp == TRUE OR $this->member_model->can('access_cp'))
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
 		else
 		{
-			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
+			$this->sdata['admin_sess'] = ($admin_session == FALSE) ? 0 : 1;
 		}
 
-		$crypt_key = $member->crypt_key;
+		$crypt_key = $this->member_model->crypt_key;
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
@@ -398,7 +401,7 @@ class EE_Session {
 		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
-		$this->userdata['group_id']		= (int) $member->MemberGroup->getId();
+		$this->userdata['role_id']		= (int) $this->member_model->role_id;
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
@@ -424,14 +427,44 @@ class EE_Session {
 	 */
 	public function delete_old_sessions()
 	{
-		$expire = ee()->localize->now - $this->session_length;
-
 		srand(time());
 
 		if ((rand() % 100) < $this->gc_probability)
 		{
-			ee()->db->where('last_activity < ', $expire)
-						 ->delete('sessions');
+			$sessions_to_delete = [];
+			$cp_expire = ee()->localize->now - $this->cpan_session_len;
+			$user_expire = ee()->localize->now - $this->user_session_len;
+
+			// Get only the CP sessions that have expired.
+			$admin_results = ee()->db->select('session_id')
+				->where('admin_sess', 1)
+				->where('last_activity < ', $cp_expire)
+				->get('sessions');
+
+			// Loop through the old sessions and delete their session and security_hash data.
+			foreach ($admin_results->result() as $row) {
+				$sessions_to_delete[] = $row->session_id;
+			}
+
+			// Get only the user sessions that have expired.
+			$user_results = ee()->db->select('session_id')
+				->where('admin_sess', 0)
+				->where('last_activity < ', $user_expire)
+				->get('sessions');
+
+			// Loop through the old sessions and delete their session and security_hash data.
+			foreach ($user_results->result() as $row) {
+				$sessions_to_delete[] = $row->session_id;
+			}
+
+			// Free the memory from this query as it's at the start of our execution loop.
+			$admin_results->free_result();
+			$user_results->free_result();
+
+			if (!empty($sessions_to_delete)) {
+				ee()->db->where_in('session_id', $sessions_to_delete);
+				ee()->db->delete(array('security_hashes', 'sessions'));
+			}
 		}
 	}
 
@@ -507,26 +540,28 @@ class EE_Session {
 	 */
 	public function fetch_guest_data()
 	{
-		$guest_q = ee()->db
-			->where('site_id', ee()->config->item('site_id'))
-			->where('group_id', (int) 3)
-			->get('member_groups');
+		$role = ee('Model')->get('Role', 3)->first();
 
-		foreach ($guest_q->row_array() as $key => $val)
+		$this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
+
+		foreach ($role->Permissions as $permission)
 		{
-			$this->userdata[$key] = $val;
+			$this->userdata[$permission->permission] = 'y';
 		}
 
-		$this->userdata['total_comments']		= 0;
-		$this->userdata['total_entries']		= 0;
-		$this->userdata['private_messages']		= 0;
-		$this->userdata['total_forum_posts']	= 0;
-		$this->userdata['total_forum_topics']	= 0;
-		$this->userdata['total_forum_replies']	= 0;
-		$this->userdata['display_signatures']	= 'y';
-		$this->userdata['display_avatars']		= 'y';
-		$this->userdata['display_photos']		= 'y';
-		$this->userdata['parse_smileys']		= 'y';
+		$this->userdata['group_id']            = $role->getId();
+		$this->userdata['group_title']         = $role->name;
+		$this->userdata['group_description']   = $role->description;
+		$this->userdata['total_comments']      = 0;
+		$this->userdata['total_entries']       = 0;
+		$this->userdata['private_messages']	   = 0;
+		$this->userdata['total_forum_posts']   = 0;
+		$this->userdata['total_forum_topics']  = 0;
+		$this->userdata['total_forum_replies'] = 0;
+		$this->userdata['display_signatures']  = 'y';
+		$this->userdata['display_avatars']     = 'y';
+		$this->userdata['display_photos']      = 'y';
+		$this->userdata['parse_smileys']       = 'y';
 
 		// The following cookie info is only used with the forum module.
 		// It enables us to track "read topics" with users who are not
@@ -590,6 +625,22 @@ class EE_Session {
 			}
 		}
 
+		// Add in Primary Role data
+		$this->userdata['primary_role_id']          = $this->member_model->PrimaryRole->getId();
+		$this->userdata['primary_role_name']        = $this->member_model->PrimaryRole->name;
+		$this->userdata['primary_role_description'] = $this->member_model->PrimaryRole->description;
+
+		// Member Group backwards compatibility
+		$this->userdata['group_id']          = $this->member_model->PrimaryRole->getId();
+		$this->userdata['group_title']       = $this->member_model->PrimaryRole->name;
+		$this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
+
+		// Add in the Permissions for backwards compatibility
+		foreach ($this->member_model->getPermissions() as $perm => $perm_id)
+		{
+			$this->userdata[$perm] = 'y';
+		}
+
 		// Remember me may have validated the user agent for us, if so create a fingerprint now that we
 		// can salt it properly for the user
 		if ($this->validation == 'c' && ee()->remember->exists())
@@ -627,16 +678,24 @@ class EE_Session {
 		// Assign Sites, Channel, Template, and Module Access Privs
 		if (REQ == 'CP')
 		{
-			$this->_setup_channel_privs();
+			$permission = new ExpressionEngine\Service\Permission\Permission(
+				ee('Model'),
+				$this->all_userdata(),
+				$this->member_model->getPermissions(),
+				$this->member_model->Roles->getDictionary('role_id', 'name'),
+				ee()->config->item('site_id')
+			);
+
+			$this->_setup_channel_privs($permission->isSuperAdmin());
 			$this->_setup_module_privs();
 			$this->_setup_template_privs();
-			$this->_setup_assigned_sites();
+			$this->_setup_assigned_sites($permission->isSuperAdmin());
 		}
 
 
 		// Does the member have admin privileges?
 
-		if ($member_query->row('can_access_cp') == 'y')
+		if ($this->member_model->can('access_cp'))
 		{
 			$this->access_cp = TRUE;
 		}
@@ -1040,6 +1099,11 @@ class EE_Session {
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
 
+	public function getMember()
+	{
+		return $this->member_model;
+	}
+
 	/**
 	 * Fetch the current session id or fingerprint
 	 *
@@ -1181,9 +1245,9 @@ class EE_Session {
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
 
-		ee()->db->from(array('members m', 'member_groups g'))
+		ee()->db->from(array('members m', 'role_settings g'))
 			->where('g.site_id', (int) ee()->config->item('site_id'))
-			->where('m.group_id', ' g.group_id', FALSE);
+			->where('m.role_id', ' g.role_id', FALSE);
 
 		$member_id = $this->sdata['member_id'];
 
@@ -1197,7 +1261,16 @@ class EE_Session {
 
 		ee()->db->where('member_id', (int) $member_id);
 
-		return ee()->db->get();
+		$data = ee()->db->get();
+
+		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
+		{
+			$this->member_model = ee('Model')->get('Member', $member_id)
+				->with('PrimaryRole')
+				->first();
+		}
+
+		return $data;
 	}
 
 	/**
@@ -1238,7 +1311,7 @@ class EE_Session {
 			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
 			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
 			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
-			'group_id'			=> '3',
+			'role_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,
 			'is_banned'			=>  $this->_do_ban_check(),
@@ -1292,39 +1365,33 @@ class EE_Session {
 	 *
 	 * @return void
 	 */
-	protected function _setup_assigned_sites()
+	protected function _setup_assigned_sites($is_superadmin = FALSE)
 	{
 		// Fetch Assigned Sites Available to User
+		$assigned_sites = ee('Model')->get('Site')
+				->fields('site_id', 'site_label')
+				->order('site_label', 'desc');
 
-		$assigned_sites = array();
+		if ( ! $is_superadmin)
+		{
+			$roles = $this->getMember()->getAllRoles()->pluck('role_id');
+			$site_ids = ee('Model')->get('Permission')
+				->fields('site_id')
+				->filter('permission', 'can_access_cp')
+				->filter('role_id', 'IN', $roles)
+				->all()
+				->pluck('site_id');
 
-		if ($this->userdata['group_id'] == 1)
-		{
-			$qry = ee()->db->select('site_id, site_label')
-								->order_by('site_label')
-								->get('sites');
-		}
-		else
-		{
-			// Groups that can access the Site's CP, see the site in the 'Sites' pulldown
-			$qry = ee()->db->select('es.site_id, es.site_label')
-								->from(array('sites es', 'member_groups mg'))
-								->where('mg.site_id', ' es.site_id', FALSE)
-								->where('mg.group_id', $this->userdata['group_id'])
-								->where('mg.can_access_cp', 'y')
-								->order_by('es.site_label')
-								->get();
-		}
-
-		if ($qry->num_rows() > 0)
-		{
-			foreach ($qry->result() as $row)
-			{
-				$assigned_sites[$row->site_id] = $row->site_label;
+			if (empty($site_ids)) {
+				$this->userdata['assigned_sites'] = [];
+				return;
 			}
+
+			$assigned_sites->filter('site_id', 'IN', $site_ids);
 		}
 
-		$this->userdata['assigned_sites'] = $assigned_sites;
+		$this->userdata['assigned_sites'] = $assigned_sites->all()
+				->getDictionary('site_id', 'site_label');
 	}
 
 	/**
@@ -1332,13 +1399,12 @@ class EE_Session {
 	 *
 	 * @return void
 	 */
-	protected function _setup_channel_privs()
+	protected function _setup_channel_privs($is_superadmin = FALSE)
 	{
 		// Fetch channel privileges
-
 		$assigned_channels = array();
 
-		if ($this->userdata['group_id'] == 1)
+		if ($is_superadmin)
 		{
 			ee()->db->select('channel_id, channel_title');
 			ee()->db->order_by('channel_title');
@@ -1346,27 +1412,28 @@ class EE_Session {
 				'channels',
 				array('site_id' => ee()->config->item('site_id'))
 			);
+
+			if ($res->num_rows() > 0)
+			{
+				foreach ($res->result() as $row)
+				{
+					$assigned_channels[$row->channel_id] = $row->channel_title;
+				}
+			}
+
+			$res->free_result();
 		}
 		else
 		{
-			$res = ee()->db->select('ec.channel_id, ec.channel_title')
-				->from(array('channel_member_groups ecmg', 'channels ec'))
-				->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
-				->where('ecmg.group_id', $this->userdata['group_id'])
-				->where('site_id', ee()->config->item('site_id'))
-				->order_by('ec.channel_title')
-				->get();
-		}
+			$site_id = ee()->config->item('site_id');
 
-		if ($res->num_rows() > 0)
-		{
-			foreach ($res->result() as $row)
-			{
-				$assigned_channels[$row->channel_id] = $row->channel_title;
-			}
+			$assigned_channels = $this->member_model->getAssignedChannels()
+				->filter(function($channel) use($site_id)
+				{
+					return $channel->site_id == $site_id;
+				})
+				->getDictionary('channel_id', 'channel_title');
 		}
-
-		$res->free_result();
 
 		$this->userdata['assigned_channels'] = $assigned_channels;
 	}
@@ -1380,21 +1447,12 @@ class EE_Session {
 	{
 		$assigned_modules = array();
 
-		ee()->db->select('module_id');
-		$qry = ee()->db->get_where('module_member_groups',
-										array('group_id' => $this->userdata['group_id']));
-
-		if ($qry->num_rows() > 0)
+		foreach ($this->member_model->getAssignedModules() as $module)
 		{
-			foreach ($qry->result() as $row)
-			{
-				$assigned_modules[$row->module_id] = TRUE;
-			}
+			$assigned_modules[$module->getId()] = TRUE;
 		}
 
 		$this->userdata['assigned_modules'] = $assigned_modules;
-
-		$qry->free_result();
 	}
 
 	/**
@@ -1429,24 +1487,14 @@ class EE_Session {
 	 */
 	protected function _setup_template_privs()
 	{
-		$assigned_template_groups = array();
+		$assigned_template_groups = [];
 
-		ee()->db->select('template_group_id');
-		$qry = ee()->db->get_where('template_member_groups',
-										array('group_id' => $this->userdata['group_id']));
-
-
-		if ($qry->num_rows() > 0)
+		foreach ($this->member_model->getAssignedTemplateGroups() as $template_group)
 		{
-			foreach ($qry->result() as $row)
-			{
-				$assigned_template_groups[$row->template_group_id] = TRUE;
-			}
+			$assigned_template_groups[$template_group->getId()] = TRUE;
 		}
 
 		$this->userdata['assigned_template_groups'] = $assigned_template_groups;
-
-		$qry->free_result();
 	}
 
 }

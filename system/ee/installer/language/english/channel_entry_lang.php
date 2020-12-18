@@ -1,4 +1,4 @@
-Thank you for choosing ExpressionEngine! This entry contains helpful resources to help you <a href="https://docs.expressionengine.com/latest/intro/getting_the_most.html">get the most from ExpressionEngine</a> and the EllisLab Community.
+Thank you for choosing ExpressionEngine! This entry contains helpful resources to help you <a href="https://docs.expressionengine.com/latest/intro/getting_the_most.html">get the most from ExpressionEngine</a> and the ExpressionEngine Community.
 
 <strong>Learning resources:</strong>
 
@@ -10,4 +10,4 @@ If you need to hire a web developer consider our <a href="https://expressionengi
 
 Welcome to our community,
 
-<span style="font-size:16px;">The EllisLab Team</span>
+<span style="font-size:16px;">The ExpressionEngine Team</span>

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,7 +20,7 @@ class Channel_entries_model extends CI_Model {
 	public function get_entry_data(array $entries)
 	{
 		$entry_data = ee('Model')->get('ChannelEntry', $entries)
-			->with('Channel', 'Author')
+			->with('Channel', 'Author', 'Categories')
 			->all()
 			->getModChannelResultsArray();
 
@@ -182,9 +182,9 @@ class Channel_entries_model extends CI_Model {
 		$this->db->where('channels.channel_id = '.$this->db->dbprefix('channel_titles.channel_id'));
 		$this->db->where('channel_titles.site_id', $this->config->item('site_id'));
 
-		if ( ! $this->cp->allowed_group('can_view_other_entries') AND
-			 ! $this->cp->allowed_group('can_edit_other_entries') AND
-			 ! $this->cp->allowed_group('can_delete_all_entries'))
+		if ( ! ee('Permission')->can('view_other_entries') AND
+			 ! ee('Permission')->can('edit_other_entries') AND
+			 ! ee('Permission')->can('delete_all_entries'))
 		{
 			$this->db->where('channel_titles.author_id', $this->session->userdata('member_id'));
 		}
@@ -220,10 +220,10 @@ class Channel_entries_model extends CI_Model {
 		$this->db->where('channels.channel_id = '.$this->db->dbprefix('channel_titles.channel_id'));
 		$this->db->where('channel_titles.site_id', $this->config->item('site_id'));
 
-		if ( ! $this->cp->allowed_group('can_view_other_comments') AND
-			 ! $this->cp->allowed_group('can_moderate_comments') AND
-			 ! $this->cp->allowed_group('can_delete_all_comments') AND
-			 ! $this->cp->allowed_group('can_edit_all_comments'))
+		if ( ! ee('Permission')->can('view_other_comments') AND
+			 ! ee('Permission')->can('moderate_comments') AND
+			 ! ee('Permission')->can('delete_all_comments') AND
+			 ! ee('Permission')->can('edit_all_comments'))
 		{
 			$this->db->where('channel_titles.author_id', $this->session->userdata('member_id'));
 		}

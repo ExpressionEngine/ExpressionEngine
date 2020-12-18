@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -155,6 +155,9 @@ class SelectList extends React.Component {
   // Allows for changing of parents and children, whereas sortable() will only
   // let you change the order constrained to a level
   bindNestable () {
+    // Make sure the draggable container is positioned relatively so that the nestable drag item is positioned correctly
+    this.container.parentNode.style.position = 'relative'
+
     $(this.container).nestable({
       listNodeName: 'ul',
       listClass: 'field-nested',
@@ -235,6 +238,10 @@ class SelectList extends React.Component {
         // Select parents?
         if (item.parent && this.props.autoSelectParents) {
           selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
+        }
+
+        if (item.children && this.props.autoSelectParents) {
+          selected = selected.concat(this.getFlattenedChildrenOfItem(item))
         }
       } else {
         let deselect = [item]
@@ -317,6 +324,16 @@ class SelectList extends React.Component {
         })
         return ! found
       })
+      newlySelected.forEach(item => {
+        if (item.children && this.props.autoSelectParents) {
+          newlySelected = newlySelected.concat(this.getFlattenedChildrenOfItem(item))
+        }
+      })
+      this.props.selected.forEach(item => {
+        if (item.children && this.props.autoSelectParents) {
+          newlySelected = newlySelected.concat(this.getFlattenedChildrenOfItem(item))
+        }
+      })
       this.props.selectionChanged(this.props.selected.concat(newlySelected))
     } else {
       // Do not uncheck disabled choices if they are selected
@@ -348,11 +365,13 @@ class SelectList extends React.Component {
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}
+      <div className={((props.tooMany) ? ' lots-of-checkboxes' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {(shouldShowToggleAll || props.tooMany) &&
-          <FieldTools>
+        {(props.tooMany) &&
+        <div class="lots-of-checkboxes__search">
+        <div class="lots-of-checkboxes__search-inner">
             {props.tooMany &&
+            <div class="lots-of-checkboxes__search-input">
               <FilterBar>
                 {props.filters && props.filters.map(filter =>
                   <FilterSelect key={filter.name}
@@ -366,14 +385,15 @@ class SelectList extends React.Component {
                 )}
                 <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
               </FilterBar>
+              </div>
             }
-            {shouldShowToggleAll && props.tooMany && <hr />}
-            {shouldShowToggleAll &&
+            {shouldShowToggleAll && props.tooMany &&
               <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
             }
-          </FieldTools>
+          </div>
+          </div>
         }
-        <FieldInputs nested={props.nested}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -421,16 +441,18 @@ class SelectList extends React.Component {
 }
 
 function FieldInputs (props) {
+  var divClass = (props.tooMany ? ' lots-of-checkboxes__items--too-many' : '')
+
   if (props.nested) {
     return (
-      <ul className="field-inputs field-nested">
+      <ul className={'field-inputs lots-of-checkboxes__items field-nested' + divClass}>
         {props.children}
       </ul>
     )
   }
 
   return (
-    <div className="field-inputs">
+    <div className={'field-inputs lots-of-checkboxes__items' + divClass}>
       {props.children}
     </div>
   )
@@ -457,17 +479,9 @@ class SelectItem extends React.Component {
       )
     }
 
-    if (props.item.component) {
-      const Tag = `${props.item.component.tag}`;
-      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
-    }
-
     let listItem = (
-      <label className={(checked ? 'act' : '')}
+      <label className={'checkbox-label'}
           data-id={props.reorderable && ! props.nested ? props.item.value : null}>
-        {props.reorderable && (
-          <span className="icon-reorder"> </span>
-        )}
         {props.selectable && (
           <input type={props.multi ? "checkbox" : "radio"}
             value={props.item.value}
@@ -477,19 +491,22 @@ class SelectItem extends React.Component {
             disabled={disabled ? 'disabled' : ''}
            />
         )}
-        {props.editable && (
-            <a href="#">{label}</a>
+        <div className="checkbox-label__text">
+        {props.reorderable && (
+          <span className="icon-reorder icon-left"></span>
         )}
-        { ! props.editable && label}
+        {props.editable && (
+            <a href="#" class="flyout-edit" dangerouslySetInnerHTML={{ __html: label }}></a>
+        )}
+        { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
         {" "}
         {props.item.instructions && (
-          <i>{props.item.instructions}</i>
+          <span className="meta-info">{props.item.instructions}</span>
         )}
         {props.removable && (
-          <ul className="toolbar">
-            <li className="remove"><a href="" onClick={(e) => props.handleRemove(e, props.item)}></a></li>
-          </ul>
+            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
         )}
+        </div>
       </label>
     )
 
@@ -521,21 +538,12 @@ class SelectedItem extends React.Component {
     let props = this.props
     let label = props.item.label
 
-    if (props.item.component) {
-      const Tag = `${props.item.component.tag}`;
-      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
-    }
-
     return (
-      <div className="field-input-selected">
-        <label>
-          <span className="icon--success"></span> {label}
+      <div className="lots-of-checkboxes__selection">
+        <i className="fas fa-check-circle"></i> {label}
           {props.selectionRemovable &&
-            <ul className="toolbar">
-              <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-            </ul>
+            <a className="button button--default float-right" href="" onClick={props.clearSelection}><i class="fas fa-trash-alt"></i></a>
           }
-        </label>
       </div>
     )
   }

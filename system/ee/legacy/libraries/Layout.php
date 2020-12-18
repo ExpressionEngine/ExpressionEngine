@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,8 +40,9 @@ class Layout {
 
 	function delete_channel_layouts($channel_id)
 	{
-		ee()->load->model('member_model');
-		ee()->member_model->delete_group_layout('', $channel_id);
+		ee('Model')->get('ChannelLayout')
+			->filter('channel_id', $channel_id)
+			->delete();
 	}
 
 	function edit_layout_fields($field_info, $channel_id)

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,7 +76,14 @@ class EE_Cache_redis extends CI_Driver
 		}
 
 		// Delete specific key
-		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
+		if (method_exists($this->_redis, 'del'))
+		{
+			return ( $this->_redis->del($this->unique_key($key, $scope)) === 1);
+		}
+		else if (method_exists($this->_redis, 'delete'))
+		{
+			return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
+		}
 	}
 
 	/**

@@ -14,11 +14,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var FilterableSelectList = makeFilterableComponent(SelectList);
@@ -44,19 +44,19 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectionChanged", function (selected) {
+    _defineProperty(_assertThisInitialized(_this), "selectionChanged", function (selected) {
       _this.setState({
         selected: selected
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setEditingMode", function (editing) {
+    _defineProperty(_assertThisInitialized(_this), "setEditingMode", function (editing) {
       _this.setState({
         editing: editing
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleRemove", function (event, item) {
+    _defineProperty(_assertThisInitialized(_this), "handleRemove", function (event, item) {
       event.preventDefault();
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     });
@@ -74,10 +74,11 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var tooManyLimit = typeof this.props.tooManyLimit !== 'undefined' && this.props.tooManyLimit !== null ? this.props.tooManyLimit : SelectList.defaultProps.tooManyLimit;
       var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
         selected: this.state.selected,
         selectionChanged: this.selectionChanged,
-        tooMany: SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit,
+        tooMany: SelectList.countItems(this.props.items) > tooManyLimit,
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
         handleRemove: function handleRemove(e, item) {
@@ -88,7 +89,7 @@ function (_React$Component) {
 
       if (this.props.manageable) {
         return React.createElement("div", null, selectItem, this.props.addLabel && React.createElement("a", {
-          className: "btn action submit",
+          className: "button button--default button--small submit publish__add-category-button",
           rel: "add_new",
           href: "#"
         }, this.props.addLabel), React.createElement(ToggleTools, {

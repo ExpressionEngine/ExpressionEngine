@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -153,13 +153,13 @@ $(document).ready(function() {
 	$(".js_show").show();
 	$(".js_hide").hide();
 
-	if (EE.publish.markitup !== undefined && EE.publish.markitup.fields !== undefined) {
+	if (typeof(EE.publish) !== 'undefined' && EE.publish.markitup !== undefined && EE.publish.markitup.fields !== undefined) {
 		$.each(EE.publish.markitup.fields, function(key, value) {
 			$("#"+key).markItUp(mySettings);
 		});
 	}
 
-	if (EE.publish.smileys === true) {
+	if (typeof(EE.publish) !== 'undefined' && EE.publish.smileys === true) {
 
 		$("a.glossary_link").click(function(){
 			$(this).parent().siblings('.glossary_content').slideToggle("fast");
@@ -205,7 +205,7 @@ $(document).ready(function() {
 
 	var field_for_writemode_publish = "";
 
-	if (EE.publish.show_write_mode === true) {
+	if (typeof(EE.publish) !== 'undefined' && EE.publish.show_write_mode === true) {
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);
 	}
 

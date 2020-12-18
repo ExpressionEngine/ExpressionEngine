@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -242,93 +242,310 @@ $(document).ready(function(){
 			}
 		});
 
-	// ====
-	// tabs
-	// ====
+
+    // Clicking icons in Jump input focuses input
+    $('.jump-focus').click(function() {
+      $("#jumpEntry1").focus();
+    })
+
+  // Side bar toggle
+	// -------------------------------------------------------------------
+
+	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
+	function debounce(func, wait = 0, immediate = false) {
+		var timeout;
+		return function() {
+			var context = this, args = arguments;
+			var later = function() {
+				timeout = null;
+				if (!immediate) func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) func.apply(context, args);
+		}
+	}
+
+	var updateMainSidebar = debounce(function() {
+		if (window.innerWidth < 1000) {
+			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
+			$('.main-nav__mobile-menu').removeClass('hidden');
+			$('.ee-wrapper-overflow').addClass('is-mobile');
+		} else {
+			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden is-mobile');
+			$('.main-nav__mobile-menu').addClass('hidden');
+			$('.ee-wrapper-overflow').removeClass('is-mobile');
+		}
+    if( $('.ee-sidebar').hasClass('ee-sidebar__collapsed') && window.innerWidth < 1000) {
+      $('.ee-wrapper').addClass('sidebar-hidden__collapsed');
+    }
+	}, 100)
+
+	// Update the sidebar visibility on page load, and when the window width changes
+	window.addEventListener('resize', function () { updateMainSidebar() })
+	updateMainSidebar()
+
+	$('.js-toggle-main-sidebar').on('click', function () {
+		let isHidden = $('.ee-wrapper').hasClass('sidebar-hidden-no-anim');
+		$('.ee-wrapper').removeClass('sidebar-hidden-no-anim');
+
+		if (isHidden) {
+			$('.ee-wrapper').removeClass('sidebar-hidden');
+		} else {
+			$('.ee-wrapper').toggleClass('sidebar-hidden');
+		}
+	})
+
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.sidebar-toggle').on('click', function (e) {
+		e.preventDefault();
+		let isHidden = $('.ee-sidebar').hasClass('ee-sidebar__collapsed');
+
+		if (isHidden) {
+			$('.ee-sidebar').removeClass('ee-sidebar__collapsed');
+			$(this).removeClass('sidebar-toggle__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-right').addClass('fa-angle-left');
+		} else {
+			$('.ee-sidebar').addClass('ee-sidebar__collapsed');
+			$(this).addClass('sidebar-toggle__collapsed');
+			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
+		}
+		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
+	})
+
+	// Toggle Developer Menu
+	// -------------------------------------------------------------------
+
+	$('.js-toggle-developer-menu').on('click', function(e) {
+		e.preventDefault()
+
+		$('.js-developer-menu-content').toggleClass('hidden');
+	})
+
+	// Toggle Dark Theme
+	// -------------------------------------------------------------------
+
+	// Toggle theme button
+	$('.js-dark-theme-toggle').on('click', (e) => {
+		e.preventDefault()
+		toggleDarkTheme(e)
+	})
+
+	// Don't allow changing the theme when it's in the middle of changing
+	var isChangingTheme = false
+
+	var currentTheme = localStorage.getItem('theme');
+
+	updateMenuText(currentTheme)
+
+	function updateMenuText(newTheme) {
+		if ($('.js-dark-theme-toggle').length) {
+			$('.js-dark-theme-toggle').html('<i class="fas fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
+		}
+	}
+
+	function toggleDarkTheme(event = null) {
+		if (isChangingTheme) {
+			return
+		}
+
+		isChangingTheme = true
+
+		setTimeout(() => {
+			isChangingTheme = false
+		}, 1000);
+
+		// Add the transition class to the html. This will make the theme change transition smoothly
+		document.documentElement.classList.add('color-theme-in-transition')
+		window.setTimeout(() => {
+			document.documentElement.classList.remove('color-theme-in-transition')
+		}, 1000)
+
+		// Toggle the theme
+		var newTheme = document.body.dataset.theme == 'dark' ? 'light' : 'dark'
+
+		document.body.dataset.theme = newTheme;
+		localStorage.setItem('theme', newTheme);
+
+		updateMenuText(newTheme)
+
+		// Show a circle animation if there's a click event
+		if (event) {
+			$('.theme-switch-circle').addClass('animate')
+			$('.theme-switch-circle').css( { top:event.pageY, left: event.pageX })
+
+			setTimeout(() => {
+				$('.theme-switch-circle').removeClass('animate')
+			}, 1000);
+		}
+	}
+
+	// Filter bar toggle
+	// -------------------------------------------------------------------
+
+	function collapseFilterBar(container, collapse) {
+		$(container).find('.filter-bar').toggleClass('filter-bar--collapsed', collapse)
+
+		$(container).find('.js-filter-bar-toggle .filter-bar__button').toggleClass('filter-bar__button--selected', !collapse)
+	}
+
+	$('body').on('click', '.js-filter-bar-toggle button', function(e) {
+		var container = $(this).closest('.js-filters-collapsible')
+
+		var filterBar = $('.filter-bar', container)
+
+		if (filterBar.hasClass('filter-bar--collapsed')) {
+			collapseFilterBar(container, false)
+		} else {
+			collapseFilterBar(container, true)
+		}
+	})
+
+	var updateFilterBars = debounce(function() {
+		var collapse = false
+
+		if (window.innerWidth < 1000) {
+			collapse = true
+		}
+
+		$('.js-filters-collapsible .js-filter-bar-toggle').toggle(collapse)
+
+		$('.js-filters-collapsible').each(function() {
+			collapseFilterBar(this, collapse)
+			//$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
+		})
+	})
+
+	// Update the filter bars on page load, and when the window width changes
+	window.addEventListener('resize', function () { updateFilterBars() })
+	updateFilterBars()
+
+	// Tabs
+	// -------------------------------------------------------------------
+
+		//Load initial tab, if requested
+		var hash_params = {}
+		window.location.hash.substring(1).split('&').map(hk => {
+			let temp = hk.split('=');
+			hash_params[temp[0]] = temp[1];
+		});
+
+		if (typeof(hash_params.tab)!='undefined') {
+			var _tab = $('.tab-wrap .js-tab-button[rel='+hash_params.tab+']');
+			if (_tab.length) {
+				switchToTab(_tab.first());
+			}
+		}
+
+		//scroll to element
+		if (typeof(hash_params.id)!='undefined') {
+			if ($('#'+hash_params.id).length) {
+				window.scrollTo({top: document.getElementById(hash_params.id).offsetTop, behavior: 'smooth' });
+			}
+		}
 
 		// listen for clicks on tabs
+		$('body').on('click', '.tab-wrap .js-tab-button', function(e){
+			e.preventDefault()
+			switchToTab($(this));
+		});
+
+		//legacy tabs
 		$('body').on('click', '.tab-wrap ul.tabs a', function(e){
 			e.preventDefault()
-
-			// set the tabClassIs variable
-			// tells us which .tab to control
-			var tabClassIs = $(this).attr('rel');
-
-			$('.tb-act').removeClass('tb-act');
-			$(this).parents('ul').parents('.tab-wrap').addClass('tb-act');
-
-			// close OTHER .tab(s), ignores the currently open tab
-			$('.tb-act ul a').not(this).removeClass('act');
-			// removes the .tab-open class from any open tabs, and hides them
-			$('.tb-act .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
-
-			// add a class of .act to THIS tab
-			$(this).addClass('act');
-			// add a class of .open to the proper .tab
-			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
+			switchToTab($(this), 'tb-act', 'act', 'ul a');
 		});
 
-	// ==============
-	// version pop up
-	// ==============
+		//switch to tab
+		function switchToTab(_this, active_group_class = 'js-active-tab-group', active_class='active', tab_selector = '.js-tab-button') {
 
-		// hide version-info box
-		$('.version-info').hide();
+			// Get the tab that needs to be opened
+			var tabClassIs = _this.attr('rel');
 
-		// listen for clicks to elements with a class of version
-		$('.version').on('click',function(e){
-			// show version-info box
-			$('.version-info').show();
-			// stop THIS href from loading
-			// in the source window
+			// Add the class js-active-tab-group to the parent tab-wrapper of the tab button that was pressed
+			// This allows us to only target the tabs that are part of this tab group,
+			// not other tabs that are somewhere else, such as in a different model
+			$('.'+active_group_class).removeClass(active_group_class);
+			_this.parents('.tab-wrap').addClass(active_group_class);
+
+			// Close other tabs, ignoring the current one
+			$('.'+active_group_class+' '+tab_selector).not(this).removeClass(active_class);
+			$('.'+active_group_class+' .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
+
+			// Open the new tab
+			_this.addClass(active_class);
+			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
+		}
+
+
+	// App about / updates pop up
+	// -------------------------------------------------------------------
+
+		$('.js-about').on('click', function(e) {
+			// Trigger an event so that the about popup can check for updates when shown
+			$('.app-about').trigger('display');
 			e.preventDefault();
 		});
 
-		// listen for clicks to elements with a class of close inside of version-info
-		$('.version-info .close').on('click',function(){
-			// hide version-info box
-			$('.version-info').hide();
-			// stop THIS from reloading
-			// the source window and appending to the URI
-			// and stop propagation up to document
-			return false;
-		});
-
-		// new app-about popup
-		$('.js-about').on('click',function(e){
-			// show version-info box
-			$('.app-about-info').show().trigger('display');
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
-		});
-
-		$('.js-about-close').on('click',function(e){
-			// hide version-info box
-			$('.app-about-info').hide();
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
-		});
-
-		$('.app-about-info').on('display', function() {
-			if ($('.app-about-info__update:visible').size() > 0) {
+		$('.app-about').on('display', function() {
+			// Is the checking for updates bar visible?
+			// If it's not, then we already checked for updates so there's nothing to do.
+			if (!$('.app-about__status--checking').hasClass('hidden')) {
+				// Hide all statuses except for the checking one
+				$('.app-about__status:not(.app-about__status--checking)').addClass('hidden');
 				$.get(EE.cp.updateCheckURL, function(data) {
 					if (data.newVersionMarkup) {
-						$('.app-about-info__status, .app-about-info__update').hide()
-						$('.app-about-info__installed').after(data.newVersionMarkup)
-
 						if (data.isVitalUpdate) {
-							$('.app-about-info__status--update-vital').show()
+							$('.app-about__status--update-vital').removeClass('hidden');
+							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup);
+						} else if (data.isMajorUpdate) {
+							$('.app-about__status--update-major').removeClass('hidden');
+							$('.app-about__status--update-major .app-about__status-version').html(data.newVersionMarkup);
 						} else {
-							$('.app-about-info__status--update').show()
+							$('.app-about__status--update').removeClass('hidden');
+							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup);
 						}
 					} else {
-						$('.app-about-info__update').hide()
+						$('.app-about__status--update-to-date').removeClass('hidden');
 					}
+
+					// Hide the checking for updates bar
+					$('.app-about__status--checking').addClass('hidden');
 				})
 			}
-		})
+		});
+
+		$('form[name="one_click_major_update_confirm"]').on('submit', function(e) {
+			e.preventDefault();
+			$('.app-about__status--update_credentials_error').hide();
+
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize(),
+				dataType: 'json',
+
+				success: function (result) {
+					if (result.messageType != 'success') {
+						$('.app-about__status--update_credentials_error').show();
+						console.log('Major Update Credential Error:', result.message);
+						return;
+					}
+
+					$('.app-about__status--update_major_version').hide();
+					$('.app-about__status--update_regular').show();
+				},
+
+				error: function (data) {
+					alert('Major Update Credential Error. See browser console for more information.');
+					console.log('Major Update Credential Error:', data.message);
+				}
+			});
+
+			return false;
+		});
 
 	// ====================
 	// modal windows -> WIP
@@ -345,6 +562,10 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
+
+			// Hide any dropdowns that are currently shown
+			DropdownController.hideAllDropdowns()
+
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
@@ -459,7 +680,7 @@ $(document).ready(function(){
 					$('body').css('overflow','hidden');
 				}
 
-				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+				var button = $('.form-ctrls .button', this);
 				button.removeClass('work');
 				button.val(button.data('submit-text'));
 			}
@@ -534,10 +755,15 @@ $(document).ready(function(){
 			})
 		})
 
+	// Table checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
-			if (event.target.nodeName != 'A') {
-       			$(this).children('td:last-child').children('input[type=checkbox]').click();
+			if ($(this).find('input[type=checkbox]').length==1) {
+				if (event.target.nodeName != 'A') {
+					$(this).children('td:last-child').children('input[type=checkbox]').click();
+				}
 			}
 		});
 
@@ -548,45 +774,54 @@ $(document).ready(function(){
 
 		// Toggle the bulk actions
 		$('body').on('change', 'table tr td:last-child input[type=checkbox], table tr th:last-child input[type=checkbox]', function() {
-			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
-			if ($(this).parents('table').find('input:checked').length == 0) {
-				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
-			} else {
-				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').show();
+			if ($(this).parents('form').find('.bulk-action-bar').length > 0 || $(this).parents('form').find('.tbl-bulk-act').length > 0) {
+				$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
+				if ($(this).parents('table').find('input:checked').length == 0) {
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
+				} else {
+					$(this).parents('.tbl-wrap, .table-responsive').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
+				}
 			}
 		});
 
-		// Check a table list row's checkbox when its item body is clicked
-		$('body').on('click', '.tbl-row', function(event) {
+	// List group checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
+	// Uncheck any checkboxes when the page loads.
+	// This solves a bug where the browser may keep item checkbox selection on reload, but the items don't show the selection.
+	$('.list-group .list-item__checkbox input').each(function () {
+		$(this).prop('checked', false)
+	});
+
+		// Check a list item checkbox if its container is clicked
+		$('body').on('click', '.list-item__checkbox', function(event) {
 			if (event.target.nodeName == 'DIV') {
-				$(this).find('> .check-ctrl input').click()
+				$(this).find('> input').click()
 			}
 		});
 
-		// "Table" lists
-		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
-			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+		// List group selection
+		$('body').on('click change', '.list-group .list-item__checkbox input', function() {
+			$(this).parents('.list-item').toggleClass('list-item--selected', $(this).is(':checked'));
 
-			var tableList = $(this).parents('.tbl-list');
+			var tableList = $(this).parents('.list-group');
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = (tableList.find('.check-ctrl input:checked').length == tableList.find('.check-ctrl input').length);
-			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+			var allSelected = (tableList.find('.list-item__checkbox input:checked').length == tableList.find('.list-item__checkbox input').length);
+			$(this).parents('.js-list-group-wrap').find('.list-group-controls .ctrl-all input').prop('checked', allSelected);
 
 			// Toggle the bulk actions
-			if (tableList.find('.check-ctrl input:checked').length == 0)
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').hide();
-			} else
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').show();
+			if (tableList.find('.list-item__checkbox input:checked').length == 0) {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').addClass('hidden');
+			} else {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar, .tbl-bulk-act').removeClass('hidden');
 			}
 		});
 
 		// Select all for "table" lists
-		$('body').on('click', '.tbl-list-ctrl input', function(){
-			$(this).parents('.tbl-list-wrap')
-				.find('.tbl-list .check-ctrl input')
+		$('body').on('click', '.list-group-controls .ctrl-all input', function(){
+			$(this).parents('.js-list-group-wrap')
+				.find('.list-group .list-item__checkbox input')
 				.prop('checked', $(this).is(':checked'))
 				.trigger('change');
 		});
@@ -621,19 +856,11 @@ $(document).ready(function(){
 
 		// Fieldset toggle
 		$('.js-toggle-field')
-			.not('.fluid-ctrls .js-toggle-field')
 			.on('click',function(){
 				$(this)
-					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.parents('fieldset,.fieldset-faux')
 					.toggleClass('fieldset---closed');
 			});
-
-		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
-		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
-			$(this)
-				.closest('.fluid-item')
-				.toggleClass('fluid-closed');
-		});
 
 	// ===================
 	// input range sliders
@@ -663,7 +890,7 @@ $(document).ready(function(){
 	// non-React toggles
 	// =================
 
-		$('body').on('click', 'a.toggle-btn', function (e) {
+		$('body').on('click', 'button.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
 				$(this).parents('.toggle-tools').size() > 0 ||
 				$(this).parents('[data-reactroot]').size() > 0) {
@@ -693,6 +920,13 @@ $(document).ready(function(){
 
 			e.preventDefault();
 		});
+
+		$('body').on('click', '.js-toggle-link', function(e) {
+			e.preventDefault()
+
+			var rel = $(this).attr('rel')
+			$('div[rev='+rel+']').toggle()
+		})
 
 	// =============
 	// filter-bar
@@ -743,4 +977,45 @@ $(document).ready(function(){
 				$('.app-about-info:visible').hide()
 			}
 		});
+
+
+		// -------------------------------------------------------------------
+
+		// This listens to the DOM, and automatically moves app alerts that are added
+		// to the top of the app into the fixed alerts container.
+		var alertObserver = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+
+					var hasClass = [].some.call(mutation.addedNodes, function(el) {
+						return el.classList.contains('app-notice')
+					})
+
+					if (hasClass) {
+						$(mutation.addedNodes).each(function () {
+							alert = $(this)
+
+							// Don't add the alert if its not at the top of the body
+							if (!alert.parent().is(document.body)) {
+								return
+							}
+
+							// Move the notice to the global alerts div, and animate it in
+							alert.hide()
+							alert.appendTo('.global-alerts')
+							alert.fadeIn()
+
+							// Make sure the app notice has a close button
+							if (!alert.find('.app-notice__controls').length) {
+								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a>`).insertAfter(alert.find('.app-notice__content'))
+							}
+						})
+					}
+				}
+			})
+		})
+
+		// Start observing changes
+		alertObserver.observe(document.body, { childList: true })
+
 }); // close (document).ready

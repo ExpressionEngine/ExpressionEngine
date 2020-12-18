@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -302,7 +302,7 @@ class Api_channel_entries extends Api {
 
 		foreach ($query->result_array() as $row)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				if ( ! in_array($row['channel_id'], $allowed_channels))
 				{
@@ -312,14 +312,14 @@ class Api_channel_entries extends Api {
 
 			if ($row['author_id'] == ee()->session->userdata('member_id'))
 			{
-				if (ee()->session->userdata('can_delete_self_entries') != 'y')
+				if ( ! ee('Permission')->can('delete_self_entries'))
 				{
 					return $this->_set_error('unauthorized_to_delete_self');
 				}
 			}
 			else
 			{
-				if (ee()->session->userdata('can_delete_all_entries') != 'y')
+				if ( ! ee('Permission')->can('delete_all_entries'))
 				{
 					return $this->_set_error('unauthorized_to_delete_others');
 				}
@@ -473,7 +473,7 @@ class Api_channel_entries extends Api {
 		// Is this user allowed to post here?
 		$this->_cache['assigned_channels'] = ee()->functions->fetch_assigned_channels();
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
 			{
@@ -573,7 +573,7 @@ class Api_channel_entries extends Api {
 
 				if ($result_zero->cat_group == $result_one->cat_group)
 				{
-					if (ee()->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
+					if (ee('Permission')->isSuperAdmin() OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
 					{
 						$data['old_channel'] = $this->channel_id;
 						$this->channel_id = $data['new_channel'];
@@ -763,38 +763,28 @@ class Api_channel_entries extends Api {
 
 		$data['author_id'] = ( ! isset($data['author_id']) OR ! $data['author_id']) ? ee()->session->userdata('member_id'): $data['author_id'];
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries'))
 		{
 			$this->_set_error('not_authorized');
 		}
 
-		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && (ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && ( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 		{
 			$this->_set_error('not_authorized');
 		}
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1 && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() &&  ! ee('Permission')->can('edit_other_entries'))
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
-				if (ee()->session->userdata('can_assign_post_authors') != 'y')
+				if ( ! ee('Permission')->can('assign_post_authors'))
 				{
 					$this->_set_error('not_authorized', 'author');
 				}
 				else
 				{
-					$allowed_authors = array();
-
-					ee()->load->model('member_model');
-					$query = ee()->member_model->get_authors();
-
-					if ($query->num_rows() > 0)
-					{
-						foreach($query->result_array() as $row)
-						{
-							$allowed_authors[] = $row['member_id'];
-						}
-					}
+					$authors = ee('Member')->getAuthors();
+					$allowed_authors = array_keys($authors);
 
 					if ( ! in_array($data['author_id'], $allowed_authors))
 					{
@@ -808,31 +798,29 @@ class Api_channel_entries extends Api {
 
 		$data['status'] = ( ! isset($data['status']) OR $data['status'] === FALSE) ? $this->c_prefs['deft_status'] : $data['status'];
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$disallowed_statuses = array();
+			$allowed_statuses = [];
 			$valid_statuses = ee('Model')->get('Channel', $this->channel_id)->first()
 				->Statuses
 				->getDictionary('status_id', 'status');
 
+			$assigned_statusues = [];
+			if (ee()->session->getMember()) {
+				$assigned_statusues = ee()->session->getMember()
+					->getAssignedStatuses()
+					->getDictionary('status_id', 'status');
+			}
+
 			foreach ($valid_statuses as $status_id => $status)
 			{
-				$valid_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
-			}
-
-			$query = ee()->status_model->get_disallowed_statuses(ee()->session->userdata('group_id'));
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
+				if (isset($assigned_statusues[$status_id]))
 				{
-					$disallowed_statuses[$row['status_id']] = strtolower($row['status']); // lower case to match MySQL's case-insensitivity
+					$allowed_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
 				}
-
-				$valid_statuses = array_diff_assoc($valid_statuses, $disallowed_statuses);
 			}
 
-			if ( ! in_array(strtolower($data['status']), $valid_statuses))
+			if ( ! in_array(strtolower($data['status']), $allowed_statuses))
 			{
 				// if there are no valid statuses, set to closed
 				$data['status'] = 'closed';
@@ -1079,7 +1067,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// https://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+			// https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
 			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
@@ -1389,13 +1377,11 @@ class Api_channel_entries extends Api {
 		// for old author and new author
 		if ( ! $this->autosave && $old_author != $meta['author_id'])
 		{
-			ee()->load->model('member_model');
-			ee()->member_model->update_member_entry_stats(
-				array(
-					$old_author,
-					$meta['author_id']
-				)
-			);
+			$old_author_member = ee('Model')->get('Member', $old_author)->first();
+			$old_author_member->updateAuthorStats();
+
+			$new_author_member = ee('Model')->get('Member', $meta['author_id'])->first();
+			$new_author_member->updateAuthorStats();
 		}
 
 		// Remove any autosaved data
@@ -1498,7 +1484,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// https://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+			// https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
 			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';

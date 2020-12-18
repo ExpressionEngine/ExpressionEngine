@@ -4,32 +4,43 @@
 date_default_timezone_set('UTC');
 
 // Load full EE as bootstrap if we're running database updates
-if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
+if (file_exists(SYSPATH.'ee/ExpressionEngine/Boot/boot.php') &&
 	isset($_GET['step']) &&
 	(strpos($_GET['step'], 'backupDatabase') === 0 OR
 		strpos($_GET['step'], 'updateDatabase') === 0 OR
+		$_GET['step'] == 'addLegacyFiles' OR
 		$_GET['step'] == 'checkForDbUpdates' OR
 		$_GET['step'] == 'restoreDatabase' OR
 		strpos($_GET['step'], 'selfDestruct') === 0))
 {
 	define('BOOT_ONLY', TRUE);
-	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
 }
 else
 {
 	if ( ! defined('BASEPATH'))
 	{
-		define('BASEPATH', SYSPATH.'ee/legacy/');
-		define('PATH_CACHE',  SYSPATH . 'user/cache/');
-		define('FILE_READ_MODE', 0644);
-		define('FILE_WRITE_MODE', 0666);
-		define('DIR_READ_MODE', 0755);
-		define('DIR_WRITE_MODE', 0777);
+		defined('BASEPATH') || define('BASEPATH', SYSPATH.'ee/legacy/');
+		defined('PATH_CACHE') || define('PATH_CACHE',  SYSPATH . 'user/cache/');
+		defined('FILE_READ_MODE') || define('FILE_READ_MODE', 0644);
+		defined('FILE_WRITE_MODE') || define('FILE_WRITE_MODE', 0666);
+		defined('DIR_READ_MODE') || define('DIR_READ_MODE', 0755);
+		defined('DIR_WRITE_MODE') || define('DIR_WRITE_MODE', 0777);
 
-		require __DIR__.'/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php';
+		require __DIR__.'/ExpressionEngine/Updater/Boot/boot.common.php';
 	}
 }
 
+// add EE constants
+if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Config/constants.php')) {
+	$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
+} else {
+	$constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';
+}
+
+foreach ($constants as $k => $v) {
+	defined($k) || define($k, $v);
+}
 
 /*
  * ------------------------------------------------------
@@ -37,10 +48,10 @@ else
  * ------------------------------------------------------
  */
 
-	require SYSPATH.'ee/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php';
+	require SYSPATH.'ee/updater/ExpressionEngine/Updater/Core/Autoloader.php';
 
-	EllisLab\ExpressionEngine\Updater\Core\Autoloader::getInstance()
-		->addPrefix('EllisLab', SYSPATH.'ee/updater/EllisLab/')
+	ExpressionEngine\Updater\Core\Autoloader::getInstance()
+		->addPrefix('ExpressionEngine', SYSPATH.'ee/updater/ExpressionEngine/')
 		->register();
 
 /*
@@ -79,7 +90,7 @@ else
 
 	function routeRequest($directory, $controller, $method = '')
 	{
-		$class = 'EllisLab\ExpressionEngine\Updater\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
+		$class = 'ExpressionEngine\Updater\Controller\\'.ucfirst($directory).'\\'.ucfirst($controller);
 
 		if (class_exists($class))
 		{

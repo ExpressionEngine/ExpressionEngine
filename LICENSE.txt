@@ -173,6 +173,10 @@
       incurred by, or claims asserted against, such Contributor by reason
       of your accepting any such warranty or additional liability.
 
+      Additional Terms and Conditions
+
+      License Validation - ExpressionEngine Add-Ons and ExpressionEngine Pro (collectively “EE Add-Ons”) require a valid site license and are subject to the terms and conditions of the developer of the relevant EE Add-On. Servers on which ExpressionEngine is installed will periodically provide information to Licensor for the purpose of license validation. This information includes the site domain, ExpressionEngine version, and a list of EE Add-Ons along with their version numbers. By installing and using the Work, you consent to the transmission of this information, as described above. Unlicensed EE Add-Ons may be limited in functionality by Licensor and/or the third-party developer of the relevant EE Add-On.
+
     END OF TERMS AND CONDITIONS
 
     APPENDIX: How to apply the Apache License to your work.
@@ -224,6 +228,9 @@ The following subcomponents are licensed under the MIT License:
     The CodeMirror component:
         Copyright (C) 2017 by Marijn Haverbeke <marijnh@gmail.com> and others
 
+    The Popper.js component:
+        Copyright © 2016 Federico Zivolo and contributors
+
     The emoji-data component:
         Copyright (c) 2013 Cal Henderson
 
@@ -270,15 +277,8 @@ The following subcomponents are licensed under the MIT License:
     The underscore.js component:
         Copyright (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 
-    The WysiHat component:
-        Original Wysihat code:
-        Copyright (c) 2010 Joshua Peek
-
-        Modified jq-wysihat code:
-        Copyright (c) 2010 Scott Williams
-
-        Modified el-wysihat code:
-        Copyright (C) 2012 EllisLab Corp.
+    The CKEditor component:
+        Copyright (c) 2003-2020 CKSource
 
     The Selection and Range components use code heavily inspired by:
 
@@ -306,6 +306,20 @@ The following subcomponents are licensed under the MIT License:
     THE SOFTWARE.
 
 The following subcomponents are licensed with the BSD-2-Clause license:
+
+    For Aura.Cli
+        Copyright (c) 2011-2017, Aura for PHP
+        All rights reserved.
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+
+        Redistributions of source code must retain the above copyright notice, this
+        list of conditions and the following disclaimer.
+
+        Redistributions in binary form must reproduce the above copyright notice,
+        this list of conditions and the following disclaimer in the documentation
+        and/or other materials provided with the distribution.
 
     For the PHP SimplePie's IPv6 component:
 
@@ -384,3 +398,6 @@ For the FontAwesome fonts component:
     Copyright (c) 2015, Dave Gandy
     This Font Software is licensed under the SIL Open Font License, Version 1.1.
     For a copy of this license, see licenses/LICENSE-fontawesome.txt
+
+For CKEditor WYSIWYG fieldtype:
+  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL CKSOURCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

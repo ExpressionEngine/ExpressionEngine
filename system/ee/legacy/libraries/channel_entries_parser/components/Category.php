@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -202,7 +202,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						'category_url_title'     => $v[6],
 						'category_description'   => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
 						'category_group'         => (isset($v[5])) ? $v[5] : '',
-						'category_image'         => $cat_image['url'],
+						'category_image'         => (isset($cat_image['url'])) ? $cat_image['url'] : '',
 						'category_id'            => $v[0],
 						'parent_id'              => $v[1],
 						'active'                 => ($active_cat == $v[0] || $active_cat == $v[6])

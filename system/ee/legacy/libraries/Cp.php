@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -72,8 +72,6 @@ class Cp {
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
-		ee()->load->model('member_model'); // for screen_name, quicklinks
-
 		ee()->lang->loadfile($langfile, '', FALSE);
 
 		// Meta-refresh tag
@@ -113,13 +111,14 @@ class Cp {
 			'cp_theme_url'			=> $this->cp_theme_url,
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
 			'cp_screen_name'		=> $member->screen_name,
-			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : '',
+			'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
+			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
-			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
+			'cp_quicklinks'			=> $this->_get_quicklinks($member->getQuicklinks()),
 
 			'EE_view_disable'		=> FALSE,
-			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
+			'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE,	// for conditional use in view files
 		);
 
 		// global table data
@@ -152,21 +151,27 @@ class Cp {
 			'clear_all'				=> lang('clear_all'),
 			'keyword_search'		=> lang('keyword_search'),
 			'loading'				=> lang('loading'),
-			'searching'				=> lang('searching')
+			'searching'				=> lang('searching'),
+			'dark_theme'			=> lang('dark_theme'),
+			'light_theme'			=> lang('light_theme')
 		);
 
 		ee()->javascript->set_global(array(
-			'BASE'             => str_replace(AMP, '&', BASE),
-			'XID'              => CSRF_TOKEN,
-			'CSRF_TOKEN'       => CSRF_TOKEN,
-			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
-			'username'         => ee()->session->userdata('username'),
-			'router_class'     => ee()->router->class, // advanced css
-			'lang'             => $js_lang_keys,
-			'THEME_URL'        => $this->cp_theme_url,
-			'hasRememberMe'    => (bool) ee()->remember->exists(),
+			'BASE'              => str_replace(AMP, '&', BASE),
+			'XID'               => CSRF_TOKEN,
+			'CSRF_TOKEN'        => CSRF_TOKEN,
+			'PATH_CP_GBL_IMG'   => PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE'  => ee()->session->userdata('show_sidebar'),
+			'username'          => ee()->session->userdata('username'),
+			'router_class'      => ee()->router->class, // advanced css
+			'lang'              => $js_lang_keys,
+			'THEME_URL'         => $this->cp_theme_url,
+			'hasRememberMe'     => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'site_id'           => ee()->config->item('site_id'),
+			'site_name'         => ee()->config->item('site_name'),
+			'site_url'          => ee()->config->item('site_url'),
+			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
 		if (ee()->session->flashdata('update:completed'))
@@ -179,13 +184,39 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
-			'file'		=> array('react/react.min', 'react/react-dom.min', 'json2',
-			'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
-			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
-			'components/no_results', 'components/loading', 'components/filters',
+			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
+			'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
+			'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+			'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
 			'components/filterable', 'components/toggle', 'components/select_list',
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
+
+		ee()->javascript->set_global(array(
+			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
+			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+		));
+
+		$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
+
+		$installed_modules_js = [];
+		foreach ($installed_modules->result() as $installed_module) {
+			$installed_modules_js[] = [
+				'slug' => strtolower($installed_module->module_name),
+				'version' => $installed_module->module_version,
+			];
+		}
+
+		// Grab the site's license key, license URL, and list of installed
+		// add-ons to send to the license validation service.
+		ee()->javascript->set_global(array(
+			'cp.appVer' => APP_VER,
+			'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+			'cp.lvUrl' => 'https://updates.expressionengine.com/check',
+			'cp.installedAddons' => json_encode($installed_modules_js)
+		));
+
+		$js_scripts['file'][] = 'cp/jump_menu';
 
 		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
 			'name'		=> 'modal-default-confirm-remove',
@@ -227,14 +258,17 @@ class Cp {
 			$new_version = ee()->el_pings->getUpgradeInfo())
 		{
 			ee()->view->new_version = $new_version;
+			$version_major = explode('.', APP_VER, 2)[0];
+			$update_version_major = explode('.', $new_version['version'], 2)[0];
+
+			if (version_compare($version_major, $update_version_major, '<')) {
+				ee()->view->major_update = true;
+			}
 		}
 
 		$this->_notices();
 
-		$formatted_version = formatted_version(APP_VER);
-		ee()->view->formatted_version = strpos($formatted_version, '-') !== FALSE
-			? substr($formatted_version, 0, strpos($formatted_version, '-'))
-			: $formatted_version;
+		ee()->view->formatted_version = formatted_version(APP_VER);
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 
@@ -298,7 +332,7 @@ class Cp {
 		$alert = $this->_checksum_bootstrap_files();
 
 		// These are only displayed to Super Admins
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			return;
 		}
@@ -343,6 +377,14 @@ class Cp {
 				lang('missing_encryption_key'),
 				'encryption_key',
 				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
+			);
+		}
+
+		if (ee('Filesystem')->exists(SYSPATH . 'ee/EllisLab')) {
+			$notices[] = sprintf(
+				lang('el_folder_present'),
+				SYSDIR . '/ee/EllisLab',
+				DOC_URL.'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
 			);
 		}
 
@@ -397,7 +439,7 @@ class Cp {
 				ee()->file_integrity->send_site_admin_warning($changed);
 			}
 
-			if (ee()->session->userdata('group_id') == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				$alert = ee('CP/Alert')->makeStandard('notices')
 					->asWarning()
@@ -413,10 +455,10 @@ class Cp {
 					)
 				);
 
-				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
+				$button .= '<input class="button button--primary" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
-				$alert->addToBody($button);
+				$alert->addToBody($button, '', false);
 
 				return $alert->now();
 			}
@@ -513,12 +555,14 @@ class Cp {
 	/**
 	 * Render Footer Javascript
 	 *
+	 * @param bool Whether to include 'common.js' automatically
+	 *
 	 * @return string
 	 */
-	public function render_footer_js()
+	public function render_footer_js($include_common = true)
 	{
 		$str = '';
-		$requests = $this->_seal_combo_loader();
+		$requests = $this->_seal_combo_loader($include_common);
 
 		foreach($requests as $req)
 		{
@@ -536,13 +580,22 @@ class Cp {
 	/**
 	 * Seal the current combo loader and reopen a new one.
 	 *
+	 * @param bool Whether to include 'common.js' automatically
 	 * @access	private
 	 * @return	array
 	 */
-	function _seal_combo_loader()
+	function _seal_combo_loader($include_common = true)
 	{
 		$str = '';
 		$mtimes = array();
+
+		if ($include_common) {
+			$this->add_js_script([
+				'file' => [
+					'common'
+				]
+			]);
+		}
 
 		$this->js_files = array_map('array_unique', $this->js_files);
 
@@ -569,7 +622,8 @@ class Cp {
 					'plugin'			=> array(),
 					'file'				=> array(),
 					'package'			=> array(),
-					'fp_module'			=> array()
+					'fp_module'			=> array(),
+					'pro_file'			=> array()
 			);
 
 			$this->requests[] = $str.AMP.'v='.max($mtimes);
@@ -607,6 +661,8 @@ class Cp {
 			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/plugins/'.$name.'.js';
 				break;
 			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/'.$name.'.js';
+				break;
+			case 'pro_file':		$file = PATH_PRO_THEMES.'js/'.$name.'.js';
 				break;
 			case 'package':
 				if (strpos($name, ':') !== FALSE)
@@ -731,26 +787,6 @@ class Cp {
 	 */
 	private function _get_quicklinks($quick_links)
 	{
-		$i = 1;
-
-		$quicklinks = array();
-
-		if ( ! empty($quick_links))
-		{
-			foreach (explode("\n", $quick_links) as $row)
-			{
-				$x = explode('|', $row);
-
-				$quicklinks[$i]['title'] = (isset($x[0])) ? $x[0] : '';
-				$quicklinks[$i]['link'] = (isset($x[1])) ? $x[1] : '';
-				$quicklinks[$i]['order'] = (isset($x[2])) ? $x[2] : '';
-
-				$i++;
-			}
-		}
-
-		$quick_links = $quicklinks;
-
 		$len = strlen(ee()->config->item('cp_url'));
 
 		$link = array();
@@ -889,37 +925,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAny() instead
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has any permissions in the set
 	 */
 	public function allowed_group_any()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAny()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
-		{
-			return TRUE;
-		}
-
-		$result = FALSE;
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ($k === TRUE OR $k == 'y')
-			{
-				$result = TRUE;
-			}
-		}
-
-		return $result;
+		return ee('Permission')->hasAny($which);
 	}
 
 	/**
@@ -927,34 +944,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAll() instead
+	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAll()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
-		{
-			return TRUE;
-		}
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ( ! $k OR $k !== 'y')
-			{
-				return FALSE;
-			}
-		}
-
-		return TRUE;
+		return ee('Permission')->hasAll($which);
 	}
 
 	/**
@@ -1089,23 +1090,14 @@ class Cp {
 	 */
 	public function switch_site($site_id, $redirect = '')
 	{
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin() && ee('Permission', $site_id)->can('access_cp'))
 		{
-			ee()->db->select('can_access_cp');
-			ee()->db->where('site_id', $site_id);
-			ee()->db->where('group_id', ee()->session->userdata['group_id']);
-
-			$query = ee()->db->get('member_groups');
-
-			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
-			{
-				show_error(lang('unauthorized_access'), 403);
-			}
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (empty($redirect))
 		{
-			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$member = ee()->session->getMember();
 			$redirect = $member->getCPHomepageURL($site_id);
 		}
 
@@ -1122,6 +1114,7 @@ class Cp {
 		// Version in anchor is sans dots
 		$version = implode('', explode('.', $version));
 		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
+		return $changelog_url;
 	}
 }
 

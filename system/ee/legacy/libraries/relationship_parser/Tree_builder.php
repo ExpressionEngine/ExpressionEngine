@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -452,9 +452,16 @@ class EE_relationship_tree_builder {
 				{
 					foreach (explode('|', $field_name) as $name)
 					{
-						foreach ($this->relationship_field_ids[$name] as $rel_field_id)
+						if (array_key_exists($name, $this->relationship_field_ids))
 						{
-							$field_ids[] = $rel_field_id;
+							foreach ($this->relationship_field_ids[$name] as $rel_field_id)
+							{
+								$field_ids[] = $rel_field_id;
+							}
+						}
+						if (array_key_exists($name, $this->grid_relationship_ids))
+						{
+							$field_ids[] = $this->grid_relationship_ids[$name];
 						}
 					}
 				}

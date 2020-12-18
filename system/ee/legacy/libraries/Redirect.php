@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -36,7 +36,7 @@ ee()->load->library('typography');
 
 $url = ee()->typography->decodeIDN($_GET['URL']);
 
-$link = '<a rel="nofollow noreferrer" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
+$link = '<a rel="nofollow noreferrer" class="button button--primary" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
 
 // Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
 $link = str_replace('&amp;', '&', $link);
@@ -44,7 +44,7 @@ $link = str_replace('&amp;', '&', $link);
 // catch XSS as well as any HTML or malformed URLs. FILTER_VALIDATE_URL doesn't work with IDN,
 // so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,
 // but that's okay, as it probably means this redirect was not created by the site owner
-if ( ! filter_var($url, FILTER_VALIDATE_URL) OR $link !== ee('Security/XSS')->clean($link) )
+if ( substr($_GET['URL'], 0, 1) != '/' && ( ! filter_var($url, FILTER_VALIDATE_URL) OR $link !== ee('Security/XSS')->clean($link) ) )
 {
 	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
@@ -59,9 +59,10 @@ $referrer_parts = isset($_SERVER['HTTP_REFERER'])
 $url_parts = parse_url($url);
 $url_host = empty($url_parts['host']) ? '' : $url_parts['host'];
 
-if ($force_redirect == TRUE
+if (substr($_GET['URL'], 0, 1) != '/'
+	&& ($force_redirect == TRUE
 	OR ! stristr($url_host, $host) // external link
-	OR ( ! $referrer_parts OR ! stristr($referrer_parts['host'], $host)))
+	OR ( ! $referrer_parts OR ! stristr($referrer_parts['host'], $host))))
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not

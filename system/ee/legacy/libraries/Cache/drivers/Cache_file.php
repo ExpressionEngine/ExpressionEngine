@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -270,7 +270,7 @@ class EE_Cache_file extends CI_Driver {
 		// For locally-cached items, separate by site name
 		if ($scope == Cache::LOCAL_SCOPE)
 		{
-			$key = ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR . $key;
+			$key = (!empty(ee()->config->item('site_short_name')) ? ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR : '') . $key;
 		}
 
 		return $key;

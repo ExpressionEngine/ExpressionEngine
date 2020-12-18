@@ -4,9 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+namespace ExpressionEngine\Updater\Version_3_3_1;
 
 /**
  * Update
@@ -22,10 +24,11 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'use_site_default_localization_settings',
-				'set_encryption_key'
+				'set_encryption_key',
+				'fixCategoryFields'
 			)
 		);
 
@@ -96,6 +99,26 @@ class Updater {
 		}
 	}
 
+	// Adds category fields
+	private function fixCategoryFields()
+	{
+
+		if ( ! ee()->db->field_exists('legacy_field_data', 'category_fields'))
+		{
+			ee()->smartforge->add_column(
+				'category_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
+		}
+
+	}
 
 }
 

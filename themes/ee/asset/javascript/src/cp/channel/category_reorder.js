@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,13 +13,13 @@
 
 $(document).ready(function() {
 
-	$('.nestable').nestable({
+	$('.js-nestable-categories').nestable({
 		listNodeName: 'ul',
-		listClass: 'tbl-list',
-		itemClass: 'tbl-list-item',
-		rootClass: 'nestable',
-		dragClass: 'drag-tbl-row',
-		handleClass: 'reorder',
+		listClass: 'list-group.list-group--nested',
+		itemClass: 'js-nested-item',
+		rootClass: 'js-nestable-categories',
+		dragClass: 'list-group--dragging',
+		handleClass: 'list-item__handle',
 		placeElement: $('<li><div class="tbl-row drag-placeholder"><div class="none"></div></div></li>'),
 		expandBtnHTML: '',
 		collapseBtnHTML: '',
@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 		$.ajax({
 			url: EE.cat.reorder_url,
-			data: {'order': $('.nestable').nestable('serialize') },
+			data: {'order': $('.js-nestable-categories').nestable('serialize') },
 			type: 'POST',
 			dataType: 'json',
 			error: function(xhr, text, error) {
@@ -43,19 +43,19 @@ $(document).ready(function() {
 	// This is probably best in a plugin or common area as
 	// we have more of these; keeping it here for now while
 	// we assess the requirements for new table lists
-	$('.tbl-list .check-ctrl input').click(function(){
+	$('.list-group .list-item__checkbox input').click(function(){
 
 		// Check/uncheck the children of this category
-		$(this).parents('.tbl-list-item')
+		$(this).parents('.js-nested-item')
 			.first()
-			.find('.tbl-list .check-ctrl input')
+			.find('.list-group .list-item__checkbox input')
 			.prop('checked', $(this).is(':checked'))
 			.trigger('change');
 
 		// If we're unchecking something, make sure all its
 		// parents are also unchecked
 		if ( ! $(this).is(':checked')) {
-			$(this).parents('.tbl-list-item')
+			$(this).parents('.js-nested-item')
 				.find('> .tbl-row > .check-ctrl input')
 				.prop('checked', false)
 				.trigger('change');

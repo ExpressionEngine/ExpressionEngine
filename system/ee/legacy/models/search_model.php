@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -118,7 +118,7 @@ class Search_model extends CI_Model {
 
 		if ($data['search_channels'] == '')
 		{
-			if ($cp && $this->session->userdata['group_id'] != 1)
+			if ($cp && ! ee('Permission')->isSuperAdmin())
 			{
 				$data['search_channels'] = $allowed_channels;
 			}
@@ -174,7 +174,7 @@ class Search_model extends CI_Model {
 		if (isset($order['screen_name']))
 		{
 			// OK- if they can't view entries by others, nothing to sort
-			if ( ! $this->cp->allowed_group('can_view_other_entries'))
+			if ( ! ee('Permission')->can('view_other_entries'))
 			{
 				$screen_name_order = $this->session->userdata('member_id');
 			}
@@ -254,7 +254,7 @@ class Search_model extends CI_Model {
 
 		$where_clause .= "exp_channel_titles.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'";
 
-		if ( ! $this->cp->allowed_group('can_edit_other_entries') AND ! $this->cp->allowed_group('can_view_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries') AND ! ee('Permission')->can('view_other_entries'))
 		{
 			$where_clause .= " AND exp_channel_titles.author_id = ".$this->session->userdata('member_id');
 		}
@@ -288,7 +288,7 @@ class Search_model extends CI_Model {
 
 					if (count($keyword_clauses))
 					{
-						$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+						$where_clause .= " AND (" . join(' AND ', $keyword_clauses);
 					}
 					else
 					{
@@ -599,7 +599,7 @@ class Search_model extends CI_Model {
 
 		if ($validate OR (is_array($id_array) && count($id_array) > 0))
 		{
-			if ( ! $this->cp->allowed_group('can_moderate_comments'))
+			if ( ! ee('Permission')->can('moderate_comments'))
 			{
 				$return_data['error'] = $this->lang->line('unauthorized_access');
 				return $return_data;
@@ -695,7 +695,7 @@ class Search_model extends CI_Model {
 
 			if ($query->row('author_id') != $this->session->userdata('member_id'))
 			{
-				if ( ! $this->cp->allowed_group('can_view_other_comments'))
+				if ( ! ee('Permission')->can('view_other_comments'))
 				{
 					$return_data['error'] = $this->lang->line('unauthorized_access');
 					return $return_data;

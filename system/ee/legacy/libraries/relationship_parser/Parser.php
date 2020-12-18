@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -238,7 +238,7 @@ class EE_Relationship_data_parser {
 	public function replace($node, $tagdata, $data)
 	{
 		$prefix = $node->name().':';
-		$channel = $this->_channel;
+    $channel = $this->_channel;
 
 		// Load the parser
 		ee()->load->library('channel_entries_parser');
@@ -246,6 +246,7 @@ class EE_Relationship_data_parser {
 
 		$config = array(
 			'callbacks' => array(
+				'tagdata_loop_start' => array($node, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end' => array($node, 'callback_tagdata_loop_end')
 			),
 			'disable' => array(
@@ -253,7 +254,7 @@ class EE_Relationship_data_parser {
 			)
 		);
 
-		$result = $parser->parse($channel, $data, $config);
+    $result = $parser->parse($channel, $data, $config);
 
 		// Lastly, handle the backspace parameter
 		$backspace = $node->param('backspace');

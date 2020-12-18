@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -68,12 +68,12 @@
 				var that = this;
 
 				$(this.tableCells).each(function(index, el) {
-					$(this).find('input[type=checkbox]').unbind('click').click(function(event) {
+					$(this).find('input[type=checkbox]:enabled').unbind('click').click(function(event) {
 						currentlyChecked = that.checkboxChecked(index);
 						if (that.shift && currentlyChecked !== false) {
 							var low  = (currentlyChecked > index) ? index : currentlyChecked,
 								high = (currentlyChecked > index) ? currentlyChecked : index;
-							$(that.tableCells).slice(low, high).find('input[type=checkbox]')
+							$(that.tableCells).slice(low, high).find('input[type=checkbox]:enabled')
 								.attr('checked', true)
 								.trigger('change');
 						}

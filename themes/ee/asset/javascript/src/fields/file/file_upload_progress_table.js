@@ -12,11 +12,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -24,41 +24,55 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 function FileUploadProgressTable(props) {
   return React.createElement("div", {
-    className: "field-file-upload__table"
-  }, React.createElement("div", {
-    className: "tbl-wrap"
-  }, React.createElement("table", {
-    className: "tbl-fixed tables--uploads"
-  }, React.createElement("tbody", null, React.createElement("tr", null, React.createElement("th", null, EE.lang.file_dnd_file_name), React.createElement("th", null, EE.lang.file_dnd_progress)), props.files.map(function (file) {
-    return React.createElement("tr", {
-      key: file.name
-    }, React.createElement("td", null, (file.error || file.duplicate) && React.createElement("span", {
-      className: "icon--issue"
-    }), file.name), React.createElement("td", null, file.error, file.error && React.createElement("span", null, "\xA0", React.createElement("a", {
-      href: "#",
-      onClick: function onClick(e) {
-        return props.onFileErrorDismiss(e, file);
-      }
-    }, EE.lang.file_dnd_dismiss)), file.duplicate && React.createElement(ResolveFilenameConflict, {
-      file: file,
-      onResolveConflict: props.onResolveConflict,
-      onFileUploadCancel: function onFileUploadCancel(e) {
-        return props.onFileErrorDismiss(e, file);
-      }
-    }), !file.error && !file.duplicate && React.createElement("div", {
+    className: "file-field__items list-group"
+  }, props.files.map(function (file) {
+    return React.createElement("div", {
+      key: file.name,
+      className: "list-item"
+    }, React.createElement("div", {
+      className: "list-item__content-left"
+    }, (file.error || file.duplicate) && React.createElement("i", {
+      "class": "fas fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"
+    }), !file.error && !file.duplicate && React.createElement("i", {
+      "class": "fas fa-file-archive file-field__file-icon"
+    })), React.createElement("div", {
+      className: "list-item__content"
+    }, React.createElement("div", null, file.name, " ", !file.error && !file.duplicate && React.createElement("span", {
+      "class": "float-right meta-info"
+    }, Math.round(file.progress), "% / 100%")), React.createElement("div", {
+      className: "list-item__secondary"
+    }, file.error && React.createElement("span", {
+      className: "error-text"
+    }, file.error), file.duplicate && React.createElement("span", {
+      className: "error-text"
+    }, EE.lang.file_dnd_conflict), !file.error && !file.duplicate && React.createElement("div", {
       className: "progress-bar"
     }, React.createElement("div", {
       className: "progress",
       style: {
         width: file.progress + '%'
       }
-    }))));
-  })))));
+    })))), React.createElement("div", {
+      className: "list-item__content-right"
+    }, file.error && React.createElement("a", {
+      className: "button button--default",
+      href: "#",
+      onClick: function onClick(e) {
+        return props.onFileErrorDismiss(e, file);
+      }
+    }, EE.lang.file_dnd_dismiss), file.duplicate && React.createElement(ResolveFilenameConflict, {
+      file: file,
+      onResolveConflict: props.onResolveConflict,
+      onFileUploadCancel: function onFileUploadCancel(e) {
+        return props.onFileErrorDismiss(e, file);
+      }
+    })));
+  }));
 }
 
 var ResolveFilenameConflict =
@@ -79,7 +93,7 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(ResolveFilenameConflict)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "resolveConflict", function (e, file) {
+    _defineProperty(_assertThisInitialized(_this), "resolveConflict", function (e, file) {
       e.preventDefault();
       var modal = $('.modal-file');
       $('div.box', modal).html('<iframe></iframe>');
@@ -131,12 +145,14 @@ function (_React$Component) {
 
       return React.createElement("a", {
         href: "#",
-        className: "m-link",
+        className: "button button--default m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           return _this2.resolveConflict(e, _this2.props.file);
         }
-      }, EE.lang.file_dnd_resolve_conflict);
+      }, React.createElement("i", {
+        "class": "fas fa-info-circle icon-left"
+      }), EE.lang.file_dnd_resolve_conflict);
     }
   }]);
 

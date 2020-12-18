@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,6 +25,7 @@
 					source: options.source
 				};
 				options.callback(data, picker);
+				window.document.dispatchEvent(new CustomEvent('filepicker:pick', { detail: data }));
 			};
 
 		if (options.iframe) {
@@ -84,7 +85,7 @@
 			}
 		});
 
-		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
+		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
 			var new_url = $(this).attr('href');
 
@@ -96,7 +97,7 @@
 		// Capture form submission
 		$('.modal-file').on('submit', 'form', function(e) {
 			var url = $(this).attr('action'),
-				payload_elements = $('input[name=search], input[name=perpage]', this);
+				payload_elements = $('.filter-bar input', this);
 
 			// Only do this if we're on the file listing screen
 			if (payload_elements.size() == 0) {
@@ -107,7 +108,7 @@
 
 			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
 		});
-		$('.modal-file').on('click', '.tbl-action .action', function(e) {
+		$('.modal-file').on('click', '.tbl-action .action, .tbl-action a.button', function(e) {
 			e.preventDefault()
 			openInIframe($(this).attr('href'))
 		});
@@ -115,6 +116,7 @@
 		function openInIframe(url) {
 			$('div.box', modal).html("<iframe></iframe>");
 
+			var theme = $('body').data('theme');
 			var frame = $('iframe', modal);
 			frame.css('border', 'none');
 			frame.css('width', '100%');
@@ -139,6 +141,7 @@
 			}
 
 			frame.load(function (e) {
+				
 				$(modal).off('modal:close', cancelOnClose);
 
 				var response = $(this).contents().find('body');
@@ -160,17 +163,18 @@
 					}
 					callback(response);
 				} catch(e) {
+					$(this).contents().find('body').attr('data-theme', theme);
 					frame.show();
 					bindFrameUnload();
 
-					if ($(this).contents().find('.form-ctrls .btn.draft[value="cancel"]').length > 0)
+					if ($(this).contents().find('.form-ctrls .button.draft[value="cancel"]').length > 0)
 					{
 						$(modal).on('modal:close', cancelOnClose);
 					}
 
-					var height = $(this).contents().find('body').height();
+					var height = this.contentWindow.document.body.scrollHeight;
 					$('.box', modal).height(height);
-					$(this).height(height);
+					$(this).height(height + 20);
 				}
 			});
 

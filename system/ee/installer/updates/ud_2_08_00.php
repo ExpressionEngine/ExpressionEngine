@@ -4,9 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+namespace ExpressionEngine\Updater\Version_2_8_0;
 
 /**
  * Update
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'_update_specialty_templates',
 				'_update_extension_quick_tabs',
@@ -285,7 +287,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->config->_update_config(array(), array('secure_forms' => ''));
 
 		// Remove config item from db
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 		$msm_config->remove_config_item('secure_forms');
 
 		// If it was no, we need to set it as disabled

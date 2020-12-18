@@ -4,12 +4,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use Michelf\MarkdownExtra;
-use  EllisLab\ExpressionEngine\Core\Autoloader;
+use  ExpressionEngine\Core\Autoloader;
 
 /**
  * Core Typography
@@ -316,6 +316,8 @@ class EE_Typography {
 		//		Etc...
 		//	}
 		$chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+
+		$chunks = ($chunks === FALSE) ? (array) $str : $chunks;
 
 		// Build our finalized string.  We cycle through the array, skipping tags, and processing the contained text
 		$str = '';
@@ -808,7 +810,7 @@ class EE_Typography {
 					else
 					{
 						if (isset($this->text_fmt_plugins[$prefs['text_format']]) &&
-							(file_exists(PATH_ADDONS.'pi.'.$prefs['text_format'].'.php') OR
+							(file_exists(PATH_ADDONS.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php') OR
 							file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
 						{
 							$this->text_format = $prefs['text_format'];
@@ -2595,14 +2597,14 @@ while (--j >= 0)
 		// on the domain and not the entire string.
 		if (isset($parts['host']))
 		{
-			if (is_php('7.2'))
+			if (is_php('7.2') && !defined('INTL_IDNA_VARIANT_UTS46'))
 			{
-				$parts['host'] = idn_to_ascii($parts['host'], 0, INTL_IDNA_VARIANT_UTS46);
+				//this is edge case, but we had reports on this from real-world installs
+				//instead of showing error, we'll write useful message into developer log
+				ee()->load->library('logger');
+				ee()->logger->developer(lang('php72_intl_error'), true);
 			}
-			else
-			{
-				$parts['host'] = idn_to_ascii($parts['host']);
-			}
+			$parts['host'] = @idn_to_ascii($parts['host'], 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
 		}
 
 		return $this->unparse_url($parts);

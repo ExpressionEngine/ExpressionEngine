@@ -14,11 +14,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var SelectList =
@@ -44,7 +44,7 @@ function (_React$Component) {
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleSelect", function (event, item) {
+    _defineProperty(_assertThisInitialized(_this), "handleSelect", function (event, item) {
       var selected = [],
           checked = event.target.checked,
           XORvalue = '--';
@@ -64,6 +64,10 @@ function (_React$Component) {
           if (item.parent && _this.props.autoSelectParents) {
             selected = selected.concat(_this.diffItems(_this.props.selected, _this.getFlattenedParentsOfItem(item)));
           }
+
+          if (item.children && _this.props.autoSelectParents) {
+            selected = selected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
         } else {
           var deselect = [item];
 
@@ -82,17 +86,17 @@ function (_React$Component) {
       if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clearSelection", function (event) {
+    _defineProperty(_assertThisInitialized(_this), "clearSelection", function (event) {
       _this.props.selectionChanged([]);
 
       event.preventDefault();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "filterChange", function (name, value) {
+    _defineProperty(_assertThisInitialized(_this), "filterChange", function (name, value) {
       _this.props.filterChange(name, value);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleToggleAll", function (check) {
+    _defineProperty(_assertThisInitialized(_this), "handleToggleAll", function (check) {
       // If checking, merge the newly-selected items on to the existing stack
       // in case the current view is limited by a filter
       if (check) {
@@ -106,6 +110,17 @@ function (_React$Component) {
             return item.value == thisItem.value;
           });
           return !found;
+        });
+        newlySelected.forEach(function (item) {
+          if (item.children && _this.props.autoSelectParents) {
+            newlySelected = newlySelected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
+        });
+
+        _this.props.selected.forEach(function (item) {
+          if (item.children && _this.props.autoSelectParents) {
+            newlySelected = newlySelected.concat(_this.getFlattenedChildrenOfItem(item));
+          }
         });
 
         _this.props.selectionChanged(_this.props.selected.concat(newlySelected));
@@ -212,6 +227,8 @@ function (_React$Component) {
     value: function bindNestable() {
       var _this3 = this;
 
+      // Make sure the draggable container is positioned relatively so that the nestable drag item is positioned correctly
+      this.container.parentNode.style.position = 'relative';
       $(this.container).nestable({
         listNodeName: 'ul',
         listClass: 'field-nested',
@@ -357,12 +374,18 @@ function (_React$Component) {
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
       return React.createElement("div", {
-        className: "fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : ''),
+        className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
           _this8.container = container;
         },
         key: this.version
-      }, (shouldShowToggleAll || props.tooMany) && React.createElement(FieldTools, null, props.tooMany && React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
+      }, props.tooMany && React.createElement("div", {
+        "class": "lots-of-checkboxes__search"
+      }, React.createElement("div", {
+        "class": "lots-of-checkboxes__search-inner"
+      }, props.tooMany && React.createElement("div", {
+        "class": "lots-of-checkboxes__search-input"
+      }, React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
         return React.createElement(FilterSelect, {
           key: filter.name,
           name: filter.name,
@@ -378,13 +401,14 @@ function (_React$Component) {
         onSearch: function onSearch(e) {
           return _this8.filterChange('search', e.target.value);
         }
-      })), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && React.createElement(FilterToggleAll, {
+      }))), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
           return _this8.handleToggleAll(check);
         }
-      })), React.createElement(FieldInputs, {
-        nested: props.nested
+      }))), React.createElement(FieldInputs, {
+        nested: props.nested,
+        tooMany: props.tooMany
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -438,10 +462,8 @@ function (_React$Component) {
       var itemsArray = [];
       var currentSection = null;
 
-      var _arr = Object.keys(items);
-
-      for (var _i = 0; _i < _arr.length; _i++) {
-        key = _arr[_i];
+      for (var _i = 0, _Object$keys = Object.keys(items); _i < _Object$keys.length; _i++) {
+        key = _Object$keys[_i];
 
         if (items[key].section) {
           currentSection = items[key].section;
@@ -502,14 +524,16 @@ _defineProperty(SelectList, "defaultProps", {
 });
 
 function FieldInputs(props) {
+  var divClass = props.tooMany ? ' lots-of-checkboxes__items--too-many' : '';
+
   if (props.nested) {
     return React.createElement("ul", {
-      className: "field-inputs field-nested"
+      className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
   }
 
   return React.createElement("div", {
-    className: "field-inputs"
+    className: 'field-inputs lots-of-checkboxes__items' + divClass
   }, props.children);
 }
 
@@ -546,20 +570,10 @@ function (_React$Component2) {
         }, props.item.section);
       }
 
-      if (props.item.component) {
-        var Tag = "".concat(props.item.component.tag);
-        label = React.createElement(Tag, {
-          className: props.item.component.class,
-          style: props.item.component.style
-        }, props.item.component.label);
-      }
-
       var listItem = React.createElement("label", {
-        className: checked ? 'act' : '',
+        className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
-      }, props.reorderable && React.createElement("span", {
-        className: "icon-reorder"
-      }, " "), props.selectable && React.createElement("input", {
+      }, props.selectable && React.createElement("input", {
         type: props.multi ? "checkbox" : "radio",
         value: props.item.value,
         onChange: function onChange(e) {
@@ -568,17 +582,30 @@ function (_React$Component2) {
         checked: checked ? 'checked' : '',
         "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
         disabled: disabled ? 'disabled' : ''
+      }), React.createElement("div", {
+        className: "checkbox-label__text"
+      }, props.reorderable && React.createElement("span", {
+        className: "icon-reorder icon-left"
       }), props.editable && React.createElement("a", {
-        href: "#"
-      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("i", null, props.item.instructions), props.removable && React.createElement("ul", {
-        className: "toolbar"
-      }, React.createElement("li", {
-        className: "remove"
-      }, React.createElement("a", {
+        href: "#",
+        "class": "flyout-edit",
+        dangerouslySetInnerHTML: {
+          __html: label
+        }
+      }), !props.editable && React.createElement("div", {
+        dangerouslySetInnerHTML: {
+          __html: label
+        }
+      }), " ", props.item.instructions && React.createElement("span", {
+        className: "meta-info"
+      }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
+        className: "button button--small default float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
+      }, React.createElement("i", {
+        "class": "fas fa-fw fa-trash-alt"
       }))));
 
       if (props.nested) {
@@ -621,27 +648,17 @@ function (_React$Component3) {
     value: function render() {
       var props = this.props;
       var label = props.item.label;
-
-      if (props.item.component) {
-        var Tag = "".concat(props.item.component.tag);
-        label = React.createElement(Tag, {
-          className: props.item.component.class,
-          style: props.item.component.style
-        }, props.item.component.label);
-      }
-
       return React.createElement("div", {
-        className: "field-input-selected"
-      }, React.createElement("label", null, React.createElement("span", {
-        className: "icon--success"
-      }), " ", label, props.selectionRemovable && React.createElement("ul", {
-        className: "toolbar"
-      }, React.createElement("li", {
-        className: "remove"
-      }, React.createElement("a", {
+        className: "lots-of-checkboxes__selection"
+      }, React.createElement("i", {
+        className: "fas fa-check-circle"
+      }), " ", label, props.selectionRemovable && React.createElement("a", {
+        className: "button button--default float-right",
         href: "",
         onClick: props.clearSelection
-      })))));
+      }, React.createElement("i", {
+        "class": "fas fa-trash-alt"
+      })));
     }
   }]);
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -69,20 +69,9 @@ class EE_Validate {
 
 		ee()->load->library('auth');
 
-		// Get the users current password
-		$pq = ee()->db->select('password, salt')
-			->get_where('members', array(
-				'member_id' => (int) ee()->session->userdata('member_id')
-			));
+		$authed = ee()->auth->authenticate_id((int) ee()->session->userdata('member_id'), $this->cur_password);
 
-		if ( ! $pq->num_rows())
-		{
-			$this->errors[] = ee()->lang->line('invalid_password');
-		}
-
-		$passwd = ee()->auth->hash_password($this->cur_password, $pq->row('salt'));
-
-		if ( ! isset($passwd['salt']) OR ($passwd['password'] != $pq->row('password')))
+		if (!$authed)
 		{
 			$this->errors[] = ee()->lang->line('invalid_password');
 		}

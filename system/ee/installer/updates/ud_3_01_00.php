@@ -4,9 +4,13 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+namespace ExpressionEngine\Updater\Version_3_1_0;
+
+use Exception;
 
 /**
  * Update
@@ -25,7 +29,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'move_avatars',
 				'update_member_data_column_names',
@@ -235,12 +239,16 @@ class Updater {
 	private function update_collation_config()
 	{
 		$db_config = ee()->config->item('database');
-		$config = $db_config['expressionengine'];
 
-		if (isset($config['dbcollat']) && $config['dbcollat'] == 'utf8_general_ci')
-		{
-			$config['dbcollat'] = 'utf8_unicode_ci';
-			ee()->config->_update_dbconfig($config);
+		// If coming from the CLI, this will have already been taken care of.
+		if(isset($db_config['expressionengine'])) {
+			$config = $db_config['expressionengine'];
+
+			if (isset($config['dbcollat']) && $config['dbcollat'] == 'utf8_general_ci')
+			{
+				$config['dbcollat'] = 'utf8_unicode_ci';
+				ee()->config->_update_dbconfig($config);
+			}
 		}
 	}
 
@@ -317,7 +325,7 @@ class Updater {
 			$existing = ee('Model')->get('UploadDestination')
 				->fields('name')
 				->filter('name', 'IN', array_keys($member_directories))
-				->filter('site_id', $site_id)
+				->filter('site_id', $site['site_id'])
 				->all()
 				->pluck('name');
 
@@ -329,11 +337,14 @@ class Updater {
 			foreach ($member_directories as $name => $data)
 			{
 				$dir = ee('Model')->make('UploadDestination', $data);
-				$dir->site_id = $site_id;
+				$dir->site_id = $site['site_id'];
 				$dir->name = $name;
-				$dir->removeNoAccess();
+				//$dir->removeNoAccess(); //function not defined since 2.x, so not using it
 				$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 				$dir->save();
+
+				ee()->db->where('upload_id', $dir->getId());
+				ee()->db->delete('upload_no_access');
 			}
 		}
 	}

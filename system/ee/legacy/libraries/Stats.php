@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -263,7 +263,7 @@ class EE_Stats {
 		$name = $query->row('screen_name');
 		$mid  = $query->row('member_id');
 
-		$query = ee()->db->where_not_in('group_id', array('4', '2'))
+		$query = ee()->db->where_not_in('role_id', array('4', '2'))
 							  ->select('COUNT(*) as count')
 							  ->get('members');
 

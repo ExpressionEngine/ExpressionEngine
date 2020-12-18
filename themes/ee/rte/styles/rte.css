@@ -1,0 +1,147 @@
+div.Rte {
+    margin-bottom: 10px;
+}
+textarea.cke_source{
+    max-height: none;
+}
+iframe.Rte {
+    border: 1px solid #bbb; 
+    width: 100%; 
+    background: #fff;
+    opacity: 0.7; 
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    filter: alpha(opacity=70);
+    border-radius: 2px; 
+    -webkit-border-radius: 2px; 
+    -moz-border-radius: 2px;
+}
+iframe.Rte:hover {
+    opacity: 1; 
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)"; 
+    filter: alpha(opacity=100);
+}
+.ck-content ol li {
+    list-style-position: inside;
+}
+.ck.ck-reset_all .ck-mentions .mention-extra {
+    color: #666;
+}
+
+.ck.ck-editor__main>.ck-editor__editable {
+    color: var(--ck-color-base-text);
+}
+
+.ck.ck-editor__main>.ck-editor__editable h2, .ck.ck-editor__main>.ck-editor__editable h3, .ck.ck-editor__main>.ck-editor__editable h4, .ck.ck-editor__main>.ck-editor__editable p, .ck.ck-editor__main>.ck-editor__editable li, .ck.ck-editor__main>.ck-editor__editable ul, .ck.ck-editor__main>.ck-editor__editable ol {
+    color: revert;
+    text-transform: revert;
+    font-size: revert;
+    border: none;
+    letter-spacing: revert;
+    margin: revert;
+    padding: revert;
+}
+
+.ck.ck-editor__main>.ck-editor__editable table, .ck.ck-editor__main>.ck-editor__editable td {
+    font-size: revert;
+    color: revert;
+    background: revert;
+}
+
+.ck-content hr {
+    height: 0;
+}
+
+
+/*
+ * CKEditor example styles
+ * https://ckeditor.com/docs/ckeditor5/latest/assets/snippet-styles.css
+ * Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+ */
+
+.ck.ck-editor {
+	margin: 1.5em 0;
+}
+
+.ck.ck-content {
+	padding: 1em;
+}
+
+.ck.ck-content > :first-child {
+	margin-top: 0;
+}
+
+.ck.ck-content > :last-child {
+	margin-bottom: 0;
+}
+
+
+/* By default Umberto uses a trick with non breaking spaces around <code> to fix space rendering.
+It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
+.ck.ck-content code:before,
+.ck.ck-content code:after {
+	content: '' !important;
+	letter-spacing: 0 !important;
+	display: none !important; /* Firefox is very stubborn. */
+}
+
+/* Restore default browser styles for <sub> and <sup>. */
+
+.ck.ck-list {
+	/* See https://github.com/ckeditor/ckeditor5/issues/494 */
+	margin-left: 0;
+}
+
+
+/* Umberto stylesheet is centering `<img>` inside a `<p>`, let's overwrite it with higher CSS Specificity.
+ * See: https://github.com/ckeditor/ckeditor5/issues/2080.
+ */
+ .ck.ck-editor__main>.ck-editor__editable p img {
+	display: initial;
+	margin: initial;
+	box-sizing: initial;
+}
+
+.ck.ck-editor__main>.ck-editor__editable .image img {
+	margin: 0 auto;
+}
+
+.ck.ck-editor__main>.ck-editor__editable blockquote p:first-of-type {
+	margin-bottom: 1.5rem;
+}
+
+/* https://github.com/ckeditor/ckeditor5/issues/896 */
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content h2,
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content h3,
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content h4 {
+	position: static;
+}
+
+/* https://github.com/ckeditor/ckeditor5/issues/899 */
+.ck.ck-editor__main>.ck-editor__editable .ck-dropdown .ck.ck-list {
+	margin: 0;
+	padding: 0;
+}
+
+/* https://github.com/ckeditor/ckeditor5/pull/1060 */
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table table {
+	margin: 0;
+	display: table;
+}
+
+/* https://github.com/ckeditor/ckeditor5/issues/7310 */
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table td,
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table th {
+	vertical-align: middle;
+}
+
+/* https://github.com/ckeditor/ckeditor5/issues/1282 */
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table p:first-child {
+	padding-top: 0;
+}
+
+/* https://github.com/ckeditor/ckeditor5/issues/1282 */
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table p:last-child,
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table ul:last-child,
+.ck.ck-editor__main>.ck-editor__editable .ck.ck-content .table ol:last-child {
+	margin-bottom: 0;
+}

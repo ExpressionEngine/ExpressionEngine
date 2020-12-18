@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -152,7 +152,7 @@ class EE_Extensions {
 		$class_name = ucfirst($class);
 		$name = ee()->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 
-		$path = ee()->addons->_packages[$name]['extension']['path'];
+		$path = isset(ee()->addons->_packages[$name]) ? ee()->addons->_packages[$name]['extension']['path'] : '';
 		$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
 		// Check to see if we need to automatically load the path

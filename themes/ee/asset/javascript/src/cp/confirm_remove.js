@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -125,10 +125,9 @@ EE.cp.Modal = {
 			.append('<li>' + label + '</li>')
 
 		// Reset buttons back to non-working state
-		$('.form-btns .btn', modal)
+		$('.form-btns .button', modal)
 			.removeClass('work')
 			.each(function(index, button) {
-				console.log(button)
 				if ($(button).data('submit-text')) {
 					$(button).attr('value', $(button).data('submit-text'))
 				}

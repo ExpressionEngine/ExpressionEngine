@@ -8,54 +8,56 @@ $lang = array(
 'completed'       => 'Completed',
 'stopped'         => 'Stopped',
 'required_fields' => 'Required Fields',
-'required_field'  =>'required field',
+'required_field'  => 'required field',
 'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
 'install_title' => 'Install ExpressionEngine %s',
-'install_note' => 'Read <a href="'.DOC_URL.'installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.',
+'install_note' => 'Read <a href="' . DOC_URL . 'installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.',
 
-	// Database Server
-	'db_settings'           => 'Database Settings',
-	'db_hostname'           => 'Server Address',
-	'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
-	'db_name'               => 'DB Name',
-	'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
-	'db_username'           => 'DB Username',
-	'db_password'           => 'DB Password',
-	'db_prefix'             => 'Table Prefix',
-	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
+    // Database Server
+    'db_settings'           => 'Database Settings',
+    'db_hostname'           => 'Server Address',
+    'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
+    'db_name'               => 'DB Name',
+    'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
+    'db_username'           => 'DB Username',
+    'db_password'           => 'DB Password',
+    'db_prefix'             => 'Table Prefix',
+    'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 
-	'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="'.DOC_URL.'troubleshooting/install_and_update/emoji_support.html" rel="external">read how to fix this before installing</a>.',
-	'client'                => 'client',
-	'server'                => 'server',
-	'and'                   => 'and',
+    'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="' . DOC_URL . 'troubleshooting/install_and_update/emoji_support.html" rel="external">read how to fix this before installing</a>.',
+    'client'                => 'client',
+    'server'                => 'server',
+    'and'                   => 'and',
 
-	// Account Creation
-	'administrator_account' => 'Administrator Account',
-	'username'              => 'Username',
-	'e_mail'                => 'Email',
-	'password'              => 'Password',
+    // Account Creation
+    'administrator_account' => 'Administrator Account',
+    'username'              => 'Username',
+    'e_mail'                => 'Email',
+    'password'              => 'Password',
 
-	// Default Theme
-	'default_theme'              => 'Default theme',
-	'install_default_theme'      => 'Install default theme?',
-	'install_default_theme_info' => 'When enabled, ExpressionEngine will install a default theme.',
+    // Default Theme
+    'default_theme'              => 'Default theme',
+    'install_default_theme'      => 'Install default theme?',
+    'install_default_theme_info' => 'When enabled, ExpressionEngine will install a default theme.',
 
-	// License Agreement
-	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
+    // License Agreement
+    'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
 
-	// Share Analytics
-	'share_analytics' => 'I want to share analytics with the ExpressionEngine Development Team',
-	'share_analytics_desc' => 'EllisLab asks users to help improve ExpressionEngine by occasionally <a href="'.DOC_URL.'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
+    // Share Analytics
+    'share_analytics' => 'I want to share analytics with the ExpressionEngine Development Team',
+    'share_analytics_desc' => 'Packet Tide asks users to help improve ExpressionEngine by occasionally <a href="' . DOC_URL . 'control-panel/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team" rel="external noreferrer">providing analytics, diagnostic, and usage information</a>.',
 
-	'start_installation'         => 'Install',
+    'start_installation'         => 'Install',
 
 // Update Form
 	'update_title'   => "Update ExpressionEngine from %s to %s",
 	'start_update'   => 'Update',
 	'update_note'    => '<b>Please</b> read <a href="'.DOC_URL.'installation/update.html" rel="external">Updating ExpressionEngine</a> <strong>before</strong> starting.',
 	'update_backup'  => 'Please <b>back up</b> your database before updating ExpressionEngine',
+	'update_should_get_database_backup' => 'Backup database before upgrade',
+	'update_should_update_addons'		=> 'Allow addons to upgrade (advanced)',
 	'updating_title' => "Updating ExpressionEngine to %s",
 	'running_updates' => "Running updates for %s",
 	'updating'       => 'Updating ExpressionEngine',
@@ -70,16 +72,17 @@ $lang = array(
 
 // Errors
 'invalid_action'                     => 'The action you have requested is not valid.',
-'unreadable_config'                  => 'Your config.php file (<code>system/user/config/config.php</code>) is unreadable. Please make sure the file exists and is writable. See the <a href="'.DOC_URL.'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-'unwritable_config'                  => 'Your config.php file (<code>system/user/config/config.php</code>) is not writable. See the <a href="'.DOC_URL.'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-'unwritable_templates'               => 'Your template directory (<code>system/user/templates</code>) is not writeable. See the <a href="'.DOC_URL.'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-'unwritable_themes_user'             => 'Your user themes directory (<code>themes/user/</code>) is not writeable. See the <a href="'.DOC_URL.'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+'unreadable_config'                  => 'Your config.php file (<code>system/user/config/config.php</code>) is unreadable. Please make sure the file exists and is writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+'unwritable_config'                  => 'Your config.php file (<code>system/user/config/config.php</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+'unwritable_templates'               => 'Your template directory (<code>system/user/templates</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+'unwritable_themes_user'             => 'Your user themes directory (<code>themes/user/</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
 'json_parser_missing'                => 'Your instance of PHP does not support the <code>json_encode</code> and <code>json_decode</code> methods.',
 'fileinfo_missing'                => 'The required Fileinfo PHP extension is not currently enabled.',
-'unwritable_cache_folder'            => 'Your cache folder (<code>system/user/cache</code>) is not writable. See the <a href="'.DOC_URL.'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+'unwritable_cache_folder'            => 'Your cache folder (<code>system/user/cache</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
 'database_invalid_host'              => 'The database host you submitted is invalid.',
 'database_invalid_database'          => 'The database name you submitted is invalid.',
 'database_invalid_user'              => 'The database user and password combination you submitted is invalid.',
+'database_authentication_unknown'    => 'Your instance of PHP does not support the current database authentication method.',
 'database_no_config'                 => 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.',
 'database_no_data'                   => 'Unable to locate any database connection information.',
 'database_no_connect'                => 'Unable to connect to your database using the configuration settings you submitted.',
@@ -136,7 +139,7 @@ $lang = array(
 'would_you_recommend'          => 'How likely is it that you will recommend ExpressionEngine to a colleague or friend?',
 'unlikely'                     => 'Unlikely',
 'highly_likely'                => 'Highly Likely',
-'additional_comments'          => 'What could ExpressionEngine or EllisLab do to delight you?',
+'additional_comments'          => 'What could ExpressionEngine or Packet Tide do to delight you?',
 
 );
 

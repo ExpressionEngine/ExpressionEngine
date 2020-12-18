@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -238,7 +238,7 @@ class EE_Config {
 	public function loadFile($file)
 	{
 		$file = str_replace('..', '', $file);
-		$syspath = SYSPATH.'ee/EllisLab/ExpressionEngine/Config/'.$file.'.php';
+		$syspath = SYSPATH.'ee/ExpressionEngine/Config/'.$file.'.php';
 		$userpath = SYSPATH.'user/config/'.$file.'.php';
 
 		$out = array();
@@ -251,7 +251,9 @@ class EE_Config {
 		if (file_exists($userpath))
 		{
 			$userout = include $userpath;
-			$out = array_replace_recursive($out, $userout);
+			if (is_array($userout)) {
+				$out = array_replace_recursive($out, $userout);
+			}
 		}
 
 		return $out;
@@ -368,8 +370,8 @@ class EE_Config {
 		// Need this so we know the base url a page belongs to
 		if (isset($config['site_pages'][$row['site_id']]))
 		{
-			$url = $config['site_url'].'/';
-			$url .= $config['site_index'].'/';
+			$url = (isset($config['site_url']) ? $config['site_url'] : '') . '/';
+			$url .= (isset($config['site_index']) ? $config['site_index'] : '') . '/';
 
 			$config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
@@ -663,8 +665,8 @@ class EE_Config {
 			'banishment_message',
 			'enable_search_log',
 			'max_logged_searches',
-			'rte_enabled',
-			'rte_default_toolset_id',
+			'rte_default_toolset',
+			'rte_file_browser',
 			'forum_trigger'
 		);
 
@@ -677,11 +679,9 @@ class EE_Config {
 			'new_member_notification',
 			'mbr_notification_emails',
 			'require_terms_of_service',
-			'default_member_group',
+			'default_primary_role',
 			'profile_trigger',
 			'member_theme',
-			'enable_avatars',
-			'allow_avatar_uploads',
 			'avatar_url',
 			'avatar_path',
 			'avatar_max_width',
@@ -848,6 +848,7 @@ class EE_Config {
 
 		// Let's get this shindig started
 		$msm_values = $new_values;
+
 		foreach ($site_ids as $site_id)
 		{
 			// If we don't do this, then only the first site will have the new changes.
@@ -888,9 +889,13 @@ class EE_Config {
 
 					$config->value = $new_values[$key];
 					$config->save();
+
+					if($key == 'is_system_on') {
+						$isSystemOn = $new_values[$key];
+					}
+
 					unset($new_values[$key]);
 				}
-
 				// Add any new configs to the DB
 				if ( ! empty($new_values))
 				{
@@ -905,6 +910,9 @@ class EE_Config {
 								'key' => $key,
 								'value' => $value
 							])->save();
+							if($key == 'is_system_on') {
+								$isSystemOn = $new_values[$key];
+							}
 							unset($new_values[$key]);
 						}
 					}
@@ -923,6 +931,11 @@ class EE_Config {
 			{
 				$new_values[$key] = $val;
 			}
+		}
+
+		// Shim writing is system on to config file
+		if(isset($isSystemOn)) {
+			$new_values['is_system_on'] = $isSystemOn;
 		}
 
 		// Update config file with remaining values
@@ -1817,7 +1830,7 @@ class EE_Config {
 			'newrelic_app_name'			=> array('newrelic_app_name_explanation'),
 			'gzip_output'				=> array('gzip_output_explanation'),
 			'server_offset'				=> array('server_offset_explain'),
-			'default_member_group'		=> array('group_assignment_defaults_to_two'),
+			'default_primary_role'		=> array('group_assignment_defaults_to_two'),
 			'smtp_server'				=> array('only_if_smpte_chosen'),
 			'smtp_port'					=> array('only_if_smpte_chosen'),
 			'smtp_username'				=> array('only_if_smpte_chosen'),
@@ -1899,8 +1912,7 @@ class EE_Config {
 				$uri = implode('/', $uri);
 			}
 
-			$suffix = ($this->item('url_suffix') == FALSE) ? '' : $this->item('url_suffix');
-			return $this->slash_item('base_url').$this->item('index_page').'?'.trim($uri, '/').$suffix;
+			return reduce_double_slashes($this->slash_item('base_url') . $this->item('index_page') . trim($uri, '/'));
 		}
 		else
 		{
@@ -1957,7 +1969,18 @@ class EE_Config {
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
 
-		return parse_config_variables($pref);
+		$pref = parse_config_variables($pref);
+
+		if (
+			strpos($pref, '/')!==0
+			&& stripos($pref, 'http:')!==0
+			&& stripos($pref, 'https:')!==0
+			&& strpos($pref, ':/')!==1 //Windows path
+		) {
+			$pref = '/'.$pref;
+		}
+
+		return $pref;
 	}
 
 

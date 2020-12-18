@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -67,7 +67,7 @@ class File_field {
 		// for this field
 		$upload_dirs[''] = lang('directory');
 		$upload_dirs = ee()->file_upload_preferences_model->get_dropdown_array(
-			ee()->session->userdata('group_id'),
+			NULL,
 			$allowed_file_dirs,
 			$upload_dirs
 		);
@@ -210,9 +210,9 @@ class File_field {
 
 		$fp_edit = clone $fp_link;
 		$fp_edit
-			->setText('')
+			->setHtml('<i class="fas fa-pen"></i><span class="hidden">' . lang('edit') . '</span>')
 			->setAttribute('title', lang('edit'))
-			->setAttribute('class', 'file-field-filepicker');
+			->setAttribute('class', 'file-field-filepicker button button--default');
 
 		$file = $this->getFileModelForFieldData($data);
 
@@ -223,7 +223,7 @@ class File_field {
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'fields/file/cp',
+				'fields/file/control_panel',
 				'fields/file/file_field_drag_and_drop'
 			),
 		));
@@ -849,7 +849,7 @@ class File_field {
 		// Include dependencies
 		ee()->cp->add_js_script(array(
 			'file'		=> array(
-				'underscore',
+				'vendor/underscore',
 				'files/publish_fields'
 			),
 			'plugin'	=> array(
@@ -944,6 +944,7 @@ class File_field {
 		ee()->javascript->set_global([
 			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
 			'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
+			'lang.file_dnd_upload_to' => lang('file_dnd_upload_to'),
 			'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
 			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
 			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
@@ -955,6 +956,7 @@ class File_field {
 			'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
 			'lang.file_dnd_progress' => lang('file_dnd_progress'),
 			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+			'lang.file_dnd_conflict' => lang('file_dnd_conflict'),
 			'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
 			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),

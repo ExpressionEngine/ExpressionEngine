@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -186,7 +186,7 @@ class Api_template_structure extends Api {
 								'refresh'  				=> $row->refresh,
 								'no_auth_bounce'  		=> $row->no_auth_bounce,
 								'php_parse_location'	=> $row->php_parse_location,
-								'allow_php'  			=> (ee()->session->userdata['group_id'] == 1) ? $row->allow_php : 'n',
+								'allow_php'  			=> (ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
 								'protect_javascript'	=> $row->protect_javascript,
 								'template_type' 		=> $row->template_type,
 								'template_data'  		=> $row->template_data,

@@ -4,12 +4,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
- * EllisLab Pings
+ * ExpressionEngine Pings
  */
 
 class El_pings {
@@ -87,7 +87,7 @@ class El_pings {
 		$installed_addons = ee('Addon')->installed();
 
 		$third_party = array_filter($installed_addons, function($addon) {
-			return $addon->getAuthor() != 'EllisLab';
+			return $addon->getAuthor() != 'ExpressionEngine';
 		});
 
 		return array_map(function($addon) {
@@ -98,7 +98,7 @@ class El_pings {
 	/**
 	 * EE Version Check function
 	 *
-	 * Checks the current version of ExpressionEngine available from EllisLab
+	 * Checks the current version of ExpressionEngine available to download
 	 *
 	 * @param boolean $force_update Use the force, update regardless of cache
 	 * @return array
@@ -126,7 +126,10 @@ class El_pings {
 			catch (\Exception $e)
 			{
 				// don't scare the user with whatever random error, but store it for debugging
-				$version_file = $e->getMessage();
+				$version_file = [
+					'error' => true,
+					'error_msg' => $e->getMessage()
+				];
 			}
 
 			// Cache version information for a day
@@ -170,6 +173,8 @@ class El_pings {
 	public function getUpgradeInfo($force_update = FALSE)
 	{
 		$version_file = $this->get_version_info($force_update);
+
+		if (!$version_file) return $version_file;
 
 		$version_info = array(
 			'version' => $version_file['latest_version'],
@@ -244,7 +249,7 @@ class El_pings {
 
 			fputs($fp, "POST {$target['path']} HTTP/1.1\r\n");
 			fputs($fp, "Host: {$target['host']}\r\n");
-			fputs($fp, "User-Agent: EE/EllisLab PHP/\r\n");
+			fputs($fp, "User-Agent: ExpressionEngine PHP/\r\n");
 			fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
 			fputs($fp, "Content-Length: ".strlen($postdata)."\r\n");
 			fputs($fp, "Connection: close\r\n\r\n");
@@ -254,7 +259,7 @@ class El_pings {
 		{
 			fputs($fp,"GET {$url} HTTP/1.1\r\n" );
 			fputs($fp,"Host: {$target['host']}\r\n");
-			fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
+			fputs($fp,"User-Agent: ExpressionEngine PHP/\r\n");
 			fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n");
 			fputs($fp,"Connection: close\r\n\r\n");
 		}

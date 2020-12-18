@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -214,7 +214,7 @@ class EE_Router {
 
 		// First check for a namespaced situation
 		$saved_segments = $segments;
-		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controller/';
+		$directory = APPPATH.'../ExpressionEngine/Controller/';
 		$namespace = '';
 		if (strtolower($segments[0]) == 'cp')
 		{
@@ -267,7 +267,7 @@ class EE_Router {
 		if ($namespace != '')
 		{
 			$this->set_directory($directory);
-			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controller' . $namespace;
+			$this->namespace_prefix = '\ExpressionEngine\Controller' . $namespace;
 
 			// If the final segment is a directory check for a file matching the
 			// directory's name inside the directory. Use its index method.

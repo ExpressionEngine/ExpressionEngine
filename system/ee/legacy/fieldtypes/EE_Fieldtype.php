@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,7 +14,7 @@
 abstract class EE_Fieldtype {
 
 	// bring in the :modifier methods
-	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+	use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
 	// Old identifiers for backwards compatibility.
 	// @deprecated
@@ -175,7 +175,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function row($key, $default = NULL)
 	{
-		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+		return (isset($this->row) && array_key_exists($key, $this->row)) ? $this->row[$key] : $default;
 	}
 
 	/**
@@ -1089,7 +1089,7 @@ abstract class EE_Fieldtype {
 
 		$channels = ee('Model')->get('Channel as C')
 			->with('CustomFields as CF')
-			->fields('C.channel_title', 'C.channel_id', 'CF.field_id', 'CF.field_label')
+			->fields('C.channel_title', 'C.channel_id', 'CF.field_id', 'CF.field_label', 'CF.field_name', 'CF.field_type')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title', 'asc')
 			->all();
@@ -1131,6 +1131,54 @@ abstract class EE_Fieldtype {
 		}
 
 		return $this->row('field_ft_'.$this->field_id) ?: $field_fmt;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnIdentifier()
+	{
+		return $this->field_name;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnLabel()
+	{
+		return '';
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function renderTableCell($data, $field_id, $entry)
+	{
+		$out = strip_tags($this->replace_tag($data));
+		if (strlen($out) > 255) {
+			$out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
+		}
+		return $out;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function getTableColumnConfig()
+	{
+		return [];
+	}
+
+	public function getEntryManagerColumnModels() {
+		return [];
+	}
+
+	public function getEntryManagerColumnFields() {
+		return [];
+	}
+
+	public function getEntryManagerColumnSortField() {
+		return '';
 	}
 }
 // END EE_Fieldtype class

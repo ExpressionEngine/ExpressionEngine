@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,7 +22,7 @@ $(document).ready(function() {
 });
 
 EE.file_manager.sync_listen = function() {
-	$('.form-standard form input.btn').click(function(event) {
+	$('.form-standard form .button').click(function(event) {
 		event.preventDefault();
 
 		// Get array of files
@@ -34,7 +34,7 @@ EE.file_manager.sync_listen = function() {
 		EE.file_manager.update_progress(0);
 
 		// Disable sync button
-		$('input.btn', this).prop('disabled', true);
+		$('.button', this).prop('disabled', true);
 
 		// Remove any existing alerts
 		$('.app-notice--inline').remove();
@@ -145,7 +145,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('.wrap .form-standard form').append(input).submit();
+			$('.ee-main .form-standard form').append(input).submit();
 		}
 	};
 };

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -337,7 +337,7 @@ class Api_channel_categories extends Api {
 	 */
 	public function fetch_allowed_category_groups($cat_group)
 	{
-		if (ee()->cp->allowed_group('can_admin_channels') OR ee()->cp->allowed_group('can_edit_categories'))
+		if (ee('Permission')->can('admin_channels') OR ee('Permission')->can('edit_categories'))
 		{
 			if (! is_array($cat_group))
 			{

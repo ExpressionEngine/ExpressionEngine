@@ -2,20 +2,20 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
 EE.cp.reindex = {
 
-	buttons: $('input.btn:visible'),
+	buttons: $('.button:visible'),
 	site: 'all',
 
 	init: function() {
 		var that = this;
 
 		EE.cp.reindex._init();
-		$('a.toggle-btn').on('click', function(e) {
+		$('button.toggle-btn').on('click', function(e) {
 			if ($('input[name="all_sites"]').val() == "1") {
 				that.site = 'all';
 			} else {

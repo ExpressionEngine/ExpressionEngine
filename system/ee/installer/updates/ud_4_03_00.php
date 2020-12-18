@@ -4,11 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Version_4_3_0;
+namespace ExpressionEngine\Updater\Version_4_3_0;
 
 /**
  * Update
@@ -271,6 +271,11 @@ class Updater {
 
 	private function installConsentModule()
 	{
+
+		if(REQ == 'CLI') {
+			return;
+		}
+
 		$addon = ee('Addon')->get('consent');
 
 		if ( ! $addon OR ! $addon->isInstalled())

@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -541,9 +541,18 @@ if ( ! function_exists('formatted_version'))
 {
 	function formatted_version($version)
 	{
-		$version = explode('.', $version);
+		// Break any suffix off first.
+		$raw_version = explode('-', $version);
 
-		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
+		$version = explode('.', $raw_version[0]);
+
+		$new_version = preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
+
+		if (!empty($raw_version[1])) {
+			$new_version .= '-' . '<b>' . $raw_version[1] . '</b>';
+		}
+
+		return $new_version;
 	}
 }
 

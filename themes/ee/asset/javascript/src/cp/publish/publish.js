@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -94,15 +94,17 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
+
+	// -------------------------------------------------------------------
+	// Live Preview
+	// -------------------------------------------------------------------
+
 	var fetchPreview = function() {
 		var iframe         = $('iframe.live-preview__frame')[0],
-		    preview_url    = $(iframe).data('url'),
-			preview_banner = $('.live-preview > .app-notice---important');
+		    preview_url    = $(iframe).data('url');
 
-		preview_banner.removeClass('app-notice---important').addClass('app-notice---loading');
-		preview_banner.find('[data-loading]').removeClass('hidden');
-		preview_banner.find('[data-unpublished]').addClass('hidden');
-		preview_banner.find('.js-preview-wide').addClass('hidden');
+		// Show that the preview is refreshing
+		$('.live-preview__preview-loader').addClass('open')
 
 		ajaxRequest = $.ajax({
 			type: "POST",
@@ -115,10 +117,8 @@ $(document).ready(function () {
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
 
-					preview_banner.removeClass('app-notice---loading').addClass('app-notice---important');
-					preview_banner.find('[data-loading]').addClass('hidden');
-					preview_banner.find('[data-unpublished]').removeClass('hidden');
-					preview_banner.find('.js-preview-wide').removeClass('hidden');
+					// Hide the refreshing indicator
+					$('.live-preview__preview-loader').removeClass('open')
 				}
 				ajaxRequest = null;
 			},
@@ -130,14 +130,29 @@ $(document).ready(function () {
 			wait = 0;
 		}
 
-		if ($('.app-modal--live-preview:visible').length) {
+		// Only update the live preview if it's open
+		if ($('.live-preview-container:visible').length) {
 			debounceAjax(fetchPreview, wait);
 		}
 	});
 
+	$('body').on('click', 'button[rel="live-preview-setup"]', function(e) {
+		e.preventDefault()
+
+		$('body').prepend(EE.alert.lp_setup);
+
+		return false;
+	});
+
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
-		var container = $('.app-modal--live-preview .form-standard'),
-		    iframe      = $('iframe.live-preview__frame')[0];
+		e.preventDefault()
+
+		// Show the live preview modal
+		$('.live-preview-container').show()
+		setTimeout(function () { $('.live-preview').removeClass('live-preview--closed') }, 10);
+
+		var container = $('.live-preview__form-content');
+		var iframe      = $('iframe.live-preview__frame')[0];
 
 		iframe.contentDocument.open();
 		iframe.contentDocument.write('');
@@ -145,6 +160,10 @@ $(document).ready(function () {
 
 		fetchPreview();
 
+		// Hide the save and preview buttons
+		$('.tab-bar__right-buttons', publishForm).hide()
+
+		// Move the publish form into the live preview container
 		container.append($(publishForm));
 
 		$(container).on('interact', 'input, textarea', function(e) {
@@ -155,39 +174,84 @@ $(document).ready(function () {
 			$(document).trigger('entry:preview');
 		});
 
-		$(container).on('click', 'a.toggle-btn', function(e) {
+		$(container).on('click', 'button.toggle-btn', function(e) {
 			$(document).trigger('entry:preview');
 		});
-
-		$('button[rel="live-preview"]').hide();
 
 		$(document).trigger('entry:preview-open')
 	});
 
-	$('.app-modal--live-preview').on('modal:close', function(e) {
-		$('[data-publish]').append($('.app-modal--live-preview .form-standard > form'));
-		$('button[rel="live-preview"]').show();
-		$(document).trigger('entry:preview-close')
+
+	$('.js-live-preview-save-button').on('click', function(e) {
+		$('.js-live-preview-save-button').addClass('button--working');
+		$('.live-preview__form-content form button[value="save"]').click()
 	});
 
+	$('.js-close-live-preview').on('click', function(e) {
+		e.preventDefault()
+
+		// Move the publish form back to the main page from the live preview modal
+		$('[data-publish]').append($('.live-preview__form-content').children());
+
+		// Show the save buttons
+		$('[data-publish] .tab-bar__right-buttons').show()
+
+		$('button[rel="live-preview"]').show();
+		$(document).trigger('entry:preview-close')
+
+		// Hide the live preview modal
+		$('.live-preview').addClass('live-preview--closed')
+		$('.live-preview-container').fadeOut(600)
+	});
+
+	// Open the preview automatically if the url wants us to
 	if (window.location.search.includes('&preview=y')) {
 		setTimeout(function() {
 			$('button[rel="live-preview"]').click();
 		}, 100);
 	}
 
-	// =============
+
+	// -------------------------------------------------------------------
 	// live preview width control
-	// =============
+	// -------------------------------------------------------------------
 
-	$('.js-preview-wide').on('click',function(){
-		var txtIs = $(this).text();
-		var closeTxtIs = $(this).attr('data-close');
-		var openTxtIs = $(this).attr('data-open');
+	function handleDrag(event, eventType, callback) {
+        var doCallback = function (e) {
+            callback(e)
+            e.preventDefault()
+        }
 
-		$('.live-preview---open').toggleClass('live-preview--wide');
-		$(this).text(txtIs == closeTxtIs ? openTxtIs : closeTxtIs);
-	});
+        var moveEventName = eventType == 'mouse' ? 'mousemove' : 'touchmove'
+        var stopEventName = eventType == 'mouse' ? 'mouseup'   : 'touchend'
+
+		window.addEventListener(moveEventName, doCallback)
+
+		$('.live-preview__frame, .live-preview__form').css('pointer-events', 'none')
+
+        window.addEventListener(stopEventName, function finish() {
+            window.removeEventListener(moveEventName, doCallback)
+			window.removeEventListener(stopEventName, finish)
+
+			$('.live-preview__frame, .live-preview__form').css('pointer-events', 'all')
+        })
+
+        doCallback(event)
+	}
+
+	function onHandleDrag(e) {
+		// Get the percentage x position of the mouse
+		var xPos = e.clientX / $(document).width() * 100;
+		// Prevent each side from getting too small
+		xPos = Math.min(Math.max(xPos, 10), 98)
+
+		// Set each sides width
+		$('.live-preview__form').css('flex-basis', xPos + '%')
+		$('.live-preview__preview').css('flex-basis', (100 - xPos) + '%')
+	}
+
+	$(".live-preview__divider").on('mousedown', function(e) { handleDrag(e, 'mouse', onHandleDrag) });
+	$(".live-preview__divider").on('touchstart', function(e) { handleDrag(e, 'touch', onHandleDrag) });
 
 	var previewButtonStartedHidden = $('button[value="preview"]').hasClass('hidden');
 

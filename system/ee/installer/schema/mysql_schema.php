@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -51,7 +51,7 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
-			`site_pages` TEXT NOT NULL ,
+			`site_pages` MEDIUMTEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`)
 		)";
@@ -249,8 +249,8 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_email_cache_mg (
 			cache_id int(6) unsigned NOT NULL,
-			group_id smallint(4) NOT NULL,
-			PRIMARY KEY `cache_id_group_id` (`cache_id`, `group_id`)
+			role_id int(10) NOT NULL,
+			PRIMARY KEY `cache_id_role_id` (`cache_id`, `role_id`)
 		)";
 
 		// We do the same with mailing lists
@@ -282,7 +282,7 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
-			group_id smallint(4) NOT NULL default '0',
+			role_id int(10) NOT NULL default '0',
 			username varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
 			screen_name varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',
@@ -323,7 +323,6 @@ class EE_Schema {
 			accept_user_email char(1) NOT NULL default 'y',
 			notify_by_default char(1) NOT NULL default 'y',
 			notify_of_pm char(1) NOT NULL default 'y',
-			display_avatars char(1) NOT NULL default 'y',
 			display_signatures char(1) NOT NULL default 'y',
 			parse_smileys char(1) NOT NULL default 'y',
 			smart_notifications char(1) NOT NULL default 'y',
@@ -343,160 +342,108 @@ class EE_Schema {
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
-			rte_enabled char(1) NOT NULL DEFAULT 'y',
-			rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
-			KEY `group_id` (`group_id`),
+			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
 			KEY `password` (`password`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_roles` (
+			`role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(100) NOT NULL,
+			`short_name` varchar(50) NOT NULL,
+			`description` text,
+			`is_locked` char(1) NOT NULL DEFAULT 'n',
+			PRIMARY KEY (`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_members_roles` (
+			`member_id` int(10) unsigned NOT NULL,
+			`role_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`member_id`,`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_role_groups` (
+			`group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(100) NOT NULL,
+			PRIMARY KEY (`group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_roles_role_groups` (
+			`role_id` int(10) unsigned NOT NULL,
+			`group_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`role_id`,`group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_members_role_groups` (
+			`member_id` int(10) unsigned NOT NULL,
+			`group_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`member_id`,`group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_permissions` (
+			`permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		    `role_id` int(10) unsigned NOT NULL,
+			`site_id` int(5) unsigned NOT NULL,
+			`permission` varchar(64) NOT NULL,
+			PRIMARY KEY (`permission_id`),
+			KEY `role_id_site_id` (`role_id`,`site_id`)
+		)";
+
 		// Member Groups table
 
-		$Q[] = "CREATE TABLE exp_member_groups (
-			`group_id` smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_role_settings (
+			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`role_id` int(10) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
-			`group_title` varchar(100) NOT NULL,
-			`group_description` text NOT NULL,
-			`is_locked` char(1) NOT NULL DEFAULT 'n',
-			`can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
-			`can_view_online_system` char(1) NOT NULL DEFAULT 'y',
-			`can_access_cp` char(1) NOT NULL DEFAULT 'y',
-			`can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
-			`can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
-			`can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
-			`can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
-			`can_access_files` char(1) NOT NULL DEFAULT 'n',
-			`can_access_design` char(1) NOT NULL DEFAULT 'n',
-			`can_access_addons` char(1) NOT NULL DEFAULT 'n',
-			`can_access_members` char(1) NOT NULL DEFAULT 'n',
-			`can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
-			`can_access_comm` char(1) NOT NULL DEFAULT 'n',
-			`can_access_utilities` char(1) NOT NULL DEFAULT 'n',
-			`can_access_data` char(1) NOT NULL DEFAULT 'n',
-			`can_access_logs` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_channels` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_design` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_members` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
-			`can_ban_users` char(1) NOT NULL DEFAULT 'n',
-			`can_admin_addons` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_categories` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_categories` char(1) NOT NULL DEFAULT 'n',
-			`can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-			`can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
-			`can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
-			`can_view_profiles` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_self` char(1) NOT NULL DEFAULT 'n',
 			`mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
-			`can_post_comments` char(1) NOT NULL DEFAULT 'n',
 			`exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
-			`can_search` char(1) NOT NULL DEFAULT 'n',
 			`search_flood_control` mediumint(5) unsigned NOT NULL,
-			`can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
 			`prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
 			`prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
-			`can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
-			`can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
 			`include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
 			`include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
 			`cp_homepage` varchar(20) DEFAULT NULL,
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
-			`can_create_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
-			`can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_files` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_files` char(1) NOT NULL DEFAULT 'n',
-			`can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
-			`can_create_upload_directories` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_upload_directories` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_upload_directories` char(1) NOT NULL DEFAULT 'n',
-			`can_create_channels` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_channels` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_channels` char(1) NOT NULL DEFAULT 'n',
-			`can_create_channel_fields` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_channel_fields` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_channel_fields` char(1) NOT NULL DEFAULT 'n',
-			`can_create_statuses` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_statuses` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_statuses` char(1) NOT NULL DEFAULT 'n',
-			`can_create_categories` char(1) NOT NULL DEFAULT 'n',
-			`can_create_member_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_member_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_create_members` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_members` char(1) NOT NULL DEFAULT 'n',
-			`can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_templates` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_templates` char(1) NOT NULL DEFAULT 'n',
-			`can_create_template_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_template_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_template_groups` char(1) NOT NULL DEFAULT 'n',
-			`can_create_template_partials` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_template_partials` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_template_partials` char(1) NOT NULL DEFAULT 'n',
-			`can_create_template_variables` char(1) NOT NULL DEFAULT 'n',
-			`can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
-			`can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
-			`can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
-			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
-			`can_access_import` char(1) NOT NULL DEFAULT 'n',
-			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
-			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
-			`can_manage_consents` char(1) NOT NULL DEFAULT 'n',
-			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
+			PRIMARY KEY (`id`),
+			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
 
 		// Channel access privs
-		// Member groups assignment for each channel
+		// Role assignment for each channel
 
-		$Q[] = "CREATE TABLE exp_channel_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_channel_member_roles (
+			role_id int(10) unsigned NOT NULL,
 			channel_id int(6) unsigned NOT NULL,
-			PRIMARY KEY `group_id_channel_id` (`group_id`, `channel_id`)
+			PRIMARY KEY `role_id_channel_id` (`role_id`, `channel_id`)
 		)";
 
 		// Module access privs
-		// Member Group assignment for each module
+		// Role assignment for each module
 
-		$Q[] = "CREATE TABLE exp_module_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_module_member_roles (
+		role_id int(10) unsigned NOT NULL,
 			module_id mediumint(5) unsigned NOT NULL,
-			PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)
+			PRIMARY KEY `role_id_module_id` (`role_id`, `module_id`)
 		)";
 
 
 		// Template Group access privs
-		// Member group assignment for each template group
+		// Role assignment for each template group
 
-		$Q[] = "CREATE TABLE exp_template_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_template_groups_roles (
+			role_id int(10) unsigned NOT NULL,
 			template_group_id mediumint(5) unsigned NOT NULL,
-			PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)
+			PRIMARY KEY `role_id_template_group_id` (`role_id`, `template_group_id`)
 		)";
 
 		// Member Custom Fields
-		// Stores the defenition of each field
+		// Stores the definition of each field
 
 		$Q[] = "CREATE TABLE exp_member_fields (
 			m_field_id int(4) unsigned NOT NULL auto_increment,
@@ -566,11 +513,11 @@ class EE_Schema {
 			channel_require_membership char(1) NOT NULL default 'y',
 			channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			channel_html_formatting char(4) NOT NULL default 'all',
-			extra_publish_controls char(1) NOT NULL default 'n',
 			channel_allow_img_urls char(1) NOT NULL default 'y',
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
 			channel_notify_emails varchar(255) NULL DEFAULT NULL,
+			sticky_enabled char(1) NOT NULL default 'n',
 			comment_url varchar(80) NULL DEFAULT NULL,
 			comment_system_enabled char(1) NOT NULL default 'y',
 			comment_require_membership char(1) NOT NULL default 'n',
@@ -811,13 +758,10 @@ class EE_Schema {
 			PRIMARY KEY `status_id` (`status_id`)
 		)";
 
-		// Status "no access"
-		// Stores groups that can not access certain statuses
-
-		$Q[] = "CREATE TABLE exp_status_no_access (
+		$Q[] = "CREATE TABLE exp_statuses_roles (
+			role_id int(10) unsigned NOT NULL,
 			status_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)
+			PRIMARY KEY `status_id_role_id` (`status_id`, `role_id`)
 		)";
 
 		// Category Groups
@@ -941,10 +885,10 @@ class EE_Schema {
 			KEY `channel_id` (`channel_id`)
 		)";
 
-		$Q[] = "CREATE TABLE exp_layout_publish_member_groups (
+		$Q[] = "CREATE TABLE exp_layout_publish_member_roles (
 			layout_id int(10) UNSIGNED NOT NULL,
-			group_id int(4) UNSIGNED NOT NULL,
-			PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
+			role_id int(10) UNSIGNED NOT NULL,
+			PRIMARY KEY `layout_id_role_id` (`layout_id`, `role_id`)
 		)";
 
 		// Template Groups
@@ -1000,14 +944,10 @@ class EE_Schema {
 			KEY `template_id` (`template_id`)
 		)";
 
-		// Template "no access"
-		// Since each template can be made private to specific member groups
-		// we store member IDs of people who can not access certain templates
-
-		$Q[] = "CREATE TABLE exp_template_no_access (
-			template_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)
+		$Q[] = "CREATE TABLE exp_templates_roles (
+			role_id int(10) unsigned NOT NULL,
+			template_id int(10) unsigned NOT NULL,
+			PRIMARY KEY `template_id_role_id` (`template_id`, `role_id`)
 		)";
 
 		// Specialty Templates
@@ -1108,10 +1048,10 @@ class EE_Schema {
 		// Upload "no access"
 		// We store the member groups that can not access various upload destinations
 
-		$Q[] = "CREATE TABLE exp_upload_no_access (
-			upload_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)
+		$Q[] = "CREATE TABLE exp_upload_prefs_roles (
+			role_id int(10) unsigned NOT NULL,
+			upload_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `upload_id_role_id` (`upload_id`, `role_id`)
 		)";
 
 		// Private messaging tables
@@ -1403,6 +1343,32 @@ class EE_Schema {
 			KEY `set_id` (`set_id`)
 	  	)";
 
+		$Q[] = "CREATE TABLE `exp_dashboard_layouts` (
+  			`layout_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  			`member_id` int(10) unsigned DEFAULT NULL,
+				`role_id` int(10) unsigned DEFAULT NULL,
+				`order` varchar(255) DEFAULT NULL,
+  			PRIMARY KEY (`layout_id`),
+				KEY `member_id` (`member_id`),
+				KEY `role_id` (`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_dashboard_layout_widgets` (
+			`layout_id` int(10) unsigned NOT NULL,
+			`widget_id` int(10) unsigned NOT NULL,
+			KEY `layouts_widgets` (`layout_id`, `widget_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_dashboard_widgets` (
+			`widget_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`widget_name` varchar(50) DEFAULT NULL,
+			`widget_data` mediumtext NULL,
+			`widget_type` varchar(10) NOT NULL,
+			`widget_source` varchar(50) NOT NULL,
+			`widget_file` varchar(100) DEFAULT NULL,
+			PRIMARY KEY (`widget_id`)
+	  	)";
+
 		$Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
@@ -1418,7 +1384,7 @@ class EE_Schema {
 			`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_id` int(10) unsigned NOT NULL,
 			`request` mediumtext,
-			`request_format` tinytext,
+			`request_format` varchar(255) NOT NULL DEFAULT '',
 			`create_date` int(10) NOT NULL DEFAULT '0',
 			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
@@ -1431,7 +1397,7 @@ class EE_Schema {
 			`consent_request_version_id` int(10) unsigned NOT NULL,
 			`member_id` int(10) unsigned NOT NULL,
 			`request_copy` mediumtext,
-			`request_format` tinytext,
+			`request_format` varchar(255) NOT NULL DEFAULT '',
 			`consent_given` char(1) NOT NULL DEFAULT 'n',
 			`consent_given_via` varchar(32) DEFAULT NULL,
 			`expiration_date` int(10) DEFAULT NULL,
@@ -1460,6 +1426,16 @@ class EE_Schema {
 			KEY `site_key` (`site_id`,`key`)
 		);";
 
+		// entry manager
+		$Q[] = "CREATE TABLE `exp_entry_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`channel_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`)
+		);";
+
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 
@@ -1473,6 +1449,7 @@ class EE_Schema {
 
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('offline_template', 'system', " . time() . ", '', '".addslashes(offline_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('message_template', 'system', " . time() . ", '', '".addslashes(message_template())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('post_install_message_template', 'system', " . time() . ", '', '".addslashes(post_install_message_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_reg', 'email', 'members', " . time() . ", '".addslashes(trim(admin_notify_reg_title()))."', '".addslashes(admin_notify_reg())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_entry', 'email', 'content', " . time() . ", '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
@@ -1493,7 +1470,7 @@ class EE_Schema {
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
 		$quick_link = '';
 
-		$Q[] = "INSERT INTO exp_members (member_id, group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
+		$Q[] = "INSERT INTO exp_members (member_id, role_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
 			VALUES (
 				'1',
 				'1',
@@ -1508,6 +1485,8 @@ class EE_Schema {
 				'".$this->userdata['default_site_timezone']."',
 				'$quick_link',
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
+
+		$Q[] = "INSERT INTO exp_members_roles (member_id, role_id) VALUES ('1', '1')";
 
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
 
@@ -1531,163 +1510,190 @@ class EE_Schema {
 
 		$Q[] = ee()->db->insert_string('sites', $site);
 
-		// Member Groups
-		$member_groups = array(
+		// Roles
+		$roles = array(
 			array(
-				'group_title'                    => 'Super Admin',
-				'group_id'                       => 1,
-				'is_locked'                      => 'y',
-				'can_view_offline_system'        => 'y',
-				'can_access_cp'                  => 'y',
-				'can_access_footer_report_bug'   => 'y',
-				'can_access_footer_new_ticket'   => 'y',
-				'can_access_footer_user_guide'   => 'y',
-				'can_view_homepage_news'         => 'y',
-				'can_upload_new_files'           => 'y',
-				'can_edit_files'                 => 'y',
-				'can_delete_files'               => 'y',
-				'can_upload_new_toolsets'        => 'y',
-				'can_edit_toolsets'              => 'y',
-				'can_delete_toolsets'            => 'y',
-				'can_create_upload_directories'  => 'y',
-				'can_edit_upload_directories'    => 'y',
-				'can_delete_upload_directories'  => 'y',
-				'can_access_files'               => 'y',
-				'can_access_design'              => 'y',
-				'can_access_addons'              => 'y',
-				'can_access_members'             => 'y',
-				'can_access_sys_prefs'           => 'y',
-				'can_access_comm'                => 'y',
-				'can_access_utilities'           => 'y',
-				'can_access_data'                => 'y',
-				'can_access_logs'                => 'y',
-				'can_admin_channels'             => 'y',
-				'can_create_channels'            => 'y',
-				'can_edit_channels'              => 'y',
-				'can_delete_channels'            => 'y',
-				'can_create_channel_fields'      => 'y',
-				'can_edit_channel_fields'        => 'y',
-				'can_delete_channel_fields'      => 'y',
-				'can_create_statuses'            => 'y',
-				'can_delete_statuses'            => 'y',
-				'can_edit_statuses'              => 'y',
-				'can_create_categories'          => 'y',
-				'can_create_member_groups'       => 'y',
-				'can_delete_member_groups'       => 'y',
-				'can_edit_member_groups'         => 'y',
-				'can_admin_design'               => 'y',
-				'can_create_members'             => 'y',
-				'can_edit_members'               => 'y',
-				'can_delete_members'             => 'y',
-				'can_admin_mbr_groups'           => 'y',
-				'can_admin_mbr_templates'        => 'y',
-				'can_ban_users'                  => 'y',
-				'can_admin_addons'               => 'y',
-				'can_create_new_templates'       => 'y',
-				'can_edit_templates'             => 'y',
-				'can_delete_templates'           => 'y',
-				'can_create_template_groups'     => 'y',
-				'can_edit_template_groups'       => 'y',
-				'can_delete_template_groups'     => 'y',
-				'can_create_template_partials'   => 'y',
-				'can_edit_template_partials'     => 'y',
-				'can_delete_template_partials'   => 'y',
-				'can_create_template_variables'  => 'y',
-				'can_delete_template_variables'  => 'y',
-				'can_edit_template_variables'    => 'y',
-				'can_edit_categories'            => 'y',
-				'can_delete_categories'          => 'y',
-				'can_view_other_entries'         => 'y',
-				'can_edit_other_entries'         => 'y',
-				'can_assign_post_authors'        => 'y',
-				'can_delete_self_entries'        => 'y',
-				'can_delete_all_entries'         => 'y',
-				'can_view_other_comments'        => 'y',
-				'can_edit_own_comments'          => 'y',
-				'can_delete_own_comments'        => 'y',
-				'can_edit_all_comments'          => 'y',
-				'can_delete_all_comments'        => 'y',
-				'can_moderate_comments'          => 'y',
-				'can_send_cached_email'          => 'y',
-				'can_email_member_groups'        => 'y',
-				'can_email_from_profile'         => 'y',
-				'can_view_profiles'              => 'y',
-				'can_edit_html_buttons'          => 'y',
-				'can_post_comments'              => 'y',
-				'can_delete_self'                => 'y',
-				'exclude_from_moderation'        => 'y',
-				'can_send_private_messages'      => 'y',
-				'can_attach_in_private_messages' => 'y',
-				'can_send_bulletins'             => 'y',
-				'include_in_authorlist'          => 'y',
-				'can_search'                     => 'y',
-				'can_create_entries'             => 'y',
-				'can_edit_self_entries'          => 'y',
-				'can_access_security_settings'   => 'y',
-				'can_access_translate'           => 'y',
-				'can_access_import'              => 'y',
-				'can_access_sql_manager'         => 'y',
-				'can_moderate_spam'              => 'y',
-				'can_manage_consents'            => 'y',
-				'search_flood_control'           => '0'
+				'name'                    => 'Super Admin',
+				'short_name'              => 'super_admin',
+				'role_id'                 => 1,
+				'is_locked'               => 'y',
+				'exclude_from_moderation' => 'y',
+				'include_in_authorlist'   => 'y',
+				'search_flood_control'    => '0'
 			),
 			array(
-				'group_title'                    => 'Banned',
-				'group_id'                       => 2,
-				'can_access_cp'                  => 'n',
-				'can_view_online_system'         => 'n',
-				'can_search'                     => 'n',
-				'can_post_comments'              => 'n',
-				'include_in_memberlist'          => 'n',
-				'search_flood_control'           => '60'
+				'name'                    => 'Banned',
+				'short_name'              => 'banned',
+				'role_id'                 => 2,
+				'is_locked'               => 'n',
+				'include_in_memberlist'   => 'n',
+				'search_flood_control'    => '60'
 			),
 			array(
-				'group_title'                    => 'Guests',
-				'group_id'                       => 3,
-				'can_access_cp'                  => 'n',
-				'search_flood_control'           => '10'
+				'name'                    => 'Guests',
+				'short_name'              => 'guests',
+				'role_id'                 => 3,
+				'is_locked'               => 'n',
+				'search_flood_control'    => '10'
 			),
 			array(
-				'group_title'                    => 'Pending',
-				'group_id'                       => 4,
-				'can_access_cp'                  => 'n',
-				'search_flood_control'           => '10'
+				'name'                    => 'Pending',
+				'short_name'              => 'pending',
+				'role_id'                 => 4,
+				'is_locked'               => 'n',
+				'search_flood_control'    => '10'
 			),
 			array(
-				'group_title'                    => 'Members',
-				'group_id'                       => 5,
-				'can_access_cp'                  => 'n',
-				'can_email_from_profile'         => 'y',
-				'can_view_profiles'              => 'y',
-				'can_edit_html_buttons'          => 'y',
-				'can_delete_self'                => 'y',
-				'can_send_private_messages'      => 'y',
-				'can_attach_in_private_messages' => 'y',
-				'search_flood_control'           => '10'
+				'name'                    => 'Members',
+				'short_name'              => 'members',
+				'role_id'                 => 5,
+				'is_locked'               => 'n',
+				'search_flood_control'    => '10'
 			)
-		);
-
-		$member_group_defaults = array(
-			'group_description' => ''
 		);
 
 		$add_quotes = function($value) {
 			return (is_string($value)) ? "'{$value}'" : $value;
 		};
 
-		foreach ($member_groups as $group)
+		foreach ($roles as $role)
 		{
-			// Merge in defaults
-			$group = array_merge($member_group_defaults, $group);
+			$Q[] = "INSERT INTO exp_roles
+				(role_id, name, short_name, is_locked)
+				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
 
-			$Q[] = "INSERT INTO exp_member_groups
-				(".implode(', ', array_keys($group)).")
-				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
+			unset($role['name']);
+			unset($role['short_name']);
+			unset($role['is_locked']);
+
+			$Q[] = "INSERT INTO exp_role_settings
+				(".implode(', ', array_keys($role)).")
+				VALUES (".implode(', ' , array_map($add_quotes, $role)).")";
+
+		}
+
+		$role_permissions = [
+			1 => [
+				'can_view_offline_system',
+				'can_access_cp',
+				'can_access_footer_report_bug',
+				'can_access_footer_new_ticket',
+				'can_access_footer_user_guide',
+				'can_view_homepage_news',
+				'can_upload_new_files',
+				'can_edit_files',
+				'can_delete_files',
+				'can_upload_new_toolsets',
+				'can_edit_toolsets',
+				'can_delete_toolsets',
+				'can_create_upload_directories',
+				'can_edit_upload_directories',
+				'can_delete_upload_directories',
+				'can_access_files',
+				'can_access_design',
+				'can_access_addons',
+				'can_access_members',
+				'can_access_sys_prefs',
+				'can_access_comm',
+				'can_access_utilities',
+				'can_access_data',
+				'can_access_logs',
+				'can_admin_channels',
+				'can_create_channels',
+				'can_edit_channels',
+				'can_delete_channels',
+				'can_create_channel_fields',
+				'can_edit_channel_fields',
+				'can_delete_channel_fields',
+				'can_create_statuses',
+				'can_delete_statuses',
+				'can_edit_statuses',
+				'can_create_categories',
+				'can_create_roles',
+				'can_delete_roles',
+				'can_edit_roles',
+				'can_admin_design',
+				'can_create_members',
+				'can_edit_members',
+				'can_delete_members',
+				'can_admin_roles',
+				'can_admin_mbr_templates',
+				'can_ban_users',
+				'can_admin_addons',
+				'can_create_templates',
+				'can_edit_templates',
+				'can_delete_templates',
+				'can_create_template_groups',
+				'can_edit_template_groups',
+				'can_delete_template_groups',
+				'can_create_template_partials',
+				'can_edit_template_partials',
+				'can_delete_template_partials',
+				'can_create_template_variables',
+				'can_delete_template_variables',
+				'can_edit_template_variables',
+				'can_edit_categories',
+				'can_delete_categories',
+				'can_view_other_entries',
+				'can_edit_other_entries',
+				'can_assign_post_authors',
+				'can_delete_self_entries',
+				'can_delete_all_entries',
+				'can_view_other_comments',
+				'can_edit_own_comments',
+				'can_delete_own_comments',
+				'can_edit_all_comments',
+				'can_delete_all_comments',
+				'can_moderate_comments',
+				'can_send_cached_email',
+				'can_email_roles',
+				'can_email_from_profile',
+				'can_view_profiles',
+				'can_edit_html_buttons',
+				'can_post_comments',
+				'can_delete_self',
+				'can_send_private_messages',
+				'can_attach_in_private_messages',
+				'can_send_bulletins',
+				'can_search',
+				'can_create_entries',
+				'can_edit_self_entries',
+				'can_access_security_settings',
+				'can_access_translate',
+				'can_access_import',
+				'can_access_sql_manager',
+				'can_moderate_spam',
+				'can_manage_consents',
+			],
+			3 => [
+				'can_view_online_system',
+			],
+			4 => [
+				'can_view_online_system',
+			],
+			5 => [
+				'can_view_online_system',
+				'can_email_from_profile',
+				'can_view_profiles',
+				'can_edit_html_buttons',
+				'can_delete_self',
+				'can_send_private_messages',
+				'can_attach_in_private_messages',
+			]
+		];
+
+		foreach ($role_permissions as $role_id => $permissions)
+		{
+			foreach ($permissions as $permission)
+			{
+				$Q[] = "INSERT INTO exp_permissions (site_id, role_id, permission) VALUES(1, $role_id, '$permission')";
+			}
 		}
 
 		// default statuses - these are really always needed
 		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('closed', '2', '990000')";
+		$Q[] = "INSERT INTO exp_statuses_roles (role_id, status_id) VALUES ('5', '1'), ('5', '2')";
 
 		$button_config = ee()->config->loadFile('html_buttons');
 
@@ -1703,14 +1709,14 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url', 'colorpicker');
 
 		foreach($default_fts as $name)
 		{
-			$addon_setup_path = SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			$addon_setup_path = SYSPATH.'/ee/ExpressionEngine/Addons/'.$name.'/addon.setup.php';
 			if (file_exists($addon_setup_path))
 			{
-				$fieldtype = require SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+				$fieldtype = require SYSPATH.'/ee/ExpressionEngine/Addons/'.$name.'/addon.setup.php';
 			}
 			else
 			{

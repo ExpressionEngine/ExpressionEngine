@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -297,32 +297,34 @@ class Tools_model extends CI_Model {
 	}
 
 	/**
-	 * Blacklist IP addresses
+	 * Block IP addresses
 	 *
 	 * @param	mixed	list of ips
 	 * @return	int		inserted count
 	 */
+	//this function needs to be deprecated one we provide an alternative to it
+	//not used in EE atm, but might be used in third party code
 	public function blacklist_ips($naughty = array())
 	{
-		// Get all previously blacklisted ips
-		$this->db->select('blacklisted_value');
-		$query = $this->db->get_where('blacklisted', array('blacklisted_type' => 'ip'));
+		// Get all previously blocked ips
+		$this->db->select('blockedlist_value');
+		$query = $this->db->get_where('blockedlist', array('blockedlist_type' => 'ip'));
 
 		// Merge old and new
 		if ($query->num_rows() > 0)
 		{
-			$naughty = array_merge($naughty, explode('|', $query->row('blacklisted_value')));
+			$naughty = array_merge($naughty, explode('|', $query->row('blockedlist_value')));
 		}
 
 		// Clear the old data
-		$this->db->where('blacklisted_type', 'ip');
-		$this->db->delete('blacklisted');
+		$this->db->where('blockedlist_type', 'ip');
+		$this->db->delete('blockedlist');
 
 		// And put the new data back in
-		$data = array(	'blacklisted_type'	=> 'ip',
-						'blacklisted_value' => implode("|", array_unique($naughty)));
+		$data = array(	'blockedlist_type'	=> 'ip',
+						'blockedlist_value' => implode("|", array_unique($naughty)));
 
-		$this->db->insert('blacklisted', $data);
+		$this->db->insert('blockedlist', $data);
 
 		return $this->db->affected_rows();
 	}

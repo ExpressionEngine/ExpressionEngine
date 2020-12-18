@@ -15,7 +15,7 @@ class TemplateRoutes < ControlPanelPage
 
   element :no_results, 'tr.no-results'
 
-  element :new_route_button, 'table tr.tbl-action td a.btn.action'
+  element :new_route_button, 'table tr.tbl-action td a.button.button--primary'
   element :update_button, 'fieldset.tbl-bulk-act input[type=submit]'
 
   def load

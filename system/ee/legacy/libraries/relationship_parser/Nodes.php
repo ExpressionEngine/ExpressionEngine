@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -152,6 +152,27 @@ class ParseNode extends EE_TreeNode {
 		}
 
 		return $ids;
+	}
+
+	/**
+	 * @param   string  tagdata for the children to parse
+	 * @param   array   the current relationship entry row
+	 * @return string
+	 */
+	public function callback_tagdata_loop_start($tagdata, $row)
+	{
+		// -------------------------------------------
+		// 'relationship_entries_tagdata' hook.
+		//  - Take the related entry data and tag data, do what you wish
+		//
+		if (ee()->extensions->active_hook('relationship_entries_tagdata') === TRUE)
+		{
+			$tagdata = ee()->extensions->call('relationship_entries_tagdata', $tagdata, $row, $this);
+		}
+		//
+		// -------------------------------------------
+
+		return $tagdata;
 	}
 
 	/**

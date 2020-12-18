@@ -2,12 +2,26 @@
   "name": "ExpressionEngine",
   "repository": "https://github.com/ExpressionEngine/ExpressionEngine",
   "private": true,
+  "scripts": {
+    "build:js": "gulp buildJs",
+    "watch:js": "gulp watchJs",
+    "build:old-js": "babel themes/ee/asset/javascript/src/ -x \".es6\" --out-dir themes/ee/asset/javascript/src/",
+    "watch:old-js": "npm run build:old-js -- --watch"
+  },
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-upgrade": "^0.0.23"
-  }
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-react": "^7.7.4",
+    "@types/jquery": "^3.3.31",
+    "@types/react": "^16.9.16",
+    "@types/react-dom": "^16.9.4",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-typescript": "^5.0.1",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {}
 }

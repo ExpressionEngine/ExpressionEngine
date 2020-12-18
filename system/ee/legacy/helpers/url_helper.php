@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,7 +25,7 @@ function cp_url($path, $qs = '')
 	ee()->load->library('logger');
 	ee()->logger->deprecated('3.0', 'ee(\'CP/URL\', \''.$path.'\')');
 
-	$url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+	$url = new \ExpressionEngine\Library\CP\URL(
 		$path,
 		ee()->session->session_id(),
 		$qs,

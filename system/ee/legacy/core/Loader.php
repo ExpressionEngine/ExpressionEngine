@@ -4,11 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use  EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
+use  ExpressionEngine\Library\Core\LoaderFacade;
 
 /**
  * Loader Class
@@ -43,7 +43,7 @@ class EE_Loader {
 		$this->_ci_library_paths = array(APPPATH, BASEPATH);
 		$this->_ci_helper_paths = array(APPPATH, BASEPATH);
 		$this->_ci_model_paths = array(APPPATH);
-		$this->_ci_view_paths = array(SYSPATH.'ee/EllisLab/ExpressionEngine/View/'	=> TRUE);
+		$this->_ci_view_paths = array(SYSPATH.'ee/ExpressionEngine/View/'	=> TRUE);
 
 		$this->set_base_classes();
 

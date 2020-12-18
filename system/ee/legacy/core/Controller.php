@@ -4,12 +4,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
-use  EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\Core\LoaderFacade;
+use  ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Legacy Application Controller Class
@@ -41,7 +41,7 @@ class Controller {
 	 */
 	public static function _setFacade($facade)
 	{
-		if (isset(self::$facade) && get_called_class() != 'EllisLab\ExpressionEngine\Controller\Error\FileNotFound')
+		if (isset(self::$facade) && get_called_class() != 'ExpressionEngine\Controller\Error\FileNotFound')
 		{
 			throw new \Exception('Cannot change the facade after boot');
 		}
@@ -105,7 +105,7 @@ class CP_Controller extends EE_Controller {
 	 * posted 'ee_fv_field' and returns an error message, or success message
 	 * but only if the request was an AJAX request.
 	 *
-	 * @param EllisLab\ExpressionEngine\Service\Validation\Result $result A model validation result
+	 * @param ExpressionEngine\Service\Validation\Result $result A model validation result
 	 * @return array|NULL NULL if the request was not via AJAX, otherwise an
 	 *   an array with an error message or a success notification.
 	 */

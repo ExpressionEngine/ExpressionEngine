@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -209,7 +209,7 @@ class EE_Image_lib {
 				}
 
 				// Is there a file name?
-				if ( ! preg_match("#\.(jpg|jpeg|gif|png)$#i", $full_dest_path))
+				if ( ! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path))
 				{
 					$this->dest_folder = $full_dest_path.'/';
 					$this->dest_image = $this->source_image;
@@ -348,6 +348,18 @@ class EE_Image_lib {
 		}
 
 		return $this->$protocol('resize');
+	}
+
+	function webp()
+	{
+		$protocol = 'image_process_'.$this->image_library;
+
+		if (preg_match('/gd2$/i', $protocol))
+		{
+			$protocol = 'image_process_gd';
+		}
+
+		return $this->$protocol('webp');
 	}
 
 	/**
@@ -505,6 +517,10 @@ class EE_Image_lib {
 
 		$copy($dst_img, $src_img, 0, 0, $this->x_axis, $this->y_axis, $this->width, $this->height, $this->orig_width, $this->orig_height);
 
+		//if we are converting, change image type
+		if ($action == 'webp') {
+			$this->image_type = 18; //IMAGETYPE_WEBP
+		}
 
 		//  Show the image
 		if ($this->dynamic_output == TRUE)
@@ -628,15 +644,15 @@ class EE_Image_lib {
 		//  Build the resizing command
 		switch ($this->image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 						$cmd_in		= 'giftopnm';
 						$cmd_out	= 'ppmtogif';
 				break;
-			case 2 :
+			case IMAGETYPE_JPEG :
 						$cmd_in		= 'jpegtopnm';
 						$cmd_out	= 'ppmtojpeg';
 				break;
-			case 3 :
+			case IMAGETYPE_PNG :
 						$cmd_in		= 'pngtopnm';
 						$cmd_out	= 'ppmtopng';
 				break;
@@ -705,6 +721,7 @@ class EE_Image_lib {
 		{
 			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
 			{
+				ee()->lang->load('image_lib');
 				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
 				return FALSE;
 			}
@@ -843,7 +860,7 @@ class EE_Image_lib {
 	function image_preserve_alpha($new_img, $src_img)
 	{
 		// Preserve transparancies for GIFs and PNGs
-		if ($this->image_type == 1 || $this->image_type == 3)
+		if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG)
 		{
 			$src_alpha_index = imagecolortransparent($src_img);
 
@@ -865,7 +882,7 @@ class EE_Image_lib {
 				imagefill($new_img, 0, 0, $alpha_index);
 				imagecolortransparent($new_img, $alpha_index);
 			}
-			else if ($this->image_type == 3)
+			else if ($this->image_type == IMAGETYPE_PNG)
 			{
 				imagealphablending($new_img, false);
 
@@ -948,19 +965,19 @@ class EE_Image_lib {
 
 		if ($this->wm_vrt_alignment == 'B')
 		{
-			$this->wm_vrt_offset = $this->wm_vrt_offset * -1;
-			$y_padding = $y_padding * -1;
+			$this->wm_vrt_offset = ((int) $this->wm_vrt_offset) * -1;
+			$y_padding = ((int) $y_padding) * -1;
 		}
 
 		if ($this->wm_hor_alignment == 'R')
 		{
-			$this->wm_hor_offset = $this->wm_hor_offset * -1;
-			$x_padding = $x_padding * -1;
+			$this->wm_hor_offset = ((int) $this->wm_hor_offset) * -1;
+			$x_padding = ((int) $x_padding) * -1;
 		}
 
 		//  Set the base x and y axis values
-		$x_axis = $this->wm_hor_offset + $x_padding;
-		$y_axis = $this->wm_vrt_offset + $y_padding;
+		$x_axis = ((int) $this->wm_hor_offset) + ((int) $x_padding);
+		$y_axis = ((int) $this->wm_vrt_offset) + ((int) $y_padding);
 
 		//  Set the vertical position
 		switch ($this->wm_vrt_alignment)
@@ -1008,7 +1025,7 @@ class EE_Image_lib {
 		{
 			// set our RGB value from above to be transparent and merge the images with the specified opacity
 			imagecolortransparent($wm_img, imagecolorat($wm_img, $this->wm_x_transp, $this->wm_y_transp));
-			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, $this->wm_opacity);
+			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, (int) $this->wm_opacity);
 		}
 
 		//  Output the image
@@ -1217,7 +1234,7 @@ class EE_Image_lib {
 
 		switch ($image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 				if ( ! function_exists('imagecreatefromgif'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_gif_not_supported'));
@@ -1226,7 +1243,7 @@ class EE_Image_lib {
 
 				return imagecreatefromgif($path);
 				break;
-			case 2 :
+			case IMAGETYPE_JPEG :
 				if ( ! function_exists('imagecreatefromjpeg'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_jpg_not_supported'));
@@ -1235,7 +1252,7 @@ class EE_Image_lib {
 
 				return imagecreatefromjpeg($path);
 				break;
-			case 3 :
+			case IMAGETYPE_PNG :
 				if ( ! function_exists('imagecreatefrompng'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
@@ -1243,6 +1260,15 @@ class EE_Image_lib {
 				}
 
 				return imagecreatefrompng($path);
+				break;
+			case 18 : //IMAGETYPE_WEBP
+				if ( ! function_exists('imagecreatefromwebp'))
+				{
+					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
+					return FALSE;
+				}
+
+				return imagecreatefromwebp($path);
 				break;
 		}
 
@@ -1264,7 +1290,7 @@ class EE_Image_lib {
 	{
 		switch ($this->image_type)
 		{
-			case 1 :
+			case IMAGETYPE_GIF :
 				if ( ! function_exists('imagegif'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_gif_not_supported'));
@@ -1277,7 +1303,7 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
-			case 2	:
+			case IMAGETYPE_JPEG	:
 				if ( ! function_exists('imagejpeg'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_jpg_not_supported'));
@@ -1290,7 +1316,7 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
-			case 3	:
+			case IMAGETYPE_PNG	:
 				if ( ! function_exists('imagepng'))
 				{
 					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
@@ -1312,12 +1338,23 @@ class EE_Image_lib {
 					return FALSE;
 				}
 				break;
+			case 18	://IMAGETYPE_WEBP
+				if ( ! function_exists('imagewebp'))
+				{
+					$this->set_error(array('imglib_unsupported_imagecreate', 'imglib_webp_not_supported'));
+					return FALSE;
+				}
+				if ( ! @imagewebp($resource, $this->full_dst_path, $this->quality))
+				{
+					$this->set_error('imglib_save_failed');
+					return FALSE;
+				}
+				break;
 			default		:
 				$this->set_error(array('imglib_unsupported_imagecreate'));
 				return FALSE;
 				break;
 		}
-
 		return TRUE;
 	}
 
@@ -1337,14 +1374,17 @@ class EE_Image_lib {
 
 		switch ($this->image_type)
 		{
-			case 1:
+			case IMAGETYPE_GIF:
 				imagegif($resource);
 				break;
-			case 2:
+			case IMAGETYPE_JPEG:
 				imagejpeg($resource, '', $this->quality);
 				break;
-			case 3:
+			case IMAGETYPE_PNG:
 				imagepng($resource);
+				break;
+			case 18: //IMAGETYPE_WEBP
+				imagewebp($resource);
 				break;
 			default:
 				echo 'Unable to display the image';
@@ -1427,7 +1467,7 @@ class EE_Image_lib {
 
 		$vals = @getimagesize($path);
 
-		$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
+		$types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
 
 		$mime = (isset($types[$vals['2']])) ? 'image/'.$types[$vals['2']] : 'image/jpg';
 
@@ -1533,15 +1573,7 @@ class EE_Image_lib {
 	 */
 	function gd_loaded()
 	{
-		if ( ! extension_loaded('gd'))
-		{
-			if (! function_exists('dl') OR ! @dl('gd.so'))
-			{
-				return FALSE;
-			}
-		}
-
-		return TRUE;
+		return extension_loaded('gd');
 	}
 
 	/**
@@ -1572,7 +1604,7 @@ class EE_Image_lib {
 	 */
 	function set_error($msg)
 	{
-		ee()->lang->load('imglib');
+		ee()->lang->load('image_lib');
 
 		if (is_array($msg))
 		{

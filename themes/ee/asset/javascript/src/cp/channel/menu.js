@@ -3,12 +3,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 $(document).ready(function () {
-	$('.sidebar .folder-list .remove a.m-link').click(function (e) {
+	$('.sidebar .folder-list .remove.m-link').click(function (e) {
 		var modalIs = '.' + $(this).attr('rel');
 
 		$(modalIs + " .checklist").html(''); // Reset it

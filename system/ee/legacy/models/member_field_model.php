@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,8 +44,7 @@ class Member_field_model extends CI_Model {
 		if (empty($data['m_field_order'])
 			OR ! is_numeric($data['m_field_order']))
 		{
-			ee()->load->model('member_model');
-			$count = ee()->member_model->count_records('member_fields');
+			$count = ee()->db->count_all('member_fields');
 			$data['m_field_order'] = $count + 1;
 		}
 

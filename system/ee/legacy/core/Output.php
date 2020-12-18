@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -146,6 +146,27 @@ class EE_Output {
 	{
 		$this->cache_expiration = ( ! is_numeric($time)) ? 0 : $time;
 	}
+
+	/**
+	 * add content before closing body tag
+	 */
+	public function add_to_foot($output, $content)
+	{
+		// If the output data contains closing </body> and </html> tags
+		// we will remove them and add them back after we insert the profile data
+		if (preg_match("|</body>.*?</html>|is", $output))
+		{
+			$output  = preg_replace("|</body>.*?</html>|is", '', $output);
+			$output .= $content;
+			$output .= '</body></html>';
+		}
+		else
+		{
+			$output .= $content;
+		}
+		return $output;
+	}
+
 
 	/**
 	 * Display the final output
@@ -335,7 +356,7 @@ class EE_Output {
 
 		// Do we need to generate profile data?
 		// If so, load the Profile service and run it.
-		if ($this->enable_profiler == TRUE && ( ! AJAX_REQUEST OR ee('LivePreview')->hasEntryData()))
+		if ($this->enable_profiler == TRUE && ( ! (AJAX_REQUEST OR ee('LivePreview')->hasEntryData())))
 		{
 			$performance = 	array(
 				'database' => number_format(ee('Database')->currentExecutionTime(), 4),
@@ -364,17 +385,10 @@ class EE_Output {
 				$profiler->addSection('template', ee()->TMPL->log);
 			}
 
-			// If the output data contains closing </body> and </html> tags
-			// we will remove them and add them back after we insert the profile data
-			if (preg_match("|</body>.*?</html>|is", $output))
-			{
-				$output  = preg_replace("|</body>.*?</html>|is", '', $output);
-				$output .= $profiler->render();
-				$output .= '</body></html>';
-			}
-			else
-			{
-				$output .= $profiler->render();
+			if (REQ == 'CP') {
+				$output = str_replace('<div id="output_profiler"></div>', $profiler->render(), $output);
+			} else {
+				$output = $this->add_to_foot($output, $profiler->render());
 			}
 		}
 
@@ -513,8 +527,14 @@ class EE_Output {
 	 * @param	bool
 	 * @return	void
 	 */
-	function show_message($data, $xhtml = TRUE)
+	function show_message($data, $xhtml = TRUE, $redirect_url = FALSE)
 	{
+		// If we have a redirect URL, use that instead of outputting the standard page.
+		if (! empty($redirect_url))
+		{
+			ee()->functions->redirect($redirect_url);
+		}
+
 		@header("Cache-Control: no-cache, must-revalidate");
 		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 		@header("Pragma: no-cache");
@@ -565,19 +585,49 @@ class EE_Output {
 			$data['content'] = ee()->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
 		}
 
-		ee()->db->select('template_data');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('template_name', 'message_template');
-		$query = ee()->db->get('specialty_templates');
+		$template_data = false;
 
-		$row = $query->row_array();
+		// Determine if we have an override template for the system messages.
+		$template_group = ee('Model')->get('TemplateGroup')
+								->filter('site_id', ee()->config->item('site_id'))
+								->filter('group_name', 'system_messages')->first();
+
+		if (! empty($template_group))
+		{
+			$template = ee('Model')->get('Template')
+								->filter('site_id', ee()->config->item('site_id'))
+								->filter('group_id', $template_group->group_id)
+								->filter('template_name', 'generic')->first();
+
+			if (!empty($template) && !empty($template->template_data))
+			{
+				$template_data = $template->template_data;
+
+				if (!isset(ee()->TMPL)) {
+					ee()->load->library('template', NULL, 'TMPL');
+				}
+				ee()->TMPL->parse($template_data);
+				$template_data = ee()->TMPL->parse_globals(ee()->TMPL->final_template);
+			}
+		}
+
+		if (empty($template_data))
+		{
+			ee()->db->select('template_data');
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->where('template_name', 'message_template');
+			$query = ee()->db->get('specialty_templates');
+
+			$row = $query->row_array();
+			$template_data = $row['template_data'];
+		}
 
 		foreach ($data as $key => $val)
 		{
-			$row['template_data']  = str_replace('{'.$key.'}', $val, $row['template_data'] );
+			$template_data  = str_replace('{'.$key.'}', $val, $template_data );
 		}
 
-		$output = stripslashes($row['template_data']);
+		$output = stripslashes($template_data);
 
 		// -------------------------------------------
 		// 'output_show_message' hook.
@@ -604,8 +654,20 @@ class EE_Output {
 	 * @param	string
 	 * @return	void
 	 */
-	function show_user_error($type = 'submission', $errors, $heading = '')
+	function show_user_error($type = 'submission', $errors = '', $heading = '', $redirect_url = '')
 	{
+		// If we have a redirect URL, use that instead of outputting the standard error page.
+		if (! empty($redirect_url))
+		{
+			ee()->session->set_flashdata('errors', $errors);
+			ee()->functions->redirect($redirect_url);
+		}
+		else
+		{
+			// If we're using an error template, kill our flashdata.
+			ee()->session->_age_flashdata();
+		}
+
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
 		$this->set_status_header(403);
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,7 @@ class EE_Functions {
 	public $file_paths         = array();
 	public $conditional_debug  = FALSE;
 	public $catfields          = array();
+	public static $protected_data   = array();
 
 	/**
 	 * Fetch base site index
@@ -336,6 +337,112 @@ class EE_Functions {
 	}
 
 	/**
+	 * Create an encrypted string of form params for the front-end forms.
+	 * @param  array  $params Custom params for specific forms
+	 * @return string         Encoded data
+	 */
+	public function get_protected_form_params($params = array())
+	{
+		// Setup some default params that every front-end form can use.
+		$default_params = array(
+			'return_error' => ee()->TMPL->fetch_param('return_error'),
+			'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
+		);
+
+		// Merge in any custom params.
+		$params = array_merge($default_params, $params);
+
+		return $this->protect_data($params);
+	}
+
+	/**
+	 * Take array data and encode it for use in form posts.
+	 * @param  array $data Array data you want to encode
+	 * @return string      Encoded data
+	 */
+	public function protect_data($data)
+	{
+		if (! is_array($data))
+		{
+			return false;
+		}
+
+		// JSON encode the data (as the encrypt system expects a string) and then encrypt it.
+		return ee('Encrypt')->encode(json_encode($data));
+	}
+
+	/**
+	 * Check for and decode protected form data for use after form submission.
+	 * @return string|array|boolean The decoded data or false if no data exists.
+	 */
+	public function handle_protected()
+	{
+		// Grab the protected data from the posted form.
+		$protected = ee()->input->get_post('P');
+
+		if (! empty($protected))
+		{
+			// Decrypt and json decode the resulting data.
+			self::$protected_data = json_decode(ee('Encrypt')->decode($protected), true);
+
+			// Sanity check that the data decrypted / decoded properly.
+			if (! is_array(self::$protected_data))
+			{
+				self::$protected_data = array();
+			}
+		}
+
+		return self::$protected_data;
+	}
+
+	/**
+	 * Determine the return link based on various factors. Used in form returns.
+	 * @return  string|bool  URL to redirect to or false
+	 */
+	public function determine_return($go_to_index = FALSE)
+	{
+		$return = ee()->input->get_post('RET');
+		$return_link = false;
+
+		if (empty($return) && $go_to_index === TRUE) {
+			// If we don't have a return in the POST and we've specified to go to the site index.
+			$return_link = ee()->functions->fetch_site_index();
+		} elseif (is_numeric($return)) {
+			// If the return is a number, it's a reference to how many pages back we have to go.
+			$return_link = ee()->functions->form_backtrack($return);
+		} elseif (substr(strtolower($return), 0, 4) === 'http') {
+			// If we're using a fully qualified URL, don't modify it.
+			$return_link = $return;
+		} else {
+			// If we're here, the return is a relative URL or template path so prepend the site URL to it.
+			$return_link = ee()->functions->create_url((string) $return);
+		}
+
+		return $return_link;
+	}
+
+	/**
+	 * Determine the return link based on various factors. Used in form returns.
+	 * @return string URL to redirect to
+	 */
+	public function determine_error_return()
+	{
+		// Find out if we have the `return_error` param in our protected data.
+		if (! empty(self::$protected_data['return_error']))
+		{
+			return self::$protected_data['return_error'];
+		}
+		elseif (! empty(self::$protected_data['inline_errors']) && self::$protected_data['inline_errors'] === 'yes')
+		{
+			// If they specified inline errors, return to the page the form submitted from.
+			return ee()->functions->form_backtrack(1);
+		}
+
+		// There was no return page or inline specified so the error will go to the standard output.
+		return false;
+	}
+
+	/**
 	 * Redirect
 	 *
 	 * @access	public
@@ -431,6 +538,7 @@ class EE_Functions {
 			'secure'		=> TRUE,
 			'enctype' 		=> '',
 			'onsubmit'		=> '',
+			'target'		=> ''
 		);
 
 
@@ -491,13 +599,14 @@ class EE_Functions {
 		$data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" '	: '';
 		$data['id']		= ($data['id'] != '') 							? 'id="'.$data['id'].'" ' 		: '';
 		$data['class']	= ($data['class'] != '')						? 'class="'.$data['class'].'" '	: '';
+		$data['target']	= ($data['target'] != '')						? 'target="'.$data['target'].'" '	: '';
 
 		if ($data['enctype'] == 'multi' OR strtolower($data['enctype']) == 'multipart/form-data')
 		{
 			$data['enctype'] = 'enctype="multipart/form-data" ';
 		}
 
-		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
+		$form  = '<form '.$data['id'].$data['class'].$data['name'].$data['target'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
 
 		if ($data['secure'] == TRUE)
 		{
@@ -879,6 +988,7 @@ class EE_Functions {
 			{
 				ee()->cache->delete('/'.$option.'_cache/');
 			}
+			ee('CP/JumpMenu')->clearAllCaches();
 		}
 	}
 
@@ -907,59 +1017,10 @@ class EE_Functions {
 	 */
 	public function fetch_assigned_channels($all_sites = FALSE)
 	{
-		$allowed_channels = array();
-
-		if (REQ == 'CP' AND isset(ee()->session->userdata['assigned_channels']) && $all_sites === FALSE)
-		{
-			$allowed_channels = array_keys(ee()->session->userdata['assigned_channels']);
+		if (ee()->session->getMember()) {
+			return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
 		}
-		elseif (ee()->session->userdata['group_id'] == 1)
-		{
-			if ($all_sites === TRUE)
-			{
-				ee()->db->select('channel_id');
-				$query = ee()->db->get('channels');
-			}
-			else
-			{
-				ee()->db->select('channel_id');
-				ee()->db->where('site_id', ee()->config->item('site_id'));
-				$query = ee()->db->get('channels');
-			}
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$allowed_channels[] = $row['channel_id'];
-				}
-			}
-		}
-		else
-		{
-			if ($all_sites === TRUE)
-			{
-				$result = ee()->db->query("SELECT exp_channel_member_groups.channel_id FROM exp_channel_member_groups
-									  WHERE exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
-			}
-			else
-			{
-				$result = ee()->db->query("SELECT exp_channels.channel_id FROM exp_channels, exp_channel_member_groups
-									  WHERE exp_channels.channel_id = exp_channel_member_groups.channel_id
-									  AND exp_channels.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
-									  AND exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
-			}
-
-			if ($result->num_rows() > 0)
-			{
-				foreach ($result->result_array() as $row)
-				{
-					$allowed_channels[] = $row['channel_id'];
-				}
-			}
-		}
-
-		return array_values($allowed_channels);
+		return [];
 	}
 
 	/**
@@ -1248,16 +1309,16 @@ class EE_Functions {
 				if (strncasecmp($parts[0], 'not ', 4) == 0)
 				{
 					$parts[0] = substr($parts[0], 4);
-					$not = 'NOT';
+					$not = 'NOT ';
 				}
 
 				if ($null === TRUE)
 				{
-					$sql .= "AND ({$prefix}{$field} {$not} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
+					$sql .= "AND ({$prefix}{$field} {$not}IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 				}
 				else
 				{
-					$sql .= "AND {$prefix}{$field} {$not} IN ('".implode("','", $parts)."')";
+					$sql .= "AND {$prefix}{$field} {$not}IN ('".implode("','", $parts)."')";
 				}
 			}
 		}
@@ -1567,7 +1628,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
 	 */
 	public function assign_variables($str = '', $slash = '/')
 	{
@@ -1582,7 +1643,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
 	 */
 	public function full_tag($str, $chunk='', $open='', $close='')
 	{
@@ -1624,7 +1685,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
 	 */
 	public function fetch_date_variables($datestr)
 	{
@@ -1636,7 +1697,7 @@ class EE_Functions {
 	 *
 	 * Deprecated in 4.0.0
 	 *
-	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
+	 * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
@@ -1724,7 +1785,7 @@ class EE_Functions {
 
 		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
-		$runner = \EllisLab\ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
+		$runner = \ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
 
 		if ($bool_safety === TRUE)
 		{
@@ -1750,7 +1811,7 @@ class EE_Functions {
 		{
 			return $runner->processConditionals($str, $vars);
 		}
-		catch (\EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
+		catch (\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
 		{
 			$thrower = str_replace(
 				array('\\', 'Conditional', 'Exception'),
@@ -1760,7 +1821,7 @@ class EE_Functions {
 
 			if (ee()->config->item('debug') == 2
 				OR (ee()->config->item('debug') == 1
-					&& ee()->session->userdata('group_id') == 1))
+					&& ee('Permission')->isSuperAdmin()))
 			{
 				$error = lang('error_invalid_conditional') . "\n\n";
 				$error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();
@@ -1814,7 +1875,7 @@ class EE_Functions {
 		$str = str_replace("%uFFD4", "\'",		$str);
 		$str = str_replace("%uFFD5", "\'",		$str);
 
-		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/","'&#'.base_convert('\\1',16,10).';'", $str);
 
 		$str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 

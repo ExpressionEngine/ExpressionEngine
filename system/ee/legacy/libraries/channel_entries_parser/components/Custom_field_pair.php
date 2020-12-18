@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -155,6 +155,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					}
 
 					list($modifier, $content, $params, $chunk) = $chk_data;
+
+
 
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not

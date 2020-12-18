@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -487,7 +487,9 @@ class Grid_parser {
 					),
 					$channel_row,
 					$content,
-					$content_type
+					$content_type,
+					!empty($row['orig_row_id']) ? $row['orig_row_id'] : $row['row_id'],
+					!empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
 				);
 
 				// Replace tag pair
@@ -508,7 +510,9 @@ class Grid_parser {
 					$field,
 					$channel_row,
 					FALSE,
-					$content_type
+					$content_type,
+					!empty($row['orig_row_id']) ? $row['orig_row_id'] : $row['row_id'],
+					!empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
 				);
 			}
 			// Check to see if this is a field in the table for
@@ -711,9 +715,11 @@ class Grid_parser {
 	 * @param	string	Field data to send to fieldtype for processing and
 	 * 					parsing
 	 * @param	string	Tag data for tag pairs being parsed
+	 * @param	string	Original row ID ('new_row_X' for new rows)
+	 * @param	string	ID of Fluid wield, if Grid is in Fluid
 	 * @return	string	Tag data with all Grid fields parsed
 	 */
-	protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = FALSE, $content_type = 'channel')
+	protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = FALSE, $content_type = 'channel', $orig_row_id = NULL, $fluid_field_data_id = 0)
 	{
 		$fieldtype = $this->instantiate_fieldtype($column, NULL, $field_id, $entry_id, $content_type);
 
@@ -736,6 +742,10 @@ class Grid_parser {
 
 		// Add row ID to settings array
 		$fieldtype->settings['grid_row_id'] = $row_id;
+
+		$fieldtype->settings['grid_orig_row_id'] = !empty($orig_row_id) ? $orig_row_id : $row_id;
+
+		$fieldtype->settings['fluid_field_data_id'] = $fluid_field_data_id;
 
 		$data = $this->call('pre_process', $data['col_id_'.$column['col_id']]);
 

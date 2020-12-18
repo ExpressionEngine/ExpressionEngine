@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -987,7 +987,11 @@ class EE_Table {
 			{
 				if (empty($link)) continue;
 
-				$url = clone $this->base_url;
+				if (is_object($this->base_url)) {
+					$url = clone $this->base_url;
+				} else {
+					$url = ee('CP/URL', $this->base_url);
+				}
 
 				$offset = str_replace('/', '', $link['pagination_url']);
 				if ( ! empty($offset))

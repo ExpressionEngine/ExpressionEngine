@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -33,9 +33,11 @@ if ( ! function_exists('force_download'))
 		}
 
 		ee()->load->library('mime_type');
+		ee()->load->helper('multibyte');
+
 		$mime = ee()->mime_type->ofBuffer($data);
 
-		$len = (function_exists('mb_strlen')) ? mb_strlen($data, '8bit') : strlen($data);
+		$len = ee_mb_strlen($data, '8bit');
 
 		// Generate the server headers
 		if (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") !== FALSE)

@@ -4,9 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+namespace ExpressionEngine\Updater\Version_3_0_5;
 
 /**
  * Update
@@ -24,7 +26,7 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'install_required_modules',
 			)
@@ -44,7 +46,9 @@ class Updater {
 	 */
 	public function install_required_modules()
 	{
-		ee()->load->library('addons');
+		if(!isset(ee()->addons)) {
+			ee()->load->library('addons');
+		}
 
 		$installed_modules = ee()->db->select('module_name')->get('modules');
 		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');

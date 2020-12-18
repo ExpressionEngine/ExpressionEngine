@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -57,16 +57,16 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('> tbody');
-	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
+	this.rowContainer = this.root.find('.grid-field__table > tbody');
+	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
-	this.reorderHandleContainerSelector = 'th.reorder-col, td.reorder-col';
+	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'td:last-child .toolbar .remove:has(a[rel=remove_row])';
+	this.deleteButtonsSelector = '[rel=remove_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -170,9 +170,13 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				},
 				// Fire 'afterSort' event on sort stop
 				afterSort: function(row) {
+					// Jquery sortable sets the display property to table-cell, which breaks the grid styles, so remove it
+					row.removeAttr("style");
+
 					that._fireEvent('afterSort', row);
 					$(document).trigger('entry:preview');
-				}
+				},
+				handle: '.js-grid-reorder-handle'
 			};
 
 		params = $.extend(params, this.sortableParams);
@@ -185,6 +189,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		
 		// File Grid minimum row count validated on server
 		if (this.isFileGrid) {
 			return
@@ -192,7 +197,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Figure out how many rows we need to add
 		var rowsCount = this._getRows().size(),
+			neededRows = 0;
+
+		if (typeof(this.settings)!=='undefined')
+		{
 			neededRows = this.settings.grid_min_rows - rowsCount;
+		}
 
 		// Show empty field message if field is empty and no rows are needed
 		if (rowsCount == 0 && neededRows == 0) {
@@ -217,22 +227,27 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Show add button below field when there are more than zero rows
 		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
-		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
 		if (this.header) {
 			this.header.toggle(showControls);
 		}
 
-		if (this.settings.grid_max_rows !== '') {
-			// Show add button if row count is below the max rows setting,
-			// and only if there are already other rows present
-			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
-		}
+		if (typeof(this.settings)!=='undefined')
+		{
+			if (this.settings.grid_max_rows !== '') {
+				// Show add button if row count is below the max rows setting,
+				// and only if there are already other rows present
+				this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
+				if (this.isFileGrid) {
+					this.root.closest('.js-file-grid').find('div[data-file-grid-react]').toggle(rowCount < this.settings.grid_max_rows && rowCount >= 0);
+				}
+			}
 
-		if (this.settings.grid_min_rows !== '') {
-			// Show delete buttons if the row count is above the min rows setting
-			$(this.deleteButtonsSelector, this.root).toggle(rowCount > this.settings.grid_min_rows);
+			if (this.settings.grid_min_rows !== '') {
+				// Show delete buttons if the row count is above the min rows setting
+				$(this.deleteButtonsSelector, this.root).toggle(rowCount > this.settings.grid_min_rows);
+			}
 		}
 
 		// Do not allow sortable to run when there is only one row, otherwise
@@ -267,7 +282,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindAddButton: function() {
 		var that = this;
 
-		$('a[rel=add_row]', this.parentContainer)
+		$('[rel=add_row]', this.parentContainer)
 			.add('.tbl-action a.add', this.root)
 			.on('click', function(event) {
 				event.preventDefault();
@@ -337,7 +352,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', 'a[rel=remove_row]', function(event) {
+		this.root.on('click', that.deleteButtonsSelector, function(event) {
 			event.preventDefault();
 
 			var row = $(this).closest(that.rowSelector);
@@ -852,7 +867,6 @@ Grid.Settings.prototype = {
 
 				if ($(this).prop('checked')) {
 					new_input.attr('checked', 'checked');
-					console.log(new_input);
 				}
 			}
 			// Handle textareas
@@ -905,7 +919,11 @@ Grid.Settings.prototype = {
  */
 EE.grid = function(field, settings) {
 	if (settings == undefined) {
-		settings = $(field).data('grid-settings');
+		if ($(field).is('[grid-settings]')) {
+			settings = $(field).data('grid-settings');
+		} else {
+			settings = $(field).find('.grid-field__table').first().data('grid-settings');
+		}
 	}
 
 	return new Grid.Publish(field, settings);
@@ -926,7 +944,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 
 $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
-  		EE.grid($('table', el));
+  		EE.grid($('div', el));
 	});
 });
 

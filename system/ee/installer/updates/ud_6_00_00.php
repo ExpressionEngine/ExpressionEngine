@@ -1,129 +1,66 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Version_6_0_0;
+namespace ExpressionEngine\Updater\Version_6_0_0;
 
 /**
  * Update
  */
-class Updater {
+class Updater
+{
 
-	var $version_suffix = '';
+    public $version_suffix = '';
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			[
-				'addConfigTable',
-			]
-		);
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator([
+            'removeExtraPubishControlSetting',
+            'addPostInstallMessageTemplate',
+        ]);
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		return TRUE;
-	}
+        return true;
+    }
 
-	private function addConfigTable()
-	{
-		if (ee()->db->table_exists('config'))
-		{
-			return;
-		}
+    private function removeExtraPubishControlSetting()
+    {
+        ee()->smartforge->drop_column('channels', 'extra_publish_controls');
+    }
 
-		// Create table
-		ee()->dbforge->add_field(
-			[
-				'config_id' => [
-					'type'           => 'int',
-					'constraint'     => 10,
-					'unsigned'       => TRUE,
-					'null'           => FALSE,
-					'auto_increment' => TRUE
-				],
-				'site_id'   => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'unsigned'   => TRUE,
-					'null'       => FALSE,
-					'default'    => 0
-				],
-				'key'       => [
-					'type'       => 'varchar',
-					'constraint' => 64,
-					'null'       => FALSE,
-					'default'    => '',
-				],
-				'value'     => [
-					'type'       => 'text',
-				],
-			]
-		);
-		ee()->dbforge->add_key('config_id', TRUE);
-		ee()->dbforge->add_key(['site_id', 'key']);
-		ee()->smartforge->create_table('config');
+    protected function addPostInstallMessageTemplate()
+    {
+        $sites = ee('Model')->get('Site')->all();
+        require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
 
-		// Populate table with existing config values
-		$sites = ee()->db->get('sites');
+        foreach ($sites as $site) {
+            ee('Model')->make('SpecialtyTemplate')
+                ->set([
+                    'template_name' => 'post_install_message_template',
+                    'template_type' => 'system',
+                    'template_subtype' => null,
+                    'data_title' => '',
+                    'template_data' => post_install_message_template(),
+                    'site_id' => $site->site_id,
+                ])->save();
+        }
+    }
 
-		$prefs = [
-			'site_channel_preferences',
-			'site_member_preferences',
-			'site_system_preferences',
-			'site_template_preferences'
-		];
-
-		foreach ($sites->result_array() as $site)
-		{
-			$site_id = $site['site_id'];
-			foreach ($prefs as $pref)
-			{
-				$data = unserialize(base64_decode($site[$pref]));
-				foreach ($data as $key => $value)
-				{
-					ee('Model')->make('Config', [
-						'site_id' => $site_id,
-						'key' => $key,
-						'value' => $value
-					])->save();
-				}
-			}
-		}
-
-		// Drop the columns from the sites table
-		foreach ($prefs as $pref)
-		{
-			ee()->smartforge->drop_column('sites', $pref);
-		}
-
-		foreach (ee()->config->divination('install') as $pref)
-		{
-			$value = ee()->config->item($pref);
-
-			if ($value)
-			{
-				ee('Model')->make('Config', [
-					'site_id' => 0,
-					'key' => $pref,
-					'value' => $value
-				])->save();
-			}
-		}
-	}
 }
 
 // EOF

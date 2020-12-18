@@ -12,11 +12,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -25,7 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Dropdown =
@@ -40,7 +40,7 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Dropdown).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectionChanged", function (selected) {
+    _defineProperty(_assertThisInitialized(_this), "selectionChanged", function (selected) {
       _this.setState({
         selected: selected,
         open: false
@@ -51,7 +51,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "toggleOpen", function () {
+    _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {
       _this.setState(function (prevState, props) {
         return {
           open: !prevState.open
@@ -104,13 +104,17 @@ function (_React$Component) {
       var tooMany = this.props.items.length > this.props.tooMany && !this.state.loading;
       var selected = this.state.selected;
       return React.createElement("div", {
-        className: "fields-select-drop" + (tooMany ? ' field-resizable' : '')
+        className: "select" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
-        className: "field-drop-selected" + (this.state.open ? ' field-open' : ''),
+        className: "select__button",
         onClick: this.toggleOpen
       }, React.createElement("label", {
-        className: this.state.selected ? 'act' : ''
-      }, selected && React.createElement("i", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', selected.label), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
+        className: 'select__button-label' + (this.state.selected ? ' act' : '')
+      }, selected && React.createElement("span", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
+        dangerouslySetInnerHTML: {
+          __html: selected.label
+        }
+      })), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
         type: "hidden",
         ref: function ref(input) {
           _this2.input = input;
@@ -119,16 +123,15 @@ function (_React$Component) {
         value: this.state.selected ? this.state.selected.value : '',
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
       }))), React.createElement("div", {
-        className: "field-drop-choices",
-        style: this.state.open ? {
-          display: 'block'
-        } : {}
-      }, this.props.initialCount > this.props.tooMany && React.createElement(FieldTools, null, React.createElement(FilterBar, null, React.createElement(FilterSearch, {
+        className: "select__dropdown"
+      }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
+        className: "select__dropdown-search"
+      }, React.createElement(FieldTools, null, React.createElement(FilterBar, null, React.createElement(FilterSearch, {
         onSearch: function onSearch(e) {
           return _this2.handleSearch(e.target.value);
         }
-      }))), React.createElement("div", {
-        className: "field-inputs"
+      })))), React.createElement("div", {
+        className: "select__dropdown-items"
       }, this.props.items.length == 0 && React.createElement(NoResults, {
         text: this.props.noResults
       }), this.state.loading && React.createElement(Loading, {
@@ -173,23 +176,27 @@ function DropdownItem(props) {
 
   if (item.section) {
     return React.createElement("div", {
-      className: "field-group-head"
+      className: "select__dropdown-item select__dropdown-item--head"
     }, React.createElement("span", {
       className: "icon--folder"
     }), " ", item.section);
   }
 
-  return React.createElement("label", {
+  return React.createElement("div", {
     onClick: props.onClick,
-    className: props.selected ? 'act' : ''
-  }, item.label, " ", item.instructions && React.createElement("i", null, item.instructions));
+    className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')
+  }, React.createElement("span", {
+    dangerouslySetInnerHTML: {
+      __html: item.label
+    }
+  }), item.instructions && React.createElement("i", null, item.instructions));
 }
 
 $(document).ready(function () {
   Dropdown.renderFields(); // Close when clicked elsewhere
 
   $(document).on('click', function (e) {
-    $('.field-drop-selected.field-open').not($(e.target).parents('.fields-select-drop').find('.field-drop-selected.field-open')).click();
+    $('.select.select--open').not($(e.target).closest('.select')).find('.select__button').click();
   });
 });
 Grid.bind('select', 'display', function (cell) {

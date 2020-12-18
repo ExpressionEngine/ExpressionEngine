@@ -4,11 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Version_4_3_3;
+namespace ExpressionEngine\Updater\Version_4_3_3;
 
 /**
  * Update
@@ -47,7 +47,7 @@ class Updater {
 		$valid = ee()->admin_model->get_xml_encodings();
 
 		// Get the current channel_lang setting for each channel
-		$channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_lang');
+		$channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_lang')->all()->getDictionary('channel_id', 'channel_lang');
 
 		foreach ($channels as $channel_id => $lang)
 		{

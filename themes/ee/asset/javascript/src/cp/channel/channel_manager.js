@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -53,13 +53,9 @@ var options = {
                 swatches: ['FA5252', 'FD7E14', 'FCC419', '40C057', '228BE6', 'BE4BDB', 'F783AC'],
 
                 onChange: function(newColor) {
-                    // Change background and border colors
-                    status_tag.style.backgroundColor = newColor;
+                    // Change colors
+                    status_tag.style.color = newColor;
                     status_tag.style.borderColor = newColor;
-
-                    // Set foreground color
-                    var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
-                    status_tag.style.color = foregroundColor;
                 }
             }, null), newContainer);
         });

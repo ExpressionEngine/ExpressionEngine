@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -87,11 +87,11 @@ class DragAndDropUpload extends React.Component {
     })
 
     let highlight = (e) => {
-      this.dropZone.classList.add('field-file-upload--drop')
+      this.dropZone.classList.add('file-field__dropzone--dragging')
     }
 
     let unhighlight = (e) => {
-      this.dropZone.classList.remove('field-file-upload--drop')
+      this.dropZone.classList.remove('file-field__dropzone--dragging')
     }
 
     ;['dragenter', 'dragover'].forEach(eventName => {
@@ -297,7 +297,7 @@ class DragAndDropUpload extends React.Component {
 
     let subheading = this.state.directory == 'all'
       ? EE.lang.file_dnd_choose_directory
-      : EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
+      : EE.lang.file_dnd_upload_to + ' '
 
     if (this.state.pendingFiles) {
       heading = EE.lang.file_dnd_choose_file_directory
@@ -306,8 +306,35 @@ class DragAndDropUpload extends React.Component {
 
     return (
       <React.Fragment>
-        <div className={"field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' field-file-upload---warning' : '') + (this.state.error ? ' field-file-upload---invalid' : '')}
-          ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
+        <div className={"file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')} >
+          {this.state.files.length  == 0 &&
+          <div className="file-field__dropzone" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
+          {this.state.files.length == 0 && <>
+            <div className="file-field__dropzone-title">{heading}</div>
+            <div class="file-field__dropzone-button">
+                {subheading}
+                {this.state.directory == 'all' && ':'}
+                {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
+                &nbsp;
+                {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
+                    <DropDownButton key={EE.lang.file_dnd_choose_existing}
+                        action={this.state.directory == 'all'}
+                        center={true}
+                        keepSelectedState={true}
+                        title={EE.lang.file_dnd_choose_directory_btn}
+                        placeholder={EE.lang.file_dnd_filter_directories}
+                        items={EE.dragAndDrop.uploadDesinations}
+                        onSelect={(directory) => this.setDirectory(directory)}
+                        buttonClass="button--default button--small"
+                    />
+                }
+            </div>
+
+            <div class="file-field__dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            </>
+          }
+          </div>
+            }
           {this.state.files.length > 0 &&
             <FileUploadProgressTable
               files={this.state.files}
@@ -317,40 +344,27 @@ class DragAndDropUpload extends React.Component {
               }}
               onResolveConflict={(file, response) => this.resolveConflict(file, response)}
             />}
-          {this.state.files.length == 0 && <div className="field-file-upload__content">
-            {heading}
-            <em>{subheading}</em>
-          </div>}
-          {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
-            <div className="field-file-upload__controls">
-              <FilterSelect key={EE.lang.file_dnd_choose_existing}
-                action={this.state.directory == 'all'}
-                center={true}
-                keepSelectedState={true}
-                title={EE.lang.file_dnd_choose_directory_btn}
-                placeholder={EE.lang.file_dnd_filter_directories}
-                items={EE.dragAndDrop.uploadDesinations}
-                onSelect={(directory) => this.setDirectory(directory)}
-              />
-            </div>
-          }
         </div>
 
+        <div className="file-field__buttons">
         {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
           <React.Fragment>
-            <a href="#" className="btn action m-link" rel="modal-file" onClick={(e) => {
+            <div className="button-segment">
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.chooseExisting(this.state.directory)
-            }}>{EE.lang.file_dnd_choose_existing}</a>&nbsp;
-            <a href="#" className="btn action m-link" rel="modal-file" onClick={(e) => {
+            }}>{EE.lang.file_dnd_choose_existing}</a>
+
+            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
+            </div>
           </React.Fragment>
         }
         {this.props.showActionButtons && this.props.allowedDirectory == 'all' && (
-          <div className="filter-bar filter-bar--inline">
-            <FilterSelect key={EE.lang.file_dnd_choose_existing}
+          <div className="button-segment">
+            <DropDownButton key={EE.lang.file_dnd_choose_existing}
               action={true}
               keepSelectedState={false}
               title={EE.lang.file_dnd_choose_existing}
@@ -359,9 +373,10 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.chooseExisting(directory)}
               rel="modal-file"
               itemClass="m-link"
+              buttonClass="button--default button--small"
             />
 
-            <FilterSelect key={EE.lang.file_dnd_upload_new}
+            <DropDownButton key={EE.lang.file_dnd_upload_new}
               action={true}
               keepSelectedState={false}
               title={EE.lang.file_dnd_upload_new}
@@ -370,9 +385,11 @@ class DragAndDropUpload extends React.Component {
               onSelect={(directory) => this.uploadNew(directory)}
               rel="modal-file"
               itemClass="m-link"
+              buttonClass="button--default button--small"
             />
           </div>
         )}
+        </div>
       </React.Fragment>
     )
   }

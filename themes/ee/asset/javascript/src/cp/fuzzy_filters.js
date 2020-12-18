@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -240,8 +240,8 @@ $.fn.fuzzyFilter = function() {
 		$(this).data('fuzzyFilterActive', true);
 
 		var input = $(this);
-		var list = $(this).closest('.sub-menu, .nav-sub-menu, .filter-submenu')
-			.find('ul, .filter-submenu__scroll');
+		var list = $(this).closest('.sub-menu, .nav-sub-menu, .filter-submenu, .dropdown')
+			.find('ul, .filter-submenu__scroll, .dropdown__scroll');
 
 		var focusBar = new ListFocus(list);
 		var fuzzyList = new FuzzyListSearch(list, {
