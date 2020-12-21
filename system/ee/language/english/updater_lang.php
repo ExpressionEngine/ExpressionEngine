@@ -50,6 +50,9 @@ $lang = array(
 'updateAddons_step' =>
 'Checking addons for automatic updates',
 
+'turnSystemOn_step' =>
+'Turning system on',
+
 'files_not_writable' =>
 'The following paths are not writable:
 
