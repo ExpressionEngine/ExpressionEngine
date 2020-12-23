@@ -35,7 +35,7 @@ class NavigationSidebar extends AbstractSidebar
 
         $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('home');
 
-        if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->can('admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
+        if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
             $section = $this->addSection(lang('nav_content'));
 
             if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries')) {
@@ -50,23 +50,23 @@ class NavigationSidebar extends AbstractSidebar
                 foreach ($cp_main_menu['channels']['all'] as $channel_name => $link) {
                     $url = isset($cp_main_menu['channels']['edit'][$channel_name]) ? $cp_main_menu['channels']['edit'][$channel_name] : '#';
                     $listitem = $list->addItem($channel_name, $url);
-                    if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])) {
+                    if (ee('Permission')->has('can_create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])) {
                         $listitem->withAddLink($cp_main_menu['channels']['create'][$channel_name]);
                     }
                 }
             }
-            if (ee('Permission')->can('access_files')) {
+            if (ee('Permission')->has('can_access_files')) {
                 $section->addItem(lang('menu_files'), ee('CP/URL', 'files'))->withIcon('folder');
             }
-            if (ee('Permission')->can('admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories')) {
+            if (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories')) {
                 $section->addItem(lang('categories'), ee('CP/URL', 'categories'))->withIcon('tags');
             }
         }
 
-        if (ee('Permission')->hasAny('access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles'))
+        if (ee('Permission')->hasAny('can_access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles'))
         {
             $section = $this->addSection(lang('members'));
-            if (ee('Permission')->can('access_members')) {
+            if (ee('Permission')->has('can_access_members')) {
                 $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
                 if (ee()->uri->segment(3) == 'roles') {
                     $item->isInactive();
@@ -83,12 +83,12 @@ class NavigationSidebar extends AbstractSidebar
 
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
-            if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites')) {
+            if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->has('can_admin_sites')) {
                 $section->addItem(lang('msm_manager'), ee('CP/URL')->make('msm'))->withIcon('globe');
             }
 
             if (
-                ee('Permission')->can('admin_channels') &&
+                ee('Permission')->has('can_admin_channels') &&
                 ee('Permission')->hasAny(
                     'can_create_channels',
                     'can_edit_channels',
@@ -108,14 +108,14 @@ class NavigationSidebar extends AbstractSidebar
                 $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('i-cursor');
             }
 
-            if (ee('Permission')->can('access_design')) {
+            if (ee('Permission')->has('can_access_design')) {
                 $section->addItem(lang('templates'), ee('CP/URL')->make('design'))->withIcon('file');
             }
 
             $tools = [];
 
 
-            if (ee('Permission')->can('access_utilities')) {
+            if (ee('Permission')->has('can_access_utilities')) {
 
                 $utility_options = array(
                     'can_access_comm' => ee('CP/URL')->make('utilities'),
@@ -136,13 +136,13 @@ class NavigationSidebar extends AbstractSidebar
                 // If so, land on extension debug page
 
                 if (! isset($tools['utilities'])) {
-                    if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
+                    if (ee('Permission')->has('can_access_addons') && ee('Permission')->has('can_admin_addons')) {
                         $tools['utilities'] = ee('CP/URL')->make('utilities/extensions');
                     }
                 }
             }
 
-            if (ee('Permission')->can('access_logs')) {
+            if (ee('Permission')->has('can_access_logs')) {
                 $tools['logs'] = ee('CP/URL')->make('logs');
             }
 
@@ -158,11 +158,11 @@ class NavigationSidebar extends AbstractSidebar
                 }
             }
 
-            if (ee('Permission')->can('access_addons')) {
+            if (ee('Permission')->has('can_access_addons')) {
                 $section->addItem(lang('addons'), ee('CP/URL', 'addons'))->withIcon('puzzle-piece');
             }
 
-            if (ee('Permission')->can('access_sys_prefs')) {
+            if (ee('Permission')->has('can_access_sys_prefs')) {
                 $section->addItem(lang('nav_settings'), ee('CP/URL', 'settings'))->withIcon('cog');
             }
         }
