@@ -2,6 +2,8 @@
 
 $lang = [
 
+'consent_module_name' => 'Consent',
+
 'consent_app_created' => '(App Created)',
 
 'consent_granted_by_log_msg' => 'consent granted by %s via %s',
