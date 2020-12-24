@@ -2495,7 +2495,12 @@ class Channel {
 
 		}
 
-		$chunks = array_chunk($fields, 50);
+		//MySQL has limit of 61 joins, so we need to make sure to not hit it
+		$join_limit = 61 - 4;
+		if (!empty($this->mfields)) {
+			$join_limit = $join_limit - 1 - count($this->mfields);
+		}
+		$chunks = array_chunk($fields, $join_limit);
 
 		$chunk = (array_shift($chunks)) ?: array();
 
