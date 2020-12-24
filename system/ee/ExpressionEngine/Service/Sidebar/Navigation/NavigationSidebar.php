@@ -31,8 +31,6 @@ class NavigationSidebar extends AbstractSidebar
             return $this->items;
         }
 
-        $cp_main_menu = ee()->menu->generate_menu();
-
         $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('home');
 
         if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
@@ -47,11 +45,34 @@ class NavigationSidebar extends AbstractSidebar
                 $list = $section->addList(lang('menu_entries'));
                 $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
 
-                foreach ($cp_main_menu['channels']['all'] as $channel_name => $link) {
-                    $url = isset($cp_main_menu['channels']['edit'][$channel_name]) ? $cp_main_menu['channels']['edit'][$channel_name] : '#';
-                    $listitem = $list->addItem($channel_name, $url);
-                    if (ee('Permission')->has('can_create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])) {
-                        $listitem->withAddLink($cp_main_menu['channels']['create'][$channel_name]);
+                $channels = ee('Model')->get('Channel')
+                    ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+                    ->order('channel_title', 'ASC');
+                foreach ($channels->all() as $channel) {
+                    $editLink = null;
+                    $publishLink = null;
+                    if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId())) {
+                        // Only add Create link if channel has room for more entries
+                        if (empty($channel->max_entries) OR ($channel->max_entries != 0 && $channel->total_records < $channel->max_entries)) {
+                            $publishLink = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+                        }
+                    }
+                    if (ee('Permission')->hasAny('can_edit_other_entries_channel_id_' . $channel->getId(), 'can_edit_self_entries_channel_id_' . $channel->getId())) {
+                        $editLink = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
+                        // If there's a limit of 1, just send them to the edit screen for that entry
+                        if (!empty($channel->max_entries) && $channel->total_records == 1 && $channel->max_entries == 1) {
+                            $entry = ee('Model')->get('ChannelEntry')
+                                ->filter('channel_id', $channel->channel_id)
+                                ->first();
+                            // Just in case $channel->total_records is inaccurate
+                            if ($entry) {
+                                $editLink = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+                            }
+                        }
+                    }
+                    $listitem = $list->addItem($channel->channel_title, $editLink ?: '#');
+                    if (!empty($publishLink)) {
+                        $listitem->withAddLink($publishLink);
                     }
                 }
             }
