@@ -47,6 +47,7 @@ class NavigationSidebar extends AbstractSidebar
 
                 $channels = ee('Model')->get('Channel')
                     ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+                    ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title', 'ASC');
                 foreach ($channels->all() as $channel) {
                     $editLink = null;
