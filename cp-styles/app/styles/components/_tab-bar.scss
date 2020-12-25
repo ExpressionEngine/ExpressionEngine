@@ -1,0 +1,274 @@
+
+.tab-bar {
+	display: flex;
+	flex-wrap: wrap-reverse;
+	margin-bottom: $s-m;
+  position: relative;
+
+	border-bottom: 2px solid color(tab-bar-border);
+
+	// Make the tabs bigger and more clickable on mobile
+	@include m-tablet-down {
+		&:not(.tab-bar--editable) {
+			border-bottom: 0;
+
+			.tab-bar__tabs {
+				border-radius: $border-radius-base;
+				overflow: hidden;
+				width: 100%;
+				margin-bottom: $s-s;
+				border: 1px solid color(bg-10);
+        background-color: color(bg-0);
+				// box-shadow: 0 2px 10px rgba(#000, 0.05);
+			}
+
+			.tab-bar__tab {
+				white-space: nowrap;
+				border-radius: 0;
+				padding: $sq-inset-s;
+				margin: 0;
+				// background: color(bg-0);
+				flex: 1 1;
+				text-align: center;
+        border: 1px solid transparent;
+
+        &:first-child {
+          margin-left: -1px;
+        }
+
+        &:last-child {
+          margin-right: -1px;
+        }
+
+				&.active {
+					border-bottom: 0;
+					background: color(bg-blank);
+          border-radius: $border-radius-base;
+          border: 1px solid color(bg-10);
+          margin-top: -1px;
+          margin-bottom: -1px;
+				}
+
+				&.invalid, &.invalid:hover {
+					border-bottom: 0;
+					margin-bottom: 0;
+					color: color(error);
+				}
+
+				&.highlight {
+					// background-color: color;
+					border-color: color(warning);
+				}
+			}
+		}
+	}
+}
+
+.tab-bar--sticky {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0px;
+	background: color(panel-bg);
+	z-index: 5;
+	box-shadow: 0 20px 20px color(panel-bg);
+
+	// When the tabs collapse
+	@include m-tablet-down {
+		box-shadow: 0 15px 15px -15px color(shadow-dropdown);
+
+		// margin-right: -40px;
+		// margin-left: -40px;
+		// padding: 0 40px 10px 40px;
+    padding-bottom: 10px;
+		// border-bottom: 2px solid color(border) !important;
+	}
+
+	@include m-mobile-down {
+		margin-right: -20px;
+		margin-left: -20px;
+		padding: 0 20px 10px 20px;
+	}
+
+	.tab-bar__tab {
+		padding: 20px 0;
+	}
+}
+
+.tab-bar__right-buttons {
+	margin-left: auto;
+	display: flex;
+	align-self: center;
+	justify-content: center;
+
+	// When the tabs collapse
+	@include m-tablet-down {
+		flex: 1 1;
+		margin-bottom: 10px;
+		margin-top: 20px;
+	}
+}
+
+.tab-bar__tabs {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.tab-bar__tab {
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent;
+	border: none;
+	position: relative;
+	cursor: pointer;
+	display: block;
+	padding: $s-s 0;
+	padding-top: 0;
+	margin-right: $s-m;
+	color: color(text-secondary);
+
+	&:hover {
+		color: color(text-secondary);
+	}
+
+	// &:hover,
+	&.active {
+		color: color(accent);
+		border-bottom: 2px solid color(accent);
+		margin-bottom: -2px;
+	}
+
+	&.invalid, &.invalid:hover {
+		color: color(error);
+		border-color: color(error);
+	}
+
+	&:focus {
+		outline: none;
+		// box-shadow: 0 0 0 2px color(bg-5), 0 0 0 4px color(keyboard-focus);
+    box-shadow: none;
+	}
+}
+
+.tab-bar__tab-notification {
+	$bubble-size: 16px;
+
+	position: relative;
+	display: inline-block;
+	width: $bubble-size;
+	height: $bubble-size;
+	line-height: $bubble-size;
+	top: -2px;
+
+	border-radius: 50%;
+	text-align: center;
+	font-size: 11px;
+	color: #fff;
+	background: color(notification);
+}
+
+
+.tab {
+	display: none;
+}
+
+.tab-open {
+	display: block;
+}
+
+.tab-bar__right-button {
+	position: absolute;
+  bottom: 7px;
+  right: 0;
+}
+
+.tab-bar--editable {
+	// background: color(bg-10);
+	// border-color: color(bg-10);
+	// border-radius: $corners-big;
+	// padding: 0 $sq-s;
+
+	@include m-tablet-down {
+		padding: $s-s $sq-s $sq-s 0;
+
+		.tab-bar__tabs {
+			width: 100%;
+			flex-direction: column;
+		}
+
+		.tab-bar__tab {
+			width: 100%;
+			border-bottom: 0;
+			border-left: 4px solid transparent;
+			padding-left: $s-s;
+
+			&.active, &:hover {
+				border-left: 4px solid color(accent);
+				margin-bottom: 0;
+			}
+		}
+
+		.tab-bar__right-button {
+			margin-left: $s-s + 4px;
+		}
+	}
+
+	.tab-remove,
+	.tab-on,
+	.tab-off{
+		cursor: pointer;
+
+		&:before{
+			@extend %fa-icon;
+			@extend .fas;
+
+			// position: relative;
+			display: inline;
+			// margin-left: $s-xs;
+			padding: 4px;
+			// top: -1px;
+			transform: translateY(-1px);
+			z-index: 1;
+			font-size: 11px;
+
+			@include m-tablet-down {
+				position: absolute;
+			}
+		}
+	}
+
+	.tab-remove:before {
+		color: color(brand-primary);
+		content: fa-content($fa-var-trash-alt);
+		right: 10px;
+		top: 13px;
+
+		@include m-tablet-up {
+				right: 0;
+				top: 3px;
+			}
+	}
+
+	.tab-off:before{
+		color: color(brand-primary);
+		content: fa-content($fa-var-eye-slash);
+		right: 10px;
+		top: 12px;
+
+		@include m-tablet-up {
+			right: 0;
+			top: 3px;
+		}
+	}
+
+	.tab-on:before{
+		color: color(brand-primary);
+		content: fa-content($fa-var-eye);
+		right: 10px;
+		top: 12px;
+
+			@include m-tablet-up {
+				right: 0;
+				top: 3px;
+			}
+	}
+}

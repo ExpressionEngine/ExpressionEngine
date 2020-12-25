@@ -1,0 +1,119 @@
+
+// This file overrides some code mirror styles to better fit ee and work with multiple themes
+
+.CodeMirror {
+	resize: vertical; // fixes disappearing resize handle.
+}
+
+// matching textarea styles
+.CodeMirror-gutters {
+	border-radius: 3px 0 0 3px;
+}
+
+.template-edit {
+	height: 600px;
+	tab-size: 4;
+}
+
+.textarea-medium {
+	height: 300px;
+	tab-size: 4;
+}
+
+.CodeMirror pre {
+	padding: 0 12px; /* Horizontal padding of content */
+  }
+
+
+// codemirror/lint.css slightly modified for EE:
+// -------------------------------------------------------------------
+
+.CodeMirror-lint-tooltip {
+	background-color: color(bg-0);
+	border: 1px solid color(border);
+	border-radius: $corners-big;
+	color: color(text-primary);
+	font-size: 1em;
+	overflow: hidden;
+	padding: $sq-inset-s;
+	position: fixed;
+	white-space: pre;
+	white-space: pre-wrap;
+	z-index: 100;
+	max-width: 600px;
+	opacity: 0;
+	transition: opacity .4s;
+	-moz-transition: opacity .4s;
+	-webkit-transition: opacity .4s;
+	-o-transition: opacity .4s;
+	-ms-transition: opacity .4s;
+}
+
+.CodeMirror-lint-mark-error {
+	background-position: left bottom;
+	background-repeat: repeat-x;
+}
+
+.CodeMirror-lint-mark-error {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADAQMAAACOOjyFAAAABlBMVEUAAAD/AAAb/40iAAAAAXRSTlMAQObYZgAAAA5JREFUCNdjYGAwYDAAAADGAGFPM1t+AAAAAElFTkSuQmCC");
+}
+
+.CodeMirror-lint-marker-error {
+	background-position: center center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	width: 16px;
+	vertical-align: middle;
+	position: relative;
+}
+
+.CodeMirror-lint-message-error {
+	padding-left: 22px;
+	background-position: top left;
+	background-repeat: no-repeat;
+}
+
+.CodeMirror-lint-marker-error,
+.CodeMirror-lint-message-error {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
+}
+
+
+// Codemirror/dialog.css
+// -------------------------------------------------------------------
+
+.CodeMirror-dialog {
+	position: absolute;
+	left: 0;
+	right: 0;
+	background: color(bg-0);
+	z-index: 15;
+	padding: $sq-inset-s;
+	overflow: hidden;
+	color: color(text-normal);
+	font-size: 1em;
+}
+
+.CodeMirror-dialog-top {
+	border-bottom: 1px solid color(border);
+	top: 0;
+}
+
+.CodeMirror-dialog-bottom {
+	border-top: 1px solid color(border);
+	bottom: 0;
+}
+
+.CodeMirror-dialog input {
+	width: 20em;
+	height: 30px;
+	line-height: 30px;
+	color: inherit;
+	font-family: monospace;
+}
+
+.CodeMirror-dialog button {
+	font-size: 70%;
+}

@@ -1,0 +1,74 @@
+
+// Gets a color variable by name
+@function color($color-name) {
+	@if not map-has-key($light-theme, $color-name) {
+		@error "Color variable does not exist: #{$color-name}";
+	}
+
+	@return var(--ee-#{$color-name});
+}
+
+// Gets a color value from a specific theme.
+// Should only be used on rare cases where css variables can't be used.
+@function raw-color($color-name, $theme) {
+	@if not map-has-key($theme, $color-name) {
+		@error "Color variable does not exist: #{$color-name}";
+	}
+
+	@return map-get($theme, $color-name);
+}
+
+// This class smoothly animates a theme change by adding it
+// to the html element when changing themes
+html.color-theme-in-transition,
+html.color-theme-in-transition *,
+html.color-theme-in-transition *:before,
+html.color-theme-in-transition *:after {
+	$speed: 1s;
+	transition: color $speed, background $speed, border-color $speed, box-shadow $speed !important;
+	transition-delay: 0 !important;
+	transition-timing-function: ease !important;
+}
+
+
+// Set the default theme in the root
+:root,
+.light-theme, body[data-theme="light"] {
+	@each $name, $value in $light-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
+.dark-theme, body[data-theme="dark"] {
+	@each $name, $value in $dark-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
+body[data-theme="dark"] .inverted-theme {
+	@each $name, $value in $light-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
+body[data-theme="light"] .inverted-theme {
+	@each $name, $value in $dark-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
+body[data-theme="pink"] {
+	@each $name, $value in $pink-theme {
+		--ee-#{$name}: #{$value};
+	}
+
+  .beta-welcome-banner .v6-wrapper::before {
+    background: #000;
+    background: radial-gradient(circle, rgba(246,41,88,1) 0%, rgba(246,41,88,0) 100%);
+  }
+
+	.file-card__info {
+		background: #fff
+	}
+}
+

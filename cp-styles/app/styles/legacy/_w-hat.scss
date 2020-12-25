@@ -1,0 +1,148 @@
+/*
+	overrides WysiHat styles
+*/
+
+// nudge the toolbar
+.WysiHat-container{
+	margin-bottom: 10px;
+
+		&:last-child{
+			margin-bottom: 0;
+		}
+
+		.toolbar{
+			// margin-bottom: -1px;
+		}
+}
+
+// match textarea, and give specific styles to it's HTML content
+.WysiHat-field{
+	margin: 0;
+	padding: 15px 10px 0;
+}
+
+.WysiHat-editor{
+	background-color: color(input-bg);
+	border: 1px solid color(input-border);
+	margin: 0;
+	max-height: 2000px;
+	min-height: 50px;
+	padding: $sq-inset-s;
+	resize: vertical;
+	overflow: auto;
+	width: 100%;
+	white-space: normal;
+	border-radius: 0 0 3px 3px;
+	// box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1) inset;
+
+		&:focus{
+			outline: 0;
+			border-color: color(accent);
+			box-shadow: 0 3px 6px rgba(#AE97FF, 0.14), 0 5px 20px rgba(rgb(97, 114, 242), 0.05);
+		}
+
+		&[disabled="disabled"],
+		&[disabled="disabled"]:focus{
+			cursor: not-allowed;
+			opacity: 0.6;
+			background-size: 20px 20px;
+
+			@include gradient-striped(rgba(#eee, 0.3));
+		}
+
+		h1, h2, h3, h4, h5, h6, p, ul, ol, dl, div{
+			color: color(text-normal);
+			margin: 0 0 10px;
+		}
+
+		h1, h2, h3, h4, h5, h6{
+			font-weight: bold;
+		}
+
+		h1{
+			border: 0;
+			font-size: 24px;
+			padding: 0;
+			// .grade(transparent,transparent;);
+			// .s0 0 0 0 rgba(0,0,0,0));
+		}
+
+		h2{
+			background-color: transparent;
+			border: 0;
+			font-size: 22px;
+			padding: 0;
+		}
+
+		h3{
+			font-size: 20px;
+		}
+
+		h4{
+			font-size: 18px;
+		}
+
+		h5{
+			font-size: 16px;
+		}
+
+		h6{
+			font-size: 14px;
+		}
+
+		figure,
+		figcaption{
+			display: block;
+		}
+
+		figure{
+			margin: 0 20px 10px;
+			text-align: center;
+
+				img{
+					display: inline-block;
+				}
+		}
+
+		figcaption{
+			font-style: italic;
+		}
+
+		blockquote{
+			border-left: 5px solid color(bg-5);
+			margin-left: 20px;
+			padding: 5px 10px;
+
+				p{
+					font-family: 'Georgia', Serif;
+					font-size: 18px;
+					font-style: italic;
+				}
+
+				cite{
+					color: color(text-secondary);
+				}
+		}
+
+		ul, ol{
+			list-style-position: inside;
+			padding-left: 20px;
+		}
+
+		ul{
+			list-style-type: disc;
+		}
+
+		ol{
+			list-style-type: decimal;
+		}
+
+		a{
+			color: color(link);
+			cursor: pointer;
+		}
+
+		ins{
+			text-decoration: underline;
+		}
+}

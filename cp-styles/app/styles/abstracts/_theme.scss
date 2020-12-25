@@ -1,0 +1,148 @@
+
+$lt-hue: 230; // 246
+
+$l-icon-accent: #6BB1F8;
+
+/* Table of Contents:
+
+#Pink Theme
+- #Base Variables - Pink Theme
+- #Details - Pink Theme
+
+*/
+
+
+
+
+
+
+// #Pink Theme
+// -------------------------------------------------------------------
+
+$lt-hue: 320;
+
+$pink-theme: (
+
+	accent-dark: #59223a,
+	accent: #fc2d85, // #029ae1
+	accent-light: #fdeffe,
+	accent-medium: #dfebfe,
+	throwback-pink: #f62958,
+
+	// Semantic
+	success: #40c057,
+	success-light: #eaf9ed,
+	warning-light: #fffcf1,
+	warning: #f5c400,
+	warning-dark: #544200,
+	error: #e34848, //fa5252
+	error-light: #fcf2f2,
+	security-caution: #f56200,
+	danger: #ee1414,
+	keyboard-focus: #f457dc,
+
+	notification: #fa5252,
+
+	// Background
+	main-bg: #faf9fa,
+	dashboard-bg: #faf9fa,
+	bg-0: #fff,
+	bg-5: #f4f4f8,
+	bg-10: #f7ebf7,
+	bg-15: #e9dfe9,
+	bg-25: #b6b2b6,
+
+	bg-neutral-light: #ededed,
+	bg-neutral-dark: #434249,
+
+	// bg: #fafafc,
+	// bg-l-contrast: #edeff5,
+	// bg-h-contrast: #c1c1c4,
+
+	// Borders
+	border: #e4e4f2,
+	border-dark: #cecedc,
+
+	// Text
+	text-primary: hsl($lt-hue, 0%, 0%),
+	text-normal: hsl($lt-hue, 15%, 30%),
+	text-secondary: hsl($lt-hue, 10%, 50%),
+	text-tertiary: hsl(223, 16%, 68%),
+	// text-primary: #000,
+	// text-secondary: #666e79,
+	// text-tertiary: #9099a5,
+	// text-normal: #494b67,
+
+	text-placeholder: #9ba2ab,
+
+	text-selection: #ffffff,
+	text-selection-bg: #454557,
+
+	link: #fc2d85,
+	link-hover: rgba(#fc2d85, 0.6),
+
+
+	// Objects / Components
+
+	sidebar-text: #a1a8c6,
+	sidebar-text-primary: #fff,
+	sidebar-text-faded: #74709f,
+	sidebar-text-active: #fff,
+	sidebar-icon-active: #fff,
+	sidebar-bg-active: transparent,
+	sidebar-bg: linear-gradient(to bottom, #382570, #240f29),
+
+	secondary-sidebar-item-bg: #eef0f7,
+	secondary-sidebar-item-icon: #fc2d85,
+	secondary-sidebar-item-bg-active: #fc2d85,
+
+	// Shadows
+	shadow-modal: rgba(85, 68, 83, 0.2),
+	shadow-dropdown: rgba(38, 23, 40, 0.1),
+
+	// Buttons
+	button-primary-color: #ffffff,
+	button-primary-bg: #7800c2,
+	button-primary-hover-bg: #01b06a,
+
+	button-action-color: #ffffff,
+	button-action-bg: #fc2d85,//linear-gradient(to right, #5779e6, #6b51f0),//#009ce6,
+	button-action-hover-bg: #f62993, //#008ed0,
+
+	button-secondary-color: #666e79,
+	button-secondary-bg: #edeff5,
+	button-secondary-hover-bg: #d7dbe6,
+
+	button-secondary-alt-color: #666e79,
+	button-secondary-alt-bg: #fff,
+	button-secondary-alt-border: #e3e3e9,
+	button-secondary-alt-hover-bg: #f2f4f9,
+	button-secondary-alt-shadow: 0 1px 0 #eee,
+
+	button-danger-color: #fff,
+	button-danger-bg: #ed0b0b,
+	button-danger-hover-bg: #d23e3e,
+
+	input-bg: #fff,
+	input-placeholder: #737a85,
+	input-border: #c4cdde,
+	input-border-accent: #f2f3f5,
+	input-focus-border: #f500a7,
+	input-focus-shadow: (0 5px 30px rgba(#f500a7, 0.1), 0 2px 10px rgba(#f500a7, 0.3)),
+
+
+	// input-checkbox-bg: rgb(218, 218, 222),
+	// input-checkbox-fg: rgb(255, 255, 255),
+
+	input-toggle-bg: rgb(218, 218, 222),
+	input-toggle-fg: rgb(255, 255, 255),
+	input-toggle-shadow: rgba(120, 119, 140, 0.077),
+
+	input-toggle-active-bg: #b62494,
+	input-toggle-active-fg: rgb(255, 255, 255),
+
+	mark-bg: #fefff3,
+
+	// LEGACY
+	modal-overlay-bg: rgba(59, 29, 60, 0.399),
+);

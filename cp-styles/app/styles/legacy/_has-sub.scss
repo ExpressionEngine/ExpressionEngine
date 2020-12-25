@@ -1,0 +1,49 @@
+
+
+.has-sub {
+	white-space: nowrap;
+
+	&::after {
+		@extend %fa-icon;
+		@extend .fas;
+
+		// color: color(text-tertiary);
+		content: fa-content($fa-var-chevron-down);
+		font-size: 10px;
+
+		font-weight: normal;
+		line-height: 0;
+		margin-left: $sq-xs;
+		position: relative;
+		top: -1px;
+	}
+
+	&.open, &.dropdown-open {
+		&::after {
+			content: fa-content($fa-var-chevron-up);
+		}
+	}
+
+	.menu-wrap .develop & {
+		padding-bottom: 4px;
+
+			&::before {
+				@extend %fa-icon;
+				@extend .fas;
+
+				content: fa-content($fa-var-wrench);
+				font-size: 15px;
+				font-weight: normal;
+				line-height: 0;
+				margin-left: 2px;
+				position: relative;
+				top: 0;
+			}
+	}
+}
+
+.button--default.has-sub {
+  &::after {
+    color: color(text-tertiary);
+  }
+}

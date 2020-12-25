@@ -1,0 +1,89 @@
+
+.ee-wrapper-overflow.is-mobile {
+	// Prevents the body from overflowing when the sidebar is shown on mobile
+	overflow-x: hidden;
+}
+
+.ee-wrapper {
+	display: flex;
+	min-height: 100%;
+	width: 100%;
+
+	transition: all 500ms cubic-bezier(0.075, 0.82, 0.165, 1);
+
+	&.is-mobile {
+		width: calc(100% + #{$ee-sidebar-width});
+	}
+
+  &.is-mobile.sidebar-hidden__collapsed {
+		width: calc(100% + #{$ee-sidebar-width-collapsed});
+	}
+
+	&.sidebar-hidden, &.sidebar-hidden-no-anim {
+		transform: translateX(-#{$ee-sidebar-width});
+	}
+
+  &.sidebar-hidden.sidebar-hidden__collapsed,
+  &.sidebar-hidden-no-anim.sidebar-hidden__collapsed {
+		transform: translateX(-#{$ee-sidebar-width-collapsed});
+	}
+
+	&.sidebar-hidden-no-anim {
+		transition: none;
+	}
+}
+
+.ee-main {
+	// display: flex;
+	// flex-direction: column;
+	min-height: 100%;
+	// flex: 1 1 auto;
+	flex: 1 0 auto;
+	width: 50%;
+  position: relative;
+}
+
+.ee-main--dashboard {
+	background: color(dashboard-bg);
+}
+
+.ee-main__title {
+	display: flex;
+	align-items: center;
+	padding-top: 0;
+	margin-bottom: $s-l;
+
+	h1 {
+		font-size: 2.2em;
+		// font-weight: 600;
+	}
+
+	.ee-main__title-buttons {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+
+		.main-nav__account {
+			margin-left: $s-m;
+			padding: 0;
+
+			img {
+				margin: 0;
+			}
+		}
+	}
+}
+
+.ee-main__content {
+	padding: $main-content-padding-y $main-content-padding-x;
+	// padding-top: $sq-m;
+
+	@include m-mobile-down {
+		padding: 30px 20px;
+	}
+	// padding: $s-inset-l;
+
+	// border-top-left-radius: 30px;
+	// background: color(bg);
+	// box-shadow: 0 0 0 60px color(sidebar-bg);
+}

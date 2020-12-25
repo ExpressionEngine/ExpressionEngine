@@ -1,0 +1,226 @@
+@mixin font-normal {
+	font-family: $font-family;
+}
+
+@mixin font-monospace {
+	font-family: $font-family-monospace;
+}
+
+// Button Sizes
+// -------------------------------------------------------------------
+
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
+  padding: $padding-vertical $padding-horizontal !important;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
+}
+
+// Button Variants
+// -------------------------------------------------------------------
+
+@mixin button-variant($color, $background, $border, $hover-bg, $hover-border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  &:focus,
+  &.focus {
+    color: $color;
+    background-color: $hover-bg;
+    border-color: $hover-border;
+  }
+  &:hover {
+    color: $color;
+    background-color: $hover-bg;
+        border-color: $hover-border;
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $color;
+    background-color: $hover-bg;
+        border-color: $hover-border;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $color;
+      background-color: $hover-bg;
+          border-color: $hover-border;
+    }
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus,
+    &.focus {
+      background-color: $background;
+          border-color: $border;
+    }
+  }
+}
+
+// Media breakpoints
+// -------------------------------------------------------------------
+
+$mobile-width: 550px;
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+@mixin m-mobile-up {
+	@media (min-width: #{$mobile-width}) {
+		@content;
+	}
+}
+
+@mixin m-mobile-down {
+	@media (max-width: #{$mobile-width - 1px}) {
+		@content;
+	}
+}
+
+@mixin m-tablet-up {
+	@media (min-width: #{$tablet-width}) {
+		@content;
+	}
+}
+
+@mixin m-tablet-down {
+	@media (max-width: #{$tablet-width - 1px}) {
+		@content;
+	}
+}
+
+@mixin m-desktop {
+	@media (min-width: #{$desktop-width}) {
+		@content;
+	}
+}
+
+@mixin m-desktop-down {
+	@media (max-width: #{$desktop-width - 1px}) {
+		@content;
+	}
+}
+
+@mixin m-custom-down($width) {
+	@media (max-width: #{$width}) {
+		@content;
+	}
+}
+
+// Helpers
+// -------------------------------------------------------------------
+
+@mixin clear-float {
+	&:after {
+		clear: both;
+		content: "";
+		display: block;
+		font-size: 0;
+		height: 0;
+		visibility: hidden;
+	}
+}
+
+@mixin selection($color, $bg) {
+	::selection {
+		color: $color;
+		background: $bg;
+	}
+
+	::-moz-selection {
+		color: $color;
+		background: $bg;
+	}
+}
+
+@mixin placeholder {
+	&::-webkit-input-placeholder {@content}
+	&:-moz-placeholder           {@content}
+	&::-moz-placeholder          {@content}
+	&:-ms-input-placeholder      {@content}
+}
+
+@mixin tab-focus() {
+  outline: 0px auto -webkit-focus-ring-color;
+  outline-offset: -3px;
+}
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// Visual
+// -------------------------------------------------------------------
+
+@mixin shadow-modal() {
+	box-shadow: 0 8px 40px color(shadow-modal);
+}
+
+@mixin shadow-dropdown() {
+	// box-shadow: 0 4px 20px $color;
+	box-shadow: 0 1px 4px 0 color(shadow-dropdown);
+}
+
+@mixin gradient-striped($color: rgba(255, 255, 255, .25), $angle: 45deg) {
+	background-image: -webkit-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+	background-image: -o-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+	background-image: linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+}
+
+@mixin focus-visible {
+	&:focus {
+		@content;
+	}
+
+	// Hide the focus styles if the user is not using keyboard navigation
+	&:focus:not(:focus-visible) {
+		outline: none;
+		box-shadow: none;
+	}
+}
+
+// Polyfill for :focus-visible
+// Hide the focus styles if the user is not using keyboard navigation
+.js-focus-visible :focus:not(.focus-visible) {
+	outline: none;
+	box-shadow: none;
+}
+
+@mixin focus-outline {
+	outline: none;
+	// box-shadow: 0 0 0 2px color(bg-5), 0 0 0 4px color(keyboard-focus);
+}
+
+@mixin focus-outline-inset {
+	outline: none;
+	box-shadow: inset 0 0 0 2px color(keyboard-focus);
+}
+
+// Functions
+// -------------------------------------------------------------------
+
+@function str-replace($string, $search, $replace: '') {
+	$index: str-index($string, $search);
+
+	@if $index {
+	  @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+	}
+
+	@return $string;
+}

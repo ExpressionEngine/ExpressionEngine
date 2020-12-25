@@ -1,0 +1,126 @@
+
+$file-card-size: 95px;
+
+.file-card-wrapper {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax($file-card-size * 2, 1fr));
+	grid-gap: $s-m;
+
+	.file-card {
+		width: initial;
+	}
+}
+
+
+.file-card {
+	transition: all 150ms ease;
+
+	overflow: hidden;
+	line-height: $line-height-normal;
+	background-color: color(bg-0);
+	border-radius: $corners;
+	// box-shadow: 0 0 0 2px rgba(0, 0, 0, 0);
+	width: 220px;
+
+	&:hover:not(.file-card--missing) {
+    background-color: color(bg-5);
+    // box-shadow: 0 0 0 2px color(accent);
+		// box-shadow: 0 0 0 2px color(border-dark);
+	}
+}
+
+.file-card--selected {
+	box-shadow: 0 0 0 2px color(accent);
+	background: color(accent-light);
+}
+
+.file-card--missing {
+	box-shadow: 0 0 0 2px color(warning);
+
+	.file-card__preview-icon {
+		background: color(warning-light);
+
+		i {
+			color: color(warning);
+		}
+	}
+}
+
+.file-card--dragging {
+	@include shadow-dropdown;
+	transform: rotate(-3deg);
+	background: color(bg-0);
+}
+
+// When a file card is loading
+.file-card--loading {
+	.file-card__preview {
+		filter: blur(10px);
+	}
+}
+
+.file-card__preview {
+	position: relative;
+	width: 100%;
+	height: $file-card-size;
+	overflow: hidden;
+	text-align: center;
+}
+
+.file-card__preview-button {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+}
+
+.file-card__preview-image {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: color(bg-neutral-dark);
+
+	img {
+		max-width: 100%;
+	}
+}
+
+.file-card__preview-icon {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	background: color(bg-15);
+
+	i {
+		color: color(text-secondary);
+	}
+}
+
+.file-card__preview-icon-text {
+	margin-top: $s-s;
+	color: color(warning-dark);
+	font-size: 0.9em;
+}
+
+.file-card__info {
+	padding: $sq-inset-s;
+}
+
+.file-card__info-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: color(text-normal);
+}
+
+.file-card__info-subtitle {
+	@include font-monospace;
+
+	// margin-top: $s-xs;
+	font-size: 0.8em;
+	color: color(text-secondary);
+}

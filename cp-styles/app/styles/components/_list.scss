@@ -1,0 +1,40 @@
+
+.list {
+	list-style-type: none;
+
+	li {
+		// margin-bottom: $s-xs;
+		font-size: 0.9em;
+		line-height: $line-height-normal;
+		// font-weight: 200;
+	}
+
+	a {
+		color: color(link);
+
+		&:hover {
+			color: color(link-hover);
+		}
+	}
+}
+
+.checklist {
+	list-style-type: none;
+	li{
+		&:before{
+			@extend %fa-icon;
+			@extend .fas;
+
+			content: fa-content($fa-var-check);
+			margin-right: $s-xs;
+			position: relative;
+			color: color(secondary-sidebar-item-icon);
+		}
+	}
+}
+
+.ajax {
+	ul {
+		list-style-type: none;
+	}
+}

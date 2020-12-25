@@ -1,0 +1,134 @@
+.app-about-info{
+	background-color: $white;
+	border: 1px solid lighten($gray-medium,20%);
+	bottom: 0;
+	display: none;
+	left: 16px;
+	min-width: 200px;
+	max-width: 200px;
+	position: absolute;
+	border-radius: $corners;
+	box-shadow: 0 0 10px 2px fade($black,10%);
+
+		// .tablet-portrait-up({
+		// 	left: 170px;
+		// });
+}
+
+
+
+.app-about-info__alert{
+	background-color: $yellow;
+	padding: 8px;
+	text-align: center;
+	border-radius: 3px 3px 0 0;
+}
+
+
+
+.app-about-info__installed,
+.app-about-info__latest{
+	line-height: 1.4;
+	margin-bottom: 16px;
+	padding: 16px 16px 0;
+
+		h3{
+			color: $gray-dark;
+			font-size: 14px;
+		}
+
+		em{
+			color: $gray-medium;
+			font-size: 12px;
+			font-style: normal;
+		}
+}
+
+
+
+.app-about-info__installed{}
+
+
+
+.app-about-info__latest{
+	padding-top: 0;
+}
+
+
+
+.app-about-info__update{
+	background-size: 40px 40px, 100% 100%;
+	color: $gray-medium-dark;
+	cursor: wait;
+	padding: 16px;
+	text-align: center;
+	// .animate-progress;
+	background: linear-gradient(
+		-45deg,
+		$gray-light 0%,
+		$gray-light 25%,
+		darken($gray-light,4%) 25%,
+		darken($gray-light,4%) 50%,
+		$gray-light 50%,
+		$gray-light 75%,
+		darken($gray-light,4%) 75%
+	);
+}
+
+/*
+	firefox anomalies
+
+	things that need minor tweaks in firefox go in {}
+	should be little to nothing in there
+*/
+@-moz-document url-prefix(){
+	.app-about-info__update{
+		padding: 16px 16px 13px;
+	}
+}
+
+
+
+.app-about-info__status{
+	background-color: $green;
+	color: $white;
+	margin: 0 -1px -1px;
+	padding: 16px;
+	text-align: center;
+	border-radius: 0 0 3px 3px;
+
+		.button{
+			margin-top: 8px;
+		}
+}
+
+
+
+.app-about-info__status--update{
+	background-color: $yellow;
+	color: $yellow-dark;
+}
+
+
+
+.app-about-info__status--update-vital{
+	background-color: $red;
+}
+
+
+
+.app-about-info__close{
+	bottom: 6px;
+	color: $white;
+	position: absolute;
+	right: 8px;
+
+		// .tablet-portrait-up({
+		// 	left: 8px;
+		// 	right: auto;
+		// });
+
+		&:hover{
+			color: $white;
+		}
+}
