@@ -549,9 +549,9 @@ class EE_Session {
 			$this->userdata[$permission->permission] = 'y';
 		}
 
-		$this->userdata['group_id']            = $role->getId();
-		$this->userdata['group_title']         = $role->name;
-		$this->userdata['group_description']   = $role->description;
+		$this->userdata['primary_role_id'] = $this->userdata['group_id'] = $role->getId();
+		$this->userdata['primary_role_name'] = $this->userdata['group_title'] = $role->name;
+		$this->userdata['primary_role_description'] = $this->userdata['group_description'] = $role->description;
 		$this->userdata['total_comments']      = 0;
 		$this->userdata['total_entries']       = 0;
 		$this->userdata['private_messages']	   = 0;
