@@ -1,13 +1,10 @@
 name: Run Cypress Installer Tests
 
 on:
-  push:
-    branches:
-      - design/6.0.0/cp
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - release/6.0.0
+      - 6.dev
 
 jobs:
     cypress-tests:
