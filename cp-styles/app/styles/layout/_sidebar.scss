@@ -440,3 +440,15 @@
   }
 
 }
+
+// Subnavigation
+.navigation-submenu {
+  max-height: 95vh;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.navigation-submenu::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
+}
