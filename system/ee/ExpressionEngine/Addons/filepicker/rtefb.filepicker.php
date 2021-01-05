@@ -47,7 +47,7 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
             ->order('UploadDestination.name', 'asc')
             ->all();
         foreach ($uploadDestinations as $destination) {
-            $uploadDirs[$destination->id] = (ee('Config')->getFile()->getBoolean('multiple_sites_enabled') ? $destination->Site->site_label . ': ' : '') . $destination->name;
+            $uploadDirs[$destination->getId()] = (ee('Config')->getFile()->getBoolean('multiple_sites_enabled') ? $destination->Site->site_label . ': ' : '') . $destination->name;
         }
         return $uploadDirs;
     }
