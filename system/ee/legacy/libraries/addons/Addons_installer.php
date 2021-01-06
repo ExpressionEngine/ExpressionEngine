@@ -156,7 +156,7 @@ class Addons_installer {
 
 			$default_settings = $FT->install();
 
-			if (!empty($FT->option_field)) {
+			if (!empty($FT->is_option_fieldtype)) {
 				// Add to custom_option_fields site config
 				if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
 					$custom_option_fieldtypes = json_decode($custom_option_fields->value);
