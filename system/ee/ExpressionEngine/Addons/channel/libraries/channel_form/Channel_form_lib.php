@@ -2705,7 +2705,12 @@ GRID_FALLBACK;
         );
 
         $this->custom_fields = array();
-        $this->custom_option_fields = array();
+
+        if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
+            $this->custom_option_fields = json_decode($custom_option_fields->value);
+        } else {
+            $this->custom_option_fields = array();
+        }
         $this->date_fields = array(
             'comment_expiration_date',
             'expiration_date',
@@ -2826,7 +2831,8 @@ GRID_FALLBACK;
 
         $this->fetch_settings();
 
-        $this->option_fields = $this->native_option_fields;
+        $this->option_fields = array_merge($this->native_option_fields, $this->custom_option_fields);
+
 /*
         ee()->config->load('config');
 

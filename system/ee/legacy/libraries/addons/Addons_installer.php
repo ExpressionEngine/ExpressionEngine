@@ -156,6 +156,26 @@ class Addons_installer {
 
 			$default_settings = $FT->install();
 
+			if (!empty($FT->option_field)) {
+				// Add to custom_option_fields site config
+				if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
+					$custom_option_fieldtypes = json_decode($custom_option_fields->value);
+					$custom_option_fieldtypes[] = $fieldtype;
+				} else {
+					$custom_option_fields = ee('Model')->make('Config',
+						[
+							'site_id' => ee()->config->item('site_id'),
+							'key' => 'custom_option_fields'
+						]
+					);
+
+					$custom_option_fieldtypes = [$fieldtype];
+				}
+
+				$custom_option_fields->set__value(json_encode($custom_option_fieldtypes));
+				$custom_option_fields->save();
+			}
+
 			ee()->db->insert('fieldtypes', array(
 				'name'					=> $fieldtype,
 				'version'				=> $FT->info['version'],
@@ -342,6 +362,18 @@ class Addons_installer {
 							ee('Model')->get('ChannelField')
 								->filter('field_type', $fieldtype_name)
 								->delete();
+
+							// Remove from custom_option_fields site config
+							if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
+								$custom_option_fieldtypes = json_decode($custom_option_fields->value);
+
+								if (($delete_key = array_search($fieldtype_name, $custom_option_fieldtypes)) !== false) {
+									unset($custom_option_fieldtypes[$delete_key]);
+								}
+
+								$custom_option_fields->set__value(json_encode($custom_option_fieldtypes));
+								$custom_option_fields->save();
+							}
 
 							if (ee()->addons_model->fieldtype_installed('grid'))
 							{
