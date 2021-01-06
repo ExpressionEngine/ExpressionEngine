@@ -172,7 +172,7 @@ class Addons_installer {
 					$custom_option_fieldtypes = [$fieldtype];
 				}
 
-				$custom_option_fields->set__value(json_encode($custom_option_fieldtypes));
+				$custom_option_fields->value = json_encode($custom_option_fieldtypes);
 				$custom_option_fields->save();
 			}
 
@@ -364,14 +364,14 @@ class Addons_installer {
 								->delete();
 
 							// Remove from custom_option_fields site config
-							if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
+							if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->filter('site_id', ee()->config->item('site_id'))->first()) {
 								$custom_option_fieldtypes = json_decode($custom_option_fields->value);
 
 								if (($delete_key = array_search($fieldtype_name, $custom_option_fieldtypes)) !== false) {
 									unset($custom_option_fieldtypes[$delete_key]);
 								}
 
-								$custom_option_fields->set__value(json_encode($custom_option_fieldtypes));
+								$custom_option_fields->value = json_encode($custom_option_fieldtypes);
 								$custom_option_fields->save();
 							}
 

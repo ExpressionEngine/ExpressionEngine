@@ -2706,7 +2706,7 @@ GRID_FALLBACK;
 
         $this->custom_fields = array();
 
-        if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->first()) {
+        if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->filter('site_id', $this->site_id)->first()) {
             $this->custom_option_fields = json_decode($custom_option_fields->value);
         } else {
             $this->custom_option_fields = array();
