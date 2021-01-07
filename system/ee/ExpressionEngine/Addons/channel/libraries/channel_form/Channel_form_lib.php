@@ -25,7 +25,6 @@ class Channel_form_lib
     public $checkboxes;
     public $custom_field_conditional_names;
     public $custom_fields;
-    public $custom_option_fields;
     public $date_fields;
     public $datepicker;
     public $default_fields;
@@ -2706,11 +2705,6 @@ GRID_FALLBACK;
 
         $this->custom_fields = array();
 
-        if ($custom_option_fields = ee('Model')->get('Config')->filter('key', 'custom_option_fields')->filter('site_id', $this->site_id)->first()) {
-            $this->custom_option_fields = json_decode($custom_option_fields->value);
-        } else {
-            $this->custom_option_fields = array();
-        }
         $this->date_fields = array(
             'comment_expiration_date',
             'expiration_date',
@@ -2831,9 +2825,34 @@ GRID_FALLBACK;
 
         $this->fetch_settings();
 
-        $this->option_fields = array_merge($this->native_option_fields, $this->custom_option_fields);
+        if (empty($this->option_fields)) {
+
+            $cache_key = '/Fieldtype/OptionFieldtypes';
+            $this->option_fields = ee()->cache->get($cache_key);
+
+            if (empty($this->option_fields)) {
+                $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+                ee()->legacy_api->instantiate('channel_fields');
+
+                // Get the list of Fieldtypes that extend OptionFieldtype
+                $this->option_fields = array_filter($fieldtypes, function($fieldtype) {
+                    ee()->api_channel_fields->include_handler($fieldtype);
+                    $class = ucfirst($fieldtype) . '_ft';
+
+                    $reflection = new \ReflectionClass($class);
+                    $instance = $reflection->newInstanceWithoutConstructor();
+
+                    return is_subclass_of($class, 'OptionFieldtype');
+                });
+
+                $this->option_fields = array_values($this->option_fields);
+
+                ee()->cache->save($cache_key, $this->option_fields);
+            }
+        }
 
 /*
+        TODO: I think the following comment can be removed
         ee()->config->load('config');
 
         if (is_array(ee()->config->item('safecracker_option_fields')))
