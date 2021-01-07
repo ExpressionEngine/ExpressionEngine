@@ -2839,9 +2839,6 @@ GRID_FALLBACK;
                     ee()->api_channel_fields->include_handler($fieldtype);
                     $class = ucfirst($fieldtype) . '_ft';
 
-                    $reflection = new \ReflectionClass($class);
-                    $instance = $reflection->newInstanceWithoutConstructor();
-
                     return is_subclass_of($class, 'OptionFieldtype');
                 });
 
@@ -2852,7 +2849,7 @@ GRID_FALLBACK;
         }
 
 /*
-        TODO: I think the following comment can be removed
+        TODO: I think the following code can be removed
         ee()->config->load('config');
 
         if (is_array(ee()->config->item('safecracker_option_fields')))
