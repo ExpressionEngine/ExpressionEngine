@@ -2832,6 +2832,8 @@ GRID_FALLBACK;
 
             if (empty($this->option_fields)) {
                 $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+
+                ee()->load->library('api');
                 ee()->legacy_api->instantiate('channel_fields');
 
                 // Get the list of Fieldtypes that extend OptionFieldtype
