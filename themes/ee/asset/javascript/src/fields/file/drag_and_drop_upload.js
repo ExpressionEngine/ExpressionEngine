@@ -358,7 +358,10 @@ function (_React$Component) {
 
       return React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
-      }, this.state.files.length == 0 && React.createElement("div", {
+      }, React.createElement("div", {
+        style: {
+          display: this.state.files.length == 0 ? 'block' : 'none'
+        },
         className: "file-field__dropzone",
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
