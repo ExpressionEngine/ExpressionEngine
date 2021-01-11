@@ -488,7 +488,7 @@ class ChannelEntry extends ContentModel {
 			$entry = ee('Model')->get('ChannelEntry', $this->entry_id)->first();
 			ee()->extensions->call('before_channel_entry_delete', $entry, $entry->getValues());
 		}
-		
+
 		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
@@ -1108,8 +1108,10 @@ class ChannelEntry extends ContentModel {
 
 		foreach ($channels as $channel)
 		{
+			$channel_statuses = $channel->Statuses->getIds();
+
 			if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
-				$my_statuses == $channel->Statuses->getIds())
+				sort($my_statuses) == sort($channel_statuses))
 			{
 				$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 			}
