@@ -349,6 +349,10 @@ $(document).ready(function () {
     })
 })
 
+Grid.bind('colorpicker', 'displaySettings', (el) => {
+    ColorPicker.renderFields(el[0])
+})
+
 Grid.bind('colorpicker', 'display', function(cell) {
     ColorPicker.renderFields(cell[0])
 });
