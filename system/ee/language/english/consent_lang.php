@@ -52,6 +52,8 @@ $lang = [
 
 'new_consent_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
 
+'all_consents' => 'All %d consents',
+
 'opt_in' => 'Opt In',
 
 'opt_out' => 'Opt Out',
