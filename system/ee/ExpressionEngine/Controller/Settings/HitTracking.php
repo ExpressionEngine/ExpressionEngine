@@ -49,7 +49,7 @@ class HitTracking extends Settings {
 					'title' => 'dynamic_tracking_disabling',
 					'desc' => sprintf(
 						lang('dynamic_tracking_disabling_desc'),
-						DOC_URL.'cp/settings/hit-tracking.html#suspend-threshold'
+						DOC_URL.'control-panel/settings/hit-tracking.html#suspend-threshold'
 					),
 					'fields' => array(
 						'dynamic_tracking_disabling' => array('type' => 'text')

@@ -94,16 +94,16 @@ class DebugTools extends Utilities
         $table = ee('CP/Table', array(
             'autosort' => true,
             'autosearch' => true,
-            'sort_col' => 'Installed',
+            'sort_col' => 'debug_tools_installed',
             'sort_dir' => 'desc',
         ));
 
         $table->setColumns(
             array(
-            'Installed',
-            'Tag' => ['encode' => false],
-            'Addon',
-            'Count')
+            'debug_tools_installed',
+            'debug_tools_tag' => ['encode' => false],
+            'debug_tools_addon',
+            'debug_tools_count')
         );
 
         $table->setData($data);

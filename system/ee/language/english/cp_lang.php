@@ -667,6 +667,8 @@ $lang = array(
 
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
+'log_into' => 'Log into %s',
+
 'up_to_date' => 'Up to date!',
 
 'version' => 'Version',
