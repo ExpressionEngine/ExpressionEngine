@@ -1,0 +1,31 @@
+
+.bulk-action-bar {
+	display: inline-block;
+	margin-bottom: 0;
+	// margin-top: $s-s;
+	padding: 20px 0px 20px 25px;
+
+	// background: color(bg-10);
+	// border-radius: $corners-big;
+	// box-shadow: 0 5px 20px rgba(#000, 0.03);
+
+	&.hidden {
+		display: none;
+	}
+
+	.button:not(:first-child) {
+		margin-left: $s-xs;
+	}
+}
+
+.tbl-bulk-act {
+	@extend .bulk-action-bar
+}
+
+// Adjust padding when displayed within panel body
+.panel-body {
+	.bulk-action-bar, .tbl-bulk-act {
+		padding-left: 0px;
+		padding-bottom: 0px;
+	}
+}

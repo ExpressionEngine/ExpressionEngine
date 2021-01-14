@@ -1,0 +1,71 @@
+.fields-keyvalue{
+	.grid-item &{
+		margin-bottom: 0;
+	}
+}
+
+.fields-keyvalue-item{
+	// border-bottom: 1px solid color(border);
+	display: flex;
+	margin-bottom: 10px;
+	// padding-bottom: 10px;
+
+		&:last-of-type{
+			border-bottom: 0;
+			// margin-bottom: 0;
+			padding-bottom: 0;
+		}
+
+		.toolbar{
+			background-color: transparent;
+			border: 0;
+			margin-bottom: 0;
+
+				li{
+					position: relative;
+					top: 5px;
+
+					a{
+						padding: 5px 0;
+
+						&:hover {
+							background-color: transparent;
+						}
+					}
+				}
+		}
+
+		.field-control{
+			flex: 1 1 auto;
+			padding: 0 5px;
+		}
+
+    .field-control:first-of-type {
+      padding-left: 0px;
+    }
+}
+
+.fields-keyvalue-header{
+	display: flex;
+
+		.field-instruct{
+			flex: 1 1 auto;
+			margin-bottom: 5px;
+
+				label{
+					display: block;
+					font-size: 12px;
+					font-weight: bold;
+					margin: 0;
+				}
+
+				&:first-child{
+					// padding-left: 18px;
+					padding-right: 0;
+				}
+
+				&:last-child{
+					padding-left: 0;
+				}
+		}
+}

@@ -1,0 +1,59 @@
+/*
+	applies custom width responsive rules to rules
+	-------------
+	arguments
+		@min-width, @rules
+	examples
+		.parent{
+			...
+
+				.response-custom(414px,{
+					...
+				});
+		}
+
+		.parent{
+			...
+
+				.tablet-portrait-up({
+					...
+				});
+		}
+*/
+
+// set a custom width for your response rules (use sparingly)
+.response-custom(@min-width,@rules){
+	@media screen and (min-width: @min-width){
+		@rules();
+	}
+}
+
+.med-phone-up(@rules){
+	@media screen and (min-width: 375px){
+		@rules();
+	}
+}
+
+.lrg-phone-up(@rules){
+	@media screen and (min-width: 414px){
+		@rules();
+	}
+}
+
+.tablet-portrait-up(@rules){
+	@media screen and (min-width: 750px){
+		@rules();
+	}
+}
+
+.tablet-landscape-up(@rules){
+	@media screen and (min-width: 1024px){
+		@rules();
+	}
+}
+
+.lrg-desktop-up(@rules){
+	@media screen and (min-width: 1200px){
+		@rules();
+	}
+}

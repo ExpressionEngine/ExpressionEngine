@@ -52,6 +52,15 @@ $lang = array(
 
 'successfully_changed_password' => 'You have successfully changed your password. Please login using your new password.',
 
+'send_request' => 'Send Request',
+
+'sending' => 'sending...',
+
+'change_password' => 'Change Password',
+
+'updating' => 'updating...',
+
+
 );
 
 // EOF

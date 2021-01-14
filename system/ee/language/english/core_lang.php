@@ -131,6 +131,14 @@ If you made these changes, please accept the modifications on the control panel 
 
 'redirect_xss_fail' => 'The link you are being redirected to contained some potentially malicious or dangerous code. We recommend you hit the back button and email %s to report the link that generated this message.',
 
+'redirect_warning_header' => 'Redirect Warning',
+
+'redirect_description' => 'You\’re opening a new web page going to host <b>%s</b> that is not part of',
+
+'redirect_check_address' => 'Please double check that the address is correct.',
+
+'redirect_cancel' => 'Cancel',
+
 'submission_error' => 'The form you submitted contained the following errors',
 
 'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <code>Themes Path</code> and <code>Themes URL</code>.',

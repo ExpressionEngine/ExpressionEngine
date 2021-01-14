@@ -1,0 +1,67 @@
+//
+// Panels
+// --------------------------------------------------
+
+
+// Base class
+.panel {
+  margin-bottom: 20px;
+  background-color: color(panel-bg);
+  border: 1px solid color(panel-border);
+  border-radius: $border-radius-large;
+}
+
+// Panel contents
+.panel-body {
+  @include clearfix;
+  padding: 20px 25px;
+}
+
+// Optional heading
+.panel-heading {
+  padding: 20px 25px;
+  position: relative;
+  border-bottom: 1px solid color(panel-border);
+}
+
+// Within heading, strip any `h*` tag of its default margins for spacing.
+.panel-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: ceil(($font-size-normal * 1.125));
+  color: inherit;
+
+  > a,
+  > small,
+  > .small,
+  > small > a,
+  > .small > a {
+    color: inherit;
+  }
+}
+
+// Optional footer
+.panel-footer {
+  padding: 20px 25px;
+  position: relative;
+  border-top: 1px solid color(panel-border);
+
+  .button-group {
+    display: inline-block;
+  }
+
+  @include m-tablet-down {
+    .button-group {
+      display: flex;
+    }
+
+    .form-btns .button {
+      width: 100%;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}

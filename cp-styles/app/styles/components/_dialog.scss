@@ -1,0 +1,104 @@
+
+.dialog {
+  background-color: color(bg-blank);
+  border: 1px solid color(border);
+}
+
+.dialog--danger {
+	.dialog__header {
+		// background: linear-gradient(to right, #fdf9f9, #fefbfb);
+	}
+
+	.dialog__icon {
+		// color: color(danger);
+	}
+}
+
+body[data-theme="dark"] .dialog--danger .dialog__header {
+	// background: linear-gradient(to right, rgba(255, 125, 125, 0.361), rgba(255, 141, 141, 0.122));
+}
+
+.dialog--warning {
+	.dialog__header {
+		// background: linear-gradient(to right, #fffbee, #fffef3);
+	}
+
+	.dialog__icon {
+		// color: color(warning);
+	}
+}
+
+.dialog__header {
+	position: relative;
+	display: flex;
+	align-items: center;
+	padding: $sq-inset-m;
+  background-color: color(bg-0);
+}
+
+.dialog__header--centered {
+	justify-content: center;
+}
+
+.dialog__icon {
+	// font-size: 20px;
+	color: color(text-secondary);
+	margin-right: $s-s;
+}
+
+.dialog__title {
+	font-size: 1.4em;
+	// font-weight: bold;
+  padding-right: 35px;
+}
+
+.dialog__close {
+	position: absolute;
+	top: 0;
+	right: $sq-m;
+	bottom: 0;
+	margin: auto 0;
+	height: 23px;
+	width: 20px;
+
+	color: color(text-secondary);
+	font-size: 20px;
+	cursor: pointer;
+
+	i {
+		display: block;
+	}
+}
+
+.dialog__body {
+	padding: $sq-inset-m;
+	line-height: $line-height-normal;
+
+	ul {
+		margin-top: $s-s;
+	}
+}
+
+.dialog__actions {
+	padding: $sq-inset-m;
+
+  .button + .button {
+    margin-left: 7px;
+    margin-bottom: 0; // account for input[type="submit"] which gets the bottom margin like all other inputs
+  }
+  // but override that for button groups
+  .button-group .button + .button {
+    margin-left: -1px;
+  }
+}
+
+.dialog__actions--with-bg {
+	background-color: color(bg-0);
+	// border-top: 1px solid color(border);
+}
+
+.dialog__buttons {
+	display: flex;
+	justify-content: end;
+}
+

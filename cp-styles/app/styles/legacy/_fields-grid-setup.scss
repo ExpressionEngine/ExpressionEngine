@@ -1,0 +1,137 @@
+.toggle-header {
+	display: block;
+	padding: 10px 0 0;
+
+	@include m-tablet-up {
+		display: inline;
+	};
+
+  b {
+    font-weight: 500;
+  }
+
+  .txt-fade {
+    color: color(text-secondary);
+  }
+}
+
+.toggle-content {
+	display: none;
+	// margin-top: 10px;
+}
+
+
+.fields-grid-setup {
+	background-color: color(bg-0);
+	margin: -10px 0 0;
+	padding: 10px;
+	border-radius: $border-radius-base;
+}
+
+.fields-grid-item {
+	background-color: color(bg-blank);
+	border: 1px solid color(border);
+	margin: 0 0 10px;
+	padding: 0;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	&.fields-grid-item---open {
+		.toggle-header {
+			display: none;
+		}
+
+		.toggle-content {
+			display: block;
+      border-top: 1px solid color(border);
+		}
+	}
+}
+
+.toggle-content {
+	padding: $s-m;
+}
+
+.fields-grid-tools {
+	background-color: color(bg-blank);
+	padding: $sq-inset-s;
+
+	&:last-child {
+		margin: 10px -20px -20px;
+    border-top: 1px solid color(border);
+    border-bottom: none;
+	}
+
+  a {
+    color: color(text-secondary);
+
+    &:hover {
+      color: color(link);
+    }
+  }
+
+	@include clear-float;
+}
+
+[class*='fields-grid-tool-'] {
+	margin-right: 10px;
+
+	&:before {
+		display: inline-block;
+
+		@extend %fa-icon;
+		@extend .fas;
+	}
+}
+
+.fields-grid-tool-expand {
+	&:before {
+		content: fa-content($fa-var-caret-square-down);
+
+		.fields-grid-item---open & {
+			content: fa-content($fa-var-caret-square-up);
+		}
+	}
+}
+
+.fields-grid-tool-reorder {
+	cursor: move;
+	margin-right: 10px;
+
+	&:before {
+		content: fa-content($fa-var-bars);
+	}
+}
+
+.fields-grid-tool-copy {
+	&:before {
+		content: fa-content($fa-var-clone);
+	}
+}
+
+.fields-grid-tool-add {
+	&:before {
+		// color: color(success);
+		content: fa-content($fa-var-plus);
+	}
+
+  &:hover {
+    color: color(success) !important;
+  }
+}
+
+.fields-grid-tool-remove {
+	float: right;
+	margin-right: 0;
+
+	&:before {
+		// color: color(error);
+		content: fa-content($fa-var-trash-alt);
+	}
+
+  &:hover {
+    color: color(error) !important;
+  }
+}

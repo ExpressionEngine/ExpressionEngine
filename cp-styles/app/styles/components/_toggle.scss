@@ -1,0 +1,128 @@
+
+$toggle-height: 26px;
+$toggle-width: 48px;
+$toggle-peg-padding: 3px;
+$toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
+
+// LEGACY 6.0
+.toggle-btn {
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	height: $toggle-height;
+	width: $toggle-width !important;
+	// margin-bottom: 10px;
+
+	transition: all 100ms ease;
+	border-radius: ($toggle-height / 2);
+	background: color(input-toggle-bg);
+	text-decoration: none;
+	border: none;
+
+	.slider {
+		position: absolute;
+		display: block;
+		left: $toggle-peg-padding;
+		top: $toggle-peg-padding;
+		width: $toggle-peg-size;
+		height: $toggle-peg-size;
+
+		transition: all 200ms ease;
+		box-shadow: 0 2px 5px color(input-toggle-shadow);
+		border-radius: 50%;
+		background: color(input-toggle-fg);
+	}
+
+	&.on {
+		background: color(input-toggle-active-bg);
+
+		.slider {
+			transform: translateX($toggle-width - $toggle-peg-size - ($toggle-peg-padding * 2));
+			background: color(input-toggle-active-fg);
+		}
+	}
+
+	&.disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.invalid & {
+		border-color: color(error);
+	}
+
+	&:focus {
+		@include focus-outline;
+	}
+}
+
+
+.toggle-tools {
+	margin-top: 1em;
+
+	b {
+		vertical-align: middle;
+    font-weight: 500;
+	}
+
+	button {
+		vertical-align: middle;
+		margin-left: 0.5em;
+	}
+}
+
+
+// TODO: This is the new toggle button.
+// It hasn't been replaced yet do to the time it would take.
+
+// .toggle {
+// 	position: relative;
+// 	height: $toggle-height;
+// 	width: $toggle-width !important;
+// 	-webkit-appearance: none;
+// 	-moz-appearance: none;
+
+// 	transition: all 100ms ease;
+// 	outline: none;
+// 	border-radius: ($toggle-height / 2);
+// 	background: color(input-toggle-bg);
+// 	// border: 1px solid color(border);
+
+// 	&:focus {
+// 		outline: none;
+// 		box-shadow: 0 0 0 2px color(bg-5), 0 0 0 4px color(keyboard-focus);
+// 	}
+
+// 	&:after {
+// 		content: "";
+
+// 		position: absolute;
+// 		display: block;
+// 		left: $toggle-peg-padding;
+// 		top: $toggle-peg-padding;
+// 		width: $toggle-peg-size;
+// 		height: $toggle-peg-size;
+
+// 		transition: all 200ms ease;
+// 		box-shadow: 0 2px 5px color(input-toggle-shadow);
+// 		border-radius: 50%;
+// 		background: color(input-toggle-fg);
+// 	}
+
+// 	&:checked, &.is-checked {
+// 		background: color(input-toggle-active-bg);
+
+// 		&:after {
+// 			transform: translateX($toggle-width - $toggle-peg-size - ($toggle-peg-padding * 2));
+// 			background: color(input-toggle-active-fg);
+// 		}
+// 	}
+
+// 	&:disabled, &--disabled {
+// 		cursor: not-allowed;
+// 		opacity: 0.6;
+// 	}
+// }
+

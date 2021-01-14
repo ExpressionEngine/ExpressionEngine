@@ -45,6 +45,8 @@ $lang = array(
 
 'jump_menu_input' => 'Jump To...',
 
+'many_jump_results' => 'More than 10 results found, please refine your search',
+
 'menu_manager' => 'Menu Manager',
 
 /* Control Panel */
@@ -666,6 +668,8 @@ $lang = array(
 'scroll_to_top' => 'scroll to top',
 
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+
+'log_into' => 'Log into %s',
 
 'up_to_date' => 'Up to date!',
 

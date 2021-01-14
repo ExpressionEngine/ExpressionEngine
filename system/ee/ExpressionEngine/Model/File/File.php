@@ -236,7 +236,9 @@ class File extends Model {
 		{
 			$ext = strrchr($this->file_name, '.');
 			$basename = ($ext === false) ? $this->file_name : substr($this->file_name, 0, -strlen($ext));
-			$pattern = rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/' . $basename . '_' . $manipulation . '_*';
+			$renamer = strrchr($basename, '_');
+			$basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
+			$pattern = rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/' . $basename . '_*';
 
 			foreach (glob($pattern) as $file) {
 				unlink($file);

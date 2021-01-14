@@ -2,7 +2,7 @@
 
 // ExpressionEngine Config Items
 // Find more configs and overrides at
-// https://docs.expressionengine.com/latest/general/system_configuration_overrides.html
+// https://docs.expressionengine.com/latest/general/system-configuration-overrides.html
 
 $config['app_version'] = '{app_version}';
 $config['encryption_key'] = '{encryption_key}';

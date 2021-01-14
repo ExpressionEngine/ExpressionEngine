@@ -1,0 +1,216 @@
+
+// Light theme
+// -------------------------------------------------------------------
+
+.cm-s-default {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	line-height: 1.6;
+	// font-size: 13px;
+}
+
+.CodeMirror {
+	background-color: #fff;
+	color: #3a383e;
+}
+
+// matching textarea styles for codemirror
+.CodeMirror-wrap {
+	border: 1px solid color(input-border);
+	margin-bottom: 10px;
+	border-radius: $corners;
+	transition: border-color $t-speed ease, box-shadow $t-speed ease;
+}
+
+.CodeMirror-wrap.CodeMirror-focused {
+	border-color: color(accent);
+	box-shadow: 0 3px 6px rgba(#AE97FF, 0.14), 0 5px 20px rgba(rgb(97, 114, 242), 0.05);
+}
+
+// Remove purple highlighting
+.CodeMirror-focused .CodeMirror-selected {
+	background: #c4daff;
+}
+
+// Remove the active line background
+.CodeMirror-activeline-background {
+	background: transparent;
+}
+
+// Make the current line number bold
+.CodeMirror-activeline-gutter .CodeMirror-linenumber {
+	font-weight: bold;
+}
+
+// The lint marker gutter
+.CodeMirror-lint-markers {
+	width: 16px;
+}
+
+// Remove brown comments
+.cm-s-default .cm-comment {
+	color: #AAA;
+}
+
+
+.cm-s-default .CodeMirror-gutters {
+	// border-right: 5px solid color(bg-10);
+	background-color: #fff;
+	white-space: nowrap;
+	border-right: none;
+}
+
+.CodeMirror-guttermarker,
+.CodeMirror-guttermarker-subtle,
+.CodeMirror-linenumber {
+	color: #d0d7de;
+}
+
+.cm-s-default .cm-comment { color:#969eb5; }
+.cm-s-default .cm-keyword, .cm-s-default .cm-property { color:#1d75b3; }
+//   .cm-s-default .cm-atom,.cm-s-default .cm-number { color:#75438a; }
+.cm-s-default .cm-node,.cm-s-default .cm-tag { color:#df5462; }
+  .cm-s-default .cm-string { color:#0d2b69; }
+
+.cm-s-default .cm-variable,.cm-s-default .cm-qualifier { color:#4271ae; }
+
+.cm-s-default .cm-variable-2, .cm-s-default .cm-attribute { color: #8979ce; }
+
+
+
+// Dark theme
+// -------------------------------------------------------------------
+
+// Tweaked version of the material palenight theme
+body[data-theme="dark"] .cm-s-default, .cm-dark {
+	&.CodeMirror {
+		background-color: #292D3E;
+		color: #A6ACCD;
+	}
+
+	.CodeMirror-gutters {
+		background: #292D3E;
+		color: #676E95;
+		border: none;
+	}
+
+	.CodeMirror-guttermarker,
+	.CodeMirror-guttermarker-subtle,
+	.CodeMirror-linenumber {
+		color: #676E95;
+	}
+
+	.CodeMirror-activeline-gutter .CodeMirror-linenumber {
+		color: #767ea6;
+	}
+
+	.CodeMirror-cursor {
+		border-left: 1px solid #FFCC00;
+	}
+
+	div.CodeMirror-selected {
+		background: rgba(113, 124, 180, 0.2);
+	}
+
+	&.CodeMirror-focused div.CodeMirror-selected {
+		background: rgba(113, 124, 180, 0.2);
+	}
+
+	.CodeMirror-line::selection,
+	.CodeMirror-line>span::selection,
+	.CodeMirror-line>span>span::selection {
+		background: rgba(128, 203, 196, 0.2);
+	}
+
+	.CodeMirror-line::-moz-selection,
+	.CodeMirror-line>span::-moz-selection,
+	.CodeMirror-line>span>span::-moz-selection {
+		background: rgba(128, 203, 196, 0.2);
+	}
+
+	.cm-keyword {
+		color: #C792EA;
+	}
+
+	.cm-operator {
+		color: #89DDFF;
+	}
+
+	.cm-variable-2 {
+		color: #EEFFFF;
+	}
+
+	.cm-variable-3,
+	.cm-type {
+		color: #f07178;
+	}
+
+	.cm-builtin {
+		color: #FFCB6B;
+	}
+
+	.cm-atom {
+		color: #F78C6C;
+	}
+
+	.cm-number {
+		color: #FF5370;
+	}
+
+	.cm-def {
+		color: #82AAFF;
+	}
+
+	.cm-string {
+		color: #C3E88D;
+	}
+
+	.cm-string-2 {
+		color: #f07178;
+	}
+
+	.cm-comment {
+		color: #676E95;
+	}
+
+	.cm-variable {
+		// color: #f07178;
+		color: #919df9;
+	}
+
+	.cm-tag {
+		color: #FF5370;
+	}
+
+	.cm-meta {
+		color: #FFCB6B;
+	}
+
+	.cm-attribute {
+		color: #C792EA;
+	}
+
+	.cm-property {
+		color: #C792EA;
+	}
+
+	.cm-qualifier {
+		color: #DECB6B;
+	}
+
+	.cm-variable-3,
+	.cm-type {
+		color: #DECB6B;
+	}
+
+
+	.cm-error {
+		color: rgba(255, 255, 255, 1.0);
+		background-color: #FF5370;
+	}
+
+	.CodeMirror-matchingbracket {
+		text-decoration: underline;
+		color: white !important;
+	}
+}
+

@@ -540,6 +540,14 @@ $lang = array(
 
 'debug_tools_debug_tags' => 'Debug Template Tags',
 
+'debug_tools_installed' => 'Installed',
+
+'debug_tools_tag' => 'Tag',
+
+'debug_tools_addon' => 'Add-on',
+
+'debug_tools_count' => 'Count',
+
 'debug_tools_broken_tags_found' => 'We found %s broken or problematic template tags.',
 
 'debug_tools_corrupt_categories' => 'Corrupt categories',
