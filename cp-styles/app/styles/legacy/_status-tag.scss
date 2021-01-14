@@ -1,0 +1,189 @@
+
+// LEGACY 6.0 All st- classes are legacy
+
+.status-tag {
+	display: inline-block;
+	padding: 3px 8px 2px;
+	color: color(text-secondary);
+	background-color: color(bg-10);
+	border: 1px solid transparent;
+	font-size: 75%;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+	border-radius: $border-radius-xsmall;
+
+	// &::before {
+	// 	content: "";
+	// 	display: inline-block;
+	// 	position: relative;
+	// 	top: -1px;
+	// 	// vertical-align: middle;
+	// 	height: 7px;
+	// 	width: 7px;
+	// 	border-radius: 50%;
+	// 	margin-right: $s-xs
+	// }
+}
+
+.status-tag--big {
+	font-size: 0.95em;
+}
+
+.st-open,
+.st-enable,
+.st-status,
+.st-unlocked,
+
+.status-tag--open {
+	background: color(bg-blank);
+	color: color(success);
+  border-color: color(success);
+
+	&::before {
+		background: color(bg-blank);
+	}
+}
+
+.st-spam,
+.st-error,
+.st-closed,
+.st-banned,
+.st-locked,
+.st-disable,
+
+.status-tag--closed {
+  background: color(bg-blank);
+	color: color(danger);
+  border-color: color(danger);
+
+	&::before {
+		background: #ee0707;
+	}
+}
+
+/*
+body[data-theme="dark"] {
+	.st-open,
+	.st-enable,
+	.st-status,
+	.st-unlocked,
+
+	.status-tag--open {
+		background: rgba(231, 250, 240, 0.925);
+		color: #00b533;
+	}
+
+	.st-spam,
+	.st-error,
+	.st-closed,
+	.st-banned,
+	.st-locked,
+	.st-disable,
+
+	.status-tag--closed {
+		background: rgba(254, 237, 240, 0.925);
+		color: #ee0707;
+	}
+}
+*/
+
+
+// LEGACY 6.0
+.st-spam,
+.st-error,
+.st-closed,
+.st-banned,
+.st-open,
+.st-draft,
+.st-pending,
+.st-info,
+.st-note,
+.st-warning,
+.st-locked,
+.st-unlocked,
+.st-enable,
+.st-disable,
+.st-status{
+	@extend .status-tag;
+}
+
+
+.st-draft{
+  background-color: color(bg-blank);
+  border-color: $gray-medium-light;
+	color: $gray-medium;
+}
+
+.st-pending,
+.st-warning,
+.st-note{
+	background-color: color(bg-blank);
+  border-color: color(warning);
+	color: color(warning);
+}
+
+.st-info{
+	background-color: color(bg-blank);
+	border-color: color(accent-medium);
+	color: color(accent);
+}
+
+// // firefox anomalies
+// @-moz-document url-prefix(){
+// 	.status-tag{
+// 		padding: 5px 5px 3px;
+// 	}
+// }
+
+// Status tag styling in select dropdowns
+.select__dropdown,
+.select__button {
+
+  .status-tag {
+    font-size: inherit;
+    font-weight: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    border: inherit;
+    background-color: inherit !important;
+    padding: inherit;
+    color: inherit !important;
+    background: inherit;
+    display: inherit;
+    border-radius: inherit;
+    // padding-left: 20px;
+
+    // Add colored beacon indicator
+    /*
+    &::before {
+      content: "";
+      width: 13px;
+      height: 13px;
+      display: block;
+      position: absolute;
+      left: 20px;
+      top: calc(50% - 7px);
+      border-radius: $border-radius-full;
+    }
+
+    &.st-open::before,
+    &.st-enable::before,
+    &.st-status::before,
+    &.st-unlocked::before,
+    &.status-tag--open::before {
+    	background-color: color(success);
+    }
+
+    &.st-spam::before,
+    &.st-error::before,
+    &.st-closed::before,
+    &.st-banned::before,
+    &.st-locked::before,
+    &.st-disable::before,
+    &.status-tag--closed::before {
+      background-color: color(danger);
+    }
+    */
+  }
+}

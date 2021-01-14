@@ -1,0 +1,59 @@
+.paginate {
+	margin: 0 0 10px;
+
+	ul {
+		background-color: color(bg-5);
+		border: 1px solid color(border);
+		list-style-type: none;
+		float: left;
+		margin: 0;
+		border-radius: 3px;
+
+		// .float(clear);
+		@include clear-float;
+	}
+
+	li {
+		float: left;
+		font-size: 0.9em;
+
+		&:first-child {
+			a:hover {
+				border-radius: 3px 0 0 3px;
+			}
+		}
+
+		&:last-child {
+			a {
+				border-right: 0;
+			}
+
+			a:hover {
+				border-radius: 0 3px 3px 0;
+			}
+		}
+	}
+
+	a {
+		border-right: 1px solid color(border);
+		display: block;
+		padding: 6px 10px;
+		text-decoration: none;
+
+		&:hover {
+			background-color: color(bg-10);
+		}
+
+		&.act {
+			background-color: color(bg-10);
+			color: color(text-primary);
+			font-weight: bold;
+		}
+	}
+
+	@include clear-float;
+
+	// @include m-tablet-up {
+	// 	float: left;
+	// };
+}

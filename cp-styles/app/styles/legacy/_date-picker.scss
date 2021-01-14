@@ -1,0 +1,195 @@
+
+.date-picker-wrap {
+	&, * {
+		box-sizing: initial;
+	}
+}
+
+.date-picker-clip-inner{
+	width: 1000em;
+}
+
+.date-picker-clip{
+	overflow-x: hidden;
+
+		// .float(clear);
+}
+
+.date-picker-item{
+	float: left;
+	margin-right: 10px;
+	position: relative;
+	width: 270px;
+}
+
+.date-picker-prev,
+.date-picker-next{
+	font-size: 12px;
+	position: absolute;
+	top: 2px;
+	color: color(link) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.date-picker-prev{
+	left: 10px;
+}
+
+.date-picker-next{
+	right: 10px;
+}
+.date-picker-wrap{
+	@include shadow-dropdown;
+
+	background-color: color(bg-dropdown);
+	border: 1px solid color(dropdown-border);
+	display: none;
+	padding: 10px;
+	position: absolute;
+	width: 270px;
+	z-index: 205;
+	border-radius: $border-radius-base;
+
+		h3{
+			font-size: 14px;
+			margin-bottom: 5px;
+            text-align: center;
+            font-weight: 500;
+		}
+
+		table{
+			border-collapse: initial;
+			margin-bottom: 0;
+			border: none;
+			box-shadow: none;
+
+				th{
+					text-transform: uppercase;
+				}
+
+				tr{
+					// zebra striped tables!
+					// this affects even rows, 2nd, 4th, 6th row, etc...
+					&:nth-child(2n){
+						td{
+							// background-color: $white;
+
+								&.act{
+									background-color: color(accent);
+									font-weight: bold;
+
+										a{
+											color: $white;
+										}
+								}
+
+								&.empty{
+									// background-color: color(bg-dropdown);
+								}
+						}
+					}
+
+					// disgusting override for table row highlighting. BOO JIM!
+					&:hover td{
+						// background: inherit;
+
+							&.act{
+								background-color: color(accent);
+
+									a{
+										color: $white;
+									}
+
+									&:hover{
+										background-color: color(accent);
+									}
+							}
+
+							&.empty{
+								// background-color: color(bg-dropdown);
+
+									&:hover{
+										background-color: color(bg-0);
+									}
+							}
+
+							&:hover{
+								background-color: color(accent-light);
+							}
+					}
+				}
+
+				th, td{
+					font-size: 11px;
+					padding: 5px;
+					text-align: center;
+				}
+
+				td{
+                    color: color(text-primary);
+					border-right: none;
+					padding: 0;
+
+					a {
+						padding: 5px 12px;
+						display: block;
+						color: color(text-normal);
+					}
+
+						&:nth-child(7n){
+							border-right: 0;
+						}
+
+						&.act{
+							background-color: color(accent);
+							font-weight: bold;
+							border-radius: $border-radius-xsmall;
+
+								a{
+									color: #fff;
+								}
+						}
+
+						&.empty{
+							background-color: color(bg-dropdown);
+						}
+				}
+		}
+}
+
+
+.date-picker-wrap {
+	.date-picker-footer {
+		text-align: center;
+		margin-top: $s-xs;
+	}
+	.date-picker-today-button {
+		@extend .button--default;
+    @extend .button--small;
+		// border: none;
+		box-shadow: none;
+	}
+
+	h3{margin:0;padding:0;}
+	table{border-spacing:0;width:100%;}
+	th{text-align:left;}
+	table{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box;-moz-border-radius:$border-radius-xsmall;-webkit-border-radius:$border-radius-xsmall;border-radius:$border-radius-xsmall;}
+	th,td{padding:10px;white-space:nowrap;}
+	th{background-color:transparent;border-bottom:none;color:color(text-tertiary);font-size:12px;position:relative;z-index:1;}
+	td{background-color:color(bg-dropdown);border-bottom:none;}
+	.date-picker-heading{margin-bottom:10px;}
+	.date-picker-item{float:left;margin-right:10px;position:relative;width:270px;}
+	.date-picker-prev,.date-picker-next{font-size:12px;position:absolute;top:2px;}
+	.date-picker-wrap h3{font-size:14px;margin-bottom:5px;text-align:center;}
+	.date-picker-wrap table{margin-bottom:0;}
+	tr:first-child th:first-child{-moz-border-radius:$border-radius-xsmall 0 0;-webkit-border-radius:$border-radius-xsmall 0 0;border-radius:$border-radius-xsmall 0 0;}
+	tr:first-child th:last-child{-moz-border-radius:0 $border-radius-xsmall 0 0;-webkit-border-radius:0 $border-radius-xsmall 0 0;border-radius:0 $border-radius-xsmall 0 0;}
+	// tbody tr:nth-child(2n) td{background-color:#f9f9f9;}
+	tbody tr:last-child td{border-bottom:0;}
+	tbody tr:last-child td:first-child{-moz-border-radius:0 0 0 $border-radius-xsmall;-webkit-border-radius:0 0 0 $border-radius-xsmall;border-radius:0 0 0 $border-radius-xsmall;}
+	tbody tr:last-child td:last-child{-moz-border-radius:0 0 $border-radius-xsmall;-webkit-border-radius:0 0 $border-radius-xsmall;border-radius:0 0 $border-radius-xsmall;}
+	.date-picker-clip::-webkit-scrollbar{width:0;}
+	.date-picker-clip::-webkit-scrollbar-track{background-color:#ccc;border-radius:0;}
+	.date-picker-clip::-webkit-scrollbar-thumb{background-color:gray;border-radius:0;}
+	}

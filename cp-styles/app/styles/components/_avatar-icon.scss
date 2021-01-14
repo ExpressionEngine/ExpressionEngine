@@ -1,0 +1,15 @@
+
+@mixin avatar-icon ($size) {
+	width: $size;
+	height: $size;
+}
+
+.avatar-icon {
+	@include avatar-icon(25px);
+	border-radius: 50%;
+	max-width: initial;
+}
+
+.avatar-icon--small {
+	@include avatar-icon(18px);
+}

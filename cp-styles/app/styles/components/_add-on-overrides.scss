@@ -1,0 +1,147 @@
+// Overrides for Add-Ons layouts
+
+.add-on-layout {
+
+  .table-responsive {
+    @extend .panel;
+    margin-bottom: 0px;
+  }
+
+  .panel .table-responsive {
+    background-color: none;
+    border: none;
+    border-radius: none;
+  }
+
+  .filter-bar {
+    margin-bottom: 10px;
+  }
+
+  .panel .filter-bar {
+    margin-bottom: 0px;
+  }
+
+  .tbl-ctrls {
+
+    h1 {
+      font-size: 1.35em;
+      border-bottom: none;
+    }
+  }
+
+  .btn.action {
+    @extend .button--primary;
+  }
+
+  .md-wrap {
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-bottom: .5em;
+    }
+
+    h2 {
+      font-size: 1.65em !important;
+      border-bottom: none !important;
+      color: inherit !important;
+      margin: inherit !important;
+      margin-bottom: .4em !important;
+      padding: 0 !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+    }
+
+    ul, ol {
+      margin-bottom: 20px;
+      padding-left: 20px;
+      text-indent: -20px;
+    }
+
+    textarea {
+      margin-bottom: 20px;
+    }
+  }
+
+  .secondary-sidebar {
+
+    .sidebar__section-title {
+      display: block;
+      margin-top: 0px;
+      margin-bottom: 2px;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: inherit;
+      font-weight: 400;
+      border-bottom: none;
+      position: relative;
+      padding: 6px 12px;
+
+      a:not(.button) {
+        @extend .sidebar__link;
+        color: color(text-normal);
+        margin: -6px -12px;
+      }
+
+      .button {
+        display: inline-block;
+        position: absolute;
+        top: 6px;
+        right: 5px;
+
+        &.button--primary {
+          @extend .button--primary;
+        }
+      }
+
+      &.active a:not(.button) {
+        color: color(link);
+    		border-radius: $corners;
+    		background: color(secondary-sidebar-item-bg);
+      }
+    }
+
+    .sidebar__link {
+      padding-left: 25px;
+    }
+
+    .sidebar__link--parent a {
+      padding-left: 0px;
+    }
+  }
+
+  .btn {
+    @extend .button--primary;
+  }
+}
+
+/*
+.add-on-layout {
+  .tbl-ctrls {
+    @extend .panel;
+    margin-bottom: 0px;
+
+    h1 {
+      padding: 20px 25px;
+      position: relative;
+      border-bottom: 1px solid color(panel-border);
+      font-size: 1.35em;
+    }
+
+    .tbl-search.right {
+      margin-top: 15px;
+      margin-right: 25px;
+    }
+
+    .btn.action {
+      @extend .button--primary;
+    }
+  }
+
+  form.tbl-ctrls {
+    border: none;
+  }
+}
+*/

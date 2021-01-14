@@ -1,0 +1,46 @@
+.installer-page {
+
+  .wrap {
+    margin: auto;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    max-width: 600px;
+  }
+
+  .panel {
+    box-shadow: 0 10px 30px -5px rgba(15, 19, 57, 0.1), 0 4px 8px -6px rgba(21, 11, 59, 0.1);
+
+    &.warn {
+      border-color: color(accent);
+    }
+  }
+
+  .updater-stack-trace{
+    background-color:#fff;
+    border:1px solid #ccc;
+    border-width:1px 0;
+    color:#000;
+    display:none;
+    margin:0;
+
+    ul {
+      list-style-type:none;margin:0;
+
+      li{
+        border-bottom:1px solid #ccc;
+        font-family:'New Courier',Courier,Monospace;
+        font-size:12px;
+        padding:10px;
+        word-break:break-all;
+
+        &:last-child{
+          border:0;
+        }
+
+        &:nth-child(2n){
+          background-color:#f9f9f9;
+        }
+      }
+    }
+  }
+}

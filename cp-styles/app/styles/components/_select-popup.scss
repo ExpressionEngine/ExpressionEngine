@@ -1,0 +1,96 @@
+
+@mixin select-popup-arrow($color) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='21.89'%3E%3Cg fill='#{$color}' transform='translate(-21 -16.004)'%3E%3Cg transform='translate(15.344 -93.49)'%3E%3Cpath d='M11.651,131.174l-5.786-5.786a.714.714,0,0,1,0-1.01l.675-.675a.714.714,0,0,1,1.009,0l4.607,4.585,4.607-4.585a.714.714,0,0,1,1.009,0l.675.675a.714.714,0,0,1,0,1.01l-5.785,5.786A.714.714,0,0,1,11.651,131.174Z' transform='translate(0 0)'/%3E%3C/g%3E%3Cg transform='translate(39.656 147.388) rotate(180)'%3E%3Cpath d='M11.651,131.174l-5.786-5.786a.714.714,0,0,1,0-1.01l.675-.675a.714.714,0,0,1,1.009,0l4.607,4.585,4.607-4.585a.714.714,0,0,1,1.009,0l.675.675a.714.714,0,0,1,0,1.01l-5.785,5.786A.714.714,0,0,1,11.651,131.174Z' transform='translate(0 0)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");;
+}
+
+.select-popup, select {
+
+  @extend .button;
+  @extend .button--default;
+
+  text-align: initial;
+
+  -webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+
+	position: relative;
+	// display: inline-block;
+	// max-width: 100%;
+	// margin: 0;
+	// border: 1px solid color(input-border);
+  // background: color(input-bg);
+	// color: color(text-primary);
+	// box-shadow: 0 2px 0 color(input-border-accent);
+	// border-radius: $corners-big;
+	cursor: pointer;
+
+    background-repeat: no-repeat;
+    background-clip: border-box;
+    -moz-background-clip: border-box;
+    -webkit-background-clip: border-box;
+
+	// Regular size
+	// line-height: 30px !important;
+	// padding: 0 $s-s;
+	padding-right: 30px !important;
+	background-size: 8px 12px;
+	background-position: right 12px center;
+
+	&:not([multiple]) {
+		// height: 30px;
+	}
+
+	&.select-popup--large {
+		height: initial;
+		line-height: initial;
+		padding: $sq-inset-s;
+		padding-right: 30px !important;
+		background-size: 10px 15px;
+		background-position: right $sq-s center;
+	}
+
+	@include focus-visible {
+		@include focus-outline;
+	}
+
+	&:not([multiple])::after {
+		@extend %fa-icon;
+		@extend .fas;
+
+		content: fa-content($fa-var-chevron-down);
+
+		position: absolute;
+		top: 9px;
+		right: 20px;
+
+		color: color(text-secondary);
+	}
+
+	&::-ms-expand {
+		display: none;
+	}
+
+	option {
+		font-weight: normal;
+	}
+}
+
+
+// Because the arrow is a background image, the color must be set programmatically instead of using css variables
+
+select:not([multiple]),
+body[data-theme="light"] select
+.select-popup,
+body[data-theme="light"] .select-popup {
+	// Encode the hashtag so it works in the data uri
+	$color: str-replace("#{raw-color(text-secondary, $light-theme)}", '#', '\%23');
+	@include select-popup-arrow($color);
+}
+
+body[data-theme="dark"] select:not([multiple]),
+body[data-theme="dark"] .select-popup {
+	// Encode the hashtag so it works in the data uri
+	$color: str-replace("#{raw-color(text-secondary, $dark-theme)}", '#', '\%23');
+	@include select-popup-arrow($color);
+}

@@ -1,0 +1,163 @@
+// Use border-box for everything
+html {
+    box-sizing: border-box;
+	font-size: 15px;
+	height: 100%;
+
+	// @include m-tablet {
+	// 	font-size: 14px;
+	// }
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+	@include font-normal;
+
+	height: 100%;
+
+	font-size: 1rem;
+	line-height: $line-height-normal;
+
+	color: color(text-normal);
+	background: color(main-bg);
+
+  @include selection(color(text-selection), color(text-selection-bg));
+
+  -webkit-font-smoothing: antialiased;
+
+  // text-rendering: optimizeLegibility;
+	// -moz-osx-font-smoothing: grayscale;
+
+	&.iframe {
+		height: auto;
+	}
+}
+
+
+h1, h2, h3, h4, h5, h6, a, p, code, pre, blockquote, ul, ol {
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    font-weight: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+
+p {
+	line-height: $line-height-normal;
+	// margin: 0 0 10px 0;
+}
+
+img {
+	max-width: 100%;
+}
+
+figure {
+	margin: 0;
+	padding: 0;
+}
+
+// a:link,
+a {
+    color: color(link);
+    text-decoration: none;
+    -webkit-transition: color 0.15s ease-in-out;
+    -moz-transition: color 0.15s ease-in-out;
+    -o-transition: color 0.15s ease-in-out;
+}
+a:hover {
+    color: color(link-hover);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 1.85em;
+}
+
+h1, h2, h3 {
+	i {
+		color: color(text-secondary);
+		// font-size: 14px;
+		font-style: normal;
+	}
+}
+
+h2 {font-size: 1.65em;}
+
+h3 {font-size: 1.35em;}
+
+h4 {font-size: 1.25em;}
+
+h5 {font-size: 1.25em;}
+
+small, .text_small {font-size: 0.8em;}
+
+
+// TODO:
+.line-heading {
+	font-size: 1em;
+	// font-weight: bold;
+	margin: $s-m 0 $s-s 0;
+
+	& + hr {
+		margin-top: 0;
+	}
+}
+
+hr {
+	margin: $s-m 0;
+	height: 2px;
+	border: 0;
+	background: color(border);
+	// border-bottom: 2px solid color(border);
+}
+
+code {
+	font-size: inherit;
+	margin: 0 2px;
+	padding: 3px 6px;
+	border-radius: $corners;
+	border: 1px solid color(code-border);
+	background-color: color(bg-blank);
+	font-size: 0.96em;
+	white-space: normal;
+}
+
+pre {
+	overflow-x: auto;
+}
+
+pre code {
+	display: block;
+	padding: $sq-inset-s;
+	border: none;
+	border-radius: $border-radius-base;
+	background: var(--ee-bg-5);
+	white-space: nowrap;
+}
+
+mark {
+	padding: $sq-inset-xs;
+	color: inherit;
+    background-color: color(mark-bg);
+}
+
+ul, ol  {
+	padding-left: 0;
+
+	li  {
+		list-style-position:inside
+	}
+
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 0 !important;
+  }
+}

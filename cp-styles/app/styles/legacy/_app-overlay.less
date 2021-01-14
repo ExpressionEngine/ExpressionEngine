@@ -1,0 +1,403 @@
+/*
+	_app-overlay.less
+	=============
+	# HTML full structure
+	```
+	<div class="app-overlay app-overlay--[type]"></div>
+	```
+
+	# HTML minimum structure
+	```
+	<div class="app-overlay"></div>
+	```
+
+	-----TOC-----
+	.app-overlay (object, required)
+	.app-overlay---open (state, optional)
+	.app-overlay---closed (state, optional)
+	.app-overlay--destruct (modifier, optional)
+	.app-overlay--warning (modifier, optional)
+*/
+
+@keyframes slideInLeft{
+	from{
+		transform: translate3d(-100%, 0, 0);
+		visibility: visible;
+	}
+
+	to{
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+@keyframes slideOutLeft{
+	from{
+		transform: translate3d(0, 0, 0);
+	}
+
+	to{
+		visibility: hidden;
+		transform: translate3d(-100%, 0, 0);
+	}
+}
+
+.animate-slide-left-in,
+.animate-slide-left-out{
+	animation-name: slideInLeft;
+	animation-duration: .5s;
+	animation-timing-function: ease-in-out;
+	animation-delay: 0;
+	animation-direction: alternate;
+	animation-iteration-count: 1;
+	animation-fill-mode: none;
+	animation-play-state: running;
+}
+
+.animate-slide-left-out{
+	animation-name: slideOutLeft;
+}
+
+
+
+
+@keyframes slideIn{
+	from{
+		transform: translate3d(100%, 0, 0);
+		visibility: visible;
+	}
+
+	to{
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+@keyframes slideOut{
+	from{
+		transform: translate3d(0, 0, 0);
+	}
+
+	to{
+		visibility: hidden;
+		transform: translate3d(100%, 0, 0);
+	}
+}
+
+.animate-slide-in,
+.animate-slide-out{
+	animation-name: slideIn;
+	animation-duration: .5s;
+	animation-timing-function: ease-in-out;
+	animation-delay: 0;
+	animation-direction: alternate;
+	animation-iteration-count: 1;
+	animation-fill-mode: none;
+	animation-play-state: running;
+}
+
+.animate-slide-out{
+	animation-name: slideOut;
+}
+
+
+@keyframes fadeIn{
+	from{
+		opacity: 0;
+	}
+
+	to{
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut{
+	from{
+		opacity: 1;
+	}
+
+	to{
+		opacity: 0;
+	}
+}
+
+.animate-fade-in,
+.animate-fade-out{
+	animation-name: fadeIn;
+	animation-duration: .5s;
+	animation-timing-function: ease-in-out;
+	animation-delay: 0;
+	animation-direction: alternate;
+	animation-iteration-count: 1;
+	animation-fill-mode: none;
+	animation-play-state: running;
+}
+
+.animate-fade-out{
+	animation-name: fadeOut;
+}
+
+
+
+.app-overlay{
+	background-color: var(--ee-modal-overlay-bg);
+	bottom: 0;
+	display: none;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+  opacity: 0.9;
+}
+
+
+
+/*
+	reveals overlay (applied via js)
+*/
+.app-overlay---open{
+	display: block;
+	.animate-fade-in;
+}
+
+
+
+/*
+	hides overlay (applied via js)
+*/
+.app-overlay---closed{
+	.animate-fade-out;
+}
+
+
+
+/*
+	use when modal action is destructive
+	example: deleting data
+*/
+.app-overlay--destruct{
+	background-color: @red;
+}
+
+
+
+/*
+	use when modal action requires extra thought
+	example: editing data
+*/
+.app-overlay--warning{
+	background-color: @yellow;
+}
+
+
+
+.app-modal{
+	display: none;
+	padding: 24px;
+	position: absolute;
+	z-index: 101;
+}
+
+
+/*
+.app-modal__dismiss{
+	margin-bottom: 16px;
+
+		a{
+			color: @gray-medium;
+			font-weight: 500;
+
+				&:hover{
+					color: @red;
+				}
+
+				&:before{
+					content: '\f00d';
+					font-family: @font-family-icon;
+					margin-right: 5px;
+				}
+		}
+}
+*/
+
+
+
+.app-modal__content{
+}
+
+
+
+.app-modal__iframe{
+	border: 0;
+	height: 100vh;
+	width: 100%;
+}
+
+
+
+.app-modal__frame{
+	border: 0;
+	flex: 1;
+	width: 100%;
+}
+
+
+
+.app-modal-inner{
+	background-color: var(--ee-bg-0);
+	padding: 24px;
+
+		// body&{
+		// 	display: block;
+		// 	height: 100%;
+		// 	min-height: 100%;
+		// }
+}
+
+
+
+/*
+	reveals modal (applied via js)
+*/
+.app-modal---open{
+	display: block;
+	.animate-fade-in;
+}
+
+
+
+/*
+	hides modal (applied via js)
+*/
+.app-modal---closed{
+	.animate-fade-out;
+}
+
+
+
+/*
+	centered modal
+
+	used for file manager, confirmations, and bulk editing
+*/
+.app-modal--center{
+	left: 0;
+	margin: 0 auto;
+	max-width: 1200px;
+	right: 0;
+	top: 0;
+
+		.app-modal__content{
+			background-color: var(--ee-bg-0);
+			padding: 24px;
+			.corners(5px);
+			box-shadow: 0 5px 10px 0 fade(@black,10%);
+		}
+}
+
+
+
+.app-modal--fullscreen{
+	background-color: var(--ee-bg-0);
+	bottom: 0;
+	flex-direction: column;
+	padding: 0;
+	top: 0;
+	width: 100%;
+
+		.app-notice--banner{
+			flex: 0 1 auto;
+		}
+
+		&.app-modal---open{
+			display: flex;
+			.animate-slide-in;
+		}
+
+		&.app-modal---closed{
+			.animate-slide-out;
+		}
+}
+
+
+
+/*
+	side panel modal
+
+	used for create and edit form modals
+*/
+.app-modal--side{
+	background-color: var(--ee-bg-0);
+	bottom: 0;
+	height: 100%;
+	overflow: auto;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 100%;
+	box-shadow: -5px 0 10px 0 fade(@black,10%);
+
+		.tablet-portrait-up({
+			width: 50%;
+		});
+
+		&.app-modal---open{
+			.animate-slide-in;
+		}
+
+		&.app-modal---closed{
+			.animate-slide-out;
+		}
+}
+
+
+
+.app-modal--full{
+	.tablet-portrait-up({
+		width: 100%;
+	});
+}
+
+
+
+.app-modal--iframe{
+	padding: 0;
+	overflow: hidden;
+}
+
+
+
+/*
+	iOS web-kit anomalies
+
+	things that need different assets called for iOS go in {}
+	should be little to nothing in there
+*/
+@supports (-webkit-overflow-scrolling: touch){
+	.app-modal--iframe .app-modal__content{
+		-webkit-overflow-scrolling: touch;
+		overflow-y: scroll;
+	}
+}
+
+
+
+.app-modal--live-preview{
+	height: 50%;
+	left: 0;
+	right: auto;
+	top: auto;
+
+		.tablet-portrait-up({
+			height: 100%;
+			top: 0;
+		});
+
+		&.app-modal---open{
+			.animate-slide-left-in;
+		}
+
+		&.app-modal---closed{
+			.animate-slide-left-out;
+		}
+}

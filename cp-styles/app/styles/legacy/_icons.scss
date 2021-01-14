@@ -1,0 +1,308 @@
+// LEGACY 6.0
+
+[class^='icon--'],
+[class*=' icon--'] {
+	@extend %fa-icon;
+	@extend .fas;
+}
+
+
+// .icon--float-right {
+// 	float: right;
+// }
+
+// .icon--small {
+// 	font-size: 90%;
+// }
+
+
+.icon--add {
+	&:before {
+		content: fa-content($fa-var-plus);
+	}
+}
+
+.icon--author {
+	&:before {
+		content: fa-content($fa-var-user);
+	}
+}
+
+.icon--cart {
+	&:before {
+		content: fa-content($fa-var-shopping-cart);
+	}
+}
+
+.icon--category {
+	&:before {
+		content: fa-content($fa-var-tag);
+	}
+}
+
+.icon--caution {
+	color: color(security-caution);
+
+	&:before {
+		content: fa-content($fa-var-shield-alt);
+		margin: 0;
+	}
+}
+
+.icon--changes {
+	&:before {
+		content: fa-content($fa-var-file-alt);
+	}
+}
+
+
+.icon--channel {
+	&:before {
+		content: fa-content($fa-var-database);
+	}
+}
+
+.icon--close {
+	&:before {
+		content: fa-content($fa-var-times);
+	}
+}
+
+.icon--columns {
+	&:before {
+		content: fa-content($fa-var-columns);
+	}
+}
+
+.icon-dashboard,
+.icon--dashboard {
+	&:before {
+		content: fa-content($fa-var-tachometer-alt);
+	}
+}
+
+.icon--date {
+	&:before {
+		content: fa-content($fa-var-calendar-alt);
+	}
+}
+
+.icon--delete {
+	&::before {
+		content: fa-content($fa-var-trash);
+	}
+}
+
+.icon--export {
+	&:before {
+		content: fa-content($fa-var-download);
+	}
+}
+
+.icon-files,
+.icon--files {
+	&:before {
+		content: fa-content($fa-var-file);
+	}
+}
+
+.icon--filters {
+	&:before {
+		content: fa-content($fa-var-filter);
+	}
+}
+
+.icon--folder {
+	&:before {
+		content: fa-content($fa-var-folder);
+	}
+}
+
+.icon--gift {
+	&:before {
+		content: fa-content($fa-var-gift);
+	}
+}
+
+.icon-home,
+.icon--home {
+	&:before {
+		content: fa-content($fa-var-home);
+	}
+}
+
+.icon--invisible {
+	&::before {
+		// color: @gray-medium;
+		content: fa-content($fa-var-eye-slash);
+		margin-right: 0;
+	}
+}
+
+.icon-issue,
+.icon--issue {
+	&:before {
+		content: fa-content($fa-var-exclamation-circle);
+	}
+}
+
+.icon-locked,
+.icon--locked {
+	&:before {
+		content: fa-content($fa-var-lock);
+	}
+}
+
+.icon-logout,
+.icon--logout {
+	&:before {
+		content: fa-content($fa-var-sign-out-alt);
+	}
+}
+
+.icon-members,
+.icon--members {
+	&:before {
+		content: fa-content($fa-var-users);
+	}
+}
+
+.icon-missing,
+.icon--missing {
+	&:before {
+		content: fa-content($fa-var-times);
+	}
+}
+
+.icon-nested,
+.icon--nested {
+	&:before {
+		// color: @gray-medium-light;
+		content: fa-content($fa-var-ellipsis-h);
+		position: relative;
+		top: 1px;
+	}
+}
+
+.icon-offline,
+.icon--offline {
+	&:before {
+		content: fa-content($fa-var-power-off);
+	}
+}
+
+.icon--primary {
+	&:before {
+		color: color(success);
+		content: fa-content($fa-var-star);
+		margin: 0;
+	}
+}
+
+.icon--remove {
+	&:before {
+		content: fa-content($fa-var-times);
+	}
+}
+
+.icon-reorder,
+.icon--reorder {
+	cursor: move;
+
+	// &:hover {
+	// 	&:before {
+	// 		color: @blue;
+	// 	}
+	// }
+
+	&:before {
+		// color: @gray-medium-light;
+		content: fa-content($fa-var-bars);
+	}
+}
+
+
+.icon--settings {
+	&:before {
+		content: fa-content($fa-var-cog);
+	}
+}
+
+.icon--status {
+	&:before {
+		content: fa-content($fa-var-circle);
+	}
+}
+
+.icon-success,
+.icon--success {
+	&:before {
+		content: fa-content($fa-var-check-circle);
+	}
+}
+
+.icon--sync {
+	&:before {
+		content: fa-content($fa-var-sync-alt);
+	}
+}
+
+.icon--tabbed {
+	&::before {
+		content: fa-content($fa-var-th-list);
+	}
+}
+
+.icon--tip {
+	&:before {
+		// color: @blue;
+		content: fa-content($fa-var-info-circle);
+		position: relative;
+		// top: -1px;
+	}
+}
+
+.icon-tools,
+.icon--tools {
+	&:before {
+		content: fa-content($fa-var-wrench);
+	}
+}
+
+.icon-user,
+.icon--user {
+	&:before {
+		content: fa-content($fa-var-user);
+	}
+}
+
+.icon-view,
+.icon--view {
+	&:before {
+		content: fa-content($fa-var-eye);
+	}
+}
+
+.icon--visible {
+	&::before {
+		// color: @green;
+		content: fa-content($fa-var-eye);
+		margin-right: 0;
+	}
+}
+
+
+.icon--export {
+	&:before {
+		content: fa-content($fa-var-download);
+	}
+}
+
+.icon-settings,
+.icon--settings {
+	@extend %fa-icon;
+	@extend .fas;
+	&:before {
+		content: fa-content($fa-var-cog);
+	}
+}
