@@ -46,9 +46,7 @@
 			</fieldset>
 		<?php endif; ?>
 		<fieldset class="last text-center">
-			<?=form_submit('submit', lang('update'), 'class="button button--primary button--large button--wide" data-work-text="updating..."')?>
+			<?=form_submit('submit', lang('update'), 'class="button button--primary button--large button--wide" data-work-text="' . lang('updating') . '"')?>
 		</fieldset>
 	<?=form_close()?>
 </div>
-
-
