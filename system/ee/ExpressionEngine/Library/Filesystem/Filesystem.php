@@ -285,7 +285,7 @@ class Filesystem {
 
 		if ($this->exists($delete_path) && is_dir($delete_path))
 		{
-			$delete_path = escapeshellarg($delete_path);
+			$delete_path = @escapeshellarg($delete_path);
 
 			if (DIRECTORY_SEPARATOR == '/')
 			{
