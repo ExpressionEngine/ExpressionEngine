@@ -45,6 +45,8 @@ $lang = array(
 
 'jump_menu_input' => 'Jump To...',
 
+'many_jump_results' => 'More than 10 results found, please refine your search',
+
 'menu_manager' => 'Menu Manager',
 
 /* Control Panel */

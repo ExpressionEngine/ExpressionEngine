@@ -78,7 +78,7 @@ class Filemanager {
 		// Get the actual set of parameters and go
 		$parameters = array_merge($default_parameters, $parameters);
 
-		$prefs = $this->fetch_upload_dir_prefs($dir_id);
+		$prefs = $this->fetch_upload_dir_prefs($dir_id, true);
 
 		$i = 1;
 		$ext = '';

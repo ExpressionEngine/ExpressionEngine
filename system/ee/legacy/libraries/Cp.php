@@ -153,7 +153,8 @@ class Cp {
 			'loading'				=> lang('loading'),
 			'searching'				=> lang('searching'),
 			'dark_theme'			=> lang('dark_theme'),
-			'light_theme'			=> lang('light_theme')
+			'light_theme'			=> lang('light_theme'),
+			'many_jump_results'		=> lang('many_jump_results'),
 		);
 
 		ee()->javascript->set_global(array(
