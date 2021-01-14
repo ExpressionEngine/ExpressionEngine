@@ -201,6 +201,20 @@ $lang = array(
 
 /* tool names */
 
+'paragraph_rte' => 'Paragraph',
+
+'heading_h1_rte' => 'Heading H1',
+
+'heading_h2_rte' => 'Heading H2',
+
+'heading_h3_rte' => 'Heading H3',
+
+'heading_h4_rte' => 'Heading H4',
+
+'heading_h5_rte' => 'Heading H5',
+
+'heading_h6_rte' => 'Heading H6',
+
 'bold_rte' => 'Bold',
 
 'italic_rte' => 'Italic',
