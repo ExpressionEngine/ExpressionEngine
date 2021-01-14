@@ -1,0 +1,35 @@
+
+.color-drop-container {
+	$drop-size: 100px;
+
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax($drop-size * 2, 1fr));
+	grid-gap: $s-m;
+
+	.color-drop {
+		width: initial;
+	}
+}
+
+.color-drop {
+	width: 100px;
+}
+
+.color-drop__color {
+	border-radius: $corners-big;
+	height: 100px;
+	width: 100%;
+  border: 10px solid color(gray-blank);
+}
+
+.color-drop__title {
+	font-size: 1.2em;
+	color: color(text-secondary);
+	margin-top: $s-s;
+}
+
+.color-drop__subtitle {
+	@include font-monospace;
+	font-size: 0.9em;
+	color: color(text-secondary);
+}

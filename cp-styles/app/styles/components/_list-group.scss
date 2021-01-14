@@ -1,0 +1,252 @@
+
+.list-group-controls {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+
+  @include m-tablet-down {
+    display: block;
+  }
+
+  .filter-bar {
+    flex: 1;
+    // border-bottom: 1px solid color(border);
+    // margin-bottom: 20px;
+    // width: auto;
+    margin-top: 0px;
+  }
+}
+
+
+// LEGACY 6.0
+.ctrl-all {
+	display: flex;
+	align-items: center;
+  // margin-top: -1px;
+	// margin-bottom: -7px;
+  flex: initial;
+  text-align: right;
+	// border: 1px solid color(border);
+	padding: $padding-small-vertical 0;
+	// border-radius: $corners-big;
+	// height: 30px;
+	cursor: pointer;
+	margin-left: auto;
+  padding-top: 0px;
+	// font-size: $font-size-small;
+	// background: color(bg-0);
+
+  @include m-tablet-down {
+    display: block;
+    margin-top: 14px;
+  }
+
+	&:hover {
+		// border-color: color(border-dark);
+	}
+
+	span {
+		margin-right: 8px;
+    margin-top: -2px;
+
+    @include m-tablet-down {
+      margin-right: 5px;
+    }
+	}
+
+  input[type=checkbox] {
+    margin-top: -2px;
+  }
+}
+
+.list-group {
+	list-style-type: none;
+
+	.list-item {
+		margin: 0 0 $s-s 0;
+	}
+
+  .list-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .js-nested-item:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.list-group--nested {
+	&, ul {
+		list-style-type: none;
+	}
+
+	ul {
+		margin-top: $s-s;
+	}
+
+	li {
+		margin-bottom: $s-s;
+	}
+
+	li li {
+		padding-left: $s-l;
+	}
+}
+
+// Special styles for the jQuery nestable plugin when a group is being dragged
+.list-group--dragging {
+	display: block;
+	pointer-events: none;
+	position: absolute;
+	z-index: 9999;
+}
+
+.list-group--connected {
+	border: 1px solid color(border);
+	border-radius: $border-radius-base;
+
+	.list-item {
+		margin: 0;
+		border-radius: 0;
+		border-width: 0 0 1px 0;
+
+		&:first-child {
+			border-top-left-radius: $border-radius-base;
+			border-top-right-radius: $border-radius-base;
+		}
+
+		&:last-child {
+			border: 0;
+			border-bottom-left-radius: $border-radius-base;
+			border-bottom-right-radius: $border-radius-base;
+		}
+	}
+}
+
+
+.list-item {
+	display: flex;
+	border: 1px solid color(list-item-border);
+	background: color(bg-0);
+	border-radius: $border-radius-base;
+	//color: color(text-normal);
+	transition: background $t-speed ease, border $t-speed ease;
+}
+
+// Clickable list items
+.list-item--action {
+	&:hover {
+		background: color(bg-5);
+    border-color: color(border-dark);
+	}
+
+	.list-item__content {
+		cursor: pointer;
+		border-radius: $border-radius-base;
+	}
+}
+
+.list-item--selected, .list-item--selected:hover {
+	border-color: color(accent);
+	background-color: color(accent-light);
+
+	.list-item__checkbox {
+		background: transparent;
+		border-left-color: transparent;
+	}
+}
+
+.list-item--warning {
+	border-color: color(warning);
+}
+
+.list-item--error {
+	border-color: color(error);
+
+	.list-item__secondary {
+		color: color(error);
+	}
+}
+
+.list-item__content {
+	display: block;
+	flex: 1 1;
+	min-width: 0;
+	padding: $sq-inset-s;
+	color: color(text-normal);
+	line-height: $line-height-normal;
+
+  &:hover {
+    color: color(text-normal);
+  }
+}
+
+.list-item__content-left, .list-item__content-right {
+	padding: $sq-inset-s;
+	display: flex;
+	align-items: center;
+}
+
+.list-item__content-left {
+	padding-right: 0;
+
+  i {
+    color: color(text-secondary);
+  }
+}
+
+.list-item__title {
+	//font-size: 1.1em;
+	font-weight: 500;
+}
+
+.list-item__secondary {
+	color: color(text-secondary);
+	font-size: 0.9em;
+}
+
+.list-item__body {
+	// margin-top: $s-s;
+  color: color(text-tertiary);
+}
+
+.list-item__handle {
+	display: flex;
+	align-items: center;
+	padding: $sq-inset-s;
+	padding-right: $sq-s / 2;
+	color: color(text-secondary);
+	cursor: move;
+
+	i {
+		position: relative;
+		top: -1px;
+		//font-size: 14px;
+	}
+
+	& + .list-item__content {
+		padding-left: $sq-s / 2;
+	}
+}
+
+.list-item__checkbox {
+	padding: $sq-s;
+  padding-left: 0;
+	display: flex;
+	align-items: center;
+	//background: color(bg-5);
+	//border-left: 1px solid color(border);
+	border-radius: 0 $corners $corners 0;
+	transition: background $t-speed ease, border $t-speed ease;
+	// cursor: default;
+	cursor: pointer;
+
+	input {
+		position: relative;
+		top: -1px;
+
+    &.checkbox--large {
+      top: 0px;
+    }
+	}
+}

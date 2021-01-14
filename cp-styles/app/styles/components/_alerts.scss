@@ -1,0 +1,275 @@
+
+// TODO: All app-notice classes are legacy and need to be removed
+
+$alert-padding-x: 20px;
+
+// LEGACY 6.0
+.app-notice--alert {
+	@include shadow-dropdown;
+	position: fixed;
+	right: 10px;
+	top: 10px;
+	z-index: 200;
+}
+
+.global-alerts {
+	position: fixed;
+	width: 40%;
+	top: 30px;
+	right: 30px;
+	z-index: 80;
+
+	@include m-tablet-down {
+		width: initial;
+		left: 30px;
+	}
+
+	.alert, .app-notice {
+		box-shadow: 0 5px 20px var(--ee-shadow-dropdown), 0 10px 10px -10px var(--ee-shadow-dropdown) !important
+	}
+}
+
+.with-alert-margin {
+  .alert, .app-notice {
+    margin: 20px 25px 0;
+  }
+}
+
+.app-notice, // LEGACY 6.0
+.alert {
+	// box-shadow: 0 5px 10px -3px color(shadow-dropdown);
+	border: 1px solid color(border);
+	overflow: hidden;
+	background-color: color(bg-0);
+	border-radius: $border-radius-base;
+	display: flex;
+	margin-bottom: $s-m;
+}
+
+.app-notice__tag, // LEGACY 6.0
+.alert__icon {
+  color: color(text-secondary);
+  font-size: 16px;
+}
+
+.alert__close-icon {
+  color: color(text-secondary);
+  position: relative;
+  top: -1px;
+}
+
+@mixin alert($alert-color, $fg: transparent) {
+	border-color: $alert-color;
+	background-color: $fg;
+
+
+	.app-notice__tag, // LEGACY 6.0
+	.alert__icon {
+		color: $alert-color;
+	}
+
+	.app-notice__icon::after {
+		background: $fg;
+	}
+
+  .alert__close-icon {
+  	color: $alert-color;
+  }
+}
+
+.app-notice---attention, // LEGACY 6.0
+.alert--attention {
+	@include alert(color(accent), color(accent-light));
+
+	// LEGACY 6.0
+	> .app-notice__tag {
+		.app-notice__icon {
+			&::before{
+				content: fa-content($fa-var-exclamation-circle);
+			}
+		}
+	}
+}
+
+.app-notice---error, // LEGACY 6.0
+.alert--error {
+	@include alert(color(error), color(error-light));
+
+  a {
+    color: color(error);
+  }
+}
+
+.app-notice---important, // LEGACY 6.0
+.alert--warning {
+	@include alert(color(warning), color(warning-light));
+
+  a {
+    color: color(warning);
+  }
+}
+
+.app-notice---success, // LEGACY 6.0
+.alert--success {
+	@include alert(color(success), color(success-light));
+
+  a {
+    color: color(success);
+  }
+
+	> .app-notice__tag {
+		.app-notice__icon {
+			&::before{
+				content: fa-content($fa-var-check-circle);
+			}
+		}
+	}
+}
+
+.app-notice---loading, // LEGACY 6.0
+.alert--loading {
+	@include alert(color(border-dark));
+	cursor: wait;
+
+	@include gradient-striped(color(bg-0));
+	background-size: 50px 50px;
+
+	animation: progress-bar-stripes 0.8s linear infinite;
+
+	// LEGACY 6.0
+	> .app-notice__tag{
+		.app-notice__icon{
+			&::before{
+				color: color(text-secondary);
+				content: fa-content($fa-var-sync-alt);
+			}
+		}
+	}
+}
+
+.alert__title {
+	font-weight: 500;
+}
+
+.app-notice__tag, // LEGACY 6.0
+.alert__icon {
+	padding: 15px $alert-padding-x;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.app-notice__icon {
+	position: relative;
+
+	&::before{
+		content: fa-content($fa-var-exclamation-circle);
+		@extend %fa-icon;
+		@extend .fas;
+		@extend .fa-fw;
+		position: relative;
+		z-index: 2;
+		// top: -1px;
+	}
+
+	&::after {
+		position: absolute;
+		margin: auto;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 34px;
+		height: 34px;
+		border-radius: 50%;
+		content: "";
+		display: block;
+		z-index: 1;
+	}
+}
+
+.app-notice__tag + .app-notice__content, // LEGACY 6.0
+.alert__icon + .alert__content {
+	padding-left: 0;
+}
+
+.app-notice__content, // LEGACY 6.0
+.alert__content {
+	flex: 1 1;
+	padding: 15px $alert-padding-x;
+
+	p {
+		margin: 0;
+    color: color(text-primary);
+    opacity: 0.6;
+
+    &.alert__title {
+      color: color(text-primary);
+      opacity: 1.0;
+    }
+	}
+
+	ol, ul {
+		margin: 4px 0 4px 24px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	li {
+		line-height: 1.3;
+	}
+
+	// LEGACY 6.0
+	hr {
+		border: 0;
+		border-top: 1px solid $yellow-medium;
+		height: 0;
+		margin: 8px 0;
+	}
+}
+
+.app-notice__controls, // LEGACY 6.0
+.alert__close {
+	display: block;
+	padding: 15px $alert-padding-x;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background $t-speed ease;
+	cursor: pointer;
+
+	background: none;
+	border-radius: 0 $corners $corners 0;
+	//border-left: 1px solid color(border);
+
+  /*
+  &:hover {
+		background: color(bg-5);
+	}
+  */
+}
+
+// LEGACY 6.0
+.app-notice__dismiss {
+	&::before{
+		@extend %fa-icon;
+		@extend .fas;
+		// color: color(text-tertiary);
+		content: fa-content($fa-var-times);
+	}
+}
+
+.redirect {
+  max-width: 700px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  p {
+    margin-bottom: 20px;
+  }
+}

@@ -1,0 +1,128 @@
+
+.hidden {
+	display: none;
+}
+
+.mt-s { margin-top: $s-s; }
+.mr-s { margin-right: $s-s; }
+.mb-s { margin-bottom: $s-s; }
+.ml-s { margin-left: $s-s; }
+
+.d-flex {
+	display: flex !important;
+}
+
+.align-items-center {
+	align-items: center;
+}
+
+.flex-grow {
+	flex: 1 1;
+}
+
+.flex-shrink {
+	flex-shrink: 1;
+}
+
+.float-right {
+	float: right;
+}
+
+.float-left {
+	float: left;
+}
+
+.font-monospace {
+	@include font-monospace;
+}
+
+.danger-link {
+	&:hover {
+		color: color(danger) !important;
+
+		.fas {
+			color: color(danger) !important;
+		}
+	}
+}
+
+.success-link {
+	color: color(success) !important;
+
+	i {
+		color: color(success) !important;
+	}
+
+	&:hover {
+		color: color(success) !important;
+
+		i {
+			color: color(success) !important;
+		}
+	}
+}
+
+.clear-float {
+	@include clear-float;
+}
+
+.normal-link {
+	color: color(text-normal);
+}
+
+.text-center {
+	text-align: center;
+}
+
+.icon-left {
+	margin-right: $s-xs;
+}
+
+.icon-right {
+	margin-left: $s-xs;
+}
+
+
+// LEGACY 6.0
+.add-mrg-top {
+	margin-top: 20px;
+}
+
+// LEGACY 6.0
+.add-mrg-right {
+	margin-right: 20px;
+}
+
+// LEGACY 6.0
+.add-mrg-bottom {
+	margin-bottom: 20px;
+}
+
+// LEGACY 6.0
+.add-mrg-left {
+	margin-left: 20px;
+}
+
+.cursor-move {
+	cursor: move;
+}
+
+.text-security-caution {
+	color: color(security-caution);
+}
+
+.text-muted {
+	color: color(text-tertiary);
+}
+
+.key {
+	position: relative;
+	// top: -1px;
+	padding: 3px 8px;
+	border-radius: $border-radius-xsmall;
+	margin: 0 2px;
+	// background: color;
+	color: color(text-secondary);
+	border: 1px solid color(key-border);
+	font-size: 0.85rem;
+}

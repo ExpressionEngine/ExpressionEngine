@@ -2,6 +2,8 @@
 
 $lang = [
 
+'consent_module_name' => 'Consent',
+
 'consent_app_created' => '(App Created)',
 
 'consent_granted_by_log_msg' => 'consent granted by %s via %s',
@@ -51,6 +53,8 @@ $lang = [
 'new_consent_version_destructive' => 'This is a destructive and irreversible action.',
 
 'new_consent_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
+
+'all_consents' => 'All %d consents',
 
 'opt_in' => 'Opt In',
 

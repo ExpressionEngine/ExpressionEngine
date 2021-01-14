@@ -1,0 +1,62 @@
+
+.login-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.login {
+	width: 100%;
+	max-width: 450px;
+	padding: $s-m;
+
+	// margin-top: -30px;
+}
+
+.login__logo {
+	margin-bottom: $s-l;
+	text-align: center;
+
+	img {
+
+	}
+
+  // Color for the svg logo
+  #logo {
+    fill: color(brand-primary);
+  }
+}
+
+.login__title {
+	// font-weight: 600;
+	font-size: 1.4em;
+	margin-bottom: $s-m;
+  text-align: center;
+
+	.fas {
+		float: right;
+		color: #e0251c;
+		// color: color(success);
+	}
+}
+
+.login__content {
+	// @include shadow-dropdown;
+	box-shadow: 0 10px 30px -5px rgba(15, 19, 57, 0.1), 0 4px 8px -6px rgba(21, 11, 59, 0.1);
+  background-color: color(panel-bg);
+	border: 1px solid color(border);
+	border-radius: $border-radius-large;
+	padding: $s-inset-m;
+	width: 100%;
+
+	label {
+		// font-weight: 400;
+	}
+}
+
+.login__footer {
+	a {
+		color: color(text-secondary);
+	}
+}

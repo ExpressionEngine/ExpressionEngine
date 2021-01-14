@@ -1,0 +1,97 @@
+
+// LEGACY 6.0
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: color(modal-overlay-bg);
+    z-index: 300;
+}
+
+.modal-wrap {
+	left: 0;
+	max-width: 940px;
+	margin: 0 auto;
+	padding: 0 10px;
+	position: absolute;
+	right: 0;
+	top: 40px;
+	z-index: 101;
+	display: none;
+	// bottom: 40px;
+}
+
+.modal-wrap--small {
+	max-width: 550px;
+}
+
+.modal {
+	background-color: color(bg-0);
+	margin-bottom: 40px;
+	padding: $sq-inset-m;
+	overflow: hidden;
+	position: relative;
+	border-radius: $corners;
+	@include shadow-modal;
+
+	.title-bar {
+		// padding-right: 20px;
+	}
+}
+
+.modal-file .modal {
+  padding-top: 65px;
+}
+
+.modal--no-padding {
+	padding: 0;
+}
+
+.m-close{
+	color: color(text-secondary);
+	position: absolute;
+	right: $sq-m;
+	text-decoration: none;
+	top: $s-m;
+
+		&:before{
+			@extend %fa-icon;
+			@extend .fas;
+
+			content: fa-content($fa-var-times);
+			font-size: 24px;
+			line-height: 1;
+		}
+
+		&:hover{
+			color: color(text-tertiary);
+		}
+}
+
+.app-modal__dismiss {
+  margin-bottom: 20px;
+
+  a {
+    color: color(text-secondary);
+    font-weight: normal;
+
+    &:before{
+      @extend %fa-icon;
+			@extend .fas;
+
+      content: fa-content($fa-var-times);
+      font-size: inherit;
+      margin-right: 5px;
+    }
+  }
+
+  span {
+    color: color(text-secondary);
+    opacity: 0.5;
+  }
+}

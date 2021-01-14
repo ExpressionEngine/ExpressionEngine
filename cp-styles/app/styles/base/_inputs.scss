@@ -1,0 +1,352 @@
+
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+textarea {
+	width: 100%;
+	max-width: 100%;
+	min-width: 100%;
+	height: auto;
+	line-height: $line-height-normal;
+
+  &.tall {
+    height: 115px;
+  }
+
+  &.taller {
+    height: 210px;
+  }
+}
+
+// Style regular text inputs
+
+input:focus, textarea:focus {
+	outline: none;
+}
+
+textarea,
+input[type='text'],
+input[type='email'],
+input[type='number'],
+input[type='password'],
+input[type='url'] {
+
+  display: block;
+  width: 100%;
+  padding: $padding-base-vertical $padding-base-horizontal;
+  font-size: $font-size-normal;
+  line-height: $line-height-normal;
+  color: color(input-color);
+  background-color: color(input-bg);
+  background-image: none;
+  transition: border-color $t-speed ease, box-shadow $t-speed ease;
+  -webkit-appearance: none;
+  border: 1px solid color(input-border);
+  border-radius: $border-radius-base;
+
+    &:focus {
+		border-color: color(input-focus-border);
+		//box-shadow: color(input-focus-shadow);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+		background-size: 20px 20px;
+
+		@include gradient-striped(color(input-disabled-bg));
+	}
+
+	@include placeholder {
+		opacity: 1;
+		color: color(input-placeholder);
+	}
+
+  // Small inputs to match button--small
+  &.input--small {
+    padding: $padding-small-vertical $padding-small-horizontal;
+    font-size: $font-size-small;
+    line-height: $line-height-small;
+    border-radius: $border-radius-small;
+  }
+
+  // Rounded inputs
+  &.input--rounded {
+    border-radius: $border-radius-full;
+  }
+}
+
+// Use of icons within inputs
+.field-control {
+  &.with-icon-start {
+    position: relative;
+
+    input[type='text'] {
+      padding-left: $padding-base-horizontal + 22px;
+
+      &.input--small {
+        padding-left: $padding-small-horizontal +18px;
+      }
+    }
+
+    .icon-start {
+      color: color(text-secondary);
+      position: absolute;
+      line-height: $line-height-normal;
+      top: $padding-base-vertical + 1px;
+      left: $padding-base-horizontal;
+
+      // Add this class to icon if using small input
+      &.icon--small {
+        font-size: $font-size-small;
+        line-height: $line-height-small;
+        top: $padding-small-vertical + 1px;
+        left: $padding-small-horizontal;
+      }
+    }
+  }
+  &.with-icon-end {
+    position: relative;
+
+    input[type='text'] {
+      padding-right: $padding-base-horizontal + 22px;
+
+      &.input--small {
+        padding-right: $padding-small-horizontal +18px;
+      }
+    }
+
+    .icon-end {
+      color: color(text-secondary);
+      position: absolute;
+      line-height: $line-height-normal;
+      top: $padding-base-vertical +1px;
+      right: $padding-base-horizontal;
+
+      // Add this class to icon if using small input
+      &.icon--small {
+        font-size: $font-size-small;
+        line-height: $line-height-small;
+        top: $padding-small-vertical + 1px;
+        right: $padding-small-horizontal;
+      }
+    }
+  }
+
+  &.with-input-shortcut {
+    position: relative;
+
+    input[type='text'] {
+      padding-right: $padding-base-horizontal + 40px;
+    }
+
+    .input-shortcut {
+      position: absolute;
+      line-height: $line-height-normal;
+      top: $padding-base-vertical +1px;
+      right: $padding-base-horizontal;
+      letter-spacing: 1px;
+      color: var(--ee-text-secondary);
+      text-transform: uppercase;
+      font-size: 80%;
+      padding: 3px 5px;
+      background-color: color(bg-5);
+      border-radius: $border-radius-small;
+      cursor: default;
+    }
+  }
+}
+
+.main-nav__toolbar .field-control.with-icon-start .icon-start {
+  left: $padding-base-horizontal + 10px;
+}
+
+// input[type='text'],
+input[type='email'],
+input[type='number'],
+input[type='password'],
+input[type='url'] {
+	// @include font-monospace;
+}
+
+// Styling for small checbox labels
+em label input[type='checkbox'] {
+  vertical-align: sub;
+  margin-right: 9px;
+  margin-top: 5px;
+}
+
+
+
+
+// $input-padding: 8px;
+
+// .form {
+// 	margin: 0 -20px;
+// 	// max-width: 750px;
+// 	margin: auto;
+// }
+
+
+
+
+// .fieldset-icon{
+// 	&:after{
+// 		display: inline-block;
+// 		// font-family: @font-family-icon;
+// 		font-size: 12px;
+// 		font-weight: normal;
+// 		margin-left: 3px;
+// 		position: relative;
+// 		// .font-wk;
+// 	}
+// }
+
+
+
+
+
+
+
+// input {
+
+//     // &[type='checkbox'], &[type='radio'] {
+// 	// 	margin: 5px 5px 5px 0;
+// 	// 	padding: 0;
+//     // }
+
+//     &[type='text'],
+// 	&[type='email'],
+// 	&[type='number'],
+// 	&[type='password'],
+// 	&[type='url'] {
+// 		width: 100%;
+
+// 			// &:focus{
+// 			// 	background-color: @yellow-light;
+// 			// }
+// 	}
+// }
+
+// .field-select {
+//     label {
+//         display: block;
+//         padding: 8px;
+//     }
+// }
+
+
+
+
+// /*style wrapper to give some space*/
+// .wrapper {
+//     position: relative;
+//   margin-bottom: $s-xs;
+//     // margin:  0;
+// //   margin-top: 1rem;
+// }
+
+// /*style label to give some more space*/
+// /*style and hide original checkbox*/
+// .wrapper input {
+//   height: 40px;
+//   left: 0;
+//   opacity: 0;
+//   position: absolute;
+//   top: 0;
+//   width: 40px;
+// }
+
+// .wrapper input + label {
+//     cursor: pointer;
+//     color: color(text-primary);
+//     // margin: 0 0 0 -5px;
+//     display: block;
+//     position: relative;
+//     padding: $input-padding $input-padding $input-padding $input-padding + 32px;
+//     line-height: 1.25;
+//     border-radius: 5px;
+//     transition: background 250ms ease;
+
+//     &:hover {
+//         background: color(bg-10);
+//     }
+// }
+
+// /*position new box*/
+// .wrapper input + label::before {
+//     border: 1px solid rgba(146, 157, 178, 0.45);
+//     content: "";
+//     height: 20px;
+//     left: $input-padding;
+//     position: absolute;
+//     top: $input-padding;
+//     width: 20px;
+//     border-radius: 50%;
+//     // border-radius: 3px;
+// }
+
+
+// .wrapper input[type="checkbox"] + label::before {
+//     border-radius: 3px;
+//     // border-radius: 3px;
+// }
+
+// .wrapper input + label::after {
+//     content: "";
+//     opacity: 0;
+//     position: absolute;
+//     left: $input-padding + 6px;
+//     top: $input-padding + 6px;
+//     transition: opacity 250ms ease-in-out;
+// }
+
+
+// /*radio pseudo element styles*/
+// .wrapper input[type="radio"] + label::after {
+//     border: 5px solid #029AE1;
+//     border: 4px solid #fff;
+//     border-radius: 50%;
+// }
+
+// .wrapper input[type="checkbox"] + label::after {
+//     content: "✓";
+//     font-size: 0.9em;
+//     color: #fff;
+//     top: 10px;
+//     left: 12px;
+//     border-radius: 0;
+//     // border-radius: 3px;
+// }
+
+// /*reveal check for 'on' state*/
+// .wrapper input:checked + label::after {
+//   opacity: 1;
+// }
+
+// .wrapper input:checked + label {
+//     background: color(bg-10);
+// }
+
+// .wrapper input:checked + label::before {
+//     border-color: #029AE1;
+//     background: #029AE1;
+//     box-shadow: 0 1px 6px rgba(174, 151, 255, 0.13);
+// }
+
+// /*focus styles*/
+// .wrapper input:focus + label::before {
+//     box-shadow: 0 0 0 3px #ffbf47;
+//     outline: 3px solid transparent; /* For Windows high contrast mode. */
+// }
+
+
+
+// $green: #01BF75;
+// $gray-light: #EEEEEE;
+// $gray-medium-light: #CCCCCC;
+// $red: #E0251C;

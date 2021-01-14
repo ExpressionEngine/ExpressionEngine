@@ -85,6 +85,12 @@ class FileUpdater {
 			[SYSPATH.'ee/updater']
 		);
 
+		// backup eecli.php
+		$this->move(
+			SYSPATH.'eecli.php',
+			$this->getBackupsPath()
+		);
+
 		// We'll only backup one theme folder, they _should_ all be the same
 		// across sites
 		$theme_path = array_values($this->configs['theme_paths'])[0];
@@ -104,6 +110,9 @@ class FileUpdater {
 		$new_system_dir = $this->configs['archive_path'] . '/system/ee/';
 
 		$this->move($new_system_dir, SYSPATH.'ee/');
+
+		//move CLI
+		$this->move($this->configs['archive_path'] . '/system/eecli.php', SYSPATH);
 
 		// Now move new themes into place
 		$new_themes_dir = $this->configs['archive_path'] . '/themes/ee/';
@@ -222,7 +231,7 @@ class FileUpdater {
 	/**
 	 * Moves contents of directories to another directory
 	 *
-	 * @param	string	$source			Source directory
+	 * @param	string	$source			Source directory or file
 	 * @param	string	$destination	Destination directory
 	 * @param	array	$exclusions		Array of any paths to exlude when moving
 	 * @param	boolean	$copy			When TRUE, copies instead of moves
@@ -242,7 +251,13 @@ class FileUpdater {
 			throw new UpdaterException('Destination path not writable: '.$destination, 21);
 		}
 
-		$contents = $this->filesystem->getDirectoryContents($source);
+		if ($this->filesystem->isDir($source)) {
+			$contents = $this->filesystem->getDirectoryContents($source);
+		} else {
+			//moving just one file
+			$contents = [$source];
+			$source = $this->filesystem->dirname($source);
+		}
 
 		$source = str_replace("\\", "/", $source);
 		$destination = str_replace("\\", "/", $destination);

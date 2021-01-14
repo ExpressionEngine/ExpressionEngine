@@ -17,7 +17,7 @@
 			<?=form_input(array('dir' => 'ltr', 'name' => "email", 'id' => "email", 'maxlength' => 80, 'autocomplete' => 'off', 'tabindex' => 1))?>
 		</fieldset>
 		<fieldset class="last text-center">
-			<?=form_submit('submit', 'Send Request', 'class="button button--primary button--large button--wide" data-work-text="sending..." tabindex="2"')?>
+			<?=form_submit('submit', lang('send_request'), 'class="button button--primary button--large button--wide" data-work-text="' . lang('sending') . '" tabindex="2"')?>
 		</fieldset>
 	<?=form_close()?>
 </div>

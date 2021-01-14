@@ -1,0 +1,247 @@
+// // .tbl-wrap {
+// // 	overflow-x: auto;
+// // 	// padding: 20px;
+// // 	// margin: -20px;
+// // 	// width: ~"calc(100% + 20px)";
+// // 	// // width: 100%;
+// // }
+
+
+// .progress-bar {
+// 	background-color: @gray-light;
+// 	border: 1px solid @gray-medium-light;
+// 	height: 10px;
+// 	padding: 1px;
+// 	width: 100%;
+// 	border-radius: 3px;
+
+// 	.progress {
+// 		background-color: @green;
+// 		height: 100%;
+// 		border-radius: 3px;
+// 	}
+// }
+
+@import "./_color-master";
+@import "./_font-icons";
+@import "./_font-wk";
+@import "./_response";
+@import "./_corners";
+
+@import "./_app-overlay";
+@import "./_fluid-field";
+
+/*
+.drag-placeholder{
+	.none{
+		background-color: @yellow-light;
+		border: 2px dashed @yellow-medium;
+		padding: 10px;
+		.corners;
+	}
+
+	fieldset&{
+		margin-bottom: 10px;
+	}
+}
+*/
+
+
+.filter-clear{
+	a{
+		display: block;
+		height: 27px;
+line-height: 27px;
+margin-left: 10px;
+border-radius: 5px;;
+padding: 0 8px;
+		border: 1px solid;
+		border-color: @gray-light;
+		color: @gray-medium;
+
+			&:before{
+				content: @fa-var-minus-square;
+				font-family: @font-family-icon;
+				font-size: 12px;
+				line-height: 1;
+				margin-right: 5px;
+				position: relative;
+				top: 0;
+			}
+
+			&:hover{
+				background-color: @red-light;
+				border-color: @red-medium;
+				color: @red;
+			}
+	}
+}
+
+.field-option-required {
+	label&{
+		color: @orange;
+	}
+}
+
+.has-format-options{
+	margin-bottom: 5px;
+}
+
+// .live-preview{
+// 	background-color: #fff;
+// 	bottom: 0;
+// 	display: none;
+// 	height: 50%;
+// 	position: fixed;
+// 	right: 0;
+// 	top: 0;
+// 	width: 100%;
+// 	z-index: 100;
+
+// 		.tablet-portrait-up({
+// 			height: 100%;
+// 			width: 50%;
+// 		});
+
+// 		.align-block-right{
+// 			right: 10px;
+// 		}
+// }
+
+
+
+// /*
+// 	iOS web-kit anomalies
+
+// 	things that need different assets called for iOS go in {}
+// 	should be little to nothing in there
+// */
+// @supports (-webkit-overflow-scrolling: touch){
+// 	.live-preview{
+// 		-webkit-overflow-scrolling: touch;
+// 		overflow-y: scroll;
+// 	}
+// }
+
+
+
+// .live-preview__frame{
+// 	border: 0;
+// 	display: block;
+// 	height: 100%;
+// 	width: 100%;
+// }
+
+
+
+// /*
+// 	reveals preview (applied via js)
+// */
+// .live-preview---open{
+// 	display: flex;
+// 	flex-direction: column;
+// 	.animate-slide-in;
+// }
+
+
+
+// /*
+// 	hides preview (applied via js)
+// */
+// .live-preview---closed{
+// 	.animate-slide-out;
+// }
+
+
+@v-gutter: 20px;
+@h-gutter: @v-gutter / 2;
+
+
+// column baseline
+.col{
+	margin-bottom: @v-gutter;
+
+		&.last{
+			margin-bottom: 0;
+		}
+
+		.tablet-portrait-up({
+			float: left;
+			margin-bottom: 0;
+			padding: 0 @h-gutter;
+
+				.box &{
+					padding: 0;
+
+						.col{
+							padding: 0 @h-gutter / 2;
+
+								&:first-child{
+									padding-left: 0;
+									padding-right: @h-gutter / 2;
+								}
+
+								&:last-child{
+									padding-right: 0;
+									padding-left: @h-gutter / 2;
+								}
+
+								&.relate-wrap{
+									padding: 0;
+								}
+						}
+				}
+		});
+}
+
+.tablet-portrait-up({
+	// align columns right
+	.align-right > .col{
+		float: right;
+	}
+
+	// column groupings
+	.col-group{
+		margin-left: auto;
+		margin-right: auto;
+		max-width: var(--eecms-max-width);
+
+			.float(clear);
+
+			&.install-wrap{
+				max-width: 800px;
+			}
+	}
+
+
+	// column widths
+	// All w-n within a col-group need to add up to 16
+	// -------------
+	// example
+	// 	w-1 + w-15 = 16
+	// 	w-8 = w-8 = 16
+	.w-1{ .col-width(1); }
+	.w-2{ .col-width(2); }
+	.w-3{ .col-width(3); }
+	.w-4{ .col-width(4); }
+	.w-5{ .col-width(5); }
+	.w-6{ .col-width(6); }
+	.w-7{ .col-width(7); }
+	.w-8{ .col-width(8); }
+	.w-9{ .col-width(9); }
+	.w-10{ .col-width(10); }
+	.w-11{ .col-width(11); }
+	.w-12{ .col-width(12); }
+	.w-13{ .col-width(13); }
+	.w-14{ .col-width(14); }
+	.w-15{ .col-width(15); }
+	.w-16{ .col-width(16); }
+
+	// oddball widths
+	.w-3rds{ width: 33.33%; }
+});
+
+// math for column widths
+.col-width(@span, @columns: 16){
+	width: 100/@columns * @span * 1%;
+}

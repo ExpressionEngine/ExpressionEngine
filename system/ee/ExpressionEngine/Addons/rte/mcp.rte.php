@@ -313,7 +313,7 @@ class Rte_mcp
                 $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
-                    $uploadDirs = array_merge($uploadDirs, $fileBrowser->getUploadDestinations());
+                    $uploadDirs = $uploadDirs + $fileBrowser->getUploadDestinations();
                     break;
                 }
             }

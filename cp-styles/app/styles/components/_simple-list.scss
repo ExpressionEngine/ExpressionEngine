@@ -1,0 +1,19 @@
+.simple-list {
+	list-style-type: none;
+	// font-size: 0.9rem;
+
+	li {
+		// margin-bottom: $s-xs;
+		padding: $s-s 0;
+		border-bottom: 1px solid color(border);
+
+		&:last-child {
+			border-bottom: none;
+		}
+
+		> a {
+			display: flex;
+      align-items: center;
+		}
+	}
+}

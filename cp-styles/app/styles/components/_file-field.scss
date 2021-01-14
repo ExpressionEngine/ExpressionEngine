@@ -1,0 +1,222 @@
+
+.file-field {
+	width: 100%;
+
+	&.file-field--disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	&.file-field--warning {
+
+	}
+
+	&.file-field--invalid {
+
+	}
+}
+
+.file-field__dropzone {
+	position: relative;
+	width: 100%;
+	margin-top: $s-s;
+	padding: $sq-inset-m;
+
+	background: color(bg-0);
+	text-align: center;
+	border: 1px dashed color(border-dark);
+    color: color(text-primary);
+    border-radius: $border-radius-base;
+}
+
+@keyframes pulsate-fwd {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.file-field__dropzone--dragging {
+	border-color: color(accent);
+
+	.file-field__dropzone-icon {
+		top: 0px;
+		opacity: 1;
+		animation: pulsate-fwd 1s ease-in-out infinite both;
+	}
+
+	.file-field__dropzone-title, .file-field__dropzone-button {
+		opacity: 0;
+		filter: blur(10px);
+	}
+}
+
+.file-field__dropzone-icon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 30px;
+	color: color(accent);
+	top: 20px;
+	transition: all $t-speed ease;
+	opacity: 0;
+	user-select: none;
+	pointer-events: none;
+
+	&::after {
+		position: absolute;
+		margin: auto;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0%;
+		// transform: translateX(-50%);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		content: "";
+		display: block;
+		z-index: 1;
+		background: color(accent-light);
+	}
+
+	i {
+		position: relative;
+		z-index: 2;
+		// text-shadow: 0 2px 3px color(shadow-modal), 0 8px 20px color(shadow-modal);
+	}
+}
+
+.file-field__dropzone-title {
+	// font-size: 1.2em;
+	font-weight: 500;
+	color: color(text-secondary);
+	transition: all $t-speed ease;
+}
+
+.file-field__dropzone-button {
+	margin-top: $s-xs;
+	color: color(text-secondary);
+	transition: all $t-speed ease;
+  font-size: 0.85em;
+}
+
+.file-field__items {
+	margin-top: $s-s;
+}
+
+.file-field__buttons {
+	margin-top: $s-s;
+
+  .button {
+    margin-bottom: 10px;
+  }
+}
+
+.file-field__file-icon {
+	color: #0097f5;
+	font-size: 30px;
+}
+.file-field__file-icon-warning {
+	color: color(warning);
+	font-size: 25px;
+}
+.file-field__file-icon-error {
+	color: color(error);
+	font-size: 25px;
+}
+
+.file-field__upload-info {
+	flex: 1 1;
+}
+
+.file-field__upload-icon {
+	// float: left;
+	font-size: 35px;
+	color: color(text-tertiary);
+	margin-right: $s-s;
+}
+
+.file-field__upload-title {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-bottom: $s-xs
+}
+
+.file-field__upload-title-info {
+	float: right;
+	font-weight: 400;
+	color: color(text-secondary);
+}
+
+.file-field__upload--error {
+	p {
+		color: color(error);
+	}
+}
+
+// Styling image grid in modal
+.modal-file .img-grid td {
+  border-bottom: none;
+}
+
+// File Field on Entry form
+.fields-upload-chosen {
+  display: block;
+  padding: 10px;
+  position: relative;
+
+  &.list-item {
+    display: block;
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  .fields-upload-chosen-name {
+    width: calc(100% - 95px);
+    padding-top: 2px;
+    padding-left: 5px;
+    margin-bottom: 15px;
+    color: color(text-secondary);
+
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    b {
+      font-weight: normal;
+    }
+  }
+
+  .fields-upload-chosen-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .fields-upload-chosen-file {
+    background-color: color(bg-blank);
+    padding: 10px;
+    text-align: center;
+    border-radius: $border-radius-base;
+
+    img {
+      max-width: 200px;
+      max-height: 200px;
+    }
+  }
+}

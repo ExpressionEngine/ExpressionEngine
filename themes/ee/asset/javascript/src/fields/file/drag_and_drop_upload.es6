@@ -307,8 +307,7 @@ class DragAndDropUpload extends React.Component {
     return (
       <React.Fragment>
         <div className={"file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')} >
-          {this.state.files.length  == 0 &&
-          <div className="file-field__dropzone" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
+          <div style={{display: this.state.files.length == 0 ? 'block' : 'none'}} className="file-field__dropzone" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
           {this.state.files.length == 0 && <>
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
@@ -334,7 +333,7 @@ class DragAndDropUpload extends React.Component {
             </>
           }
           </div>
-            }
+
           {this.state.files.length > 0 &&
             <FileUploadProgressTable
               files={this.state.files}

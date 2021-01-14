@@ -6,6 +6,8 @@ env_local.rb
 *.swp
 node_modules/
 .vscode/
+cypress.env.json
+phpcs.ruleset.xml
 
 system/user/addons/*
 !system/user/addons/index.html
@@ -45,18 +47,19 @@ themes/ee/asset/javascript/compressed/
 
 # Tests ========================================================================
 
-system/ee/EllisLab/Tests/vendor/
-system/ee/EllisLab/Tests/phpunit/composer.lock
+system/ee/ExpressionEngine/Tests/vendor/
 tests/rspec/config.local.rb
 tests/rspec/screenshots/*
 tests/rspec/support/file-sync/uploads/*
 tests/rspec/fixtures/vendor/
-tests/rspec/fixtures/composer.lock
 
-system/ee/EllisLab/Tests/vendor/*
-system/ee/EllisLab/Tests/composer.lock
-system/ee/installer/updater/EllisLab/Tests/vendor/*
-system/ee/installer/updater/EllisLab/Tests/composer.lock
+system/ee/ExpressionEngine/Tests/vendor/*
+system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
+
+
+tests/cypress/vendor/
+tests/cypress/vendor/*
+cypress.env.json
 
 
 # Themes/Images ================================================================
@@ -68,7 +71,7 @@ images/captchas/*
 !images/captchas/.htaccess
 
 images/avatars/*
-!images/avatars/default/*
+!images/avatars/default/
 !images/avatars/index.html
 !images/avatars/.htaccess
 
@@ -96,17 +99,27 @@ themes/third_party/
 
 asset/*
 
+# Renamed installer
+system/ee/installer_*
+
 # Updater dependencies =================================================
 
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Protocol/Config/Config.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Directory.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Factory.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/File.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/File.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php
+system/ee/installer/updater/ExpressionEngine/Updater/Boot/boot.common.php
+system/ee/installer/updater/ExpressionEngine/Updater/Core/Autoloader.php
+system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
+system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
+system/ee/installer/updater/ExpressionEngine/Updater/Protocol/Config/Config.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/Directory.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/Factory.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/File.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Logger/File.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Logger.php
+system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php
+
+# Pro files
+system/ee/ExpressionEngine/Addons/pro
+themes/ee/pro
+
+#
+phpcs.ruleset.xml

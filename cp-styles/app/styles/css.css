@@ -1,0 +1,3 @@
+body[data-theme="dark"] .fluid__footer img {
+    filter: invert();
+}

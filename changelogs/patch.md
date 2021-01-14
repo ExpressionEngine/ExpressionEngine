@@ -13,6 +13,7 @@ Bullet list below, e.g.
    - Fixed PSR-12 lint error for SELF constant by adding and swapping it out for new EESELF constant.
    - Fixed "Select Dropdown" "Populate the menu from another channel field" not showing any field options.
    - Fixed a bug ([#687](https://github.com/ExpressionEngine/ExpressionEngine/issues/687) where no valid channels were available in the channel field on the publish page.
+   - Fixed several missing language variables in the control panel.
    - Added CLI command file
 
 EOF MARKER: This line helps prevent merge conflicts when things are
