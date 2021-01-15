@@ -96,7 +96,7 @@ class EE_Schema {
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			total_members mediumint(7) NOT NULL default '0',
 			recent_member_id int(10) default '0' NOT NULL,
-			recent_member varchar(50) NOT NULL,
+			recent_member varchar(75) NOT NULL,
 			total_entries mediumint(8) default '0' NOT NULL,
 			total_forum_topics mediumint(8) default '0' NOT NULL,
 			total_forum_posts mediumint(8) default '0' NOT NULL,
