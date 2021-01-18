@@ -55,6 +55,13 @@ class Stats_upd extends Installer
 
 		}
 
+		if (version_compare($current, '2.2', '<')) {
+			$fields = array(
+				'recent_member'	=> array('type' => 'varchar', 'constraint' => '75', 'null' => false)
+			);
+			ee()->smartforge->modify_column('stats', $fields);
+		}
+
 		return TRUE;
 	}
 

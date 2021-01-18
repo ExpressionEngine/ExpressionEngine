@@ -26,6 +26,7 @@ class Member {
 	{
 		// First, get member groups who should be in the list
 		$role_settings = ee('Model')->get('RoleSetting')
+			->with('Role')
 			->filter('include_in_authorlist', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
