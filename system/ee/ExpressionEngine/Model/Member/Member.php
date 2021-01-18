@@ -549,7 +549,7 @@ class Member extends ContentModel {
 	/**
 	 * Ensure primary role is one of the roles
 	 */
-	private function updateAllRoles()
+	public function updateAllRoles()
 	{
 		$roles = $this->Roles->pluck('role_id');
 		$primary_role_id = $this->PrimaryRole->getId();
