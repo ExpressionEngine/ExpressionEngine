@@ -1713,6 +1713,7 @@ class JumpMenu extends AbstractJumpMenu
         ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
 
         //load language for all the jumps
+        ee()->lang->load('jump_menu');
         ee()->lang->load('settings');
         ee()->lang->load('addons');
         ee()->lang->load('myaccount');
@@ -1980,9 +1981,8 @@ class JumpMenu extends AbstractJumpMenu
         }
 
         //member quick links
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-        if (!empty($member->quick_links)) {
-			foreach (explode("\n", $member->quick_links) as $i=>$row) {
+        if (!empty(ee()->session->getMember()->quick_links)) {
+           foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
                 $x = explode('|', $row);
                 $items[1]['quicklink_' . $i] = array(
                     'icon' => 'fa-link',
@@ -1991,7 +1991,7 @@ class JumpMenu extends AbstractJumpMenu
                     'dynamic' => false,
                     'target' => $x[1]
                 );
-			}
+            }
         }
 
         //translate the commands

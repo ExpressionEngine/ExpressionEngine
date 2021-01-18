@@ -368,8 +368,6 @@ class Roles extends AbstractRolesController {
 					);
 				}
 
-				ee('CP/JumpMenu')->clearAllCaches();
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_role_success'))

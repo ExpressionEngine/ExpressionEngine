@@ -166,6 +166,7 @@ class Site extends Model {
 	public function onAfterSave()
 	{
 		ee()->cache->delete('/site_pages/', \Cache::GLOBAL_SCOPE);
+		ee('CP/JumpMenu')->clearAllCaches();
 	}
 
 	/**

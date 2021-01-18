@@ -230,7 +230,8 @@ class Member extends ContentModel {
 		'beforeDelete',
 		'afterBulkDelete',
 		'beforeInsert',
-		'beforeValidate'
+		'beforeValidate',
+		'afterSave'
 	);
 
 	// Properties
@@ -422,6 +423,12 @@ class Member extends ContentModel {
 				->filter('member_id', $this->member_id)
 				->delete();
 		}
+	}
+
+	public function onAfterSave()
+	{
+		parent::onAfterSave();
+		ee()->cache->file->delete('jumpmenu/' . $this->member_id);
 	}
 
 	/**

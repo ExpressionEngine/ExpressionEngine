@@ -43,6 +43,10 @@ class MenuItem extends Model {
 		)
 	);
 
+	protected static $_events = array(
+		'afterSave'
+	);
+
 	protected $item_id;
 	protected $parent_id;
 	protected $set_id;
@@ -58,4 +62,8 @@ class MenuItem extends Model {
 		return in_array($type, $parameters) ? TRUE : $rule->skip();
 	}
 
+	public function onAfterSave()
+	{
+		ee('CP/JumpMenu')->clearAllCaches();
+	}
 }

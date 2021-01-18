@@ -64,6 +64,10 @@ class Cache extends Utilities {
 		{
 			ee()->functions->clear_caching(ee()->input->post('cache_type'));
 
+			if (ee()->input->post('cache_type') == 'all') {
+				ee('CP/JumpMenu')->clearAllCaches();
+			}
+
 			ee()->view->set_message('success', lang('caches_cleared'), '', TRUE);
 			ee()->functions->redirect(ee('CP/URL')->make('utilities/cache'));
 		}

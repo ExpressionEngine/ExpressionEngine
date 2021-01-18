@@ -122,7 +122,9 @@ class Role extends Model {
 		'short_name' => 'required|unique|alphaDash|maxLength[50]',
 	];
 
-	// protected static $_events = [];
+	protected static $_events = array(
+		'afterSave'
+	);
 
 	// Properties
 	protected $role_id;
@@ -194,6 +196,11 @@ class Role extends Model {
 	{
 		$permissions = $this->getPermissions();
 		return array_key_exists($permission, $permissions);
+	}
+
+	public function onAfterSave()
+	{
+		ee('CP/JumpMenu')->clearAllCaches();
 	}
 }
 

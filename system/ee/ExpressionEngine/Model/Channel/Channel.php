@@ -147,7 +147,8 @@ class Channel extends StructureModel {
 		'beforeSave',
 		'afterInsert',
 		'afterUpdate',
-		'beforeDelete'
+		'beforeDelete',
+		'afterSave'
 	);
 
 	// Properties
@@ -555,6 +556,11 @@ class Channel extends StructureModel {
 				$this->Site->save();
 			}
 		}
+	}
+
+	public function onAfterSave()
+	{
+		ee('CP/JumpMenu')->clearAllCaches();
 	}
 
 	public function getCategoryGroups()

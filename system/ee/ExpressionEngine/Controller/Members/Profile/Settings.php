@@ -208,7 +208,9 @@ class Settings extends Profile {
 			return FALSE;
 		}
 
-		return parent::saveSettings($settings);
+		$saved = parent::saveSettings($settings);
+
+		return $saved;
 	}
 
 	protected function uploadAvatar()
