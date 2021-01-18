@@ -227,6 +227,7 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'afterUpdate',
+		'beforeSave',
 		'beforeDelete',
 		'afterBulkDelete',
 		'beforeInsert',
@@ -340,6 +341,13 @@ class Member extends ContentModel {
 		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
 	}
 
+	/**
+	 * Ensure primary role is one of the roles
+	 */
+	public function onBeforeSave()
+	{
+		$this->updateAllRoles();
+	}
 	/**
 	 * Log email and password changes
 	 */
@@ -515,6 +523,22 @@ class Member extends ContentModel {
 	public function getMemberName()
 	{
 		return $this->screen_name ?: $this->username;
+	}
+
+	/**
+	 * Ensure primary role is one of the roles
+	 */
+	private function updateAllRoles()
+	{
+		$roles = $this->Roles->pluck('role_id');
+		$primary_role_id = $this->PrimaryRole->getId();
+
+		// If primary role is not found in the assigned roles
+		if ((! array_search($primary_role_id, $roles)) !== false) {
+			$roles[] = $primary_role_id;
+
+			$this->Roles = ee('Model')->get('Role', $roles)->all();
+		}
 	}
 
 	/**
