@@ -227,6 +227,7 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'afterUpdate',
+		'beforeUpdate',
 		'beforeSave',
 		'beforeDelete',
 		'afterBulkDelete',
@@ -348,6 +349,26 @@ class Member extends ContentModel {
 	{
 		$this->updateAllRoles();
 	}
+
+	/**
+	 * When primary role has changed, unassociate it's Role
+	 */
+	public function onBeforeUpdate($changed)
+	{
+		// We know primary role has changed
+		if (isset($changed['role_id']) && $changed['role_id'] !== (int) $this->role_id)
+		{
+			// $changed['role_id'] is the old primary role
+			// $this->role_id is new primary role
+			$old_primary_role_id = $changed['role_id'];
+
+			// Remove the old primary role from the Roles relationship
+			$roles = $this->Roles->getDictionary('role_id', 'role_id');
+			unset($roles[$old_primary_role_id]);
+			$this->Roles = ee('Model')->get('Role', $roles)->all();
+		}
+	}
+
 	/**
 	 * Log email and password changes
 	 */
