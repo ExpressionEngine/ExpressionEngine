@@ -913,7 +913,7 @@ class Moblog {
 			}
 			else
 			{
-				ee()->functions->clear_caching('sql_cache');
+				ee()->functions->clear_caching('sql');
 			}
 		}
 
