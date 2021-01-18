@@ -68,6 +68,15 @@ class Roles extends Profile {
 				]
 			];
 		}
+
+		// Remove the primary role from the selected additional roles
+		$selected = $this->member->Roles->pluck('role_id');
+		if (($primary_role = array_search($this->member->role_id, $selected)) !== false) {
+			unset($selected[$primary_role]);
+		}
+		// Disable the primary role from being selected
+		$disabled_choices[] = $this->member->role_id;
+
 		$additional_roles_section[] = [
 			'title' => 'roles',
 			'desc' => 'roles_desc',
@@ -75,7 +84,8 @@ class Roles extends Profile {
 				'roles' => [
 					'type' => 'checkbox',
 					'choices' => $roles,
-					'value' => $this->member->Roles->pluck('role_id'),
+					'disabled_choices' => $disabled_choices,
+					'value' => $selected,
 					'no_results' => [
 						'text' => sprintf(lang('no_found'), lang('roles'))
 					]
@@ -163,6 +173,8 @@ class Roles extends Profile {
 			}
 
 			$roles = ee('Request')->post('roles');
+			$roles[ee()->input->post('role_id')] = ee()->input->post('role_id');
+			$roles = array_unique($roles);
 			$this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : NULL;
 
 			$this->member->save();
