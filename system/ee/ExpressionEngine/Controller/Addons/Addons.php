@@ -728,6 +728,8 @@ class Addons extends CP_Controller {
 
 		}
 
+		ee('CP/JumpMenu')->clearAllCaches();
+
 		foreach (array('first', 'third') as $party)
 		{
 			if ( ! empty($uninstalled[$party]))

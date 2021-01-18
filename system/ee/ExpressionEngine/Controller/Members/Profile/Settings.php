@@ -210,8 +210,6 @@ class Settings extends Profile {
 
 		$saved = parent::saveSettings($settings);
 
-		ee('CP/JumpMenu')->clearAllCaches();
-
 		return $saved;
 	}
 
