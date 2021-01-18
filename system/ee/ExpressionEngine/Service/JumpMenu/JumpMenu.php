@@ -1713,6 +1713,7 @@ class JumpMenu extends AbstractJumpMenu
         ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
 
         //load language for all the jumps
+        ee()->lang->loadfile('jump_menu');
         ee()->lang->load('settings');
         ee()->lang->load('addons');
         ee()->lang->load('myaccount');

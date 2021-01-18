@@ -982,18 +982,14 @@ class EE_Functions {
 		{
 			ee()->cache->delete('/'.$which.'_cache/');
 		}
-		elseif ($which === 'jumpmenu')
-		{
-			ee('CP/JumpMenu')->clearAllCaches();
-		}
 		elseif ($which == 'all')
 		{
 			foreach ($options as $option)
 			{
 				ee()->cache->delete('/'.$option.'_cache/');
 			}
-			ee('CP/JumpMenu')->clearAllCaches();
 		}
+		ee('CP/JumpMenu')->clearAllCaches();
 	}
 
 	/**

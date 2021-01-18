@@ -208,7 +208,11 @@ class Settings extends Profile {
 			return FALSE;
 		}
 
-		return parent::saveSettings($settings);
+		$saved = parent::saveSettings($settings);
+
+		ee('CP/JumpMenu')->clearAllCaches();
+
+		return $saved;
 	}
 
 	protected function uploadAvatar()

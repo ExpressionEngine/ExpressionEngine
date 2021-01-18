@@ -414,7 +414,6 @@ class EE_Core
 
         // Fetch control panel language file
         ee()->lang->loadfile('cp');
-        ee()->lang->loadfile('jump_menu');
 
         // Prevent Pseudo Output variables from being parsed
         ee()->output->parse_exec_vars = false;

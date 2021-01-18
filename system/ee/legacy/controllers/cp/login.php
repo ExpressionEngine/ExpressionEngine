@@ -264,8 +264,6 @@ class Login extends CP_Controller {
 			$return_path = ee('CP/URL')->make('/')->compile();
 		}
 
-		ee('CP/JumpMenu')->primeCache();
-
 		$this->functions->redirect($return_path);
 	}
 
