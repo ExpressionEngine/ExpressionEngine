@@ -6,7 +6,12 @@ end_of_line = lf
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{php,js,css,json,xml,html}]
+# PHP-Files
+[*.php]
+indent_style = space
+indent_size = 4
+
+[*.{js,css,json,xml,html}]
 indent_style = tab
 indent_size = 4
 
