@@ -22,7 +22,7 @@ class Consent extends Settings
     public function __construct()
     {
         parent::__construct();
-        $this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
+        $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
         ee()->lang->loadfile('consent');
     }
 
@@ -153,10 +153,10 @@ class Consent extends Settings
                     'type' => Table::COL_STATUS
                 ],
                 'manage' => [
-                    'type'=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ],
                 [
-                    'type'=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 ]
             ]
         );

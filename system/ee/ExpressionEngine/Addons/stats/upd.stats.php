@@ -26,7 +26,7 @@ class Stats_upd extends Installer
      * @access	public
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         if (version_compare($current, $this->version, '==')) {
             return false;
@@ -42,9 +42,9 @@ class Stats_upd extends Installer
 
             // Create syncing action
             $data = [
-                'class'			=> 'Stats',
-                'method'		=> 'sync_stats',
-                'csrf_exempt'	=> 1,
+                'class' => 'Stats',
+                'method' => 'sync_stats',
+                'csrf_exempt' => 1,
             ];
 
             ee()->db->insert('actions', $data);
@@ -52,7 +52,7 @@ class Stats_upd extends Installer
 
         if (version_compare($current, '2.2', '<')) {
             $fields = array(
-                'recent_member'	=> array('type' => 'varchar', 'constraint' => '75', 'null' => false)
+                'recent_member' => array('type' => 'varchar', 'constraint' => '75', 'null' => false)
             );
             ee()->smartforge->modify_column('stats', $fields);
         }

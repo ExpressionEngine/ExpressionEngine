@@ -18,8 +18,8 @@ class EE_Schema
     public $year;
     public $month;
     public $day;
-    public $default_entry	= '';
-    public $theme_path		= '';
+    public $default_entry = '';
+    public $theme_path = '';
     public $version;
 
     private $default_engine = 'InnoDB';
@@ -1494,11 +1494,11 @@ class EE_Schema
 
         // Default Site
         $site = array(
-            'site_id' 		=> 1,
-            'site_label'	=> $this->userdata['site_label'],
-            'site_name'		=> $this->userdata['site_name'],
-            'site_bootstrap_checksums'     => '',
-            'site_pages'                   => '',
+            'site_id' => 1,
+            'site_label' => $this->userdata['site_label'],
+            'site_name' => $this->userdata['site_name'],
+            'site_bootstrap_checksums' => '',
+            'site_pages' => '',
         );
 
         $Q[] = ee()->db->insert_string('sites', $site);
@@ -1506,42 +1506,42 @@ class EE_Schema
         // Roles
         $roles = array(
             array(
-                'name'                    => 'Super Admin',
-                'short_name'              => 'super_admin',
-                'role_id'                 => 1,
-                'is_locked'               => 'y',
+                'name' => 'Super Admin',
+                'short_name' => 'super_admin',
+                'role_id' => 1,
+                'is_locked' => 'y',
                 'exclude_from_moderation' => 'y',
-                'include_in_authorlist'   => 'y',
-                'search_flood_control'    => '0'
+                'include_in_authorlist' => 'y',
+                'search_flood_control' => '0'
             ),
             array(
-                'name'                    => 'Banned',
-                'short_name'              => 'banned',
-                'role_id'                 => 2,
-                'is_locked'               => 'n',
-                'include_in_memberlist'   => 'n',
-                'search_flood_control'    => '60'
+                'name' => 'Banned',
+                'short_name' => 'banned',
+                'role_id' => 2,
+                'is_locked' => 'n',
+                'include_in_memberlist' => 'n',
+                'search_flood_control' => '60'
             ),
             array(
-                'name'                    => 'Guests',
-                'short_name'              => 'guests',
-                'role_id'                 => 3,
-                'is_locked'               => 'n',
-                'search_flood_control'    => '10'
+                'name' => 'Guests',
+                'short_name' => 'guests',
+                'role_id' => 3,
+                'is_locked' => 'n',
+                'search_flood_control' => '10'
             ),
             array(
-                'name'                    => 'Pending',
-                'short_name'              => 'pending',
-                'role_id'                 => 4,
-                'is_locked'               => 'n',
-                'search_flood_control'    => '10'
+                'name' => 'Pending',
+                'short_name' => 'pending',
+                'role_id' => 4,
+                'is_locked' => 'n',
+                'search_flood_control' => '10'
             ),
             array(
-                'name'                    => 'Members',
-                'short_name'              => 'members',
-                'role_id'                 => 5,
-                'is_locked'               => 'n',
-                'search_flood_control'    => '10'
+                'name' => 'Members',
+                'short_name' => 'members',
+                'role_id' => 5,
+                'is_locked' => 'n',
+                'search_flood_control' => '10'
             )
         );
 

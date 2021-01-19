@@ -583,9 +583,9 @@ class Addon
         foreach ($this->getFilesMatching('widgets/*.*') as $path) {
             if (preg_match('/widgets\/(.*).(html|php)/', $path, $matches)) {
                 $widgets[$matches[1] . '.' . $matches[2]] = [
-                    'widget_file'	=> $matches[1],
-                    'widget_type'	=> $matches[2],
-                    'widget_source'=> $widget_source
+                    'widget_file' => $matches[1],
+                    'widget_type' => $matches[2],
+                    'widget_source' => $widget_source
                 ];
             }
         }

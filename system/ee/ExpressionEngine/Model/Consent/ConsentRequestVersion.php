@@ -22,9 +22,9 @@ class ConsentRequestVersion extends Model
 
     protected static $_typed_columns = [
         'consent_request_version_id' => 'int',
-        'consent_request_id'         => 'int',
-        'create_date'                => 'timestamp',
-        'author_id'                  => 'int',
+        'consent_request_id' => 'int',
+        'create_date' => 'timestamp',
+        'author_id' => 'int',
     ];
 
     protected static $_relationships = [
@@ -49,8 +49,8 @@ class ConsentRequestVersion extends Model
     ];
 
     protected static $_validation_rules = [
-        'create_date'    => 'required',
-        'author_id'      => 'required',
+        'create_date' => 'required',
+        'author_id' => 'required',
     ];
 
     // protected static $_events = [];
@@ -68,15 +68,15 @@ class ConsentRequestVersion extends Model
         ee()->load->library('typography');
         ee()->typography->initialize(array(
             'bbencode_links' => false,
-            'parse_images'	=> false,
-            'parse_smileys'	=> false
+            'parse_images' => false,
+            'parse_smileys' => false
         ));
 
         return ee()->typography->parse_type($this->request, array(
-            'text_format'    => $this->request_format,
-            'html_format'    => 'all',
-            'auto_links'	 => 'n',
-            'allow_img_url'  => 'y'
+            'text_format' => $this->request_format,
+            'html_format' => 'all',
+            'auto_links' => 'n',
+            'allow_img_url' => 'y'
         ));
     }
 }

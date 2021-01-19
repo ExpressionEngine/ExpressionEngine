@@ -28,7 +28,7 @@ class ASCIIPrintable implements Vectorizer
     {
         ee()->load->helper('multibyte');
 
-        $non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
+        $non_ascii = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
 
         $length = ee_mb_strlen($source);
 

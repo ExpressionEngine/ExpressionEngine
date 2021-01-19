@@ -56,10 +56,10 @@ class Updater
             'file_dimensions',
             array(
                 'quality' => array(
-                    'type'       => 'tinyint',
+                    'type' => 'tinyint',
                     'constraint' => 1,
-                    'unsigned'   => true,
-                    'default'    => 90,
+                    'unsigned' => true,
+                    'default' => 90,
                 )
             )
         );

@@ -18,10 +18,10 @@ class Rss_parser
     public function __construct()
     {
         // Fetch Parameters and set defaults
-        $url		= ee()->TMPL->fetch_param('url');
-        $limit		= (int) ee()->TMPL->fetch_param('limit', 10);
-        $offset		= (int) ee()->TMPL->fetch_param('offset', 0);
-        $refresh	= (int) ee()->TMPL->fetch_param('refresh', 180);
+        $url = ee()->TMPL->fetch_param('url');
+        $limit = (int) ee()->TMPL->fetch_param('limit', 10);
+        $offset = (int) ee()->TMPL->fetch_param('offset', 0);
+        $refresh = (int) ee()->TMPL->fetch_param('refresh', 180);
 
         // Bring in SimplePie
         ee()->load->library('rss_parser');
@@ -44,21 +44,21 @@ class Rss_parser
         }
 
         $content = array(
-            'feed_items' 		=> $this->_map_feed_items($feed, $limit, $offset),
+            'feed_items' => $this->_map_feed_items($feed, $limit, $offset),
 
             // Feed Information
-            'feed_title'		=> $feed->get_title(),
-            'feed_link'			=> $feed->get_link(),
-            'feed_copyright'	=> $feed->get_copyright(),
-            'feed_description'	=> $feed->get_description(),
-            'feed_language'		=> $feed->get_language(),
+            'feed_title' => $feed->get_title(),
+            'feed_link' => $feed->get_link(),
+            'feed_copyright' => $feed->get_copyright(),
+            'feed_description' => $feed->get_description(),
+            'feed_language' => $feed->get_language(),
 
             // Feed Logo Information
-            'logo_url'			=> $feed->get_image_url(),
-            'logo_title'		=> $feed->get_image_title(),
-            'logo_link'			=> $feed->get_image_link(),
-            'logo_width'		=> $feed->get_image_width(),
-            'logo_height'		=> $feed->get_image_height()
+            'logo_url' => $feed->get_image_url(),
+            'logo_title' => $feed->get_image_title(),
+            'logo_link' => $feed->get_image_link(),
+            'logo_width' => $feed->get_image_width(),
+            'logo_height' => $feed->get_image_height()
         );
 
         $this->return_data = ee()->TMPL->parse_variables(
@@ -96,21 +96,21 @@ class Rss_parser
             if (! empty($item_authors)) {
                 foreach ($item_authors as $author) {
                     $authors[] = array(
-                        'author_email'	=> $author->get_email(),
-                        'author_link'	=> $author->get_link(),
-                        'author_name'	=> $author->get_name()
+                        'author_email' => $author->get_email(),
+                        'author_link' => $author->get_link(),
+                        'author_name' => $author->get_name()
                     );
                 }
             }
 
             $items[] = array(
-                'item_title'		=> $item->get_title(),
-                'item_link'			=> $item->get_permalink(),
-                'item_date'			=> $item->get_date('U'),
-                'item_content'		=> $item->get_content(),
-                'item_description'	=> $item->get_description(),
-                'item_categories'	=> $categories,
-                'item_authors'		=> $authors
+                'item_title' => $item->get_title(),
+                'item_link' => $item->get_permalink(),
+                'item_date' => $item->get_date('U'),
+                'item_content' => $item->get_content(),
+                'item_description' => $item->get_description(),
+                'item_categories' => $categories,
+                'item_authors' => $authors
             );
         }
 

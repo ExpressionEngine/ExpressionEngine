@@ -21,9 +21,9 @@ class RevisionTracker extends Model
     protected static $_table_name = 'revision_tracker';
 
     protected static $_typed_columns = array(
-        'tracker_id'     => 'int',
-        'item_id'        => 'int',
-        'item_date'      => 'int',
+        'tracker_id' => 'int',
+        'item_id' => 'int',
+        'item_date' => 'int',
         'item_author_id' => 'int'
     );
 

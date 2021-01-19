@@ -65,7 +65,7 @@ class Profile extends CP_Controller
 
         $this->generateSidebar();
 
-        $this->breadcrumbs= array(
+        $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             ee('CP/URL')->make('members/profile', $qs)->compile() => lang('profile')//$this->member->screen_name
         );
@@ -169,14 +169,14 @@ class Profile extends CP_Controller
                             ->asDeleteAction('modal-confirm-anonymize-member');
 
                         $modal_vars = [
-                            'name'		=> 'modal-confirm-anonymize-member',
-                            'title'		=> sprintf(lang('anonymize_username'), lang('member')),
-                            'alert'		=> ee('CP/Alert')
+                            'name' => 'modal-confirm-anonymize-member',
+                            'title' => sprintf(lang('anonymize_username'), lang('member')),
+                            'alert' => ee('CP/Alert')
                                 ->makeInline()
                                 ->asIssue()
                                 ->addToBody(lang('anonymize_member_desc'))
                                 ->render(),
-                            'form_url'	=> ee('CP/URL')->make('members/anonymize'),
+                            'form_url' => ee('CP/URL')->make('members/anonymize'),
                             'button' => [
                                 'text' => lang('btn_confirm_and_anonymize'),
                                 'working' => lang('btn_confirm_and_anonymize_working')
@@ -189,7 +189,7 @@ class Profile extends CP_Controller
                             ],
                             'hidden' => [
                                 'bulk_action' => 'anonymize',
-                                'selection'   => $this->member->member_id
+                                'selection' => $this->member->member_id
                             ]
                         ];
 
@@ -200,8 +200,8 @@ class Profile extends CP_Controller
                                 'group' => 'verify_password',
                                 'fields' => [
                                     'verify_password' => [
-                                        'type'      => 'password',
-                                        'required'  => true,
+                                        'type' => 'password',
+                                        'required' => true,
                                         'maxlength' => PASSWORD_MAX_LENGTH
                                     ]
                                 ]
@@ -256,8 +256,8 @@ class Profile extends CP_Controller
                     }
 
                     $modal_vars = array(
-                        'name'		=> 'modal-confirm-remove-member',
-                        'form_url'	=> ee('CP/URL')->make('members/delete'),
+                        'name' => 'modal-confirm-remove-member',
+                        'form_url' => ee('CP/URL')->make('members/delete'),
                         'checklist' => array(
                             array(
                                 'kind' => lang('members'),
@@ -266,7 +266,7 @@ class Profile extends CP_Controller
                         ),
                         'hidden' => array(
                             'bulk_action' => 'remove',
-                            'selection'   => $this->member->member_id
+                            'selection' => $this->member->member_id
                         ),
                         'ajax_default' => $heirs_view
                     );
@@ -278,8 +278,8 @@ class Profile extends CP_Controller
                             'group' => 'verify_password',
                             'fields' => [
                                 'verify_password' => [
-                                    'type'      => 'password',
-                                    'required'  => true,
+                                    'type' => 'password',
+                                    'required' => true,
                                     'maxlength' => PASSWORD_MAX_LENGTH
                                 ]
                             ]

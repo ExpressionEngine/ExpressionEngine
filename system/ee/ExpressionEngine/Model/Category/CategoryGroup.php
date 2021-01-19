@@ -35,10 +35,10 @@ class CategoryGroup extends StructureModel
     );
 
     protected static $_validation_rules = array(
-        'group_name'            => 'required|unique[site_id]',
-        'sort_order'            => 'enum[a,c]',
+        'group_name' => 'required|unique[site_id]',
+        'sort_order' => 'enum[a,c]',
         'field_html_formatting' => 'enum[all,safe,none]',
-        'exclude_group'         => 'enum[0,1,2]'
+        'exclude_group' => 'enum[0,1,2]'
     );
 
     protected static $_events = [
@@ -153,30 +153,30 @@ class CategoryGroup extends StructureModel
         }
 
         $metadata = array(
-            'field_id'				=> 'categories',
-            'group_id'				=> $this->getId(),
-            'field_label'			=> $this->group_name,
-            'field_required'		=> 'n',
-            'field_show_fmt'		=> 'n',
-            'field_instructions'	=> lang('categories_desc'),
-            'field_text_direction'	=> 'ltr',
-            'field_type'			=> 'checkboxes',
-            'field_list_items'      => '',
-            'field_maxl'			=> 100,
-            'editable'				=> $editable,
-            'editing'				=> false,
-            'deletable'				=> $deletable,
-            'populateCallback'		=> array($this, 'populateCategories'),
-            'manage_toggle_label'	=> lang('manage_categories'),
-            'add_btn_label'	        => REQ == 'CP' && ee('Permission')->can('create_categories')
+            'field_id' => 'categories',
+            'group_id' => $this->getId(),
+            'field_label' => $this->group_name,
+            'field_required' => 'n',
+            'field_show_fmt' => 'n',
+            'field_instructions' => lang('categories_desc'),
+            'field_text_direction' => 'ltr',
+            'field_type' => 'checkboxes',
+            'field_list_items' => '',
+            'field_maxl' => 100,
+            'editable' => $editable,
+            'editing' => false,
+            'deletable' => $deletable,
+            'populateCallback' => array($this, 'populateCategories'),
+            'manage_toggle_label' => lang('manage_categories'),
+            'add_btn_label' => REQ == 'CP' && ee('Permission')->can('create_categories')
                 ? lang('add_category')
                 : null,
-            'content_item_label'	=> lang('category'),
-            'reorder_ajax_url'		=> ! INSTALLER
+            'content_item_label' => lang('category'),
+            'reorder_ajax_url' => ! INSTALLER
                 ? ee('CP/URL')->make('categories/reorder/' . $this->getId())->compile()
                 : '',
-            'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y',
-            'no_results'			=> $no_results
+            'auto_select_parents' => ee()->config->item('auto_assign_cat_parents') == 'y',
+            'no_results' => $no_results
         );
 
         return $metadata;

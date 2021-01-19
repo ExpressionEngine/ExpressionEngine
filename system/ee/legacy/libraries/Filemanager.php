@@ -16,15 +16,15 @@ class Filemanager
     public $config;
     public $theme_url;
 
-    public $upload_errors		= false;
-    public $upload_data			= null;
-    public $upload_warnings		= false;
+    public $upload_errors = false;
+    public $upload_data = null;
+    public $upload_warnings = false;
 
-    private $_errors			= array();
-    private $_upload_dirs		= array();
-    private $_upload_dir_prefs	= array();
+    private $_errors = array();
+    private $_upload_dirs = array();
+    private $_upload_dir_prefs = array();
 
-    private $_xss_on			= true;
+    private $_xss_on = true;
     private $_memory_tweak_factor = 1.8;
 
     /**
@@ -91,12 +91,12 @@ class Filemanager
         $filename = ee()->security->sanitize_filename($filename);
 
         if (strpos($filename, '.') !== false) {
-            $parts		= explode('.', $filename);
-            $ext		= array_pop($parts);
+            $parts = explode('.', $filename);
+            $ext = array_pop($parts);
 
             // @todo prevent security issues with multiple extensions
             // http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
-            $filename	= implode('.', $parts);
+            $filename = implode('.', $parts);
         }
 
         $ext = '.' . $ext;
@@ -173,12 +173,12 @@ class Filemanager
 
         foreach ($dir->FileDimensions as $dimension) {
             $data = array(
-                'short_name'   => $dimension->short_name,
-                'width'        => $dimension->width,
-                'height'       => $dimension->height,
+                'short_name' => $dimension->short_name,
+                'width' => $dimension->width,
+                'height' => $dimension->height,
                 'watermark_id' => $dimension->watermark_id,
-                'resize_type'  => $dimension->resize_type,
-                'quality'      => $dimension->quality
+                'resize_type' => $dimension->resize_type,
+                'quality' => $dimension->quality
             );
 
             // Add watermarking prefs
@@ -308,8 +308,8 @@ class Filemanager
 
             if ($imageSize && is_array($imageSize)) {
                 $imageSizeParsed = [
-                    'height'	=> $imageSize['1'],
-                    'width'	=> $imageSize['0']
+                    'height' => $imageSize['1'],
+                    'width' => $imageSize['0']
                 ];
 
                 return $imageSizeParsed;
@@ -460,10 +460,10 @@ class Filemanager
             }
 
             $config = array(
-                'rotation_angle'	=> $deg,
-                'library_path'		=> ee()->config->item('image_library_path'),
-                'image_library'		=> ee()->config->item('image_resize_protocol'),
-                'source_image'		=> $file_path
+                'rotation_angle' => $deg,
+                'library_path' => ee()->config->item('image_library_path'),
+                'image_library' => ee()->config->item('image_resize_protocol'),
+                'source_image' => $file_path
             );
 
             ee()->image_lib->initialize($config);
@@ -478,7 +478,7 @@ class Filemanager
             // We need to reset some prefs
             if ($new_image) {
                 ee()->load->helper('number');
-                $f_size =  get_file_info($file_path);
+                $f_size = get_file_info($file_path);
                 $prefs['file_height'] = $new_image['height'];
                 $prefs['file_width'] = $new_image['width'];
                 $prefs['file_hw_original'] = $new_image['height'] . ' ' . $new_image['width'];
@@ -518,20 +518,20 @@ class Filemanager
             return $prefs;
         }
 
-        $config['width']			= $prefs['max_width'];
-        $config['height']			= $prefs['max_height'];
+        $config['width'] = $prefs['max_width'];
+        $config['height'] = $prefs['max_height'];
 
         ee()->load->library('image_lib');
 
         ee()->image_lib->clear();
 
         // If either h/w unspecified, calculate the other here
-        if ($prefs['max_width'] ==  0) {
-            $config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+        if ($prefs['max_width'] == 0) {
+            $config['width'] = ($prefs['width'] / $prefs['height']) * $prefs['max_height'];
             $force_master_dim = 'height';
-        } elseif ($prefs['max_height'] ==  0) {
+        } elseif ($prefs['max_height'] == 0) {
             // Old h/old w * new width
-            $config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+            $config['height'] = ($prefs['height'] / $prefs['width']) * $prefs['max_width'];
             $force_master_dim = 'width';
         }
 
@@ -557,10 +557,10 @@ class Filemanager
 
         // Resize
 
-        $config['source_image']		= $file_path;
-        $config['maintain_ratio']	= true;
-        $config['image_library']	= ee()->config->item('image_resize_protocol');
-        $config['library_path']		= ee()->config->item('image_library_path');
+        $config['source_image'] = $file_path;
+        $config['maintain_ratio'] = true;
+        $config['image_library'] = ee()->config->item('image_resize_protocol');
+        $config['library_path'] = ee()->config->item('image_library_path');
 
         ee()->image_lib->initialize($config);
 
@@ -573,7 +573,7 @@ class Filemanager
         // We need to reset some prefs
         if ($new_image) {
             ee()->load->helper('number');
-            $f_size =  get_file_info($file_path);
+            $f_size = get_file_info($file_path);
 
             $prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;
 
@@ -625,8 +625,8 @@ class Filemanager
         }
 
         return array(
-            'status'	=> $status,
-            $key		=> $message
+            'status' => $status,
+            $key => $message
         );
     }
 
@@ -769,8 +769,8 @@ class Filemanager
         $filebrowser_html = ee()->load->ee_view('_shared/file/browser', $vars, true);
 
         ee()->output->send_ajax_response(array(
-            'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
-            'directories'	=> $vars['filemanager_directories']
+            'manager' => str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
+            'directories' => $vars['filemanager_directories']
         ));
     }
 
@@ -786,23 +786,23 @@ class Filemanager
         ee()->table->set_base_url('C=content_publish&M=filemanager_actions&action=directory_contents');
         ee()->table->set_columns(array(
             'file_name' => array('header' => lang('name')),
-            'file_size'	=> array('header' => lang('size')),
-            'mime_type'	=> array('header' => lang('kind')),
-            'date'		=> array('header' => lang('date'))
+            'file_size' => array('header' => lang('size')),
+            'mime_type' => array('header' => lang('kind')),
+            'date' => array('header' => lang('date'))
         ));
 
-        $per_page	= ee()->input->get_post('per_page');
-        $dir_id 	= ee()->input->get_post('dir_choice');
-        $keywords 	= ee()->input->get_post('keywords');
-        $tbl_sort	= ee()->input->get_post('tbl_sort');
+        $per_page = ee()->input->get_post('per_page');
+        $dir_id = ee()->input->get_post('dir_choice');
+        $keywords = ee()->input->get_post('keywords');
+        $tbl_sort = ee()->input->get_post('tbl_sort');
 
         // Default to file_name sorting if tbl_sort isn't set
         $state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
 
         $params = array(
-            'per_page'	=> $per_page ? $per_page : 15,
-            'dir_id'	=> $dir_id,
-            'keywords'	=> $keywords
+            'per_page' => $per_page ? $per_page : 15,
+            'dir_id' => $dir_id,
+            'keywords' => $keywords
         );
 
         if ($first_dir) {
@@ -834,15 +834,15 @@ class Filemanager
         }
 
         $file_params = array(
-            'type'		=> $dir['allowed_types'],
-            'order'		=> $state['sort'],
-            'limit'		=> $per_page,
-            'offset'	=> $state['offset']
+            'type' => $dir['allowed_types'],
+            'order' => $state['sort'],
+            'limit' => $per_page,
+            'offset' => $state['offset']
         );
 
         if (isset($params['keywords'])) {
-            $file_params['search_value']	= $params['keywords'];
-            $file_params['search_in']		= 'all';
+            $file_params['search_value'] = $params['keywords'];
+            $file_params['search_in'] = 'all';
         }
 
         // Mask the URL if we're coming from the CP
@@ -851,15 +851,15 @@ class Filemanager
             DOC_URL . 'cp/files/uploads/sync.html';
 
         return array(
-            'rows'			=> $this->_browser_get_files($dir, $file_params),
-            'no_results'	=> sprintf(
+            'rows' => $this->_browser_get_files($dir, $file_params),
+            'no_results' => sprintf(
                 lang('no_uploaded_files'),
                 $sync_files_url,
                 BASE . AMP . 'C=content_files' . AMP . 'M=file_upload_preferences'
             ),
-            'pagination' 	=> array(
-                'per_page' 		=> $per_page,
-                'total_rows'	=> ee()->file_model->count_files($params['dir_id'])
+            'pagination' => array(
+                'per_page' => $per_page,
+                'total_rows' => ee()->file_model->count_files($params['dir_id'])
             )
         );
     }
@@ -869,11 +869,11 @@ class Filemanager
         $base = (defined('BASE')) ? BASE : ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER;
 
         $vars = array(
-            'base_url'	=> $base . AMP . 'C=content_files_modal'
+            'base_url' => $base . AMP . 'C=content_files_modal'
         );
 
         ee()->output->send_ajax_response(array(
-            'uploader'	=> ee()->load->ee_view('_shared/file_upload/upload_modal', $vars, true)
+            'uploader' => ee()->load->ee_view('_shared/file_upload/upload_modal', $vars, true)
         ));
     }
 
@@ -953,11 +953,11 @@ class Filemanager
     {
         $this->datatables();
 
-        $dir_id	= ee()->input->get('directory_id');
-        $dir	= $this->directory($dir_id, false, true);
+        $dir_id = ee()->input->get('directory_id');
+        $dir = $this->directory($dir_id, false, true);
 
-        $offset	= ee()->input->get('offset');
-        $limit	= ee()->input->get('limit');
+        $offset = ee()->input->get('offset');
+        $limit = ee()->input->get('limit');
 
         $data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir, $limit, $offset) : array();
 
@@ -1125,12 +1125,12 @@ class Filemanager
 
         if ($thumb) {
             $dimensions[] = array(
-                'short_name'	=> 'thumbs',
-                'width'			=> 380, //73,
-                'height'		=> 367, //60
-                'quality'       => 90,
-                'watermark_id'	=> 0,
-                'resize_type'	=> 'crop'
+                'short_name' => 'thumbs',
+                'width' => 380, //73,
+                'height' => 367, //60
+                'quality' => 90,
+                'watermark_id' => 0,
+                'resize_type' => 'crop'
             );
         }
 
@@ -1194,23 +1194,23 @@ class Filemanager
 
             // If either h/w unspecified, calculate the other here
             if ($size['width'] == '' or $size['width'] == 0) {
-                $size['width'] = ($prefs['width']/$prefs['height'])*$size['height'];
+                $size['width'] = ($prefs['width'] / $prefs['height']) * $size['height'];
                 $force_master_dim = 'height';
             } elseif ($size['height'] == '' or $size['height'] == 0) {
                 // Old h/old w * new width
-                $size['height'] = ($prefs['height']/$prefs['width'])*$size['width'];
+                $size['height'] = ($prefs['height'] / $prefs['width']) * $size['width'];
                 $force_master_dim = 'width';
             }
 
             // Resize
-            $config['source_image']		= $source;
-            $config['new_image']		= $resized_path . $prefs['file_name'];
-            $config['maintain_ratio']	= true;
-            $config['image_library']	= $protocol;
-            $config['library_path']		= $lib_path;
-            $config['width']			= $size['width'];
-            $config['height']			= $size['height'];
-            $config['quality']          = $size['quality'];
+            $config['source_image'] = $source;
+            $config['new_image'] = $resized_path . $prefs['file_name'];
+            $config['maintain_ratio'] = true;
+            $config['image_library'] = $protocol;
+            $config['library_path'] = $lib_path;
+            $config['width'] = $size['width'];
+            $config['height'] = $size['height'];
+            $config['quality'] = $size['quality'];
 
             // If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
             if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) or
@@ -1492,7 +1492,7 @@ class Filemanager
             $t_type_prefs = array('wm_text', 'wm_font_path', 'wm_font_size', 'wm_font_color',
                 'wm_shadow_color', 'wm_shadow_distance');
 
-            $config['wm_type'] =  ($data['wm_type'] == 't' or $data['wm_type'] == 'text') ? 'text' : 'overlay';
+            $config['wm_type'] = ($data['wm_type'] == 't' or $data['wm_type'] == 'text') ? 'text' : 'overlay';
 
             if ($config['wm_type'] == 'text') {
                 // If dropshadow not enabled, let's blank the related values
@@ -1594,12 +1594,12 @@ class Filemanager
             $params = $limit;
         } else {
             $params = array(
-                'type'		=> $dir['allowed_types'],
-                'order'		=> array(
+                'type' => $dir['allowed_types'],
+                'order' => array(
                     'file_name' => 'asc'
                 ),
-                'limit'		=> $limit,
-                'offset'	=> $offset
+                'limit' => $limit,
+                'offset' => $offset
             );
         }
 
@@ -1632,11 +1632,11 @@ class Filemanager
 					' . urldecode($file['file_name']) . '
 				</a>';
 
-            $file['short_name']		= ellipsize($file['title'], 13, 0.5);
-            $file['file_size']		= byte_format($file['file_size']);
-            $file['date']			= ee()->localize->format_date('%F %j, %Y %g:%i %a', $file['modified_date']);
-            $file['thumb'] 			= $thumb_info['thumb'];
-            $file['thumb_class']	= $thumb_info['thumb_class'];
+            $file['short_name'] = ellipsize($file['title'], 13, 0.5);
+            $file['file_size'] = byte_format($file['file_size']);
+            $file['date'] = ee()->localize->format_date('%F %j, %Y %g:%i %a', $file['modified_date']);
+            $file['thumb'] = $thumb_info['thumb'];
+            $file['thumb_class'] = $thumb_info['thumb_class'];
         }
 
         return $files;
@@ -1729,9 +1729,9 @@ class Filemanager
         ee()->load->model('file_model');
 
         return array(
-            'url' 			=> $dir['url'],
-            'file_count'	=> ee()->file_model->count_files($dir['id']),
-            'image_count'	=> ee()->file_model->count_images($dir['id'])
+            'url' => $dir['url'],
+            'file_count' => ee()->file_model->count_files($dir['id']),
+            'image_count' => ee()->file_model->count_images($dir['id'])
         );
     }
 
@@ -1811,9 +1811,9 @@ class Filemanager
         ));
 
         $config = array(
-            'file_name'		=> $clean_filename,
-            'upload_path'	=> $dir['server_path'],
-            'max_size'		=> round((int) $dir['max_size'], 3)
+            'file_name' => $clean_filename,
+            'upload_path' => $dir['server_path'],
+            'max_size' => round((int) $dir['max_size'], 3)
         );
 
         // Restricted upload directory?
@@ -1870,8 +1870,8 @@ class Filemanager
             return $this->_upload_error(
                 lang('invalid_mime'),
                 array(
-                    'file_name'		=> $file['file_name'],
-                    'directory_id'	=> $dir['id']
+                    'file_name' => $file['file_name'],
+                    'directory_id' => $dir['id']
                 )
             );
         }
@@ -1880,28 +1880,28 @@ class Filemanager
 
         // Build list of information to save and return
         $file_data = array(
-            'upload_location_id'	=> $dir['id'],
-            'site_id'				=> ee()->config->item('site_id'),
+            'upload_location_id' => $dir['id'],
+            'site_id' => ee()->config->item('site_id'),
 
-            'file_name'				=> $file['file_name'],
-            'orig_name'				=> $original_filename, // name before any upload library processing
-            'file_data_orig_name'	=> $file['orig_name'], // name after upload lib but before duplicate checks
+            'file_name' => $file['file_name'],
+            'orig_name' => $original_filename, // name before any upload library processing
+            'file_data_orig_name' => $file['orig_name'], // name after upload lib but before duplicate checks
 
-            'is_image'				=> $file['is_image'],
-            'mime_type'				=> $file['file_type'],
+            'is_image' => $file['is_image'],
+            'mime_type' => $file['file_type'],
 
-            'file_thumb'			=> $thumb_info['thumb'],
-            'thumb_class' 			=> $thumb_info['thumb_class'],
+            'file_thumb' => $thumb_info['thumb'],
+            'thumb_class' => $thumb_info['thumb_class'],
 
             'modified_by_member_id' => ee()->session->userdata('member_id'),
-            'uploaded_by_member_id'	=> ee()->session->userdata('member_id'),
+            'uploaded_by_member_id' => ee()->session->userdata('member_id'),
 
-            'file_size'				=> $file['file_size'] * 1024, // Bring it back to Bytes from KB
-            'file_height'			=> $file['image_height'],
-            'file_width'			=> $file['image_width'],
-            'file_hw_original'		=> $file['image_height'] . ' ' . $file['image_width'],
-            'max_width'				=> $dir['max_width'],
-            'max_height'			=> $dir['max_height']
+            'file_size' => $file['file_size'] * 1024, // Bring it back to Bytes from KB
+            'file_height' => $file['image_height'],
+            'file_width' => $file['image_width'],
+            'file_hw_original' => $file['image_height'] . ' ' . $file['image_width'],
+            'max_width' => $dir['max_width'],
+            'max_height' => $dir['max_height']
         );
 
         /* -------------------------------------------
@@ -1928,8 +1928,8 @@ class Filemanager
                 return $this->_upload_error(
                     lang('exceeds_max_dimensions'),
                     array(
-                        'file_name'		=> $file['file_name'],
-                        'directory_id'	=> $dir['id']
+                        'file_name' => $file['file_name'],
+                        'directory_id' => $dir['id']
                     )
                 );
             }
@@ -1943,8 +1943,8 @@ class Filemanager
             return $this->_upload_error(
                 $saved['message'],
                 array(
-                    'file_name'		=> $file['file_name'],
-                    'directory_id'	=> $dir['id']
+                    'file_name' => $file['file_name'],
+                    'directory_id' => $dir['id']
                 )
             );
         }
@@ -2006,15 +2006,15 @@ class Filemanager
         // If the new name is the same as the previous, get out of here
         if ($new_file_name == $previous_data->file_name) {
             return array(
-                'success'	=> true,
-                'replace'	=> $replace,
-                'file_id'	=> $file_id
+                'success' => true,
+                'replace' => $replace,
+                'file_id' => $file_id
             );
         }
 
-        $directory_id		= $previous_data->upload_location_id;
-        $old_file_name		= $previous_data->file_name;
-        $upload_directory	= $this->fetch_upload_dir_prefs($directory_id);
+        $directory_id = $previous_data->upload_location_id;
+        $old_file_name = $previous_data->file_name;
+        $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
 
         // If they renamed, we need to be sure the NEW name doesn't conflict
         if ($replace_file_name != '' && $new_file_name != $replace_file_name) {
@@ -2025,17 +2025,17 @@ class Filemanager
                     $replace_data = $replace_data->row();
 
                     return array(
-                        'success'	=> false,
-                        'error'	=> 'retry',
+                        'success' => false,
+                        'error' => 'retry',
                         'replace_filename' => $replace_data->file_name,
-                        'file_id'	=> $file_id
+                        'file_id' => $file_id
                     );
                 }
 
                 return array(
-                    'success'	=> false,
-                    'error'	=> lang('file_exists_replacement_error'),
-                    'file_id'	=> $file_id
+                    'success' => false,
+                    'error' => lang('file_exists_replacement_error'),
+                    'file_id' => $file_id
                 );
             }
         }
@@ -2065,15 +2065,15 @@ class Filemanager
         // If renaming the file sparked an error return it
         if (is_array($file_path)) {
             return array(
-                'success'	=> false,
-                'error'		=> $file_path['error']
+                'success' => false,
+                'error' => $file_path['error']
             );
         }
 
         // Update the file record
         $updated_data = array(
-            'file_id'	=> $file_id,
-            'file_name'	=> $new_file_name,
+            'file_id' => $file_id,
+            'file_name' => $new_file_name,
         );
 
         // Change title if it was automatically set
@@ -2088,9 +2088,9 @@ class Filemanager
         );
 
         return array(
-            'success'	=> true,
-            'replace'	=> $replace,
-            'file_id'	=> ($replace) ? $file['file_id'] : $file_id
+            'success' => true,
+            'replace' => $replace,
+            'file_id' => ($replace) ? $file['file_id'] : $file_id
         );
     }
 
@@ -2124,17 +2124,17 @@ class Filemanager
 
         // Update file_hw_original, filesize, modified date and modified user
         ee()->file_model->save_file(array(
-            'file_id'				=> $existing_file->file_id, // Use the old file_id
-            'file_size'				=> $new_file->file_size,
-            'file_hw_original'		=> $new_file->file_hw_original,
-            'modified_date'			=> $new_file->modified_date,
-            'modified_by_member_id'	=> ee()->session->userdata('member_id')
+            'file_id' => $existing_file->file_id, // Use the old file_id
+            'file_size' => $new_file->file_size,
+            'file_hw_original' => $new_file->file_hw_original,
+            'modified_date' => $new_file->modified_date,
+            'modified_by_member_id' => ee()->session->userdata('member_id')
         ));
 
-        $existing_file->file_size				= $new_file->file_size;
-        $existing_file->file_hw_original		= $new_file->file_hw_original;
-        $existing_file->modified_date			= $new_file->modified_date;
-        $existing_file->modified_by_member_id 	= ee()->session->userdata('member_id');
+        $existing_file->file_size = $new_file->file_size;
+        $existing_file->file_hw_original = $new_file->file_hw_original;
+        $existing_file->modified_date = $new_file->modified_date;
+        $existing_file->modified_by_member_id = ee()->session->userdata('member_id');
 
         return $existing_file;
     }
@@ -2162,11 +2162,11 @@ class Filemanager
 
         // Rename the file
         $config = array(
-            'upload_path'	=> $upload_directory['server_path'],
-            'allowed_types'	=> (ee('Permission')->isSuperAdmin()) ? 'all' : $upload_directory['allowed_types'],
-            'max_size'		=> round((int) $upload_directory['max_size']*1024, 3),
-            'max_width'		=> $upload_directory['max_width'],
-            'max_height'	=> $upload_directory['max_height']
+            'upload_path' => $upload_directory['server_path'],
+            'allowed_types' => (ee('Permission')->isSuperAdmin()) ? 'all' : $upload_directory['allowed_types'],
+            'max_size' => round((int) $upload_directory['max_size'] * 1024, 3),
+            'max_width' => $upload_directory['max_width'],
+            'max_height' => $upload_directory['max_height']
         );
 
         ee()->load->library('upload', $config);
@@ -2237,8 +2237,8 @@ class Filemanager
         $config['library_path'] = ee()->config->item('image_library_path');
         $config['source_image'] = $file;
 
-        $path = substr($file, 0, strrpos($file, '/')+1);
-        $filename = substr($file, strrpos($file, '/')+1, -4); // All editable images have 3 character file extensions
+        $path = substr($file, 0, strrpos($file, '/') + 1);
+        $filename = substr($file, strrpos($file, '/') + 1, -4); // All editable images have 3 character file extensions
         $file_ext = substr($file, -4); // All editable images have 3 character file extensions
 
         $image_name_reference = $filename . $file_ext;
@@ -2292,8 +2292,8 @@ class Filemanager
 
         // Rebuild thumb
         $this->create_thumb(
-            array('server_path'	=> $path),
-            array('name'		=> $image_name_reference)
+            array('server_path' => $path),
+            array('name' => $image_name_reference)
         );
 
         exit($image_name_reference);
@@ -2373,9 +2373,9 @@ class Filemanager
         ee()->load->library('mime_type');
 
         if ($fp = @opendir($source_dir)) {
-            $filedata	= array();
-            $new_depth	= $directory_depth - 1;
-            $source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            $filedata = array();
+            $new_depth = $directory_depth - 1;
+            $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
             while (false !== ($file = readdir($fp))) {
                 $allowed = true;
@@ -2422,7 +2422,7 @@ class Filemanager
      * @param 	string	optional name of zip file to download
      * @return 	mixed 	nuttin' or boolean false if everything goes wrong.
      */
-    public function download_files($files, $zip_name='downloaded_files.zip')
+    public function download_files($files, $zip_name = 'downloaded_files.zip')
     {
         ee()->load->model('file_upload_preferences_model');
 
@@ -2622,9 +2622,9 @@ class Filemanager
         $this->create_thumb(
             $file_path,
             array(
-                'server_path'	=> $upload_prefs['server_path'],
-                'file_name'		=> basename($file_name),
-                'dimensions'	=> $dimensions
+                'server_path' => $upload_prefs['server_path'],
+                'file_name' => basename($file_name),
+                'dimensions' => $dimensions
             ),
             true, // Regenerate thumbnails
             false // Regenerate all images
@@ -2635,8 +2635,8 @@ class Filemanager
             // Send the dimensions back for Ajax requests
             if (AJAX_REQUEST) {
                 ee()->output->send_ajax_response(array(
-                    'width'		=> $response['dimensions']['width'],
-                    'height'	=> $response['dimensions']['height']
+                    'width' => $response['dimensions']['width'],
+                    'height' => $response['dimensions']['height']
                 ));
             }
 
@@ -2662,16 +2662,16 @@ class Filemanager
     public function _do_crop($file_path)
     {
         $config = array(
-            'width'				=> ee()->input->post('crop_width'),
-            'maintain_ratio'	=> false,
-            'x_axis'			=> ee()->input->post('crop_x'),
-            'y_axis'			=> ee()->input->post('crop_y'),
-            'height'			=> (ee()->input->post('crop_height')) ? ee()->input->post('crop_height') : null,
-            'master_dim'		=> 'width',
-            'library_path'		=> ee()->config->item('image_library_path'),
-            'image_library'		=> ee()->config->item('image_resize_protocol'),
-            'source_image'		=> $file_path,
-            'new_image'			=> $file_path
+            'width' => ee()->input->post('crop_width'),
+            'maintain_ratio' => false,
+            'x_axis' => ee()->input->post('crop_x'),
+            'y_axis' => ee()->input->post('crop_y'),
+            'height' => (ee()->input->post('crop_height')) ? ee()->input->post('crop_height') : null,
+            'master_dim' => 'width',
+            'library_path' => ee()->config->item('image_library_path'),
+            'image_library' => ee()->config->item('image_resize_protocol'),
+            'source_image' => $file_path,
+            'new_image' => $file_path
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2694,7 +2694,7 @@ class Filemanager
             ee()->load->helper('file');
             $response = array(
                 'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info'  => get_file_info($file_path)
+                'file_info' => get_file_info($file_path)
             );
         }
 
@@ -2709,11 +2709,11 @@ class Filemanager
     public function _do_rotate($file_path)
     {
         $config = array(
-            'rotation_angle'	=> ee()->input->post('rotate'),
-            'library_path'		=> ee()->config->item('image_library_path'),
-            'image_library'		=> ee()->config->item('image_resize_protocol'),
-            'source_image'		=> $file_path,
-            'new_image'			=> $file_path
+            'rotation_angle' => ee()->input->post('rotate'),
+            'library_path' => ee()->config->item('image_library_path'),
+            'image_library' => ee()->config->item('image_resize_protocol'),
+            'source_image' => $file_path,
+            'new_image' => $file_path
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2736,7 +2736,7 @@ class Filemanager
             ee()->load->helper('file');
             $response = array(
                 'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info'  => get_file_info($file_path)
+                'file_info' => get_file_info($file_path)
             );
         }
 
@@ -2751,12 +2751,12 @@ class Filemanager
     public function _do_resize($file_path)
     {
         $config = array(
-            'width'				=> ee()->input->get_post('resize_width'),
-            'maintain_ratio'	=> ee()->input->get_post('constrain'),
-            'library_path'		=> ee()->config->item('image_library_path'),
-            'image_library'		=> ee()->config->item('image_resize_protocol'),
-            'source_image'		=> $file_path,
-            'new_image'			=> $file_path
+            'width' => ee()->input->get_post('resize_width'),
+            'maintain_ratio' => ee()->input->get_post('constrain'),
+            'library_path' => ee()->config->item('image_library_path'),
+            'image_library' => ee()->config->item('image_resize_protocol'),
+            'source_image' => $file_path,
+            'new_image' => $file_path
         );
 
         if (ee()->input->get_post('resize_height') != '') {
@@ -2785,7 +2785,7 @@ class Filemanager
             ee()->load->helper('file');
             $response = array(
                 'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info'  => get_file_info($file_path)
+                'file_info' => get_file_info($file_path)
             );
         }
 

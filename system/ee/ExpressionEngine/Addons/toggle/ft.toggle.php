@@ -23,7 +23,7 @@ class Toggle_ft extends EE_Fieldtype
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
-        'field_default_value'	=> '0',
+        'field_default_value' => '0',
     );
 
     /**
@@ -33,7 +33,7 @@ class Toggle_ft extends EE_Fieldtype
     {
         $addon = ee('Addon')->get('toggle');
         $this->info = array(
-            'name'    => $addon->getName(),
+            'name' => $addon->getName(),
             'version' => $addon->getVersion()
         );
     }
@@ -109,9 +109,9 @@ class Toggle_ft extends EE_Fieldtype
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
                 'field_name' => $this->field_name,
-                'value'      => $data,
-                'disabled'   => $this->get_setting('field_disabled'),
-                'yes_no'     => $this->get_setting('yes_no', false)
+                'value' => $data,
+                'disabled' => $this->get_setting('field_disabled'),
+                'yes_no' => $this->get_setting('yes_no', false)
             ));
         }
 
@@ -158,10 +158,10 @@ class Toggle_ft extends EE_Fieldtype
 
         $settings = array(
             array(
-                'title'     => 'default_value',
-                'desc'      => 'toggle_default_value_desc',
+                'title' => 'default_value',
+                'desc' => 'toggle_default_value_desc',
                 'desc_cont' => 'toggle_default_value_desc_cont',
-                'fields'    => array(
+                'fields' => array(
                     'field_default_value' => array(
                         'type' => 'html',
                         'content' => $this->_display_field($data['field_default_value'])
@@ -229,9 +229,9 @@ class Toggle_ft extends EE_Fieldtype
 
         return array(
             $id . '_' . $data[$id] => array(
-                'type'		=> 'TINYINT',
-                'null'      => false,
-                'default'   => $default_value
+                'type' => 'TINYINT',
+                'null' => false,
+                'default' => $default_value
             )
         );
     }
@@ -261,19 +261,19 @@ class Toggle_ft extends EE_Fieldtype
     public function renderTableCell($data, $field_id, $entry)
     {
         switch (true) {
-            case ($data==='y'):
+            case ($data === 'y'):
                 $out = lang('yes');
 
                 break;
-            case ($data==='n'):
+            case ($data === 'n'):
                 $out = lang('no');
 
                 break;
-            case ($data===1):
+            case ($data === 1):
                 $out = lang('on');
 
                 break;
-            case ($data===0):
+            case ($data === 0):
             default:
                 $out = lang('off');
 

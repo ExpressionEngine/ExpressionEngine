@@ -54,13 +54,13 @@ class EE_Spellcheck
             return '';
         }
 
-        $spell_save_edit		= lang('spell_save_edit');
-        $spell_edit_word		= lang('spell_edit_word');
-        $unsupported_browser	= lang('unsupported_browser');
-        $no_spelling_errors		= lang('no_spelling_errors');
-        $spellcheck_in_progress	= lang('spellcheck_in_progress');
-        $XID_SECURE_HASH		= (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
-        $is_frontend			= 'true';
+        $spell_save_edit = lang('spell_save_edit');
+        $spell_edit_word = lang('spell_edit_word');
+        $unsupported_browser = lang('unsupported_browser');
+        $no_spelling_errors = lang('no_spelling_errors');
+        $spellcheck_in_progress = lang('spellcheck_in_progress');
+        $XID_SECURE_HASH = (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
+        $is_frontend = 'true';
 
         if (REQ == 'CP') {
             $is_frontend = 'false';
@@ -69,7 +69,7 @@ class EE_Spellcheck
 
         $check_url = str_replace('&amp;', '&', $check_url);
 
-        $r  = ($wrap === true) ? '<script type="text/javascript">' . NL . '//<![CDATA[' . NL : '';
+        $r = ($wrap === true) ? '<script type="text/javascript">' . NL . '//<![CDATA[' . NL : '';
 
         $r .= <<<EOT
 
@@ -1183,7 +1183,7 @@ EOH;
     /** -----------------------------------------
     /**  Spell Check for Textareas
     /** -----------------------------------------*/
-    public function check($lang='en')
+    public function check($lang = 'en')
     {
         /* -------------------------------------------
         /*	Hidden Configuration Variable
@@ -1225,14 +1225,14 @@ EOH;
 
         $str = '<?xml version="1.0" encoding="UTF-8"?' . ">\n<items>\n";
         $items = array();
-        $prechecked  = array();
+        $prechecked = array();
 
         if (! function_exists('pspell_new')) {
             $content = str_replace('&', ' ', stripslashes($content));
 
             // Google has silently changed the service internally, setting ignoredups="1" now causes results to
             // always return as spelled correctly.  -- changed 8/20/08 d.j.
-            $payload = 	'<spellrequest textalreadyclipped="0" ignoredups="0" ignoredigits="1" ignoreallcaps="0"><text>'
+            $payload = '<spellrequest textalreadyclipped="0" ignoredups="0" ignoredigits="1" ignoreallcaps="0"><text>'
                         . $content
                         . '</text></spellrequest>';
 
@@ -1272,7 +1272,7 @@ EOH;
 
             $pspell = pspell_new($lang);
 
-            for ($i=0, $s = count($parts['0']); $i < $s; $i++) {
+            for ($i = 0, $s = count($parts['0']); $i < $s; $i++) {
                 if (! is_numeric($parts['0'][$i]) &&
                     ! in_array(strtolower($parts['0'][$i]), $common) &&
                     ! in_array($parts['0'][$i], $prechecked) &&
@@ -1310,7 +1310,7 @@ EOH;
     /** ----------------------------------------*/
     public function curl_process($url, $payload)
     {
-        $ch=curl_init();
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -1321,7 +1321,7 @@ EOH;
         curl_exec($ch);
 
         //Get contents of output buffer
-        $info=ob_get_contents();
+        $info = ob_get_contents();
         curl_close($ch);
 
         //End ob and erase contents.
@@ -1335,11 +1335,11 @@ EOH;
     /** ----------------------------------------*/
     public function fsockopen_process($url, $payload)
     {
-        $parts	= parse_url($url);
-        $host	= $parts['host'];
-        $path	= (! isset($parts['path'])) ? '/' : $parts['path'];
-        $port	= ($parts['scheme'] == "https") ? '443' : '80';
-        $ssl	= ($parts['scheme'] == "https") ? 'ssl://' : '';
+        $parts = parse_url($url);
+        $host = $parts['host'];
+        $path = (! isset($parts['path'])) ? '/' : $parts['path'];
+        $port = ($parts['scheme'] == "https") ? '443' : '80';
+        $ssl = ($parts['scheme'] == "https") ? 'ssl://' : '';
 
         if (isset($parts['query']) && $parts['query'] != '') {
             $path .= '?' . $parts['query'];

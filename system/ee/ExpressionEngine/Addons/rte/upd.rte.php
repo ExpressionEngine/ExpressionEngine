@@ -52,9 +52,9 @@ class Rte_upd extends Installer
         }
 
         ee()->dbforge->add_field(array(
-            'toolset_id'   => array('type' => 'int', 'constraint' => 6, 'unsigned' => true, 'auto_increment' => true),
+            'toolset_id' => array('type' => 'int', 'constraint' => 6, 'unsigned' => true, 'auto_increment' => true),
             'toolset_name' => array('type' => 'varchar', 'constraint' => 32),
-            'settings'    => array('type' => 'text')
+            'settings' => array('type' => 'text')
         ));
         ee()->dbforge->add_key('toolset_id', true);
         ee()->dbforge->create_table('rte_toolsets');

@@ -18,8 +18,8 @@ use ExpressionEngine\Library\CP\Table;
 class File_ft extends EE_Fieldtype implements ColumnInterface
 {
     public $info = array(
-        'name'		=> 'File',
-        'version'	=> '1.1.0'
+        'name' => 'File',
+        'version' => '1.1.0'
     );
 
     public $has_array_data = true;
@@ -135,13 +135,13 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
      */
     public function display_field($data)
     {
-        $allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all')
+        $allowed_file_dirs = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all')
             ? $this->settings['allowed_directories']
             : '';
-        $content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-        $existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
-        $show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
-        $filebrowser			= (REQ == 'CP');
+        $content_type = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+        $existing_limit = (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
+        $show_existing = (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
+        $filebrowser = (REQ == 'CP');
 
         if (REQ == 'CP') {
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
@@ -349,7 +349,7 @@ JSC;
     public function replace_resize($data, $params = array(), $tagdata = false)
     {
         //this could be the name of pre-saved manipulation, check if params are set
-        if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
+        if (empty($params) || (count($params) == 1 && array_keys($params)[0] == 'wrap')) {
             return $this->replace_tag_catchall($data, $params, $tagdata, 'resize');
         }
 
@@ -378,7 +378,7 @@ JSC;
     public function replace_crop($data, $params = array(), $tagdata = false)
     {
         //this could be the name of pre-saved manipulation, check if params are set
-        if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
+        if (empty($params) || (count($params) == 1 && array_keys($params)[0] == 'wrap')) {
             return $this->replace_tag_catchall($data, $params, $tagdata, 'crop');
         }
 
@@ -520,17 +520,17 @@ JSC;
         $new_image_url = rtrim($data['directory_url'], '/') . '/_' . $function . '/' . rawurlencode($new_image);
         if (!file_exists($new_image_path)) {
             $imageLibConfig = array(
-                'image_library'		=> ee()->config->item('image_resize_protocol'),
-                'library_path'		=> ee()->config->item('image_library_path'),
-                'source_image'		=> $data['source_image'],
-                'new_image'			=> $new_image_path,
-                'maintain_ratio'	=> isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
-                'master_dim'		=> (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
+                'image_library' => ee()->config->item('image_resize_protocol'),
+                'library_path' => ee()->config->item('image_library_path'),
+                'source_image' => $data['source_image'],
+                'new_image' => $new_image_path,
+                'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
+                'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
-                'quality'			=> isset($params['quality']) ? (int) $params['quality'] : 75,
-                'x_axis'			=> isset($params['x']) ? (int) $params['x'] : 0,
-                'y_axis'			=> isset($params['y']) ? (int) $params['y'] : 0,
-                'rotation_angle'	=> (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
+                'quality' => isset($params['quality']) ? (int) $params['quality'] : 75,
+                'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
+                'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
+                'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
             );
             if (isset($params['width'])) {
                 $imageLibConfig['width'] = (int) $params['width'];
@@ -904,11 +904,11 @@ JSC;
     public function save_settings($data)
     {
         $defaults = array(
-            'field_content_type'	=> 'all',
-            'allowed_directories'	=> '',
-            'show_existing'			=> '',
-            'num_existing'			=> 0,
-            'field_fmt' 			=> 'none'
+            'field_content_type' => 'all',
+            'allowed_directories' => '',
+            'show_existing' => '',
+            'num_existing' => 0,
+            'field_fmt' => 'none'
         );
 
         $all = array_merge($defaults, $data);
@@ -951,7 +951,7 @@ JSC;
     public function getTableColumnConfig()
     {
         return [
-            'encode'	=> false
+            'encode' => false
         ];
     }
 

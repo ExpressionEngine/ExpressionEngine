@@ -43,10 +43,10 @@ class Updater
         // so we update again to catch any from that window
         $fields = array(
             'email' => array(
-                'name'			=> 'email',
-                'type'			=> 'varchar',
-                'constraint'	=> 72,
-                'null'			=> false
+                'name' => 'email',
+                'type' => 'varchar',
+                'constraint' => 72,
+                'null' => false
             )
         );
 
@@ -54,13 +54,13 @@ class Updater
 
         // If 'comments_opened_notification' isn't already in exp_specialty_templates, add it.
         $values = array(
-            'template_name'	=> 'comments_opened_notification',
-            'data_title'	=> 'New comments have been added',
-            'template_data'	=> addslashes($this->comments_opened_notification()),
+            'template_name' => 'comments_opened_notification',
+            'data_title' => 'New comments have been added',
+            'template_data' => addslashes($this->comments_opened_notification()),
         );
 
         $unique = array(
-            'template_name'	=> 'comments_opened_notification'
+            'template_name' => 'comments_opened_notification'
         );
 
         ee()->smartforge->insert_set('specialty_templates', $values, $unique);
@@ -75,13 +75,13 @@ class Updater
         ee()->progress->update_state("Creating Comment Subscription Table");
 
         $fields = array(
-            'subscription_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'entry_id'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true),
-            'member_id'			=> array('type' => 'int', 'constraint' => '10', 'default' => 0),
-            'email'				=> array('type' => 'varchar', 'constraint' => '50'),
-            'subscription_date'	=> array('type' => 'varchar', 'constraint' => '10'),
-            'notification_sent'	=> array('type' => 'char', 'constraint' => '1', 'default' => 'n'),
-            'hash'				=> array('type' => 'varchar', 'constraint' => '15')
+            'subscription_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'entry_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true),
+            'member_id' => array('type' => 'int', 'constraint' => '10', 'default' => 0),
+            'email' => array('type' => 'varchar', 'constraint' => '50'),
+            'subscription_date' => array('type' => 'varchar', 'constraint' => '10'),
+            'notification_sent' => array('type' => 'char', 'constraint' => '1', 'default' => 'n'),
+            'hash' => array('type' => 'varchar', 'constraint' => '15')
         );
 
         ee()->load->dbforge();
@@ -99,7 +99,7 @@ class Updater
 
         $batch = 50;
         $offset = 0;
-        $progress   = "Moving Comment Notifications: %s";
+        $progress = "Moving Comment Notifications: %s";
 
         // If the notify field doesn't exist anymore, we can move on
         // to the next update file.
@@ -134,12 +134,12 @@ class Updater
                     $email = ($row['email'] == '') ? null : $row['email'];
 
                     $data[] = array(
-                        'entry_id'			=> $row['entry_id'],
-                        'member_id'			=> $author_id,
-                        'email'				=> $email,
-                        'subscription_date'	=> $s_date,
-                        'notification_sent'	=> 'n',
-                        'hash'				=> $rand
+                        'entry_id' => $row['entry_id'],
+                        'member_id' => $author_id,
+                        'email' => $email,
+                        'subscription_date' => $s_date,
+                        'notification_sent' => 'n',
+                        'hash' => $rand
                     );
                 }
 

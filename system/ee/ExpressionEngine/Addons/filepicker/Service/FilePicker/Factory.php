@@ -33,7 +33,7 @@ class Factory
      */
     public function injectModal(ModalCollection $modals, View $modal_view, Cp $cp)
     {
-        $modal_vars = array('name'=> 'modal-file', 'contents' => '');
+        $modal_vars = array('name' => 'modal-file', 'contents' => '');
         $modal = $modal_view->render($modal_vars);
 
         $modals->addModal('modal-file', $modal);

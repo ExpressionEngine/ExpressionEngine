@@ -18,17 +18,17 @@ use  ExpressionEngine\Library\Core\LoaderFacade;
 class EE_Loader
 {
     protected $_ci_ob_level;
-    protected $_ci_view_paths		= array();
-    protected $_ci_library_paths	= array();
-    protected $_ci_model_paths		= array();
-    protected $_ci_helper_paths		= array();
-    protected $_base_classes		= array(); // Set by the controller class
-    protected $_ci_cached_vars		= array();
-    protected $_ci_classes			= array();
-    protected $_ci_loaded_files		= array();
-    protected $_ci_models			= array();
-    protected $_ci_helpers			= array();
-    protected $_ci_varmap			= array('user_agent' => 'agent');
+    protected $_ci_view_paths = array();
+    protected $_ci_library_paths = array();
+    protected $_ci_model_paths = array();
+    protected $_ci_helper_paths = array();
+    protected $_base_classes = array(); // Set by the controller class
+    protected $_ci_cached_vars = array();
+    protected $_ci_classes = array();
+    protected $_ci_loaded_files = array();
+    protected $_ci_models = array();
+    protected $_ci_helpers = array();
+    protected $_ci_varmap = array('user_agent' => 'agent');
 
     protected $facade;
 
@@ -39,11 +39,11 @@ class EE_Loader
      */
     public function __construct()
     {
-        $this->_ci_ob_level  = ob_get_level();
+        $this->_ci_ob_level = ob_get_level();
         $this->_ci_library_paths = array(APPPATH, BASEPATH);
         $this->_ci_helper_paths = array(APPPATH, BASEPATH);
         $this->_ci_model_paths = array(APPPATH);
-        $this->_ci_view_paths = array(SYSPATH . 'ee/ExpressionEngine/View/'	=> true);
+        $this->_ci_view_paths = array(SYSPATH . 'ee/ExpressionEngine/View/' => true);
 
         $this->set_base_classes();
 
@@ -581,7 +581,7 @@ class EE_Loader
      * @param 	boolean
      * @return	void
      */
-    public function add_package_path($path, $view_cascade=true)
+    public function add_package_path($path, $view_cascade = true)
     {
         $path = rtrim($path, '/') . '/';
 
@@ -709,7 +709,7 @@ class EE_Loader
 
         foreach (get_object_vars(ee()) as $_ci_key => $_ci_var) {
             if (! isset($this->$_ci_key)) {
-                $this->$_ci_key =& ee()->$_ci_key;
+                $this->$_ci_key = & ee()->$_ci_key;
             }
         }
 

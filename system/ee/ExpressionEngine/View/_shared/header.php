@@ -43,14 +43,14 @@ $current_page = ee()->uri->segment(2);
 
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
-			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) :
+			<?php if (!isset($hide_sidebar) || $hide_sidebar != true) :
                 $this->embed('ee:_shared/sidebar/navigation/navigation');
             endif; ?>
 			<div class="ee-main">
 
         <div class="ee-main-header">
 
-          <a href="" class="sidebar-toggle<?php if (isset($collapsed_nav) && $collapsed_nav=='1') : ?> sidebar-toggle__collapsed<?php endif; ?>" title="Toggle Sidebar"><i class="fas fa-angle-<?php if (isset($collapsed_nav) && $collapsed_nav=='1') : ?>right<?php else : ?>left<?php endif; ?>"></i></a>
+          <a href="" class="sidebar-toggle<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?> sidebar-toggle__collapsed<?php endif; ?>" title="Toggle Sidebar"><i class="fas fa-angle-<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?>right<?php else : ?>left<?php endif; ?>"></i></a>
 
           <a class="main-nav__mobile-menu js-toggle-main-sidebar hidden">
         		<svg xmlns="http://www.w3.org/2000/svg" width="18.585" height="13.939" viewBox="0 0 18.585 13.939"><g transform="translate(-210.99 -17.71)"><path d="M3,12.1H19.585" transform="translate(208.99 12.575)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,6H19.585" transform="translate(208.99 12.71)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,18H9.386" transform="translate(208.99 12.649)" fill="none" stroke-linecap="round" stroke-width="2"/></g></svg>

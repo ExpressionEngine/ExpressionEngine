@@ -157,9 +157,9 @@ class Rte_mcp
                         'fields' => array(
                             'rte_file_browser' => array(
                                 'required' => true,
-                                'type'     => 'select',
+                                'type' => 'select',
                                 'value' => $prefs['rte_file_browser'],
-                                'choices'  => $file_browser_choices
+                                'choices' => $file_browser_choices
                             )
                         )
                     )
@@ -203,14 +203,14 @@ class Rte_mcp
     public function edit_toolset()
     {
         if (ee('Request')->isPost()) {
-            $settings =  ee('Request')->post('settings');
+            $settings = ee('Request')->post('settings');
 
             // -------------------------------------------
             //  Save and redirect to Index
             // -------------------------------------------
 
-            $toolset_id =  ee('Request')->post('toolset_id');
-            $configName =  ee('Request')->post('toolset_name');
+            $toolset_id = ee('Request')->post('toolset_id');
+            $configName = ee('Request')->post('toolset_name');
 
             if (!$configName) {
                 $configName = 'Untitled';
@@ -339,16 +339,16 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title'  => lang('toolset_name'),
+                    'title' => lang('toolset_name'),
                     'fields' => array(
                         'toolset_name' => array(
-                            'type'     => 'text',
-                            'value'    => $config->toolset_name
+                            'type' => 'text',
+                            'value' => $config->toolset_name
                         )
                     )
                 ),
                 array(
-                    'title'  => lang('rte_upload_dir'),
+                    'title' => lang('rte_upload_dir'),
                     'fields' => array(
                         'settings[upload_dir]' => array(
                             'type' => 'select',
@@ -358,9 +358,9 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title'   => lang('rte_toolbar'),
-                    'wide'    => true,
-                    'fields'  => array(
+                    'title' => lang('rte_toolbar'),
+                    'wide' => true,
+                    'fields' => array(
                         'settings[toolbar]' => array(
                             'type' => 'html',
                             'content' => $toolbarInputHtml
@@ -371,7 +371,7 @@ class Rte_mcp
                     'title' => lang('rte_height'),
                     'fields' => array(
                         'settings[height]' => array(
-                            'type'  => 'short-text',
+                            'type' => 'short-text',
                             'value' => $config->settings['height'],
                             'label' => ''
                         )

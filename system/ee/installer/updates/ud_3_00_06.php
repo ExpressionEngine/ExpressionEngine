@@ -49,10 +49,10 @@ class Updater
             'channels',
             array(
                 'comment_text_formatting' => array(
-                    'type'			=> 'char',
-                    'constraint'	=> 40,
-                    'null'			=> false,
-                    'default'		=> 'xhtml',
+                    'type' => 'char',
+                    'constraint' => 40,
+                    'null' => false,
+                    'default' => 'xhtml',
                 ),
             )
         );
@@ -65,10 +65,10 @@ class Updater
                 'channels',
                 array(
                     'sticky_enabled' => array(
-                        'type'				=> 'char',
-                        'constraint'		=> 1,
-                        'null'				=> false,
-                        'default'			=> 'n'
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'null' => false,
+                        'default' => 'n'
                     )
                 )
             );

@@ -56,7 +56,7 @@ class Subscriptions extends Settings
                     array(
                         'name' => 'selection[]',
                         'value' => $subscription['id'],
-                        'data'	=> array(
+                        'data' => array(
                             'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES, 'UTF-8') . '</b>'
                         )
                     )
@@ -70,7 +70,7 @@ class Subscriptions extends Settings
                 'title',
                 'type',
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );

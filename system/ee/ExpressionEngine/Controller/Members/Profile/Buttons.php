@@ -81,7 +81,7 @@ class Buttons extends Settings
                 array(
                     'name' => 'selection[]',
                     'value' => $button->id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('html_button') . ': <b>' . $encoded_name . '</b>'
                     )
                 )
@@ -102,15 +102,15 @@ class Buttons extends Settings
         $table->setColumns(
             array(
                 'preview' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 'tag_name',
                 'accesskey',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -334,19 +334,19 @@ class Buttons extends Settings
 
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'tag_name',
-                'label'   => 'lang:tag_name',
-                'rules'   => 'required|valid_xss_check'
+                'field' => 'tag_name',
+                'label' => 'lang:tag_name',
+                'rules' => 'required|valid_xss_check'
             ),
             array(
-                'field'   => 'tag_open',
-                'label'   => 'lang:tag_open',
-                'rules'   => 'required'
+                'field' => 'tag_open',
+                'label' => 'lang:tag_open',
+                'rules' => 'required'
             ),
             array(
-                'field'   => 'accesskey',
-                'label'   => 'lang:accesskey',
-                'rules'   => 'valid_xss_check'
+                'field' => 'accesskey',
+                'label' => 'lang:accesskey',
+                'rules' => 'valid_xss_check'
             )
         ));
 

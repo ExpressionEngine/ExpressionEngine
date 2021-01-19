@@ -90,31 +90,31 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         ee()->javascript->set_global(array(
-            'lang.add_new_html_button'       => lang('add_new_html_button'),
-            'lang.close'                     => lang('close'),
-            'lang.confirm_exit'              => lang('confirm_exit'),
-            'lang.loading'                   => lang('loading'),
-            'publish.autosave.interval'      => (int) $autosave_interval_seconds,
-            'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
-            'publish.channel_title'          => ee('Format')->make('Text', $entry->Channel->channel_title)
+            'lang.add_new_html_button' => lang('add_new_html_button'),
+            'lang.close' => lang('close'),
+            'lang.confirm_exit' => lang('confirm_exit'),
+            'lang.loading' => lang('loading'),
+            'publish.autosave.interval' => (int) $autosave_interval_seconds,
+            'publish.autosave.URL' => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+            'publish.channel_title' => ee('Format')->make('Text', $entry->Channel->channel_title)
                 ->convertToEntities()
                 ->compile(),
-            'publish.default_entry_title'    => $entry->Channel->default_entry_title,
-            'publish.foreignChars'           => $foreign_characters,
-            'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
-            'publish.lang.no_member_groups'  => lang('no_member_roles'),
-            'publish.lang.refresh_layout'    => lang('refresh_layout'),
-            'publish.lang.tab_count_zero'    => lang('tab_count_zero'),
+            'publish.default_entry_title' => $entry->Channel->default_entry_title,
+            'publish.foreignChars' => $foreign_characters,
+            'publish.urlLength' => URL_TITLE_MAX_LENGTH,
+            'publish.lang.no_member_groups' => lang('no_member_roles'),
+            'publish.lang.refresh_layout' => lang('refresh_layout'),
+            'publish.lang.tab_count_zero' => lang('tab_count_zero'),
             'publish.lang.tab_has_req_field' => lang('tab_has_req_field'),
-            'publish.markitup.foo'           => false,
-            'publish.smileys'                => $smileys_enabled,
-            'publish.field.URL'              => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
-            'publish.url_title_prefix'       => $entry->Channel->url_title_prefix,
-            'publish.which'                  => ($entry_id) ? 'edit' : 'new',
-            'publish.word_separator'         => ee()->config->item('word_separator') != "dash" ? '_' : '-',
-            'user.can_edit_html_buttons'     => ee('Permission')->can('edit_html_buttons'),
-            'user.foo'                       => false,
-            'user_id'                        => ee()->session->userdata('member_id'),
+            'publish.markitup.foo' => false,
+            'publish.smileys' => $smileys_enabled,
+            'publish.field.URL' => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
+            'publish.url_title_prefix' => $entry->Channel->url_title_prefix,
+            'publish.which' => ($entry_id) ? 'edit' : 'new',
+            'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
+            'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
+            'user.foo' => false,
+            'user_id' => ee()->session->userdata('member_id'),
         ));
 
         ee('Category')->addCategoryJS();
@@ -151,7 +151,7 @@ abstract class AbstractPublish extends CP_Controller
         $authors = array();
         $i = $entry->Versions->count();
         $current_author_id = false;
-        $current_id = $i+1;
+        $current_id = $i + 1;
 
         foreach ($entry->Versions->sortBy('version_date')->reverse() as $version) {
             if (! isset($authors[$version->author_id])) {
@@ -177,7 +177,7 @@ abstract class AbstractPublish extends CP_Controller
             $attrs = ($version->version_id == $version_id) ? array('class' => 'selected') : array();
 
             $data[] = array(
-                'attrs'   => $attrs,
+                'attrs' => $attrs,
                 'columns' => array(
                     $i,
                     ee()->localize->human_time($version->version_date->format('U')),
@@ -201,7 +201,7 @@ abstract class AbstractPublish extends CP_Controller
             array_unshift(
                 $data,
                 array(
-                    'attrs'   => $attrs,
+                    'attrs' => $attrs,
                     'columns' => array(
                         $current_id,
                         $edit_date,
@@ -249,7 +249,7 @@ abstract class AbstractPublish extends CP_Controller
                 : null;
 
             $data[] = array(
-                'attrs'   => $attrs,
+                'attrs' => $attrs,
                 'columns' => array(
                     $i,
                     $edit_date,
@@ -282,7 +282,7 @@ abstract class AbstractPublish extends CP_Controller
             $attrs = ($autosave->getId() == $autosave_id) ? array('class' => 'selected') : array();
 
             $data[] = array(
-                'attrs'   => $attrs,
+                'attrs' => $attrs,
                 'columns' => array(
                     $i,
                     ee()->localize->human_time($autosave->edit_date),
@@ -411,7 +411,7 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save') {
-            if (ee()->input->post('return')!='') {
+            if (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
                 $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
@@ -499,11 +499,11 @@ abstract class AbstractPublish extends CP_Controller
             unset($buttons[1]);
         }
 
-        $has_preview_button  = false;
+        $has_preview_button = false;
         $show_preview_button = false;
 
         if ($entry->hasLivePreview()) {
-            $has_preview_button  = true;
+            $has_preview_button = true;
             $show_preview_button = true;
         }
 
@@ -519,29 +519,29 @@ abstract class AbstractPublish extends CP_Controller
         $configured_domain = explode('/', $configured_site_url[1]);
 
         if (($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) || ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:')))) {
-            $has_preview_button  = false;
+            $has_preview_button = false;
         }
 
         if ($has_preview_button) {
             $extra_class = ($show_preview_button) ? '' : ' hidden';
 
             $buttons[] = [
-                'name'    => 'submit',
-                'type'    => 'submit',
-                'value'   => 'preview',
-                'text'    => 'preview',
-                'class'   => 'action' . $extra_class,
-                'attrs'   => 'rel="live-preview" disabled="disabled"',
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'preview',
+                'text' => 'preview',
+                'class' => 'action' . $extra_class,
+                'attrs' => 'rel="live-preview" disabled="disabled"',
             ];
         } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
             $buttons[] = [
-                'name'    => 'submit',
-                'type'    => 'button',
-                'value'   => 'preview',
-                'text'    => 'preview',
-                'html'		=> '<i class="app-notice__icon"></i> ',
-                'class'   => 'action',
-                'attrs'   => 'rel="live-preview-setup" disabled="disabled"',
+                'name' => 'submit',
+                'type' => 'button',
+                'value' => 'preview',
+                'text' => 'preview',
+                'html' => '<i class="app-notice__icon"></i> ',
+                'class' => 'action',
+                'attrs' => 'rel="live-preview-setup" disabled="disabled"',
             ];
         }
 

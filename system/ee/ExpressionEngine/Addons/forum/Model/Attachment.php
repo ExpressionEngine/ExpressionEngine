@@ -23,19 +23,19 @@ class Attachment extends Model
     protected static $_table_name = 'forum_attachments';
 
     protected static $_typed_columns = array(
-        'topic_id'        => 'int',
-        'post_id'         => 'int',
-        'board_id'        => 'int',
-        'member_id'       => 'int',
-        'filesize'        => 'int',
-        'hits'            => 'int',
+        'topic_id' => 'int',
+        'post_id' => 'int',
+        'board_id' => 'int',
+        'member_id' => 'int',
+        'filesize' => 'int',
+        'hits' => 'int',
         'attachment_date' => 'timestamp',
-        'is_temp'         => 'boolString',
-        'width'           => 'int',
-        'height'          => 'int',
-        't_width'         => 'int',
-        't_height'        => 'int',
-        'is_image'        => 'boolString',
+        'is_temp' => 'boolString',
+        'width' => 'int',
+        'height' => 'int',
+        't_width' => 'int',
+        't_height' => 'int',
+        'is_image' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -43,7 +43,7 @@ class Attachment extends Model
             'type' => 'belongsTo'
         ),
         'Member' => array(
-            'type'  => 'belongsTo',
+            'type' => 'belongsTo',
             'model' => 'ee:Member',
             'inverse' => array(
                 'name' => 'Attachment',
@@ -59,16 +59,16 @@ class Attachment extends Model
     );
 
     protected static $_validation_rules = array(
-        'filename'        => 'required',
-        'filehash'        => 'required',
-        'extension'       => 'required',
+        'filename' => 'required',
+        'filehash' => 'required',
+        'extension' => 'required',
         'attachment_date' => 'required',
-        'is_temp'         => 'enum[y,n]',
-        'width'           => 'required',
-        'height'          => 'required',
-        't_width'         => 'required',
-        't_height'        => 'required',
-        'is_image'        => 'enum[y,n]',
+        'is_temp' => 'enum[y,n]',
+        'width' => 'required',
+        'height' => 'required',
+        't_width' => 'required',
+        't_height' => 'required',
+        'is_image' => 'enum[y,n]',
     );
 
     protected $attachment_id;

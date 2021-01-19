@@ -15,25 +15,25 @@
  */
 class EE_User_agent
 {
-    public $agent		= null;
+    public $agent = null;
 
-    public $is_browser	= false;
-    public $is_robot	= false;
-    public $is_mobile	= false;
+    public $is_browser = false;
+    public $is_robot = false;
+    public $is_mobile = false;
 
-    public $languages	= array();
-    public $charsets	= array();
+    public $languages = array();
+    public $charsets = array();
 
-    public $platforms	= array();
-    public $browsers	= array();
-    public $mobiles	= array();
-    public $robots		= array();
+    public $platforms = array();
+    public $browsers = array();
+    public $mobiles = array();
+    public $robots = array();
 
-    public $platform	= '';
-    public $browser	= '';
-    public $version	= '';
-    public $mobile		= '';
-    public $robot		= '';
+    public $platform = '';
+    public $browser = '';
+    public $version = '';
+    public $mobile = '';
+    public $robot = '';
 
     /**
      * Constructor

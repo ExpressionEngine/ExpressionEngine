@@ -34,12 +34,12 @@ class Module extends Model
     );
 
     protected static $_typed_columns = array(
-        'has_cp_backend'     => 'boolString',
+        'has_cp_backend' => 'boolString',
         'has_publish_fields' => 'boolString',
     );
 
     protected static $_validation_rules = array(
-        'has_cp_backend'     => 'enum[y,n]',
+        'has_cp_backend' => 'enum[y,n]',
         'has_publish_fields' => 'enum[y,n]'
     );
 

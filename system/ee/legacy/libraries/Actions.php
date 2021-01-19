@@ -51,8 +51,8 @@ class EE_Actions
         // These are actions that are triggered manually
         // rather than doing a lookup in the actions table.
         $specials = array(
-            'jquery'			=> array('Jquery', 'output_javascript'),
-            'comment_editor'	=> array('Comment', 'comment_editor')
+            'jquery' => array('Jquery', 'output_javascript'),
+            'comment_editor' => array('Comment', 'comment_editor')
         );
 
         // Make sure the ACT variable is set
@@ -75,7 +75,7 @@ class EE_Actions
                 }
             }
 
-            $class  = ucfirst($query->row('class'));
+            $class = ucfirst($query->row('class'));
             $method = strtolower($query->row('method'));
             $csrf_exempt = (bool) $query->row('csrf_exempt');
         } else {
@@ -84,7 +84,7 @@ class EE_Actions
                 return false;
             }
 
-            $class  = $specials[$action_id]['0'];
+            $class = $specials[$action_id]['0'];
             $method = $specials[$action_id]['1'];
             $csrf_exempt = false;
 

@@ -15,8 +15,8 @@
  */
 class EE_Encrypt
 {
-    public $encryption_key	= '';
-    public $_hash_type	= 'sha1';
+    public $encryption_key = '';
+    public $_hash_type = 'sha1';
     public $_mcrypt_exists = false;
     public $_mcrypt_cipher;
     public $_mcrypt_mode;
@@ -271,7 +271,7 @@ class EE_Encrypt
     {
         $data = $this->_remove_cipher_noise($data, $key);
         $init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
-        $mb_adjusted_data_length =  ee_mb_strlen($data, 'ascii');
+        $mb_adjusted_data_length = ee_mb_strlen($data, 'ascii');
 
         if ($init_size > $mb_adjusted_data_length) {
             return false;

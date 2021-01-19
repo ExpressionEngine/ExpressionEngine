@@ -36,34 +36,34 @@ class Design_model extends CI_Model
             $terms = array();
 
             if (preg_match_all("/\-*\"(.*?)\"/", $keywords, $matches)) {
-                for ($m=0; $m < sizeof($matches['1']); $m++) {
+                for ($m = 0; $m < sizeof($matches['1']); $m++) {
                     $terms[] = trim(str_replace('"', '', $matches['0'][$m]));
                     $keywords = str_replace($matches['0'][$m], '', $keywords);
                 }
             }
 
             if (trim($keywords) != '') {
-                $terms  = array_merge($terms, preg_split("/\s+/", trim($keywords)));
+                $terms = array_merge($terms, preg_split("/\s+/", trim($keywords)));
             }
 
             rsort($terms);
             $not_and = (sizeof($terms) > 2) ? ') AND (' : 'AND';
             $criteria = 'AND';
 
-            $mysql_function	= (substr($terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-            $search_term	= (substr($terms['0'], 0, 1) == '-') ? substr($terms['0'], 1) : $terms['0'];
+            $mysql_function = (substr($terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+            $search_term = (substr($terms['0'], 0, 1) == '-') ? substr($terms['0'], 1) : $terms['0'];
 
             // We have two parentheses in the beginning in case
             // there are any NOT LIKE's being used
             $sql = "\n (t.template_data $mysql_function '%" . $this->db->escape_like_str($search_term) . "%' ";
 
-            for ($i=1; $i < sizeof($terms); $i++) {
+            for ($i = 1; $i < sizeof($terms); $i++) {
                 if (trim($terms[$i]) == '') {
                     continue;
                 }
-                $mysql_criteria	= ($mysql_function == 'NOT LIKE' or substr($terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                $mysql_function	= (substr($terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                $search_term	= (substr($terms[$i], 0, 1) == '-') ? substr($terms[$i], 1) : $terms[$i];
+                $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                $mysql_function = (substr($terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                $search_term = (substr($terms[$i], 0, 1) == '-') ? substr($terms[$i], 1) : $terms[$i];
 
                 $sql .= "$mysql_criteria t.template_data $mysql_function '%" . $this->db->escape_like_str($search_term) . "%' ";
             }

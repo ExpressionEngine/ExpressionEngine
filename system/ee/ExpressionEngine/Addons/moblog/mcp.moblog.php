@@ -15,15 +15,15 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Moblog_mcp
 {
-    public $channel_array		= array();
-    public $status_array 		= array();
-    public $field_array  		= array();
-    public $author_array 		= array();
-    public $image_dim_array	= array();
-    public $upload_loc_array	= array();
+    public $channel_array = array();
+    public $status_array = array();
+    public $field_array = array();
+    public $author_array = array();
+    public $image_dim_array = array();
+    public $upload_loc_array = array();
 
-    public $default_template 	= '';
-    public $default_channel_cat	= '';
+    public $default_template = '';
+    public $default_channel_cat = '';
 
     /**
      * Constructor
@@ -58,10 +58,10 @@ EOT;
             'col_id',
             'moblog',
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         ));
 
@@ -104,7 +104,7 @@ EOT;
                 array(
                     'name' => 'moblogs[]',
                     'value' => $moblog['moblog_id'],
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -538,7 +538,7 @@ EOT;
                     'fields' => array(
                         'moblog_image_size' => array(
                             'type' => 'select',
-                            'choices' => array('0'=> lang('none')),
+                            'choices' => array('0' => lang('none')),
                             'value' => $moblog->moblog_image_size
                         )
                     )
@@ -548,7 +548,7 @@ EOT;
                     'fields' => array(
                         'moblog_thumb_size' => array(
                             'type' => 'select',
-                            'choices' => array('0'=> lang('none')),
+                            'choices' => array('0' => lang('none')),
                             'value' => $moblog->moblog_thumb_size
                         )
                     )
@@ -563,9 +563,9 @@ EOT;
         $vars['save_btn_text_working'] = 'btn_saving';
 
         return array(
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
             'breadcrumb' => array(ee('CP/URL')->make('addons/settings/moblog')->compile() => lang('moblog') . ' ' . lang('configuration')),
-            'body'       => ee('View')->make('moblog:create')->render($vars)
+            'body' => ee('View')->make('moblog:create')->render($vars)
         );
     }
 
@@ -811,8 +811,8 @@ MAGIC;
     public function check($moblog_id)
     {
         $where = array(
-            'moblog_enabled'	=> 'y',
-            'moblog_id'			=> $moblog_id
+            'moblog_enabled' => 'y',
+            'moblog_id' => $moblog_id
         );
 
         $query = ee()->db->get_where('moblogs', $where);

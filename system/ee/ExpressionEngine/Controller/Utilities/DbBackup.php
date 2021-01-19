@@ -60,13 +60,13 @@ class DbBackup extends Utilities
         ee()->cp->add_js_script('file', 'cp/db_backup');
         ee()->javascript->set_global([
             'db_backup' => [
-                'endpoint'                => ee('CP/URL')->make('utilities/db-backup/do-backup')->compile(),
-                'tables'                  => array_keys($tables),
-                'table_counts'            => $table_counts,
-                'total_rows'              => array_sum($table_counts),
+                'endpoint' => ee('CP/URL')->make('utilities/db-backup/do-backup')->compile(),
+                'tables' => array_keys($tables),
+                'table_counts' => $table_counts,
+                'total_rows' => array_sum($table_counts),
                 'backup_ajax_fail_banner' => $backup_ajax_fail_banner->render(),
-                'base_url'                => ee('CP/URL')->make('utilities/db-backup')->compile(),
-                'out_of_memory_lang'      => sprintf(lang('backup_out_of_memory'), ee()->cp->masked_url(DOC_URL . 'general/system-configuration-overrides.html#db_backup_row_limit'))
+                'base_url' => ee('CP/URL')->make('utilities/db-backup')->compile(),
+                'out_of_memory_lang' => sprintf(lang('backup_out_of_memory'), ee()->cp->masked_url(DOC_URL . 'general/system-configuration-overrides.html#db_backup_row_limit'))
             ]
         ]);
 
@@ -130,10 +130,10 @@ class DbBackup extends Utilities
         // another request to this method
         if ($returned !== false) {
             return [
-                'status'     => 'in_progress',
+                'status' => 'in_progress',
                 'table_name' => $returned['table_name'],
-                'offset'     => $returned['offset'],
-                'file_path'  => $safe_file_path
+                'offset' => $returned['offset'],
+                'file_path' => $safe_file_path
             ];
         }
 
@@ -148,7 +148,7 @@ class DbBackup extends Utilities
 
         // All finished!
         return [
-            'status'    => 'finished',
+            'status' => 'finished',
             'file_path' => $safe_file_path
         ];
     }
@@ -156,7 +156,7 @@ class DbBackup extends Utilities
     private function sendError($error)
     {
         return [
-            'status'  => 'error',
+            'status' => 'error',
             'message' => $error
         ];
     }

@@ -159,33 +159,33 @@ class Notifications
         ee()->load->library('typography');
         ee()->typography->initialize(
             array(
-                'parse_images'   => false,
+                'parse_images' => false,
                 'allow_headings' => false,
-                'smileys'        => false,
-                'word_censor'    => (ee()->config->item('comment_word_censoring') == 'y') ? true : false)
+                'smileys' => false,
+                'word_censor' => (ee()->config->item('comment_word_censoring') == 'y') ? true : false)
         );
 
         $body = ($reply) ? $reply->body : $topic->body;
         $body = ee()->typography->parse_type(
             $body,
             array(
-                'text_format'   => 'none',
-                'html_format'   => 'none',
-                'auto_links'    => 'n',
+                'text_format' => 'none',
+                'html_format' => 'none',
+                'auto_links' => 'n',
                 'allow_img_url' => 'n'
             )
         );
 
-        $action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
+        $action_id = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
 
         $this->variables = array(
             'name_of_poster' => ($reply) ? $reply->Author->screen_name : $topic->Author->screen_name,
-            'forum_name'     => $topic->Board->board_label,
-            'title'          => $topic->title,
-            'body'           => $body,
-            'topic_id'       => $topic->topic_id,
-            'thread_url'     => ee()->input->remove_session_id($url),
-            'post_url'       => ($reply) ? $this->getForumUrl($topic) . "/viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url),
+            'forum_name' => $topic->Board->board_label,
+            'title' => $topic->title,
+            'body' => $body,
+            'topic_id' => $topic->topic_id,
+            'thread_url' => ee()->input->remove_session_id($url),
+            'post_url' => ($reply) ? $this->getForumUrl($topic) . "/viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url),
             'notification_removal_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id={subscription}&board_id=' . $topic->board_id,
         );
     }

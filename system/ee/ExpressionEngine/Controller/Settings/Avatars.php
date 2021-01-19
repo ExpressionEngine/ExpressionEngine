@@ -104,10 +104,10 @@ class Avatars extends Settings
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $directory_settings = array(
-                'avatar_path'       => ee()->input->post('avatar_path'),
-                'avatar_url'        => ee()->input->post('avatar_url'),
-                'avatar_max_kb'     => ee()->input->post('avatar_max_kb'),
-                'avatar_max_width'  => ee()->input->post('avatar_max_width'),
+                'avatar_path' => ee()->input->post('avatar_path'),
+                'avatar_url' => ee()->input->post('avatar_url'),
+                'avatar_max_kb' => ee()->input->post('avatar_max_kb'),
+                'avatar_max_width' => ee()->input->post('avatar_max_width'),
                 'avatar_max_height' => ee()->input->post('avatar_max_height')
             );
 

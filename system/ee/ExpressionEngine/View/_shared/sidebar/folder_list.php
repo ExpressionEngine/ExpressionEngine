@@ -7,9 +7,9 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-' . $name,
-    'form_url'	=> $remove_url,
-    'hidden'	=> array(
+    'name' => 'modal-confirm-' . $name,
+    'form_url' => $remove_url,
+    'hidden' => array(
         $removal_key => ''
     )
 );

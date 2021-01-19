@@ -60,23 +60,23 @@ class Updater
         // Fields can span Sites and do not need Groups
         ee()->smartforge->modify_column('channel_fields', array(
             'site_id' => array(
-                'type'     => 'int',
+                'type' => 'int',
                 'unsigned' => true,
-                'null'     => true,
+                'null' => true,
             ),
             'group_id' => array(
-                'type'     => 'int',
+                'type' => 'int',
                 'unsigned' => true,
-                'null'     => true,
+                'null' => true,
             ),
         ));
 
         // Field groups can span Sites
         ee()->smartforge->modify_column('field_groups', array(
             'site_id' => array(
-                'type'     => 'int',
+                'type' => 'int',
                 'unsigned' => true,
-                'null'     => true,
+                'null' => true,
             ),
         ));
 
@@ -85,16 +85,16 @@ class Updater
             ee()->dbforge->add_field(
                 array(
                     'channel_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 4,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     ),
                     'group_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 4,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     )
                 )
             );
@@ -106,16 +106,16 @@ class Updater
             ee()->dbforge->add_field(
                 array(
                     'channel_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 4,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     ),
                     'field_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 6,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     )
                 )
             );
@@ -127,16 +127,16 @@ class Updater
             ee()->dbforge->add_field(
                 array(
                     'field_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 6,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     ),
                     'group_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 4,
-                        'unsigned'   => true,
-                        'null'       => false
+                        'unsigned' => true,
+                        'null' => false
                     )
                 )
             );
@@ -192,8 +192,8 @@ class Updater
                 'category_fields',
                 array(
                     'legacy_field_data' => array(
-                        'type'    => 'CHAR(1)',
-                        'null'    => false,
+                        'type' => 'CHAR(1)',
+                        'null' => false,
                         'default' => 'n'
                     )
                 )
@@ -206,8 +206,8 @@ class Updater
                 'channel_fields',
                 array(
                     'legacy_field_data' => array(
-                        'type'    => 'CHAR(1)',
-                        'null'    => false,
+                        'type' => 'CHAR(1)',
+                        'null' => false,
                         'default' => 'n'
                     )
                 )
@@ -220,8 +220,8 @@ class Updater
                 'member_fields',
                 array(
                     'm_legacy_field_data' => array(
-                        'type'    => 'CHAR(1)',
-                        'null'    => false,
+                        'type' => 'CHAR(1)',
+                        'null' => false,
                         'default' => 'n'
                     )
                 )
@@ -594,22 +594,22 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'news_id' => array(
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'version' => array(
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 10
                 ),
                 'member_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 )
             )
         );
@@ -636,10 +636,10 @@ class Updater
             'file_dimensions',
             array(
                 'quality' => array(
-                    'type'       => 'tinyint',
+                    'type' => 'tinyint',
                     'constraint' => 1,
-                    'unsigned'   => true,
-                    'default'    => 90,
+                    'unsigned' => true,
+                    'default' => 90,
                 )
             )
         );
@@ -651,10 +651,10 @@ class Updater
             'member_groups',
             array(
                 'can_moderate_spam' => array(
-                    'type'       => 'CHAR',
+                    'type' => 'CHAR',
                     'constraint' => 1,
-                    'default'    => 'n',
-                    'null'       => false,
+                    'default' => 'n',
+                    'null' => false,
                 )
             )
         );
@@ -692,18 +692,18 @@ class Updater
             'file_categories',
             array(
                 'file_id' => array(
-                    'name'       => 'file_id',
-                    'type'       => 'int',
+                    'name' => 'file_id',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'cat_id' => array(
-                    'name'       => 'cat_id',
-                    'type'       => 'int',
+                    'name' => 'cat_id',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 )
             )
         );
@@ -741,42 +741,42 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'id' => array(
-                    'type'           => 'int',
-                    'constraint'     => 11,
-                    'unsigned'       => true,
-                    'null'           => false,
+                    'type' => 'int',
+                    'constraint' => 11,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ),
                 'fluid_field_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 11,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'entry_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 11,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'field_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 11,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'field_data_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 11,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'order' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 5,
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 )
             )
         );
@@ -789,11 +789,11 @@ class Updater
             'relationships',
             array(
                 'fluid_field_data_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'default'    => 0,
-                    'unsigned'   => true,
-                    'null'       => false,
+                    'default' => 0,
+                    'unsigned' => true,
+                    'null' => false,
                 )
             )
         );
@@ -818,11 +818,11 @@ class Updater
                 $table,
                 array(
                     'fluid_field_data_id' => array(
-                        'type'       => 'int',
+                        'type' => 'int',
                         'constraint' => 10,
-                        'default'    => 0,
-                        'unsigned'   => true,
-                        'null'       => false,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false,
                     )
                 )
             );
@@ -859,12 +859,12 @@ class Updater
         }
 
         $data = array(
-            'class'		=> 'Comment_ext',
-            'method'	=> 'addCommentMenu',
-            'hook'		=> 'cp_custom_menu',
-            'settings'	=> serialize([]),
-            'version'	=> '2.3.3',
-            'enabled'	=> 'y'
+            'class' => 'Comment_ext',
+            'method' => 'addCommentMenu',
+            'hook' => 'cp_custom_menu',
+            'settings' => serialize([]),
+            'version' => '2.3.3',
+            'enabled' => 'y'
         );
 
         ee()->db->insert('extensions', $data);
@@ -949,16 +949,16 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'channel_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'status_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 )
             )
         );
@@ -985,10 +985,10 @@ class Updater
             'channel_titles',
             array(
                 'status_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 )
             ),
             'status'

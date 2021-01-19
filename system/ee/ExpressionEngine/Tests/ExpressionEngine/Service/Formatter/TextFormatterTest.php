@@ -38,19 +38,19 @@ class TextFormatterTest extends TestCase
     {
         // minimal map
         $config['foreign_chars'] = [
-            '223'	=>	"ss", // ß
-            '224'	=>  "a",
-            '225'	=>  "a",
-            '226'	=>	"a",
-            '229'	=>	"a",
-            '227'	=>	"ae", // ã
-            '228'	=>	"ae", // ä
-            '230'	=>	"ae", // æ
-            '231'	=>	"c",
-            '232'	=>	"e",  // è
-            '233'	=>	"e",  // é
-            '234'	=>	"e",  // ê
-            '235'	=>	"e",  // ë
+            '223' => "ss", // ß
+            '224' => "a",
+            '225' => "a",
+            '226' => "a",
+            '229' => "a",
+            '227' => "ae", // ã
+            '228' => "ae", // ä
+            '230' => "ae", // æ
+            '231' => "c",
+            '232' => "e",  // è
+            '233' => "e",  // é
+            '234' => "e",  // ê
+            '235' => "e",  // ë
         ];
 
         $text = (string) $this->format('ßaeiouãêëæ ærstlnãêëß', $config)->accentsToAscii();
@@ -453,8 +453,8 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
     {
         // minimal map
         $config['foreign_chars'] = [
-            '223'	=>	"ss", // ß
-            '230'	=>	"ae", // æ
+            '223' => "ss", // ß
+            '230' => "ae", // æ
         ];
 
         $config['stopwords'] = ['a', 'and', 'into', 'to'];

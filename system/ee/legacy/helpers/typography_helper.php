@@ -62,7 +62,7 @@ if (! function_exists('auto_typography')) {
  * @return	string
  */
 if (! function_exists('entity_decode')) {
-    function entity_decode($str, $charset='UTF-8')
+    function entity_decode($str, $charset = 'UTF-8')
     {
         return ee('Security/XSS')->entity_decode($str, $charset);
     }

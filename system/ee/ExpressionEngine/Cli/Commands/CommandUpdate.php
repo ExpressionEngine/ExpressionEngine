@@ -46,13 +46,13 @@ class CommandUpdate extends Cli
      * @var array
      */
     public $commandOptions = [
-        'rollback'				=> 'Rollback last update',
-        'verbose,v'				=> 'Verbose output',
-        'microapp'				=> 'Run as microapp',
-        'step:'					=> 'Step in process (param required)',
-        'no-bootstrap'			=> 'Runs with no bootstrap',
-        'force-addon-upgrades'	=> 'Automatically runs all addon updaters at end of update (advanced)',
-        'y'						=> 'Skip all confirmations. Don\'t do this.'
+        'rollback' => 'Rollback last update',
+        'verbose,v' => 'Verbose output',
+        'microapp' => 'Run as microapp',
+        'step:' => 'Step in process (param required)',
+        'no-bootstrap' => 'Runs with no bootstrap',
+        'force-addon-upgrades' => 'Automatically runs all addon updaters at end of update (advanced)',
+        'y' => 'Skip all confirmations. Don\'t do this.'
     ];
 
     protected $verbose;
@@ -157,7 +157,7 @@ class CommandUpdate extends Cli
         defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
         defined('PATH_THEMES') || define('PATH_THEMES', SYSPATH . '../themes/');
         defined('APP_VER') || define('APP_VER', $this->currentVersion);
-        defined('IS_CORE') ||define('IS_CORE', false);
+        defined('IS_CORE') || define('IS_CORE', false);
         defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
 
         $this->verbose = CLI_VERBOSE;
@@ -400,7 +400,7 @@ class CommandUpdate extends Cli
             ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
             ee()->config
                 ->_update_config([
-                    'app_version'	=> $upgradeMap[$currentVersionKey]
+                    'app_version' => $upgradeMap[$currentVersionKey]
                 ]);
 
             $next_version = $upgradeMap[$currentVersionKey];
@@ -447,7 +447,7 @@ class CommandUpdate extends Cli
         if (isset($versionNamingMap[$version])) {
             ee()->config
                 ->_update_config([
-                    'app_version'	=> $versionNamingMap[$version]
+                    'app_version' => $versionNamingMap[$version]
                 ]);
         }
     }

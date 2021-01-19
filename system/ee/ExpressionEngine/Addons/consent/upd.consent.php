@@ -78,7 +78,7 @@ class Consent_upd
      * @param string $current Currently installed version number
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         return true;
     }

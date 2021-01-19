@@ -14,7 +14,7 @@
 class CI_DB_utility extends CI_DB_forge
 {
     public $db;
-    public $data_cache		= array();
+    public $data_cache = array();
 
     /**
      * Constructor
@@ -25,7 +25,7 @@ class CI_DB_utility extends CI_DB_forge
     public function __construct()
     {
         // Assign the main database object to $this->db
-        $this->db =& ee()->db;
+        $this->db = & ee()->db;
 
         log_message('debug', "Database Utility Class Initialized");
     }
@@ -254,13 +254,13 @@ class CI_DB_utility extends CI_DB_forge
 
         // Set up our default preferences
         $prefs = array(
-            'tables'		=> array(),
-            'ignore'		=> array(),
-            'filename'		=> '',
-            'format'		=> 'gzip', // gzip, zip, txt
-            'add_drop'		=> true,
-            'add_insert'	=> true,
-            'newline'		=> "\n"
+            'tables' => array(),
+            'ignore' => array(),
+            'filename' => '',
+            'format' => 'gzip', // gzip, zip, txt
+            'add_drop' => true,
+            'add_insert' => true,
+            'newline' => "\n"
         );
 
         // Did the user submit any preferences? If so set them....
@@ -292,7 +292,7 @@ class CI_DB_utility extends CI_DB_forge
         // Is the encoder supported?  If not, we'll either issue an
         // error or use plain text depending on the debug settings
         if (($prefs['format'] == 'gzip' and ! @function_exists('gzencode'))
-        or ($prefs['format'] == 'zip'  and ! @function_exists('gzcompress'))) {
+        or ($prefs['format'] == 'zip' and ! @function_exists('gzcompress'))) {
             if ($this->db->db_debug) {
                 return $this->db->display_error('db_unsuported_compression');
             }

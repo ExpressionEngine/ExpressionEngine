@@ -64,11 +64,11 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete',
-    'form_url'	=> ee('CP/URL')->make('categories/remove'),
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove',
-        'cat_group_id'	=> $cat_group->group_id
+    'name' => 'modal-confirm-delete',
+    'form_url' => ee('CP/URL')->make('categories/remove'),
+    'hidden' => array(
+        'bulk_action' => 'remove',
+        'cat_group_id' => $cat_group->group_id
     )
 );
 

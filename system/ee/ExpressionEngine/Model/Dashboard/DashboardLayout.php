@@ -131,8 +131,8 @@ class DashboardLayout extends Model
 
                 foreach ($feed->get_items(0, 10) as $item) {
                     $news[] = array(
-                        'title'   => strip_tags($item->get_title()),
-                        'date'    => ee()->localize->format_date(
+                        'title' => strip_tags($item->get_title()),
+                        'date' => ee()->localize->format_date(
                             ee()->session->userdata('date_format', ee()->config->item('date_format')),
                             $item->get_date('U')
                         ),
@@ -140,14 +140,14 @@ class DashboardLayout extends Model
                             ee()->typography->parse_type(
                                 $item->get_content(),
                                 array(
-                                    'text_format'   => 'xhtml',
-                                    'html_format'   => 'all',
-                                    'auto_links'    => 'y',
+                                    'text_format' => 'xhtml',
+                                    'html_format' => 'all',
+                                    'auto_links' => 'y',
                                     'allow_img_url' => 'n'
                                 )
                             )
                         ),
-                        'link'    => ee()->cp->masked_url($item->get_permalink())
+                        'link' => ee()->cp->masked_url($item->get_permalink())
                     );
                 }
 

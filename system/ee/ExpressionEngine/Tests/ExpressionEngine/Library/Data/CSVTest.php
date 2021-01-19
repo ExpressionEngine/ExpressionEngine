@@ -25,7 +25,7 @@ class CSVTest extends TestCase
     public function testAddsAssociaitiveArrayRow()
     {
         $result = $this->csv->addRow(array(
-            'name'  => 'ExpressionEngine',
+            'name' => 'ExpressionEngine',
             'email' => 'support@expressionengine.com',
         ));
 
@@ -58,11 +58,11 @@ class CSVTest extends TestCase
     {
         $this->csv
             ->addRow(array(
-                'name'  => 'ExpressionEngine Team',
+                'name' => 'ExpressionEngine Team',
                 'email' => 'support@expressionengine.com',
             ))
             ->addRow(array(
-                'name'  => 'ExpressionEngine Support',
+                'name' => 'ExpressionEngine Support',
                 'email' => 'support@ellislab.com',
             ));
 
@@ -76,16 +76,16 @@ class CSVTest extends TestCase
     {
         $this->csv
             ->addRow(array(
-                'name'  => 'ExpressionEngine Team',
+                'name' => 'ExpressionEngine Team',
                 'email' => 'support@expressionengine.com',
             ))
             ->addRow(array(
-                'name'  => 'ExpressionEngine Support',
+                'name' => 'ExpressionEngine Support',
                 'email' => 'support@ellislab.com',
             ));
 
         $tmp_dir = "/var/tmp";
-        if (PHP_OS=="WINNT") {
+        if (PHP_OS == "WINNT") {
             $tmp_dir = "C:/tmp";
         }
         $this->csv->save($tmp_dir . '/test.csv');
@@ -100,13 +100,13 @@ class CSVTest extends TestCase
     {
         $this->csv
             ->addRow(array(
-                'name'  => 'ExpressionEngine Team',
+                'name' => 'ExpressionEngine Team',
                 'email' => 'support@expressionengine.com'
             ))
             ->addRow(array(
-                'email'      => 'developers@ellislab.com',
+                'email' => 'developers@ellislab.com',
                 'first_name' => 'ExpressionEngine',
-                'last_name'  => 'Developers'
+                'last_name' => 'Developers'
             ));
 
         $this->assertEquals(
@@ -117,13 +117,13 @@ class CSVTest extends TestCase
 
     public function testAddDifferentObjects()
     {
-        $row1             = new \stdClass();
-        $row1->name       = 'ExpressionEngine Team';
-        $row1->email      = 'support@expressionengine.com';
-        $row2             = new \stdClass();
-        $row2->email      = 'developers@ellislab.com';
+        $row1 = new \stdClass();
+        $row1->name = 'ExpressionEngine Team';
+        $row1->email = 'support@expressionengine.com';
+        $row2 = new \stdClass();
+        $row2->email = 'developers@ellislab.com';
         $row2->first_name = 'ExpressionEngine';
-        $row2->last_name  = 'Developers';
+        $row2->last_name = 'Developers';
 
         $this->csv->addRow($row1)->addRow($row2);
 
@@ -135,15 +135,15 @@ class CSVTest extends TestCase
 
     public function testAddDifferentArraysAndObjects()
     {
-        $row1             = new \stdClass();
-        $row1->name       = 'ExpressionEngine Team';
-        $row1->email      = 'support@expressionengine.com';
+        $row1 = new \stdClass();
+        $row1->name = 'ExpressionEngine Team';
+        $row1->email = 'support@expressionengine.com';
 
         $this->csv->addRow($row1)
             ->addRow(array(
-                'email'      => 'developers@ellislab.com',
+                'email' => 'developers@ellislab.com',
                 'first_name' => 'ExpressionEngine',
-                'last_name'  => 'Developers'
+                'last_name' => 'Developers'
             ));
 
         $this->assertEquals(
@@ -155,7 +155,7 @@ class CSVTest extends TestCase
     public function testCommasInRows()
     {
         $result = $this->csv->addRow(array(
-            'name'  => 'Team, ExpressionEngine',
+            'name' => 'Team, ExpressionEngine',
             'email' => 'support@expressionengine.com',
         ));
 
@@ -168,7 +168,7 @@ class CSVTest extends TestCase
     public function testQuotesInRows()
     {
         $result = $this->csv->addRow(array(
-            'name'  => '"Dev Robots" Team',
+            'name' => '"Dev Robots" Team',
             'email' => 'developers@ellislab.com',
         ));
 

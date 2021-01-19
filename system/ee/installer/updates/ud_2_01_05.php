@@ -78,11 +78,11 @@ class Updater
                 'actions',
                 array(
                     'csrf_exempt' => array(
-                        'type'			=> 'tinyint',
-                        'constraint'	=> 1,
-                        'unsigned'		=> true,
-                        'default'		=> 0,
-                        'null'			=> false
+                        'type' => 'tinyint',
+                        'constraint' => 1,
+                        'unsigned' => true,
+                        'default' => 0,
+                        'null' => false
                     )
                 )
             );
@@ -109,10 +109,10 @@ class Updater
             $fg_id = $qry->row('field_group');
 
             $data = array(
-                'field_group_id' 		=> $fg_id,
-                'content_field_id' 		=> $custom_field_id,
-                'metaweblog_pref_name' 	=> $row->blogger_pref_name . '_blogger',
-                'metaweblog_parse_type'	=> $row->blogger_parse_type,
+                'field_group_id' => $fg_id,
+                'content_field_id' => $custom_field_id,
+                'metaweblog_pref_name' => $row->blogger_pref_name . '_blogger',
+                'metaweblog_parse_type' => $row->blogger_parse_type,
             );
 
             ee()->db->insert('metaweblog_api', $data);
@@ -152,12 +152,12 @@ class Updater
     {
         $fields = array(
             'batch_location' => array(
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 255,
+                'type' => 'VARCHAR',
+                'constraint' => 255,
             ),
             'cat_group' => array(
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 255
+                'type' => 'VARCHAR',
+                'constraint' => 255
             )
         );
 
@@ -165,9 +165,9 @@ class Updater
 
         $fields = array(
             'server_path' => array(
-                'name'			=> 'server_path',
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 255
+                'name' => 'server_path',
+                'type' => 'VARCHAR',
+                'constraint' => 255
             ),
         );
 
@@ -185,10 +185,10 @@ class Updater
     {
         $fields = array(
             'exclude_group' => array(
-                'type'			=> 'TINYINT',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 0
+                'type' => 'TINYINT',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 0
             )
         );
 
@@ -206,101 +206,101 @@ class Updater
     {
         $watermark_fields = array(
             'wm_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 4,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
             'wm_name' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 80
+                'type' => 'varchar',
+                'constraint' => 80
             ),
             'wm_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 10,
-                'default'			=> 'text'
+                'type' => 'varchar',
+                'constraint' => 10,
+                'default' => 'text'
             ),
             'wm_image_path' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 100
+                'type' => 'varchar',
+                'constraint' => 100
             ),
             'wm_test_image_path' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 100
+                'type' => 'varchar',
+                'constraint' => 100
             ),
             'wm_use_font' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1,
-                'default'			=> 'y'
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => 'y'
             ),
             'wm_font' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 30
+                'type' => 'varchar',
+                'constraint' => 30
             ),
             'wm_font_size' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'wm_text' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 100
+                'type' => 'varchar',
+                'constraint' => 100
             ),
             'wm_vrt_alignment' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 10,
-                'default'			=> 'top'
+                'type' => 'varchar',
+                'constraint' => 10,
+                'default' => 'top'
             ),
             'wm_hor_alignment' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 10,
-                'default'			=> 'left'
+                'type' => 'varchar',
+                'constraint' => 10,
+                'default' => 'left'
             ),
             'wm_padding' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'wm_opacity' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'wm_x_offset' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 4,
+                'unsigned' => true
             ),
             'wm_y_offset' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 4,
+                'unsigned' => true
             ),
             'wm_x_transp' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4
+                'type' => 'int',
+                'constraint' => 4
             ),
             'wm_y_transp' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4
+                'type' => 'int',
+                'constraint' => 4
             ),
             'wm_font_color' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 7
+                'type' => 'varchar',
+                'constraint' => 7
             ),
             'wm_use_drop_shadow' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1,
-                'default'			=> 'y'
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => 'y'
             ),
             'wm_shadow_distance' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'wm_shadow_color' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 7
+                'type' => 'varchar',
+                'constraint' => 7
             )
         );
 
@@ -359,25 +359,25 @@ class Updater
 
         $categories_fields = array(
             'file_id' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true
             ),
             'cat_id' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true
             ),
             'sort' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true,
-                'default'		=> 0
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
             'is_cover' => array(
-                'type'			=> 'char',
-                'constraint'	=> 1,
-                'default'		=> 'n'
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => 'n'
             )
         );
 
@@ -387,112 +387,112 @@ class Updater
 
         $files_fields = array(
             'file_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
             'site_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4,
-                'unsigned'			=> true,
-                'default'			=> 1
+                'type' => 'int',
+                'constraint' => 4,
+                'unsigned' => true,
+                'default' => 1
             ),
             'title' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 255
+                'type' => 'varchar',
+                'constraint' => 255
             ),
             'upload_location_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 4,
-                'unsigned'			=> true,
-                'default'			=> 0
+                'type' => 'int',
+                'constraint' => 4,
+                'unsigned' => true,
+                'default' => 0
             ),
             'rel_path' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 255
+                'type' => 'varchar',
+                'constraint' => 255
             ),
             'status' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1,
-                'default'			=> 'o'
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => 'o'
             ),
             'mime_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 255
+                'type' => 'varchar',
+                'constraint' => 255
             ),
             'file_name' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 255
+                'type' => 'varchar',
+                'constraint' => 255
             ),
             'file_size' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'default'			=> 0
+                'type' => 'int',
+                'constraint' => 10,
+                'default' => 0
             ),
             'field_1' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_1_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'field_2' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_2_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'field_3' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_3_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'field_4' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_4_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'field_5' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_5_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'field_6' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'field_6_fmt' => array(
-                'type'				=> 'tinytext'
+                'type' => 'tinytext'
             ),
             'metadata' => array(
-                'type'				=> 'mediumtext',
-                'null'				=> true
+                'type' => 'mediumtext',
+                'null' => true
             ),
             'uploaded_by_member_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
             'upload_date' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10
+                'type' => 'int',
+                'constraint' => 10
             ),
             'modified_by_member_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
             'modified_date' => array(
-                'type' 				=> 'int',
-                'constraint'		=> 10
+                'type' => 'int',
+                'constraint' => 10
             ),
             'file_hw_original' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 20
+                'type' => 'varchar',
+                'constraint' => 20
             ),
         );
 
@@ -512,11 +512,11 @@ class Updater
     private function _do_permissions_update()
     {
         $fields = array(
-            'can_admin_upload_prefs' 	=> array(
-                'type'			=> 'CHAR',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 'n'
+            'can_admin_upload_prefs' => array(
+                'type' => 'CHAR',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'n'
             )
         );
 

@@ -88,10 +88,10 @@ class Routes extends AbstractDesignController
         $grid->addActionButton('#', lang('new_route'), 'add button--small');
 
         $vars = array(
-            'table'          => $grid->viewData($this->base_url),
-            'form_url'       => ee('CP/URL')->make('design/routes/update'),
-            'cp_page_title'  => lang('template_manager'),
-            'cp_heading'     => lang('template_routes_header'),
+            'table' => $grid->viewData($this->base_url),
+            'form_url' => ee('CP/URL')->make('design/routes/update'),
+            'cp_page_title' => lang('template_manager'),
+            'cp_heading' => lang('template_routes_header'),
             'cp_sub_heading' => lang('template_routes_header_desc')
         );
 

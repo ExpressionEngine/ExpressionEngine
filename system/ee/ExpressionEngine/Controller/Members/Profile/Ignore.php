@@ -43,8 +43,8 @@ class Ignore extends Profile
         $page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
 
         $sort_map = array(
-            'member_id'    => 'member_id',
-            'username'     => 'username',
+            'member_id' => 'member_id',
+            'username' => 'username',
             'primary_role' => 'PrimaryRole.name'
         );
 
@@ -88,7 +88,7 @@ class Ignore extends Profile
                         array(
                             'name' => 'selection[]',
                             'value' => $member->member_id,
-                            'data'	=> array(
+                            'data' => array(
                                 'confirm' => lang('member') . ': <b>' . htmlentities($member->screen_name, ENT_QUOTES, 'UTF-8') . '</b>'
                             )
                         )
@@ -104,7 +104,7 @@ class Ignore extends Profile
                 'username' => array('encode' => false),
                 'primary_role' => array('encode' => false),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );

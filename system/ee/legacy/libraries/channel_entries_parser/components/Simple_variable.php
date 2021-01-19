@@ -116,9 +116,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                     ee()->typography->parse_type(
                         $data['signature'],
                         array(
-                            'text_format'	=> 'xhtml',
-                            'html_format'	=> 'safe',
-                            'auto_links'	=> 'y',
+                            'text_format' => 'xhtml',
+                            'html_format' => 'safe',
+                            'auto_links' => 'y',
                             'allow_img_url' => ee()->config->item('sig_allow_img_hotlink')
                         )
                     ),
@@ -318,7 +318,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                 $tagdata = str_replace(LD . $val . RD, ee()->typography->encode_email($data['email']), $tagdata);
             }
         } elseif ($key == $prefix . "signature_image_url") {
-            if (ee()->session->userdata('display_signatures') == 'n' or $data['sig_img_filename'] == ''  or ee()->session->userdata('display_signatures') == 'n') {
+            if (ee()->session->userdata('display_signatures') == 'n' or $data['sig_img_filename'] == '' or ee()->session->userdata('display_signatures') == 'n') {
                 $tagdata = str_replace(LD . $key . RD, '', $tagdata);
                 $tagdata = str_replace(LD . $prefix . 'signature_image_width' . RD, '', $tagdata);
                 $tagdata = str_replace(LD . $prefix . 'signature_image_height' . RD, '', $tagdata);
@@ -338,7 +338,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
             $tagdata = str_replace(LD . $prefix . 'avatar_image_width' . RD, $data['avatar_width'], $tagdata);
             $tagdata = str_replace(LD . $prefix . 'avatar_image_height' . RD, $data['avatar_height'], $tagdata);
         } elseif ($key == $prefix . "photo_url") {
-            if (ee()->session->userdata('display_photos') == 'n' or $data['photo_filename'] == ''  or ee()->session->userdata('display_photos') == 'n') {
+            if (ee()->session->userdata('display_photos') == 'n' or $data['photo_filename'] == '' or ee()->session->userdata('display_photos') == 'n') {
                 $tagdata = str_replace(LD . $key . RD, '', $tagdata);
                 $tagdata = str_replace(LD . $prefix . 'photo_image_width' . RD, '', $tagdata);
                 $tagdata = str_replace(LD . $prefix . 'photo_image_height' . RD, '', $tagdata);

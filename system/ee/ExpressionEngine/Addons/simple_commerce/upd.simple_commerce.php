@@ -92,21 +92,21 @@ class Simple_commerce_upd extends Installer
 
         // update the config file based on whether this install is from the CP or the install wizard
         if (method_exists(ee()->config, 'divination')) {
-            ee()->config->_update_config(array('sc_paypal_account' 	=> '',
-                'sc_encrypt_buttons' 	=> 'n',
-                'sc_certificate_id'		=> '',
+            ee()->config->_update_config(array('sc_paypal_account' => '',
+                'sc_encrypt_buttons' => 'n',
+                'sc_certificate_id' => '',
                 'sc_public_certificate' => '',
-                'sc_private_key'		=> '',
+                'sc_private_key' => '',
                 'sc_paypal_certificate' => '',
-                'sc_temp_path'			=> '/tmp'));
+                'sc_temp_path' => '/tmp'));
         } else {
-            ee()->config->_assign_to_config(array('sc_paypal_account' 	=> '',
-                'sc_encrypt_buttons' 	=> 'n',
-                'sc_certificate_id'		=> '',
+            ee()->config->_assign_to_config(array('sc_paypal_account' => '',
+                'sc_encrypt_buttons' => 'n',
+                'sc_certificate_id' => '',
                 'sc_public_certificate' => '',
-                'sc_private_key'		=> '',
+                'sc_private_key' => '',
                 'sc_paypal_certificate' => '',
-                'sc_temp_path'			=> '/tmp'));
+                'sc_temp_path' => '/tmp'));
         }
 
         return true;
@@ -196,11 +196,11 @@ class Simple_commerce_upd extends Installer
                 'simple_commerce_items',
                 array(
                     'admin_email_address' => array(
-                        'name' 			=> 'admin_email_address',
-                        'type' 			=> 'varchar',
-                        'constraint'	=> '75',
-                        'null'			=> true,
-                        'default'		=> null
+                        'name' => 'admin_email_address',
+                        'type' => 'varchar',
+                        'constraint' => '75',
+                        'null' => true,
+                        'default' => null
                     )
                 )
             );
@@ -216,12 +216,12 @@ class Simple_commerce_upd extends Installer
 
         if (version_compare($current, '2.2.1', '<')) {
             ee('Model')->make('Extension', [
-                'class'    => 'Simple_commerce_ext',
-                'method'   => 'anonymizeMember',
-                'hook'     => 'member_anonymize',
+                'class' => 'Simple_commerce_ext',
+                'method' => 'anonymizeMember',
+                'hook' => 'member_anonymize',
                 'settings' => [],
-                'version'  => $current,
-                'enabled'  => 'y'
+                'version' => $current,
+                'enabled' => 'y'
             ])->save();
         }
 

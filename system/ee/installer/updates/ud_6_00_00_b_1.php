@@ -74,27 +74,27 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'config_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
-                'site_id'   => [
-                    'type'       => 'int',
+                'site_id' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 ],
-                'key'       => [
-                    'type'       => 'varchar',
+                'key' => [
+                    'type' => 'varchar',
                     'constraint' => 64,
-                    'null'       => false,
-                    'default'    => '',
+                    'null' => false,
+                    'default' => '',
                 ],
-                'value'     => [
-                    'type'       => 'text',
+                'value' => [
+                    'type' => 'text',
                 ],
             ]
         );
@@ -156,33 +156,33 @@ class Updater
             ee()->dbforge->add_field(
                 [
                     'view_id' => [
-                        'type'           => 'int',
-                        'constraint'     => 10,
-                        'unsigned'       => true,
-                        'null'           => false,
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
                         'auto_increment' => true
                     ],
                     'channel_id' => [
-                        'type'           => 'int',
-                        'constraint'     => 6,
-                        'unsigned'       => true,
-                        'null'           => false,
+                        'type' => 'int',
+                        'constraint' => 6,
+                        'unsigned' => true,
+                        'null' => false,
                     ],
                     'member_id' => [
-                        'type'           => 'int',
-                        'constraint'     => 10,
-                        'unsigned'       => true,
-                        'null'           => false,
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
                     ],
                     'name' => [
-                        'type'       => 'varchar',
+                        'type' => 'varchar',
                         'constraint' => 128,
-                        'null'       => false,
-                        'default'    => '',
+                        'null' => false,
+                        'default' => '',
                     ],
                     'columns' => [
-                        'type'       => 'text',
-                        'null'       => false
+                        'type' => 'text',
+                        'null' => false
                     ]
                 ]
             );
@@ -236,31 +236,31 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'role_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
                 'name' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 100,
-                    'null'       => false
+                    'null' => false
                 ],
                 'short_name' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => false
+                    'null' => false
                 ],
                 'description' => [
-                    'type'       => 'text',
-                    'null'       => true
+                    'type' => 'text',
+                    'null' => true
                 ],
                 'is_locked' => [
-                    'type'       => 'char',
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => false,
-                    'default'    => 'n'
+                    'null' => false,
+                    'default' => 'n'
                 ]
             ]
         );
@@ -296,16 +296,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'member_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -334,16 +334,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'group_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
                 'name' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 100,
-                    'null'       => false
+                    'null' => false
                 ]
             ]
         );
@@ -354,16 +354,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'group_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -374,16 +374,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'member_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'group_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -400,28 +400,28 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'permission_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ],
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'site_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 5,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'permission' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 255,
-                    'null'       => false
+                    'null' => false
                 ],
             ]
         );
@@ -535,11 +535,11 @@ class Updater
         ];
 
         $rename = [
-            'can_admin_mbr_groups'     => 'can_admin_roles',
-            'can_email_member_groups'  => 'can_email_roles',
+            'can_admin_mbr_groups' => 'can_admin_roles',
+            'can_email_member_groups' => 'can_email_roles',
             'can_create_member_groups' => 'can_create_roles',
             'can_delete_member_groups' => 'can_delete_roles',
-            'can_edit_member_groups'   => 'can_edit_roles',
+            'can_edit_member_groups' => 'can_edit_roles',
         ];
 
         $groups = ee()->db->get('member_groups');
@@ -552,8 +552,8 @@ class Updater
                 if ($group->$permission == 'y') {
                     $permission = (array_key_exists($permission, $rename)) ? $rename[$permission] : $permission;
                     $insert[] = [
-                        'role_id'   => $group->group_id,
-                        'site_id'    => $group->site_id,
+                        'role_id' => $group->group_id,
+                        'site_id' => $group->site_id,
                         'permission' => $permission
                     ];
                 }
@@ -563,8 +563,8 @@ class Updater
                 if ($group->$permission == 'y') {
                     foreach ($assigned_channels->result() as $row) {
                         $insert[] = [
-                            'role_id'   => $group->group_id,
-                            'site_id'    => $group->site_id,
+                            'role_id' => $group->group_id,
+                            'site_id' => $group->site_id,
                             'permission' => $permission . '_channel_id_' . $row->channel_id
                         ];
                     }
@@ -576,15 +576,15 @@ class Updater
                     foreach ($template_groups->result() as $row) {
                         if ($permission == 'can_create_new_templates') {
                             $insert[] = [
-                                'role_id'   => $group->group_id,
-                                'site_id'    => $group->site_id,
+                                'role_id' => $group->group_id,
+                                'site_id' => $group->site_id,
                                 'permission' => 'can_manage_settings_template_group_id_' . $row->template_group_id
                             ];
                             $permission = 'can_create_templates';
                         }
                         $insert[] = [
-                            'role_id'   => $group->group_id,
-                            'site_id'    => $group->site_id,
+                            'role_id' => $group->group_id,
+                            'site_id' => $group->site_id,
                             'permission' => $permission . '_template_group_id_' . $row->template_group_id
                         ];
                     }
@@ -609,8 +609,8 @@ class Updater
 
         ee()->smartforge->modify_column('channel_member_groups', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -626,8 +626,8 @@ class Updater
 
         ee()->smartforge->modify_column('module_member_groups', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -643,8 +643,8 @@ class Updater
 
         ee()->smartforge->modify_column('template_member_groups', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -661,16 +661,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'status_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 6,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -702,7 +702,7 @@ class Updater
                 if (! array_key_exists($status_id, $no_access) ||
                      ! in_array($role_id, $no_access[$status_id])) {
                     $insert[] = [
-                        'role_id'   => $role_id,
+                        'role_id' => $role_id,
                         'status_id' => $status_id
                     ];
                 }
@@ -725,16 +725,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'template_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -766,7 +766,7 @@ class Updater
                 if (! array_key_exists($template_id, $no_access) ||
                      ! in_array($role_id, $no_access[$template_id])) {
                     $insert[] = [
-                        'role_id'   => $role_id,
+                        'role_id' => $role_id,
                         'template_id' => $template_id
                     ];
                 }
@@ -789,16 +789,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'upload_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ]
             ]
         );
@@ -831,7 +831,7 @@ class Updater
                 if (! array_key_exists($upload_pref_id, $no_access) ||
                      ! in_array($role_id, $no_access[$upload_pref_id])) {
                     $insert[] = [
-                        'role_id'   => $role_id,
+                        'role_id' => $role_id,
                         'upload_id' => $upload_pref_id
                     ];
                 }
@@ -853,8 +853,8 @@ class Updater
 
         ee()->smartforge->modify_column('member_groups', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -871,8 +871,8 @@ class Updater
     {
         ee()->smartforge->modify_column('members', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -882,8 +882,8 @@ class Updater
     {
         ee()->smartforge->modify_column('layout_publish_member_groups', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -895,8 +895,8 @@ class Updater
     {
         ee()->smartforge->modify_column('email_cache_mg', [
             'group_id' => [
-                'name'       => 'role_id',
-                'type'       => 'int',
+                'name' => 'role_id',
+                'type' => 'int',
                 'constraint' => 10
             ]
         ]);
@@ -943,37 +943,37 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'widget_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ],
                 'widget_name' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => true,
-                    'default'		 => null
+                    'null' => true,
+                    'default' => null
                 ],
                 'widget_data' => [
-                    'type'       => 'mediumtext',
-                    'null'       => true
+                    'type' => 'mediumtext',
+                    'null' => true
                 ],
                 'widget_type' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 10,
-                    'null'       => false
+                    'null' => false
                 ],
                 'widget_source' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => false
+                    'null' => false
                 ],
                 'widget_file' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 100,
-                    'null'       => true,
-                    'default'		 => null
+                    'null' => true,
+                    'default' => null
                 ]
             ]
         );
@@ -992,31 +992,31 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'layout_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ],
                 'member_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => true,
-                    'default'		 => null
+                    'unsigned' => true,
+                    'null' => true,
+                    'default' => null
                 ],
                 'role_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => true,
-                    'default'		 => null
+                    'unsigned' => true,
+                    'null' => true,
+                    'default' => null
                 ],
                 'order' => [
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 255,
-                    'null'       => true,
-                    'default'		 => null
+                    'null' => true,
+                    'default' => null
                 ],
             ]
         );
@@ -1037,16 +1037,16 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'layout_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true
                 ],
                 'widget_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'null'           => false,
-                    'unsigned'       => true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true
                 ]
             ]
         );
@@ -1100,10 +1100,10 @@ class Updater
                 'channels',
                 array(
                     'sticky_enabled' => array(
-                        'type'				=> 'char',
-                        'constraint'		=> 1,
-                        'null'				=> false,
-                        'default'			=> 'n'
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'null' => false,
+                        'default' => 'n'
                     )
                 )
             );

@@ -76,7 +76,7 @@ class Email_upd extends Installer
      * @access	public
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         return true;
     }

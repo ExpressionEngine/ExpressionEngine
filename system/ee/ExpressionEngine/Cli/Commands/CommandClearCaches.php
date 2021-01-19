@@ -44,7 +44,7 @@ class CommandClearCaches extends Cli
      * @var array
      */
     public $commandOptions = [
-        'type,t:'   => 'Type of cache to clear (default: all)',
+        'type,t:' => 'Type of cache to clear (default: all)',
     ];
 
     /**

@@ -259,11 +259,11 @@ class Channels extends AbstractChannelsController
 
         $vars['sections'] = [];
         $vars['tabs'] = [
-            'channel'     => $this->renderChannelTab($channel, $vars['errors']),
-            'fields'      => $this->renderFieldsTab($channel, $vars['errors']),
-            'categories'  => $this->renderCategoriesTab($channel, $vars['errors']),
-            'statuses'    => $this->renderStatusesTab($channel, $vars['errors']),
-            'settings'    => $this->renderSettingsTab($channel, $vars['errors']),
+            'channel' => $this->renderChannelTab($channel, $vars['errors']),
+            'fields' => $this->renderFieldsTab($channel, $vars['errors']),
+            'categories' => $this->renderCategoriesTab($channel, $vars['errors']),
+            'statuses' => $this->renderStatusesTab($channel, $vars['errors']),
+            'settings' => $this->renderSettingsTab($channel, $vars['errors']),
             'permissions' => $this->renderPermissionsTab($channel, $vars['errors']),
         ];
 
@@ -521,9 +521,9 @@ class Channels extends AbstractChannelsController
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'field_groups',
-            'choices'    => $field_group_options,
-            'value'      => $selected,
-            'multi'      => true,
+            'choices' => $field_group_options,
+            'value' => $selected,
+            'multi' => true,
             'no_results' => $no_results
         ]);
     }
@@ -567,9 +567,9 @@ class Channels extends AbstractChannelsController
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'custom_fields',
-            'choices'    => $custom_field_options,
-            'value'      => $selected,
-            'multi'      => true,
+            'choices' => $custom_field_options,
+            'value' => $selected,
+            'multi' => true,
             'no_results' => $no_results
         ]);
     }
@@ -645,9 +645,9 @@ class Channels extends AbstractChannelsController
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'cat_group',
-            'choices'    => $cat_group_options,
-            'value'      => $selected,
-            'multi'      => true,
+            'choices' => $cat_group_options,
+            'value' => $selected,
+            'multi' => true,
             'no_results' => $no_results
         ]);
     }
@@ -721,17 +721,17 @@ class Channels extends AbstractChannelsController
         $selected = array_merge($selected, $default);
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
-            'field_name'       => 'statuses',
-            'choices'          => $status_options,
+            'field_name' => 'statuses',
+            'choices' => $status_options,
             'disabled_choices' => $default,
-            'encode' 		   => false,
+            'encode' => false,
             'unremovable_choices' => $default,
-            'value'            => $selected,
-            'multi'            => true,
-            'force_react'      => true,
-            'reorderable'      => ee('Permission')->can('edit_statuses'),
-            'removable'        => ee('Permission')->can('delete_statuses'),
-            'editable'         => ee('Permission')->can('edit_statuses'),
+            'value' => $selected,
+            'multi' => true,
+            'force_react' => true,
+            'reorderable' => ee('Permission')->can('edit_statuses'),
+            'removable' => ee('Permission')->can('delete_statuses'),
+            'editable' => ee('Permission')->can('edit_statuses'),
             'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile()
         ]);
     }
@@ -787,9 +787,9 @@ class Channels extends AbstractChannelsController
 
         // HTML formatting
         $channel_html_formatting_options = array(
-            'none'	=> lang('convert_to_entities'),
-            'safe'	=> lang('allow_safe_html'),
-            'all'	=> lang('allow_all_html')
+            'none' => lang('convert_to_entities'),
+            'safe' => lang('allow_safe_html'),
+            'all' => lang('allow_all_html')
         );
 
         // Default comment text formatting
@@ -797,9 +797,9 @@ class Channels extends AbstractChannelsController
 
         // Comment HTML formatting
         $comment_html_formatting_options = array(
-            'none'	=> lang('convert_to_entities'),
-            'safe'	=> lang('allow_safe_html'),
-            'all'	=> lang('allow_all_html_not_recommended')
+            'none' => lang('convert_to_entities'),
+            'safe' => lang('allow_safe_html'),
+            'all' => lang('allow_all_html_not_recommended')
         );
 
         if (! $channel_form = $channel->getChannelFormSettings()) {
@@ -1246,11 +1246,11 @@ class Channels extends AbstractChannelsController
     private function getPermissionKeys()
     {
         return [
-            'can_create_entries_channel_id_'      => lang('can_create_entries'),
-            'can_edit_self_entries_channel_id_'   => lang('can_edit_self_entries'),
+            'can_create_entries_channel_id_' => lang('can_create_entries'),
+            'can_edit_self_entries_channel_id_' => lang('can_edit_self_entries'),
             'can_delete_self_entries_channel_id_' => lang('can_delete_self_entries'),
-            'can_edit_other_entries_channel_id_'  => lang('can_edit_other_entries'),
-            'can_delete_all_entries_channel_id_'  => lang('can_delete_all_entries'),
+            'can_edit_other_entries_channel_id_' => lang('can_edit_other_entries'),
+            'can_delete_all_entries_channel_id_' => lang('can_delete_all_entries'),
             'can_assign_post_authors_channel_id_' => lang('can_assign_post_authors')
         ];
     }
@@ -1295,7 +1295,7 @@ class Channels extends AbstractChannelsController
             }
 
             $choices['role_id_' . $role->getId()] = [
-                'label'    => $role->name,
+                'label' => $role->name,
                 'children' => $children
             ];
         }
@@ -1316,8 +1316,8 @@ class Channels extends AbstractChannelsController
 
         $section = [
             [
-                'title'  => 'channel_roles',
-                'desc'   => 'channel_roles_desc',
+                'title' => 'channel_roles',
+                'desc' => 'channel_roles_desc',
                 'fields' => [
                     'roles' => [
                         'type' => 'checkbox',
@@ -1470,7 +1470,7 @@ class Channels extends AbstractChannelsController
             // able to access it as well
             if (! ee('Permission')->isSuperAdmin()) {
                 $data = array(
-                    'role_id'    => ee()->session->getMember()->PrimaryRole->getId(),
+                    'role_id' => ee()->session->getMember()->PrimaryRole->getId(),
                     'channel_id' => $channel->channel_id
                 );
 
@@ -1503,8 +1503,8 @@ class Channels extends AbstractChannelsController
                 list($permission, $role_id) = explode(':role_id_', $value);
 
                 ee('Model')->make('Permission', [
-                    'role_id'    => $role_id,
-                    'site_id'    => ee()->config->item('site_id'),
+                    'role_id' => $role_id,
+                    'site_id' => ee()->config->item('site_id'),
                     'permission' => $permission . $channel->getId()
                 ])->save();
             }

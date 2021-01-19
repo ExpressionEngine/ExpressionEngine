@@ -25,9 +25,9 @@ if (! defined('BASEPATH')) {
         if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
             $ex = explode('/', $match[2]);
 
-            $year  = $ex[0];
+            $year = $ex[0];
             $month = $ex[1];
-            $day   = $ex[2];
+            $day = $ex[2];
 
             $qstring = trim_slashes(str_replace($match[0], '', $qstring));
         }
@@ -44,8 +44,8 @@ if (! defined('BASEPATH')) {
         if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
             $ex = explode('/', $match[2]);
 
-            $year	= $ex[0];
-            $month	= $ex[1];
+            $year = $ex[0];
+            $month = $ex[1];
 
             $qstring = trim_slashes(str_replace($match[2], '', $qstring));
         }

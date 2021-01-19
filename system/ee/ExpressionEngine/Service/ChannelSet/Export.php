@@ -294,9 +294,9 @@ class Export
 
         if ($field->hasProperty('field_pre_populate')) {
             if ($field->field_pre_populate) {
-                $result->pre_populate   = 'y';
+                $result->pre_populate = 'y';
                 $result->pre_channel_id = $field->field_pre_channel_id;
-                $result->pre_field_id   = $field->field_pre_field_id;
+                $result->pre_field_id = $field->field_pre_field_id;
             } elseif (isset($field->field_settings) &&
                 isset($field->field_settings['value_label_pairs']) &&
                 ! empty($field->field_settings['value_label_pairs'])) {

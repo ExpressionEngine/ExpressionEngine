@@ -503,13 +503,13 @@ class Comments extends AbstractPublishController
                 'column_comment_date',
                 'column_ip_address',
                 'column_status' => array(
-                    'type'	=> Table::COL_STATUS
+                    'type' => Table::COL_STATUS
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -576,8 +576,8 @@ class Comments extends AbstractPublishController
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
         $table->setData($data);

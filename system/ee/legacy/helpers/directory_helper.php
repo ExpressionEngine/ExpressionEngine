@@ -33,9 +33,9 @@ if (! function_exists('directory_map')) {
     function directory_map($source_dir, $directory_depth = 0, $hidden = false)
     {
         if ($fp = @opendir($source_dir)) {
-            $filedata	= array();
-            $new_depth	= $directory_depth - 1;
-            $source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            $filedata = array();
+            $new_depth = $directory_depth - 1;
+            $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
             while (false !== ($file = readdir($fp))) {
                 // Remove '.', '..', and hidden files [optional]

@@ -135,7 +135,7 @@ class Publish extends AbstractPublishController
         ee()->output->send_ajax_response(array(
             'success' => ee('View')->make('ee:publish/partials/autosave_badge')->render(['time' => $time]),
             'autosave_entry_id' => $autosave->entry_id,
-            'original_entry_id'	=> $entry_id
+            'original_entry_id' => $entry_id
         ));
     }
 
@@ -175,7 +175,7 @@ class Publish extends AbstractPublishController
 
         $entry = ee('Model')->make('ChannelEntry');
         $entry->Channel = $channel;
-        $entry->site_id =  ee()->config->item('site_id');
+        $entry->site_id = ee()->config->item('site_id');
         $entry->author_id = ee()->session->userdata('member_id');
         $entry->ip_address = ee()->session->userdata['ip_address'];
         $entry->versioning_enabled = $channel->enable_versioning;
@@ -258,7 +258,7 @@ class Publish extends AbstractPublishController
                     ->where('method', 'live_preview')
                     ->get('actions');
                 $modal = ee('View')->make('publish/live-preview-modal')->render([
-                    'preview_url'	=> ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id
+                    'preview_url' => ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id
                 ]);
                 ee('CP/Modal')->addModal('live-preview', $modal);
             }

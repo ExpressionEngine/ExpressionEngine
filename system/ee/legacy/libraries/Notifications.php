@@ -42,13 +42,13 @@ class Notifications
         $overrides = ee()->config->get_cached_site_prefs($c->row('site_id'));
 
         $swap = array(
-            'name'				=> ee()->session->userdata('screen_name'),
-            'email'				=> ee()->session->userdata('email'),
-            'channel_name'		=> $c->row('channel_title'),
-            'entry_title'		=> $e->row('title'),
-            'entry_url'			=> reduce_double_slashes(parse_config_variables($c->row('channel_url'), $overrides) . '/' . $e->row('url_title')),
-            'comment_url'		=> reduce_double_slashes(parse_config_variables($c->row('comment_url'), $overrides) . '/' . $e->row('url_title')),
-            'cp_edit_entry_url'	=> ee('CP/URL')->make(
+            'name' => ee()->session->userdata('screen_name'),
+            'email' => ee()->session->userdata('email'),
+            'channel_name' => $c->row('channel_title'),
+            'entry_title' => $e->row('title'),
+            'entry_url' => reduce_double_slashes(parse_config_variables($c->row('channel_url'), $overrides) . '/' . $e->row('url_title')),
+            'comment_url' => reduce_double_slashes(parse_config_variables($c->row('comment_url'), $overrides) . '/' . $e->row('url_title')),
+            'cp_edit_entry_url' => ee('CP/URL')->make(
                 'publish/edit/entry/' . $entry_id,
                 array(),
                 ee()->config->item('cp_url')

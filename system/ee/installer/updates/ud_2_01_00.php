@@ -28,10 +28,10 @@ class Updater
             'member_groups',
             array(
                 'can_access_fieldtypes' => array(
-                    'type'			=> 'char',
-                    'constraint'	=> 1,
-                    'default'		=> 'n',
-                    'null'			=> false
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
                 )
             ),
             'can_access_files'

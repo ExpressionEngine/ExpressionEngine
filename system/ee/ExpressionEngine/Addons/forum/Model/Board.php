@@ -23,98 +23,98 @@ class Board extends Model
     protected static $_table_name = 'forum_boards';
 
     protected static $_typed_columns = array(
-        'board_enabled'              => 'boolString',
-        'board_site_id'              => 'int',
-        'board_alias_id'             => 'int',
-        'board_allow_php'            => 'boolString',
-        'board_install_date'         => 'timestamp',
-        'board_topics_perpage'       => 'int',
-        'board_posts_perpage'        => 'int',
-        'board_hot_topic'            => 'int',
-        'board_max_post_chars'       => 'int',
-        'board_post_timelock'        => 'int',
-        'board_display_edit_date'    => 'boolString',
-        'board_allow_img_urls'       => 'boolString',
-        'board_auto_link_urls'       => 'boolString',
-        'board_max_attach_perpost'   => 'int',
-        'board_max_attach_size'      => 'int',
-        'board_max_width'            => 'int',
-        'board_max_height'           => 'int',
-        'board_use_img_thumbs'       => 'boolString',
-        'board_thumb_width'          => 'int',
-        'board_thumb_height'         => 'int',
-        'board_forum_permissions'    => 'serialized',
+        'board_enabled' => 'boolString',
+        'board_site_id' => 'int',
+        'board_alias_id' => 'int',
+        'board_allow_php' => 'boolString',
+        'board_install_date' => 'timestamp',
+        'board_topics_perpage' => 'int',
+        'board_posts_perpage' => 'int',
+        'board_hot_topic' => 'int',
+        'board_max_post_chars' => 'int',
+        'board_post_timelock' => 'int',
+        'board_display_edit_date' => 'boolString',
+        'board_allow_img_urls' => 'boolString',
+        'board_auto_link_urls' => 'boolString',
+        'board_max_attach_perpost' => 'int',
+        'board_max_attach_size' => 'int',
+        'board_max_width' => 'int',
+        'board_max_height' => 'int',
+        'board_use_img_thumbs' => 'boolString',
+        'board_thumb_width' => 'int',
+        'board_thumb_height' => 'int',
+        'board_forum_permissions' => 'serialized',
         'board_use_deft_permissions' => 'boolString',
-        'board_recent_poster_id'     => 'int',
-        'board_enable_rss'           => 'boolString',
-        'board_use_http_auth'        => 'boolString',
+        'board_recent_poster_id' => 'int',
+        'board_enable_rss' => 'boolString',
+        'board_use_http_auth' => 'boolString',
     );
 
     protected static $_relationships = array(
         'Administrators' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Administrator'
         ),
         'Attachments' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Attachment'
         ),
         'Categories' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Forum'
         ),
         'Forums' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Forum'
         ),
         'Moderators' => array(
-            'type'   => 'hasMany',
-            'model'  => 'Moderator',
+            'type' => 'hasMany',
+            'model' => 'Moderator',
         ),
         'Posts' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Post'
         ),
         'Searches' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Search'
         ),
         'Site' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Site',
+            'type' => 'belongsTo',
+            'model' => 'ee:Site',
             'from_key' => 'board_site_id',
-            'to_key'   => 'site_id',
+            'to_key' => 'site_id',
             'inverse' => array(
                 'name' => 'Board',
                 'type' => 'hasMany'
             )
         ),
         'Topics' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Topic'
         ),
     );
 
     protected static $_validation_rules = array(
-        'board_label'                => 'required',
-        'board_name'                 => 'required|unique|alphaDash',
-        'board_enabled'              => 'enum[y,n]',
-        'board_forum_trigger'        => 'required|unique[board_site_id]|alphaDash|validateForumTrigger[board_site_id]',
-        'board_allow_php'            => 'enum[y,n]',
-        'board_php_stage'            => 'enum[i,o]',
-        'board_forum_url'            => 'required',
-        'board_default_theme'        => 'required',
-        'board_upload_path'          => 'writable|validateUploadPath',
-        'board_topic_order'          => 'enum[r,a,d]',
-        'board_post_order'           => 'enum[a,d]',
-        'board_display_edit_date'    => 'enum[y,n]',
-        'board_allow_img_urls'       => 'enum[y,n]',
-        'board_auto_link_urls'       => 'enum[y,n]',
-        'board_use_img_thumbs'       => 'enum[y,n]',
-        'board_forum_permissions'    => 'required',
+        'board_label' => 'required',
+        'board_name' => 'required|unique|alphaDash',
+        'board_enabled' => 'enum[y,n]',
+        'board_forum_trigger' => 'required|unique[board_site_id]|alphaDash|validateForumTrigger[board_site_id]',
+        'board_allow_php' => 'enum[y,n]',
+        'board_php_stage' => 'enum[i,o]',
+        'board_forum_url' => 'required',
+        'board_default_theme' => 'required',
+        'board_upload_path' => 'writable|validateUploadPath',
+        'board_topic_order' => 'enum[r,a,d]',
+        'board_post_order' => 'enum[a,d]',
+        'board_display_edit_date' => 'enum[y,n]',
+        'board_allow_img_urls' => 'enum[y,n]',
+        'board_auto_link_urls' => 'enum[y,n]',
+        'board_use_img_thumbs' => 'enum[y,n]',
+        'board_forum_permissions' => 'required',
         'board_use_deft_permissions' => 'enum[y,n]',
-        'board_enable_rss'           => 'enum[y,n]',
-        'board_use_http_auth'        => 'enum[y,n]',
+        'board_enable_rss' => 'enum[y,n]',
+        'board_use_http_auth' => 'enum[y,n]',
     );
 
     protected static $_events = array(

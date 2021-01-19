@@ -65,9 +65,9 @@ class Member_group_model extends CI_Model
         /** ----------------------------------------------------
         /**  Remove and Store Channel and Template Permissions
         /** ----------------------------------------------------*/
-        $data = array('group_title' 		=> $this->input->post('group_title'),
-            'group_description'	=> $this->input->post('group_description'),
-            'group_id'			=> $group_id);
+        $data = array('group_title' => $this->input->post('group_title'),
+            'group_description' => $this->input->post('group_description'),
+            'group_id' => $group_id);
 
         // If editing Super Admin group, the is_locked field doesn't exist, so make sure we
         // got a value from the form before writing 0 to the database
@@ -198,7 +198,7 @@ class Member_group_model extends CI_Model
         // array.  Yes, this isn't optimal.
         $channel_ids = array();
         $channel_ids_yes = array();
-        foreach ($permissions['channel'] as $id=>$value) {
+        foreach ($permissions['channel'] as $id => $value) {
             $channel_ids[] = $id;
             if ($value !== false) {
                 $channel_ids_yes[] = $value;
@@ -207,7 +207,7 @@ class Member_group_model extends CI_Model
 
         $module_ids = array();
         $module_ids_yes = array();
-        foreach ($permissions['module'] as $id=>$value) {
+        foreach ($permissions['module'] as $id => $value) {
             $module_ids[] = $id;
             if ($value !== false) {
                 $module_ids_yes[] = $value;
@@ -216,7 +216,7 @@ class Member_group_model extends CI_Model
 
         $template_ids = array();
         $template_ids_yes = array();
-        foreach ($permissions['template'] as $id=>$value) {
+        foreach ($permissions['template'] as $id => $value) {
             $template_ids[] = $id;
             if ($value !== false) {
                 $template_ids_yes[] = $value;
@@ -281,7 +281,7 @@ class Member_group_model extends CI_Model
         $data = $this->_parse_form_data($post, $form_site_id, $group_id);
         // We'll need this later when we call $this->_update_permissions()
         // We'll have to unpack them and it's klutzy, but for now, this is the best I got. -Daniel
-        $permissions = array('channel'=>$data['channel'],'module'=>$data['module'],'template'=>$data['template']);
+        $permissions = array('channel' => $data['channel'],'module' => $data['module'],'template' => $data['template']);
         // And we don't want them hanging around in the data arround to be stuck into the database.
         unset($data['channel']);
         unset($data['module']);
@@ -360,7 +360,7 @@ class Member_group_model extends CI_Model
 
         $is_multisite = ($this->config->item('multiple_sites_enabled') == 'y' ? true : false);
         if ($is_multisite) {
-            $groups_query = $this->get(array('group_id'=> $group_id));
+            $groups_query = $this->get(array('group_id' => $group_id));
             $title_changed = false;
             foreach ($groups_query->result_array() as $group) {
                 if ($group['site_id'] != $site_id && $group['group_title'] != $group_title) {
@@ -370,7 +370,7 @@ class Member_group_model extends CI_Model
         }
 
         if ($is_multisite && $title_changed) {
-            $data = array('group_title'=>$group_title);
+            $data = array('group_title' => $group_title);
             $this->update_all_sites($group_id, $data);
         }
 
@@ -387,7 +387,7 @@ class Member_group_model extends CI_Model
 
         // We'll need this later when we call $this->_update_permissions()
         // We'll have to unpack them and it's klutzy, but for now, this is the best I got.
-        $permissions = array('channel'=>$data['channel'], 'module'=>$data['module'], 'template'=>$data['template']);
+        $permissions = array('channel' => $data['channel'], 'module' => $data['module'], 'template' => $data['template']);
         // And we don't want them hanging around in the data arround to be stuck into the database.
         unset($data['channel']);
         unset($data['module']);
@@ -428,7 +428,7 @@ class Member_group_model extends CI_Model
      * @param array $where_conditions The where conditions you wish to limit your search by.
      * @param array $fields The fields you wish to select.
      */
-    public function get(array $where_conditions=array(), array $fields=array('group_id', 'site_id', 'group_title'))
+    public function get(array $where_conditions = array(), array $fields = array('group_id', 'site_id', 'group_title'))
     {
         ee()->load->library('logger');
         ee()->logger->deprecated('6.0.0', "ee('Model')->get('Role')");
@@ -443,7 +443,7 @@ class Member_group_model extends CI_Model
         }
         $this->db->select(implode(',', $fields));
 
-        foreach ($where_conditions as $field=>$value) {
+        foreach ($where_conditions as $field => $value) {
             if (is_array($value)) {
                 $this->db->where_in($field, $value);
             } else {

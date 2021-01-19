@@ -230,9 +230,9 @@ class EE_Lang
         'Chuang' => 'za',
         'Zulu' => 'zu'
     ];
-    public $language	= array();
-    public $addon_language	= array();
-    public $is_loaded	= array();
+    public $language = array();
+    public $addon_language = array();
+    public $is_loaded = array();
 
     /**
      * Add a language file to the main language array

@@ -17,7 +17,7 @@ class Duration_Ft extends EE_Fieldtype
      * @var array $info Legacy Fieldtype info array
      */
     public $info = array(
-        'name'    => 'Duration',
+        'name' => 'Duration',
         'version' => '1.0.0'
     );
 
@@ -78,8 +78,8 @@ class Duration_Ft extends EE_Fieldtype
         ee()->lang->loadfile('fieldtypes');
 
         $field = array(
-            'name'        => $this->field_name,
-            'value'       => $data,
+            'name' => $this->field_name,
+            'value' => $data,
             'placeholder' => sprintf(
                 lang('duration_ft_placeholder'),
                 lang('duration_ft_' . $this->settings['units']),
@@ -175,8 +175,8 @@ class Duration_Ft extends EE_Fieldtype
         }
 
         return array('field_options_duration' => array(
-            'label'    => 'field_options',
-            'group'    => 'duration',
+            'label' => 'field_options',
+            'group' => 'duration',
             'settings' => $settings
         ));
     }

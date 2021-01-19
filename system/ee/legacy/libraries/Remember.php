@@ -51,22 +51,22 @@ class Remember
         $active = ee()->db
             ->order_by('last_refresh', 'ASC')
             ->get_where($this->table, array(
-                'member_id'		=> ee()->session->userdata('member_id'),
-                'site_id'		=> ee()->config->item('site_id')
+                'member_id' => ee()->session->userdata('member_id'),
+                'site_id' => ee()->config->item('site_id')
             ))
             ->result();
 
         $this->cookie_value = $this->_generate_id();
 
         $this->data = array(
-            'remember_me_id'	=> $this->cookie_value,
-            'member_id'			=> ee()->session->userdata('member_id'),
-            'ip_address'		=> $this->ip_address,
-            'user_agent'		=> $this->user_agent,
-            'admin_sess'		=> ee()->session->userdata('admin_sess'),
-            'site_id'			=> ee()->config->item('site_id'),
-            'expiration'		=> ee()->localize->now + $this->expiry,
-            'last_refresh'		=> ee()->localize->now
+            'remember_me_id' => $this->cookie_value,
+            'member_id' => ee()->session->userdata('member_id'),
+            'ip_address' => $this->ip_address,
+            'user_agent' => $this->user_agent,
+            'admin_sess' => ee()->session->userdata('admin_sess'),
+            'site_id' => ee()->config->item('site_id'),
+            'expiration' => ee()->localize->now + $this->expiry,
+            'last_refresh' => ee()->localize->now
         );
 
         ee()->db->set($this->data);
@@ -160,7 +160,7 @@ class Remember
             return;
         }
 
-        $yesterday = ee()->localize->now - 60*60*24;
+        $yesterday = ee()->localize->now - 60 * 60 * 24;
 
         if ($this->data['last_refresh'] < $yesterday) {
             $id = $this->_generate_id();

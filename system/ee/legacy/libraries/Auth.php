@@ -53,10 +53,10 @@ class Auth
     // the hash function, so they must be unique!
 
     private $hash_algos = array(
-        128		=> 'sha512',
-        64		=> 'sha256',
-        40		=> 'sha1',
-        32		=> 'md5'
+        128 => 'sha512',
+        64 => 'sha256',
+        40 => 'sha1',
+        32 => 'md5'
     );
 
     public const BCRYPT_HASH_LENGTH = 60;
@@ -116,9 +116,8 @@ class Auth
      */
     public function authenticate_http_basic(
         $not_allowed_groups = array(),
-        $realm='Authentication Required'
-    )
-    {
+        $realm = 'Authentication Required'
+    ) {
         $always_disallowed = array(2, 3, 4);
 
         $not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);
@@ -225,7 +224,7 @@ class Auth
 
             if (AJAX_REQUEST) {
                 ee()->output->send_ajax_response(array(
-                    'messageType'	=> 'logout'
+                    'messageType' => 'logout'
                 ));
             }
 
@@ -354,8 +353,8 @@ class Auth
         }
 
         return array(
-            'salt'		=> $salt,
-            'password'	=> hash($this->hash_algos[$h_byte_size], $salt . $password)
+            'salt' => $salt,
+            'password' => hash($this->hash_algos[$h_byte_size], $salt . $password)
         );
     }
 

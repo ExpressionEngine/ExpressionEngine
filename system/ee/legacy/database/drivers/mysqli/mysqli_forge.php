@@ -49,7 +49,7 @@ class CI_DB_mysqli_forge extends CI_DB_forge
         $current_field_count = 0;
         $sql = '';
 
-        foreach ($fields as $field=>$attributes) {
+        foreach ($fields as $field => $attributes) {
             // Numeric field names aren't allowed in databases, so if the key is
             // numeric, we know it was assigned by PHP and the developer manually
             // entered the field information, so we'll simply add it to the list
@@ -65,7 +65,7 @@ class CI_DB_mysqli_forge extends CI_DB_forge
                 }
 
                 if (array_key_exists('TYPE', $attributes)) {
-                    $sql .=  ' ' . $attributes['TYPE'];
+                    $sql .= ' ' . $attributes['TYPE'];
                 }
 
                 if (array_key_exists('CONSTRAINT', $attributes)) {

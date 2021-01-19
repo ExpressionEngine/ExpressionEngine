@@ -15,8 +15,8 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 class Multi_select_ft extends OptionFieldtype
 {
     public $info = array(
-        'name'		=> 'Multi Select',
-        'version'	=> '1.0.0'
+        'name' => 'Multi Select',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = true;
@@ -67,10 +67,10 @@ class Multi_select_ft extends OptionFieldtype
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/select')->render([
                 'field_name' => $this->field_name,
-                'choices'    => $field_options,
-                'value'      => $values,
-                'multi'      => true,
-                'disabled'   => $this->get_setting('field_disabled')
+                'choices' => $field_options,
+                'value' => $values,
+                'multi' => true,
+                'disabled' => $this->get_setting('field_disabled')
             ]);
         }
 

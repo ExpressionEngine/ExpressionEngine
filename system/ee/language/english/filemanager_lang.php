@@ -726,7 +726,7 @@ $lang = array(
 
     'pagination_page' => 'Page',
 
-    'php_max_filesize'=>'Maximum upload size allowed by PHP is %s',
+    'php_max_filesize' => 'Maximum upload size allowed by PHP is %s',
 
     'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
 

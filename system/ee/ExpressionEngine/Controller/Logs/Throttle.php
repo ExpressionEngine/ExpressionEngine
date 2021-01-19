@@ -51,7 +51,7 @@ class Throttle extends Logs
         if (ee()->config->item('enable_throttling') == 'y') {
             $throttling_disabled = false;
             $max_page_loads = 10;
-            $lockout_time	= 30;
+            $lockout_time = 30;
 
             if (is_numeric($this->config->item('max_page_loads'))) {
                 $max_page_loads = $this->config->item('max_page_loads');

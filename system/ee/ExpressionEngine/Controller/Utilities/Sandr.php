@@ -129,13 +129,13 @@ class Sandr extends Utilities
                     'file_properties',
                     'url'
                 ),
-                'exp_global_variables'	=> array('variable_data'),
-                'exp_categories'		=> array('cat_image'),
-                'exp_forums'			=> array(
+                'exp_global_variables' => array('variable_data'),
+                'exp_categories' => array('cat_image'),
+                'exp_forums' => array(
                     'forum_name',
                     'forum_notify_emails',
                     'forum_notify_emails_topics'),
-                'exp_forum_boards'		=> array(
+                'exp_forum_boards' => array(
                     'board_label',
                     'board_forum_url',
                     'board_upload_path',

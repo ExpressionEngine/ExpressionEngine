@@ -244,8 +244,8 @@ class EE_relationship_tree_builder
             $relationship_prefix = $match[1];
 
             // some helpful booleans
-            $is_closing				= ($match[0][1] == '/');
-            $is_only_relationship	= (substr($relationship_prefix, -1) != ':');
+            $is_closing = ($match[0][1] == '/');
+            $is_only_relationship = (substr($relationship_prefix, -1) != ':');
 
             $tag_name = rtrim($relationship_prefix, ':');
             $in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
@@ -314,13 +314,13 @@ class EE_relationship_tree_builder
 
             // instantiate and hook to tree
             $node = new $node_class($tag_name, array(
-                'field_name'  => $determinant_relationship,
-                'tag_info'	  => array(),
-                'entry_ids'	  => array(),
-                'params'	  => $params,
-                'shortcut'	  => $is_only_relationship ? false : ltrim($tag, ':'),
-                'open_tag'	  => $match[0],
-                'in_grid'	  => $in_grid,
+                'field_name' => $determinant_relationship,
+                'tag_info' => array(),
+                'entry_ids' => array(),
+                'params' => $params,
+                'shortcut' => $is_only_relationship ? false : ltrim($tag, ':'),
+                'open_tag' => $match[0],
+                'in_grid' => $in_grid,
                 'in_fluid_field' => $in_fluid_field,
                 'in_cond' => $type == 'conditional' ? true : false
             ));
@@ -383,7 +383,7 @@ class EE_relationship_tree_builder
             // on the parent since our query is not limited in breadth.
             // This does not apply to an un-prefixed sibling tag which is
             // handled as regular subtree below.
-            if ($node->field_name == 'siblings' &&  ! $is_root_sibling) {
+            if ($node->field_name == 'siblings' && ! $is_root_sibling) {
                 $siblings = array();
                 $possible_siblings = $node->parent()->entry_ids();
 

@@ -62,7 +62,7 @@ class Snippet extends FileSyncedModel
 
         $path = $this->getFolderPath();
         $file = $this->snippet_name;
-        $ext  = '.html';
+        $ext = '.html';
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;

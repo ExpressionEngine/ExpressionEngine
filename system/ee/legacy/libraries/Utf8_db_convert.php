@@ -51,9 +51,9 @@ class Utf8_db_convert
         }
 
         foreach ($tables as $table) {
-            $count  = ee()->db->count_all($table);
+            $count = ee()->db->count_all($table);
             $offset = 0;
-            $batch  = 100;
+            $batch = 100;
 
             if ($count > 0) {
                 for ($i = 0; $i < $count; $i = $i + $batch) {

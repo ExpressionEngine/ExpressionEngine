@@ -31,7 +31,7 @@ class Bookmarks extends Settings
         }
 
         $this->index_url = $this->base_url;
-        $this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
+        $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
     }
 
     /**
@@ -64,7 +64,7 @@ class Bookmarks extends Settings
                 array(
                     'name' => 'selection[]',
                     'value' => $id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -77,10 +77,10 @@ class Bookmarks extends Settings
                     'encode' => false
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -300,9 +300,9 @@ class Bookmarks extends Settings
 
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'name',
-                'label'   => 'lang:bookmark_name',
-                'rules'   => 'required|valid_xss_check'
+                'field' => 'name',
+                'label' => 'lang:bookmark_name',
+                'rules' => 'required|valid_xss_check'
             )
         ));
 

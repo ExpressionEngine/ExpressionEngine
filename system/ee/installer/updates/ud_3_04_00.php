@@ -50,10 +50,10 @@ class Updater
             'member_groups',
             array(
                 'can_view_homepage_news' => array(
-                    'type'       => 'char',
+                    'type' => 'char',
                     'constraint' => 1,
-                    'default'    => 'y',
-                    'null'       => false
+                    'default' => 'y',
+                    'null' => false
                 )
             )
         );
@@ -68,11 +68,11 @@ class Updater
         ee()->smartforge->add_column(
             'channels',
             array(
-                'max_entries'      => array(
-                    'type'         => 'int',
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 0
+                'max_entries' => array(
+                    'type' => 'int',
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             )
         );
@@ -80,12 +80,12 @@ class Updater
         ee()->smartforge->add_column(
             'channels',
             array(
-                'total_records'    => array(
-                    'type'         => 'mediumint',
-                    'constraint'   => 8,
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 0
+                'total_records' => array(
+                    'type' => 'mediumint',
+                    'constraint' => 8,
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             ),
             'total_entries'
@@ -105,10 +105,10 @@ class Updater
             'channel_titles',
             array(
                 'status_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 )
             ),
             'status'
@@ -120,8 +120,8 @@ class Updater
             'channels',
             array(
                 'preview_url' => array(
-                    'type'    => 'VARCHAR(100)',
-                    'null'    => true,
+                    'type' => 'VARCHAR(100)',
+                    'null' => true,
                 )
             )
         );
@@ -137,10 +137,10 @@ class Updater
             'members',
             array(
                 'username' => array(
-                    'name'			=> 'username',
-                    'type'			=> 'varchar',
-                    'constraint'	=> USERNAME_MAX_LENGTH,
-                    'null'			=> false
+                    'name' => 'username',
+                    'type' => 'varchar',
+                    'constraint' => USERNAME_MAX_LENGTH,
+                    'null' => false
                 )
             )
         );
@@ -149,10 +149,10 @@ class Updater
             'members',
             array(
                 'screen_name' => array(
-                    'name'			=> 'screen_name',
-                    'type'			=> 'varchar',
-                    'constraint'	=> USERNAME_MAX_LENGTH,
-                    'null'			=> false
+                    'name' => 'screen_name',
+                    'type' => 'varchar',
+                    'constraint' => USERNAME_MAX_LENGTH,
+                    'null' => false
                 )
             )
         );
@@ -166,11 +166,11 @@ class Updater
         ee()->smartforge->add_column(
             'member_groups',
             array(
-                'menu_set_id'      => array(
-                    'type'         => 'int',
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 1
+                'menu_set_id' => array(
+                    'type' => 'int',
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 1
                 ),
             )
         );
@@ -178,46 +178,46 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'item_id' => array(
-                    'type'			 => 'int',
-                    'constraint'     => 10,
-                    'null'			 => false,
-                    'unsigned'		 => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'parent_id' => array(
-                    'type'			=> 'int',
-                    'constraint'    => 10,
-                    'unsigned'		=> true,
-                    'null'			=> false,
-                    'default'		=> 0
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 ),
                 'set_id' => array(
-                    'type'			=> 'int',
-                    'constraint'    => 10,
-                    'unsigned'		=> true,
-                    'null'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => true
                 ),
                 'name' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 50,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => true
                 ),
                 'data' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 255,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 255,
+                    'null' => true
                 ),
                 'type' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 10,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 10,
+                    'null' => true
                 ),
                 'sort' => array(
-                    'type'			=> 'int',
-                    'constraint'    => 5,
-                    'unsigned'		=> true,
-                    'null'			=> false,
-                    'default'       => 0
+                    'type' => 'int',
+                    'constraint' => 5,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 )
             )
         );
@@ -229,16 +229,16 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'set_id' => array(
-                    'type'			 => 'int',
-                    'constraint'     => 10,
-                    'null'			 => false,
-                    'unsigned'		 => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'name' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 50,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => true
                 )
             )
         );

@@ -42,11 +42,11 @@ class FileDimension extends Model
     );
 
     protected static $_validation_rules = array(
-        'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
+        'short_name' => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
         'resize_type' => 'enum[crop,constrain]',
-        'width'       => 'isNatural|validateDimension',
-        'height'      => 'isNatural|validateDimension',
-        'quality'     => 'isNatural|lessThan[101]'
+        'width' => 'isNatural|validateDimension',
+        'height' => 'isNatural|validateDimension',
+        'quality' => 'isNatural|lessThan[101]'
     );
 
     protected $id;
@@ -103,18 +103,18 @@ class FileDimension extends Model
             return false;
         }
 
-        $width  = $this->width;
+        $width = $this->width;
         $height = $this->height;
 
         $force_master_dim = false;
 
         // If either h/w unspecified, calculate the other here
         if ($this->width == '' or $this->width == 0) {
-            $width = ($original_dimensions[1]/$original_dimensions[0])*$this->height;
+            $width = ($original_dimensions[1] / $original_dimensions[0]) * $this->height;
             $force_master_dim = 'height';
         } elseif ($this->height == '' or $this->height == 0) {
             // Old h/old w * new width
-            $height = ($original_dimensions[0]/$original_dimensions[1])*$this->width;
+            $height = ($original_dimensions[0] / $original_dimensions[1]) * $this->width;
             $force_master_dim = 'width';
         }
 
@@ -126,18 +126,18 @@ class FileDimension extends Model
             )) {
             return array(
                 'height' => $original_dimensions[0],
-                'width'  => $original_dimensions[1],
+                'width' => $original_dimensions[1],
             );
         }
 
         $config = array(
-            'source_image'   => $file->getAbsolutePath(),
-            'image_library'  => ee()->config->item('image_resize_protocol'),
-            'library_path'   => ee()->config->item('image_library_path'),
+            'source_image' => $file->getAbsolutePath(),
+            'image_library' => ee()->config->item('image_resize_protocol'),
+            'library_path' => ee()->config->item('image_library_path'),
             'maintain_ratio' => true,
-            'width'          => $width,
-            'height'         => $height,
-            'master_dim'     => $force_master_dim
+            'width' => $width,
+            'height' => $height,
+            'master_dim' => $force_master_dim
         );
 
         if (isset($this->resize_type) && $this->resize_type == 'crop') {
@@ -192,7 +192,7 @@ class FileDimension extends Model
 
         $dimensions = array(
             'height' => round(ee()->image_lib->height),
-            'width'  => round(ee()->image_lib->width),
+            'width' => round(ee()->image_lib->width),
         );
 
         return $dimensions;

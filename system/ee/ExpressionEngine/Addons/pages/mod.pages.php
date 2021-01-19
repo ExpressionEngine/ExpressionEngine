@@ -24,8 +24,8 @@ class Pages
      */
     public function load_site_pages()
     {
-        $sites			= ee()->TMPL->fetch_param('site', '');
-        $current_site	= ee()->config->item('site_short_name');
+        $sites = ee()->TMPL->fetch_param('site', '');
+        $current_site = ee()->config->item('site_short_name');
 
         // Always include the current site
 

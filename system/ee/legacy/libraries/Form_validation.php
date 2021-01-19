@@ -14,16 +14,16 @@
 class EE_Form_validation
 {
     public $CI;
-    public $_field_data			= array();
-    public $_config_rules			= array();
-    public $_error_array			= array();
-    public $_error_messages		= array();
-    public $_error_prefix			= '<em class="ee-form-error-message">';
-    public $_error_suffix			= '</em>';
-    public $error_string			= '';
-    public $_safe_form_data		= false;
-    public $old_values				= array();
-    public $_fieldtype				= null;
+    public $_field_data = array();
+    public $_config_rules = array();
+    public $_error_array = array();
+    public $_error_messages = array();
+    public $_error_prefix = '<em class="ee-form-error-message">';
+    public $_error_suffix = '</em>';
+    public $error_string = '';
+    public $_safe_form_data = false;
+    public $old_values = array();
+    public $_fieldtype = null;
 
     /**
      * Constructor
@@ -63,10 +63,10 @@ class EE_Form_validation
      */
     public function setCallbackObject($obj)
     {
-        $obj->lang =& ee()->lang;
-        $obj->input =& ee()->input;
-        $obj->security =& ee()->security;
-        $this->CI =& $obj;
+        $obj->lang = & ee()->lang;
+        $obj->input = & ee()->input;
+        $obj->security = & ee()->security;
+        $this->CI = & $obj;
     }
 
     /**
@@ -228,7 +228,7 @@ class EE_Form_validation
         }
 
         // No fields? Nothing to do...
-        if (! is_string($field) or  ! is_string($rules) or $field == '') {
+        if (! is_string($field) or ! is_string($rules) or $field == '') {
             return $this;
         }
 
@@ -252,19 +252,19 @@ class EE_Form_validation
 
             $is_array = true;
         } else {
-            $indexes	= array();
-            $is_array	= false;
+            $indexes = array();
+            $is_array = false;
         }
 
         // Build our master array
         $this->_field_data[$field] = array(
-            'field'				=> $field,
-            'label'				=> $label,
-            'rules'				=> $rules,
-            'is_array'			=> $is_array,
-            'keys'				=> $indexes,
-            'postdata'			=> null,
-            'error'				=> ''
+            'field' => $field,
+            'label' => $label,
+            'rules' => $rules,
+            'is_array' => $is_array,
+            'keys' => $indexes,
+            'postdata' => null,
+            'error' => ''
         );
 
         return $this;
@@ -882,8 +882,8 @@ class EE_Form_validation
             // Rules can contain a parameter: max_length[5]
             $param = false;
             if (preg_match("/(.*?)\[(.*?)\]/", $rule, $match)) {
-                $rule	= $match[1];
-                $param	= $match[2];
+                $rule = $match[1];
+                $param = $match[2];
             }
 
             // Call the function that corresponds to the rule
@@ -1198,7 +1198,7 @@ class EE_Form_validation
         if (is_array($array)) {
             if (isset($keys[$i])) {
                 if (isset($array[$keys[$i]])) {
-                    $array = $this->_reduce_array($array[$keys[$i]], $keys, ($i+1));
+                    $array = $this->_reduce_array($array[$keys[$i]], $keys, ($i + 1));
                 } else {
                     return null;
                 }
@@ -1226,14 +1226,14 @@ class EE_Form_validation
                     }
                 } else {
                     // start with a reference
-                    $post_ref =& $_POST;
+                    $post_ref = & $_POST;
 
                     // before we assign values, make a reference to the right POST key
                     if (count($row['keys']) == 1) {
-                        $post_ref =& $post_ref[current($row['keys'])];
+                        $post_ref = & $post_ref[current($row['keys'])];
                     } else {
                         foreach ($row['keys'] as $val) {
-                            $post_ref =& $post_ref[$val];
+                            $post_ref = & $post_ref[$val];
                         }
                     }
 

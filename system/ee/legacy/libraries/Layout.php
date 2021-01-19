@@ -74,10 +74,10 @@ class Layout
         $delete_fields = array();
 
         $default_settings = array(
-            'visible'		=> true,
-            'collapse'		=> false,
-            'htmlbuttons'	=> false,
-            'width'			=> '100%'
+            'visible' => true,
+            'collapse' => false,
+            'htmlbuttons' => false,
+            'width' => '100%'
         );
 
         $layout_fields = array('enable_versioning', 'comment_system_enabled');

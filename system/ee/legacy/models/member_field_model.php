@@ -13,8 +13,8 @@
  */
 class Member_field_model extends CI_Model
 {
-    private $table_data		= 'member_data';
-    private $table_fields	= 'member_fields';
+    private $table_data = 'member_data';
+    private $table_fields = 'member_fields';
 
     /**
      * Save (Create/Edit) a Member Field
@@ -30,8 +30,8 @@ class Member_field_model extends CI_Model
         }
 
         // Sanitize fields allowed
-        $fields	= ee()->db->list_fields('member_fields');
-        $data	= array_intersect_key($data, array_flip($fields));
+        $fields = ee()->db->list_fields('member_fields');
+        $data = array_intersect_key($data, array_flip($fields));
 
         // Clean up field list items
         if (isset($data['m_field_list_items']) && $data['m_field_list_items'] != '') {
@@ -50,8 +50,8 @@ class Member_field_model extends CI_Model
 
         // Ensure defaults are there
         $defaults = array(
-            'm_field_description'	=> '',
-            'm_field_list_items'	=> '',
+            'm_field_description' => '',
+            'm_field_list_items' => '',
         );
 
         $data = array_merge($defaults, $data);

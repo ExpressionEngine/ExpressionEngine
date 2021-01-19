@@ -206,8 +206,8 @@ class LanguageKeysTest extends TestCase
             }
         );
 
-        $used_keys         = array_unique($used_keys);
-        $unused_keys       = array_diff(array_unique(array_keys($all_keys)), $used_keys);
+        $used_keys = array_unique($used_keys);
+        $unused_keys = array_diff(array_unique(array_keys($all_keys)), $used_keys);
         $unused_keys_count = count($unused_keys);
 
         echo "\n- " . implode("\n- ", $unused_keys);

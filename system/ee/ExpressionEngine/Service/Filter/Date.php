@@ -43,11 +43,11 @@ class Date extends Filter
         $this->label = 'date_filter';
         $this->placeholder = lang('custom_date');
         $this->options = array(
-            '86400'     => ucwords(lang('last') . ' 24 ' . lang('hours')),
-            '604800'    => ucwords(lang('last') . ' 7 ' . lang('days')),
-            '2592000'   => ucwords(lang('last') . ' 30 ' . lang('days')),
-            '15552000'  => ucwords(lang('last') . ' 180 ' . lang('days')),
-            '31536000'  => ucwords(lang('last') . ' 365 ' . lang('days')),
+            '86400' => ucwords(lang('last') . ' 24 ' . lang('hours')),
+            '604800' => ucwords(lang('last') . ' 7 ' . lang('days')),
+            '2592000' => ucwords(lang('last') . ' 30 ' . lang('days')),
+            '15552000' => ucwords(lang('last') . ' 180 ' . lang('days')),
+            '31536000' => ucwords(lang('last') . ' 365 ' . lang('days')),
         );
 
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
@@ -110,7 +110,7 @@ class Date extends Filter
                 $date = ee()->localize->string_to_timestamp($value . ' 0:00', true, $date_format . ' G:i');
                 $this->timestamp = $date;
                 $this->display_value = ee()->localize->format_date($date_format, $date);
-                $this->selected_value = array($date, $date+86400);
+                $this->selected_value = array($date, $date + 86400);
             }
         }
     }
@@ -161,13 +161,13 @@ class Date extends Filter
         $url_without_filter->removeQueryStringVariable($this->name);
 
         $filter = array(
-            'label'              => $this->label,
-            'name'               => $this->name,
-            'value'              => $value,
-            'custom_value'       => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
-            'placeholder'        => $this->placeholder,
-            'options'            => $options,
-            'timestamp'          => $this->timestamp,
+            'label' => $this->label,
+            'name' => $this->name,
+            'value' => $value,
+            'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
+            'placeholder' => $this->placeholder,
+            'options' => $options,
+            'timestamp' => $this->timestamp,
             'url_without_filter' => $url_without_filter,
         );
 

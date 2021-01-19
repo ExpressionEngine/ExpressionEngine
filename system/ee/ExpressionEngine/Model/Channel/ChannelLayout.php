@@ -46,9 +46,9 @@ class ChannelLayout extends Model implements LayoutInterface
     );
 
     protected static $_validation_rules = array(
-        'site_id'      => 'required|isNatural',
-        'channel_id'   => 'required|isNatural',
-        'layout_name'  => 'required',
+        'site_id' => 'required|isNatural',
+        'channel_id' => 'required|isNatural',
+        'layout_name' => 'required',
     );
 
     protected $layout_id;
@@ -209,8 +209,8 @@ class ChannelLayout extends Model implements LayoutInterface
     {
         $field_layout = $this->field_layout;
         $field_info = array(
-            'field'     => 'field_id_' . $field->field_id,
-            'visible'   => true,
+            'field' => 'field_id_' . $field->field_id,
+            'visible' => true,
             'collapsed' => $field->getProperty('field_is_hidden')
         );
         $field_layout[0]['fields'][] = $field_info;

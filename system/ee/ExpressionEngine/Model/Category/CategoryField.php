@@ -23,12 +23,12 @@ class CategoryField extends FieldModel
     protected static $_hook_id = 'category_field';
 
     protected static $_typed_columns = array(
-        'field_ta_rows'     => 'int',
-        'field_maxl'        => 'int',
-        'field_required'    => 'boolString',
-        'field_show_fmt'    => 'boolString',
-        'field_order'       => 'int',
-        'field_settings'    => 'json',
+        'field_ta_rows' => 'int',
+        'field_maxl' => 'int',
+        'field_required' => 'boolString',
+        'field_show_fmt' => 'boolString',
+        'field_order' => 'int',
+        'field_settings' => 'json',
         'legacy_field_data' => 'boolString',
     );
 
@@ -43,14 +43,14 @@ class CategoryField extends FieldModel
     );
 
     protected static $_validation_rules = array(
-        'field_type'        => 'required|enum[text,textarea,select]',
-        'field_label'       => 'required|xss|noHtml|maxLength[50]',
-        'field_name'        => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
-        'field_ta_rows'     => 'integer',
-        'field_maxl'        => 'integer',
-        'field_required'    => 'enum[y,n]',
-        'field_show_fmt'    => 'enum[y,n]',
-        'field_order'       => 'integer',
+        'field_type' => 'required|enum[text,textarea,select]',
+        'field_label' => 'required|xss|noHtml|maxLength[50]',
+        'field_name' => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+        'field_ta_rows' => 'integer',
+        'field_maxl' => 'integer',
+        'field_required' => 'enum[y,n]',
+        'field_show_fmt' => 'enum[y,n]',
+        'field_order' => 'integer',
         'legacy_field_data' => 'enum[y,n]'
     );
 

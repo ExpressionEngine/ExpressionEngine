@@ -100,8 +100,8 @@ class Updater
                 'channels',
                 array(
                     'preview_url' => array(
-                        'type'    => 'VARCHAR(100)',
-                        'null'    => true,
+                        'type' => 'VARCHAR(100)',
+                        'null' => true,
                     )
                 )
             );

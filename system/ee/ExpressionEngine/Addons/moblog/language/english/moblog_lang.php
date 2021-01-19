@@ -79,16 +79,16 @@ $lang = array(
     'moblog_email_login' =>
     'Email account username',
 
-    'moblog_email_password'	=>
+    'moblog_email_password' =>
     'Email account password',
 
     'data_encrypted' =>
     'Data encrypted on submit',
 
-    'moblog_subject_prefix'	=>
+    'moblog_subject_prefix' =>
     'Moblog subject prefix',
 
-    'moblog_subject_subtext'	=>
+    'moblog_subject_subtext' =>
     'Leave blank to automatically accept all emails.',
 
     'moblog_auth_required' =>
@@ -221,7 +221,7 @@ $lang = array(
     'unable_to_resize' =>
     'Unable to resize image',
 
-    ''=>''
+    '' => ''
 );
 
 // EOF

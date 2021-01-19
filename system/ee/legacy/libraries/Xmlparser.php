@@ -27,8 +27,8 @@ class EE_XMLparser
 {
     public $tagdata;
     public $index;
-    public $errors		= array();
-    public $encoding 	= '';		// 'ISO-8859-1', 'UTF-8', or 'US-ASCII' - empty string should auto-detect
+    public $errors = array();
+    public $encoding = '';		// 'ISO-8859-1', 'UTF-8', or 'US-ASCII' - empty string should auto-detect
 
     public function __construct()
     {
@@ -54,9 +54,9 @@ class EE_XMLparser
 
                 if ($item['type'] == 'open' or $item['type'] == 'complete') {
                     $elements[$current] = new XML_Cache();
-                    $elements[$current]->tag		= $item['tag'];
-                    $elements[$current]->attributes	= (array_key_exists('attributes', $item)) ? $item['attributes'] : '';
-                    $elements[$current]->value		= (array_key_exists('value', $item)) ? $item['value'] : '';
+                    $elements[$current]->tag = $item['tag'];
+                    $elements[$current]->attributes = (array_key_exists('attributes', $item)) ? $item['attributes'] : '';
+                    $elements[$current]->value = (array_key_exists('value', $item)) ? $item['value'] : '';
 
                     /** -------------------------------------
                     /**  Create a new child layer for 'open'
@@ -91,12 +91,12 @@ class EE_XMLparser
         }
 
         $defaults = array(
-            'data'			=>	null,
-            'structure'		=>	array(),
-            'root'			=>	'root',
-            'element'		=>	'element',
-            'delimiter'		=>	"\t",
-            'enclosure'		=>	''
+            'data' => null,
+            'structure' => array(),
+            'root' => 'root',
+            'element' => 'element',
+            'delimiter' => "\t",
+            'enclosure' => ''
         );
 
         foreach ($defaults as $key => $val) {
@@ -123,9 +123,9 @@ class EE_XMLparser
         /** -------------------------------------
         /**  Convert delimited text to array
         /** -------------------------------------*/
-        $data_arr 	= array();
-        $data		= str_replace(array("\r\n", "\r"), "\n", $data);
-        $lines		= explode("\n", $data);
+        $data_arr = array();
+        $data = str_replace(array("\r\n", "\r"), "\n", $data);
+        $lines = explode("\n", $data);
 
         if (empty($lines)) {
             $this->errors[] = "No data to work with";

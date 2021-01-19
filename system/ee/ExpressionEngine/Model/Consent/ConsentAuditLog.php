@@ -21,10 +21,10 @@ class ConsentAuditLog extends Model
     protected static $_table_name = 'consent_audit_log';
 
     protected static $_typed_columns = [
-        'consent_audit_id'   => 'int',
+        'consent_audit_id' => 'int',
         'consent_request_id' => 'int',
-        'member_id'          => 'int',
-        'log_date'           => 'timestamp',
+        'member_id' => 'int',
+        'log_date' => 'timestamp',
     ];
 
     protected static $_relationships = [
@@ -37,11 +37,11 @@ class ConsentAuditLog extends Model
     ];
 
     protected static $_validation_rules = [
-        'consent_audit_id'   => 'required',
+        'consent_audit_id' => 'required',
         'consent_request_id' => 'required',
-        'member_id'          => 'required',
-        'action'             => 'required',
-        'log_date'           => 'required',
+        'member_id' => 'required',
+        'action' => 'required',
+        'log_date' => 'required',
     ];
 
     // protected static $_events = [];

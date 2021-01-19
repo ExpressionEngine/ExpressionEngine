@@ -542,15 +542,15 @@ $setup = [
 
         // ..\Template
         'Template' => 'Model\Template\Template',
-        'TemplateGroup'  => 'Model\Template\TemplateGroup',
-        'TemplateRoute'  => 'Model\Template\TemplateRoute',
-        'GlobalVariable'  => 'Model\Template\GlobalVariable',
+        'TemplateGroup' => 'Model\Template\TemplateGroup',
+        'TemplateRoute' => 'Model\Template\TemplateRoute',
+        'GlobalVariable' => 'Model\Template\GlobalVariable',
         'Snippet' => 'Model\Template\Snippet',
         'SpecialtyTemplate' => 'Model\Template\SpecialtyTemplate',
 
         // ..\Channel
         'Channel' => 'Model\Channel\Channel',
-        'ChannelFieldGroup'=> 'Model\Channel\ChannelFieldGroup',
+        'ChannelFieldGroup' => 'Model\Channel\ChannelFieldGroup',
         'ChannelField' => 'Model\Channel\ChannelField',
         'ChannelEntry' => 'Model\Channel\ChannelEntry',
         'ChannelEntryAutosave' => 'Model\Channel\ChannelEntryAutosave',
@@ -614,7 +614,7 @@ $setup = [
         'Config' => 'Model\Config\Config',
 
         // ..\EntryManager
-        'EntryManagerView'       => 'Model\EntryManager\View',
+        'EntryManagerView' => 'Model\EntryManager\View',
         'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
     ),
 
@@ -650,7 +650,7 @@ if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {
     foreach ($setup['models'] as $model => $namespace) {
         $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
         if (file_exists($pro_file)) {
-            $setup['models'][$model] =  "\ExpressionEngine\Addons\Pro\\" . $namespace;
+            $setup['models'][$model] = "\ExpressionEngine\Addons\Pro\\" . $namespace;
         }
     }
 }

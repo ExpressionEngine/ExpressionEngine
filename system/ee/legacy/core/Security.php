@@ -121,7 +121,7 @@ class EE_Security
         }
 
         // Retrieve the current token
-        $csrf_token	= ee()->csrf->get_user_token();
+        $csrf_token = ee()->csrf->get_user_token();
 
         // Set the constant and the legacy constants. Le sigh.
         define('CSRF_TOKEN', $csrf_token);

@@ -135,7 +135,7 @@ abstract class AbstractFiles extends CP_Controller
 
         if ($active !== null) {
             $toolbar_items['sync'] = [
-                'href'  => ee('CP/URL')->make('files/uploads/sync/' . $active),
+                'href' => ee('CP/URL')->make('files/uploads/sync/' . $active),
                 'title' => lang('sync')
             ];
         }
@@ -155,9 +155,9 @@ abstract class AbstractFiles extends CP_Controller
     protected function buildTable($files, $limit, $offset)
     {
         $table = ee('CP/Table', array(
-            'sort_col'   => 'date_added',
-            'sort_dir'   => 'desc',
-            'class'      => 'tbl-fixed'
+            'sort_col' => 'date_added',
+            'sort_dir' => 'desc',
+            'class' => 'tbl-fixed'
         ));
 
         $table->setColumns(
@@ -171,10 +171,10 @@ abstract class AbstractFiles extends CP_Controller
                 'file_type',
                 'date_added',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -276,8 +276,8 @@ abstract class AbstractFiles extends CP_Controller
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 

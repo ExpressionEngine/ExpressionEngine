@@ -21,8 +21,8 @@ class Permission extends Model
 
     protected static $_typed_columns = [
         'permission_id' => 'int',
-        'role_id'       => 'int',
-        'site_id'       => 'int',
+        'role_id' => 'int',
+        'site_id' => 'int',
     ];
 
     protected static $_relationships = [
@@ -36,9 +36,9 @@ class Permission extends Model
 
     protected static $_validation_rules = [
         'permission_id' => 'required',
-        'role_id'       => 'required',
-        'site_id'       => 'required',
-        'permission'    => 'required',
+        'role_id' => 'required',
+        'site_id' => 'required',
+        'permission' => 'required',
     ];
 
     protected static $_events = [];

@@ -13,7 +13,7 @@
  */
 class EE_Stats
 {
-    protected $_statdata	= array();
+    protected $_statdata = array();
 
     public $stats_cache = array();
 
@@ -62,11 +62,11 @@ class EE_Stats
         }
 
         //  Assign users to a multi-dimensional array
-        $total_logged	= 0;
-        $total_guests	= 0;
-        $total_anon		= 0;
-        $update 		= false;
-        $current_names	= array();
+        $total_logged = 0;
+        $total_guests = 0;
+        $total_anon = 0;
+        $update = false;
+        $current_names = array();
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -110,12 +110,12 @@ class EE_Stats
 
         //  Update online_users table
         $data = array(
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'name'			=> $name,
-            'ip_address'	=> ee()->input->ip_address(),
-            'date'			=> ee()->localize->now,
-            'anon'			=> $anon,
-            'site_id'		=> ee()->config->item('site_id')
+            'member_id' => ee()->session->userdata('member_id'),
+            'name' => $name,
+            'ip_address' => ee()->input->ip_address(),
+            'date' => ee()->localize->now,
+            'anon' => $anon,
+            'site_id' => ee()->config->item('site_id')
         );
 
         if ($update == false) {
@@ -136,13 +136,13 @@ class EE_Stats
 
         //  Update the stats
         if ($total_visitors > $query->row('most_visitors')) {
-            $row['most_visitors'] 	= $total_visitors;
-            $row['most_visitor_date'] 	= ee()->localize->now;
+            $row['most_visitors'] = $total_visitors;
+            $row['most_visitor_date'] = ee()->localize->now;
 
             $data = array(
-                'most_visitors'		=> $total_visitors,
-                'most_visitor_date'	=> ee()->localize->now,
-                'last_visitor_date'	=> ee()->localize->now,
+                'most_visitors' => $total_visitors,
+                'most_visitor_date' => ee()->localize->now,
+                'last_visitor_date' => ee()->localize->now,
             );
 
             ee()->db->where('site_id', ee()->config->item('site_id'));
@@ -159,25 +159,25 @@ class EE_Stats
 
         //  Assign the stats
         $this->_statdata = array(
-            'recent_member'				=> $row['recent_member'],
-            'recent_member_id'			=> $row['recent_member_id'],
-            'total_members'				=> $row['total_members'],
-            'total_entries'				=> $row['total_entries'],
-            'total_forum_topics'		=> $row['total_forum_topics'],
-            'total_forum_posts'			=> $row['total_forum_posts']  + $row['total_forum_topics'],
-            'total_forum_replies'		=> $row['total_forum_posts'],
-            'total_comments'			=> $row['total_comments'],
-            'most_visitors'				=> $row['most_visitors'],
-            'last_entry_date'			=> $row['last_entry_date'],
-            'last_forum_post_date'		=> $row['last_forum_post_date'],
-            'last_comment_date'			=> $row['last_comment_date'],
-            'last_cache_clear'			=> $row['last_cache_clear'],
-            'last_visitor_date'			=> $row['last_visitor_date'],
-            'most_visitor_date'			=> $row['most_visitor_date'],
-            'total_logged_in'			=> $total_logged,
-            'total_guests'				=> $total_guests,
-            'total_anon'				=> $total_anon,
-            'current_names'				=> $current_names
+            'recent_member' => $row['recent_member'],
+            'recent_member_id' => $row['recent_member_id'],
+            'total_members' => $row['total_members'],
+            'total_entries' => $row['total_entries'],
+            'total_forum_topics' => $row['total_forum_topics'],
+            'total_forum_posts' => $row['total_forum_posts'] + $row['total_forum_topics'],
+            'total_forum_replies' => $row['total_forum_posts'],
+            'total_comments' => $row['total_comments'],
+            'most_visitors' => $row['most_visitors'],
+            'last_entry_date' => $row['last_entry_date'],
+            'last_forum_post_date' => $row['last_forum_post_date'],
+            'last_comment_date' => $row['last_comment_date'],
+            'last_cache_clear' => $row['last_cache_clear'],
+            'last_visitor_date' => $row['last_visitor_date'],
+            'most_visitor_date' => $row['most_visitor_date'],
+            'total_logged_in' => $total_logged,
+            'total_guests' => $total_guests,
+            'total_anon' => $total_anon,
+            'current_names' => $current_names
         );
         unset($query);
 
@@ -233,16 +233,16 @@ class EE_Stats
             ->get('members');
 
         $name = $query->row('screen_name');
-        $mid  = $query->row('member_id');
+        $mid = $query->row('member_id');
 
         $query = ee()->db->where_not_in('role_id', array('4', '2'))
             ->select('COUNT(*) as count')
             ->get('members');
 
         $data = array(
-            'total_members'		=> $query->row('count'),
-            'recent_member'		=> $name,
-            'recent_member_id'	=> $mid
+            'total_members' => $query->row('count'),
+            'recent_member' => $name,
+            'recent_member_id' => $mid
         );
 
         ee()->db->update('stats', $data);
@@ -294,8 +294,8 @@ class EE_Stats
         $date = ($query->num_rows() == 0 or ! is_numeric($query->row('max_date'))) ? 0 : $query->row('max_date') ;
 
         $d = array(
-            'total_entries'		=> $total,
-            'last_entry_date'	=> $date
+            'total_entries' => $total,
+            'last_entry_date' => $date
         );
 
         ee()->db->where('site_id', ee()->config->item('site_id'));
@@ -320,8 +320,8 @@ class EE_Stats
             $total = $query->row('count');
 
             $d = array(
-                'total_entries'		=> $total,
-                'last_entry_date'	=> $date
+                'total_entries' => $total,
+                'last_entry_date' => $date
             );
 
             ee()->db->where('site_id', $site_id)
@@ -340,7 +340,7 @@ class EE_Stats
      * @param	boolean
      * @return 	mixed
      */
-    public function update_comment_stats($channel_id = '', $newtime = '', $global=true)
+    public function update_comment_stats($channel_id = '', $newtime = '', $global = true)
     {
         // Is the comments module installed?  Bail out if not.
         if (! ee()->db->table_exists('comments')) {
@@ -388,8 +388,8 @@ class EE_Stats
             }
 
             $data = array(
-                'total_comments'	=> $total,
-                'last_comment_date'	=> $date
+                'total_comments' => $total,
+                'last_comment_date' => $date
             );
 
             ee()->db->where('site_id', ee()->config->item('site_id'));
@@ -417,8 +417,8 @@ class EE_Stats
         // Is the comments module installed?
         if (! ee()->db->table_exists('comments')) {
             $data = array(
-                'total_comments'	=> 0,
-                'last_comment_date'	=> 0
+                'total_comments' => 0,
+                'last_comment_date' => 0
             );
 
             ee()->db->where('channel_id', $channel_id)
@@ -450,8 +450,8 @@ class EE_Stats
         }
 
         $data = array(
-            'total_comments'	=> $total,
-            'last_comment_date'	=> $date
+            'total_comments' => $total,
+            'last_comment_date' => $date
         );
 
         ee()->db->where('channel_id', $channel_id)
@@ -513,7 +513,7 @@ class EE_Stats
             $resrow = $res->row_array();
 
             $comment_total = $resrow['comment_total'] ;
-            $comment_date  = (! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
+            $comment_date = (! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
 
             ee()->db->set('total_comments', $comment_total)
                 ->set('last_comment_date', $comment_date)
@@ -558,11 +558,11 @@ class EE_Stats
         $query = ee()->db->get('online_users');
 
         // Assign users to a multi-dimensional array
-        $total_logged	= 0;
-        $total_guests	= 0;
-        $total_anon		= 0;
-        $update 		= false;
-        $current_names	= array();
+        $total_logged = 0;
+        $total_guests = 0;
+        $total_anon = 0;
+        $update = false;
+        $current_names = array();
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -607,25 +607,25 @@ class EE_Stats
         $query = ee()->db->get_where('stats', array('site_id' => ee()->config->item('site_id')));
 
         $this->_statdata = array(
-            'recent_member'				=> $query->row('recent_member'),
-            'recent_member_id'			=> $query->row('recent_member_id'),
-            'total_members'				=> $query->row('total_members'),
-            'total_entries'				=> $query->row('total_entries'),
-            'total_forum_topics'		=> $query->row('total_forum_topics'),
-            'total_forum_posts'			=> $query->row('total_forum_posts') + $query->row('total_forum_topics'),
-            'total_forum_replies'		=> $query->row('total_forum_posts'),
-            'total_comments'			=> $query->row('total_comments'),
-            'most_visitors'				=> $query->row('most_visitors'),
-            'last_entry_date'			=> $query->row('last_entry_date'),
-            'last_forum_post_date'		=> $query->row('last_forum_post_date'),
-            'last_comment_date'			=> $query->row('last_comment_date'),
-            'last_cache_clear'			=> $query->row('last_cache_clear'),
-            'last_visitor_date'			=> $query->row('last_visitor_date'),
-            'most_visitor_date'			=> $query->row('most_visitor_date'),
-            'total_logged_in'			=> $total_logged,
-            'total_guests'				=> $total_guests,
-            'total_anon'				=> $total_anon,
-            'current_names'				=> $current_names
+            'recent_member' => $query->row('recent_member'),
+            'recent_member_id' => $query->row('recent_member_id'),
+            'total_members' => $query->row('total_members'),
+            'total_entries' => $query->row('total_entries'),
+            'total_forum_topics' => $query->row('total_forum_topics'),
+            'total_forum_posts' => $query->row('total_forum_posts') + $query->row('total_forum_topics'),
+            'total_forum_replies' => $query->row('total_forum_posts'),
+            'total_comments' => $query->row('total_comments'),
+            'most_visitors' => $query->row('most_visitors'),
+            'last_entry_date' => $query->row('last_entry_date'),
+            'last_forum_post_date' => $query->row('last_forum_post_date'),
+            'last_comment_date' => $query->row('last_comment_date'),
+            'last_cache_clear' => $query->row('last_cache_clear'),
+            'last_visitor_date' => $query->row('last_visitor_date'),
+            'most_visitor_date' => $query->row('most_visitor_date'),
+            'total_logged_in' => $total_logged,
+            'total_guests' => $total_guests,
+            'total_anon' => $total_anon,
+            'current_names' => $current_names
         );
         unset($query);
     }

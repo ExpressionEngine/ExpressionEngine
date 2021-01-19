@@ -329,9 +329,9 @@ class Groups extends AbstractFieldsController
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'channel_fields',
-            'choices'    => $custom_field_options,
-            'value'      => $selected,
-            'multi'      => true,
+            'choices' => $custom_field_options,
+            'value' => $selected,
+            'multi' => true,
             'no_results' => $no_results
         ]);
     }

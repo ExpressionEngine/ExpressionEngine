@@ -136,10 +136,10 @@ class Pagination
      */
     public function render(Url $base_url)
     {
-        $prev  = ($this->current_page - 1 >= 1) ? ($this->current_page - 1) : null;
+        $prev = ($this->current_page - 1 >= 1) ? ($this->current_page - 1) : null;
         $pages = (int) ceil($this->total_count / $this->per_page);
-        $next  = ($this->current_page + 1 <= $pages) ? ($this->current_page + 1) : null;
-        $last  = $pages;
+        $next = ($this->current_page + 1 <= $pages) ? ($this->current_page + 1) : null;
+        $last = $pages;
 
         // Show no pagination unless we have at least 2 pages
         if ($pages < 2) {

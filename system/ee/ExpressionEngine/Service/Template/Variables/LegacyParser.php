@@ -44,9 +44,9 @@ class LegacyParser
     {
         $props = [];
 
-        $unprefixed_var	= preg_replace('/^' . $prefix . '/', '', $template_var);
+        $unprefixed_var = preg_replace('/^' . $prefix . '/', '', $template_var);
         $orig_field_name = substr($unprefixed_var . ' ', 0, strpos($unprefixed_var . ' ', ' '));
-        $param_string	= substr($unprefixed_var . ' ', strlen($orig_field_name));
+        $param_string = substr($unprefixed_var . ' ', strlen($orig_field_name));
 
         $field_name = $orig_field_name;
         $modifier = '';
@@ -144,7 +144,7 @@ class LegacyParser
     public function extractVariables($tagdata, $target = null)
     {
         $return['var_single'] = [];
-        $return['var_pair']   = [];
+        $return['var_pair'] = [];
 
         if ($tagdata == '') {
             return $return;
@@ -162,7 +162,7 @@ class LegacyParser
         }
 
         $temp_close = [];
-        $temp_misc  = [];
+        $temp_misc = [];
 
         foreach ($matches[1] as $key => $val) {
             if (strncmp($val, 'if ', 3) !== 0 &&
@@ -239,7 +239,7 @@ class LegacyParser
 
         // Weed out the duplicatess
         $temp_single = array_unique($temp_single);
-        $temp_pair   = array_unique($temp_pair);
+        $temp_pair = array_unique($temp_pair);
 
         // Assign Single Variables
         $var_single = [];
@@ -271,7 +271,7 @@ class LegacyParser
         }
 
         $return['var_single'] = $var_single;
-        $return['var_pair']   = $var_pair;
+        $return['var_pair'] = $var_pair;
 
         return $return;
     }

@@ -289,8 +289,8 @@ class Validator
     protected function parseRuleString($string)
     {
         if (preg_match("/(.*?)\[(.*?)\]/", $string, $match)) {
-            $rule_name	= $match[1];
-            $parameters	= $match[2];
+            $rule_name = $match[1];
+            $parameters = $match[2];
 
             $parameters = explode(',', $parameters);
             $parameters = array_map('trim', $parameters);

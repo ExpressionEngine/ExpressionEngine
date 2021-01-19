@@ -19,47 +19,47 @@ class XSS
 
     /* never allowed, string replacement */
     protected $_never_allowed_str = array(
-        'document.cookie'	=> '[removed]',
-        'document.write'	=> '[removed]',
-        '.parentNode'		=> '[removed]',
-        '.innerHTML'		=> '[removed]',
-        'window.location'	=> '[removed]',
-        '-moz-binding'		=> '[removed]',
-        '<!--'				=> '&lt;!--',
-        '-->'				=> '--&gt;',
-        '<![CDATA['			=> '&lt;![CDATA['
+        'document.cookie' => '[removed]',
+        'document.write' => '[removed]',
+        '.parentNode' => '[removed]',
+        '.innerHTML' => '[removed]',
+        'window.location' => '[removed]',
+        '-moz-binding' => '[removed]',
+        '<!--' => '&lt;!--',
+        '-->' => '--&gt;',
+        '<![CDATA[' => '&lt;![CDATA['
     );
 
     /* never allowed, regex replacement */
     protected $_never_allowed_regex = array(
-        "javascript\s*:"				=> '[removed]',
-        "expression\s*(\(|&\#40;)"		=> '[removed]', // CSS and IE
-        "vbscript\s*:"					=> '[removed]', // IE, surprise!
-        "Redirect\s+302"				=> '[removed]'
+        "javascript\s*:" => '[removed]',
+        "expression\s*(\(|&\#40;)" => '[removed]', // CSS and IE
+        "vbscript\s*:" => '[removed]', // IE, surprise!
+        "Redirect\s+302" => '[removed]'
     );
 
     /* html5 entities we need to manually decode pre PHP 5.4 */
     protected $_html5_entites = array(
-        '&Tab;'		=> '&#x00009;',
-        '&NewLine;'	=> '&#x0000A;',
-        '&excl;'	=> '&#x00021;',
-        '&quot;'	=> '&#x00022;',
-        '&QUOT;'	=> '&#x00022;',
-        '&num;'		=> '&#x00023;',
-        '&dollar;'	=> '&#x00024;',
-        '&percnt;'	=> '&#x00025;',
-        '&amp;'		=> '&#x00026;',
-        '&lpar;'	=> '&#x00028;',
-        '&rpar;'	=> '&#x00029;',
-        '&ast;'		=> '&#x0002A;',
-        '&plus;'	=> '&#x0002B;',
-        '&comma;'	=> '&#x0002C;',
-        '&period;'	=> '&#x0002E;',
-        '&sol;'		=> '&#x0002F;',
-        '&colon;'	=> '&#x0003A;',
-        '&semi;'	=> '&#x0003B;',
-        '&lt;'		=> '&#x0003C;',
-        '&gt;'		=> '&#x0003E;'
+        '&Tab;' => '&#x00009;',
+        '&NewLine;' => '&#x0000A;',
+        '&excl;' => '&#x00021;',
+        '&quot;' => '&#x00022;',
+        '&QUOT;' => '&#x00022;',
+        '&num;' => '&#x00023;',
+        '&dollar;' => '&#x00024;',
+        '&percnt;' => '&#x00025;',
+        '&amp;' => '&#x00026;',
+        '&lpar;' => '&#x00028;',
+        '&rpar;' => '&#x00029;',
+        '&ast;' => '&#x0002A;',
+        '&plus;' => '&#x0002B;',
+        '&comma;' => '&#x0002C;',
+        '&period;' => '&#x0002E;',
+        '&sol;' => '&#x0002F;',
+        '&colon;' => '&#x0003A;',
+        '&semi;' => '&#x0003B;',
+        '&lt;' => '&#x0003C;',
+        '&gt;' => '&#x0003E;'
     );
 
     /**

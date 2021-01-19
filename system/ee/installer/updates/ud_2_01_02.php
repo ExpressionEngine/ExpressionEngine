@@ -20,44 +20,44 @@ class Updater
     public function do_update()
     {
         $fields = array(
-            'show_sidebar' 	=> array(
-                'type'			=> 'char',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 'n'
+            'show_sidebar' => array(
+                'type' => 'char',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'n'
             )
         );
 
         ee()->smartforge->add_column('members', $fields, 'quick_tabs');
 
         $fields = array(
-            'm_field_cp_reg' 	=> array(
-                'type'			=> 'char',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 'n'
+            'm_field_cp_reg' => array(
+                'type' => 'char',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'n'
             )
         );
 
         ee()->smartforge->add_column('member_fields', $fields, 'm_field_reg');
 
         $fields = array(
-            'member_groups' 	=> array(
-                'name'			=> 'member_groups',
-                'type'			=> 'varchar',
-                'constraint'	=> 255,
-                'null'			=> false
+            'member_groups' => array(
+                'name' => 'member_groups',
+                'type' => 'varchar',
+                'constraint' => 255,
+                'null' => false
             )
         );
 
         ee()->smartforge->modify_column('accessories', $fields);
 
         $fields = array(
-            'can_edit_html_buttons' 	=> array(
-                'type'			=> 'char',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 'n'
+            'can_edit_html_buttons' => array(
+                'type' => 'char',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'n'
             )
         );
 

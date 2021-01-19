@@ -17,10 +17,10 @@ class TreeNodeTest extends TestCase
 {
     public function validNodeNames()
     {
-        $int	= 2;
-        $float	= 3.5;
+        $int = 2;
+        $float = 3.5;
         $string = 'testname';
-        $array	= array('a' => 'ok');
+        $array = array('a' => 'ok');
         $object = (object) $array;
 
         return array(

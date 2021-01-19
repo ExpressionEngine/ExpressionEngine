@@ -43,10 +43,10 @@ class EE_Menu
 
         $menu = array();
 
-        $menu['sites']    = $this->_site_menu();
+        $menu['sites'] = $this->_site_menu();
         $menu['channels'] = $this->_channels_menu();
         //$menu['develop']  = $this->_develop_menu(); //commenting this out as it's not used anymore anywhere
-        $menu['custom']   = null;
+        $menu['custom'] = null;
 
         $custom = ee('CP/CustomMenu');
 
@@ -312,7 +312,7 @@ class EE_Menu
                 $x = explode('|', $row);
 
                 $title = (isset($x['0'])) ? $x['0'] : '';
-                $link  = (isset($x['1'])) ? $x['1'] : '';
+                $link = (isset($x['1'])) ? $x['1'] : '';
 
                 // Look to see if the session is in the link; if so, it was
                 // it was likely stored the old way which made for possibly

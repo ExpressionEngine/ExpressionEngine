@@ -52,12 +52,12 @@
 // Individual confirm delete modals
 foreach ($logs as $log) {
     $modal_vars = array(
-        'name'      => 'modal-confirm-' . $log->id,
-        'form_url'	=> $form_url,
-        'hidden'	=> array(
-            'delete'	=> $log->id
+        'name' => 'modal-confirm-' . $log->id,
+        'form_url' => $form_url,
+        'hidden' => array(
+            'delete' => $log->id
         ),
-        'checklist'	=> array(
+        'checklist' => array(
             array(
                 'kind' => lang('view_cp_log'),
                 'desc' => $log->username . ' ' . $log->action
@@ -71,12 +71,12 @@ foreach ($logs as $log) {
 
 // Confirm delete all modal
 $modal_vars = array(
-    'name'      => 'modal-confirm-all',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'delete'	=> 'all'
+    'name' => 'modal-confirm-all',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'delete' => 'all'
     ),
-    'checklist'	=> array(
+    'checklist' => array(
         array(
             'kind' => lang('view_cp_log'),
             'desc' => lang('all')

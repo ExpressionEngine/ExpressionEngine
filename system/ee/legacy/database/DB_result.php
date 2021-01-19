@@ -17,11 +17,11 @@
  */
 class CI_DB_result
 {
-    public $result_array	= array();
-    public $result_object	= array();
-    public $current_row	= 0;
-    public $num_rows		= 0;
-    public $row_data		= null;
+    public $result_array = array();
+    public $result_object = array();
+    public $current_row = 0;
+    public $num_rows = 0;
+    public $row_data = null;
 
     protected $pdo_statement;
 

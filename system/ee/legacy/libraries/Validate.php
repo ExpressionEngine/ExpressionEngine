@@ -13,21 +13,21 @@
  */
 class EE_Validate
 {
-    public $member_id			= '';
-    public $val_type			= 'update';
-    public $fetch_lang 		= true;
-    public $require_cpw 		= false;
-    public $username			= '';
-    public $cur_username		= '';
-    public $screen_name		= '';
-    public $cur_screen_name	= '';
-    public $password			= '';
-    public $password_confirm	= '';
-    public $email				= '';
-    public $cur_email			= '';
-    public $errors 			= array();
-    public $enable_log			= false;
-    public $log_msg			= array();
+    public $member_id = '';
+    public $val_type = 'update';
+    public $fetch_lang = true;
+    public $require_cpw = false;
+    public $username = '';
+    public $cur_username = '';
+    public $screen_name = '';
+    public $cur_screen_name = '';
+    public $password = '';
+    public $password_confirm = '';
+    public $email = '';
+    public $cur_email = '';
+    public $errors = array();
+    public $enable_log = false;
+    public $log_msg = array();
 
     /**
      * Construct
@@ -42,21 +42,21 @@ class EE_Validate
 
         if (is_array($data)) {
             foreach ($vars as $val) {
-                $this->$val	= (isset($data[$val])) ? $data[$val] : '';
+                $this->$val = (isset($data[$val])) ? $data[$val] : '';
             }
         }
 
         if (isset($data['fetch_lang'])) {
-            $this->fetch_lang 	= $data['fetch_lang'];
+            $this->fetch_lang = $data['fetch_lang'];
         }
         if (isset($data['require_cpw'])) {
-            $this->require_cpw 	= $data['require_cpw'];
+            $this->require_cpw = $data['require_cpw'];
         }
         if (isset($data['enable_log'])) {
-            $this->enable_log 	= $data['enable_log'];
+            $this->enable_log = $data['enable_log'];
         }
         if (isset($data['val_type'])) {
-            $this->val_type 	= $data['val_type'];
+            $this->val_type = $data['val_type'];
         }
         if ($this->fetch_lang == true) {
             ee()->lang->loadfile('myaccount');
@@ -138,7 +138,7 @@ class EE_Validate
             ee()->db->where('LOWER(username) = ' . ee()->db->escape(strtolower($this->username)), null, false);
             $count = ee()->db->count_all_results();
 
-            if ($count  > 0) {
+            if ($count > 0) {
                 $this->errors[] = ee()->lang->line('username_taken');
             }
         }

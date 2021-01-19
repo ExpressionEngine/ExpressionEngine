@@ -13,13 +13,13 @@
  */
 class Api_channel_fields extends Api
 {
-    public $custom_fields		= array();
-    public $field_types		= array();
-    public $ft_paths			= array();
-    public $settings			= array();
-    public $native				= array();
+    public $custom_fields = array();
+    public $field_types = array();
+    public $ft_paths = array();
+    public $settings = array();
+    public $native = array();
 
-    public $ee_base_ft			= false;
+    public $ee_base_ft = false;
     public $global_settings;
 
     protected $custom_field_modules;
@@ -144,11 +144,11 @@ class Api_channel_fields extends Api
         ee()->db->select('field_id, field_type, field_fmt, field_name, site_id, field_settings');
         $query = ee()->db->get('channel_fields');
 
-        $cfields  = array();
-        $dfields  = array();
-        $rfields  = array();
-        $gfields  = array();
-        $pfields  = array();
+        $cfields = array();
+        $dfields = array();
+        $rfields = array();
+        $gfields = array();
+        $pfields = array();
         $ffields = array();
         $tfields = array();
 
@@ -196,12 +196,12 @@ class Api_channel_fields extends Api
 
         return array(
             'custom_channel_fields' => $cfields,
-            'date_fields'           => $dfields,
-            'relationship_fields'   => $rfields,
-            'grid_fields'           => $gfields,
-            'pair_custom_fields'    => $pfields,
-            'fluid_field_fields'    => $ffields,
-            'toggle_fields'         => $tfields,
+            'date_fields' => $dfields,
+            'relationship_fields' => $rfields,
+            'grid_fields' => $gfields,
+            'pair_custom_fields' => $pfields,
+            'fluid_field_fields' => $ffields,
+            'toggle_fields' => $tfields,
         );
     }
 
@@ -309,7 +309,7 @@ class Api_channel_fields extends Api
         $settings = $this->get_settings($field_id);
 
         if (isset($settings['field_name'])) {
-            $field_name	= $settings['field_name'];
+            $field_name = $settings['field_name'];
         }
 
         // Merge field settings with the global settings
@@ -317,9 +317,9 @@ class Api_channel_fields extends Api
 
         // Initialize fieldtype with settings for this field
         $this->field_types[$field_type]->_init(array(
-            'settings'		=> $settings,
-            'field_id'		=> $field_id,
-            'field_name'	=> $field_name
+            'settings' => $settings,
+            'field_id' => $field_id,
+            'field_name' => $field_name
         ));
 
         // Remember what we set up so that apply
@@ -340,8 +340,8 @@ class Api_channel_fields extends Api
      */
     public function &_instantiate_handler($field_type)
     {
-        $class		= $this->field_types[$field_type];
-        $_ft_path	= $this->ft_paths[$field_type];
+        $class = $this->field_types[$field_type];
+        $_ft_path = $this->ft_paths[$field_type];
 
         ee()->load->add_package_path($_ft_path);
 
@@ -368,7 +368,7 @@ class Api_channel_fields extends Api
 
         ee()->load->add_package_path($_ft_path, false);
 
-        $ft =& $this->field_types[$this->field_type];
+        $ft = & $this->field_types[$this->field_type];
 
         if (count($parameters)) {
             $parameters = $this->custom_field_data_hook($ft, $method, $parameters);
@@ -428,10 +428,10 @@ class Api_channel_fields extends Api
     public function delete_datatype($field_id, $data, $overrides = array())
     {
         $defaults = array(
-            'id_field'				=> 'field_id',
-            'col_settings_method'	=> 'settings_modify_column',
-            'col_prefix'			=> 'field',
-            'data_table'			=> 'channel_data'
+            'id_field' => 'field_id',
+            'col_settings_method' => 'settings_modify_column',
+            'col_prefix' => 'field',
+            'data_table' => 'channel_data'
         );
 
         foreach ($overrides as $key => $value) {
@@ -481,12 +481,12 @@ class Api_channel_fields extends Api
     public function edit_datatype($field_id, $field_type, $data, $overrides = array())
     {
         $defaults = array(
-            'id_field'				=> 'field_id',
-            'type_field'			=> 'field_type',
-            'col_settings_method'	=> 'settings_modify_column',
-            'col_prefix'			=> 'field',
-            'fields_table'			=> 'channel_fields',
-            'data_table'			=> 'channel_data'
+            'id_field' => 'field_id',
+            'type_field' => 'field_type',
+            'col_settings_method' => 'settings_modify_column',
+            'col_prefix' => 'field',
+            'fields_table' => 'channel_fields',
+            'data_table' => 'channel_data'
         );
 
         foreach ($overrides as $key => $value) {
@@ -570,10 +570,10 @@ class Api_channel_fields extends Api
     public function set_datatype($field_id, $data, $old_fields = array(), $new = true, $type_change = false, $overrides = array())
     {
         $defaults = array(
-            'id_field'				=> 'field_id',
-            'col_settings_method'	=> 'settings_modify_column',
-            'col_prefix'			=> 'field',
-            'data_table'			=> 'channel_data'
+            'id_field' => 'field_id',
+            'col_settings_method' => 'settings_modify_column',
+            'col_prefix' => 'field',
+            'data_table' => 'channel_data'
         );
 
         foreach ($overrides as $key => $value) {
@@ -689,8 +689,8 @@ class Api_channel_fields extends Api
         }
 
         foreach ($tab_modules as $name) {
-            $directory	= strtolower($name);
-            $class_name	= ucfirst($directory) . '_tab';
+            $directory = strtolower($name);
+            $class_name = ucfirst($directory) . '_tab';
 
             $mod_base_path = $this->_include_tab_file($directory);
 
@@ -744,8 +744,8 @@ class Api_channel_fields extends Api
         }
 
         foreach ($tab_modules as $name) {
-            $directory	= strtolower($name);
-            $class_name	= ucfirst($directory) . '_tab';
+            $directory = strtolower($name);
+            $class_name = ucfirst($directory) . '_tab';
 
             $mod_base_path = $this->_include_tab_file($directory);
 
@@ -847,7 +847,7 @@ class Api_channel_fields extends Api
         foreach ($array_to_clean as $field => $value) {
             // loop through each module name
             foreach ($module_names as $module_name) {
-                $module_name.="__";
+                $module_name .= "__";
 
                 if (strncmp($field, $module_name, strlen($module_name)) == 0) {
                     // new name
@@ -911,71 +911,71 @@ class Api_channel_fields extends Api
         $url_title = (isset($entry_data['url_title'])) ? $entry_data['url_title'] : '';
 
         $deft_fields = array(
-            'title' 		=> array(
-                'field_id'				=> 'title',
-                'field_label'			=> lang('title'),
-                'field_required'		=> 'y',
-                'field_data'			=> $title,
-                'field_show_fmt'		=> 'n',
-                'field_instructions'	=> '',
-                'field_text_direction'	=> 'ltr',
-                'field_type'			=> 'text',
-                'field_maxl'			=> 100
+            'title' => array(
+                'field_id' => 'title',
+                'field_label' => lang('title'),
+                'field_required' => 'y',
+                'field_data' => $title,
+                'field_show_fmt' => 'n',
+                'field_instructions' => '',
+                'field_text_direction' => 'ltr',
+                'field_type' => 'text',
+                'field_maxl' => 100
             ),
-            'url_title'		=> array(
-                'field_id'				=> 'url_title',
-                'field_label'			=> lang('url_title'),
-                'field_required'		=> 'n',
-                'field_data'			=> $url_title,
-                'field_fmt'				=> 'xhtml',
-                'field_instructions'	=> '',
-                'field_show_fmt'		=> 'n',
-                'field_text_direction'	=> 'ltr',
-                'field_type'			=> 'text',
-                'field_maxl'			=> URL_TITLE_MAX_LENGTH
+            'url_title' => array(
+                'field_id' => 'url_title',
+                'field_label' => lang('url_title'),
+                'field_required' => 'n',
+                'field_data' => $url_title,
+                'field_fmt' => 'xhtml',
+                'field_instructions' => '',
+                'field_show_fmt' => 'n',
+                'field_text_direction' => 'ltr',
+                'field_type' => 'text',
+                'field_maxl' => URL_TITLE_MAX_LENGTH
             ),
-            'entry_date'	=> array(
-                'field_id'				=> 'entry_date',
-                'field_label'			=> lang('entry_date'),
-                'field_required'		=> 'y',
-                'field_type'			=> 'date',
-                'field_text_direction'	=> 'ltr',
-                'field_data'			=> (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
-                'field_fmt'				=> 'text',
-                'field_instructions'	=> '',
-                'field_show_fmt'		=> 'n',
-                'always_show_date'		=> 'y',
-                'default_offset'		=> 0,
-                'selected'				=> 'y',
+            'entry_date' => array(
+                'field_id' => 'entry_date',
+                'field_label' => lang('entry_date'),
+                'field_required' => 'y',
+                'field_type' => 'date',
+                'field_text_direction' => 'ltr',
+                'field_data' => (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
+                'field_fmt' => 'text',
+                'field_instructions' => '',
+                'field_show_fmt' => 'n',
+                'always_show_date' => 'y',
+                'default_offset' => 0,
+                'selected' => 'y',
             ),
             'expiration_date' => array(
-                'field_id'				=> 'expiration_date',
-                'field_label'			=> lang('expiration_date'),
-                'field_required'		=> 'n',
-                'field_type'			=> 'date',
-                'field_text_direction'	=> 'ltr',
-                'field_data'			=> (isset($entry_data['expiration_date'])) ? $entry_data['expiration_date'] : '',
-                'field_fmt'				=> 'text',
-                'field_instructions'	=> '',
-                'field_show_fmt'		=> 'n',
-                'default_offset'		=> 0,
-                'selected'				=> 'y',
+                'field_id' => 'expiration_date',
+                'field_label' => lang('expiration_date'),
+                'field_required' => 'n',
+                'field_type' => 'date',
+                'field_text_direction' => 'ltr',
+                'field_data' => (isset($entry_data['expiration_date'])) ? $entry_data['expiration_date'] : '',
+                'field_fmt' => 'text',
+                'field_instructions' => '',
+                'field_show_fmt' => 'n',
+                'default_offset' => 0,
+                'selected' => 'y',
             )
         );
 
         // comment expiry here.
         $deft_fields['comment_expiration_date'] = array(
-            'field_id'				=> 'comment_expiration_date',
-            'field_label'			=> lang('comment_expiration_date'),
-            'field_required'		=> 'n',
-            'field_type'			=> 'date',
-            'field_text_direction'	=> 'ltr',
-            'field_data'			=> (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
-            'field_fmt'				=> 'text',
-            'field_instructions'	=> '',
-            'field_show_fmt'		=> 'n',
-            'default_offset'		=> $channel_data['comment_expiration'] * 86400,
-            'selected'				=> 'y',
+            'field_id' => 'comment_expiration_date',
+            'field_label' => lang('comment_expiration_date'),
+            'field_required' => 'n',
+            'field_type' => 'date',
+            'field_text_direction' => 'ltr',
+            'field_data' => (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
+            'field_fmt' => 'text',
+            'field_instructions' => '',
+            'field_show_fmt' => 'n',
+            'default_offset' => $channel_data['comment_expiration'] * 86400,
+            'selected' => 'y',
         );
 
         foreach ($deft_fields as $field_name => $f_data) {
@@ -993,9 +993,9 @@ class Api_channel_fields extends Api
         foreach ($channel_fields as $field) {
             $row = $field->getValues();
 
-            $field_fmt 		= $row['field_fmt'];
-            $field_dt 		= '';
-            $field_data		= '';
+            $field_fmt = $row['field_fmt'];
+            $field_dt = '';
+            $field_data = '';
 
             if ($bookmarklet) {
                 // Bookmarklet data perhaps?
@@ -1004,17 +1004,17 @@ class Api_channel_fields extends Api
                 }
             } else {
                 $field_data = (isset($entry_data['field_id_' . $row['field_id']])) ? $entry_data['field_id_' . $row['field_id']] : $field_data;
-                $field_dt	= (isset($entry_data['field_dt_' . $row['field_id']])) ? $entry_data['field_dt_' . $row['field_id']] : 'y';
-                $field_fmt	= (isset($entry_data['field_ft_' . $row['field_id']])) ? $entry_data['field_ft_' . $row['field_id']] : $field_fmt;
+                $field_dt = (isset($entry_data['field_dt_' . $row['field_id']])) ? $entry_data['field_dt_' . $row['field_id']] : 'y';
+                $field_fmt = (isset($entry_data['field_ft_' . $row['field_id']])) ? $entry_data['field_ft_' . $row['field_id']] : $field_fmt;
             }
 
             $settings = array(
-                'field_instructions'	=> trim($row['field_instructions']),
-                'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-                'field_fmt'				=> $field_fmt,
-                'field_dt'				=> $field_dt,
-                'field_data'			=> $field_data,
-                'field_name'			=> 'field_id_' . $row['field_id'],
+                'field_instructions' => trim($row['field_instructions']),
+                'field_text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+                'field_fmt' => $field_fmt,
+                'field_dt' => $field_dt,
+                'field_data' => $field_data,
+                'field_name' => 'field_id_' . $row['field_id'],
             );
 
             $ft_settings = array();
@@ -1163,11 +1163,11 @@ class Api_channel_fields extends Api
         }
 
         // Set some defaults
-        $native_settings['field_list_items']		= ($tmp = $this->_get_ft_data($field_type, 'field_list_items', $field_data)) ? $tmp : '';
+        $native_settings['field_list_items'] = ($tmp = $this->_get_ft_data($field_type, 'field_list_items', $field_data)) ? $tmp : '';
 
-        $native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== false) ? $native_settings['field_text_direction'] : 'ltr';
-        $native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== false) ? $native_settings['field_show_fmt'] : 'n';
-        $native_settings['field_fmt']				= ($native_settings['field_fmt'] !== false) ? $native_settings['field_fmt'] : 'xhtml';
+        $native_settings['field_text_direction'] = ($native_settings['field_text_direction'] !== false) ? $native_settings['field_text_direction'] : 'ltr';
+        $native_settings['field_show_fmt'] = ($native_settings['field_show_fmt'] !== false) ? $native_settings['field_show_fmt'] : 'n';
+        $native_settings['field_fmt'] = ($native_settings['field_fmt'] !== false) ? $native_settings['field_fmt'] : 'xhtml';
 
         if ($native_settings['field_list_items'] != '') {
             // This results in double encoding later on
@@ -1177,7 +1177,7 @@ class Api_channel_fields extends Api
         if ($native_settings['field_pre_populate'] == 'y') {
             $x = explode('_', $this->_get_ft_data($field_type, 'field_pre_populate_id', $field_data));
 
-            $native_settings['field_pre_channel_id']	= $x['0'];
+            $native_settings['field_pre_channel_id'] = $x['0'];
             $native_settings['field_pre_field_id'] = $x['1'];
         }
 
@@ -1271,10 +1271,10 @@ class Api_channel_fields extends Api
                     }
 
                     $field_info[$native_settings['field_id']] = array(
-                        'visible'     => $visibility,
-                        'collapse'    => $collapse,
+                        'visible' => $visibility,
+                        'collapse' => $collapse,
                         'htmlbuttons' => $buttons,
-                        'width'       => $width
+                        'width' => $width
                     );
 
                     ee()->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
@@ -1302,10 +1302,10 @@ class Api_channel_fields extends Api
             $buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? true : false;
 
             $field_info['publish'][$insert_id] = array(
-                'visible'		=> 'true',
-                'collapse'		=> $collapse,
-                'htmlbuttons'	=> $buttons,
-                'width'			=> '100%'
+                'visible' => 'true',
+                'collapse' => $collapse,
+                'htmlbuttons' => $buttons,
+                'width' => '100%'
             );
 
             // Add to any custom layouts

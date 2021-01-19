@@ -41,7 +41,7 @@ class Email
         );
 
         $recipients = ee()->TMPL->fetch_param('recipients', '');
-        $channel    = ee()->TMPL->fetch_param('channel', '');
+        $channel = ee()->TMPL->fetch_param('channel', '');
 
         // No email left behind act
         if (! $this->_user_recipients && $recipients == '') {
@@ -58,9 +58,9 @@ class Email
 
         // Conditionals
         $cond = array(
-            'logged_in'  => (ee()->session->userdata('member_id') != 0),
+            'logged_in' => (ee()->session->userdata('member_id') != 0),
             'logged_out' => (ee()->session->userdata('member_id') == 0),
-            'captcha'    => ($this->use_captchas == 'y'),
+            'captcha' => ($this->use_captchas == 'y'),
         );
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -125,7 +125,7 @@ class Email
                     if ($query->num_rows() == 0) {
                         $author_name = '';
                     } else {
-                        $author_name = ($query->row('screen_name')  != '') ? $query->row('screen_name') : $query->row('username') ;
+                        $author_name = ($query->row('screen_name') != '') ? $query->row('screen_name') : $query->row('username') ;
                     }
 
                     $author_email = ($query->num_rows() == 0) ? '' : $query->row('email') ;
@@ -225,9 +225,9 @@ class Email
         // Recipient Email Checking
         $this->_user_recipients = true;  // By default
 
-        $recipients	= ee()->TMPL->fetch_param('recipients', '');
-        $charset	= ee()->TMPL->fetch_param('charset', '');
-        $allow_html	= ee()->TMPL->fetch_param('allow_html');
+        $recipients = ee()->TMPL->fetch_param('recipients', '');
+        $charset = ee()->TMPL->fetch_param('charset', '');
+        $allow_html = ee()->TMPL->fetch_param('allow_html');
 
         // Equalize $allow_html value
         $allow_html = (is_string($allow_html) and in_array($allow_html, array('yes', 'y', 'true'))) ? true : $allow_html;
@@ -331,8 +331,8 @@ class Email
 
             ee()->load->library('typography');
             ee()->typography->initialize(array(
-                'encode_email'	=> false,
-                'convert_curly'	=> false
+                'encode_email' => false,
+                'convert_curly' => false
             ));
 
             $channel->fetch_categories();
@@ -521,7 +521,7 @@ class Email
         }
 
         // Check Tracking Class
-        $day_ago = ee()->localize->now - 60*60*24;
+        $day_ago = ee()->localize->now - 60 * 60 * 24;
         $query = ee()->db->query("DELETE FROM exp_email_tracker WHERE email_date < '{$day_ago}'");
 
         if (ee()->session->userdata['username'] === false or ee()->session->userdata['username'] == '') {
@@ -557,7 +557,7 @@ class Email
             }
 
             // Interval check
-            if ($query->row('email_date')  > (ee()->localize->now - $this->email_time_interval)) {
+            if ($query->row('email_date') > (ee()->localize->now - $this->email_time_interval)) {
                 $error[] = str_replace("%s", $this->email_time_interval, lang('em_interval_warning'));
 
                 return ee()->output->show_user_error('general', $error);
@@ -775,11 +775,11 @@ class Email
 
         // Store in tracking class
         $data = array(
-            'email_date'		=> ee()->localize->now,
-            'sender_ip'			=> ee()->input->ip_address(),
-            'sender_email'		=> $_POST['from'],
-            'sender_username'	=> ee()->session->userdata['username'],
-            'number_recipients'	=> count($approved_tos) + count($approved_recipients)
+            'email_date' => ee()->localize->now,
+            'sender_ip' => ee()->input->ip_address(),
+            'sender_email' => $_POST['from'],
+            'sender_username' => ee()->session->userdata['username'],
+            'number_recipients' => count($approved_tos) + count($approved_recipients)
         );
 
         ee()->db->query(ee()->db->insert_string('exp_email_tracker', $data));
@@ -800,11 +800,11 @@ class Email
 
         // Thank you message
         $data = array(
-            'title' 	=> lang('email_module_name'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('em_email_sent'),
-            'redirect'	=> $return_link,
-            'link'		=> array($return_link, $return_name)
+            'title' => lang('email_module_name'),
+            'heading' => lang('thank_you'),
+            'content' => lang('em_email_sent'),
+            'redirect' => $return_link,
+            'link' => array($return_link, $return_name)
         );
 
         if (ee()->input->get_post('redirect') !== false) {
@@ -891,25 +891,25 @@ class Email
         $allow_attachments = get_bool_from_string(ee()->TMPL->fetch_param('allow_attachments')) ? 'y' : 'n';
 
         $data = array(
-            'id'            => (ee()->TMPL->form_id == '')
+            'id' => (ee()->TMPL->form_id == '')
                 ? $options['form_id']
                 : ee()->TMPL->form_id,
-            'class'         => ee()->TMPL->form_class,
-            'enctype'       => ($allow_attachments == 'y') ? 'multipart/form-data' : '',
+            'class' => ee()->TMPL->form_class,
+            'enctype' => ($allow_attachments == 'y') ? 'multipart/form-data' : '',
             'hidden_fields' => array(
-                'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
-                'RET'             => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
-                'URI'             => (ee()->uri->uri_string == '')
+                'ACT' => ee()->functions->fetch_action_id('Email', 'send_email'),
+                'RET' => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
+                'URI' => (ee()->uri->uri_string == '')
                     ? 'index'
                     : ee()->uri->uri_string,
-                'PRV'             => ee()->TMPL->fetch_param('preview', ''),
-                'recipients'      => $this->_encrypt($recipients),
+                'PRV' => ee()->TMPL->fetch_param('preview', ''),
+                'recipients' => $this->_encrypt($recipients),
                 'user_recipients' => $this->_encrypt(($this->_user_recipients) ? 'y' : 'n'),
-                'charset'         => $charset,
+                'charset' => $charset,
                 'allow_attachments' => $this->_encrypt('allow_attachments_' . $allow_attachments),
-                'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
-                'replyto'         => ee()->TMPL->fetch_param('replyto', ''),
-                'markdown'        => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
+                'redirect' => ee()->TMPL->fetch_param('redirect', ''),
+                'replyto' => ee()->TMPL->fetch_param('replyto', ''),
+                'markdown' => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
             )
         );
 
@@ -923,7 +923,7 @@ class Email
             $data['name'] = $name;
         }
 
-        $res  = ee()->functions->form_declaration($data);
+        $res = ee()->functions->form_declaration($data);
         $res .= stripslashes($tagdata);
         $res .= "</form>";//echo $res; exit;
 

@@ -88,11 +88,11 @@ class Updater
         ee()->smartforge->add_column(
             'snippets',
             array(
-                'edit_date'        => array(
-                    'type'         => 'int',
-                    'constraint'   => 10,
-                    'null'         => false,
-                    'default'      => 0
+                'edit_date' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'default' => 0
                 ),
             )
         );
@@ -111,11 +111,11 @@ class Updater
         ee()->smartforge->add_column(
             'global_variables',
             array(
-                'edit_date'        => array(
-                    'type'         => 'int',
-                    'constraint'   => 10,
-                    'null'         => false,
-                    'default'      => 0
+                'edit_date' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'default' => 0
                 ),
             )
         );
@@ -332,11 +332,11 @@ class Updater
         ee()->smartforge->add_column(
             'channels',
             array(
-                'max_entries'      => array(
-                    'type'         => 'int',
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 0
+                'max_entries' => array(
+                    'type' => 'int',
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             )
         );
@@ -344,12 +344,12 @@ class Updater
         ee()->smartforge->add_column(
             'channels',
             array(
-                'total_records'    => array(
-                    'type'         => 'mediumint',
-                    'constraint'   => 8,
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 0
+                'total_records' => array(
+                    'type' => 'mediumint',
+                    'constraint' => 8,
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             ),
             'total_entries'
@@ -369,8 +369,8 @@ class Updater
             'channels',
             array(
                 'preview_url' => array(
-                    'type'    => 'VARCHAR(100)',
-                    'null'    => true,
+                    'type' => 'VARCHAR(100)',
+                    'null' => true,
                 )
             )
         );
@@ -410,8 +410,8 @@ class Updater
 
             foreach ($custom_fields as $id => $val) {
                 $field_info = array(
-                    'field'     => 'field_id_' . $id,
-                    'visible'   => true,
+                    'field' => 'field_id_' . $id,
+                    'visible' => true,
                     'collapsed' => false
                 );
                 $field_layout[0]['fields'][] = $field_info;

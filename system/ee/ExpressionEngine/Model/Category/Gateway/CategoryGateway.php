@@ -30,15 +30,15 @@ class CategoryGateway extends Gateway
 
         'site_id' => array(
             'gateway' => 'SiteGateway',
-            'key'	 => 'site_id'
+            'key' => 'site_id'
         ),
         'group_id' => array(
             'gateway' => 'CategoryGroupGateway',
-            'key'	 => 'group_id'
+            'key' => 'group_id'
         ),
         'parent_id' => array(
             'gateway' => 'CategoryGateway',
-            'key'	 => 'cat_id'
+            'key' => 'cat_id'
         ),
     );
 

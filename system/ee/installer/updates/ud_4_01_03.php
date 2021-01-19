@@ -44,9 +44,9 @@ class Updater
             'cp_log',
             [
                 'action' => [
-                    'name'       => 'action',
-                    'type'       => 'text',
-                    'null'       => false
+                    'name' => 'action',
+                    'type' => 'text',
+                    'null' => false
                 ]
             ]
         );

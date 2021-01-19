@@ -195,22 +195,22 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
     function default_config_items()
     {
         return [
-            'allow_extensions'     => 'y',
-            'cache_driver'         => 'file',
-            'cache_path'           => '',
-            'charset'              => 'UTF-8',
-            'cookie_httponly'      => 'y',
-            'debug'                => 1,
-            'encryption_key'       => '',
-            'is_system_on'         => 'y',
-            'log_date_format'      => 'Y-m-d H:i:s',
-            'log_threshold'        => 0,
-            'rewrite_short_tags'   => true,
-            'subclass_prefix'      => 'EE_',
-            'uri_protocol'         => 'AUTO',
+            'allow_extensions' => 'y',
+            'cache_driver' => 'file',
+            'cache_path' => '',
+            'charset' => 'UTF-8',
+            'cookie_httponly' => 'y',
+            'debug' => 1,
+            'encryption_key' => '',
+            'is_system_on' => 'y',
+            'log_date_format' => 'Y-m-d H:i:s',
+            'log_threshold' => 0,
+            'rewrite_short_tags' => true,
+            'subclass_prefix' => 'EE_',
+            'uri_protocol' => 'AUTO',
             'enable_devlog_alerts' => 'n',
-            'save_tmpl_files'      => 'y',
-            'save_tmpl_globals'    => 'y',
+            'save_tmpl_files' => 'y',
+            'save_tmpl_globals' => 'y',
         ];
     }
 
@@ -224,7 +224,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
 */
     function config_item($item, $raw_value = false)
     {
-        $config =& get_config();
+        $config = & get_config();
 
         if (! isset($config[$item])) {
             $defaults = default_config_items();
@@ -416,45 +416,45 @@ if (! function_exists('log_message')) {
     function set_status_header($code = 200, $text = '')
     {
         $stati = array(
-            200	=> 'OK',
-            201	=> 'Created',
-            202	=> 'Accepted',
-            203	=> 'Non-Authoritative Information',
-            204	=> 'No Content',
-            205	=> 'Reset Content',
-            206	=> 'Partial Content',
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
 
-            300	=> 'Multiple Choices',
-            301	=> 'Moved Permanently',
-            302	=> 'Found',
-            304	=> 'Not Modified',
-            305	=> 'Use Proxy',
-            307	=> 'Temporary Redirect',
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            307 => 'Temporary Redirect',
 
-            400	=> 'Bad Request',
-            401	=> 'Unauthorized',
-            403	=> 'Forbidden',
-            404	=> 'Not Found',
-            405	=> 'Method Not Allowed',
-            406	=> 'Not Acceptable',
-            407	=> 'Proxy Authentication Required',
-            408	=> 'Request Timeout',
-            409	=> 'Conflict',
-            410	=> 'Gone',
-            411	=> 'Length Required',
-            412	=> 'Precondition Failed',
-            413	=> 'Request Entity Too Large',
-            414	=> 'Request-URI Too Long',
-            415	=> 'Unsupported Media Type',
-            416	=> 'Requested Range Not Satisfiable',
-            417	=> 'Expectation Failed',
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
 
-            500	=> 'Internal Server Error',
-            501	=> 'Not Implemented',
-            502	=> 'Bad Gateway',
-            503	=> 'Service Unavailable',
-            504	=> 'Gateway Timeout',
-            505	=> 'HTTP Version Not Supported'
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported'
         );
 
         if ($code == '' or ! is_numeric($code)) {

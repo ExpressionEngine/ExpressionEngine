@@ -59,10 +59,10 @@ class Updater
         ee()->smartforge->add_key('sessions', 'last_activity', 'last_activity_idx');
 
         $field = array(
-            'user_agent'	=> array(
-                'name'			=> 'user_agent',
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 120
+            'user_agent' => array(
+                'name' => 'user_agent',
+                'type' => 'VARCHAR',
+                'constraint' => 120
             )
         );
 
@@ -80,10 +80,10 @@ class Updater
     private function _update_password_lockout_table()
     {
         $field = array(
-            'user_agent'	=> array(
-                'name'			=> 'user_agent',
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 120
+            'user_agent' => array(
+                'name' => 'user_agent',
+                'type' => 'VARCHAR',
+                'constraint' => 120
             )
         );
 
@@ -102,10 +102,10 @@ class Updater
     {
         // Update password column to VARCHAR(128)
         $field = array(
-            'password'		=> array(
-                'name'			=> 'password',
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 128
+            'password' => array(
+                'name' => 'password',
+                'type' => 'VARCHAR',
+                'constraint' => 128
             )
         );
 
@@ -113,11 +113,11 @@ class Updater
 
         // Add a salt column VARCHAR(128)
         $field = array(
-            'salt'			=> array(
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 128,
-                'default'		=> '',
-                'null'			=> false
+            'salt' => array(
+                'type' => 'VARCHAR',
+                'constraint' => 128,
+                'default' => '',
+                'null' => false
             )
         );
 
@@ -125,11 +125,11 @@ class Updater
 
         // Add a remember_me column VARCHAR(32)
         $field = array(
-            'remember_me'	=> array(
-                'type'			=> 'VARCHAR',
-                'constraint'	=> 32,
-                'default'		=> '',
-                'null'			=> false
+            'remember_me' => array(
+                'type' => 'VARCHAR',
+                'constraint' => 32,
+                'default' => '',
+                'null' => false
             )
         );
 
@@ -142,8 +142,8 @@ class Updater
     private function _update_files_table()
     {
         $field = array(
-            'caption'	=> array(
-                'type'		=> 'text'
+            'caption' => array(
+                'type' => 'text'
             )
         );
 

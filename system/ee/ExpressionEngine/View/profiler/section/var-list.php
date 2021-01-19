@@ -1,4 +1,4 @@
-<div class="tab t-<?=$index?> <?=($index==0) ? 'tab-open' : ''?>">
+<div class="tab t-<?=$index?> <?=($index == 0) ? 'tab-open' : ''?>">
 	<div class="debug-content">
 	<?php foreach ($profiler_data as $dataset): ?>
 		<?php foreach ($dataset as $label => $data): ?>

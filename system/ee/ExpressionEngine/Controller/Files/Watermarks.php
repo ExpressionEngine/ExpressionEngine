@@ -46,7 +46,7 @@ class Watermarks extends AbstractFilesController
                 'name',
                 'type',
                 array(
-                    'type'	=> CP\Table::COL_CHECKBOX
+                    'type' => CP\Table::COL_CHECKBOX
                 )
             )
         );
@@ -77,7 +77,7 @@ class Watermarks extends AbstractFilesController
                 array(
                     'name' => 'watermarks[]',
                     'value' => $watermark->getId(),
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('watermark') . ': <b>' . htmlentities($watermark->wm_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     ),
                     // Cannot delete default group

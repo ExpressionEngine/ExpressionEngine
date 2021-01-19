@@ -92,7 +92,7 @@ class Urls extends Settings
                     'title' => 'category_url',
                     'desc' => 'category_url_desc',
                     'fields' => array(
-                        'use_category_name' =>	array(
+                        'use_category_name' => array(
                             'type' => 'inline_radio',
                             'choices' => array(
                                 'y' => lang('category_url_opt_titles'),
@@ -105,7 +105,7 @@ class Urls extends Settings
                     'title' => 'url_title_separator',
                     'desc' => 'url_title_separator_desc',
                     'fields' => array(
-                        'word_separator' =>	array(
+                        'word_separator' => array(
                             'type' => 'radio',
                             'choices' => array(
                                 'dash' => lang('url_title_separator_opt_hyphen'),

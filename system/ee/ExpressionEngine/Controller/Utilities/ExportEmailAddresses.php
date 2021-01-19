@@ -59,10 +59,10 @@ class ExportEmailAddresses extends Utilities
 
         ee()->javascript->set_global([
             'export_email' => [
-                'endpoint'              => ee('CP/URL')->make('utilities/export-email-addresses/export', ['export_path' => $export_path])->compile(),
-                'total_members'         => $this->total_members,
-                'base_url'              => ee('CP/URL')->make('utilities/export-email-addresses', ['export_path' => $export_path])->compile(),
-                'ajax_fail_banner'      => ee('CP/Alert')->makeInline('export-fail')
+                'endpoint' => ee('CP/URL')->make('utilities/export-email-addresses/export', ['export_path' => $export_path])->compile(),
+                'total_members' => $this->total_members,
+                'base_url' => ee('CP/URL')->make('utilities/export-email-addresses', ['export_path' => $export_path])->compile(),
+                'ajax_fail_banner' => ee('CP/Alert')->makeInline('export-fail')
                     ->asIssue()
                     ->withTitle(lang('export_email_addresses_fail'))
                     ->addToBody('%body%')
@@ -84,18 +84,18 @@ class ExportEmailAddresses extends Utilities
                         ->cannotClose()
                         ->render(),
                     [
-                        'title'  => 'export_email_addresses_title',
-                        'desc'   => sprintf(lang('export_email_addresses_desc'), number_format($this->total_members)),
+                        'title' => 'export_email_addresses_title',
+                        'desc' => sprintf(lang('export_email_addresses_desc'), number_format($this->total_members)),
                         'fields' => [
                             'progress' => [
-                                'type'    => 'html',
+                                'type' => 'html',
                                 'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
                             ]
                         ]
                     ],
                     [
                         'title' => 'validate_addresses',
-                        'desc'  => 'validate_addresses_desc',
+                        'desc' => 'validate_addresses_desc',
                         'fields' => [
                             'validate_email' => [
                                 'type' => 'toggle',
@@ -196,10 +196,10 @@ class ExportEmailAddresses extends Utilities
 
         foreach ($members as $member) {
             $data = [
-                'member_id'   => $member->member_id,
-                'username'    => $member->username,
+                'member_id' => $member->member_id,
+                'username' => $member->username,
                 'screen_name' => $member->screen_name,
-                'email'       => $member->email
+                'email' => $member->email
             ];
 
             if ($this->emailIsValid($member->email)) {

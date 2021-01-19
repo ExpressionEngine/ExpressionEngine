@@ -13,22 +13,22 @@
  */
 class Search
 {
-    public $min_length		= 3;			// Minimum length of search keywords
-    public $max_length		= 60;			// Maximum length of search keywords (logged to varchar(60))...
-    public $cache_expire	= 2;			// How many hours should we keep search caches?
-    public $keywords		= "";
-    public $terms			= [];
-    public $text_format	= 'xhtml';		// Excerpt text formatting
-    public $html_format	= 'all';		// Excerpt html formatting
-    public $auto_links		= 'y';			// Excerpt auto-linking: y/n
-    public $allow_img_url	= 'n';			// Excerpt - allow images:  y/n
-    public $channel_array 	= array();
-    public $cat_array  	= array();
-    public $fields			= array();
-    public $num_rows		= 0;
-    public $hash			= "";
+    public $min_length = 3;			// Minimum length of search keywords
+    public $max_length = 60;			// Maximum length of search keywords (logged to varchar(60))...
+    public $cache_expire = 2;			// How many hours should we keep search caches?
+    public $keywords = "";
+    public $terms = [];
+    public $text_format = 'xhtml';		// Excerpt text formatting
+    public $html_format = 'all';		// Excerpt html formatting
+    public $auto_links = 'y';			// Excerpt auto-linking: y/n
+    public $allow_img_url = 'n';			// Excerpt - allow images:  y/n
+    public $channel_array = array();
+    public $cat_array = array();
+    public $fields = array();
+    public $num_rows = 0;
+    public $hash = "";
 
-    protected $_meta 	= array();
+    protected $_meta = array();
     protected $custom_fields = [];
 
     /**
@@ -53,9 +53,9 @@ class Search
         // trigger our exception
 
         if (ee()->input->get_post('mbr')) {
-            $this->_meta['result_page']	= (ee()->input->get_post('result_path') != '') ? ee()->input->get_post('result_path') : 'search/results';
-            $_POST['keywords']		= '';
-            $_POST['exact_match'] 	= 'y';
+            $this->_meta['result_page'] = (ee()->input->get_post('result_path') != '') ? ee()->input->get_post('result_path') : 'search/results';
+            $_POST['keywords'] = '';
+            $_POST['exact_match'] = 'y';
             $_POST['exact_keyword'] = 'n';
             $this->_meta['site_ids'] = array(ee()->config->item('site_id'));
         }
@@ -217,17 +217,17 @@ class Search
         if ($query_parts == false) {
             if (isset($this->_meta['no_results_page']) and $this->_meta['no_results_page'] != '') {
                 $data = array(
-                    'search_id'		=> $this->hash,
-                    'search_date'	=> time(),
-                    'member_id'		=> ee()->session->userdata('member_id'),
-                    'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
-                    'ip_address'	=> ee()->input->ip_address(),
-                    'total_results'	=> 0,
-                    'per_page'		=> 0,
-                    'query'			=> '',
-                    'custom_fields'	=> '',
-                    'result_page'	=> '',
-                    'site_id'		=> ee()->config->item('site_id')
+                    'search_id' => $this->hash,
+                    'search_date' => time(),
+                    'member_id' => ee()->session->userdata('member_id'),
+                    'keywords' => ($original_keywords != '') ? $original_keywords : $mbr,
+                    'ip_address' => ee()->input->ip_address(),
+                    'total_results' => 0,
+                    'per_page' => 0,
+                    'query' => '',
+                    'custom_fields' => '',
+                    'result_page' => '',
+                    'site_id' => ee()->config->item('site_id')
                 );
 
                 ee()->db->query(ee()->db->insert_string('exp_search', $data));
@@ -242,17 +242,17 @@ class Search
         /**  If we have a result, cache it
         /** ----------------------------------------*/
         $data = array(
-            'search_id'		=> $this->hash,
-            'search_date'	=> time(),
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
-            'ip_address'	=> ee()->input->ip_address(),
-            'total_results'	=> $this->num_rows,
-            'per_page'		=> (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 999) ? $_POST['RES'] : 50,
-            'query'			=> serialize($query_parts),
-            'custom_fields'	=> addslashes(serialize($this->fields)),
-            'result_page'	=> $this->_meta['result_page'],
-            'site_id'		=> ee()->config->item('site_id')  // site search was made from
+            'search_id' => $this->hash,
+            'search_date' => time(),
+            'member_id' => ee()->session->userdata('member_id'),
+            'keywords' => ($original_keywords != '') ? $original_keywords : $mbr,
+            'ip_address' => ee()->input->ip_address(),
+            'total_results' => $this->num_rows,
+            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 999) ? $_POST['RES'] : 50,
+            'query' => serialize($query_parts),
+            'custom_fields' => addslashes(serialize($this->fields)),
+            'result_page' => $this->_meta['result_page'],
+            'site_id' => ee()->config->item('site_id')  // site search was made from
         );
 
         ee()->db->query(ee()->db->insert_string('exp_search', $data));
@@ -280,16 +280,16 @@ class Search
         $site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids : array(ee()->config->item('site_id'));
 
         $meta = array(
-            'status'				=> ee()->TMPL->fetch_param('status', ''),
-            'channel'				=> ee()->TMPL->fetch_param('channel', ''),
-            'category'				=> ee()->TMPL->fetch_param('category', ''),
-            'search_in'				=> ee()->TMPL->fetch_param('search_in', ''),
-            'where'					=> ee()->TMPL->fetch_param('where', ''),
-            'show_expired'			=> ee()->TMPL->fetch_param('show_expired', ''),
-            'show_future_entries'	=> ee()->TMPL->fetch_param('show_future_entries'),
-            'result_page'			=> ee()->TMPL->fetch_param('result_page', 'search/results'),
-            'no_results_page'		=> ee()->TMPL->fetch_param('no_result_page', ''),
-            'site_ids'				=> $site_ids
+            'status' => ee()->TMPL->fetch_param('status', ''),
+            'channel' => ee()->TMPL->fetch_param('channel', ''),
+            'category' => ee()->TMPL->fetch_param('category', ''),
+            'search_in' => ee()->TMPL->fetch_param('search_in', ''),
+            'where' => ee()->TMPL->fetch_param('where', ''),
+            'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
+            'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
+            'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
+            'no_results_page' => ee()->TMPL->fetch_param('no_result_page', ''),
+            'site_ids' => $site_ids
         );
 
         $meta = serialize($meta);
@@ -335,7 +335,7 @@ class Search
     {
         ee()->load->model('addons_model');
 
-        $channel_array	= array();
+        $channel_array = array();
 
         /** ---------------------------------------
         /**  Fetch the channel_id numbers
@@ -405,8 +405,8 @@ class Search
         /**  as there's a potential for this to bring the
         /**  search to an end if it's not a valid member
         /** ----------------------------------------------*/
-        $member_array	= array();
-        $member_ids		= '';
+        $member_array = array();
+        $member_ids = '';
 
         if (isset($_GET['mbr']) and is_numeric($_GET['mbr'])) {
             $query = ee()->db->select('member_id')->get_where('members', array(
@@ -543,7 +543,7 @@ class Search
         /**  Set Date filtering
         /** ----------------------------------------------*/
         if (isset($_POST['date']) and $_POST['date'] != 0) {
-            $cutoff = ee()->localize->now - (60*60*24*$_POST['date']);
+            $cutoff = ee()->localize->now - (60 * 60 * 24 * $_POST['date']);
 
             if (isset($_POST['date_order']) and $_POST['date_order'] == 'older') {
                 $sql .= "AND exp_channel_titles.entry_date < " . $cutoff . " ";
@@ -566,7 +566,7 @@ class Search
             $criteria = (isset($this->_meta['where']) && $this->_meta['where'] == 'all') ? 'AND' : 'OR';
 
             if (preg_match_all("/\-*\"(.*?)\"/", $this->keywords, $matches)) {
-                for ($m=0; $m < count($matches['1']); $m++) {
+                for ($m = 0; $m < count($matches['1']); $m++) {
                     $this->terms[] = trim(str_replace('"', '', $matches['0'][$m]));
                     $this->keywords = str_replace($matches['0'][$m], '', $this->keywords);
                 }
@@ -594,17 +594,17 @@ class Search
                     $sql .= ") \n";
                 }
             } elseif (! isset($_POST['exact_keyword'])) {  // Any terms, all terms
-                $mysql_function	= (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                $search_term	= (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
                 // We have three parentheses in the beginning in case
                 // there are any NOT LIKE's being used and to allow for a member clause
                 $sql .= "\n(((exp_channel_titles.title $mysql_function '%" . $search_term . "%' ";
 
-                for ($i=1; $i < count($this->terms); $i++) {
-                    $mysql_criteria	= ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                    $mysql_function	= (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term	= (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                for ($i = 1; $i < count($this->terms); $i++) {
+                    $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                    $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
                     $sql .= "$mysql_criteria exp_channel_titles.title $mysql_function '%" . $search_term . "%' ";
                 }
@@ -641,18 +641,18 @@ class Search
                     }
                     $concat_fields = "CAST(CONCAT_WS(' ', " . implode(', ', $concat_tables) . ") AS CHAR)";
 
-                    $mysql_function	= (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term	= (substr($this->terms['0'], 0, 1) == '-') ? substr($this->terms['0'], 1) : $this->terms['0'];
+                    $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($this->terms['0'], 1) : $this->terms['0'];
 
                     // Since Title is always required in a search we use OR
                     // And then three parentheses just like above in case
                     // there are any NOT LIKE's being used and to allow for a member clause
                     $sql .= "\nOR ((($concat_fields $mysql_function '%" . $search_term . "%' ";
 
-                    for ($i=1; $i < count($this->terms); $i++) {
-                        $mysql_criteria	= ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                        $mysql_function	= (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                        $search_term	= (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                    for ($i = 1; $i < count($this->terms); $i++) {
+                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                        $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                        $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
                         $sql .= "$mysql_criteria $concat_fields $mysql_function '%" . $search_term . "%' ";
                     }
@@ -679,18 +679,18 @@ class Search
                                 $sql .= ") ";
                             }
                         } elseif (! isset($_POST['exact_keyword'])) {
-                            $mysql_function	= (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                            $search_term	= (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                            $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                            $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
                             // Since Title is always required in a search we use OR
                             // And then three parentheses just like above in case
                             // there are any NOT LIKE's being used and to allow for a member clause
                             $sql .= "\nOR ((({$table}.field_id_" . $val . " $mysql_function '%" . $search_term . "%' ";
 
-                            for ($i=1; $i < count($this->terms); $i++) {
-                                $mysql_criteria	= ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                                $mysql_function	= (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                                $search_term	= (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                            for ($i = 1; $i < count($this->terms); $i++) {
+                                $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                                $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                                $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
                                 $sql .= "$mysql_criteria {$table}.field_id_" . $val . " $mysql_function '%" . $search_term . "%' ";
                             }
@@ -735,17 +735,17 @@ class Search
                         $sql .= ") \n";
                     }
                 } elseif (! isset($_POST['exact_keyword'])) {
-                    $mysql_function	= (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term	= (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                    $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
                     // We have three parentheses in the beginning in case
                     // there are any NOT LIKE's being used and to allow a member clause
                     $sql .= "\nOR (((exp_comments.comment $mysql_function '%" . $search_term . "%' ";
 
-                    for ($i=1; $i < count($this->terms); $i++) {
-                        $mysql_criteria	= ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                        $mysql_function	= (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                        $search_term	= (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                    for ($i = 1; $i < count($this->terms); $i++) {
+                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                        $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                        $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
                         $sql .= "$mysql_criteria exp_comments.comment $mysql_function '%" . $search_term . "%' ";
                     }
@@ -1018,7 +1018,7 @@ class Search
      */
     private function _get_search_id()
     {
-        $search_id =  ee()->TMPL->fetch_param('search_id');
+        $search_id = ee()->TMPL->fetch_param('search_id');
 
         // Retrieve the search_id
         if (! $search_id) {
@@ -1068,7 +1068,7 @@ class Search
         // Fetch the cached search query
         $query = ee()->db->get_where('search', array('search_id' => $search_id));
 
-        if ($query->num_rows() == 0 or $query->row('total_results')  == 0) {
+        if ($query->num_rows() == 0 or $query->row('total_results') == 0) {
             // This should be impossible as we already know there are results
             return ee()->output->show_user_error(
                 'general',
@@ -1076,7 +1076,7 @@ class Search
             );
         }
 
-        $fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));
+        $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));
         $query_parts = unserialize($query->row('query'));
 
         $this->num_rows = (int) $query->row('total_results');
@@ -1172,8 +1172,8 @@ class Search
 
         ee()->load->library('typography');
         ee()->typography->initialize(array(
-            'convert_curly'	=> false,
-            'encode_email'	=> false
+            'convert_curly' => false,
+            'encode_email' => false
         ));
 
         $channel->fetch_categories();
@@ -1184,18 +1184,18 @@ class Search
 
         // Parse lang variables
         $swap = array(
-            'lang:total_search_results'	=>	lang('search_total_results'),
-            'lang:search_engine'		=>	lang('search_engine'),
-            'lang:search_results'		=>	lang('search_results'),
-            'lang:search'				=>	lang('search'),
-            'lang:title'				=>	lang('search_title'),
-            'lang:channel'				=>	lang('search_channel'),
-            'lang:excerpt'				=>	lang('search_excerpt'),
-            'lang:author'				=>	lang('search_author'),
-            'lang:date'					=>	lang('search_date'),
-            'lang:total_comments'		=>	lang('search_total_comments'),
-            'lang:recent_comments'		=>	lang('search_recent_comment_date'),
-            'lang:keywords'				=>	lang('search_keywords')
+            'lang:total_search_results' => lang('search_total_results'),
+            'lang:search_engine' => lang('search_engine'),
+            'lang:search_results' => lang('search_results'),
+            'lang:search' => lang('search'),
+            'lang:title' => lang('search_title'),
+            'lang:channel' => lang('search_channel'),
+            'lang:excerpt' => lang('search_excerpt'),
+            'lang:author' => lang('search_author'),
+            'lang:date' => lang('search_date'),
+            'lang:total_comments' => lang('search_total_comments'),
+            'lang:recent_comments' => lang('search_recent_comment_date'),
+            'lang:keywords' => lang('search_keywords')
         );
         ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
 
@@ -1212,9 +1212,9 @@ class Search
     public function callback_search_result_row($tagdata, $row)
     {
         $overrides = ee()->config->get_cached_site_prefs($row['entry_site_id']);
-        $row['channel_url']			= parse_config_variables($row['channel_url'], $overrides);
-        $row['comment_url']			= parse_config_variables($row['comment_url'], $overrides);
-        $row['search_results_url']	= parse_config_variables($row['search_results_url'], $overrides);
+        $row['channel_url'] = parse_config_variables($row['channel_url'], $overrides);
+        $row['comment_url'] = parse_config_variables($row['comment_url'], $overrides);
+        $row['search_results_url'] = parse_config_variables($row['search_results_url'], $overrides);
 
         if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']]) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
@@ -1230,9 +1230,9 @@ class Search
                     )
                 ),
                 array(
-                    'text_format'	=> $format,
-                    'html_format'	=> 'safe',
-                    'auto_links'	=> 'y',
+                    'text_format' => $format,
+                    'html_format' => 'safe',
+                    'auto_links' => 'y',
                     'allow_img_url' => 'n'
                 )
             );
@@ -1358,9 +1358,9 @@ class Search
         $meta = $this->_build_meta_array();
 
         $data['hidden_fields'] = array(
-            'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-            'RES'	=> ee()->TMPL->fetch_param('results'),
-            'meta'	=> $meta
+            'ACT' => ee()->functions->fetch_action_id('Search', 'do_search'),
+            'RES' => ee()->TMPL->fetch_param('results'),
+            'meta' => $meta
         );
 
         if (ee()->TMPL->fetch_param('name') !== false &&
@@ -1378,7 +1378,7 @@ class Search
 
         $data['class'] = ee()->TMPL->form_class;
 
-        $res  = ee()->functions->form_declaration($data);
+        $res = ee()->functions->form_declaration($data);
 
         $res .= stripslashes(ee()->TMPL->tagdata);
 
@@ -1458,41 +1458,41 @@ class Search
         /**  Parse variables
         /** ----------------------------------------*/
         $swap = array(
-            'lang:search_engine'			=> lang('search_engine'),
-            'lang:search'					=> lang('search'),
-            'lang:search_by_keyword'		=> lang('search_by_keyword'),
-            'lang:search_in_titles'			=> lang('search_in_titles'),
-            'lang:search_in_entries'		=> lang('search_entries'),
-            'lang:search_everywhere'		=> lang('search_everywhere'),
-            'lang:search_by_member_name'	=> lang('search_by_member_name'),
-            'lang:exact_name_match'			=> lang('search_exact_name_match'),
-            'lang:exact_phrase_match'		=> lang('search_exact_phrase_match'),
-            'lang:also_search_comments'		=> lang('search_also_search_comments'),
-            'lang:any_date'					=> lang('search_any_date'),
-            'lang:today_and'				=> lang('search_today_and'),
-            'lang:this_week_and'			=> lang('search_this_week_and'),
-            'lang:one_month_ago_and'		=> lang('search_one_month_ago_and'),
-            'lang:three_months_ago_and'		=> lang('search_three_months_ago_and'),
-            'lang:six_months_ago_and'		=> lang('search_six_months_ago_and'),
-            'lang:one_year_ago_and'			=> lang('search_one_year_ago_and'),
-            'lang:channels'					=> lang('search_channels'),
-            'lang:weblogs'					=> lang('search_channels'),
-            'lang:categories'				=> lang('search_categories'),
-            'lang:newer'					=> lang('search_newer'),
-            'lang:older'					=> lang('search_older'),
-            'lang:sort_results_by'			=> lang('search_sort_results_by'),
-            'lang:date'						=> lang('search_date'),
-            'lang:title'					=> lang('search_title'),
-            'lang:most_comments'			=> lang('search_most_comments'),
-            'lang:recent_comment'			=> lang('search_recent_comment'),
-            'lang:descending'				=> lang('search_descending'),
-            'lang:ascending'				=> lang('search_ascending'),
-            'lang:search_entries_from'		=> lang('search_entries_from'),
-            'lang:any_category'				=> lang('search_any_category'),
-            'lang:search_any_words'			=> lang('search_any_words'),
-            'lang:search_all_words'			=> lang('search_all_words'),
-            'lang:search_exact_word'		=> lang('search_exact_word'),
-            'channel_names' 				=> $channel_names
+            'lang:search_engine' => lang('search_engine'),
+            'lang:search' => lang('search'),
+            'lang:search_by_keyword' => lang('search_by_keyword'),
+            'lang:search_in_titles' => lang('search_in_titles'),
+            'lang:search_in_entries' => lang('search_entries'),
+            'lang:search_everywhere' => lang('search_everywhere'),
+            'lang:search_by_member_name' => lang('search_by_member_name'),
+            'lang:exact_name_match' => lang('search_exact_name_match'),
+            'lang:exact_phrase_match' => lang('search_exact_phrase_match'),
+            'lang:also_search_comments' => lang('search_also_search_comments'),
+            'lang:any_date' => lang('search_any_date'),
+            'lang:today_and' => lang('search_today_and'),
+            'lang:this_week_and' => lang('search_this_week_and'),
+            'lang:one_month_ago_and' => lang('search_one_month_ago_and'),
+            'lang:three_months_ago_and' => lang('search_three_months_ago_and'),
+            'lang:six_months_ago_and' => lang('search_six_months_ago_and'),
+            'lang:one_year_ago_and' => lang('search_one_year_ago_and'),
+            'lang:channels' => lang('search_channels'),
+            'lang:weblogs' => lang('search_channels'),
+            'lang:categories' => lang('search_categories'),
+            'lang:newer' => lang('search_newer'),
+            'lang:older' => lang('search_older'),
+            'lang:sort_results_by' => lang('search_sort_results_by'),
+            'lang:date' => lang('search_date'),
+            'lang:title' => lang('search_title'),
+            'lang:most_comments' => lang('search_most_comments'),
+            'lang:recent_comment' => lang('search_recent_comment'),
+            'lang:descending' => lang('search_descending'),
+            'lang:ascending' => lang('search_ascending'),
+            'lang:search_entries_from' => lang('search_entries_from'),
+            'lang:any_category' => lang('search_any_category'),
+            'lang:search_any_words' => lang('search_any_words'),
+            'lang:search_all_words' => lang('search_all_words'),
+            'lang:search_exact_word' => lang('search_exact_word'),
+            'channel_names' => $channel_names
         );
 
         $tagdata = ee()->functions->var_swap($tagdata, $swap);
@@ -1506,9 +1506,9 @@ class Search
 
         $data['class'] = ee()->TMPL->form_class;
         $data['hidden_fields'] = array(
-            'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-            'RES'	=> ee()->TMPL->fetch_param('results'),
-            'meta'	=> $meta
+            'ACT' => ee()->functions->fetch_action_id('Search', 'do_search'),
+            'RES' => ee()->TMPL->fetch_param('results'),
+            'meta' => $meta
         );
 
         if (ee()->TMPL->fetch_param('name') !== false &&
@@ -1526,7 +1526,7 @@ class Search
             $data['id'] = 'searchform';
         }
 
-        $res  = ee()->functions->form_declaration($data);
+        $res = ee()->functions->form_declaration($data);
 
         $res .= $this->search_js_switcher($nested, $data['id']);
 
@@ -1540,7 +1540,7 @@ class Search
     /**
      * JavaScript channel/category switch code
      */
-    public function search_js_switcher($nested='n', $id='searchform')
+    public function search_js_switcher($nested = 'n', $id = 'searchform')
     {
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_categories');
@@ -1615,7 +1615,7 @@ function changemenu(index)
                             $last_group = $v['0'];
                         }
 
-                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page ?>
+                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page?>
 			categories[i] = new Option("<?php echo addslashes($v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
                     }
                 }
@@ -1624,7 +1624,7 @@ function changemenu(index)
 		} // END if channels
 
 		<?php
-        } // END OUTER FOREACH ?>
+        } // END OUTER FOREACH?>
 
 		if (reset > 1)
 		{

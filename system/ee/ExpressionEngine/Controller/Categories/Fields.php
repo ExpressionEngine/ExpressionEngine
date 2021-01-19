@@ -100,9 +100,9 @@ class Fields extends AbstractCategoriesController
         }
 
         $fieldtype_choices = [
-            'text'     => lang('text_input'),
+            'text' => lang('text_input'),
             'textarea' => lang('textarea'),
-            'select'   => lang('select_dropdown')
+            'select' => lang('select_dropdown')
         ];
 
         $cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();

@@ -33,10 +33,10 @@ class ChannelEntryAutosave extends Model
             'type' => 'belongsTo',
             'key' => 'channel_id'
         ),
-        'Author'	=> array(
+        'Author' => array(
             'type' => 'belongsTo',
             'model' => 'Member',
-            'from_key' 	=> 'author_id',
+            'from_key' => 'author_id',
             'weak' => true
         ),
     );

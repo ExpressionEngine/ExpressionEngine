@@ -68,7 +68,7 @@ class Updater
         ee()->db->delete('specialty_templates');
 
         $data = array(
-            'template_data'=>'{name},
+            'template_data' => '{name},
 
 To reset your password, please go to the following page:
 
@@ -97,22 +97,22 @@ If you do not wish to reset your password, ignore this message. It will expire i
         // For this one, the method was renamed.  It still mostly does
         // the same thing and needs to be an action.
         ee()->db->where('method', 'retrieve_password')
-            ->update('actions', array('method'=>'send_reset_token'));
+            ->update('actions', array('method' => 'send_reset_token'));
         // For this one the method still exists, but is now a form.  It needs
         // to be renamed to the new processing method.
         ee()->db->where('method', 'reset_password')
-            ->update('actions', array('method'=>'process_reset_password'));
+            ->update('actions', array('method' => 'process_reset_password'));
 
         // Add the csrf_exempt field
         ee()->smartforge->add_column(
             'actions',
             array(
                 'csrf_exempt' => array(
-                    'type'			=> 'tinyint',
-                    'constraint'	=> 1,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'tinyint',
+                    'constraint' => 1,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             )
         );
@@ -214,8 +214,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
         $data = array();
         foreach ($fields as $field_id) {
             $data[] = array(
-                'field_id'	=> $field_id,
-                'field_fmt'	=> 'markdown'
+                'field_id' => $field_id,
+                'field_fmt' => 'markdown'
             );
         }
 
@@ -261,11 +261,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'security_hashes',
             array(
                 'used' => array(
-                    'type'			=> 'tinyint',
-                    'constraint'	=> 1,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'tinyint',
+                    'constraint' => 1,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             )
         );
@@ -293,12 +293,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->dbforge->add_field(
             array(
                 'channel_form_settings_id' => array('type' => 'int','constraint' => 10,	'unsigned' => true,	'null' => false,	'auto_increment' => true),
-                'site_id'			=> array('type' => 'int',		'constraint' => 4,	'unsigned' => true,	'null' => false,	'default' => 0),
-                'channel_id'		=> array('type' => 'int',		'constraint' => 6,	'unsigned' => true,	'null' => false,	'default' => 0),
-                'default_status'	=> array('type' => 'varchar',	'constraint' => 50,	'null' => false, 	'default' => 'open'),
-                'require_captcha'	=> array('type' => 'char',		'constraint' => 1,	'null' => false,	'default' => 'n'),
-                'allow_guest_posts'	=> array('type' => 'char',		'constraint' => 1,	'null' => false,	'default' => 'n'),
-                'default_author'	=> array('type' => 'int',		'constraint' => 11,	'unsigned' => true,	'null' => false,	'default' => 0),
+                'site_id' => array('type' => 'int',		'constraint' => 4,	'unsigned' => true,	'null' => false,	'default' => 0),
+                'channel_id' => array('type' => 'int',		'constraint' => 6,	'unsigned' => true,	'null' => false,	'default' => 0),
+                'default_status' => array('type' => 'varchar',	'constraint' => 50,	'null' => false, 	'default' => 'open'),
+                'require_captcha' => array('type' => 'char',		'constraint' => 1,	'null' => false,	'default' => 'n'),
+                'allow_guest_posts' => array('type' => 'char',		'constraint' => 1,	'null' => false,	'default' => 'n'),
+                'default_author' => array('type' => 'int',		'constraint' => 11,	'unsigned' => true,	'null' => false,	'default' => 0),
             )
         );
 
@@ -378,10 +378,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
             // Now flatten that into a usable set of db rows
             $db_settings = array();
             $default_settings = array(
-                'default_status'	=> 'closed',
-                'require_captcha'	=> 'n',
-                'allow_guest_posts'	=> 'n',
-                'default_author'	=> 0,
+                'default_status' => 'closed',
+                'require_captcha' => 'n',
+                'allow_guest_posts' => 'n',
+                'default_author' => 0,
             );
 
             foreach ($grouped_settings as $site_id => $channels) {
@@ -565,25 +565,25 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'relationships',
             array(
                 'grid_field_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 ),
                 'grid_col_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 ),
                 'grid_row_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             )
         );
@@ -604,10 +604,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
             ee()->db->insert(
                 'fieldtypes',
                 array(
-                    'name'					=> 'grid',
-                    'version'				=> '1.0',
-                    'settings'				=> 'YTowOnt9',
-                    'has_global_settings'	=> 'n',
+                    'name' => 'grid',
+                    'version' => '1.0',
+                    'settings' => 'YTowOnt9',
+                    'has_global_settings' => 'n',
                 )
             );
 
@@ -616,55 +616,55 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         $columns = array(
             'col_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
             'field_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true
             ),
             'content_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_order' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'col_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_label' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_name' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 32
+                'type' => 'varchar',
+                'constraint' => 32
             ),
             'col_instructions' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'col_required' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1
+                'type' => 'char',
+                'constraint' => 1
             ),
             'col_search' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1
+                'type' => 'char',
+                'constraint' => 1
             ),
             'col_width' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'col_settings' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             )
         );
 
@@ -716,14 +716,14 @@ If you do not wish to reset your password, ignore this message. It will expire i
     {
         $columns = array(
             'content_type_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
             'name' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             )
         );
 
@@ -777,9 +777,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
                 'channel_data',
                 array(
                     $field_name => array(
-                        'name' 			=> $field_name,
-                        'type' 			=> isset($column_types[$field_name]) ? $column_types[$field_name] : 'text',
-                        'null' 			=> true
+                        'name' => $field_name,
+                        'type' => isset($column_types[$field_name]) ? $column_types[$field_name] : 'text',
+                        'null' => true
                     )
                 )
             );
@@ -821,9 +821,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
                 'category_field_data',
                 array(
                     $field_name => array(
-                        'name' 			=> $field_name,
-                        'type' 			=> 'text',
-                        'null' 			=> true
+                        'name' => $field_name,
+                        'type' => 'text',
+                        'null' => true
                     )
                 )
             );
@@ -843,9 +843,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'developer_log',
             array(
                 'hash' => array(
-                    'type'			=> 'char',
-                    'constraint'	=> 32,
-                    'null'			=> false
+                    'type' => 'char',
+                    'constraint' => 32,
+                    'null' => false
                 )
             )
         );

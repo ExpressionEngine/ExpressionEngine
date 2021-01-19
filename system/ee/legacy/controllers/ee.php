@@ -27,16 +27,16 @@ class EE extends EE_Controller
             define('REQ', false);
         }
 
-        $can_view_system =  false;
+        $can_view_system = false;
 
         if ($this->config->item('is_system_on') == 'y' &&
             ($this->config->item('multiple_sites_enabled') != 'y' or $this->config->item('is_site_on') == 'y')) {
             if ($this->session->userdata('can_view_online_system') == 'y') {
-                $can_view_system =  true;
+                $can_view_system = true;
             }
         } else {
             if ($this->session->userdata('can_view_offline_system') == 'y') {
-                $can_view_system =  true;
+                $can_view_system = true;
             }
         }
 

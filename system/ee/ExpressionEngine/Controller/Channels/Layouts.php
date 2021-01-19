@@ -546,14 +546,14 @@ class Layouts extends AbstractChannelsController
 
         if (bool_config_item('enable_comments') && $channel_layout->Channel->comment_system_enabled) {
             $comment_expiration_date = [
-                'field'     => 'comment_expiration_date',
-                'visible'   => true,
+                'field' => 'comment_expiration_date',
+                'visible' => true,
                 'collapsed' => false
             ];
 
             $allow_comments = [
-                'field'     => 'allow_comments',
-                'visible'   => true,
+                'field' => 'allow_comments',
+                'visible' => true,
                 'collapsed' => false
             ];
 

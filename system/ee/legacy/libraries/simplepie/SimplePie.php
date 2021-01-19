@@ -773,7 +773,7 @@ class SimplePie
         if ($file instanceof SimplePie_File) {
             $this->feed_url = $file->url;
             $this->permanent_url = $this->feed_url;
-            $this->file =& $file;
+            $this->file = & $file;
 
             return true;
         }
@@ -863,7 +863,7 @@ class SimplePie
      */
     public function force_cache_fallback($enable = false)
     {
-        $this->force_cache_fallback= (bool) $enable;
+        $this->force_cache_fallback = (bool) $enable;
     }
 
     /**
@@ -1512,7 +1512,7 @@ class SimplePie
                             $headers['if-none-match'] = $this->data['headers']['etag'];
                         }
 
-                        $file = $this->registry->create('File', array($this->feed_url, $this->timeout/10, 5, $headers, $this->useragent, $this->force_fsockopen, $this->curl_options));
+                        $file = $this->registry->create('File', array($this->feed_url, $this->timeout / 10, 5, $headers, $this->useragent, $this->force_fsockopen, $this->curl_options));
 
                         if ($file->success) {
                             if ($file->status_code === 304) {
@@ -1551,7 +1551,7 @@ class SimplePie
         // If we don't already have the file (it'll only exist if we've opened it to check if the cache has been modified), open it.
         if (!isset($file)) {
             if ($this->file instanceof SimplePie_File && $this->file->url === $this->feed_url) {
-                $file =& $this->file;
+                $file = & $this->file;
             } else {
                 $headers = array(
                     'Accept' => 'application/atom+xml, application/rss+xml, application/rdf+xml;q=0.9, application/xml;q=0.8, text/xml;q=0.8, text/html;q=0.7, unknown/unknown;q=0.1, application/unknown;q=0.1, */*;q=0.1',
@@ -1848,9 +1848,9 @@ class SimplePie
                     '&amp;',
                     '&',
                     $this->sanitize(
-                                       $this->permanent_url,
-                                       SIMPLEPIE_CONSTRUCT_IRI
-                                   )
+                        $this->permanent_url,
+                        SIMPLEPIE_CONSTRUCT_IRI
+                    )
                 );
             }
         } else {
@@ -1859,9 +1859,9 @@ class SimplePie
                     '&amp;',
                     '&',
                     $this->sanitize(
-                                       $this->feed_url,
-                                       SIMPLEPIE_CONSTRUCT_IRI
-                                   )
+                        $this->feed_url,
+                        SIMPLEPIE_CONSTRUCT_IRI
+                    )
                 );
             }
         }
@@ -2390,12 +2390,12 @@ class SimplePie
                 if ($this->registry->call('Misc', 'is_isegment_nz_nc', array($key))) {
                     if (isset($this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key])) {
                         $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key] = array_merge($this->data['links'][$key], $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key]);
-                        $this->data['links'][$key] =& $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key];
+                        $this->data['links'][$key] = & $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key];
                     } else {
-                        $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key] =& $this->data['links'][$key];
+                        $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key] = & $this->data['links'][$key];
                     }
                 } elseif (substr($key, 0, 41) === SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY) {
-                    $this->data['links'][substr($key, 41)] =& $this->data['links'][$key];
+                    $this->data['links'][substr($key, 41)] = & $this->data['links'][$key];
                 }
                 $this->data['links'][$key] = array_unique($this->data['links'][$key]);
             }

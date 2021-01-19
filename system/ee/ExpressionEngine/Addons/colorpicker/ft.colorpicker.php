@@ -14,16 +14,16 @@ class Colorpicker_ft extends EE_Fieldtype
     public $info = [];
 
     public $default_settings = [
-        'allowed_colors' 			=> 'any',
+        'allowed_colors' => 'any',
         // The default color to use on invalid field input
         'colorpicker_default_color' => '',
         // An array of colors
-        'value_swatches' 			=> null,
-        'manual_swatches'			=> '',
+        'value_swatches' => null,
+        'manual_swatches' => '',
         // How the swatches should be crated
         //   v = By values with a grid
         //   m = Manually with a textarea
-        'populate_swatches'			=> 'v'
+        'populate_swatches' => 'v'
     ];
 
     public function __construct()
@@ -31,7 +31,7 @@ class Colorpicker_ft extends EE_Fieldtype
         $addon = ee('Addon')->get('colorpicker');
 
         $this->info = [
-            'name'    => $addon->getName(),
+            'name' => $addon->getName(),
             'version' => $addon->getVersion()
         ];
     }
@@ -88,11 +88,11 @@ class Colorpicker_ft extends EE_Fieldtype
 
         return $this->create_colorpicker([
             'allowedColors' => $this->get_setting('allowed_colors'),
-            'inputId'       => $this->field_id,
-            'inputName'     => $this->field_name,
-            'initialColor' 	=> $data,
-            'swatches'   	=> $this->getSwatches(),
-            'defaultColor' 	=> $this->get_setting('colorpicker_default_color'),
+            'inputId' => $this->field_id,
+            'inputName' => $this->field_name,
+            'initialColor' => $data,
+            'swatches' => $this->getSwatches(),
+            'defaultColor' => $this->get_setting('colorpicker_default_color'),
             // 'disabled'      => $this->get_setting('field_disabled')
         ]);
     }
@@ -175,14 +175,14 @@ class Colorpicker_ft extends EE_Fieldtype
         $settings = [
             // ColorPicker type
             [
-                'title'  => 'colorpicker_allowed_colors',
-                'desc'	 => 'colorpicker_allowed_colors_desc',
+                'title' => 'colorpicker_allowed_colors',
+                'desc' => 'colorpicker_allowed_colors_desc',
                 'fields' => [
                     'allowed_colors' => [
-                        'type'    => 'radio',
-                        'value'   => $data['allowed_colors'],
+                        'type' => 'radio',
+                        'value' => $data['allowed_colors'],
                         'choices' => [
-                            'any'   => lang('colorpicker_allowed_colors_any'),
+                            'any' => lang('colorpicker_allowed_colors_any'),
                             'swatches' => lang('colorpicker_allowed_colors_swatches')
                         ]
                     ]
@@ -191,8 +191,8 @@ class Colorpicker_ft extends EE_Fieldtype
 
             // Default Color
             [
-                'title'  => 'colorpicker_default_color',
-                'desc'   => 'colorpicker_default_color_desc',
+                'title' => 'colorpicker_default_color',
+                'desc' => 'colorpicker_default_color_desc',
                 'fields' => [
                     'colorpicker_default_color' => [
                         'type' => 'html',
@@ -217,9 +217,9 @@ class Colorpicker_ft extends EE_Fieldtype
                         'value' => $data['populate_swatches']
                     ),
                     'value_swatches' => [
-                        'type' 		  =>'html',
+                        'type' => 'html',
                         'margin_left' => true,
-                        'content'	  => ee('View')->make('ee:_shared/form/mini_grid')->render($grid->viewData())
+                        'content' => ee('View')->make('ee:_shared/form/mini_grid')->render($grid->viewData())
                     ],
 
                     'populate_swatches_manually' => array(

@@ -119,15 +119,15 @@ class Updater
             'sessions',
             array(
                 'fingerprint' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 40
+                    'type' => 'varchar',
+                    'constraint' => 40
                 ),
                 'sess_start' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             ),
             'user_agent'
@@ -145,9 +145,9 @@ class Updater
             'security_hashes',
             array(
                 'ip_address' => array(
-                    'name' 			=> 'session_id',
-                    'type' 			=> 'varchar',
-                    'constraint' 	=> 40
+                    'name' => 'session_id',
+                    'type' => 'varchar',
+                    'constraint' => 40
                 )
             )
         );

@@ -62,13 +62,13 @@ class Updater extends CP_Controller
 
         $next_step = $runner->getNextStep();
         $vars = [
-            'cp_page_title'   => lang('updating'),
-            'site_name'       => ee()->config->item('site_name'),
+            'cp_page_title' => lang('updating'),
+            'site_name' => ee()->config->item('site_name'),
             'current_version' => formatted_version($current_version),
-            'to_version'      => formatted_version($to_version),
-            'warn_message'    => $preflight_error,
-            'first_step'      => $runner->getLanguageForStep($next_step),
-            'next_step'       => $next_step
+            'to_version' => formatted_version($to_version),
+            'warn_message' => $preflight_error,
+            'first_step' => $runner->getLanguageForStep($next_step),
+            'next_step' => $next_step
         ];
 
         ee()->javascript->set_global([
@@ -123,16 +123,16 @@ class Updater extends CP_Controller
         if (! ($verify_result = $this->auth->verify())) {
             if (AJAX_REQUEST) {
                 $this->output->send_ajax_response(array(
-                    'messageType'	=> 'failure',
-                    'message'		=> $this->auth->errors
+                    'messageType' => 'failure',
+                    'message' => $this->auth->errors
                 ));
             }
         }
 
         if (AJAX_REQUEST) {
             $this->output->send_ajax_response(array(
-                'messageType'	=> 'success',
-                'message'		=> ''
+                'messageType' => 'success',
+                'message' => ''
             ));
         }
     }

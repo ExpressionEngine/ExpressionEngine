@@ -49,10 +49,10 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-remove',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-remove',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

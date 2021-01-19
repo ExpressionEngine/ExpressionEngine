@@ -128,7 +128,7 @@ class Auth extends Settings
                     'desc' => 'new_password_desc',
                     'fields' => array(
                         'password' => array(
-                            'type'      => 'password',
+                            'type' => 'password',
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )
@@ -138,7 +138,7 @@ class Auth extends Settings
                     'desc' => 'new_password_confirm_desc',
                     'fields' => array(
                         'confirm_password' => array(
-                            'type'      => 'password',
+                            'type' => 'password',
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )
@@ -153,8 +153,8 @@ class Auth extends Settings
                     'desc' => 'existing_password_exp',
                     'fields' => array(
                         'verify_password' => array(
-                            'type'      => 'password',
-                            'required'  => true,
+                            'type' => 'password',
+                            'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )

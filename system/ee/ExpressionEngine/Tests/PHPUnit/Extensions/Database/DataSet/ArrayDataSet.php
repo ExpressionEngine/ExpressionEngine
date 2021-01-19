@@ -12,7 +12,7 @@ class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet
 
     public function __construct(
         array $data,
-        array $tables=array()
+        array $tables = array()
     ) {
         $this->tables = $tables;
         foreach ($data as $table_name => $rows) {
@@ -39,7 +39,7 @@ class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet
         return array_values(array_unique($columns));
     }
 
-    protected function createIterator($reverse=false)
+    protected function createIterator($reverse = false)
     {
         return new \PHPUnit_Extensions_Database_DataSet_DefaultTableIterator(
             $this->tables,

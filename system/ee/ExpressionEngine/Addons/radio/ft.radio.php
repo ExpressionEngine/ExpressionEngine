@@ -15,8 +15,8 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 class Radio_ft extends OptionFieldtype
 {
     public $info = array(
-        'name'		=> 'Radio Buttons',
-        'version'	=> '1.0.0'
+        'name' => 'Radio Buttons',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = false;
@@ -24,17 +24,17 @@ class Radio_ft extends OptionFieldtype
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
-        'field_text_direction'	=> 'rtl',
-        'field_pre_populate'	=> 'n',
-        'field_list_items'		=> array(),
-        'field_pre_field_id'	=> '',
-        'field_pre_channel_id'	=> ''
+        'field_text_direction' => 'rtl',
+        'field_pre_populate' => 'n',
+        'field_list_items' => array(),
+        'field_pre_field_id' => '',
+        'field_pre_channel_id' => ''
     );
 
     public function validate($data)
     {
-        $valid			= false;
-        $field_options	= $this->_get_field_options($data);
+        $valid = false;
+        $field_options = $this->_get_field_options($data);
 
         if ($data === false or $data == '') {
             return true;
@@ -107,10 +107,10 @@ class Radio_ft extends OptionFieldtype
 
             return ee('View')->make('ee:_shared/form/fields/select')->render([
                 'field_name' => $this->field_name,
-                'choices'    => $field_options,
-                'value'      => $data,
-                'multi'      => false,
-                'disabled'   => $this->get_setting('field_disabled'),
+                'choices' => $field_options,
+                'value' => $data,
+                'multi' => false,
+                'disabled' => $this->get_setting('field_disabled'),
                 'filter_url' => $this->get_setting('filter_url', null),
                 'no_results' => $this->get_setting('no_results', null),
             ]);

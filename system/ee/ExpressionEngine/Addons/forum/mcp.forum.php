@@ -27,7 +27,7 @@ class Forum_mcp extends CP_Controller
         ee()->lang->loadfile('forum_cp');
 
         // Garbage collection.  Delete old read topic data
-        $year_ago = ee()->localize->now - (60*60*24*365);
+        $year_ago = ee()->localize->now - (60 * 60 * 24 * 365);
         ee()->db->where('last_visit <', $year_ago);
         ee()->db->delete('forum_read_topics');
     }
@@ -162,13 +162,13 @@ break;
                 $class = ($i == count($boards_categories) - 1) ? '' : 'mb';
 
                 $table_config = array(
-                    'limit'             => 0,
-                    'reorder'           => true,
-                    'reorder_header'    => true,
-                    'checkbox_header'   => true,
-                    'sortable'          => false,
-                    'class'             => $class,
-                    'wrap'              => false,
+                    'limit' => 0,
+                    'reorder' => true,
+                    'reorder_header' => true,
+                    'checkbox_header' => true,
+                    'sortable' => false,
+                    'class' => $class,
+                    'wrap' => false,
                 );
 
                 $table = ee('CP/Table', $table_config);
@@ -181,10 +181,10 @@ break;
                             'encode' => false
                         ),
                         $manage => array(
-                            'type'	=> Table::COL_TOOLBAR,
+                            'type' => Table::COL_TOOLBAR,
                         ),
                         array(
-                            'type'	=> Table::COL_CHECKBOX,
+                            'type' => Table::COL_CHECKBOX,
                             'content' => form_checkbox(array(
                                 'name' => 'selection[]',
                                 'value' => $category->getId(),
@@ -217,7 +217,7 @@ break;
                         array(
                             'name' => 'selection[]',
                             'value' => $forum->forum_id,
-                            'data'	=> array(
+                            'data' => array(
                                 'confirm' => lang('forum') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
                             )
                         )
@@ -230,8 +230,8 @@ break;
                     }
 
                     $data[] = array(
-                        'attrs'		=> $attrs,
-                        'columns'	=> $row
+                        'attrs' => $attrs,
+                        'columns' => $row
                     );
                 }
                 $table->setData($data);
@@ -266,7 +266,7 @@ break;
         $this->generateSidebar($id);
 
         return array(
-            'body'    => $body,
+            'body' => $body,
             'heading' => lang('forum_manager'),
         );
     }
@@ -373,47 +373,47 @@ break;
         $errors = null;
 
         $defaults = array(
-            'board_id'						=> '',
-            'board_label'					=> '',
-            'board_name'					=> '',
-            'board_enabled'					=> 'y',
-            'board_forum_trigger'			=> 'forums',
-            'board_site_id'					=> 1,
-            'board_alias_id'				=> 0,
-            'board_allow_php'				=> 'n',
-            'board_php_stage'				=> 'o',
-            'board_install_date'			=> 0,
-            'board_forum_url'				=> ee()->functions->create_url('forums'),
-            'board_default_theme'			=> 'default',
-            'board_upload_path'				=> '',
-            'board_topics_perpage'			=> 25,
-            'board_posts_perpage'			=> 15,
-            'board_topic_order'				=> 'r',
-            'board_post_order'				=> 'a',
-            'board_hot_topic'				=> 10,
-            'board_max_post_chars'			=> 6000,
-            'board_post_timelock'			=> 0,
-            'board_display_edit_date'		=> 'n',
-            'board_text_formatting'			=> 'xhtml',
-            'board_html_formatting'			=> 'safe',
-            'board_allow_img_urls'			=> 'n',
-            'board_auto_link_urls'			=> 'y',
-            'board_notify_emails'			=> '',
-            'board_notify_emails_topics'	=> '',
-            'board_max_attach_perpost'		=> 3,
-            'board_max_attach_size'			=> 75,
-            'board_max_width'				=> 800,
-            'board_max_height'				=> 600,
-            'board_attach_types'			=> 'img',
-            'board_use_img_thumbs'			=> ($this->isGdAvailable()) ? 'y' : 'n',
-            'board_thumb_width'				=> 100,
-            'board_thumb_height'			=> 100,
-            'board_forum_permissions'		=> $this->getDefaultForumPermissions(),
-            'board_use_deft_permissions'	=> 'n',
-            'board_recent_poster_id'		=> '0',
-            'board_recent_poster'			=> '',
-            'board_enable_rss'				=> 'y',
-            'board_use_http_auth'			=> 'n',
+            'board_id' => '',
+            'board_label' => '',
+            'board_name' => '',
+            'board_enabled' => 'y',
+            'board_forum_trigger' => 'forums',
+            'board_site_id' => 1,
+            'board_alias_id' => 0,
+            'board_allow_php' => 'n',
+            'board_php_stage' => 'o',
+            'board_install_date' => 0,
+            'board_forum_url' => ee()->functions->create_url('forums'),
+            'board_default_theme' => 'default',
+            'board_upload_path' => '',
+            'board_topics_perpage' => 25,
+            'board_posts_perpage' => 15,
+            'board_topic_order' => 'r',
+            'board_post_order' => 'a',
+            'board_hot_topic' => 10,
+            'board_max_post_chars' => 6000,
+            'board_post_timelock' => 0,
+            'board_display_edit_date' => 'n',
+            'board_text_formatting' => 'xhtml',
+            'board_html_formatting' => 'safe',
+            'board_allow_img_urls' => 'n',
+            'board_auto_link_urls' => 'y',
+            'board_notify_emails' => '',
+            'board_notify_emails_topics' => '',
+            'board_max_attach_perpost' => 3,
+            'board_max_attach_size' => 75,
+            'board_max_width' => 800,
+            'board_max_height' => 600,
+            'board_attach_types' => 'img',
+            'board_use_img_thumbs' => ($this->isGdAvailable()) ? 'y' : 'n',
+            'board_thumb_width' => 100,
+            'board_thumb_height' => 100,
+            'board_forum_permissions' => $this->getDefaultForumPermissions(),
+            'board_use_deft_permissions' => 'n',
+            'board_recent_poster_id' => '0',
+            'board_recent_poster' => '',
+            'board_enable_rss' => 'y',
+            'board_use_http_auth' => 'n',
         );
 
         $board = ee('Model')->make('forum:Board', $defaults);
@@ -478,11 +478,11 @@ break;
         $this->generateSidebar();
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
             ),
-            'heading'    => lang('create_forum_board'),
+            'heading' => lang('create_forum_board'),
         );
     }
 
@@ -548,11 +548,11 @@ break;
         $this->generateSidebar($id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -997,7 +997,7 @@ break;
                         'board_html_formatting' => array(
                             'type' => 'radio',
                             'choices' => array(
-                                'all'  => lang('html_all'),
+                                'all' => lang('html_all'),
                                 'safe' => lang('html_safe'),
                                 'none' => lang('html_none'),
                             ),
@@ -1232,16 +1232,16 @@ break;
         $errors = null;
 
         $defaults = array(
-            'board_id'						=> '',
-            'board_label'					=> '',
-            'board_name'					=> '',
-            'board_enabled'					=> 'y',
-            'board_forum_trigger'			=> 'forums',
-            'board_site_id'					=> 1,
-            'board_alias_id'				=> 0,
-            'board_forum_url'				=> ee()->functions->create_url('forums'),
-            'board_default_theme'			=> 'default',
-            'board_forum_permissions'		=> $this->getDefaultForumPermissions(),
+            'board_id' => '',
+            'board_label' => '',
+            'board_name' => '',
+            'board_enabled' => 'y',
+            'board_forum_trigger' => 'forums',
+            'board_site_id' => 1,
+            'board_alias_id' => 0,
+            'board_forum_url' => ee()->functions->create_url('forums'),
+            'board_default_theme' => 'default',
+            'board_forum_permissions' => $this->getDefaultForumPermissions(),
         );
 
         $alias = ee('Model')->make('forum:Board', $defaults);
@@ -1302,11 +1302,11 @@ break;
         $this->generateSidebar();
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base)->compile() => lang('forum_listing')
             ),
-            'heading'    => lang('create_forum_alias'),
+            'heading' => lang('create_forum_alias'),
         );
     }
 
@@ -1368,11 +1368,11 @@ break;
         $this->generateSidebar($id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $alias->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -1609,11 +1609,11 @@ break;
         $this->generateSidebar($board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => lang('create_category'),
+            'heading' => lang('create_category'),
         );
     }
 
@@ -1673,11 +1673,11 @@ break;
         $this->generateSidebar($category->Board->board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -1777,7 +1777,7 @@ break;
                             'type' => 'checkbox',
                             'choices' => array(
                                 'forum_notify_moderators_topics' => lang('new_topics'),
-                                'forum_notify_moderators_replies'  => lang('new_replies')
+                                'forum_notify_moderators_replies' => lang('new_replies')
                             ),
                             'value' => $notify_moderators
 
@@ -1922,11 +1922,11 @@ break;
         $this->generateSidebar($category->Board->board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 $return->compile() => $category->Board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -2011,11 +2011,11 @@ break;
         $this->generateSidebar($board->board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $board->board_id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => lang('create_forum'),
+            'heading' => lang('create_forum'),
         );
     }
 
@@ -2075,11 +2075,11 @@ break;
         $this->generateSidebar($forum->Board->board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -2278,7 +2278,7 @@ break;
                             'type' => 'checkbox',
                             'choices' => array(
                                 'forum_notify_moderators_topics' => lang('new_topics'),
-                                'forum_notify_moderators_replies'  => lang('new_replies')
+                                'forum_notify_moderators_replies' => lang('new_replies')
                             ),
                             'value' => $notify_moderators
                         )
@@ -2325,7 +2325,7 @@ break;
                         'forum_html_formatting' => array(
                             'type' => 'radio',
                             'choices' => array(
-                                'all'  => lang('html_all'),
+                                'all' => lang('html_all'),
                                 'safe' => lang('html_safe'),
                                 'none' => lang('html_none'),
                             ),
@@ -2578,11 +2578,11 @@ break;
         $this->generateSidebar($forum->Board->board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 $return->compile() => $forum->Board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -2629,10 +2629,10 @@ break;
                 'posts',
                 'stars',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR,
+                    'type' => Table::COL_TOOLBAR,
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -2661,7 +2661,7 @@ break;
                 array(
                     'name' => 'selection[]',
                     'value' => $rank->rank_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('rank') . ': <b>' . htmlentities($rank->rank_title, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -2674,8 +2674,8 @@ break;
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $row
+                'attrs' => $attrs,
+                'columns' => $row
             );
         }
         $table->setData($data);
@@ -2707,7 +2707,7 @@ break;
         $this->generateSidebar('ranks');
 
         return array(
-            'body'    => $body,
+            'body' => $body,
             'heading' => lang('member_ranks'),
         );
     }
@@ -2765,11 +2765,11 @@ break;
         $this->generateSidebar('ranks');
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'ranks')->compile() => lang('member_ranks')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -2829,11 +2829,11 @@ break;
         $this->generateSidebar('ranks');
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'ranks')->compile() => lang('member_ranks')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -2980,7 +2980,7 @@ break;
                 'name',
                 'type',
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -2998,7 +2998,7 @@ break;
                 array(
                     'name' => 'selection[]',
                     'value' => $admin->admin_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('admin') . ': <b>' . htmlentities($admin->getAdminName(), ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -3011,8 +3011,8 @@ break;
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $row
+                'attrs' => $attrs,
+                'columns' => $row
             );
         }
         $table->setData($data);
@@ -3020,10 +3020,10 @@ break;
         $base_url = ee('CP/URL')->make($this->base . 'admins/' . $board_id);
 
         $vars = array(
-            'cp_page_title'   => lang('administrators'),
-            'cp_heading'      => lang('administrators'),
+            'cp_page_title' => lang('administrators'),
+            'cp_heading' => lang('administrators'),
             'cp_heading_desc' => lang('administrators_desc'),
-            'new_url'         => $new_url
+            'new_url' => $new_url
         );
 
         $vars['table'] = $table->viewData($base_url);
@@ -3046,7 +3046,7 @@ break;
         $this->generateSidebar($board_id);
 
         return array(
-            'body'    => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
@@ -3165,11 +3165,11 @@ break;
         $this->generateSidebar($board_id);
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $board_id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
-            'heading'    => $vars['cp_page_title'],
+            'heading' => $vars['cp_page_title'],
         );
     }
 
@@ -3181,8 +3181,8 @@ break;
 
         $validator = ee('Validation')->make(array(
             'administrator_type' => 'required|enum[group,individual]',
-            'member_group'       => 'whenAdministratorTypeIs[group]|validRole',
-            'individual'         => 'whenAdministratorTypeIs[individual]|validMember',
+            'member_group' => 'whenAdministratorTypeIs[group]|validRole',
+            'individual' => 'whenAdministratorTypeIs[individual]|validMember',
         ));
 
         $data = $_POST;
@@ -3293,7 +3293,7 @@ break;
                         'encode' => false
                     ),
                     'manage' => array(
-                        'type'	=> Table::COL_TOOLBAR,
+                        'type' => Table::COL_TOOLBAR,
                     )
                 )
             );
@@ -3329,8 +3329,8 @@ break;
                 }
 
                 $data[] = array(
-                    'attrs'		=> $attrs,
-                    'columns'	=> $row
+                    'attrs' => $attrs,
+                    'columns' => $row
                 );
             }
             $table->setData($data);
@@ -3355,7 +3355,7 @@ break;
         $this->generateSidebar($id);
 
         return array(
-            'body'    => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
@@ -3427,12 +3427,12 @@ break;
         $this->generateSidebar();
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' ' . lang('forum_listing'),
                 ee('CP/URL')->make($this->base . 'moderators/' . $forum_id)->compile() => lang('moderators')
             ),
-            'heading'    => lang('create_moderator'),
+            'heading' => lang('create_moderator'),
         );
     }
 
@@ -3496,12 +3496,12 @@ break;
         $this->generateSidebar();
 
         return array(
-            'body'       => $body,
+            'body' => $body,
             'breadcrumb' => array(
                 ee('CP/URL')->make($this->base . 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' ' . lang('forum_listing'),
                 ee('CP/URL')->make($this->base . 'moderators/' . $forum_id)->compile() => lang('moderators')
             ),
-            'heading'    => lang('edit_moderator'),
+            'heading' => lang('edit_moderator'),
         );
     }
 
@@ -3576,14 +3576,14 @@ break;
                         'permissions' => array(
                             'type' => 'checkbox',
                             'choices' => array(
-                                'mod_can_edit'          => lang('mod_can_edit'),
-                                'mod_can_move'          => lang('mod_can_move'),
-                                'mod_can_split'         => lang('mod_can_split'),
-                                'mod_can_merge'         => lang('mod_can_merge'),
-                                'mod_can_delete'        => lang('mod_can_delete'),
+                                'mod_can_edit' => lang('mod_can_edit'),
+                                'mod_can_move' => lang('mod_can_move'),
+                                'mod_can_split' => lang('mod_can_split'),
+                                'mod_can_merge' => lang('mod_can_merge'),
+                                'mod_can_delete' => lang('mod_can_delete'),
                                 'mod_can_change_status' => lang('mod_can_change_status'),
-                                'mod_can_announce'      => lang('mod_can_announce'),
-                                'mod_can_view_ip'       => lang('mod_can_view_ip'),
+                                'mod_can_announce' => lang('mod_can_announce'),
+                                'mod_can_view_ip' => lang('mod_can_view_ip'),
                             ),
                             'encode' => false,
                             'value' => $permissions
@@ -3619,8 +3619,8 @@ break;
 
         $validator = ee('Validation')->make(array(
             'moderator_type' => 'required|enum[group,individual]',
-            'member_group'       => 'whenModeratorTypeIs[group]|validRole',
-            'individual'         => 'whenModeratorTypeIs[individual]|validMember',
+            'member_group' => 'whenModeratorTypeIs[group]|validRole',
+            'individual' => 'whenModeratorTypeIs[individual]|validMember',
         ));
 
         $data = $_POST;
@@ -3742,10 +3742,10 @@ break;
         require_once SYSPATH . 'ee/language/english/email_data.php';
 
         $data = array(
-            'site_id'			=> $site_id,
-            'template_type'		=> 'email',
-            'template_subtype'	=> 'forums',
-            'edit_date'			=> ee()->localize->now,
+            'site_id' => $site_id,
+            'template_type' => 'email',
+            'template_subtype' => 'forums',
+            'edit_date' => ee()->localize->now,
         );
 
         $template_names = array(

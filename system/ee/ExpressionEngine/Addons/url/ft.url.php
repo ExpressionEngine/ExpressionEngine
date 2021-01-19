@@ -17,7 +17,7 @@ class Url_Ft extends EE_Fieldtype
      * @var array $info Legacy Fieldtype info array
      */
     public $info = array(
-        'name'    => 'URL',
+        'name' => 'URL',
         'version' => '1.0.0'
     );
 
@@ -107,8 +107,8 @@ class Url_Ft extends EE_Fieldtype
         $default_scheme = $this->get_setting('url_scheme_placeholder');
 
         $field = array(
-            'name'        => $this->field_name,
-            'value'       => $data,
+            'name' => $this->field_name,
+            'value' => $data,
             'placeholder' => $default_scheme
         );
 
@@ -173,8 +173,8 @@ class Url_Ft extends EE_Fieldtype
         }
 
         return array('field_options_url' => array(
-            'label'    => 'field_options',
-            'group'    => 'url',
+            'label' => 'field_options',
+            'group' => 'url',
             'settings' => $settings
         ));
     }
@@ -217,7 +217,7 @@ class Url_Ft extends EE_Fieldtype
     private function getSchemes($only_defaults = false)
     {
         $protocols = array(
-            'http://'  => 'http://',
+            'http://' => 'http://',
             'https://' => 'https://'
         );
 
@@ -226,11 +226,11 @@ class Url_Ft extends EE_Fieldtype
         }
 
         $protocols += array(
-            '//'      => '// (' . lang('url_ft_protocol_relative_url') . ')',
-            'ftp://'  => 'ftp://',
+            '//' => '// (' . lang('url_ft_protocol_relative_url') . ')',
+            'ftp://' => 'ftp://',
             'mailto:' => 'mailto:',
             'sftp://' => 'sftp://',
-            'ssh://'  => 'ssh://',
+            'ssh://' => 'ssh://',
         );
 
         return $protocols;

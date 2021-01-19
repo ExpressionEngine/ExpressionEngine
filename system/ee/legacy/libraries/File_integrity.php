@@ -150,13 +150,13 @@ class File_integrity
      */
     public function create_bootstrap_checksum($path = '', $site_id = '')
     {
-        $checksums  = ee()->config->item('site_bootstrap_checksums');
-        $site_id    = ($site_id != '') ? $site_id : ee()->config->item('site_id');
+        $checksums = ee()->config->item('site_bootstrap_checksums');
+        $site_id = ($site_id != '') ? $site_id : ee()->config->item('site_id');
 
         if (REQ == 'CP' && $path && file_exists($path)) {
-            $checksums              = $this->checksums[$site_id];       // should already have called check_bootstrap_files
-            $checksums[$path]       = md5_file($path);
-            $checksums['emailed']   = array();
+            $checksums = $this->checksums[$site_id];       // should already have called check_bootstrap_files
+            $checksums[$path] = md5_file($path);
+            $checksums['emailed'] = array();
 
             $this->_update_config($checksums, $site_id);
         } elseif (REQ != 'CP' && ! array_key_exists(FCPATH . EESELF, $checksums)) {

@@ -33,14 +33,14 @@ if (! function_exists('singular')) {
         $end = substr($str, -3);
 
         if ($end == 'ies') {
-            $str = substr($str, 0, strlen($str)-3) . 'y';
+            $str = substr($str, 0, strlen($str) - 3) . 'y';
         } elseif ($end == 'ses') {
-            $str = substr($str, 0, strlen($str)-2);
+            $str = substr($str, 0, strlen($str) - 2);
         } else {
             $end = substr($str, -1);
 
             if ($end == 's') {
-                $str = substr($str, 0, strlen($str)-1);
+                $str = substr($str, 0, strlen($str) - 1);
             }
         }
 

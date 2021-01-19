@@ -206,7 +206,7 @@ class Select extends Query
 
     protected function getExtraData($alias, $result_array)
     {
-        $meta  = $this->store->getMetaDataReader($this->expandAlias($alias));
+        $meta = $this->store->getMetaDataReader($this->expandAlias($alias));
         $class = $meta->getClass();
 
         $fields = $this->getFields();
@@ -228,16 +228,16 @@ class Select extends Query
 
         $meta_field_data = $class::getMetaData('field_data');
 
-        $field_model     = ee('Model')->make($meta_field_data['field_model']);
+        $field_model = ee('Model')->make($meta_field_data['field_model']);
 
         // let's make life a bit easier
-        $item_key_column   = $alias . '__' . $meta->getPrimaryKey();
-        $table_prefix      = $alias;
+        $item_key_column = $alias . '__' . $meta->getPrimaryKey();
+        $table_prefix = $alias;
         $join_table_prefix = $field_model->getTableName();
-        $column_prefix     = $field_model->getColumnPrefix();
-        $primary_key       = $meta->getPrimaryKey();
-        $table_name        = $class::getMetaData('table_name');
-        $parent_key        = "{$table_name}.{$primary_key}";
+        $column_prefix = $field_model->getColumnPrefix();
+        $primary_key = $meta->getPrimaryKey();
+        $table_name = $class::getMetaData('table_name');
+        $parent_key = "{$table_name}.{$primary_key}";
 
         if (array_key_exists('group_column', $meta_field_data)) {
             $meta_field_data['group_column'] = $alias . '__' . $meta_field_data['group_column'];
@@ -351,7 +351,7 @@ class Select extends Query
 
     protected function augmentQuery($query)
     {
-        $meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+        $meta = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
         $class = $meta->getClass();
 
         $meta_field_data = $class::getMetaData('field_data');
@@ -359,11 +359,11 @@ class Select extends Query
         $field_model = ee('Model')->make($meta_field_data['field_model']);
 
         // let's make life a bit easier
-        $table_prefix      = $meta->getName();
+        $table_prefix = $meta->getName();
         $join_table_prefix = $field_model->getTableName();
-        $column_prefix     = $field_model->getColumnPrefix();
-        $primary_key       = $meta->getPrimaryKey();
-        $parent_key        = "{$table_prefix}__{$primary_key}";
+        $column_prefix = $field_model->getColumnPrefix();
+        $primary_key = $meta->getPrimaryKey();
+        $parent_key = "{$table_prefix}__{$primary_key}";
 
         $field_ids = array();
 

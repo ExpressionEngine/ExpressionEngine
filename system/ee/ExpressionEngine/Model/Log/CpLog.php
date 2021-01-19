@@ -24,13 +24,13 @@ class CpLog extends Model
         'Site' => array(
             'type' => 'belongsTo'
         ),
-        'Member'	=> array(
+        'Member' => array(
             'type' => 'belongsTo'
         )
     );
 
     protected static $_validation_rules = array(
-        'ip_address'  => 'ip_address'
+        'ip_address' => 'ip_address'
     );
 
     protected $id;

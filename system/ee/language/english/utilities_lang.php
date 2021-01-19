@@ -122,7 +122,7 @@ $lang = array(
 
     'search_files_button' => 'Search Files',
 
-    'trans_file_not_writable'=> 'Translation file is not writeable.',
+    'trans_file_not_writable' => 'Translation file is not writeable.',
 
     'translate_btn' => 'Save Translations',
 

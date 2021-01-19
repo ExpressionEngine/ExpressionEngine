@@ -30,7 +30,7 @@ class Spaces implements Vectorizer
 
         $whitespace = preg_match_all('/\s/u', $source, $matches);
 
-        $characters  = ee_mb_strlen($source);
+        $characters = ee_mb_strlen($source);
 
         if ($characters !== 0) {
             $ratio = $whitespace / $characters;

@@ -50,11 +50,11 @@ class Updater
         foreach ($tables as $table) {
             $column_settings = array(
                 'ip_address' => array(
-                    'name' 			=> 'ip_address',
-                    'type' 			=> 'varchar',
-                    'constraint' 	=> 45,
-                    'default'		=> '0',
-                    'null'			=> false
+                    'name' => 'ip_address',
+                    'type' => 'varchar',
+                    'constraint' => 45,
+                    'default' => '0',
+                    'null' => false
                 )
             );
 

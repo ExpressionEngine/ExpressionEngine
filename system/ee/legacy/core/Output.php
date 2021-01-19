@@ -13,19 +13,19 @@
  */
 class EE_Output
 {
-    public $out_type		= 'webpage';
-    public $refresh_msg	= true;			// TRUE/FALSE - whether to show the "You will be redirected in 5 seconds" message.
-    public $refresh_time	= 1;			// Number of seconds for redirects
+    public $out_type = 'webpage';
+    public $refresh_msg = true;			// TRUE/FALSE - whether to show the "You will be redirected in 5 seconds" message.
+    public $refresh_time = 1;			// Number of seconds for redirects
 
     public $remove_unparsed_variables = false; // whether to remove left-over variables that had bad syntax
 
-    public $final_output		= '';
-    public $cache_expiration	= 0;
-    public $headers			= array();
-    public $enable_profiler	= false;
-    public $parse_exec_vars	= true;	// whether or not to parse variables like {elapsed_time} and {memory_usage}
+    public $final_output = '';
+    public $cache_expiration = 0;
+    public $headers = array();
+    public $enable_profiler = false;
+    public $parse_exec_vars = true;	// whether or not to parse variables like {elapsed_time} and {memory_usage}
 
-    public $_zlib_oc			= false;
+    public $_zlib_oc = false;
 
     public function __construct()
     {
@@ -153,7 +153,7 @@ class EE_Output
         // If the output data contains closing </body> and </html> tags
         // we will remove them and add them back after we insert the profile data
         if (preg_match("|</body>.*?</html>|is", $output)) {
-            $output  = preg_replace("|</body>.*?</html>|is", '', $output);
+            $output = preg_replace("|</body>.*?</html>|is", '', $output);
             $output .= $content;
             $output .= '</body></html>';
         } else {
@@ -275,7 +275,7 @@ class EE_Output
 
         // Set the output data
         if ($output == '') {
-            $output =& $this->final_output;
+            $output = & $this->final_output;
         }
 
         // --------------------------------------------------------------------
@@ -293,7 +293,7 @@ class EE_Output
         $elapsed = $BM->elapsed_time('total_execution_time_start', 'total_execution_time_end');
 
         if ($this->parse_exec_vars === true) {
-            $memory	 = (! function_exists('memory_get_usage')) ? '0' : round(memory_get_usage()/1024/1024, 2) . 'MB';
+            $memory = (! function_exists('memory_get_usage')) ? '0' : round(memory_get_usage() / 1024 / 1024, 2) . 'MB';
 
             $output = str_replace('{elapsed_time}', $elapsed, $output);
             $output = str_replace('{memory_usage}', $memory, $output);
@@ -332,7 +332,7 @@ class EE_Output
         // Do we need to generate profile data?
         // If so, load the Profile service and run it.
         if ($this->enable_profiler == true && (! (AJAX_REQUEST or ee('LivePreview')->hasEntryData()))) {
-            $performance = 	array(
+            $performance = array(
                 'database' => number_format(ee('Database')->currentExecutionTime(), 4),
                 'benchmarks' => ee()->benchmark->getBenchmarkTimings()
             );
@@ -340,10 +340,10 @@ class EE_Output
             $profiler = ee('Profiler')
                 ->addSection('performance', $performance)
                 ->addSection('variables', array(
-                    'server'   => $_SERVER,
-                    'cookie'   => $_COOKIE,
-                    'get'      => $_GET,
-                    'post'     => $_POST,
+                    'server' => $_SERVER,
+                    'cookie' => $_COOKIE,
+                    'get' => $_GET,
+                    'post' => $_POST,
                     'userdata' => ee()->session->all_userdata()
                 ))
                 ->addSection('database', array(ee('Database')));
@@ -415,8 +415,8 @@ class EE_Output
         // Check for the 'If-Modified-Since' Header
 
         if (ee()->config->item('send_headers') == 'y' && isset($request['If-Modified-Since']) && trim($request['If-Modified-Since']) != '') {
-            $x				= explode(';', $request['If-Modified-Since']);
-            $modify_tstamp	= strtotime($x['0']);
+            $x = explode(';', $request['If-Modified-Since']);
+            $modify_tstamp = strtotime($x['0']);
 
             // If no new content, send no data
 
@@ -429,7 +429,7 @@ class EE_Output
         $this->set_status_header(200);
         $this->set_header("Content-Type: text/xml; charset=" . ee()->config->item('output_charset'));
 
-        $this->set_header('Expires: ' . gmdate('D, d M Y H:i:s', $last_update+(60*60)) . ' GMT'); // One hour
+        $this->set_header('Expires: ' . gmdate('D, d M Y H:i:s', $last_update + (60 * 60)) . ' GMT'); // One hour
         $this->set_header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_update) . ' GMT');
         $this->set_header("Cache-Control: no-store, no-cache, must-revalidate");
         $this->set_header("Cache-Control: post-check=0, pre-check=0", false);
@@ -450,9 +450,9 @@ class EE_Output
     {
         $heading = ($use_lang == true && is_object(ee()->lang)) ? ee()->lang->line('error') : 'Error Message';
 
-        $data = array('title' 	=> $heading,
-            'heading'	=> $heading,
-            'content'	=> '<p>' . $error_msg . '</p>'
+        $data = array('title' => $heading,
+            'heading' => $heading,
+            'content' => '<p>' . $error_msg . '</p>'
         );
 
         $this->show_message($data);
@@ -516,13 +516,13 @@ class EE_Output
         if ($data['redirect'] != '') {
             $secure_redirect = ee('Security/XSS')->clean($data['redirect']);
             $secure_redirect = htmlentities($secure_redirect, ENT_QUOTES, 'UTF-8');
-            $js_rate = $data['rate']*1000;
+            $js_rate = $data['rate'] * 1000;
 
             $data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='" . $secure_redirect . "'}," . $js_rate . ')</script>';
             $data['meta_refresh'] .= "<noscript><meta http-equiv='refresh' content='" . $data['rate'] . "; url=" . $secure_redirect . "'></noscript>";
         }
 
-        $data['charset']		= ee()->config->item('output_charset');
+        $data['charset'] = ee()->config->item('output_charset');
 
         if (is_array($data['link']) and count($data['link']) > 0) {
             $refresh_msg = ($data['redirect'] != '' and $this->refresh_msg == true) ? ee()->lang->line('click_if_no_redirect') : '';
@@ -576,7 +576,7 @@ class EE_Output
         }
 
         foreach ($data as $key => $val) {
-            $template_data  = str_replace('{' . $key . '}', $val, $template_data);
+            $template_data = str_replace('{' . $key . '}', $val, $template_data);
         }
 
         $output = stripslashes($template_data);
@@ -627,24 +627,24 @@ class EE_Output
             }
         }
 
-        $content  = '<ul>';
+        $content = '<ul>';
 
         if (! is_array($errors)) {
-            $content.= "<li>" . $errors . "</li>\n";
+            $content .= "<li>" . $errors . "</li>\n";
         } else {
             foreach ($errors as $val) {
-                $content.= "<li>" . $val . "</li>\n";
+                $content .= "<li>" . $val . "</li>\n";
             }
         }
 
         $content .= "</ul>";
 
         $data = array(
-            'title' 	=> ee()->lang->line('error'),
-            'heading'	=> $heading,
-            'content'	=> $content,
-            'redirect'	=> '',
-            'link'		=> array('JavaScript:history.go(-1)', ee()->lang->line('return_to_previous'))
+            'title' => ee()->lang->line('error'),
+            'heading' => $heading,
+            'content' => $content,
+            'redirect' => '',
+            'link' => array('JavaScript:history.go(-1)', ee()->lang->line('return_to_previous'))
         );
 
         $this->show_message($data, 0);
@@ -697,9 +697,9 @@ class EE_Output
     public function send_cache_headers($modified, $max_age = 172800, $etag_path = null)
     {
         if (ee()->config->item('send_headers') == 'y') {
-            $max_age		= (int) $max_age;
-            $modified		= (int) $modified;
-            $modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
+            $max_age = (int) $max_age;
+            $modified = (int) $modified;
+            $modified_since = ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
             // Remove anything after the semicolon
 

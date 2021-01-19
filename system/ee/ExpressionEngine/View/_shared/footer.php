@@ -45,7 +45,7 @@
 					<?=lang('out_of_date_upgrade_major')?>
 
 					<div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
-						<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name'=>'one_click_major_update_confirm'])?>
+						<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
 							<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 							<fieldset>
 								<label><?=lang('one_click_major_update_instructions')?></label>

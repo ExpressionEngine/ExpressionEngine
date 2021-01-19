@@ -23,29 +23,29 @@ class Forum extends Model
     protected static $_table_name = 'forums';
 
     protected static $_typed_columns = array(
-        'forum_id'                        => 'int',
-        'board_id'                        => 'int',
-        'forum_is_cat'                    => 'boolString',
-        'forum_parent'                    => 'int',
-        'forum_order'                     => 'int',
-        'forum_total_topics'              => 'int',
-        'forum_total_posts'               => 'int',
-        'forum_last_post_id'              => 'int',
-        'forum_last_post_date'            => 'timestamp',
-        'forum_last_post_author_id'       => 'int',
-        'forum_permissions'               => 'serialized',
-        'forum_topics_perpage'            => 'int',
-        'forum_posts_perpage'             => 'int',
-        'forum_hot_topic'                 => 'int',
-        'forum_max_post_chars'            => 'int',
-        'forum_post_timelock'             => 'int',
-        'forum_display_edit_date'         => 'boolString',
-        'forum_allow_img_urls'            => 'boolString',
-        'forum_auto_link_urls'            => 'boolString',
-        'forum_notify_moderators_topics'  => 'boolString',
+        'forum_id' => 'int',
+        'board_id' => 'int',
+        'forum_is_cat' => 'boolString',
+        'forum_parent' => 'int',
+        'forum_order' => 'int',
+        'forum_total_topics' => 'int',
+        'forum_total_posts' => 'int',
+        'forum_last_post_id' => 'int',
+        'forum_last_post_date' => 'timestamp',
+        'forum_last_post_author_id' => 'int',
+        'forum_permissions' => 'serialized',
+        'forum_topics_perpage' => 'int',
+        'forum_posts_perpage' => 'int',
+        'forum_hot_topic' => 'int',
+        'forum_max_post_chars' => 'int',
+        'forum_post_timelock' => 'int',
+        'forum_display_edit_date' => 'boolString',
+        'forum_allow_img_urls' => 'boolString',
+        'forum_auto_link_urls' => 'boolString',
+        'forum_notify_moderators_topics' => 'boolString',
         'forum_notify_moderators_replies' => 'boolString',
-        'forum_enable_rss'                => 'boolString',
-        'forum_use_http_auth'             => 'boolString',
+        'forum_enable_rss' => 'boolString',
+        'forum_use_http_auth' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -53,30 +53,30 @@ class Forum extends Model
             'type' => 'belongsTo'
         ),
         'Category' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'Forum',
+            'type' => 'belongsTo',
+            'model' => 'Forum',
             'from_key' => 'forum_parent',
-            'to_key'   => 'forum_id'
+            'to_key' => 'forum_id'
         ),
         'Forums' => array(
-            'type'     => 'hasMany',
-            'model'    => 'Forum',
+            'type' => 'hasMany',
+            'model' => 'Forum',
             'from_key' => 'forum_id',
-            'to_key'   => 'forum_parent'
+            'to_key' => 'forum_parent'
         ),
         'LastPost' => array(
-            'type'     => 'hasOne',
-            'model'    => 'Post',
+            'type' => 'hasOne',
+            'model' => 'Post',
             'from_key' => 'forum_last_post_id',
-            'to_key'   => 'post_id',
-            'weak'     => true
+            'to_key' => 'post_id',
+            'weak' => true
         ),
         'LastPostAuthor' => array(
-            'type'     => 'belongsTo',
+            'type' => 'belongsTo',
             'from_key' => 'forum_last_post_author_id',
-            'to_key'   => 'member_id',
-            'model'    => 'ee:Member',
-            'weak'     => true,
+            'to_key' => 'member_id',
+            'model' => 'ee:Member',
+            'weak' => true,
             'inverse' => array(
                 'name' => 'Forum',
                 'type' => 'hasMany',
@@ -84,37 +84,37 @@ class Forum extends Model
             )
         ),
         'Moderators' => array(
-            'type'   => 'hasMany',
-            'model'  => 'Moderator',
+            'type' => 'hasMany',
+            'model' => 'Moderator',
             'to_key' => 'mod_forum_id'
         ),
         'Posts' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Post'
         ),
         'Topics' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Topic'
         ),
     );
 
     protected static $_validation_rules = array(
-        'forum_name'                      => 'required',
-        'forum_is_cat'                    => 'enum[y,n]',
-        'forum_status'                    => 'enum[o,c,a]',
-        'forum_last_post_type'            => 'enum[p,a]',
-        'forum_permissions'               => 'required',
-        'forum_topic_order'               => 'enum[r,a,d]',
-        'forum_post_order'                => 'enum[a,d]',
-        'forum_hot_topic'                 => 'required',
-        'forum_max_post_chars'            => 'required',
-        'forum_display_edit_date'         => 'enum[y,n]',
-        'forum_allow_img_urls'            => 'enum[y,n]',
-        'forum_auto_link_urls'            => 'enum[y,n]',
-        'forum_notify_moderators_topics'  => 'enum[y,n]',
+        'forum_name' => 'required',
+        'forum_is_cat' => 'enum[y,n]',
+        'forum_status' => 'enum[o,c,a]',
+        'forum_last_post_type' => 'enum[p,a]',
+        'forum_permissions' => 'required',
+        'forum_topic_order' => 'enum[r,a,d]',
+        'forum_post_order' => 'enum[a,d]',
+        'forum_hot_topic' => 'required',
+        'forum_max_post_chars' => 'required',
+        'forum_display_edit_date' => 'enum[y,n]',
+        'forum_allow_img_urls' => 'enum[y,n]',
+        'forum_auto_link_urls' => 'enum[y,n]',
+        'forum_notify_moderators_topics' => 'enum[y,n]',
         'forum_notify_moderators_replies' => 'enum[y,n]',
-        'forum_enable_rss'                => 'enum[y,n]',
-        'forum_use_http_auth'             => 'enum[y,n]',
+        'forum_enable_rss' => 'enum[y,n]',
+        'forum_use_http_auth' => 'enum[y,n]',
     );
 
     protected static $_events = array(

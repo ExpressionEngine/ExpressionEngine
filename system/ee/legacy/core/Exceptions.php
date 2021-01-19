@@ -146,7 +146,7 @@ class EE_Exceptions
         // Ajax Requests get a reasonable response
         if (defined('AJAX_REQUEST') && AJAX_REQUEST) {
             ee()->output->send_ajax_response(array(
-                'error'	=> $message
+                'error' => $message
             ));
         }
 
@@ -246,7 +246,7 @@ class EE_Exceptions
         //allow links to docs
         $message = preg_replace('/&lt;a href=&quot;https:\/\/docs\.expressionengine\.com(.*)&quot;&gt;(.*)&lt;\/a&gt;/i', '<a href="https://docs.expressionengine.com${1}">${2}</a>', $message);
 
-        $location =  $filepath . ':' . $exception->getLine();
+        $location = $filepath . ':' . $exception->getLine();
         $trace = explode("\n", $exception->getTraceAsString());
         $partial_path = substr($syspath, 0, 15);
 

@@ -18,7 +18,7 @@ class Update extends Query
     public function run()
     {
         $builder = $this->builder;
-        $object  = $builder->getExisting();
+        $object = $builder->getExisting();
 
         if (! $object) {
             $object = $this->store->make(

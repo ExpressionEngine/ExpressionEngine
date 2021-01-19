@@ -54,9 +54,9 @@ class Perpage extends Filter
         $this->label = 'perpage_filter';
         $this->placeholder = lang('custom_limit');
         $this->options = array(
-            '25'  => '25 ' . lang('results'),
-            '50'  => '50 ' . lang('results'),
-            '75'  => '75 ' . lang('results'),
+            '25' => '25 ' . lang('results'),
+            '50' => '50 ' . lang('results'),
+            '75' => '75 ' . lang('results'),
             '100' => '100 ' . lang('results'),
             '150' => '150 ' . lang('results'),
             $total => sprintf(lang($all_lang_key), $total)
@@ -142,16 +142,16 @@ class Perpage extends Filter
         $show_all_url = end($urls);
 
         $filter = array(
-            'label'            => $this->label,
-            'name'             => $this->name,
-            'value'            => $value,
+            'label' => $this->label,
+            'name' => $this->name,
+            'value' => $value,
             'has_custom_value' => $this->has_custom_value,
-            'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
-            'placeholder'      => $this->placeholder,
-            'options'          => $options,
-            'show_all_url'     => $show_all_url,
+            'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
+            'placeholder' => $this->placeholder,
+            'options' => $options,
+            'show_all_url' => $show_all_url,
             'confirm_show_all' => $this->confirm_show_all,
-            'threshold'        => $this->total_threshold
+            'threshold' => $this->total_threshold
         );
 
         return $view->make('_shared/filters/perpage')->render($filter);

@@ -58,7 +58,7 @@ class File_category_model extends CI_Model
 
         $this->db->insert(self::TABLE_NAME, array(
             'file_id' => $file_id,
-            'cat_id'  => $cat_id
+            'cat_id' => $cat_id
         ));
 
         return true;

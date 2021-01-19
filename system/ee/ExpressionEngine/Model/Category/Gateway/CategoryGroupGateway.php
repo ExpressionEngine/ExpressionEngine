@@ -22,7 +22,7 @@ class CategoryGroupGateway extends Gateway
     protected static $_related_gateways = array(
         'site_id' => array(
             'gateway' => 'SiteGateway',
-            'key'	 => 'site_id'
+            'key' => 'site_id'
         ),
         'group_id' => array(
             'gateway' => 'CategoryGateway',

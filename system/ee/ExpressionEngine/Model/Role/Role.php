@@ -21,7 +21,7 @@ class Role extends Model
     protected static $_table_name = 'roles';
 
     protected static $_typed_columns = [
-        'role_id'   => 'int',
+        'role_id' => 'int',
         'is_locked' => 'boolString',
     ];
 
@@ -95,7 +95,7 @@ class Role extends Model
             'model' => 'TemplateGroup',
             'pivot' => array(
                 'table' => 'template_groups_roles',
-                'left'  => 'role_id',
+                'left' => 'role_id',
                 'right' => 'template_group_id'
             )
         ),
@@ -118,7 +118,7 @@ class Role extends Model
     ];
 
     protected static $_validation_rules = [
-        'name'       => 'required|unique|maxLength[100]',
+        'name' => 'required|unique|maxLength[100]',
         'short_name' => 'required|unique|alphaDash|maxLength[50]',
     ];
 

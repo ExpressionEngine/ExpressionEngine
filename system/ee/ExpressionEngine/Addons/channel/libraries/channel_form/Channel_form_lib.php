@@ -63,7 +63,7 @@ class Channel_form_lib
     protected $_file_enctype = false;
     protected $_hidden_fields = array();
     protected $_form_attributes = array();
-    protected $_installed_mods  = array('smileys' => false, 'spellcheck' => false);
+    protected $_installed_mods = array('smileys' => false, 'spellcheck' => false);
 
     protected $member;
 
@@ -511,7 +511,7 @@ class Channel_form_lib
                 )
             );
         } elseif ($this->channel('channel_id')) {
-            $this->parse_variables['title']     = $this->channel('default_entry_title');
+            $this->parse_variables['title'] = $this->channel('default_entry_title');
             $this->parse_variables['url_title'] = $this->channel('url_title_prefix');
             $this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == false or $this->channel('comment_system_enabled') == false) ? '' : "checked='checked'";
 
@@ -658,12 +658,12 @@ class Channel_form_lib
         $RET = ee()->functions->fetch_current_uri();
 
         $hidden_fields = array(
-            'RET'                   => $RET,
-            'URI'                   => (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-            'return_url'            => (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
-            'author_id'             => $this->member->getId(),
-            'channel_id'            => $this->channel('channel_id'),
-            'entry_id'              => 0
+            'RET' => $RET,
+            'URI' => (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
+            'return_url' => (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
+            'author_id' => $this->member->getId(),
+            'channel_id' => $this->channel('channel_id'),
+            'entry_id' => 0
         );
 
         $hidden_fields = array_merge($hidden_fields, $this->_hidden_fields);
@@ -690,9 +690,9 @@ class Channel_form_lib
 
         $form_attributes = array(
             'hidden_fields' => $hidden_fields,
-            'action'        => $action,
-            'id'            => ee()->TMPL->fetch_param('id', 'cform'),
-            'enctype'       => $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
+            'action' => $action,
+            'id' => ee()->TMPL->fetch_param('id', 'cform'),
+            'enctype' => $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
         );
 
         $form_attributes = array_merge($form_attributes, $this->_form_attributes);
@@ -768,9 +768,9 @@ class Channel_form_lib
                 $button_js[] = array('separator' => '---');
             } else {
                 $button_js[] = array(
-                    'name'      => $button->tag_name,
-                    'key'       => strtoupper($button->accesskey),
-                    'openWith'  => $button->tag_open,
+                    'name' => $button->tag_name,
+                    'key' => strtoupper($button->accesskey),
+                    'openWith' => $button->tag_open,
                     'closeWith' => $button->tag_close,
                     'className' => $button->classname
                 );
@@ -778,10 +778,10 @@ class Channel_form_lib
         }
 
         $markItUp = array(
-            'nameSpace'     => "html",
-            'onShiftEnter'  => array('keepDefault' => false, 'replaceWith' => "<br />\n"),
-            'onCtrlEnter'   => array('keepDefault' => false, 'openWith' => "\n<p>", 'closeWith' => "</p>\n"),
-            'markupSet'     => $button_js,
+            'nameSpace' => "html",
+            'onShiftEnter' => array('keepDefault' => false, 'replaceWith' => "<br />\n"),
+            'onCtrlEnter' => array('keepDefault' => false, 'openWith' => "\n<p>", 'closeWith' => "</p>\n"),
+            'markupSet' => $button_js,
         );
 
         /* -------------------------------------------
@@ -803,15 +803,15 @@ class Channel_form_lib
 
         $addt_js = array(
             'publish' => array(
-                'title_focus'       => ((! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
-                'smileys'           => ($this->_installed_mods['smileys']) ? true : false,
-                'url_title_prefix'  => $this->channel('url_title_prefix'),
+                'title_focus' => ((! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
+                'smileys' => ($this->_installed_mods['smileys']) ? true : false,
+                'url_title_prefix' => $this->channel('url_title_prefix'),
                 'default_entry_title' => $this->channel('default_entry_title')
             ),
             'user_id' => $this->member->getId(),
             'lang' => array(
-                'confirm_exit'          => lang('confirm_exit'),
-                'add_new_html_button'   => lang('add_new_html_button')
+                'confirm_exit' => lang('confirm_exit'),
+                'add_new_html_button' => lang('add_new_html_button')
             )
         );
 
@@ -864,9 +864,9 @@ class Channel_form_lib
         ee()->lang->loadfile('content');
 
         $this->output_js['json'] = array(
-            'EE'                    => $addt_js,
-            'EE.markitup'           => new StdClass(),
-            'EE.markitup.settings'          => $markItUp,
+            'EE' => $addt_js,
+            'EE.markitup' => new StdClass(),
+            'EE.markitup.settings' => $markItUp,
         );
 
         $include_jquery = ee()->TMPL->fetch_param('include_jquery');
@@ -1063,24 +1063,24 @@ GRID_FALLBACK;
 
             // standard vars/conditionals
             $custom_field_variables_row = array(
-                'required'      => $field->isRequired(),
+                'required' => $field->isRequired(),
                 'text_direction' => $field->getSetting('field_text_direction'),
-                'field_data'    => $this->entry($field->getName()),
-                'rows'          => $field->getSetting('field_ta_rows'),
-                'maxlength'     => $field->getSetting('field_maxl'),
-                'formatting_buttons'            => '',
-                'field_show_formatting_btns'    => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
-                'textinput'     => 0,
-                'pulldown'      => 0,
-                'checkbox'      => 0,
-                'relationship'  => 0,
+                'field_data' => $this->entry($field->getName()),
+                'rows' => $field->getSetting('field_ta_rows'),
+                'maxlength' => $field->getSetting('field_maxl'),
+                'formatting_buttons' => '',
+                'field_show_formatting_btns' => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
+                'textinput' => 0,
+                'pulldown' => 0,
+                'checkbox' => 0,
+                'relationship' => 0,
                 'relationships' => 0,
-                'multiselect'   => 0,
-                'date'          => 0,
-                'radio'         => 0,
+                'multiselect' => 0,
+                'date' => 0,
+                'radio' => 0,
                 'display_field' => '',
-                'options'       => $this->get_field_options($field_name),
-                'error'         => (! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
+                'options' => $this->get_field_options($field_name),
+                'error' => (! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
             );
 
             $custom_field_equivalent = $this->custom_fields[$field_name];
@@ -1248,7 +1248,7 @@ GRID_FALLBACK;
             if ($logged_out_member_id = $this->_meta['logged_out_member_id']) {
                 $this->fetch_logged_out_member($logged_out_member_id);
             }
-        } elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')])) {
+        } elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') && ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')])) {
             $this->fetch_logged_out_member($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]);
         }
 
@@ -1825,10 +1825,10 @@ GRID_FALLBACK;
 
         $fieldtype->_init(
             array(
-                'field_id'      => $field_id,
-                'field_name'    => $field_name,
-                'content_id'    => $this->entry('entry_id'),
-                'content_type'  => 'channel'
+                'field_id' => $field_id,
+                'field_name' => $field_name,
+                'content_id' => $this->entry('entry_id'),
+                'content_type' => 'channel'
             )
         );
 

@@ -291,13 +291,13 @@ class SimplePie_Cache_MySQL extends SimplePie_Cache_DB
 
             if ($items !== 0) {
                 if (isset($data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0])) {
-                    $feed =& $data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0];
+                    $feed = & $data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0];
                 } elseif (isset($data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0])) {
-                    $feed =& $data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0];
+                    $feed = & $data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0];
                 } elseif (isset($data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0])) {
-                    $feed =& $data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0];
+                    $feed = & $data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0];
                 } elseif (isset($data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0])) {
-                    $feed =& $data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0];
+                    $feed = & $data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0];
                 } else {
                     $feed = null;
                 }

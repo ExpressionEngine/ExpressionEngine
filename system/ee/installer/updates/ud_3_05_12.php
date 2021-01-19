@@ -40,7 +40,7 @@ class Updater
     private function alterUsernameFields()
     {
         $fields = array(
-            'username'	=> array('type' => 'text',	'constraint' => '75',	'null' => false)
+            'username' => array('type' => 'text',	'constraint' => '75',	'null' => false)
         );
         ee()->smartforge->modify_column('cp_log', $fields);
         ee()->smartforge->modify_column('password_lockout', $fields);

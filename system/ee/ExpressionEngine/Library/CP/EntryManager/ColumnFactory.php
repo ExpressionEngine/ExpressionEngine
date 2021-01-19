@@ -16,17 +16,17 @@ namespace ExpressionEngine\Library\CP\EntryManager;
 class ColumnFactory
 {
     private static $standard_columns = [
-        'entry_id'        => Columns\EntryId::class,
-        'title'           => Columns\Title::class,
-        'url_title'       => Columns\UrlTitle::class,
-        'author'          => Columns\Author::class,
-        'status'          => Columns\Status::class,
-        'entry_date'      => Columns\EntryDate::class,
+        'entry_id' => Columns\EntryId::class,
+        'title' => Columns\Title::class,
+        'url_title' => Columns\UrlTitle::class,
+        'author' => Columns\Author::class,
+        'status' => Columns\Status::class,
+        'entry_date' => Columns\EntryDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
-        'channel'         => Columns\ChannelName::class,
-        'comments'        => Columns\Comments::class,
-        'categories'      => Columns\Categories::class,
-        'checkbox'        => Columns\Checkbox::class
+        'channel' => Columns\ChannelName::class,
+        'comments' => Columns\Comments::class,
+        'categories' => Columns\Categories::class,
+        'checkbox' => Columns\Checkbox::class
     ];
 
     private static $instances = [];

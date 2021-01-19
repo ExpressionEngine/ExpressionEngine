@@ -300,7 +300,7 @@ class Backup
 
                     return [
                         'table_name' => $next_table[0],
-                        'offset'     => 0
+                        'offset' => 0
                     ];
                 }
                 // There is more of this table to export that we weren't able to,
@@ -308,7 +308,7 @@ class Backup
                 else {
                     return [
                         'table_name' => $table,
-                        'offset'     => $offset
+                        'offset' => $offset
                     ];
                 }
             }

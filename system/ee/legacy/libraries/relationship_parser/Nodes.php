@@ -94,7 +94,7 @@ class ParseNode extends EE_TreeNode
      */
     public function add_entry_id($parent, $child)
     {
-        $ids =& $this->data['entry_ids'];
+        $ids = & $this->data['entry_ids'];
 
         if (empty($child)) {
             $child = array();
@@ -124,7 +124,7 @@ class ParseNode extends EE_TreeNode
      */
     public function entry_ids()
     {
-        $ids =& $this->data['entry_ids'];
+        $ids = & $this->data['entry_ids'];
 
         if ($this->_dirty) {
             if (isset($this->_entry_id_opts)) {

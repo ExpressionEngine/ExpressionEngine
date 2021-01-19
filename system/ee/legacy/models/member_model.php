@@ -261,7 +261,7 @@ class Member_model extends CI_Model
 
         $query = $this->get_member_data($this->id, array('ignore_list'));
 
-        $ignored = ($query->row('ignore_list')	== '') ? array('') : explode('|', $query->row('ignore_list'));
+        $ignored = ($query->row('ignore_list') == '') ? array('') : explode('|', $query->row('ignore_list'));
 
         $this->db->select('screen_name, member_id');
         $this->db->where_in('member_id', $ignored);
@@ -733,7 +733,7 @@ class Member_model extends CI_Model
             $this->db->limit($limit);
         }
 
-        if ($offset !='') {
+        if ($offset != '') {
             $this->db->offset($offset);
         }
 
@@ -769,7 +769,7 @@ class Member_model extends CI_Model
 
         if ($reassign_group !== false) {
             // reassign current members to new group
-            $this->db->set(array('role_id'=>$reassign_group));
+            $this->db->set(array('role_id' => $reassign_group));
             $this->db->where('role_id', $group_id);
             $this->db->update('members');
         }

@@ -208,21 +208,21 @@ class Member extends ContentModel
     );
 
     protected static $_field_data = array(
-        'field_model'     => 'MemberField',
+        'field_model' => 'MemberField',
         'structure_model' => 'Member',
     );
 
     protected static $_validation_rules = array(
-        'role_id'         => 'required|isNatural|validateRoles',
-        'username'        => 'required|unique|validateUsername',
-        'screen_name'     => 'validateScreenName',
-        'email'           => 'required|email|uniqueEmail|validateEmail',
-        'password'        => 'required|validatePassword',
-        'timezone'        => 'validateTimezone',
-        'date_format'     => 'validateDateFormat',
-        'time_format'     => 'enum[12,24]',
+        'role_id' => 'required|isNatural|validateRoles',
+        'username' => 'required|unique|validateUsername',
+        'screen_name' => 'validateScreenName',
+        'email' => 'required|email|uniqueEmail|validateEmail',
+        'password' => 'required|validatePassword',
+        'timezone' => 'validateTimezone',
+        'date_format' => 'validateDateFormat',
+        'time_format' => 'enum[12,24]',
         'include_seconds' => 'enum[y,n]',
-        'roles'           => 'validateRoles'
+        'roles' => 'validateRoles'
     );
 
     protected static $_events = array(
@@ -430,10 +430,10 @@ class Member extends ContentModel
     private function notifyOfChanges($type, $to)
     {
         $vars = [
-            'name'		=> $this->screen_name,
-            'username'  => $this->username,
-            'site_name'	=> ee()->config->item('site_name'),
-            'site_url'	=> ee()->config->item('site_url')
+            'name' => $this->screen_name,
+            'username' => $this->username,
+            'site_name' => ee()->config->item('site_name'),
+            'site_url' => ee()->config->item('site_url')
         ];
 
         $template = ee()->functions->fetch_email_template($type);
@@ -685,7 +685,7 @@ class Member extends ContentModel
 
         //we're not checking additional roles when checking primary role
         //however, for additional roles we'll need both
-        if ($key=='role_id') {
+        if ($key == 'role_id') {
             if (! in_array($role_id, $roles->all()->pluck('role_id'))) {
                 return lang('invalid_role_id');
             }

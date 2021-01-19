@@ -67,12 +67,12 @@ class Spam implements SpamProtocol
     public function moderate($content_type, $entity, $document, $optional_data)
     {
         $data = array(
-            'content_type'  => $content_type,
-            'author_id'     => ee()->session->userdata('member_id'),
-            'trap_date'     => ee()->localize->now,
-            'ip_address'    => $_SERVER['REMOTE_ADDR'],
-            'entity'        => $entity,
-            'document'      => $document,
+            'content_type' => $content_type,
+            'author_id' => ee()->session->userdata('member_id'),
+            'trap_date' => ee()->localize->now,
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'entity' => $entity,
+            'document' => $document,
             'optional_data' => $optional_data,
         );
 

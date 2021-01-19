@@ -111,12 +111,12 @@ class Comment
      */
     public function entries()
     {
-        $return 		= '';
-        $qstring		= ee()->uri->query_string;
-        $uristr			= ee()->uri->uri_string;
-        $switch 		= array();
-        $search_link	= '';
-        $enabled 		= $this->_fetch_disable_param();
+        $return = '';
+        $qstring = ee()->uri->query_string;
+        $uristr = ee()->uri->uri_string;
+        $switch = array();
+        $search_link = '';
+        $enabled = $this->_fetch_disable_param();
 
         if ($enabled['pagination']) {
             ee()->load->library('pagination');
@@ -170,7 +170,7 @@ class Comment
                 if ($enabled['pagination']) {
                     $pagination->current_page = $match['2'];
                 }
-                $uristr  = reduce_double_slashes(str_replace($match['0'], '/', $uristr));
+                $uristr = reduce_double_slashes(str_replace($match['0'], '/', $uristr));
                 $qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
             }
         }
@@ -620,8 +620,8 @@ class Comment
      */
     public function form($return_form = false, $captcha = '')
     {
-        $qstring		 = ee()->uri->query_string;
-        $entry_where	 = array();
+        $qstring = ee()->uri->query_string;
+        $entry_where = array();
         $halt_processing = false;
 
         /** --------------------------------------
@@ -758,7 +758,7 @@ class Comment
 
         //  First check whether expiration is overriden
         if (ee()->config->item('comment_moderation_override') !== 'y') {
-            if ($query->row('comment_expiration_date')  > 0) {
+            if ($query->row('comment_expiration_date') > 0) {
                 if (ee()->localize->now > $query->row('comment_expiration_date')) {
                     $halt_processing = 'expired';
                 }
@@ -803,13 +803,13 @@ class Comment
         /**  Conditionals
         /** ----------------------------------------*/
         $cond = array();
-        $cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? false : true;
-        $cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? false : true;
+        $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
+        $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
 
         if (! ee('Captcha')->shouldRequireCaptcha()) {
             $cond['captcha'] = false;
         } else {
-            $cond['captcha'] =  (ee()->config->item('captcha_require_members') == 'y'  or
+            $cond['captcha'] = (ee()->config->item('captcha_require_members') == 'y' or
                                 (ee()->config->item('captcha_require_members') == 'n' and ee()->session->userdata('member_id') == 0)) ? true : false;
         }
 
@@ -947,11 +947,11 @@ class Comment
         $PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
 
         $hidden_fields = array(
-            'ACT'	  	=> ee()->functions->fetch_action_id('Comment', 'insert_new_comment'),
-            'RET'	  	=> $RET,
-            'URI'	  	=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-            'PRV'	  	=> $PRV,
-            'entry_id' 	=> $query->row('entry_id')
+            'ACT' => ee()->functions->fetch_action_id('Comment', 'insert_new_comment'),
+            'RET' => $RET,
+            'URI' => (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
+            'PRV' => $PRV,
+            'entry_id' => $query->row('entry_id')
         );
 
         if (ee('Captcha')->shouldRequireCaptcha()) {
@@ -977,10 +977,10 @@ class Comment
         $url = ee()->functions->fetch_site_index(true) . $uri_string;
 
         $data = array(
-            'action'		=> reduce_double_slashes($url),
-            'hidden_fields'	=> $hidden_fields,
-            'id'			=> (! isset(ee()->TMPL->tagparams['id'])) ? 'comment_form' : ee()->TMPL->tagparams['id'],
-            'class'			=> (! isset(ee()->TMPL->tagparams['class'])) ? null : ee()->TMPL->tagparams['class']
+            'action' => reduce_double_slashes($url),
+            'hidden_fields' => $hidden_fields,
+            'id' => (! isset(ee()->TMPL->tagparams['id'])) ? 'comment_form' : ee()->TMPL->tagparams['id'],
+            'class' => (! isset(ee()->TMPL->tagparams['class'])) ? null : ee()->TMPL->tagparams['class']
         );
 
         if (ee()->TMPL->fetch_param('name') !== false &&
@@ -988,7 +988,7 @@ class Comment
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
-        $res  = ee()->functions->form_declaration($data);
+        $res = ee()->functions->form_declaration($data);
 
         $res .= stripslashes($tagdata);
         $res .= "</form>";
@@ -1029,10 +1029,10 @@ class Comment
         ee()->load->library('typography');
         ee()->typography->initialize(
             array(
-                'parse_images'   => false,
+                'parse_images' => false,
                 'allow_headings' => false,
-                'encode_email'   => false,
-                'word_censor'    => (ee()->config->item('comment_word_censoring') == 'y') ? true : false)
+                'encode_email' => false,
+                'word_censor' => (ee()->config->item('comment_word_censoring') == 'y') ? true : false)
         );
 
         ee()->db->select('channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.comment_max_chars');
@@ -1049,7 +1049,7 @@ class Comment
         /** -------------------------------------
         /**  Check size of comment
         /** -------------------------------------*/
-        if ($query->row('comment_max_chars')  != '' and $query->row('comment_max_chars')  != 0) {
+        if ($query->row('comment_max_chars') != '' and $query->row('comment_max_chars') != 0) {
             if (strlen($_POST['comment']) > $query->row('comment_max_chars')) {
                 $str = str_replace("%n", strlen($_POST['comment']), ee()->lang->line('cmt_too_large'));
 
@@ -1083,28 +1083,28 @@ class Comment
         /** ----------------------------------------
         /**  Set defaults based on member data as needed
         /** ----------------------------------------*/
-        $name		= ee()->input->post('name', true);
-        $email		= ee()->input->post('email', true); // this is just for preview, actual submission will validate the email address
-        $url		= ee()->input->post('url', true);
-        $location	= ee()->input->post('location', true);
+        $name = ee()->input->post('name', true);
+        $email = ee()->input->post('email', true); // this is just for preview, actual submission will validate the email address
+        $url = ee()->input->post('url', true);
+        $location = ee()->input->post('location', true);
 
         if (ee()->session->userdata('member_id') != 0) {
-            $name		= ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
-            $email		= ee()->session->userdata('email');
-            $url		= (string) ee()->session->userdata('url');
-            $location	= (string) ee()->session->userdata('location');
+            $name = ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
+            $email = ee()->session->userdata('email');
+            $url = (string) ee()->session->userdata('url');
+            $location = (string) ee()->session->userdata('location');
         }
 
         /** ----------------------------------------
         /**  Conditionals
         /** ----------------------------------------*/
         $cond = $_POST; // Sanitized on input and also in prep_conditionals, so no real worries here
-        $cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? false : true;
-        $cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? false : true;
-        $cond['name']		= $name;
-        $cond['email']		= $email;
-        $cond['url']		= ($url == 'http://') ? '' : $url;
-        $cond['location']	= $location;
+        $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
+        $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+        $cond['name'] = $name;
+        $cond['email'] = $email;
+        $cond['url'] = ($url == 'http://') ? '' : $url;
+        $cond['location'] = $location;
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -1188,9 +1188,9 @@ class Comment
                     $data = ee()->typography->parse_type(
                         ee()->input->post('comment'),
                         array(
-                            'text_format'	=> $query->row('comment_text_formatting'),
-                            'html_format'	=> $query->row('comment_html_formatting'),
-                            'auto_links'	=> $query->row('comment_auto_link_urls'),
+                            'text_format' => $query->row('comment_text_formatting'),
+                            'html_format' => $query->row('comment_html_formatting'),
+                            'auto_links' => $query->row('comment_auto_link_urls'),
                             'allow_img_url' => $query->row('comment_allow_img_urls')
                         )
                     );
@@ -1418,7 +1418,7 @@ class Comment
         /** ----------------------------------------
         /**  Are comments allowed?
         /** ----------------------------------------*/
-        if ($query->row('allow_comments')  == 'n' or $query->row('comment_system_enabled')  == 'n') {
+        if ($query->row('allow_comments') == 'n' or $query->row('comment_system_enabled') == 'n') {
             return ee()->output->show_user_error('submission', ee()->lang->line('cmt_comments_not_allowed'));
         }
 
@@ -1427,7 +1427,7 @@ class Comment
         /** ----------------------------------------*/
         $force_moderation = $query->row('comment_moderate');
 
-        if ($query->row('comment_expiration_date')  > 0) {
+        if ($query->row('comment_expiration_date') > 0) {
             if (ee()->localize->now > $query->row('comment_expiration_date')) {
                 if (ee()->config->item('comment_moderation_override') == 'y') {
                     $force_moderation = 'y';
@@ -1449,7 +1449,7 @@ class Comment
 
                 $result = ee()->db->count_all_results('comments');
 
-                if ($result  > 0) {
+                if ($result > 0) {
                     return ee()->output->show_user_error('submission', str_replace("%s", $query->row('comment_timelock'), ee()->lang->line('cmt_comments_timelock')));
                 }
             }
@@ -1472,11 +1472,11 @@ class Comment
         /** ----------------------------------------
         /**  Assign data
         /** ----------------------------------------*/
-        $channel_id         = $query->row('channel_id') ;
+        $channel_id = $query->row('channel_id') ;
         $require_membership = $query->row('comment_require_membership') ;
-        $comment_moderate   = (ee('Permission')->isSuperAdmin() or ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
-        $entry_id           = $query->row('entry_id');
-        $comment_site_id    = $query->row('site_id');
+        $comment_moderate = (ee('Permission')->isSuperAdmin() or ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+        $entry_id = $query->row('entry_id');
+        $comment_site_id = $query->row('site_id');
 
         $comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
@@ -1500,10 +1500,10 @@ class Comment
         if (ee()->session->userdata('member_id') != 0) {
             // If the user is logged in we'll reassign the POST variables with the user data
 
-            $_POST['name']		= (ee()->session->userdata['screen_name'] != '') ? ee()->session->userdata['screen_name'] : ee()->session->userdata['username'];
-            $_POST['email']	=  ee()->session->userdata['email'];
-            $_POST['url']		=  (is_null(ee()->session->userdata['url'])) ? '' : ee()->session->userdata['url'];
-            $_POST['location']	=  (is_null(ee()->session->userdata['location'])) ? '' : ee()->session->userdata['location'];
+            $_POST['name'] = (ee()->session->userdata['screen_name'] != '') ? ee()->session->userdata['screen_name'] : ee()->session->userdata['username'];
+            $_POST['email'] = ee()->session->userdata['email'];
+            $_POST['url'] = (is_null(ee()->session->userdata['url'])) ? '' : ee()->session->userdata['url'];
+            $_POST['location'] = (is_null(ee()->session->userdata['location'])) ? '' : ee()->session->userdata['location'];
         }
 
         /** ----------------------------------------
@@ -1542,7 +1542,7 @@ class Comment
             /** ----------------------------------------
             /**  Missing or invalid email address
             /** ----------------------------------------*/
-            if ($query->row('comment_require_email')  == 'y') {
+            if ($query->row('comment_require_email') == 'y') {
                 ee()->load->helper('email');
 
                 if ($_POST['email'] == '') {
@@ -1565,7 +1565,7 @@ class Comment
         /** ----------------------------------------
         /**  Is comment too big?
         /** ----------------------------------------*/
-        if ($query->row('comment_max_chars')  != '' and $query->row('comment_max_chars')  != 0) {
+        if ($query->row('comment_max_chars') != '' and $query->row('comment_max_chars') != 0) {
             if (strlen($_POST['comment']) > $query->row('comment_max_chars')) {
                 $str = str_replace("%n", strlen($_POST['comment']), ee()->lang->line('cmt_too_large'));
 
@@ -1609,25 +1609,25 @@ class Comment
         /** ----------------------------------------*/
         $notify = (ee()->input->post('notify_me')) ? 'y' : 'n';
 
-        $cmtr_name	= ee()->input->post('name', true);
-        $cmtr_email	= ee()->input->post('email');
-        $cmtr_loc	= ee()->input->post('location', true);
-        $cmtr_url	= ee()->input->post('url', true);
-        $cmtr_url	= (string) filter_var(ee('Format')->make('Text', $cmtr_url)->url(), FILTER_VALIDATE_URL);
+        $cmtr_name = ee()->input->post('name', true);
+        $cmtr_email = ee()->input->post('email');
+        $cmtr_loc = ee()->input->post('location', true);
+        $cmtr_url = ee()->input->post('url', true);
+        $cmtr_url = (string) filter_var(ee('Format')->make('Text', $cmtr_url)->url(), FILTER_VALIDATE_URL);
 
         $data = array(
-            'channel_id'	=> $channel_id,
-            'entry_id'		=> $entry_id,
-            'author_id'		=> ee()->session->userdata('member_id'),
-            'name'			=> $cmtr_name,
-            'email'			=> $cmtr_email,
-            'url'			=> $cmtr_url,
-            'location'		=> $cmtr_loc,
-            'comment'		=> $comment_string,
-            'comment_date'	=> ee()->localize->now,
-            'ip_address'	=> ee()->input->ip_address(),
-            'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
-            'site_id'		=> $comment_site_id
+            'channel_id' => $channel_id,
+            'entry_id' => $entry_id,
+            'author_id' => ee()->session->userdata('member_id'),
+            'name' => $cmtr_name,
+            'email' => $cmtr_email,
+            'url' => $cmtr_url,
+            'location' => $cmtr_loc,
+            'comment' => $comment_string,
+            'comment_date' => ee()->localize->now,
+            'ip_address' => ee()->input->ip_address(),
+            'status' => ($comment_moderate == 'y') ? 'p' : 'o',
+            'site_id' => $comment_site_id
         );
 
         if ($is_spam === true) {
@@ -1684,19 +1684,19 @@ class Comment
         /**  Set cookies
         /** ----------------------------------------*/
         if ($notify == 'y') {
-            ee()->input->set_cookie('notify_me', 'yes', 60*60*24*365);
+            ee()->input->set_cookie('notify_me', 'yes', 60 * 60 * 24 * 365);
         } else {
-            ee()->input->set_cookie('notify_me', 'no', 60*60*24*365);
+            ee()->input->set_cookie('notify_me', 'no', 60 * 60 * 24 * 365);
         }
 
         if (ee()->input->post('save_info')) {
-            ee()->input->set_cookie('save_info', 'yes', 60*60*24*365);
-            ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 60*60*24*365);
-            ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 60*60*24*365);
-            ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 60*60*24*365);
-            ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 60*60*24*365);
+            ee()->input->set_cookie('save_info', 'yes', 60 * 60 * 24 * 365);
+            ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 60 * 60 * 24 * 365);
+            ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 60 * 60 * 24 * 365);
+            ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 60 * 60 * 24 * 365);
+            ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 60 * 60 * 24 * 365);
         } else {
-            ee()->input->set_cookie('save_info', 'no', 60*60*24*365);
+            ee()->input->set_cookie('save_info', 'no', 60 * 60 * 24 * 365);
             ee()->input->delete_cookie('my_name');
             ee()->input->delete_cookie('my_email');
             ee()->input->delete_cookie('my_url');
@@ -1720,12 +1720,12 @@ class Comment
         /** -------------------------------------------*/
         if ($comment_moderate == 'y') {
             $data = array(
-                'title' 	=> ee()->lang->line('cmt_comment_accepted'),
-                'heading'	=> ee()->lang->line('thank_you'),
-                'content'	=> ee()->lang->line('cmt_will_be_reviewed'),
-                'redirect'	=> $return_link,
-                'link'		=> array($return_link, ee()->lang->line('cmt_return_to_comments')),
-                'rate'		=> 3
+                'title' => ee()->lang->line('cmt_comment_accepted'),
+                'heading' => ee()->lang->line('thank_you'),
+                'content' => ee()->lang->line('cmt_will_be_reviewed'),
+                'redirect' => $return_link,
+                'link' => array($return_link, ee()->lang->line('cmt_return_to_comments')),
+                'rate' => 3
             );
 
             ee()->output->show_message($data);
@@ -1759,7 +1759,7 @@ class Comment
         ee()->subscription->init('comment', array('entry_id' => $entry_id), true);
         $subscribed = ee()->subscription->is_subscribed(false);
 
-        $action_id  = ee()->functions->fetch_action_id('Comment', 'comment_subscribe');
+        $action_id = ee()->functions->fetch_action_id('Comment', 'comment_subscribe');
 
         // Bleh- really need a conditional for if they are subscribed
 
@@ -1850,10 +1850,10 @@ class Comment
     {
         ee()->lang->loadfile('comment');
 
-        $id		= ee()->input->get('entry_id');
-        $hash	= ee()->input->get('hash');
-        $type	= (ee()->input->get('type')) ? 'unsubscribe' : 'subscribe';
-        $ret	= ee()->input->get('ret');
+        $id = ee()->input->get('entry_id');
+        $hash = ee()->input->get('hash');
+        $type = (ee()->input->get('type')) ? 'unsubscribe' : 'subscribe';
+        $ret = ee()->input->get('ret');
 
         // Membership is required unless hash is set
         if (ee()->session->userdata('member_id') == 0) {
@@ -1918,12 +1918,12 @@ class Comment
         }
 
         $data = array(
-            'title' 	=> ee()->lang->line($title),
-            'heading'	=> ee()->lang->line('thank_you'),
-            'content'	=> ee()->lang->line($content) . ' ' . $entry_title,
-            'redirect'	=> $redirect,
-            'link'		=> $return_link,
-            'rate'		=> 3
+            'title' => ee()->lang->line($title),
+            'heading' => ee()->lang->line('thank_you'),
+            'content' => ee()->lang->line($content) . ' ' . $entry_title,
+            'redirect' => $redirect,
+            'link' => $return_link,
+            'rate' => 3
         );
 
         ee()->output->show_message($data);
@@ -2168,7 +2168,7 @@ CMT_EDIT_SCR;
             // Figure out the right entry ID
             // If there is a slash in the entry ID we'll kill everything after it.
             $entry_seg = trim($qstring);
-            $entry_seg= preg_replace("#/.+#", "", $entry_seg);
+            $entry_seg = preg_replace("#/.+#", "", $entry_seg);
         }
 
         if (is_numeric($entry_seg)) {

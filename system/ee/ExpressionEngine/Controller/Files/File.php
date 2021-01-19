@@ -277,17 +277,17 @@ class File extends AbstractFilesController
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('files/file/crop/' . $id),
             'tabs' => [
-                'crop'   => $this->renderCropForm($file, $info),
+                'crop' => $this->renderCropForm($file, $info),
                 'rotate' => $this->renderRotateForm($file),
                 'resize' => $this->renderResizeForm($file, $info)
             ],
             'active_tab' => $active_tab,
             'buttons' => [
                 [
-                    'name'    => 'submit',
-                    'type'    => 'submit',
-                    'value'   => 'save',
-                    'text'    => 'save',
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'save',
+                    'text' => 'save',
                     'working' => 'btn_saving'
                 ]
             ],

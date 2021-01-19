@@ -24,29 +24,29 @@ class Forum_upd
     public function tabs()
     {
         $tabs['forum'] = array(
-            'forum_title'	=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'forum_title' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             ),
-            'forum_body'	=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'forum_body' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             ),
-            'forum_id'	=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'forum_id' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             ),
-            'forum_topic_id'	=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'forum_topic_id' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             )
         );
 
@@ -71,7 +71,7 @@ class Forum_upd
 
             $pquery = ee()->db->query("SELECT site_system_preferences FROM exp_sites WHERE site_id = '" . ee()->db->escape_str($row['site_id']) . "'");
 
-            $prefs	 = unserialize(base64_decode($pquery->row('site_system_preferences')));
+            $prefs = unserialize(base64_decode($pquery->row('site_system_preferences')));
 
             $prefs['forum_trigger'] = implode('|', $triggers);
 
@@ -107,14 +107,14 @@ class Forum_upd
         /**  Define the permission array
         /** ------------------------------------*/
         $perms = array(
-            'can_view_forum'	=> '|1|3|4' . $group_ids . '|',
-            'can_view_hidden'	=> '|1' . $group_ids . '|',
-            'can_view_topics'	=> ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|',
-            'can_post_topics'	=> ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_post_reply'	=> ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_report'		=> ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_upload_files'	=> ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_search'		=> ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|'
+            'can_view_forum' => '|1|3|4' . $group_ids . '|',
+            'can_view_hidden' => '|1' . $group_ids . '|',
+            'can_view_topics' => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|',
+            'can_post_topics' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_post_reply' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_report' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_upload_files' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_search' => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|'
         );
 
         return $perms;
@@ -430,7 +430,7 @@ class Forum_upd
         foreach ($forum_triggers as $val) {
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_template_groups WHERE group_name = '{$val}' AND site_id = 1");
 
-            if ($query->row('count')  == 0) {
+            if ($query->row('count') == 0) {
                 $trigger = $val;
 
                 break;
@@ -511,7 +511,7 @@ class Forum_upd
      * @access	public
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         if (version_compare($current, $this->version, '==')) {
             return false;
@@ -605,7 +605,7 @@ class Forum_upd
             }
 
             $query = ee()->db->query("SELECT pref_forum_permissions FROM exp_forum_prefs WHERE pref_id = '1'");
-            $perms = ($query->row('pref_forum_permissions')  != '') ? unserialize(stripslashes($query->row('pref_forum_permissions'))) : $this->forum_set_base_permissions();
+            $perms = ($query->row('pref_forum_permissions') != '') ? unserialize(stripslashes($query->row('pref_forum_permissions'))) : $this->forum_set_base_permissions();
 
             if (! isset($perms['can_report'])) {
                 $perms['can_report'] = '|1' . $group_ids . '|';
@@ -683,10 +683,10 @@ class Forum_upd
                 $data['board_' . substr($key, 5)] = $value;
             }
 
-            $data['board_label']			= $query->row('pref_forum_name') ;
-            $data['board_name']				= ee('Format')->make('Text', $query->row('pref_forum_name'))->urlSlug();
-            $data['board_enabled']			= $query->row('pref_forum_enabled') ;
-            $data['board_forum_trigger']	= ee()->config->item('forum_trigger');
+            $data['board_label'] = $query->row('pref_forum_name') ;
+            $data['board_name'] = ee('Format')->make('Text', $query->row('pref_forum_name'))->urlSlug();
+            $data['board_enabled'] = $query->row('pref_forum_enabled') ;
+            $data['board_forum_trigger'] = ee()->config->item('forum_trigger');
 
             unset($data['board_forum_name']);
             unset($data['board_forum_enabled']);
@@ -860,10 +860,10 @@ class Forum_upd
                     $table,
                     array(
                         'ip_address' => array(
-                            'name' 			=> 'ip_address',
-                            'type' 			=> 'varchar',
-                            'constraint'	=> '45',
-                            'null'			=> false
+                            'name' => 'ip_address',
+                            'type' => 'varchar',
+                            'constraint' => '45',
+                            'null' => false
                         )
                     )
                 );
@@ -881,8 +881,8 @@ class Forum_upd
                 'mod_member_name' => array(
                     'mod_member_name' => 'mod_member_name',
                     'type' => 'varchar',
-                    'constraint'	=> '50',
-                    'null'			=> true)
+                    'constraint' => '50',
+                    'null' => true)
             );
 
             ee()->smartforge->modify_column('forum_moderators', $fields);
@@ -901,12 +901,12 @@ class Forum_upd
 
         if (version_compare($current, '5.0.1', '<')) {
             ee('Model')->make('Extension', [
-                'class'    => 'Forum_ext',
-                'method'   => 'anonymizeMember',
-                'hook'     => 'member_anonymize',
+                'class' => 'Forum_ext',
+                'method' => 'anonymizeMember',
+                'hook' => 'member_anonymize',
                 'settings' => [],
-                'version'  => $current,
-                'enabled'  => 'y'
+                'version' => $current,
+                'enabled' => 'y'
             ])->save();
         }
 

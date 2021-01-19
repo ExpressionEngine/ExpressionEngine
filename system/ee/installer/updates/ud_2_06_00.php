@@ -67,30 +67,30 @@ class Updater
             'developer_log',
             array(
                 'template_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 ),
                 'template_name' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 100
+                    'type' => 'varchar',
+                    'constraint' => 100
                 ),
                 'template_group' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 100
+                    'type' => 'varchar',
+                    'constraint' => 100
                 ),
                 'addon_module' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 100
+                    'type' => 'varchar',
+                    'constraint' => 100
                 ),
                 'addon_method' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 100
+                    'type' => 'varchar',
+                    'constraint' => 100
                 ),
                 'snippets' => array(
-                    'type'			=> 'text'
+                    'type' => 'text'
                 )
             )
         );
@@ -119,10 +119,10 @@ class Updater
             'members',
             array(
                 'timezone' => array(
-                    'name' 			=> 'timezone',
-                    'type' 			=> 'varchar',
-                    'constraint' 	=> 50,
-                    'null'			=> false
+                    'name' => 'timezone',
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
                 )
             )
         );
@@ -143,9 +143,9 @@ class Updater
                 'channel_data',
                 array(
                     $field_name => array(
-                        'name' 			=> $field_name,
-                        'type' 			=> 'varchar',
-                        'constraint' 	=> 50
+                        'name' => $field_name,
+                        'type' => 'varchar',
+                        'constraint' => 50
                     )
                 )
             );
@@ -165,15 +165,15 @@ class Updater
             'sessions',
             array(
                 'fingerprint' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 40
+                    'type' => 'varchar',
+                    'constraint' => 40
                 ),
                 'sess_start' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             ),
             'user_agent'
@@ -195,12 +195,12 @@ class Updater
         // the same thing and needs to be an action.
         ee()->db->where('method', 'retrieve_password')
             ->where('class', 'Member')
-            ->update('actions', array('method'=>'send_reset_token'));
+            ->update('actions', array('method' => 'send_reset_token'));
         // For this one the method still exists, but is now a form.  It needs
         // to be renamed to the new processing method.
         ee()->db->where('method', 'reset_password')
             ->where('class', 'Member')
-            ->update('actions', array('method'=>'process_reset_password'));
+            ->update('actions', array('method' => 'process_reset_password'));
     }
 
     /**
@@ -213,7 +213,7 @@ class Updater
     private function _update_specialty_templates()
     {
         $data = array(
-            'template_data'=>'{name},
+            'template_data' => '{name},
 
 To reset your password, please go to the following page:
 
@@ -241,32 +241,32 @@ If you do not wish to reset your password, ignore this message. It will expire i
     {
         // UPDATE TABLE `exp_fieldtypes` SET name='relationships' WHERE name='rel';
         ee()->db->where('name', 'rel');
-        ee()->db->update('fieldtypes', array('name'=>'relationship'));
+        ee()->db->update('fieldtypes', array('name' => 'relationship'));
 
         // UPDATE TABLE `exp_channel_fields` set field_type='relationships' where field_type='rel';
         ee()->db->where('field_type', 'rel');
-        ee()->db->update('channel_fields', array('field_type'=>'relationship'));
+        ee()->db->update('channel_fields', array('field_type' => 'relationship'));
 
         ee()->db->where('field_type', 'relationship');
         $channel_fields = ee()->db->get('channel_fields');
         foreach ($channel_fields->result_array() as $channel_field) {
             $settings = array(
-                'channels'		=> array($channel_field['field_related_id']),
-                'expired'		=> 0,
-                'future'		=> 0,
-                'categories'	=> array(),
-                'authors'		=> array(),
-                'statuses'		=> array(),
-                'limit'			=> $channel_field['field_related_max'],
-                'order_field'	=> $channel_field['field_related_orderby'],
-                'order_dir'		=> $channel_field['field_related_sort'],
-                'allow_multiple'	=> 0
+                'channels' => array($channel_field['field_related_id']),
+                'expired' => 0,
+                'future' => 0,
+                'categories' => array(),
+                'authors' => array(),
+                'statuses' => array(),
+                'limit' => $channel_field['field_related_max'],
+                'order_field' => $channel_field['field_related_orderby'],
+                'order_dir' => $channel_field['field_related_sort'],
+                'allow_multiple' => 0
             );
 
             ee()->db->where('field_id', $channel_field['field_id']);
             ee()->db->update(
                 'channel_fields',
-                array('field_settings'=>base64_encode(serialize($settings)))
+                array('field_settings' => base64_encode(serialize($settings)))
             );
         }
     }
@@ -288,11 +288,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'relationships',
             array(
                 'rel_id' => array(
-                    'name'			=> 'relationship_id',
-                    'type'			=> 'int',
-                    'constraint'	=> 6,
-                    'unsigned'		=> true,
-                    'auto_increment'=> true
+                    'name' => 'relationship_id',
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'auto_increment' => true
                 )
             )
         );
@@ -302,12 +302,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'relationships',
             array(
                 'rel_parent_id' => array(
-                    'name'			=> 'parent_id',
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'name' => 'parent_id',
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             )
         );
@@ -317,12 +317,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'relationships',
             array(
                 'rel_child_id' => array(
-                    'name'			=> 'child_id',
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'name' => 'child_id',
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             )
         );
@@ -342,18 +342,18 @@ If you do not wish to reset your password, ignore this message. It will expire i
             'relationships',
             array(
                 'field_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 ),
                 'order' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 10,
-                    'unsigned'		=> true,
-                    'default'		=> 0,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0,
+                    'null' => false
                 )
             ),
             'child_id'
@@ -396,7 +396,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			SET ' . $relationships . '.field_id = ' . $field['field_id'];
         ee()->db->query($sql);
 
-        ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> null));
+        ee()->db->update('channel_data', array('field_id_' . $field['field_id'] => null));
     }
 
     /**
@@ -461,36 +461,36 @@ If you do not wish to reset your password, ignore this message. It will expire i
     private function _schema_cleanup()
     {
         $fields = array(
-            'member_groups'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => false,	'default'=> 'all')
+            'member_groups' => array('type' => 'varchar',	'constraint' => 255,	'null' => false,	'default' => 'all')
         );
 
         ee()->smartforge->modify_column('accessories', $fields);
 
         $fields = array(
-            'channel_description'		=> array('type' => 'varchar',	'constraint' => 255,	'null' => true),
-            'channel_auto_link_urls'	=> array('type' => 'char',		'constraint' => 1,		'null' => false,	'default' => 'n'),
-            'default_entry_title'		=> array('type' => 'varchar',	'constraint' => 100,	'null' => true),
-            'url_title_prefix'			=> array('type' => 'varchar',	'constraint' => 80,		'null' => true),
+            'channel_description' => array('type' => 'varchar',	'constraint' => 255,	'null' => true),
+            'channel_auto_link_urls' => array('type' => 'char',		'constraint' => 1,		'null' => false,	'default' => 'n'),
+            'default_entry_title' => array('type' => 'varchar',	'constraint' => 100,	'null' => true),
+            'url_title_prefix' => array('type' => 'varchar',	'constraint' => 80,		'null' => true),
         );
 
         ee()->smartforge->modify_column('channels', $fields);
 
         $fields = array(
-            'recent_comment_date'		=> array('type' => 'int',		'constraint' => 10,		'null' => true),
+            'recent_comment_date' => array('type' => 'int',		'constraint' => 10,		'null' => true),
         );
 
         ee()->smartforge->modify_column('channel_entries_autosave', $fields);
 
         $fields = array(
-            'timestamp'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => true,	'null' => false),
-            'viewed'	=> array('type' => 'char',	'constraint' => 1,	'null' => false,	'default' => 'n')
+            'timestamp' => array('type' => 'int',	'constraint' => 10,	'unsigned' => true,	'null' => false),
+            'viewed' => array('type' => 'char',	'constraint' => 1,	'null' => false,	'default' => 'n')
         );
 
         ee()->smartforge->modify_column('developer_log', $fields);
 
         $fields = array(
-            'wm_hor_offset'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => true),
-            'wm_vrt_offset'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => true)
+            'wm_hor_offset' => array('type' => 'int',	'constraint' => 4,	'unsigned' => true),
+            'wm_vrt_offset' => array('type' => 'int',	'constraint' => 4,	'unsigned' => true)
         );
 
         ee()->smartforge->modify_column('file_watermarks', $fields);
@@ -508,21 +508,21 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->smartforge->modify_column('member_groups', $fields);
 
         $fields = array(
-            'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => false)
+            'user_agent' => array('type' => 'VARCHAR',	'constraint' => 120,	'null' => false)
         );
 
         ee()->smartforge->modify_column('password_lockout', $fields);
 
         $fields = array(
-            'password'			=> array('type' => 'VARCHAR',	'constraint' => 128,	'null' => false),
-            'total_entries'		=> array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => true,	'null' => false, 'default' => 0),
-            'total_comments'	=> array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => true,	'null' => false, 'default' => 0),
+            'password' => array('type' => 'VARCHAR',	'constraint' => 128,	'null' => false),
+            'total_entries' => array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => true,	'null' => false, 'default' => 0),
+            'total_comments' => array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => true,	'null' => false, 'default' => 0),
         );
 
         ee()->smartforge->modify_column('members', $fields);
 
         $fields = array(
-            'session_id'	=> array('type' => 'VARCHAR',	'constraint' => 40,	'null' => false,	'default' => 0)
+            'session_id' => array('type' => 'VARCHAR',	'constraint' => 40,	'null' => false,	'default' => 0)
         );
 
         ee()->smartforge->modify_column('security_hashes', $fields);
@@ -530,26 +530,26 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->db->truncate('sessions');
 
         $fields = array(
-            'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => false),
-            'fingerprint'	=> array('type' => 'VARCHAR',	'constraint' => 40,		'null' => false),
+            'user_agent' => array('type' => 'VARCHAR',	'constraint' => 120,	'null' => false),
+            'fingerprint' => array('type' => 'VARCHAR',	'constraint' => 40,		'null' => false),
         );
 
         ee()->smartforge->modify_column('sessions', $fields);
 
         $fields = array(
-            'site_system_preferences'	=> array('type' => 'mediumtext',	'null' => false),
+            'site_system_preferences' => array('type' => 'mediumtext',	'null' => false),
         );
 
         ee()->smartforge->modify_column('sites', $fields);
 
         $fields = array(
-            'last_author_id'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => true,	'null' => false, 'default' => 0),
+            'last_author_id' => array('type' => 'int',	'constraint' => 10,	'unsigned' => true,	'null' => false, 'default' => 0),
         );
 
         ee()->smartforge->modify_column('templates', $fields);
 
         $fields = array(
-            'server_path'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => false, 'default' => ''),
+            'server_path' => array('type' => 'varchar',	'constraint' => 255,	'null' => false, 'default' => ''),
         );
 
         ee()->smartforge->modify_column('upload_prefs', $fields);
@@ -558,11 +558,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
 
         $drop_column = array(
-            'category_groups'			=> 'is_user_blog',
-            'channel_titles'			=> 'pentry_id',
-            'channel_entries_autosave'	=> 'pentry_id',
-            'forum_topics'				=> 'pentry_id',
-            'upload_prefs'				=> 'is_user_blog',
+            'category_groups' => 'is_user_blog',
+            'channel_titles' => 'pentry_id',
+            'channel_entries_autosave' => 'pentry_id',
+            'forum_topics' => 'pentry_id',
+            'upload_prefs' => 'is_user_blog',
         );
 
         foreach ($drop_column as $table => $column) {

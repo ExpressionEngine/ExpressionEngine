@@ -149,9 +149,9 @@ class Ip_to_nation_data extends CI_Model
 
             // $low, $high, $dec_low, $dec_high, $c_code, $c_name
             $insert[$batch++] = array(
-                'ip_range_low'	=> $this->to_binary($data[0]),
-                'ip_range_high'	=> $this->to_binary($data[1]),
-                'country'		=> strtolower($data[4])
+                'ip_range_low' => $this->to_binary($data[0]),
+                'ip_range_high' => $this->to_binary($data[1]),
+                'country' => strtolower($data[4])
             );
 
             $countries[] = $data[4];

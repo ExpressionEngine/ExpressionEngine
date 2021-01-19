@@ -32,12 +32,12 @@ class Forum_tab
             ->order_by('b.board_label asc, forum_order asc')
             ->get();
 
-        $forum_title         = '';
-        $forum_body          = '';
-        $forum_id            = array();
-        $forum_topic_id      = '';
+        $forum_title = '';
+        $forum_body = '';
+        $forum_id = array();
+        $forum_topic_id = '';
         $forum_topic_id_desc = '';
-        $forum_id_override   = ($forumsq->num_rows() === 0)
+        $forum_id_override = ($forumsq->num_rows() === 0)
             ? lang('forums_unavailable')
             : null;
 
@@ -63,57 +63,57 @@ class Forum_tab
                 ->get('forum_topics');
 
             if ($frm_q->num_rows() > 0) {
-                $forum_title          = $frm_q->row('title');
-                $forum_body           = $frm_q->row('body');
+                $forum_title = $frm_q->row('title');
+                $forum_body = $frm_q->row('body');
                 $forum_id['selected'] = $frm_q->row('forum_id');
             }
         }
 
         $settings = array(
             'forum_title' => array(
-                'field_id'             => 'forum_title',
-                'field_label'          => lang('forum_title'),
-                'field_required'       => 'n',
-                'field_data'           => $forum_title,
-                'field_show_fmt'       => 'n',
-                'field_instructions'   => '',
+                'field_id' => 'forum_title',
+                'field_label' => lang('forum_title'),
+                'field_required' => 'n',
+                'field_data' => $forum_title,
+                'field_show_fmt' => 'n',
+                'field_instructions' => '',
                 'field_text_direction' => 'ltr',
-                'field_type'           => 'text',
-                'field_maxl'           => 150
+                'field_type' => 'text',
+                'field_maxl' => 150
             ),
             'forum_body' => array(
-                'field_id'             => 'forum_body',
-                'field_label'          => lang('forum_body'),
-                'field_required'       => 'n',
-                'field_data'           => $forum_body,
-                'field_show_fmt'       => 'n',
-                'field_fmt_options'    => array(),
-                'field_instructions'   => '',
+                'field_id' => 'forum_body',
+                'field_label' => lang('forum_body'),
+                'field_required' => 'n',
+                'field_data' => $forum_body,
+                'field_show_fmt' => 'n',
+                'field_fmt_options' => array(),
+                'field_instructions' => '',
                 'field_text_direction' => 'ltr',
-                'field_type'           => 'textarea',
-                'field_ta_rows'        => 8
+                'field_type' => 'textarea',
+                'field_ta_rows' => 8
             ),
             'forum_id' => array(
-                'field_id'             => 'forum_id',
-                'field_label'          => lang('forum'),
-                'field_required'       => 'n',
-                'field_pre_populate'   => 'n',
-                'field_list_items'     => (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
-                'field_data'           => (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
+                'field_id' => 'forum_id',
+                'field_label' => lang('forum'),
+                'field_required' => 'n',
+                'field_pre_populate' => 'n',
+                'field_list_items' => (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
+                'field_data' => (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
                 'field_text_direction' => 'ltr',
-                'field_type'           => 'select',
-                'field_instructions'   => '',
-                'string_override'      => $forum_id_override,
+                'field_type' => 'select',
+                'field_instructions' => '',
+                'string_override' => $forum_id_override,
             ),
             'forum_topic_id' => array(
-                'field_id'             => 'forum_topic_id',
-                'field_label'          => lang('forum_topic_id'),
-                'field_type'           => 'text',
-                'field_required'       => 'n',
-                'field_data'           => $forum_topic_id,
+                'field_id' => 'forum_topic_id',
+                'field_label' => lang('forum_topic_id'),
+                'field_type' => 'text',
+                'field_required' => 'n',
+                'field_data' => $forum_topic_id,
                 'field_text_direction' => 'ltr',
-                'field_maxl'           => '',
-                'field_instructions'   => lang('forum_topic_id_exitsts')
+                'field_maxl' => '',
+                'field_instructions' => lang('forum_topic_id_exitsts')
             )
         );
 
@@ -208,9 +208,9 @@ class Forum_tab
         });
 
         $validator->setRules(array(
-            'forum_title'    => 'valid_forum_title|maxLength[150]',
-            'forum_body'     => 'valid_forum_body',
-            'forum_id'       => 'isNatural|has_forum_id|valid_forum_id',
+            'forum_title' => 'valid_forum_title|maxLength[150]',
+            'forum_body' => 'valid_forum_body',
+            'forum_id' => 'isNatural|has_forum_id|valid_forum_id',
             'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
         ));
 
@@ -255,18 +255,18 @@ class Forum_tab
                 );
 
             if ($query->num_rows() > 0) {
-                $title 	= $this->_convert_forum_tags($values['forum_title']);
-                $body 	= str_replace(
+                $title = $this->_convert_forum_tags($values['forum_title']);
+                $body = str_replace(
                     '{permalink}',
                     parse_config_variables($entry->Channel->comment_url) . '/' . $entry->url_title . '/',
                     $values['forum_body']
                 );
 
-                $body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
+                $body = $this->_convert_forum_tags(reduce_double_slashes($body));
 
                 $data = array(
                     'title' => ee('Security/XSS')->clean($title),
-                    'body'  => ee('Security/XSS')->clean($body),
+                    'body' => ee('Security/XSS')->clean($body),
                 );
 
                 // Allow overwriting existing forum data
@@ -277,19 +277,19 @@ class Forum_tab
                 } else {
                     // If we're not overwriting, add in new forum topic parameters
                     $new_forum_topic_data = array(
-                        'forum_id'            => $values['forum_id'],
-                        'board_id'            => $query->row('board_id'),
-                        'topic_date'          => ee()->localize->now,
-                        'author_id'           => $entry->author_id,
-                        'ip_address'          => ee()->input->ip_address(),
-                        'last_post_date'      => ee()->localize->now,
+                        'forum_id' => $values['forum_id'],
+                        'board_id' => $query->row('board_id'),
+                        'topic_date' => ee()->localize->now,
+                        'author_id' => $entry->author_id,
+                        'ip_address' => ee()->input->ip_address(),
+                        'last_post_date' => ee()->localize->now,
                         'last_post_author_id' => $entry->author_id,
-                        'sticky'              => 'n',
-                        'status'              => 'o',
-                        'announcement'        => 'n',
-                        'poll'                => 'n',
-                        'parse_smileys'       => 'y',
-                        'thread_total'        => 1
+                        'sticky' => 'n',
+                        'status' => 'o',
+                        'announcement' => 'n',
+                        'poll' => 'n',
+                        'parse_smileys' => 'y',
+                        'thread_total' => 1
                     );
 
                     $data = array_merge($data, $new_forum_topic_data);
@@ -298,10 +298,10 @@ class Forum_tab
                     $topic_id = ee()->db->insert_id();
 
                     ee()->db->insert('forum_subscriptions', array(
-                        'topic_id'          => $topic_id,
-                        'member_id'         => $entry->author_id,
+                        'topic_id' => $topic_id,
+                        'member_id' => $entry->author_id,
                         'subscription_date' => ee()->localize->now,
-                        'hash'              => $entry->author_id . ee()->functions->random('alpha', 8)
+                        'hash' => $entry->author_id . ee()->functions->random('alpha', 8)
                     ));
 
                     // Update member post total
@@ -346,7 +346,7 @@ class Forum_tab
             $adminq = ee()->db->get('forum_administrators');
 
             foreach ($adminq->result() as $row) {
-                $admins[$row->board_id] = array('member_id' => $row->admin_member_id, 'group_id' =>  $row->admin_group_id);
+                $admins[$row->board_id] = array('member_id' => $row->admin_member_id, 'group_id' => $row->admin_group_id);
             }
         }
 

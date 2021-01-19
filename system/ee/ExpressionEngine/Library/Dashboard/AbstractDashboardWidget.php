@@ -29,14 +29,14 @@ abstract class AbstractDashboardWidget implements DashboardWidgetInterface
     {
         ee()->lang->loadfile('homepage');
         $this->vars = [
-            'title'			=> $this->getTitle(),
-            'width'			=> $this->getWidth(),
-            'class'			=> $this->getClass(),
-            'right_head'=> $this->getRightHead(),
-            'edit_mode'	=> $edit_mode,
-            'enabled'		=> $enabled,
-            'widget_id'	=> $widgetObject->widget_id,
-            'widget'		=> $this->getContent()
+            'title' => $this->getTitle(),
+            'width' => $this->getWidth(),
+            'class' => $this->getClass(),
+            'right_head' => $this->getRightHead(),
+            'edit_mode' => $edit_mode,
+            'enabled' => $enabled,
+            'widget_id' => $widgetObject->widget_id,
+            'widget' => $this->getContent()
         ];
     }
 

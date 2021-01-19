@@ -176,7 +176,7 @@ abstract class Core
     protected function loadNamespacedController($routing)
     {
         $RTR = $GLOBALS['RTR'];
-        $class  = $RTR->fetch_class(true);
+        $class = $RTR->fetch_class(true);
         $method = $RTR->fetch_method();
 
         // First try a fully namespaced class, with fallback
@@ -190,7 +190,7 @@ abstract class Core
             $directories = explode('/', rtrim($RTR->fetch_directory(), '/'));
             $RTR->set_class(array_pop($directories));
 
-            $class  = $RTR->fetch_class(true);
+            $class = $RTR->fetch_class(true);
             $method = $RTR->fetch_method();
         }
 
@@ -225,7 +225,7 @@ abstract class Core
      */
     protected function runController($routing)
     {
-        $class  = $routing['class'];
+        $class = $routing['class'];
         $method = $routing['method'];
         $params = $routing['segments'];
 
@@ -302,10 +302,10 @@ abstract class Core
      */
     protected function loadApplicationCore()
     {
-        $autoloader   = Autoloader::getInstance();
+        $autoloader = Autoloader::getInstance();
         $dependencies = new InjectionContainer();
-        $providers    = new ProviderRegistry($dependencies);
-        $application  = new Application($autoloader, $dependencies, $providers);
+        $providers = new ProviderRegistry($dependencies);
+        $application = new Application($autoloader, $dependencies, $providers);
 
         $provider = $application->addProvider(
             SYSPATH . 'ee/ExpressionEngine',

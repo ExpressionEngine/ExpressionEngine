@@ -291,7 +291,7 @@ class Tools_model extends CI_Model
         $this->db->delete('blockedlist');
 
         // And put the new data back in
-        $data = array('blockedlist_type'	=> 'ip',
+        $data = array('blockedlist_type' => 'ip',
             'blockedlist_value' => implode("|", array_unique($naughty)));
 
         $this->db->insert('blockedlist', $data);
@@ -422,8 +422,8 @@ class Tools_model extends CI_Model
                 return false;
             }
 
-            $this->width	= $D['0'];
-            $this->height  = $D['1'];
+            $this->width = $D['0'];
+            $this->height = $D['1'];
             $this->imgtype = $D['2'];
 
             return $D;
@@ -474,7 +474,7 @@ class Tools_model extends CI_Model
         // db uptime
         $query = $this->db->query("SHOW STATUS");
 
-        $uptime	 = '';
+        $uptime = '';
         $queries = '';
 
         // We need this a bit later
@@ -514,7 +514,7 @@ class Tools_model extends CI_Model
 
         $i = 0;
         $records = 0;
-        $tables	 = 0;
+        $tables = 0;
         $totsize = 0;
 
         $prefix_len = strlen($this->db->dbprefix);

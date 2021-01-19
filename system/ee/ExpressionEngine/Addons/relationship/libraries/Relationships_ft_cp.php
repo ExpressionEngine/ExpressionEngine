@@ -266,7 +266,7 @@ class Relationships_ft_cp
     public function all_order_options()
     {
         return array(
-            'title' 	 => lang('rel_ft_order_title'),
+            'title' => lang('rel_ft_order_title'),
             'entry_date' => lang('rel_ft_order_date')
         );
     }
@@ -280,7 +280,7 @@ class Relationships_ft_cp
     {
         return array(
             'asc' => lang('rel_ft_order_asc'),
-            'desc'	=> lang('rel_ft_order_desc'),
+            'desc' => lang('rel_ft_order_desc'),
         );
     }
 

@@ -22,11 +22,11 @@ class DashboardWidget extends Model
     protected static $_table_name = 'dashboard_widgets';
 
     protected static $_validation_rules = array(
-        'widget_type' 	=> 'required|enum[html,php]',
-        'widget_source'=> 'required|validWidgetSources[type]',
-        'widget_name' 	=> 'validateWhenSourceIs[template]|required|noHtml',
-        'widget_data' 	=> 'validateWhenSourceIs[template]|required',
-        'widget_file' 	=> 'validateWhenSourceIsNot[template]|required'
+        'widget_type' => 'required|enum[html,php]',
+        'widget_source' => 'required|validWidgetSources[type]',
+        'widget_name' => 'validateWhenSourceIs[template]|required|noHtml',
+        'widget_data' => 'validateWhenSourceIs[template]|required',
+        'widget_file' => 'validateWhenSourceIsNot[template]|required'
     );
 
     protected static $_relationships = array(
@@ -78,7 +78,7 @@ class DashboardWidget extends Model
 
     public function validWidgetSources($key, $value, $parameters, $rule)
     {
-        if ($value=='template') {
+        if ($value == 'template') {
             return true;
         }
 
@@ -86,7 +86,7 @@ class DashboardWidget extends Model
         $file = $this->getProperty('widget_file');
         $fs = new Filesystem();
 
-        if ($value=='ee') {
+        if ($value == 'ee') {
             if ($fs->exists(PATH_ADDONS . 'pro/widgets/' . $file . '.' . $type)) {
                 return true;
             }

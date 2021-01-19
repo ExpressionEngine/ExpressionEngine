@@ -52,7 +52,7 @@ class Member_auth extends Member
             return;
         }
 
-        $data['hidden_fields']['ACT']	= ee()->functions->fetch_action_id('Member', 'member_login');
+        $data['hidden_fields']['ACT'] = ee()->functions->fetch_action_id('Member', 'member_login');
 
         if (isset($match['4'])) {
             $data['hidden_fields']['RET'] = (substr($match['4'], 0, 4) !== 'http') ? ee()->functions->create_url($match['4']) : $match['4'];
@@ -63,7 +63,7 @@ class Member_auth extends Member
         }
 
         $data['hidden_fields']['FROM'] = ($this->in_forum === true) ? 'forum' : '';
-        $data['id']	  = 'member_login_form';
+        $data['id'] = 'member_login_form';
 
         $this->_set_page_title(lang('member_login'));
 
@@ -294,7 +294,7 @@ class Member_auth extends Member
 
         // Grab session
         $sess_q = ee()->db->get_where('sessions', array(
-            'user_agent'  => substr(ee()->input->user_agent(), 0, 120),
+            'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'login_state' => $login_state
         ));
 
@@ -364,11 +364,11 @@ class Member_auth extends Member
 
             // next site
             $next_qs = array(
-                'ACT'          => $action_id->row('action_id'),
-                'RET'          => $return,
-                'cur'          => $next_idx,
-                'orig'         => $orig_idx,
-                'multi'        => $login_state,
+                'ACT' => $action_id->row('action_id'),
+                'RET' => $return,
+                'cur' => $next_idx,
+                'orig' => $orig_idx,
+                'multi' => $login_state,
                 'orig_site_id' => $orig_id,
             );
 
@@ -402,13 +402,13 @@ class Member_auth extends Member
             ->delete('online_users');
 
         $data = array(
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'name'			=> (ee()->session->userdata('screen_name') == '') ? ee()->session->userdata('username') : ee()->session->userdata('screen_name'),
-            'ip_address'	=> ee()->input->ip_address(),
-            'in_forum'		=> $in_forum,
-            'date'			=> ee()->localize->now,
-            'anon'			=> $anon,
-            'site_id'		=> ee()->config->item('site_id')
+            'member_id' => ee()->session->userdata('member_id'),
+            'name' => (ee()->session->userdata('screen_name') == '') ? ee()->session->userdata('username') : ee()->session->userdata('screen_name'),
+            'ip_address' => ee()->input->ip_address(),
+            'in_forum' => $in_forum,
+            'date' => ee()->localize->now,
+            'anon' => $anon,
+            'site_id' => ee()->config->item('site_id')
         );
 
         ee()->db->where('ip_address', ee()->input->ip_address())
@@ -529,12 +529,12 @@ class Member_auth extends Member
                     ->get('forum_boards');
             }
 
-            $return		= parse_config_variables($query->row('board_forum_url'));
-            $site_name	= $query->row('board_label') ;
-            $board_id	= $query->row('board_id') ;
+            $return = parse_config_variables($query->row('board_forum_url'));
+            $site_name = $query->row('board_label') ;
+            $board_id = $query->row('board_id') ;
         } else {
-            $site_name	= stripslashes(ee()->config->item('site_name'));
-            $return 	= ee()->config->item('site_url');
+            $site_name = stripslashes(ee()->config->item('site_name'));
+            $return = ee()->config->item('site_url');
         }
 
         $forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id=' . $board_id : '';
@@ -548,18 +548,18 @@ class Member_auth extends Member
         if ($memberQuery->num_rows() == 0) {
             // Build success message
             $data = array(
-                'title' 	=> lang('mbr_passwd_email_sent'),
-                'heading'	=> lang('thank_you'),
-                'content'	=> lang('forgotten_username_email_sent'),
-                'link'		=> array($return, $site_name)
+                'title' => lang('mbr_passwd_email_sent'),
+                'heading' => lang('thank_you'),
+                'content' => lang('forgotten_username_email_sent'),
+                'link' => array($return, $site_name)
             );
 
             ee()->output->show_message($data);
         }
 
         $member_id = $memberQuery->row('member_id');
-        $username  = $memberQuery->row('username');
-        $name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+        $username = $memberQuery->row('username');
+        $name = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
 
         $template = ee()->functions->fetch_email_template('forgot_username_instructions');
 
@@ -578,10 +578,10 @@ class Member_auth extends Member
 
         // Build the email message
         $swap = array(
-            'name'		=> $name,
-            'username'  => $username,
-            'site_name'	=> $site_name,
-            'site_url'	=> $return
+            'name' => $name,
+            'username' => $username,
+            'site_name' => $site_name,
+            'site_url' => $return
         );
 
         // _var_swap calls string replace on $template[] for each key in
@@ -604,10 +604,10 @@ class Member_auth extends Member
 
         // Build success message
         $data = array(
-            'title' 	=> lang('mbr_username_email_sent'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('forgotten_email_sent'),
-            'link'		=> array($return, $site_name)
+            'title' => lang('mbr_username_email_sent'),
+            'heading' => lang('thank_you'),
+            'content' => lang('forgotten_email_sent'),
+            'link' => array($return, $site_name)
         );
 
         // If we have a success return link, go to that, otherwise, output the standard message.
@@ -632,10 +632,10 @@ class Member_auth extends Member
         }
 
         $data = array(
-            'id'				=> 'forgot_password_form',
-            'hidden_fields'		=> array(
-                'ACT'	=> ee()->functions->fetch_action_id('Member', 'send_reset_token'),
-                'FROM'	=> ($this->in_forum == true) ? 'forum' : ''
+            'id' => 'forgot_password_form',
+            'hidden_fields' => array(
+                'ACT' => ee()->functions->fetch_action_id('Member', 'send_reset_token'),
+                'FROM' => ($this->in_forum == true) ? 'forum' : ''
             )
         );
 
@@ -707,12 +707,12 @@ class Member_auth extends Member
                     ->get('forum_boards');
             }
 
-            $return		= parse_config_variables($query->row('board_forum_url'));
-            $site_name	= $query->row('board_label') ;
-            $board_id	= $query->row('board_id') ;
+            $return = parse_config_variables($query->row('board_forum_url'));
+            $site_name = $query->row('board_label') ;
+            $board_id = $query->row('board_id') ;
         } else {
-            $site_name	= stripslashes(ee()->config->item('site_name'));
-            $return 	= ee()->config->item('site_url');
+            $site_name = stripslashes(ee()->config->item('site_name'));
+            $return = ee()->config->item('site_url');
         }
 
         $forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id=' . $board_id : '';
@@ -726,18 +726,18 @@ class Member_auth extends Member
         if ($memberQuery->num_rows() == 0) {
             // Build success message
             $data = array(
-                'title' 	=> lang('mbr_passwd_email_sent'),
-                'heading'	=> lang('thank_you'),
-                'content'	=> lang('forgotten_email_sent'),
-                'link'		=> array($return, $site_name)
+                'title' => lang('mbr_passwd_email_sent'),
+                'heading' => lang('thank_you'),
+                'content' => lang('forgotten_email_sent'),
+                'link' => array($return, $site_name)
             );
 
             ee()->output->show_message($data);
         }
 
         $member_id = $memberQuery->row('member_id');
-        $username  = $memberQuery->row('username');
-        $name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+        $username = $memberQuery->row('username');
+        $name = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
 
         // Kill old data from the reset_password field
         ee()->db->where('date <', $this->getTokenExpiration())
@@ -789,11 +789,11 @@ class Member_auth extends Member
 
         // Build the email message
         $swap = array(
-            'name'		=> $name,
-            'username'  => $username,
-            'reset_url'	=> $reset_url,
-            'site_name'	=> $site_name,
-            'site_url'	=> $return
+            'name' => $name,
+            'username' => $username,
+            'reset_url' => $reset_url,
+            'site_name' => $site_name,
+            'site_url' => $return
         );
 
         // _var_swap calls string replace on $template[] for each key in
@@ -816,10 +816,10 @@ class Member_auth extends Member
 
         // Build success message
         $data = array(
-            'title' 	=> lang('mbr_passwd_email_sent'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('forgotten_email_sent'),
-            'link'		=> array($return, $site_name)
+            'title' => lang('mbr_passwd_email_sent'),
+            'heading' => lang('thank_you'),
+            'content' => lang('forgotten_email_sent'),
+            'link' => array($return, $site_name)
         );
 
         // If we have a success return link, go to that, otherwise, output the standard message.
@@ -867,10 +867,10 @@ class Member_auth extends Member
         $in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
 
         $data = array(
-            'id'				=> 'reset_password_form',
-            'hidden_fields'		=> array(
-                'ACT'	=> ee()->functions->fetch_action_id('Member', 'process_reset_password'),
-                'FROM'	=> ($in_forum == true) ? 'forum' : '',
+            'id' => 'reset_password_form',
+            'hidden_fields' => array(
+                'ACT' => ee()->functions->fetch_action_id('Member', 'process_reset_password'),
+                'FROM' => ($in_forum == true) ? 'forum' : '',
                 'resetcode' => $resetcode
             )
         );
@@ -966,8 +966,8 @@ class Member_auth extends Member
         }
 
         $VAL = new EE_Validate(array(
-            'password'			=> $password,
-            'password_confirm'	=> $password_confirm,
+            'password' => $password,
+            'password_confirm' => $password_confirm,
         ));
 
         $VAL->validate_password();
@@ -1016,11 +1016,11 @@ class Member_auth extends Member
 
         // Build the success message that we'll show to the user.
         $data = array(
-            'title' 	=> lang('mbr_password_changed'),
-            'heading'	=> lang('mbr_password_changed'),
-            'content'	=> lang('mbr_successfully_changed_password'),
-            'link'		=> array($return, $site_name), // The link to show them. In the form of (URL, Name)
-            'redirect'	=> $return, // Redirect them to this URL...
+            'title' => lang('mbr_password_changed'),
+            'heading' => lang('mbr_password_changed'),
+            'content' => lang('mbr_successfully_changed_password'),
+            'link' => array($return, $site_name), // The link to show them. In the form of (URL, Name)
+            'redirect' => $return, // Redirect them to this URL...
             'rate' => '5' // ...after 5 seconds.
 
         );
@@ -1048,7 +1048,7 @@ class Member_auth extends Member
      */
     private function getTokenExpiration()
     {
-        return ee()->localize->now - (60*60); // One hour
+        return ee()->localize->now - (60 * 60); // One hour
     }
 }
 // END CLASS

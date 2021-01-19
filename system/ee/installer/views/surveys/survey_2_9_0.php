@@ -1,1 +1,3 @@
-<?php $this->load->view('surveys/default_survey');
+<?php
+
+$this->load->view('surveys/default_survey');

@@ -100,11 +100,11 @@ class Forum_spam implements SpamModerationInterface
                 $rand = $member->member_id . ee()->functions->random('alnum', 8);
 
                 $data = array(
-                    'topic_id'				=> $topic->topic_id,
-                    'board_id'				=> $topic->board_id,
-                    'member_id'				=> $member->member_id,
-                    'subscription_date'		=> ee()->localize->now,
-                    'hash'					=> $rand
+                    'topic_id' => $topic->topic_id,
+                    'board_id' => $topic->board_id,
+                    'member_id' => $member->member_id,
+                    'subscription_date' => ee()->localize->now,
+                    'hash' => $rand
                 );
 
                 ee()->db->insert('forum_subscriptions', $data);

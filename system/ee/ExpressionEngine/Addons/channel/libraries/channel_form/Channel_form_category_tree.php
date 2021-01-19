@@ -86,7 +86,7 @@ class Channel_form_category_tree_obj
         // Assign the query result to a multi-dimensional array
 
         foreach ($kitty_query->result_array() as $row) {
-            $cat_array[$row['cat_id']]  = array($row['parent_id'], $row['cat_name']);
+            $cat_array[$row['cat_id']] = array($row['parent_id'], $row['cat_name']);
         }
 
         $size = count($cat_array) + 1;
@@ -107,7 +107,7 @@ class Channel_form_category_tree_obj
 
                 $this->categories[] = "<option value='" . $key . "'" . $s . ">" . $val['1'] . "</option>\n";
 
-                $this->_category_subtree_form($key, $cat_array, $depth=1, $action, $default, $selected);
+                $this->_category_subtree_form($key, $cat_array, $depth = 1, $action, $default, $selected);
             }
         }
     }

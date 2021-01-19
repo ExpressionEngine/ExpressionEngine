@@ -75,13 +75,13 @@ abstract class SimplePie_Cache_DB implements SimplePie_Cache_Base
             }
 
             if (isset($data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0])) {
-                $channel =& $data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0];
+                $channel = & $data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_10]['feed'][0];
             } elseif (isset($data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0])) {
-                $channel =& $data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0];
+                $channel = & $data->data['child'][SIMPLEPIE_NAMESPACE_ATOM_03]['feed'][0];
             } elseif (isset($data->data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0])) {
-                $channel =& $data->data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0];
+                $channel = & $data->data['child'][SIMPLEPIE_NAMESPACE_RDF]['RDF'][0];
             } elseif (isset($data->data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0]['child'][SIMPLEPIE_NAMESPACE_RSS_20]['channel'][0])) {
-                $channel =& $data->data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0]['child'][SIMPLEPIE_NAMESPACE_RSS_20]['channel'][0];
+                $channel = & $data->data['child'][SIMPLEPIE_NAMESPACE_RSS_20]['rss'][0]['child'][SIMPLEPIE_NAMESPACE_RSS_20]['channel'][0];
             } else {
                 $channel = null;
             }

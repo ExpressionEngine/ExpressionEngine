@@ -33,7 +33,7 @@ class EE_Messages_send extends EE_Messages
         /**  Are there previous attachments?
         /** -------------------------------------*/
         $this->attachments = array();
-        $attachments_size  = 0;
+        $attachments_size = 0;
 
         if (ee()->input->get_post('attach') !== false && ee()->input->get_post('attach') != '') {
             ee()->db->select('attachment_id, attachment_size, attachment_location');
@@ -57,7 +57,7 @@ class EE_Messages_send extends EE_Messages
         /** -------------------------------------
         /**  Attachment too hefty?
         /** -------------------------------------*/
-        if ($this->attach_maxsize != 0 && ($attachments_size + ($_FILES['userfile']['size'] /1024)) > $this->attach_maxsize) {
+        if ($this->attach_maxsize != 0 && ($attachments_size + ($_FILES['userfile']['size'] / 1024)) > $this->attach_maxsize) {
             return ee()->lang->line('attach_too_large');
         }
 
@@ -71,7 +71,7 @@ class EE_Messages_send extends EE_Messages
 
             if ($query->row('total') != null) {
                 // Is the size of the new file (along with the previous ones) too large?
-                if (ceil($query->row('total')  + ($_FILES['userfile']['size']/1024)) > ($this->attach_total * 1000)) {
+                if (ceil($query->row('total') + ($_FILES['userfile']['size'] / 1024)) > ($this->attach_total * 1000)) {
                     return ee()->lang->line('too_many_attachments');
                 }
             }
@@ -85,8 +85,8 @@ class EE_Messages_send extends EE_Messages
 
         // Upload the image
         $config = array(
-            'upload_path'	=> $this->upload_path,
-            'max_size'		=> $this->attach_maxsize
+            'upload_path' => $this->upload_path,
+            'max_size' => $this->attach_maxsize
         );
 
         if (ee()->config->item('xss_clean_uploads') == 'n') {
@@ -108,14 +108,14 @@ class EE_Messages_send extends EE_Messages
         $this->temp_message_id = ee()->functions->random('nozero', 9);
 
         $data = array(
-            'sender_id'				=> $this->member_id,
-            'message_id'			=> $this->temp_message_id,
-            'attachment_name'		=> $upload_data['file_name'],
-            'attachment_hash'		=> $filehash,
-            'attachment_extension'  => $upload_data['file_ext'],
-            'attachment_location'	=> $upload_data['file_name'],
-            'attachment_date'		=> ee()->localize->now,
-            'attachment_size'		=> $upload_data['file_size']
+            'sender_id' => $this->member_id,
+            'message_id' => $this->temp_message_id,
+            'attachment_name' => $upload_data['file_name'],
+            'attachment_hash' => $filehash,
+            'attachment_extension' => $upload_data['file_ext'],
+            'attachment_location' => $upload_data['file_name'],
+            'attachment_date' => ee()->localize->now,
+            'attachment_size' => $upload_data['file_size']
         );
 
         ee()->db->insert('message_attachments', $data);
@@ -136,7 +136,7 @@ class EE_Messages_send extends EE_Messages
         /*  is gone but the message remains.
         /* -------------------------------------*/
 
-        $expire = ee()->localize->now - 24*60*60;
+        $expire = ee()->localize->now - 24 * 60 * 60;
 
         ee()->db->select('attachment_location');
         ee()->db->where('attachment_date < ', $expire);
@@ -236,14 +236,14 @@ class EE_Messages_send extends EE_Messages
             $this->temp_message_id = ee()->functions->random('nozero', 10);
 
             $data = array(
-                'sender_id'				=> $this->member_id,
-                'message_id'			=> $this->temp_message_id,
-                'attachment_name'		=> $row['attachment_name'],
-                'attachment_hash'		=> $filehash,
-                'attachment_extension'  => $row['attachment_extension'],
-                'attachment_location'	=> $new_location,
-                'attachment_date'		=> ee()->localize->now,
-                'attachment_size'		=> $row['attachment_size']
+                'sender_id' => $this->member_id,
+                'message_id' => $this->temp_message_id,
+                'attachment_name' => $row['attachment_name'],
+                'attachment_hash' => $filehash,
+                'attachment_extension' => $row['attachment_extension'],
+                'attachment_location' => $new_location,
+                'attachment_date' => ee()->localize->now,
+                'attachment_size' => $row['attachment_size']
             );
 
             ee()->db->query(ee()->db->insert_string('exp_message_attachments', $data));
@@ -348,7 +348,7 @@ class EE_Messages_send extends EE_Messages
         if (ee()->input->get_post('message_id') !== false && is_numeric(ee()->input->get_post('message_id'))) {
             $query = ee()->db->query("SELECT message_status FROM exp_message_data WHERE message_id = '" . ee()->db->escape_str(ee()->input->get_post('message_id')) . "'");
 
-            if ($query->num_rows() > 0 && $query->row('message_status')  == 'sent') {
+            if ($query->num_rows() > 0 && $query->row('message_status') == 'sent') {
                 return $this->_error_page(ee()->lang->line('messsage_already_sent'));
             }
         }
@@ -381,7 +381,7 @@ class EE_Messages_send extends EE_Messages
 								 AND d.message_status = 'sent'
 								 AND d.message_date > " . ee()->db->escape_str(ee()->localize->now - $period));
 
-            if ($query->row('count')  > 0) {
+            if ($query->row('count') > 0) {
                 return $this->_error_page(str_replace('%x', $period, ee()->lang->line('send_throttle')));
             }
         }
@@ -406,7 +406,7 @@ class EE_Messages_send extends EE_Messages
 								 AND d.message_status = 'sent'
 								 AND d.message_body = '" . ee()->db->escape_str(ee('Security/XSS')->clean(ee()->input->get_post('body'))) . "'");
 
-            if ($query->row('count')  > 0) {
+            if ($query->row('count') > 0) {
                 return $this->_error_page(ee()->lang->line('duplicate_message_sent'));
             }
         }
@@ -418,8 +418,8 @@ class EE_Messages_send extends EE_Messages
 
         $cc = (trim(ee()->input->get_post('cc')) == '') ? array() : $this->convert_recipients(ee()->input->get_post('cc'), 'array', 'member_id');
 
-        $recip_orig	= count($recipients);
-        $cc_orig	= count($cc);
+        $recip_orig = count($recipients);
+        $cc_orig = count($cc);
 
         // Make sure CC does not contain members in Recipients
         $cc = array_diff($cc, $recipients);
@@ -451,9 +451,9 @@ class EE_Messages_send extends EE_Messages
 								 WHERE c.message_id = d.message_id
 								 AND c.sender_id = '" . ee()->db->escape_str($this->member_id) . "'
 								 AND d.message_status = 'sent'
-								 AND d.message_date > " . (ee()->localize->now - 24*60*60));
+								 AND d.message_date > " . (ee()->localize->now - 24 * 60 * 60));
 
-            if (($query->row('count')  + count($recipients) + count($cc)) > $this->send_limit) {
+            if (($query->row('count') + count($recipients) + count($cc)) > $this->send_limit) {
                 $submission_error[] = ee()->lang->line('sending_limit_warning');
             }
 
@@ -534,18 +534,18 @@ class EE_Messages_send extends EE_Messages
         /** -----------------------------------
         /**  Check Overflow
         /** -----------------------------------*/
-        $details  = array();
+        $details = array();
         $details['overflow_recipients'] = array();
         $details['overflow_cc'] = array();
 
-        for ($i=0, $size = count($recipients); $i < $size; $i++) {
+        for ($i = 0, $size = count($recipients); $i < $size; $i++) {
             if ($this->_check_overflow($recipients[$i]) === false) {
                 $details['overflow_recipients'][] = $recipients[$i];
                 unset($recipients[$i]);
             }
         }
 
-        for ($i=0, $size = count($cc); $i < $size; $i++) {
+        for ($i = 0, $size = count($cc); $i < $size; $i++) {
             if ($this->_check_overflow($cc[$i]) === false) {
                 $details['overflow_cc'][] = $cc[$i];
                 unset($cc[$i]);
@@ -581,9 +581,9 @@ class EE_Messages_send extends EE_Messages
                 ee()->email->wordwrap = true;
 
                 $swap = array(
-                    'sender_name'			=> ee()->session->userdata('screen_name'),
-                    'site_name'			=> stripslashes(ee()->config->item('site_name')),
-                    'site_url'			=> ee()->config->item('site_url')
+                    'sender_name' => ee()->session->userdata('screen_name'),
+                    'site_name' => stripslashes(ee()->config->item('site_name')),
+                    'site_url' => ee()->config->item('site_url')
                 );
 
                 $template = ee()->functions->fetch_email_template('pm_inbox_full');
@@ -659,18 +659,18 @@ class EE_Messages_send extends EE_Messages
         /**  Store Data
         /** -------------------------------------*/
         $data = array(
-            'sender_id'				=> $this->member_id,
-            'message_date'			=> ee()->localize->now,
-            'message_subject'		=> ee()->input->get_post('subject', true),
-            'message_body'			=> ee()->input->get_post('body', true),
-            'message_tracking'		=> (! ee()->input->get_post('tracking')) ? 'n' : 'y',
-            'message_attachments'	=> (count($this->attachments) > 0) ? 'y' : 'n',
-            'message_recipients'	=> implode('|', $recipients),
-            'message_cc'			=> implode('|', $cc),
-            'message_hide_cc'		=> (! ee()->input->get_post('hide_cc')) ? 'n' : 'y',
-            'message_sent_copy'		=> (! ee()->input->get_post('sent_copy')) ? 'n' : 'y',
-            'total_recipients'		=> (count($recipients) + count($cc)),
-            'message_status'		=> $status
+            'sender_id' => $this->member_id,
+            'message_date' => ee()->localize->now,
+            'message_subject' => ee()->input->get_post('subject', true),
+            'message_body' => ee()->input->get_post('body', true),
+            'message_tracking' => (! ee()->input->get_post('tracking')) ? 'n' : 'y',
+            'message_attachments' => (count($this->attachments) > 0) ? 'y' : 'n',
+            'message_recipients' => implode('|', $recipients),
+            'message_cc' => implode('|', $cc),
+            'message_hide_cc' => (! ee()->input->get_post('hide_cc')) ? 'n' : 'y',
+            'message_sent_copy' => (! ee()->input->get_post('sent_copy')) ? 'n' : 'y',
+            'total_recipients' => (count($recipients) + count($cc)),
+            'message_status' => $status
         );
 
         if (ee()->input->get_post('message_id') && is_numeric(ee()->input->get_post('message_id'))) {
@@ -694,20 +694,20 @@ class EE_Messages_send extends EE_Messages
         /** -----------------------------------------*/
         if ($status == 'sent') {
             $copy_data = array('message_id' => $message_id,
-                'sender_id'	 => $this->member_id);
+                'sender_id' => $this->member_id);
 
             /** -----------------------------------------
             /**  Send out Messages to Recipients and CC
             /** -----------------------------------------*/
-            for ($i=0, $size = count($recipients); $i < $size; $i++) {
-                $copy_data['recipient_id'] 		= $recipients[$i];
-                $copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
+            for ($i = 0, $size = count($recipients); $i < $size; $i++) {
+                $copy_data['recipient_id'] = $recipients[$i];
+                $copy_data['message_authcode'] = ee()->functions->random('alnum', 10);
                 ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
             }
 
-            for ($i=0, $size = count($cc); $i < $size; $i++) {
-                $copy_data['recipient_id']		= $cc[$i];
-                $copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
+            for ($i = 0, $size = count($cc); $i < $size; $i++) {
+                $copy_data['recipient_id'] = $cc[$i];
+                $copy_data['message_authcode'] = ee()->functions->random('alnum', 10);
                 ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
             }
 
@@ -729,9 +729,9 @@ class EE_Messages_send extends EE_Messages
                 ee()->load->library('typography');
                 ee()->typography->initialize(
                     array(
-                        'parse_images'		=> false,
-                        'smileys'			=> false,
-                        'highlight_code'	=> true)
+                        'parse_images' => false,
+                        'smileys' => false,
+                        'highlight_code' => true)
                 );
 
                 $subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
@@ -742,9 +742,9 @@ class EE_Messages_send extends EE_Messages
 
                 $body = ee()->typography->parse_type(
                     stripslashes(ee('Security/XSS')->clean(ee()->input->get_post('body'))),
-                    array('text_format'	=> 'none',
-                        'html_format'	=> 'none',
-                        'auto_links'	=> 'n',
+                    array('text_format' => 'none',
+                        'html_format' => 'none',
+                        'auto_links' => 'n',
                         'allow_img_url' => 'n'
                     )
                 );
@@ -754,11 +754,11 @@ class EE_Messages_send extends EE_Messages
                 ee()->email->wordwrap = true;
 
                 $swap = array(
-                    'sender_name'			=> ee()->session->userdata('screen_name'),
-                    'message_subject'		=> $subject,
-                    'message_content'		=> $body,
-                    'site_name'			=> stripslashes(ee()->config->item('site_name')),
-                    'site_url'			=> ee()->config->item('site_url')
+                    'sender_name' => ee()->session->userdata('screen_name'),
+                    'message_subject' => $subject,
+                    'message_content' => $body,
+                    'site_name' => stripslashes(ee()->config->item('site_name')),
+                    'site_url' => ee()->config->item('site_url')
                 );
 
                 $template = ee()->functions->fetch_email_template('private_message_notification');
@@ -783,10 +783,10 @@ class EE_Messages_send extends EE_Messages
         /**  Sent Copy?
         /** -------------------------------------*/
         if ($status == 'sent' && $data['message_sent_copy'] == 'y') {
-            $copy_data['recipient_id'] 		= $this->member_id;
-            $copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
-            $copy_data['message_folder']	= '2';  // Sent Message Folder
-            $copy_data['message_read']		= 'y';  // Already read automatically
+            $copy_data['recipient_id'] = $this->member_id;
+            $copy_data['message_authcode'] = ee()->functions->random('alnum', 10);
+            $copy_data['message_folder'] = '2';  // Sent Message Folder
+            $copy_data['message_read'] = 'y';  // Already read automatically
             ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
         }
 
@@ -795,7 +795,7 @@ class EE_Messages_send extends EE_Messages
         /** -------------------------------------*/
         if ($status == 'sent' && (ee()->input->get_post('replying') !== false or ee()->input->get_post('forwarding') !== false)) {
             $copy_id = (ee()->input->get_post('replying') !== false) ? ee()->input->get_post('replying') : ee()->input->get_post('forwarding');
-            $status  = (ee()->input->get_post('replying') !== false) ? 'replied' : 'forwarded';
+            $status = (ee()->input->get_post('replying') !== false) ? 'replied' : 'forwarded';
 
             ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{$copy_id}'");
         }

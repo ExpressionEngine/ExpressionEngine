@@ -153,7 +153,7 @@ abstract class HasOneOrMany extends Relation
     protected function deriveKeys()
     {
         $from = $this->from_key ?: $this->from_primary_key;
-        $to   = $this->to_key ?: $from;
+        $to = $this->to_key ?: $from;
 
         return array($from, $to);
     }

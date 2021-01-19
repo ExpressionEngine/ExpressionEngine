@@ -174,7 +174,7 @@ if (! function_exists('img')) {
 
         $img = '<img';
 
-        foreach ($src as $k=>$v) {
+        foreach ($src as $k => $v) {
             if ($k == 'src' and strpos($v, '://') === false) {
                 if ($index_page === true) {
                     $img .= ' src="' . ee()->config->site_url($v) . '"';
@@ -238,7 +238,7 @@ if (! function_exists('link_tag')) {
         $link = '<link ';
 
         if (is_array($href)) {
-            foreach ($href as $k=>$v) {
+            foreach ($href as $k => $v) {
                 if ($k == 'href' and strpos($v, '://') === false) {
                     if ($index_page === true) {
                         $link .= 'href="' . ee()->config->site_url($v) . '" ';
@@ -262,11 +262,11 @@ if (! function_exists('link_tag')) {
 
             $link .= 'rel="' . $rel . '" type="' . $type . '" ';
 
-            if ($media	!= '') {
+            if ($media != '') {
                 $link .= 'media="' . $media . '" ';
             }
 
-            if ($title	!= '') {
+            if ($title != '') {
                 $link .= 'title="' . $title . '" ';
             }
 
@@ -300,10 +300,10 @@ if (! function_exists('meta')) {
 
         $str = '';
         foreach ($name as $meta) {
-            $type		= (! isset($meta['type']) or $meta['type'] == 'name') ? 'name' : 'http-equiv';
-            $name		= (! isset($meta['name'])) ? '' : $meta['name'];
-            $content	= (! isset($meta['content'])) ? '' : $meta['content'];
-            $newline	= (! isset($meta['newline'])) ? "\n" : $meta['newline'];
+            $type = (! isset($meta['type']) or $meta['type'] == 'name') ? 'name' : 'http-equiv';
+            $name = (! isset($meta['name'])) ? '' : $meta['name'];
+            $content = (! isset($meta['content'])) ? '' : $meta['content'];
+            $newline = (! isset($meta['newline'])) ? "\n" : $meta['newline'];
 
             $str .= '<meta ' . $type . '="' . $name . '" content="' . $content . '" />' . $newline;
         }

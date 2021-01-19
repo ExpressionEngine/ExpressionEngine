@@ -24,7 +24,7 @@ class Watermark extends Model
     protected static $_table_name = 'file_watermarks';
 
     protected static $_typed_columns = array(
-        'wm_use_font'        => 'boolString',
+        'wm_use_font' => 'boolString',
         'wm_use_drop_shadow' => 'boolString',
         //'wm_font_size'       => 'int',
         //'wm_padding'         => 'int',
@@ -45,25 +45,25 @@ class Watermark extends Model
     );
 
     protected static $_validation_rules = array(
-        'wm_name'            => 'required|xss|noHtml|unique',
-        'wm_type'            => 'enum[text,image]',
-        'wm_image_path'      => 'fileExists',
+        'wm_name' => 'required|xss|noHtml|unique',
+        'wm_type' => 'enum[text,image]',
+        'wm_image_path' => 'fileExists',
         'wm_test_image_path' => 'fileExists',
-        'wm_use_font'        => 'enum[y,n]',
-        'wm_font_size'       => 'isNaturalNoZero',
-        'wm_text'            => 'validateText|required',
-        'wm_vrt_alignment'   => 'enum[top,middle,bottom]',
-        'wm_hor_alignment'   => 'enum[left,center,right]',
-        'wm_padding'         => 'isNatural',
-        'wm_opacity'         => 'isNatural',
-        'wm_hor_offset'      => 'integer',
-        'wm_vrt_offset'      => 'integer',
-        'wm_x_transp'        => 'isNatural',
-        'wm_y_transp'        => 'isNatural',
-        'wm_font_color'      => 'hexColor',
+        'wm_use_font' => 'enum[y,n]',
+        'wm_font_size' => 'isNaturalNoZero',
+        'wm_text' => 'validateText|required',
+        'wm_vrt_alignment' => 'enum[top,middle,bottom]',
+        'wm_hor_alignment' => 'enum[left,center,right]',
+        'wm_padding' => 'isNatural',
+        'wm_opacity' => 'isNatural',
+        'wm_hor_offset' => 'integer',
+        'wm_vrt_offset' => 'integer',
+        'wm_x_transp' => 'isNatural',
+        'wm_y_transp' => 'isNatural',
+        'wm_font_color' => 'hexColor',
         'wm_use_drop_shadow' => 'enum[y,n]',
         'wm_shadow_distance' => 'integer',
-        'wm_shadow_color'    => 'hexColor'
+        'wm_shadow_color' => 'hexColor'
     );
 
     protected $wm_id;

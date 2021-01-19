@@ -47,7 +47,7 @@ class View
             $this->disable($this->_disable_up);
             $data = array(
                 'EE_rendered_view' => $rendered_view,
-                'blocks'           => $this->blocks
+                'blocks' => $this->blocks
             );
             $rendered_view = ee('View')->make($view)->render($data);
         }
@@ -132,14 +132,14 @@ class View
     public function script_tag($file)
     {
         $src_dir = PATH_JS . '/';
-        $path    = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file;
+        $path = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file;
 
         if (! file_exists($path)) {
             return null;
         }
 
         $filemtime = filemtime($path);
-        $url       = URL_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
+        $url = URL_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 
         return '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
     }
@@ -157,7 +157,7 @@ class View
     public function head_link($file, $media = 'screen')
     {
         $filemtime = null;
-        $file_url  = URL_THEMES . 'cp/' . $file;
+        $file_url = URL_THEMES . 'cp/' . $file;
 
         if (file_exists(PATH_CP_THEME . $file)) {
             $filemtime = filemtime(PATH_CP_THEME . $file);

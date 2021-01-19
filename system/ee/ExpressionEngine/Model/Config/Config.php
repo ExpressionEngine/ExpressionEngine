@@ -21,7 +21,7 @@ class Config extends Model
 
     protected static $_typed_columns = [
         'config_id' => 'int',
-        'site_id'   => 'int',
+        'site_id' => 'int',
     ];
 
     protected static $_relationships = [
@@ -32,7 +32,7 @@ class Config extends Model
 
     protected static $_validation_rules = [
         'config_id' => 'required',
-        'key'       => 'required',
+        'key' => 'required',
     ];
 
     // protected static $_events = [];

@@ -61,17 +61,17 @@ class Category extends ContentModel
     );
 
     protected static $_field_data = array(
-        'field_model'     => 'CategoryField',
-        'group_column'    => 'group_id',
+        'field_model' => 'CategoryField',
+        'group_column' => 'group_id',
         'structure_model' => 'CategoryGroup',
     );
 
     protected static $_validation_rules = array(
-        'cat_name'			=> 'required|noHtml|xss',
-        'cat_url_title'		=> 'required|alphaDash|unique[group_id]',
-        'cat_description'	=> 'xss',
-        'cat_order'			=> 'isNaturalNoZero',
-        'parent_id'			=> 'validateParentCategory'
+        'cat_name' => 'required|noHtml|xss',
+        'cat_url_title' => 'required|alphaDash|unique[group_id]',
+        'cat_description' => 'xss',
+        'cat_order' => 'isNaturalNoZero',
+        'parent_id' => 'validateParentCategory'
     );
 
     protected static $_events = array(

@@ -34,12 +34,12 @@ class HTMLButton extends Model
 
     protected static $_typed_columns = array(
         'tag_order' => 'int',
-        'tag_row'   => 'int',
+        'tag_row' => 'int',
     );
 
     protected static $_validation_rules = array(
-        'tag_name'  => 'required',
-        'tag_open'  => 'required',
+        'tag_name' => 'required',
+        'tag_open' => 'required',
         'tag_close' => 'required',
         'accesskey' => 'required',
         'tag_order' => 'required|isNatural',
@@ -64,11 +64,11 @@ class HTMLButton extends Model
             $button_js = array('separator' => '---');
         } else {
             $button_js = array(
-                'name'		  => htmlentities($this->tag_name, ENT_QUOTES, 'UTF-8'),
-                'key'		    => strtoupper($this->accesskey),
-                'openWith'	=> $this->tag_open,
-                'closeWith'	=> $this->tag_close,
-                'className'	=> $this->classname . ' id' . $this->id
+                'name' => htmlentities($this->tag_name, ENT_QUOTES, 'UTF-8'),
+                'key' => strtoupper($this->accesskey),
+                'openWith' => $this->tag_open,
+                'closeWith' => $this->tag_close,
+                'className' => $this->classname . ' id' . $this->id
             );
         }
 

@@ -72,9 +72,9 @@ class EE_Cache_file extends CI_Driver
     public function save($key, $data, $ttl = 60, $scope = Cache::LOCAL_SCOPE)
     {
         $contents = array(
-            'time'		=> ee()->localize->now,
-            'ttl'		=> $ttl,
-            'data'		=> $data
+            'time' => ee()->localize->now,
+            'ttl' => $ttl,
+            'data' => $data
         );
 
         $key = $this->_namespaced_key($key, $scope);
@@ -212,9 +212,9 @@ class EE_Cache_file extends CI_Driver
             }
 
             return array(
-                'expire'	=> $mtime + $data['ttl'],
-                'mtime'		=> $mtime,
-                'data'		=> $data['data']
+                'expire' => $mtime + $data['ttl'],
+                'mtime' => $mtime,
+                'data' => $data['data']
             );
         }
 

@@ -84,11 +84,11 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
     public function __construct($location, $name, $type)
     {
         $this->options = array(
-            'host'   => '127.0.0.1',
-            'port'   => 11211,
+            'host' => '127.0.0.1',
+            'port' => 11211,
             'extras' => array(
                 'timeout' => 3600, // one hour
-                'prefix'  => 'simplepie_',
+                'prefix' => 'simplepie_',
             ),
         );
         $this->options = SimplePie_Misc::array_merge_recursive($this->options, SimplePie_Cache::parse_URL($location));

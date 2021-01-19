@@ -54,43 +54,43 @@
  */
 class EE_Session
 {
-    public $user_session_len	= 7200;  // User sessions expire in two hours
-    public $cpan_session_len	= 3600;  // Admin sessions expire in one hour
-    public $valid_session_types	= array('cs', 'c', 's');
+    public $user_session_len = 7200;  // User sessions expire in two hours
+    public $cpan_session_len = 3600;  // Admin sessions expire in one hour
+    public $valid_session_types = array('cs', 'c', 's');
 
-    public $c_session			= 'sessionid';
-    public $c_expire			= 'expiration';
-    public $c_anon				= 'anon';
-    public $c_prefix			= '';
+    public $c_session = 'sessionid';
+    public $c_expire = 'expiration';
+    public $c_anon = 'anon';
+    public $c_prefix = '';
 
-    public $sdata				= array();
-    public $userdata		 	= array();
-    public $tracker				= array();
-    public $flashdata			= array();
+    public $sdata = array();
+    public $userdata = array();
+    public $tracker = array();
+    public $flashdata = array();
 
-    public $sess_crypt_key		= '';
+    public $sess_crypt_key = '';
 
-    public $cookie_ttl			= '';
+    public $cookie_ttl = '';
     protected $activity_cookie_ttl = 31536000; // Activity cookie expiration:  One year
 
-    public $session_length		= '';
-    public $validation_type  	= '';
+    public $session_length = '';
+    public $validation_type = '';
 
-    public $access_cp			= false;
-    public $cookies_exist		= false;
-    public $session_exists		= false;
+    public $access_cp = false;
+    public $cookies_exist = false;
+    public $session_exists = false;
 
     // Garbage collection probability. Used to kill expired sessions.
-    public $gc_probability		= 5;
+    public $gc_probability = 5;
 
     // Store data for just this page load.
     // Multi-dimensional array with module/class name,
     // e.g. $this->cache['module']['var_name']
     // Use set_cache() and cache() methods.
-    public $cache				= array();
+    public $cache = array();
 
-    private $session_model      = null;
-    private $member_model       = null;
+    private $session_model = null;
+    private $member_model = null;
 
     /**
      * Session Class Constructor
@@ -373,20 +373,20 @@ class EE_Session
             );
         }
 
-        $this->sdata['session_id'] 		= ee()->functions->random();
-        $this->sdata['ip_address']  	= ee()->input->ip_address();
-        $this->sdata['user_agent']		= substr(ee()->input->user_agent(), 0, 120);
-        $this->sdata['member_id']  		= (int) $member_id;
-        $this->sdata['last_activity']	= ee()->localize->now;
-        $this->sdata['sess_start']		= $this->sdata['last_activity'];
-        $this->sdata['fingerprint']		= $this->_create_fingerprint((string) $crypt_key);
-        $this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
+        $this->sdata['session_id'] = ee()->functions->random();
+        $this->sdata['ip_address'] = ee()->input->ip_address();
+        $this->sdata['user_agent'] = substr(ee()->input->user_agent(), 0, 120);
+        $this->sdata['member_id'] = (int) $member_id;
+        $this->sdata['last_activity'] = ee()->localize->now;
+        $this->sdata['sess_start'] = $this->sdata['last_activity'];
+        $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
+        $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
 
-        $this->userdata['member_id']	= (int) $member_id;
-        $this->userdata['role_id']		= (int) $this->member_model->role_id;
-        $this->userdata['session_id']	= $this->sdata['session_id'];
-        $this->userdata['fingerprint']	= $this->sdata['fingerprint'];
-        $this->userdata['site_id']		= ee()->config->item('site_id');
+        $this->userdata['member_id'] = (int) $member_id;
+        $this->userdata['role_id'] = (int) $this->member_model->role_id;
+        $this->userdata['session_id'] = $this->sdata['session_id'];
+        $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
+        $this->userdata['site_id'] = ee()->config->item('site_id');
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -529,16 +529,16 @@ class EE_Session
         $this->userdata['primary_role_id'] = $this->userdata['group_id'] = $role->getId();
         $this->userdata['primary_role_name'] = $this->userdata['group_title'] = $role->name;
         $this->userdata['primary_role_description'] = $this->userdata['group_description'] = $role->description;
-        $this->userdata['total_comments']      = 0;
-        $this->userdata['total_entries']       = 0;
-        $this->userdata['private_messages']	   = 0;
-        $this->userdata['total_forum_posts']   = 0;
-        $this->userdata['total_forum_topics']  = 0;
+        $this->userdata['total_comments'] = 0;
+        $this->userdata['total_entries'] = 0;
+        $this->userdata['private_messages'] = 0;
+        $this->userdata['total_forum_posts'] = 0;
+        $this->userdata['total_forum_topics'] = 0;
         $this->userdata['total_forum_replies'] = 0;
-        $this->userdata['display_signatures']  = 'y';
-        $this->userdata['display_avatars']     = 'y';
-        $this->userdata['display_photos']      = 'y';
-        $this->userdata['parse_smileys']       = 'y';
+        $this->userdata['display_signatures'] = 'y';
+        $this->userdata['display_avatars'] = 'y';
+        $this->userdata['display_photos'] = 'y';
+        $this->userdata['parse_smileys'] = 'y';
 
         // The following cookie info is only used with the forum module.
         // It enables us to track "read topics" with users who are not
@@ -553,7 +553,7 @@ class EE_Session
         // last_visit stats are only available for logged-in members it
         // doesn't hurt anything to set it this way for guests.
         if (! ee()->input->cookie('last_visit')) {
-            $this->userdata['last_visit'] = ee()->localize->now-($this->activity_cookie_ttl*10);
+            $this->userdata['last_visit'] = ee()->localize->now - ($this->activity_cookie_ttl * 10);
         } else {
             $this->userdata['last_visit'] = (int) ee()->input->cookie('last_visit');
         }
@@ -594,13 +594,13 @@ class EE_Session
         }
 
         // Add in Primary Role data
-        $this->userdata['primary_role_id']          = $this->member_model->PrimaryRole->getId();
-        $this->userdata['primary_role_name']        = $this->member_model->PrimaryRole->name;
+        $this->userdata['primary_role_id'] = $this->member_model->PrimaryRole->getId();
+        $this->userdata['primary_role_name'] = $this->member_model->PrimaryRole->name;
         $this->userdata['primary_role_description'] = $this->member_model->PrimaryRole->description;
 
         // Member Group backwards compatibility
-        $this->userdata['group_id']          = $this->member_model->PrimaryRole->getId();
-        $this->userdata['group_title']       = $this->member_model->PrimaryRole->name;
+        $this->userdata['group_id'] = $this->member_model->PrimaryRole->getId();
+        $this->userdata['group_title'] = $this->member_model->PrimaryRole->name;
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
         // Add in the Permissions for backwards compatibility
@@ -627,7 +627,7 @@ class EE_Session
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
 
         // Fix the values for forum posts and replies
-        $this->userdata['total_forum_posts'] = $member_query->row('total_forum_topics')  + $member_query->row('total_forum_posts') ;
+        $this->userdata['total_forum_posts'] = $member_query->row('total_forum_topics') + $member_query->row('total_forum_posts') ;
         $this->userdata['total_forum_replies'] = $member_query->row('total_forum_posts') ;
 
         $this->userdata['display_photos'] = ee()->config->item('enable_photos');
@@ -675,12 +675,12 @@ class EE_Session
         // date.  That way, we can show the exact time they were last visitng the site.
 
         if (($this->userdata['last_visit'] == 0) or
-            (($member_query->row('last_activity')  + $this->session_length) < ee()->localize->now)) {
+            (($member_query->row('last_activity') + $this->session_length) < ee()->localize->now)) {
             $last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity') : ee()->localize->now;
 
             ee()->db->where('member_id', (int) $this->sdata['member_id']);
             ee()->db->update('members', array(
-                'last_visit' 	=> $last_act,
+                'last_visit' => $last_act,
                 'last_activity' => ee()->localize->now
             ));
 
@@ -691,7 +691,7 @@ class EE_Session
         // We update this ever 5 minutes.  It's used with the session table
         // so we can update sessions
 
-        if (($member_query->row('last_activity')  + 300) < ee()->localize->now) {
+        if (($member_query->row('last_activity') + 300) < ee()->localize->now) {
             ee()->db->where('member_id', (int) $this->sdata['member_id']);
             ee()->db->update('members', array(
                 'last_activity' => ee()->localize->now
@@ -747,7 +747,7 @@ class EE_Session
 
         // If session has expired, delete it and set session data to GUEST
         if ($this->validation != 'c') {
-            if ($session->last_activity  < (ee()->localize->now - $this->session_length)) {
+            if ($session->last_activity < (ee()->localize->now - $this->session_length)) {
                 ee()->db->where('session_id', $this->sdata['session_id']);
                 ee()->db->delete(array('sessions', 'security_hashes'));
 
@@ -826,10 +826,10 @@ class EE_Session
         }
 
         $data = array(
-            'login_date'	=> time(),
-            'ip_address'	=> ee()->input->ip_address(),
-            'user_agent'	=> $this->userdata['user_agent'],
-            'username'		=> $username
+            'login_date' => time(),
+            'ip_address' => ee()->input->ip_address(),
+            'user_agent' => $this->userdata['user_agent'],
+            'username' => $username
         );
 
         ee()->db->insert('password_lockout', $data);
@@ -1196,14 +1196,14 @@ class EE_Session
     protected function _initialize_session()
     {
         $this->sdata = array(
-            'session_id' 		=>  0,
-            'fingerprint'		=>	0,
-            'member_id'  		=>  0,
-            'admin_sess' 		=>  0,
-            'ip_address' 		=>  ee()->input->ip_address(),
-            'user_agent' 		=>  substr(ee()->input->user_agent(), 0, 120),
-            'last_activity'		=>  0,
-            'sess_start'		=>	0
+            'session_id' => 0,
+            'fingerprint' => 0,
+            'member_id' => 0,
+            'admin_sess' => 0,
+            'ip_address' => ee()->input->ip_address(),
+            'user_agent' => substr(ee()->input->user_agent(), 0, 120),
+            'last_activity' => 0,
+            'sess_start' => 0
         );
     }
 
@@ -1216,21 +1216,21 @@ class EE_Session
     {
         // my_* cookies used by guests in the comment form
         $this->userdata = array(
-            'username'			=> ee('Cookie')->getSignedCookie('my_name', true),
-            'screen_name'		=> '',
-            'email'				=> ee('Cookie')->getSignedCookie('my_email', true),
-            'url'				=> ee('Cookie')->getSignedCookie('my_url', true),
-            'location'			=> ee('Cookie')->getSignedCookie('my_location', true),
-            'language'			=> '',
-            'timezone'			=> ee()->config->item('default_site_timezone'),
-            'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
-            'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
-            'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
-            'role_id'			=> '3',
-            'access_cp'			=>  0,
-            'last_visit'		=>  0,
-            'is_banned'			=>  $this->_do_ban_check(),
-            'ignore_list'		=>  array()
+            'username' => ee('Cookie')->getSignedCookie('my_name', true),
+            'screen_name' => '',
+            'email' => ee('Cookie')->getSignedCookie('my_email', true),
+            'url' => ee('Cookie')->getSignedCookie('my_url', true),
+            'location' => ee('Cookie')->getSignedCookie('my_location', true),
+            'language' => '',
+            'timezone' => ee()->config->item('default_site_timezone'),
+            'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
+            'time_format' => ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+            'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
+            'role_id' => '3',
+            'access_cp' => 0,
+            'last_visit' => 0,
+            'is_banned' => $this->_do_ban_check(),
+            'ignore_list' => array()
         );
     }
 

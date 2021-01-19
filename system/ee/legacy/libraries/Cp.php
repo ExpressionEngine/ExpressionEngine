@@ -16,18 +16,18 @@ class Cp
     private $view;
 
     protected $its_all_in_your_head = array();
-    protected $footer_item          = array();
+    protected $footer_item = array();
 
-    public $cp_theme_url         = '';	// base URL to the CP theme folder
-    public $installed_modules    = false;
-    public $requests             = array();
-    public $loaded               = array();
+    public $cp_theme_url = '';	// base URL to the CP theme folder
+    public $installed_modules = false;
+    public $requests = array();
+    public $loaded = array();
 
     public $js_files = array(
-        'ui'        => array(),
-        'plugin'    => array(),
-        'file'      => array(),
-        'package'   => array(),
+        'ui' => array(),
+        'plugin' => array(),
+        'file' => array(),
+        'package' => array(),
         'fp_module' => array()
     );
 
@@ -61,7 +61,7 @@ class Cp
      */
     public function set_default_view_variables()
     {
-        $langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
+        $langfile = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
         // Javascript Path Constants
         define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/');
@@ -94,27 +94,27 @@ class Cp
         $notepad_content = ($member->notepad) ?: '';
 
         // Global view variables
-        $vars =	array(
-            'cp_homepage_url'       => $member->getCPHomepageURL(),
-            'cp_page_onload'		=> '',
-            'cp_page_title'			=> '',
-            'cp_breadcrumbs'		=> array(),
-            'cp_right_nav'			=> array(),
-            'cp_messages'			=> array(),
-            'cp_notepad_content'	=> $notepad_content,
-            'cp_table_template'		=> $cp_table_template,
-            'cp_pad_table_template'	=> $cp_pad_table_template,
-            'cp_theme_url'			=> $this->cp_theme_url,
-            'cp_current_site_label'	=> ee()->config->item('site_name'),
-            'cp_screen_name'		=> $member->screen_name,
+        $vars = array(
+            'cp_homepage_url' => $member->getCPHomepageURL(),
+            'cp_page_onload' => '',
+            'cp_page_title' => '',
+            'cp_breadcrumbs' => array(),
+            'cp_right_nav' => array(),
+            'cp_messages' => array(),
+            'cp_notepad_content' => $notepad_content,
+            'cp_table_template' => $cp_table_template,
+            'cp_pad_table_template' => $cp_pad_table_template,
+            'cp_theme_url' => $this->cp_theme_url,
+            'cp_current_site_label' => ee()->config->item('site_name'),
+            'cp_screen_name' => $member->screen_name,
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
-            'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
-            'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
-            'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
-            'cp_quicklinks'			=> $this->_get_quicklinks($member->getQuicklinks()),
+            'cp_avatar_path' => ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
+            'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
+            'cp_avatar_height' => ($member->avatar_filename) ? $member->avatar_height : '',
+            'cp_quicklinks' => $this->_get_quicklinks($member->getQuicklinks()),
 
-            'EE_view_disable'		=> false,
-            'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? true : false,	// for conditional use in view files
+            'EE_view_disable' => false,
+            'is_super_admin' => (ee('Permission')->isSuperAdmin()) ? true : false,	// for conditional use in view files
         );
 
         // global table data
@@ -138,36 +138,36 @@ class Cp
         // Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
 
         $js_lang_keys = array(
-            'logout'				=> lang('logout'),
-            'search'				=> lang('search'),
-            'session_idle'			=> lang('session_idle'),
-            'btn_fix_errors'		=> lang('btn_fix_errors'),
-            'btn_fix_errors'		=> lang('btn_fix_errors'),
-            'check_all'				=> lang('check_all'),
-            'clear_all'				=> lang('clear_all'),
-            'keyword_search'		=> lang('keyword_search'),
-            'loading'				=> lang('loading'),
-            'searching'				=> lang('searching'),
-            'dark_theme'			=> lang('dark_theme'),
-            'light_theme'			=> lang('light_theme'),
-            'many_jump_results'		=> lang('many_jump_results'),
+            'logout' => lang('logout'),
+            'search' => lang('search'),
+            'session_idle' => lang('session_idle'),
+            'btn_fix_errors' => lang('btn_fix_errors'),
+            'btn_fix_errors' => lang('btn_fix_errors'),
+            'check_all' => lang('check_all'),
+            'clear_all' => lang('clear_all'),
+            'keyword_search' => lang('keyword_search'),
+            'loading' => lang('loading'),
+            'searching' => lang('searching'),
+            'dark_theme' => lang('dark_theme'),
+            'light_theme' => lang('light_theme'),
+            'many_jump_results' => lang('many_jump_results'),
         );
 
         ee()->javascript->set_global(array(
-            'BASE'              => str_replace(AMP, '&', BASE),
-            'XID'               => CSRF_TOKEN,
-            'CSRF_TOKEN'        => CSRF_TOKEN,
-            'PATH_CP_GBL_IMG'   => PATH_CP_GBL_IMG,
-            'CP_SIDEBAR_STATE'  => ee()->session->userdata('show_sidebar'),
-            'username'          => ee()->session->userdata('username'),
-            'router_class'      => ee()->router->class, // advanced css
-            'lang'              => $js_lang_keys,
-            'THEME_URL'         => $this->cp_theme_url,
-            'hasRememberMe'     => (bool) ee()->remember->exists(),
+            'BASE' => str_replace(AMP, '&', BASE),
+            'XID' => CSRF_TOKEN,
+            'CSRF_TOKEN' => CSRF_TOKEN,
+            'PATH_CP_GBL_IMG' => PATH_CP_GBL_IMG,
+            'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
+            'username' => ee()->session->userdata('username'),
+            'router_class' => ee()->router->class, // advanced css
+            'lang' => $js_lang_keys,
+            'THEME_URL' => $this->cp_theme_url,
+            'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
-            'site_id'           => ee()->config->item('site_id'),
-            'site_name'         => ee()->config->item('site_name'),
-            'site_url'          => ee()->config->item('site_url'),
+            'site_id' => ee()->config->item('site_id'),
+            'site_name' => ee()->config->item('site_name'),
+            'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
         ));
 
@@ -178,9 +178,9 @@ class Cp
         // Combo-load the javascript files we need for every request
 
         $js_scripts = array(
-            'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
-            'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
-            'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
+            'ui' => array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
+            'plugin' => array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
+            'file' => array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
                 'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
                 'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
                 'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
@@ -215,10 +215,10 @@ class Cp
         $js_scripts['file'][] = 'cp/jump_menu';
 
         $modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
-            'name'		=> 'modal-default-confirm-remove',
-            'form_url'	=> '#',
-            'hidden'	=> [
-                'bulk_action'	=> 'remove',
+            'name' => 'modal-default-confirm-remove',
+            'form_url' => '#',
+            'hidden' => [
+                'bulk_action' => 'remove',
                 'content_id' => ''
             ]
         ]);
@@ -579,12 +579,12 @@ class Cp
             $this->loaded = array_merge_recursive($this->loaded, $this->js_files);
 
             $this->js_files = array(
-                'ui'				=> array(),
-                'plugin'			=> array(),
-                'file'				=> array(),
-                'package'			=> array(),
-                'fp_module'			=> array(),
-                'pro_file'			=> array()
+                'ui' => array(),
+                'plugin' => array(),
+                'file' => array(),
+                'package' => array(),
+                'fp_module' => array(),
+                'pro_file' => array()
             );
 
             $this->requests[] = $str . AMP . 'v=' . max($mtimes);
@@ -747,9 +747,9 @@ class Cp
 
         foreach ($quick_links as $ql) {
             $link[$count] = array(
-                'link'		=> ee('CP/URL')->makeFromString($ql['link']),
-                'title'		=> $ql['title'],
-                'external'	=> true
+                'link' => ee('CP/URL')->makeFromString($ql['link']),
+                'title' => $ql['title'],
+                'external' => true
             );
 
             $count++;

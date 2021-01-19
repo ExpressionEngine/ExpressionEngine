@@ -210,9 +210,9 @@ class Login extends CP_Controller
 
         if (AJAX_REQUEST) {
             $this->output->send_ajax_response(array(
-                'base'			=> $base,
-                'messageType'	=> 'success',
-                'message'		=> lang('logged_back_in')
+                'base' => $base,
+                'messageType' => 'success',
+                'message' => lang('logged_back_in')
             ));
         }
 
@@ -270,17 +270,17 @@ class Login extends CP_Controller
 
         $data = array(
             'required_changes' => array(),
-            'focus_field'   => 'new_username',
-            'cp_page_title'	=> lang('login'),
-            'username'		=> $this->input->post('username'),
-            'new_username_required'	=> false,
-            'new_username'	=> $new_un,
-            'password'		=> $this->input->post('password'),
-            'new_password_required'	=> false,
-            'new_password'	=> $new_pw,
-            'hidden'		=> array(
-                'username'	=> $this->input->post('username'),
-                'password'	=> base64_encode($this->input->post('password'))
+            'focus_field' => 'new_username',
+            'cp_page_title' => lang('login'),
+            'username' => $this->input->post('username'),
+            'new_username_required' => false,
+            'new_username' => $new_un,
+            'password' => $this->input->post('password'),
+            'new_password_required' => false,
+            'new_password' => $new_pw,
+            'hidden' => array(
+                'username' => $this->input->post('username'),
+                'password' => base64_encode($this->input->post('password'))
             )
         );
 
@@ -337,8 +337,8 @@ class Login extends CP_Controller
         list($username, $password, $incoming) = $verify_result;
         $member_id = $incoming->member('member_id');
 
-        $new_un  = (string) $this->input->post('new_username');
-        $new_pw  = (string) $this->input->post('new_password');
+        $new_un = (string) $this->input->post('new_username');
+        $new_pw = (string) $this->input->post('new_password');
         $new_pwc = (string) $this->input->post('new_password_confirm');
 
         // Make sure validation library is available
@@ -349,14 +349,14 @@ class Login extends CP_Controller
         // Load it up with the information needed
         $VAL = new EE_Validate(
             array(
-                'val_type'			=> 'new',
-                'fetch_lang' 		=> true,
-                'require_cpw' 		=> false,
-                'enable_log'		=> false,
-                'username'			=> $new_un,
-                'password'			=> $new_pw,
-                'password_confirm'	=> $new_pwc,
-                'cur_password'		=> $this->input->post('password')
+                'val_type' => 'new',
+                'fetch_lang' => true,
+                'require_cpw' => false,
+                'enable_log' => false,
+                'username' => $new_un,
+                'password' => $new_pw,
+                'password_confirm' => $new_pwc,
+                'cur_password' => $this->input->post('password')
             )
         );
 
@@ -527,11 +527,11 @@ class Login extends CP_Controller
         }
 
         $member_id = $query->row('member_id');
-        $name  = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
-        $username  = $query->row('username');
+        $name = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
+        $username = $query->row('username');
 
         // Clean out any old reset codes.
-        $a_day_ago = time() - (60*60*24);
+        $a_day_ago = time() - (60 * 60 * 24);
         $this->db->where('date <', $a_day_ago);
         $this->db->delete('reset_password');
 
@@ -551,11 +551,11 @@ class Login extends CP_Controller
 
         // Build the email message
         $swap = array(
-            'name'		=> $name,
-            'username'		=> $username,
-            'reset_url'	=> reduce_double_slashes($this->config->item('cp_url') . "?S=0&D=cp&C=login&M=reset_password&resetcode=" . $rand),
-            'site_name'	=> stripslashes($this->config->item('site_name')),
-            'site_url'	=> $this->config->item('site_url')
+            'name' => $name,
+            'username' => $username,
+            'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?S=0&D=cp&C=login&M=reset_password&resetcode=" . $rand),
+            'site_name' => stripslashes($this->config->item('site_name')),
+            'site_url' => $this->config->item('site_url')
         );
 
         $template = $this->functions->fetch_email_template('forgot_password_instructions');
@@ -625,7 +625,7 @@ class Login extends CP_Controller
 
         // Validate their reset code.  Make sure it matches a valid
         // member.
-        $a_day_ago = time() - (60*60*24);
+        $a_day_ago = time() - (60 * 60 * 24);
         $member_id_query = $this->db->select('member_id')
             ->where('resetcode', $resetcode)
             ->where('date >', $a_day_ago)
@@ -763,8 +763,8 @@ class Login extends CP_Controller
     {
         if (AJAX_REQUEST) {
             $this->output->send_ajax_response(array(
-                'messageType'	=> 'failure',
-                'message'		=> lang($lang_key)
+                'messageType' => 'failure',
+                'message' => lang($lang_key)
             ));
         }
 

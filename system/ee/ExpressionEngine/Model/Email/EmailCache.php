@@ -21,11 +21,11 @@ class EmailCache extends Model
     protected static $_table_name = 'email_cache';
 
     protected static $_typed_columns = array(
-        'cache_date'      => 'timestamp',
-        'total_sent'      => 'int',
+        'cache_date' => 'timestamp',
+        'total_sent' => 'int',
         'recipient_array' => 'serialized',
-        'attachments'     => 'serialized',
-        'wordwrap'        => 'boolString'
+        'attachments' => 'serialized',
+        'wordwrap' => 'boolString'
     );
 
     protected static $_relationships = array(
@@ -39,20 +39,20 @@ class EmailCache extends Model
     );
 
     protected static $_validation_rules = array(
-        'cache_date'      => 'required',
-        'total_sent'      => 'required',
-        'from_name'       => 'required',
-        'from_email'      => 'required|email',
-        'recipient'       => 'required|email',
-        'cc'              => 'required|email',
-        'bcc'             => 'required|email',
+        'cache_date' => 'required',
+        'total_sent' => 'required',
+        'from_name' => 'required',
+        'from_email' => 'required|email',
+        'recipient' => 'required|email',
+        'cc' => 'required|email',
+        'bcc' => 'required|email',
         'recipient_array' => 'required',
-        'subject'         => 'required',
-        'message'         => 'required',
-        'plaintext_alt'   => 'required',
-        'mailtype'        => 'required',
-        'text_fmt'        => 'required',
-        'wordwrap'        => 'required|enum[y,n]',
+        'subject' => 'required',
+        'message' => 'required',
+        'plaintext_alt' => 'required',
+        'mailtype' => 'required',
+        'text_fmt' => 'required',
+        'wordwrap' => 'required|enum[y,n]',
     );
 
     protected $cache_id;

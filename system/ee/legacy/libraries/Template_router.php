@@ -70,7 +70,7 @@ class EE_Template_Router extends CI_Router
 
                 $this->end_points[$route_parsed->compile()] = array(
                     "template" => $template_name,
-                    "group"    => $group_name
+                    "group" => $group_name
                 );
             }
         }
@@ -87,7 +87,7 @@ class EE_Template_Router extends CI_Router
         foreach ($query->result() as $template) {
             $this->end_points[$template->route_parsed] = array(
                 "template" => $template->template_name,
-                "group"    => $template->group_name
+                "group" => $template->group_name
             );
         }
     }

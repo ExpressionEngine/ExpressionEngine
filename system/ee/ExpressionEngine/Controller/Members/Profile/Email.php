@@ -102,8 +102,8 @@ class Email extends Settings
                     'desc' => 'existing_password_exp',
                     'fields' => array(
                         'verify_password' => array(
-                            'type'      => 'password',
-                            'required'  => true,
+                            'type' => 'password',
+                            'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )

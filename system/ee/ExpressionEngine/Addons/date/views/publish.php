@@ -24,7 +24,7 @@ if ($value) {
 }
 
 if ($disabled) {
-    $params['disabled']	= 'disabled';
+    $params['disabled'] = 'disabled';
 }
 
 echo form_input($params);

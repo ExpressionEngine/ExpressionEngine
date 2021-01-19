@@ -34,9 +34,9 @@ class Csrf_database implements Csrf_storage_backend
     public function store_token($token)
     {
         ee()->db->insert('security_hashes', array(
-            'date'			=> ee()->localize->now,
-            'hash'			=> $token,
-            'session_id'	=> ee()->session->userdata('session_id')
+            'date' => ee()->localize->now,
+            'hash' => $token,
+            'session_id' => ee()->session->userdata('session_id')
         ));
     }
 

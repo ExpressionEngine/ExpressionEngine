@@ -130,7 +130,7 @@ class EE_Cache_redis extends CI_Driver
                 // expiration time to be the same as mtime to be consistent
                 // with our other drivers
                 'expire' => ($ttl == -1) ? $time : ee()->localize->now + $ttl,
-                'mtime'	=> $time,
+                'mtime' => $time,
                 'data' => $data
             );
         }

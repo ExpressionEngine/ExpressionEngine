@@ -45,14 +45,14 @@ class GridInput extends Table
         // These should be our default to properly initialize a Table class
         // for use as a Grid input
         $defaults = array(
-            'limit'		    => 0,
-            'sortable'	    => false,
-            'grid_input'    => true,
-            'reorder'	    => true,
-            'field_name'    => 'grid',
+            'limit' => 0,
+            'sortable' => false,
+            'grid_input' => true,
+            'reorder' => true,
+            'field_name' => 'grid',
             'grid_min_rows' => 0,
             'grid_max_rows' => '',
-            'show_add_button'=> true,
+            'show_add_button' => true,
         );
 
         parent::__construct(array_merge($defaults, $config));
@@ -93,7 +93,7 @@ class GridInput extends Table
             // Prepend blank row to array instead of prepend so that the DOM
             // is consistent when loading new data vs loading new data
             array_unshift($data, array(
-                'attrs'   => array('class' => 'grid-blank-row hidden'),
+                'attrs' => array('class' => 'grid-blank-row hidden'),
                 'columns' => $this->config['grid_blank_row']
             ));
         }

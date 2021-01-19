@@ -113,7 +113,7 @@ if (REQ == 'CP') {
     function form_yes_no_toggle($name, $value)
     {
         $insertion_point = strcspn($name, '['); // add y/n flag before arrays
-        $name_no  = substr_replace($name, '_n', $insertion_point, 0);
+        $name_no = substr_replace($name, '_n', $insertion_point, 0);
         $name_yes = substr_replace($name, '_y', $insertion_point, 0);
 
         $value = is_bool($value) ? $value : $value == 'y';

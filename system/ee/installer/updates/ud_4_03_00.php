@@ -45,46 +45,46 @@ class Updater
     {
         ee()->dbforge->add_field(
             [
-                'consent_request_id'         => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                'consent_request_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
                 'consent_request_version_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => true,
-                    'default'    => null
+                    'unsigned' => true,
+                    'null' => true,
+                    'default' => null
                 ],
-                'user_created'               => [
-                    'type'       => 'char',
+                'user_created' => [
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => false,
-                    'default'    => 'n',
+                    'null' => false,
+                    'default' => 'n',
                 ],
-                'title'                      => [
-                    'type'       => 'varchar',
+                'title' => [
+                    'type' => 'varchar',
                     'constraint' => 200,
-                    'null'       => false
+                    'null' => false
                 ],
-                'consent_name'               => [
-                    'type'       => 'varchar',
+                'consent_name' => [
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => false
+                    'null' => false
                 ],
-                'double_opt_in'              => [
-                    'type'       => 'char',
+                'double_opt_in' => [
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => false,
-                    'default'    => 'n'
+                    'null' => false,
+                    'default' => 'n'
                 ],
-                'retention_period'           => [
-                    'type'       => 'varchar',
+                'retention_period' => [
+                    'type' => 'varchar',
                     'constraint' => 32,
-                    'null'       => true,
+                    'null' => true,
                 ],
             ]
         );
@@ -95,38 +95,38 @@ class Updater
         ee()->dbforge->add_field(
             [
                 'consent_request_version_id' => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
-                'consent_request_id'         => [
-                    'type'       => 'int',
+                'consent_request_id' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
-                'request'                    => [
-                    'type'       => 'mediumtext',
-                    'null'       => true
+                'request' => [
+                    'type' => 'mediumtext',
+                    'null' => true
                 ],
-                'request_format'             => [
-                    'type'       => 'tinytext',
-                    'null'       => true
+                'request_format' => [
+                    'type' => 'tinytext',
+                    'null' => true
                 ],
-                'create_date'                => [
-                    'type'       => 'int',
+                'create_date' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'null'       => false,
-                    'default'    => 0
+                    'null' => false,
+                    'default' => 0
                 ],
-                'author_id'                  => [
-                    'type'       => 'int',
+                'author_id' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 ],
             ]
         );
@@ -136,59 +136,59 @@ class Updater
 
         ee()->dbforge->add_field(
             [
-                'consent_id'                 => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                'consent_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
                 'consent_request_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
                 'consent_request_version_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
-                'member_id'                  => [
-                    'type'       => 'int',
+                'member_id' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
-                'request_copy'               => [
-                    'type'       => 'mediumtext',
-                    'null'       => true
+                'request_copy' => [
+                    'type' => 'mediumtext',
+                    'null' => true
                 ],
-                'request_format'             => [
-                    'type'       => 'tinytext',
-                    'null'       => true
+                'request_format' => [
+                    'type' => 'tinytext',
+                    'null' => true
                 ],
-                'consent_given'              => [
-                    'type'       => 'char',
+                'consent_given' => [
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => false,
-                    'default'    => 'n'
+                    'null' => false,
+                    'default' => 'n'
                 ],
-                'consent_given_via'          => [
-                    'type'       => 'varchar',
+                'consent_given_via' => [
+                    'type' => 'varchar',
                     'constraint' => 32,
-                    'null'       => true
+                    'null' => true
                 ],
-                'expiration_date'            => [
-                    'type'       => 'int',
+                'expiration_date' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'null'       => true
+                    'null' => true
                 ],
-                'response_date'              => [
-                    'type'       => 'int',
+                'response_date' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'null'       => true
+                    'null' => true
                 ],
             ]
         );
@@ -199,34 +199,34 @@ class Updater
 
         ee()->dbforge->add_field(
             [
-                'consent_audit_id'   => [
-                    'type'           => 'int',
-                    'constraint'     => 10,
-                    'unsigned'       => true,
-                    'null'           => false,
+                'consent_audit_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
                     'auto_increment' => true
                 ],
                 'consent_request_id' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
-                'member_id'          => [
-                    'type'       => 'int',
+                'member_id' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false
+                    'unsigned' => true,
+                    'null' => false
                 ],
-                'action'             => [
-                    'type'       => 'text',
-                    'null'       => false
+                'action' => [
+                    'type' => 'text',
+                    'null' => false
                 ],
-                'log_date'           => [
-                    'type'       => 'int',
+                'log_date' => [
+                    'type' => 'int',
                     'constraint' => 10,
-                    'null'       => false,
-                    'default'    => 0
+                    'null' => false,
+                    'default' => 0
                 ],
             ]
         );
@@ -241,10 +241,10 @@ class Updater
             'member_groups',
             array(
                 'can_manage_consents' => array(
-                    'type'       => 'CHAR',
+                    'type' => 'CHAR',
                     'constraint' => 1,
-                    'default'    => 'n',
-                    'null'       => false,
+                    'default' => 'n',
+                    'null' => false,
                 )
             )
         );
@@ -259,8 +259,8 @@ class Updater
             'member_fields',
             [
                 'm_field_exclude_from_anon' => [
-                    'type'    => 'CHAR(1)',
-                    'null'    => false,
+                    'type' => 'CHAR(1)',
+                    'null' => false,
                     'default' => 'n'
                 ]
             ],
@@ -295,11 +295,11 @@ class Updater
             'sessions',
             [
                 'auth_timeout' => [
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 ]
             ],
             'sess_start'

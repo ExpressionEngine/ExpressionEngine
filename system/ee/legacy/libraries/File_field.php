@@ -43,9 +43,9 @@ class File_field
         ee()->lang->loadfile('fieldtypes');
 
         $vars = array(
-            'filedir'				=> '',
-            'filename'				=> '',
-            'upload_location_id'	=> ''
+            'filedir' => '',
+            'filename' => '',
+            'upload_location_id' => ''
         );
         $allowed_file_dirs = ($allowed_file_dirs == 'all') ? '' : $allowed_file_dirs;
         $specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
@@ -85,16 +85,16 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden']	  = form_hidden($field_name . '_hidden_file', $vars['filename']);
-        $vars['hidden']	 .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', $vars['filename']);
+        $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks
         // without javascript
         $vars['upload'] = form_upload(array(
-            'name'				=> $field_name,
-            'value'				=> $vars['filename'],
-            'data-content-type'	=> $content_type,
-            'data-directory'	=> $specified_directory
+            'name' => $field_name,
+            'value' => $vars['filename'],
+            'data-content-type' => $content_type,
+            'data-directory' => $specified_directory
         ));
 
         $vars['allowed_file_dirs'] = $allowed_file_dirs;
@@ -324,17 +324,17 @@ class File_field
      */
     public function validate($data, $field_name, $required = 'n', $grid = array())
     {
-        $entry_id		 = (int) ee()->input->post('entry_id');
+        $entry_id = (int) ee()->input->post('entry_id');
 
-        $dir_field		 = $field_name . '_directory';
-        $existing_field  = $field_name . '_existing';
-        $hidden_field	 = $field_name . '_hidden_file';
-        $hidden_dir		 = (ee()->input->post($field_name . '_hidden_dir')) ? ee()->input->post($field_name . '_hidden_dir') : ee()->input->post($field_name . '_directory');
-        $allowed_dirs	 = array();
+        $dir_field = $field_name . '_directory';
+        $existing_field = $field_name . '_existing';
+        $hidden_field = $field_name . '_hidden_file';
+        $hidden_dir = (ee()->input->post($field_name . '_hidden_dir')) ? ee()->input->post($field_name . '_hidden_dir') : ee()->input->post($field_name . '_directory');
+        $allowed_dirs = array();
 
         $directory_input = ee()->input->post($dir_field);
-        $existing_input	 = ee()->input->post($existing_field);
-        $hidden_input    = ee()->input->post($hidden_field);
+        $existing_input = ee()->input->post($existing_field);
+        $hidden_input = ee()->input->post($hidden_field);
 
         // Default to blank, set POST to allow form validation to modify the value
         $filename = $_POST[$field_name] = '';
@@ -626,13 +626,13 @@ class File_field
         // the URL so that people's category images continue to work.
         if (empty($file) and ! empty($data)) {
             $file = array(
-                'url'					=> $data,
-                'file_name'				=> $data,
-                'filename'				=> '',
-                'extension'				=> '',
-                'path'					=> '',
-                'upload_location_id'	=> '',
-                'file_hw_original'		=> ''
+                'url' => $data,
+                'file_name' => $data,
+                'filename' => '',
+                'extension' => '',
+                'path' => '',
+                'upload_location_id' => '',
+                'file_hw_original' => ''
             );
 
             return $file;
@@ -654,16 +654,16 @@ class File_field
         $file['file_name'] = rawurlencode($file['file_name']);
 
         // Set additional data based on what we've gathered
-        $file['raw_output']	= $data;
+        $file['raw_output'] = $data;
         $file['raw_content'] = $data;
-        $file['path'] 		= (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
-        $file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
-        $file['filename'] 	= basename($file['file_name'], '.' . $file['extension']); // backwards compatibility
-        $file['url'] 		= $file['path'] . $file['file_name'];
+        $file['path'] = (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
+        $file['extension'] = substr(strrchr($file['file_name'], '.'), 1);
+        $file['filename'] = basename($file['file_name'], '.' . $file['extension']); // backwards compatibility
+        $file['url'] = $file['path'] . $file['file_name'];
 
         $dimensions = explode(" ", $file['file_hw_original']);
 
-        $file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
+        $file['width'] = isset($dimensions[1]) ? $dimensions[1] : '';
         $file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
 
         // Pre and post formatting
@@ -699,7 +699,7 @@ class File_field
                 $file['file_size:' . $manipulation->short_name . ':human_long'] = (string) ee('Format')->make('Number', $size)->bytes(false);
 
                 if ($dimensions) {
-                    $file['width:' . $manipulation->short_name]  = $dimensions['width'];
+                    $file['width:' . $manipulation->short_name] = $dimensions['width'];
                     $file['height:' . $manipulation->short_name] = $dimensions['height'];
                 }
             }
@@ -778,11 +778,11 @@ class File_field
 
         // Include dependencies
         ee()->cp->add_js_script(array(
-            'file'		=> array(
+            'file' => array(
                 'vendor/underscore',
                 'files/publish_fields'
             ),
-            'plugin'	=> array(
+            'plugin' => array(
                 'ee_filebrowser',
                 'ee_fileuploader',
                 'tmpl'
@@ -793,14 +793,14 @@ class File_field
 
         ee()->javascript->set_global(array(
             'lang' => array(
-                'resize_image'		=> lang('resize_image'),
-                'or'				=> lang('or'),
-                'return_to_publish'	=> lang('return_to_publish')
+                'resize_image' => lang('resize_image'),
+                'or' => lang('or'),
+                'return_to_publish' => lang('return_to_publish')
             ),
             'filebrowser' => array(
-                'endpoint_url'		=> $endpoint_url,
-                'window_title'		=> lang('file_manager'),
-                'next'				=> anchor(
+                'endpoint_url' => $endpoint_url,
+                'window_title' => lang('file_manager'),
+                'next' => anchor(
                     '#',
                     img(
                         ee()->cp->cp_theme_url . 'images/pagination_next_button.gif',
@@ -814,7 +814,7 @@ class File_field
                         'class' => 'next'
                     )
                 ),
-                'previous'			=> anchor(
+                'previous' => anchor(
                     '#',
                     img(
                         ee()->cp->cp_theme_url . 'images/pagination_prev_button.gif',
@@ -830,8 +830,8 @@ class File_field
                 )
             ),
             'fileuploader' => array(
-                'window_title'		=> lang('file_upload'),
-                'delete_url'		=> 'C=content_files&M=delete_files'
+                'window_title' => lang('file_upload'),
+                'delete_url' => 'C=content_files&M=delete_files'
             )
         ));
     }

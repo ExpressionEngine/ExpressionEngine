@@ -40,7 +40,7 @@ class OptionFactory
         $string = trim($string);
 
         $option = (object) array(
-            'name'  => null,
+            'name' => null,
             'alias' => null,
             'multi' => false,
             'param' => 'rejected',

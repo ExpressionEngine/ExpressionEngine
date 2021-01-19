@@ -136,9 +136,9 @@ if (! function_exists('character_limiter')) {
 if (! function_exists('ascii_to_entities')) {
     function ascii_to_entities($str)
     {
-        $count	= 1;
-        $out	= '';
-        $temp	= array();
+        $count = 1;
+        $out = '';
+        $temp = array();
 
         for ($i = 0, $s = strlen($str); $i < $s; $i++) {
             $ordinal = ord($str[$i]);
@@ -149,7 +149,7 @@ if (! function_exists('ascii_to_entities')) {
                     fair that we output that entity and restart $temp before continuing. -Paul
                 */
                 if (count($temp) == 1) {
-                    $out  .= '&#' . array_shift($temp) . ';';
+                    $out .= '&#' . array_shift($temp) . ';';
                     $count = 1;
                 }
 
@@ -415,8 +415,8 @@ if (! function_exists('word_wrap')) {
                 }
 
                 // Trim the word down
-                $temp .= substr($line, 0, $charlim-1);
-                $line = substr($line, $charlim-1);
+                $temp .= substr($line, 0, $charlim - 1);
+                $line = substr($line, $charlim - 1);
             }
 
             // If $temp contains data it means we had to split up an over-length

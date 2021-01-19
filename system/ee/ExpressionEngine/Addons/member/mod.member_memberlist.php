@@ -13,10 +13,10 @@
  */
 class Member_memberlist extends Member
 {
-    public $is_search			= false;
-    public $search_keywords	= '';
-    public $search_fields		= '';
-    public $search_total		= 0;
+    public $is_search = false;
+    public $search_keywords = '';
+    public $search_fields = '';
+    public $search_total = 0;
 
     /** ----------------------------------
     /**  Member Email Form
@@ -43,30 +43,30 @@ class Member_memberlist extends Member
             return false;
         }
 
-        if ($query->row('accept_user_email')  != 'y') {
+        if ($query->row('accept_user_email') != 'y') {
             return $this->_var_swap(
                 $this->_load_element('email_user_message'),
                 array(
-                    'lang:message'	=>	ee()->lang->line('mbr_email_not_accepted'),
-                    'css_class'		=>	'highlight'
+                    'lang:message' => ee()->lang->line('mbr_email_not_accepted'),
+                    'css_class' => 'highlight'
                 )
             );
         }
 
         $data = array(
             'hidden_fields' => array('MID' => $this->cur_id),
-            'action' 		=> $this->_member_path('send_email')
+            'action' => $this->_member_path('send_email')
         );
 
-        $data['id']		= 'email_console_form';
+        $data['id'] = 'email_console_form';
 
         $this->_set_page_title(ee()->lang->line('email_console'));
 
         return $this->_var_swap(
             $this->_load_element('email_form'),
             array(
-                'form_declaration'	=>	ee()->functions->form_declaration($data),
-                'name'				=>	$query->row('screen_name')
+                'form_declaration' => ee()->functions->form_declaration($data),
+                'name' => $query->row('screen_name')
             )
         );
     }
@@ -116,13 +116,13 @@ class Member_memberlist extends Member
             $lock = ee()->config->item('email_console_timelock');
 
             if (is_numeric($lock) and $lock != 0) {
-                if ((ee()->session->userdata['last_email_date'] + ($lock*60)) > ee()->localize->now) {
+                if ((ee()->session->userdata['last_email_date'] + ($lock * 60)) > ee()->localize->now) {
                     return $this->_var_swap(
                         $this->_load_element('email_user_message'),
                         array(
-                            'lang:message'			=>	str_replace("%x", $lock, ee()->lang->line('mbr_email_timelock_not_expired')),
-                            'css_class'				=>	'highlight',
-                            'lang:close_window'		=>	ee()->lang->line('mbr_close_window')
+                            'lang:message' => str_replace("%x", $lock, ee()->lang->line('mbr_email_timelock_not_expired')),
+                            'css_class' => 'highlight',
+                            'lang:close_window' => ee()->lang->line('mbr_close_window')
                         )
                     );
                 }
@@ -138,17 +138,17 @@ class Member_memberlist extends Member
             return false;
         }
 
-        if ($query->row('accept_user_email')  != 'y') {
+        if ($query->row('accept_user_email') != 'y') {
             return $this->_var_swap(
                 $this->_load_element('email_user_message'),
                 array(
-                    'lang:message'	=>	ee()->lang->line('mbr_email_not_accepted'),
-                    'css_class'		=>	'highlight'
+                    'lang:message' => ee()->lang->line('mbr_email_not_accepted'),
+                    'css_class' => 'highlight'
                 )
             );
         }
 
-        $message  = stripslashes($_POST['message']) . "\n\n";
+        $message = stripslashes($_POST['message']) . "\n\n";
         $message .= ee()->lang->line('mbr_email_forwarding') . "\n";
         $message .= ee()->config->item('site_url') . "\n";
         $message .= ee()->lang->line('mbr_email_forwarding_cont');
@@ -176,13 +176,13 @@ class Member_memberlist extends Member
         $swap['lang:close_window'] = ee()->lang->line('mbr_close_window');
 
         if (! ee()->email->send()) {
-            $swap['lang:message']	= ee()->lang->line('mbr_email_error');
-            $swap['css_class'] 		= 'alert';
+            $swap['lang:message'] = ee()->lang->line('mbr_email_error');
+            $swap['css_class'] = 'alert';
         } else {
             $this->log_email($query->row('email'), $query->row('screen_name'), $_POST['subject'], $_POST['message']);
 
-            $swap['lang:message']	= ee()->lang->line('mbr_good_email');
-            $swap['css_class'] 		= 'success';
+            $swap['lang:message'] = ee()->lang->line('mbr_good_email');
+            $swap['css_class'] = 'success';
 
             ee()->db->query("UPDATE exp_members SET last_email_date = '" . ee()->localize->now . "' WHERE member_id = '" . ee()->session->userdata('member_id') . "'");
         }
@@ -199,14 +199,14 @@ class Member_memberlist extends Member
     {
         if (ee()->config->item('log_email_console_msgs') == 'y') {
             $data = array(
-                'cache_date'		=> ee()->localize->now,
-                'member_id'			=> ee()->session->userdata('member_id'),
-                'member_name'		=> ee()->session->userdata['screen_name'],
-                'ip_address'		=> ee()->input->ip_address(),
-                'recipient'			=> $recipient,
-                'recipient_name'	=> $recipient_name,
-                'subject'			=> $subject,
-                'message'			=> ee('Security/XSS')->clean($message)
+                'cache_date' => ee()->localize->now,
+                'member_id' => ee()->session->userdata('member_id'),
+                'member_name' => ee()->session->userdata['screen_name'],
+                'ip_address' => ee()->input->ip_address(),
+                'recipient' => $recipient,
+                'recipient_name' => $recipient_name,
+                'subject' => $subject,
+                'message' => ee('Security/XSS')->clean($message)
             );
 
             ee()->db->query(ee()->db->insert_string('exp_email_console_cache', $data));
@@ -277,9 +277,9 @@ class Member_memberlist extends Member
         $mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
         $mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
-        $this->var_cond   = array_merge($var_cond, $mvar_cond);
+        $this->var_cond = array_merge($var_cond, $mvar_cond);
         $this->var_single = array_merge($vars['var_single'], $mvars['var_single']);
-        $this->var_pair   = array_merge($vars['var_pair'], $mvars['var_pair']);
+        $this->var_pair = array_merge($vars['var_pair'], $mvars['var_pair']);
 
         /** ----------------------------------------
         /**  Fetch the custom member field definitions
@@ -370,21 +370,21 @@ class Member_memberlist extends Member
 
         // Redirect for old URI styles
         if (preg_match('/^([0-9]{1,})\-([0-9a-z_]{1,})\-([0-9a-z]{1,})\-([0-9]{1,})\-([0-9]{1,})/i', $this->cur_id, $matches)) {
-            $group_id   = $matches[1];
-            $order_by   = $matches[2];
+            $group_id = $matches[1];
+            $order_by = $matches[2];
             $sort_order = $matches[3];
-            $row_limit  = $matches[4];
-            $row_count  = $matches[5];
+            $row_limit = $matches[4];
+            $row_count = $matches[5];
 
             return ee()->functions->redirect($this->_member_path('memberlist') . '/G' . $group_id . '/' . $order_by . '/' . $sort_order . '/L' . $row_limit . '/P' . $row_count, false, 301);
         }
 
         $path = '';
         if (preg_match('#/?G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches)) {
-            $group_id   = $matches[1];
-            $order_by   = $matches[2];
+            $group_id = $matches[1];
+            $order_by = $matches[2];
             $sort_order = $matches[3];
-            $row_limit  = $matches[4];
+            $row_limit = $matches[4];
         }
 
         // Ensure $order_by is valid
@@ -410,9 +410,9 @@ class Member_memberlist extends Member
             $mcf_sql = '';
         }
 
-        $f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
-        $p_sql	= "SELECT COUNT(m.member_id) AS count ";
-        $sql	= "FROM exp_members m
+        $f_sql = "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
+        $p_sql = "SELECT COUNT(m.member_id) AS count ";
+        $sql = "FROM exp_members m
 					LEFT JOIN exp_roles g ON g.role_id = m.role_id
 					INNER JOIN exp_role_settings s ON g.role_id = s.role_id
 					WHERE g.role_id != '3'
@@ -446,7 +446,7 @@ class Member_memberlist extends Member
         // Pagination or No Pagination & Forum
         // Pagination & Forum
 
-        for ($i=3; $i <= 5; ++ $i) {
+        for ($i = 3; $i <= 5; ++ $i) {
             if (isset(ee()->uri->segments[$i]) && strlen(ee()->uri->segments[$i]) == 1 && preg_match("/[A-Z]{1}/", ee()->uri->segments[$i])) {
                 $first_letter = ee()->uri->segments[$i];
                 $sql .= " AND m.screen_name LIKE '{$first_letter}%' ";
@@ -522,13 +522,13 @@ class Member_memberlist extends Member
                 $temp = $this->_var_swap(
                     $temp,
                     array(
-                        'email_console'	=> "onclick=\"window.open('" . $this->_member_path('email_console/' . $row['member_id']) . "', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
+                        'email_console' => "onclick=\"window.open('" . $this->_member_path('email_console/' . $row['member_id']) . "', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
                     )
                 );
 
-                $avatar_path	= '';
-                $avatar_width	= '';
-                $avatar_height	= '';
+                $avatar_path = '';
+                $avatar_width = '';
+                $avatar_height = '';
 
                 /** ----------------------------------------
                 /**  Parse conditional pairs
@@ -539,8 +539,8 @@ class Member_memberlist extends Member
                     /** ----------------------------------------*/
                     $cond = ee()->functions->prep_conditional($val['0']);
 
-                    $lcond	= substr($cond, 0, strpos($cond, ' '));
-                    $rcond	= substr($cond, strpos($cond, ' '));
+                    $lcond = substr($cond, 0, strpos($cond, ' '));
+                    $rcond = substr($cond, strpos($cond, ' '));
 
                     /** ----------------------------------------
                     /**  Parse conditions in standard fields
@@ -596,9 +596,9 @@ class Member_memberlist extends Member
                     /**  {if avatar}
                     /** ----------------------------------------*/
                     if (preg_match("/^if\s+avatar.*/i", $val['0'])) {
-                        $avatar_path	= $member->getAvatarUrl();
-                        $avatar_width	= $row['avatar_width'];
-                        $avatar_height	= $row['avatar_height'];
+                        $avatar_path = $member->getAvatarUrl();
+                        $avatar_width = $row['avatar_width'];
+                        $avatar_height = $row['avatar_height'];
 
                         $temp = $this->_allow_if('avatar', $temp);
                     }
@@ -669,14 +669,14 @@ class Member_memberlist extends Member
                     /**  {total_forum_posts}
                     /** ----------------------------------------*/
                     if ($key == 'total_forum_posts') {
-                        $temp = $this->_var_swap_single($val, $row['total_forum_topics']+$row['total_forum_posts'], $temp);
+                        $temp = $this->_var_swap_single($val, $row['total_forum_topics'] + $row['total_forum_posts'], $temp);
                     }
 
                     /** ----------------------------------------
                     /**  {total_combined_posts}
                     /** ----------------------------------------*/
                     if ($key == 'total_combined_posts') {
-                        $temp = $this->_var_swap_single($val, $row['total_forum_topics']+$row['total_forum_posts']+$row['total_entries']+$row['total_comments'], $temp);
+                        $temp = $this->_var_swap_single($val, $row['total_forum_topics'] + $row['total_forum_posts'] + $row['total_entries'] + $row['total_comments'], $temp);
                     }
 
                     /** ----------------------------------------
@@ -786,7 +786,7 @@ class Member_memberlist extends Member
         /**  Create the "Row Limit" menu
         /** ----------------------------------------*/
         $selected = ($row_limit == '10') ? " selected='selected' " : '';
-        $menu  = "<option value='10'" . $selected . ">10</option>\n";
+        $menu = "<option value='10'" . $selected . ">10</option>\n";
         $selected = ($row_limit == '20') ? " selected='selected' " : '';
         $menu .= "<option value='20'" . $selected . ">20</option>\n";
         $selected = ($row_limit == '30') ? " selected='selected' " : '';
@@ -862,7 +862,7 @@ class Member_memberlist extends Member
             $template = ee()->functions->form_declaration(array(
                 'hidden_fields' => array(
                     'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
-                    'RET' => ee()->TMPL->fetch_param('return')!='' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
+                    'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
                     'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
                 )
             )) . $template . '</form>';
@@ -901,9 +901,9 @@ class Member_memberlist extends Member
         }
 
         $this->is_search = true;
-        $this->search_keywords	= str_replace('|', ", ", $query->row('keywords'));
-        $this->search_fields	= str_replace('|', ", ", $query->row('fields'));
-        $this->search_total		= $query->row('total_results') ;
+        $this->search_keywords = str_replace('|', ", ", $query->row('keywords'));
+        $this->search_fields = str_replace('|', ", ", $query->row('fields'));
+        $this->search_total = $query->row('total_results') ;
 
         $query = ee()->db->query($query->row('query'));
 
@@ -1011,7 +1011,7 @@ class Member_memberlist extends Member
         /**  Create Query
         /** ----------------------------------------*/
         $keywords = array();
-        $fields	= array();
+        $fields = array();
 
         $xsql = ($this->is_admin == false or ! ee('Permission')->isSuperAdmin()) ? ",'2'" : "";
 
@@ -1074,15 +1074,15 @@ class Member_memberlist extends Member
         $hash = ee()->functions->random('md5');
 
         $data = array(
-            'search_id'		=> $hash,
-            'search_date'	=> ee()->localize->now,
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'keywords'		=> implode('|', $keywords),
-            'fields'		=> implode('|', $fields),
-            'ip_address'	=> ee()->input->ip_address(),
-            'total_results'	=> $query->num_rows,
-            'query'			=> $sql,
-            'site_id'		=> ee()->config->item('site_id')
+            'search_id' => $hash,
+            'search_date' => ee()->localize->now,
+            'member_id' => ee()->session->userdata('member_id'),
+            'keywords' => implode('|', $keywords),
+            'fields' => implode('|', $fields),
+            'ip_address' => ee()->input->ip_address(),
+            'total_results' => $query->num_rows,
+            'query' => $sql,
+            'site_id' => ee()->config->item('site_id')
         );
 
         ee()->db->query(ee()->db->insert_string('exp_member_search', $data));

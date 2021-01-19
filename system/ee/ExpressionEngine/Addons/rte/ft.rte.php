@@ -221,7 +221,7 @@ class Rte_ft extends EE_Fieldtype
         if (! isset(ee()->session->cache['rte'])) {
             ee()->session->cache['rte'] = array();
         }
-        $cache =& ee()->session->cache['rte'];
+        $cache = & ee()->session->cache['rte'];
 
         if (! isset($cache['displayed_grid_cols'])) {
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/grid.js"></script>');
@@ -376,9 +376,9 @@ class Rte_ft extends EE_Fieldtype
         ee()->typography->convert_curly = false;
 
         $data = ee()->typography->parse_type($data, array(
-            'text_format'   => 'none',
-            'html_format'   => 'all',
-            'auto_links'    => (isset($this->row['channel_auto_link_urls']) ? $this->row['channel_auto_link_urls'] : 'n'),
+            'text_format' => 'none',
+            'html_format' => 'all',
+            'auto_links' => (isset($this->row['channel_auto_link_urls']) ? $this->row['channel_auto_link_urls'] : 'n'),
             'allow_img_url' => (isset($this->row['channel_allow_img_urls']) ? $this->row['channel_allow_img_urls'] : 'y')
         ));
 
@@ -524,7 +524,7 @@ class Rte_ft extends EE_Fieldtype
     {
         $settings = array_merge([
             'toolset_id' => ee()->config->item('rte_default_toolset'),
-            'defer'     => 'n'
+            'defer' => 'n'
         ], $settings);
 
         // load the language file
@@ -539,19 +539,19 @@ class Rte_ft extends EE_Fieldtype
         if (!empty($configOptions)) {
             $configFields = array(
                 'rte[toolset_id]' => array(
-                    'type'    => 'select',
+                    'type' => 'select',
                     'choices' => $configOptions,
-                    'value'   => $settings['toolset_id']
+                    'value' => $settings['toolset_id']
                 ),
                 array(
-                    'type'    => 'html',
+                    'type' => 'html',
                     'content' => '(<a href="' . ee('CP/URL')->make('addons/settings/rte')->compile() . '">' . lang('rte_edit_configs') . '</a>)'
                 )
             );
         } else {
             $configFields = array(
                 array(
-                    'type'    => 'html',
+                    'type' => 'html',
                     'content' => '<a href="' . ee('CP/URL')->make('addons/settings/rte/edit_toolset')->compile() . '">' . lang('rte_create_config') . '</a>'
                 )
             );
@@ -670,7 +670,7 @@ class Rte_ft extends EE_Fieldtype
         // offset and limit params
         if (isset($params['offset']) || isset($params['limit'])) {
             $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
-            $limit  = isset($params['limit']) ? (int) $params['limit'] : (!empty($images) ? count($images) : 0);
+            $limit = isset($params['limit']) ? (int) $params['limit'] : (!empty($images) ? count($images) : 0);
 
             $images = array_splice($images, $offset, $limit);
         }

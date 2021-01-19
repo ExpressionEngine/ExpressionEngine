@@ -13,38 +13,38 @@
  */
 class Metaweblog_api
 {
-    public $return_data	= ''; 						// Bah!
-    public $LB				= "\r\n";					// Line Break for Entry Output
+    public $return_data = ''; 						// Bah!
+    public $LB = "\r\n";					// Line Break for Entry Output
 
-    public $status			= '';						// Retrieving
-    public $channel		= '';
-    public $fields			= array();
-    public $userdata		= array();
+    public $status = '';						// Retrieving
+    public $channel = '';
+    public $fields = array();
+    public $userdata = array();
 
-    public $entry			= null;
-    public $title			= 'MetaWeblog API Entry';	// Default Title
-    public $channel_id		= '1';						// Default Channel ID
-    public $site_id		= '1';						// Default Site ID
-    public $channel_url	= '';						// Channel URL for Permalink
-    public $comment_url	= '';						// Comment URL for Permalink
-    public $deft_category	= '';						// Default Category for Channel
+    public $entry = null;
+    public $title = 'MetaWeblog API Entry';	// Default Title
+    public $channel_id = '1';						// Default Channel ID
+    public $site_id = '1';						// Default Site ID
+    public $channel_url = '';						// Channel URL for Permalink
+    public $comment_url = '';						// Comment URL for Permalink
+    public $deft_category = '';						// Default Category for Channel
 
-    public $excerpt_field	= '1';						// Default Except Field ID
-    public $content_field	= '2';						// Default Content Field ID
-    public $more_field		= '3';						// Default More Field ID
+    public $excerpt_field = '1';						// Default Except Field ID
+    public $content_field = '2';						// Default Content Field ID
+    public $more_field = '3';						// Default More Field ID
     public $keywords_field = '0';						// Default Keywords Field ID
-    public $upload_dir		= '';						// Upload Directory for Media Files
+    public $upload_dir = '';						// Upload Directory for Media Files
 
-    public $field_name		= 'body';					// Default Field Name
-    public $entry_status	= 'null';					// Entry Status from Configuration
-    public $field_data		= array();					// Array of Field Data
-    public $field_format	= array();					// Array of Field Formats
-    public $categories 	= array();					// Categories (new/edit/get entry)
-    public $assign_parents	= true;						// Assign cat parents to post
-    public $cat_parents	= array();					// Parent categories of new/edited entry
+    public $field_name = 'body';					// Default Field Name
+    public $entry_status = 'null';					// Entry Status from Configuration
+    public $field_data = array();					// Array of Field Data
+    public $field_format = array();					// Array of Field Formats
+    public $categories = array();					// Categories (new/edit/get entry)
+    public $assign_parents = true;						// Assign cat parents to post
+    public $cat_parents = array();					// Parent categories of new/edited entry
 
-    public $parse_type		= false;					// Use Typography class when sending entry?
-    public $html_format	= 'none';					// Channel's HTML Formatting Preferences
+    public $parse_type = false;					// Use Typography class when sending entry?
+    public $html_format = 'none';					// Channel's HTML Formatting Preferences
 
     /**
      * Constructor
@@ -99,27 +99,27 @@ class Metaweblog_api
         /*	functions I just skipped it.
         /* ---------------------------------*/
 
-        $functions = array('metaWeblog.newPost'		=> array('function' => 'Metaweblog_api.newPost'),
-            'metaWeblog.editPost'		=> array('function' => 'Metaweblog_api.editPost'),
-            'metaWeblog.getPost'		=> array('function' => 'Metaweblog_api.getPost'),
-            'metaWeblog.getCategories'	=> array('function' => 'Metaweblog_api.getCategories'),
-            'metaWeblog.getRecentPosts'	=> array('function' => 'Metaweblog_api.getRecentPosts'),
-            'metaWeblog.deletePost'		=> array('function' => 'Metaweblog_api.deletePost'),
-            'metaWeblog.getUsersBlogs'	=> array('function' => 'Metaweblog_api.getUsersBlogs'),
+        $functions = array('metaWeblog.newPost' => array('function' => 'Metaweblog_api.newPost'),
+            'metaWeblog.editPost' => array('function' => 'Metaweblog_api.editPost'),
+            'metaWeblog.getPost' => array('function' => 'Metaweblog_api.getPost'),
+            'metaWeblog.getCategories' => array('function' => 'Metaweblog_api.getCategories'),
+            'metaWeblog.getRecentPosts' => array('function' => 'Metaweblog_api.getRecentPosts'),
+            'metaWeblog.deletePost' => array('function' => 'Metaweblog_api.deletePost'),
+            'metaWeblog.getUsersBlogs' => array('function' => 'Metaweblog_api.getUsersBlogs'),
             'metaWeblog.newMediaObject' => array('function' => 'Metaweblog_api.newMediaObject'),
 
-            'blogger.getUserInfo'		=> array('function' => 'Metaweblog_api.getUserInfo'),
-            'blogger.getUsersBlogs'		=> array('function' => 'Metaweblog_api.getUsersBlogs'),
-            'blogger.deletePost'		=> array('function' => 'Metaweblog_api.deletePost'),
+            'blogger.getUserInfo' => array('function' => 'Metaweblog_api.getUserInfo'),
+            'blogger.getUsersBlogs' => array('function' => 'Metaweblog_api.getUsersBlogs'),
+            'blogger.deletePost' => array('function' => 'Metaweblog_api.deletePost'),
 
-            'mt.getCategoryList'		=> array('function' => 'Metaweblog_api.getCategoryList'),
-            'mt.get_postCategories'		=> array('function' => 'Metaweblog_api.get_postCategories'),
-            'mt.getPostCategories'		=> array('function' => 'Metaweblog_api.get_postCategories'),
-            'mt.publishPost'			=> array('function' => 'Metaweblog_api.publishPost'),
-            'mt.getRecentPostTitles'	=> array('function' => 'Metaweblog_api.getRecentPostTitles'),
-            'mt.setPostCategories'		=> array('function' => 'Metaweblog_api.setPostCategories'),
-            'mt.supportedMethods'		=> array('function' => 'this.listMethods'),
-            'mt.supportedTextFilters'	=> array('function' => 'Metaweblog_api.supportedTextFilters')
+            'mt.getCategoryList' => array('function' => 'Metaweblog_api.getCategoryList'),
+            'mt.get_postCategories' => array('function' => 'Metaweblog_api.get_postCategories'),
+            'mt.getPostCategories' => array('function' => 'Metaweblog_api.get_postCategories'),
+            'mt.publishPost' => array('function' => 'Metaweblog_api.publishPost'),
+            'mt.getRecentPostTitles' => array('function' => 'Metaweblog_api.getRecentPostTitles'),
+            'mt.setPostCategories' => array('function' => 'Metaweblog_api.setPostCategories'),
+            'mt.supportedMethods' => array('function' => 'this.listMethods'),
+            'mt.supportedTextFilters' => array('function' => 'Metaweblog_api.supportedTextFilters')
         );
 
         /** ---------------------------------
@@ -157,9 +157,9 @@ class Metaweblog_api
 
         $this->title = $parameters['3']['title'];
 
-        $this->field_data['excerpt']  = (! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
-        $this->field_data['content']  = (! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
-        $this->field_data['more']	  = (! isset($parameters['3']['mt_text_more'])) ? '' : $parameters['3']['mt_text_more'];
+        $this->field_data['excerpt'] = (! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
+        $this->field_data['content'] = (! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
+        $this->field_data['more'] = (! isset($parameters['3']['mt_text_more'])) ? '' : $parameters['3']['mt_text_more'];
         $this->field_data['keywords'] = (! isset($parameters['3']['mt_keywords'])) ? '' : $parameters['3']['mt_keywords'];
 
         if (isset($parameters['3']['mt_allow_comments'])) {
@@ -192,15 +192,15 @@ class Metaweblog_api
         // Set custom field data
         $entry_data = $this->get_field_entry_data($parameters);
 
-        $entry_data['site_id']	= $this->site_id;
+        $entry_data['site_id'] = $this->site_id;
         $entry_data['versioning_enabled'] = 'n';
 
         ee()->session->userdata = array_merge(
             ee()->session->userdata,
             array(
-                'group_id'			=> $this->userdata['group_id'],
-                'member_id'			=> $this->userdata['member_id'],
-                'assigned_channels'	=> $this->userdata['assigned_channels']
+                'group_id' => $this->userdata['group_id'],
+                'member_id' => $this->userdata['member_id'],
+                'assigned_channels' => $this->userdata['assigned_channels']
             )
         );
 
@@ -276,9 +276,9 @@ class Metaweblog_api
         /** ---------------------------------------*/
         $this->title = $parameters['3']['title'];
 
-        $this->field_data['excerpt']  = (! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
-        $this->field_data['content']  = (! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
-        $this->field_data['more']	  = (! isset($parameters['3']['mt_text_more'])) ? '' : $parameters['3']['mt_text_more'];
+        $this->field_data['excerpt'] = (! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
+        $this->field_data['content'] = (! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
+        $this->field_data['more'] = (! isset($parameters['3']['mt_text_more'])) ? '' : $parameters['3']['mt_text_more'];
         $this->field_data['keywords'] = (! isset($parameters['3']['mt_keywords'])) ? '' : $parameters['3']['mt_keywords'];
 
         if (isset($parameters['3']['mt_allow_comments'])) {
@@ -298,7 +298,7 @@ class Metaweblog_api
         // Set custom field data
         $entry_data = $this->get_field_entry_data($parameters);
 
-        $entry_data['site_id']	= $this->site_id;
+        $entry_data['site_id'] = $this->site_id;
         $entry_data['versioning_enabled'] = 'n';
 
         $entry_data['channel_id'] = $this->channel_id;
@@ -478,7 +478,7 @@ class Metaweblog_api
             }
 
             if (! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin()) {
-                if ($this->entry->author_id  != $this->userdata['member_id']) {
+                if ($this->entry->author_id != $this->userdata['member_id']) {
                     return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
                 }
             }
@@ -596,7 +596,7 @@ class Metaweblog_api
             ee()->load->library('typography');
             ee()->typography->initialize(
                 array(
-                    'encode_email'	=> false)
+                    'encode_email' => false)
             );
             ee()->config->set_item('enable_emoticons', 'n');
         }
@@ -605,9 +605,9 @@ class Metaweblog_api
         /**  Process Output
         /** ---------------------------------------*/
         $settings = array();
-        $settings['html_format']	= $this->html_format;
-        $settings['auto_links']		= 'n';
-        $settings['allow_img_url']	= 'y';
+        $settings['html_format'] = $this->html_format;
+        $settings['auto_links'] = 'n';
+        $settings['allow_img_url'] = 'y';
 
         $response = array();
 
@@ -635,7 +635,7 @@ class Metaweblog_api
             if (isset($this->fields[$this->content_field])) {
                 $field_ft = 'field_ft_' . $this->content_field;
                 $field_id = 'field_id_' . $this->content_field;
-                $convert_breaks	= $row->$field_ft;
+                $convert_breaks = $row->$field_ft;
 
                 if ($this->parse_type === true) {
                     $settings['text_format'] = $row->$field_ft;
@@ -902,12 +902,12 @@ class Metaweblog_api
         }
 
         if (! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin()) {
-            if ($query->row('author_id')  != $this->userdata['member_id']) {
+            if ($query->row('author_id') != $this->userdata['member_id']) {
                 return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
             }
         }
 
-        $this->channel_id	= $query->row('channel_id') ;
+        $this->channel_id = $query->row('channel_id') ;
 
         $this->parse_channel($this->channel_id);
 
@@ -1044,11 +1044,11 @@ class Metaweblog_api
 
                 $link = reduce_double_slashes(parse_config_variables($this->channel_url) . '/C' . $row['cat_id'] . '/');
 
-                $cat['categoryId']		= array($row['cat_id'],'string');
-                $cat['description']		= array(($row['cat_description'] == '') ? $row['cat_name'] : $row['cat_description'],'string');
-                $cat['categoryName']	= array($row['cat_name'],'string');
-                $cat['htmlUrl']			= array($link,'string');
-                $cat['rssUrl']			= array($link,'string'); // No RSS URL for Categories
+                $cat['categoryId'] = array($row['cat_id'],'string');
+                $cat['description'] = array(($row['cat_description'] == '') ? $row['cat_name'] : $row['cat_description'],'string');
+                $cat['categoryName'] = array($row['cat_name'],'string');
+                $cat['htmlUrl'] = array($link,'string');
+                $cat['rssUrl'] = array($link,'string'); // No RSS URL for Categories
 
                 array_push($cats, array($cat, 'struct'));
             }
@@ -1091,7 +1091,7 @@ class Metaweblog_api
             foreach ($query->result_array() as $row) {
                 $cat = array();
 
-                $cat['categoryId']   = array($row['cat_id'],'string');
+                $cat['categoryId'] = array($row['cat_id'],'string');
                 $cat['categoryName'] = array($row['cat_name'],'string');
 
                 array_push($cats, array($cat, 'struct'));
@@ -1110,8 +1110,8 @@ class Metaweblog_api
      */
     public function parse_channel($channel_id)
     {
-        $channel_id			= trim($channel_id);
-        $this->status		= 'open';
+        $channel_id = trim($channel_id);
+        $this->status = 'open';
 
         $channel = ee('Model')->get('Channel', $channel_id)->first();
 
@@ -1119,12 +1119,12 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
         }
 
-        $this->channel_id		= $channel->channel_id;
-        $this->channel_url		= parse_config_variables($channel->channel_url);
-        $this->comment_url		= parse_config_variables($channel->comment_url);
-        $this->deft_category	= $channel->deft_category;
-        $this->html_format		= $channel->channel_html_formatting;
-        $this->site_id			= $channel->site_id;
+        $this->channel_id = $channel->channel_id;
+        $this->channel_url = parse_config_variables($channel->channel_url);
+        $this->comment_url = parse_config_variables($channel->comment_url);
+        $this->deft_category = $channel->deft_category;
+        $this->html_format = $channel->channel_html_formatting;
+        $this->site_id = $channel->site_id;
 
         if ($this->site_id != ee()->config->item('site_id')) {
             ee()->config->site_prefs('', $this->site_id);
@@ -1171,8 +1171,8 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
         }
 
-        $good		= 0;
-        $all_cats	= array();
+        $good = 0;
+        $all_cats = array();
 
         // //$this->categories[cat_group_id_1] = array(2,4);
 
@@ -1215,9 +1215,9 @@ class Metaweblog_api
         ee()->session->userdata = array_merge(
             ee()->session->userdata,
             array(
-                'group_id'			=> $this->userdata['group_id'],
-                'member_id'			=> $this->userdata['member_id'],
-                'assigned_channels'	=> $this->userdata['assigned_channels']
+                'group_id' => $this->userdata['group_id'],
+                'member_id' => $this->userdata['member_id'],
+                'assigned_channels' => $this->userdata['assigned_channels']
             )
         );
 
@@ -1316,8 +1316,8 @@ class Metaweblog_api
             $file_path,
             $this->upload_dir,
             array(
-                'title'     => $filename,
-                'path'      => dirname($file_path),
+                'title' => $filename,
+                'path' => dirname($file_path),
                 'file_name' => $filename
             )
         );
@@ -1426,7 +1426,7 @@ class Metaweblog_api
      * @param	time
      * @return	void
      */
-    public function iso8601_decode($time, $utc=true)
+    public function iso8601_decode($time, $utc = true)
     {
         // return a time in the localtime, or UTC
         $t = 0;
@@ -1541,18 +1541,18 @@ class Metaweblog_api
 
             if ($which == 'edit') {
                 $field_data = (! isset($resrow['field_id_' . $row['field_id']])) ? '' : $resrow['field_id_' . $row['field_id']];
-                $field_fmt	= (! isset($resrow['field_ft_' . $row['field_id']])) ? $row['field_fmt'] : $resrow['field_ft_' . $row['field_id']];
+                $field_fmt = (! isset($resrow['field_ft_' . $row['field_id']])) ? $row['field_fmt'] : $resrow['field_ft_' . $row['field_id']];
             } else { // New entry- use the default setting
-                $field_fmt	= $row['field_fmt'];
+                $field_fmt = $row['field_fmt'];
             }
 
             // Settings that need to be prepped
             $settings = array(
-                'field_instructions'	=> trim($row['field_instructions']),
-                'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-                'field_fmt'				=> $field_fmt,
-                'field_data'			=> $field_data,
-                'field_name'			=> 'field_id_' . $row['field_id'],
+                'field_instructions' => trim($row['field_instructions']),
+                'field_text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+                'field_fmt' => $field_fmt,
+                'field_data' => $field_data,
+                'field_name' => 'field_id_' . $row['field_id'],
             );
 
             $ft_settings = array();

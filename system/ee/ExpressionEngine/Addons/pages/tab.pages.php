@@ -26,15 +26,15 @@ class Pages_tab
     {
         ee()->lang->loadfile('pages');
 
-        $site_id			= ee()->config->item('site_id');
-        $settings 			= array();
+        $site_id = ee()->config->item('site_id');
+        $settings = array();
 
-        $no_templates 		= null;
-        $pages 				= ee()->config->item('site_pages');
+        $no_templates = null;
+        $pages = ee()->config->item('site_pages');
 
-        $pages_template_id 	= 0;
-        $pages_dropdown 	= array();
-        $pages_uri 			= '';
+        $pages_template_id = 0;
+        $pages_dropdown = array();
+        $pages_uri = '';
 
         if ($entry_id !== 0) {
             if (isset($pages[$site_id]['uris'][$entry_id])) {
@@ -83,31 +83,31 @@ class Pages_tab
         }
 
         $settings = array(
-            'pages_uri'				=> array(
-                'field_id'				=> 'pages_uri',
-                'field_label'			=> lang('pages_uri'),
-                'field_type'			=> 'text',
-                'field_required'		=> 'n',
-                'field_data'			=> $pages_uri,
-                'field_text_direction'	=> 'ltr',
-                'field_maxl'			=> 100,
-                'field_instructions'	=> '',
-                'field_placeholder'     => lang('example_uri')
+            'pages_uri' => array(
+                'field_id' => 'pages_uri',
+                'field_label' => lang('pages_uri'),
+                'field_type' => 'text',
+                'field_required' => 'n',
+                'field_data' => $pages_uri,
+                'field_text_direction' => 'ltr',
+                'field_maxl' => 100,
+                'field_instructions' => '',
+                'field_placeholder' => lang('example_uri')
             ),
-            'pages_template_id'		=> array(
-                'field_id'				=> 'pages_template_id',
-                'field_label'			=> lang('template'),
-                'field_type'			=> 'select',
-                'field_required'		=> 'n',
-                'field_pre_populate'	=> 'n',
-                'field_list_items'		=> $pages_dropdown,
-                'field_data'			=> $pages_template_id,
-                'options'				=> $pages_dropdown,
-                'selected'				=> $pages_template_id,
-                'field_text_direction'	=> 'ltr',
-                'field_maxl'			=> 100,
-                'field_instructions'	=> '',
-                'string_override'		=> $no_templates,
+            'pages_template_id' => array(
+                'field_id' => 'pages_template_id',
+                'field_label' => lang('template'),
+                'field_type' => 'select',
+                'field_required' => 'n',
+                'field_pre_populate' => 'n',
+                'field_list_items' => $pages_dropdown,
+                'field_data' => $pages_template_id,
+                'options' => $pages_dropdown,
+                'selected' => $pages_template_id,
+                'field_text_direction' => 'ltr',
+                'field_maxl' => 100,
+                'field_instructions' => '',
+                'string_override' => $no_templates,
             ),
         );
 
@@ -273,7 +273,7 @@ class Pages_tab
      */
     public function prepareSitePagesData($entry, $values)
     {
-        $site_id    = ee()->config->item('site_id');
+        $site_id = ee()->config->item('site_id');
         $site_pages = ee()->config->item('site_pages');
 
         if ($site_pages !== false
@@ -286,10 +286,10 @@ class Pages_tab
                     "#[^a-zA-Z0-9_\-/\.]+$#i",
                     '',
                     str_replace(
-                                        ee()->config->item('site_url'),
-                                        '',
-                                        $values['pages_uri']
-                                    )
+                        ee()->config->item('site_url'),
+                        '',
+                        $values['pages_uri']
+                    )
                 );
 
                 $page = '/' . trim($page, '/');
@@ -321,7 +321,7 @@ class Pages_tab
      */
     public function save($entry, $values)
     {
-        $site_id    = ee()->config->item('site_id');
+        $site_id = ee()->config->item('site_id');
         $site_pages = $this->prepareSitePagesData($entry, $values);
 
         if ($site_pages !== false) {
@@ -342,7 +342,7 @@ class Pages_tab
     public function delete($entry_ids)
     {
         $site_pages = ee()->config->item('site_pages');
-        $site_id	= ee()->config->item('site_id');
+        $site_id = ee()->config->item('site_id');
 
         foreach ($entry_ids as $entry_id) {
             unset($site_pages[$site_id]['uris'][$entry_id]);

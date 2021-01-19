@@ -27,7 +27,7 @@ class Status extends Column
     public function getTableColumnConfig()
     {
         return [
-            'type'	=> Table::COL_STATUS
+            'type' => Table::COL_STATUS
         ];
     }
 

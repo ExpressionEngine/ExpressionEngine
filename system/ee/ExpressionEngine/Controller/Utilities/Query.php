@@ -30,9 +30,9 @@ class Query extends Utilities
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'thequery',
-                'label'   => 'lang:sql_query_to_run',
-                'rules'   => 'required'
+                'field' => 'thequery',
+                'label' => 'lang:sql_query_to_run',
+                'rules' => 'required'
             )
         ));
 
@@ -48,9 +48,9 @@ class Query extends Utilities
         ee()->view->cp_page_title = lang('sql_query_form');
 
         ee()->cp->add_js_script([
-            'plugin'	=> 'ee_codemirror',
-            'ui'		=> 'resizable',
-            'file'		=> array(
+            'plugin' => 'ee_codemirror',
+            'ui' => 'resizable',
+            'file' => array(
                 'cp/utilities/sql-query-form',
                 'vendor/codemirror/codemirror',
                 'vendor/codemirror/closebrackets',
@@ -85,8 +85,8 @@ class Query extends Utilities
      */
     public function runQuery($table_name = '')
     {
-        $row_limit	= 25;
-        $title		= lang('query_result');
+        $row_limit = 25;
+        $title = lang('query_result');
         $vars['write'] = false;
 
         $page = ee()->input->get('page') ? ee()->input->get('page') : 1;

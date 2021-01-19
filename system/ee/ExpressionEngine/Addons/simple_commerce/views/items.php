@@ -42,10 +42,10 @@
 
 <?php
 $modal_vars = array(
-    'name'      => 'modal-confirm-remove',
-    'form_url'	=> ee('CP/URL')->make('addons/settings/simple_commerce/remove-item'),
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-remove',
+    'form_url' => ee('CP/URL')->make('addons/settings/simple_commerce/remove-item'),
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

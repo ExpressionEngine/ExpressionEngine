@@ -16,12 +16,12 @@ class Api_channel_entries extends Api
     public $entry_data = array();
 
     public $channel_id;
-    public $entry_id	= 0;
-    public $autosave	= false;
-    public $data		= array();
-    public $meta		= array();
-    public $c_prefs	= array();
-    public $_cache		= array();
+    public $entry_id = 0;
+    public $autosave = false;
+    public $data = array();
+    public $meta = array();
+    public $c_prefs = array();
+    public $_cache = array();
 
     public $autosave_entry_id = 0;
 
@@ -68,7 +68,7 @@ class Api_channel_entries extends Api
 
         $this->entry_id = $entry_id;
         $this->autosave_entry_id = isset($data['autosave_entry_id']) ? $data['autosave_entry_id'] : 0;
-        $this->data =& $data;
+        $this->data = & $data;
 
         $initialize = array(
             'entry_id' => $entry_id,
@@ -115,24 +115,24 @@ class Api_channel_entries extends Api
         $this->_prepare_data($data, $mod_data, $autosave);
 
         $meta = array(
-            'channel_id'				=> $this->channel_id,
-            'author_id'					=> $data['author_id'],
-            'site_id'					=> ee()->config->item('site_id'),
-            'ip_address'				=> ee()->input->ip_address(),
-            'title'						=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
-            'url_title'					=> $data['url_title'],
-            'entry_date'				=> $data['entry_date'],
-            'edit_date'					=> (isset($data['edit_date'])) ? $data['edit_date'] : ee()->localize->now(),
-            'versioning_enabled'		=> $data['versioning_enabled'],
-            'year'						=> ee()->localize->format_date('%Y', $data['entry_date']),
-            'month'						=> ee()->localize->format_date('%m', $data['entry_date']),
-            'day'						=> ee()->localize->format_date('%d', $data['entry_date']),
-            'expiration_date'			=> $data['expiration_date'],
-            'comment_expiration_date'	=> $data['comment_expiration_date'],
-            'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
-            'status'					=> $data['status'],
-            'status_id'                 => (isset($data['status_id'])) ? $data['status_id'] : 2, // closed if not sent
-            'allow_comments'			=> $data['allow_comments'],
+            'channel_id' => $this->channel_id,
+            'author_id' => $data['author_id'],
+            'site_id' => ee()->config->item('site_id'),
+            'ip_address' => ee()->input->ip_address(),
+            'title' => (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
+            'url_title' => $data['url_title'],
+            'entry_date' => $data['entry_date'],
+            'edit_date' => (isset($data['edit_date'])) ? $data['edit_date'] : ee()->localize->now(),
+            'versioning_enabled' => $data['versioning_enabled'],
+            'year' => ee()->localize->format_date('%Y', $data['entry_date']),
+            'month' => ee()->localize->format_date('%m', $data['entry_date']),
+            'day' => ee()->localize->format_date('%d', $data['entry_date']),
+            'expiration_date' => $data['expiration_date'],
+            'comment_expiration_date' => $data['comment_expiration_date'],
+            'sticky' => (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
+            'status' => $data['status'],
+            'status_id' => (isset($data['status_id'])) ? $data['status_id'] : 2, // closed if not sent
+            'allow_comments' => $data['allow_comments'],
         );
 
         if (isset($data['recent_comment_date'])) {
@@ -141,7 +141,7 @@ class Api_channel_entries extends Api
             $meta['recent_comment_date'] = 0;
         }
 
-        $this->meta =& $meta;
+        $this->meta = & $meta;
 
         $meta_keys = array_keys($meta);
         $meta_keys = array_diff($meta_keys, array('channel_id', 'entry_id', 'site_id'));
@@ -493,8 +493,8 @@ class Api_channel_entries extends Api
             $this->c_prefs[$key] = $query->row($key);
         }
 
-        $this->c_prefs['channel_title']		= ascii_to_entities($query->row('channel_title'));
-        $this->c_prefs['notify_address']	= ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails') : '';
+        $this->c_prefs['channel_title'] = ascii_to_entities($query->row('channel_title'));
+        $this->c_prefs['notify_address'] = ($query->row('channel_notify') == 'y' and $query->row('channel_notify_emails') != '') ? $query->row('channel_notify_emails') : '';
     }
 
     /**
@@ -590,7 +590,7 @@ class Api_channel_entries extends Api
         // Always required fields
 
         $required = array(
-            'title'			=> 'missing_title'
+            'title' => 'missing_title'
         );
 
         if (! isset($data['title']) or ! $data['title'] = strip_tags(trim($data['title']))) {
@@ -656,7 +656,7 @@ class Api_channel_entries extends Api
             if ($row['field_type'] == 'file') {
                 if ($this->autosave && ! empty($data['field_id_' . $row['field_id'] . '_hidden'])) {
                     $directory = $data['field_id_' . $row['field_id'] . '_directory'];
-                    $data['field_id_' . $row['field_id']] =  '{filedir_' . $directory . '}' . $data['field_id_' . $row['field_id'] . '_hidden'];
+                    $data['field_id_' . $row['field_id']] = '{filedir_' . $directory . '}' . $data['field_id_' . $row['field_id'] . '_hidden'];
                 }
 
                 unset($data['field_id_' . $row['field_id'] . '_hidden_file']);
@@ -687,7 +687,7 @@ class Api_channel_entries extends Api
             $this->_set_error('not_authorized');
         }
 
-        if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() &&  ! ee('Permission')->can('edit_other_entries')) {
+        if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() && ! ee('Permission')->can('edit_other_entries')) {
             if (! isset($this->_cache['orig_author_id']) or $data['author_id'] != $this->_cache['orig_author_id']) {
                 if (! ee('Permission')->can('assign_post_authors')) {
                     $this->_set_error('not_authorized', 'author');
@@ -875,9 +875,9 @@ class Api_channel_entries extends Api
         $this->instantiate('channel_categories');
 
         ee()->api_channel_categories->initialize(array(
-            'categories'  => array(),
+            'categories' => array(),
             'cat_parents' => array(),
-            'cat_array'   => array()
+            'cat_array' => array()
         ));
 
         // Category parents - we toss the rest
@@ -1054,7 +1054,7 @@ class Api_channel_entries extends Api
         } else {
             ee()->db->select('total_entries');
             $query = ee()->db->get_where('members', array('member_id' => $meta['author_id']));
-            $total_entries = $query->row('total_entries')  + 1;
+            $total_entries = $query->row('total_entries') + 1;
         }
 
         ee()->db->set(array('total_entries' => $total_entries, 'last_entry_date' => ee()->localize->now));
@@ -1102,7 +1102,7 @@ class Api_channel_entries extends Api
         }
 
         // Update Custom fields
-        $cust_fields = array('channel_id' =>  $this->channel_id);
+        $cust_fields = array('channel_id' => $this->channel_id);
 
         foreach ($data as $key => $val) {
             if (strncmp($key, 'field_offset_', 13) == 0) {
@@ -1251,11 +1251,11 @@ class Api_channel_entries extends Api
             $data['revision_post']['entry_id'] = $this->entry_id;
 
             ee()->db->insert('entry_versioning', array(
-                'entry_id'		=> $this->entry_id,
-                'channel_id'	=> $this->channel_id,
-                'author_id'		=> ee()->session->userdata('member_id'),
-                'version_date'	=> ee()->localize->now,
-                'version_data'	=> serialize($data['revision_post'])
+                'entry_id' => $this->entry_id,
+                'channel_id' => $this->channel_id,
+                'author_id' => ee()->session->userdata('member_id'),
+                'version_date' => ee()->localize->now,
+                'version_data' => serialize($data['revision_post'])
             ));
 
             $max = (is_numeric($this->c_prefs['max_revisions']) and $this->c_prefs['max_revisions'] > 0) ? $this->c_prefs['max_revisions'] : 10;
@@ -1321,10 +1321,10 @@ class Api_channel_entries extends Api
         // imitate legacy query which only gathered field_id, field_name, field_label, field_type, field_required
         foreach ($fields->asArray() as $field) {
             $result[] = [
-                'field_id'       => $field->field_id,
-                'field_name'     => $field->field_name,
-                'field_label'    => $field->field_label,
-                'field_type'     => $field->field_type,
+                'field_id' => $field->field_id,
+                'field_name' => $field->field_name,
+                'field_label' => $field->field_label,
+                'field_type' => $field->field_type,
                 'field_required' => $field->field_required,
             ];
         }

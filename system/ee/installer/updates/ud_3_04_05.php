@@ -50,9 +50,9 @@ class Updater
         ee()->db->insert(
             'modules',
             array(
-                'module_name'        => 'Relationship',
-                'module_version'     => '1.0.0',
-                'has_cp_backend'     => 'n',
+                'module_name' => 'Relationship',
+                'module_version' => '1.0.0',
+                'has_cp_backend' => 'n',
                 'has_publish_fields' => 'n'
             )
         );
@@ -61,7 +61,7 @@ class Updater
             'actions',
             array(
                 array(
-                    'class'  => 'Relationship',
+                    'class' => 'Relationship',
                     'method' => 'entryList'
                 )
             )

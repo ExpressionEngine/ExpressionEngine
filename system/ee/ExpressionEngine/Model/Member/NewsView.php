@@ -25,7 +25,7 @@ class NewsView extends Model
     protected static $_table_name = 'member_news_views';
 
     protected static $_typed_columns = [
-        'news_id'   => 'int',
+        'news_id' => 'int',
         'member_id' => 'int'
     ];
 

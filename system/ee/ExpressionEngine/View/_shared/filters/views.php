@@ -27,10 +27,10 @@
 
 <?php
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete-view',
-    'form_url'	=> '',//$form_url,
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-delete-view',
+    'form_url' => '',//$form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
     ),
     'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : null
 );

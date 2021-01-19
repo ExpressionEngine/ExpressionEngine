@@ -18,8 +18,8 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 {
     public $info = array(
-        'name'		=> 'Checkboxes',
-        'version'	=> '1.0.0'
+        'name' => 'Checkboxes',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = true;
@@ -27,11 +27,11 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
-        'field_text_direction'	=> 'ltr',
-        'field_pre_populate'	=> 'n',
-        'field_list_items'		=> array(),
-        'field_pre_field_id'	=> '',
-        'field_pre_channel_id'	=> ''
+        'field_text_direction' => 'ltr',
+        'field_pre_populate' => 'n',
+        'field_list_items' => array(),
+        'field_pre_field_id' => '',
+        'field_pre_channel_id' => ''
     );
 
     /**
@@ -118,20 +118,20 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/select')->render([
-                'field_name'          => $this->field_name,
-                'choices'             => $field_options,
-                'value'               => $values,
-                'multi'               => true,
-                'nested'              => true,
-                'nestable_reorder'    => true,
-                'manageable'          => $this->get_setting('editable', false)
+                'field_name' => $this->field_name,
+                'choices' => $field_options,
+                'value' => $values,
+                'multi' => true,
+                'nested' => true,
+                'nestable_reorder' => true,
+                'manageable' => $this->get_setting('editable', false)
                     && ! $this->get_setting('in_modal_context'),
-                'add_btn_label'       => $this->get_setting('add_btn_label', null),
-                'editing'             => $this->get_setting('editing', false),
-                'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
-                'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', null),
+                'add_btn_label' => $this->get_setting('add_btn_label', null),
+                'editing' => $this->get_setting('editing', false),
+                'manage_label' => $this->get_setting('manage_toggle_label', lang('manage')),
+                'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
                 'auto_select_parents' => $this->get_setting('auto_select_parents', false),
-                'no_results'          => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))])
+                'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))])
             ]);
         }
 
@@ -158,7 +158,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     protected function _display_nested_form($fields, $values, $child = false)
     {
-        $out      = '';
+        $out = '';
         $disabled = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         foreach ($fields as $id => $option) {

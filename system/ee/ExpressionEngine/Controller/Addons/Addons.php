@@ -19,8 +19,8 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Addons extends CP_Controller
 {
-    public $perpage		= 25;
-    public $params			= array();
+    public $perpage = 25;
+    public $params = array();
     public $base_url;
 
     public $assigned_modules = array();
@@ -77,9 +77,9 @@ class Addons extends CP_Controller
 
         // Status
         $status = ee('CP/Filter')->make('filter_by_first_status', 'filter_by_status', array(
-            'installed'   => strtolower(lang('installed')),
+            'installed' => strtolower(lang('installed')),
             'uninstalled' => strtolower(lang('uninstalled')),
-            'updates'     => strtolower(lang('needs_updates'))
+            'updates' => strtolower(lang('needs_updates'))
         ));
         $status->disableCustomValue();
 
@@ -91,9 +91,9 @@ class Addons extends CP_Controller
 
         // Status
         $status = ee('CP/Filter')->make('filter_by_third_status', 'filter_by_status', array(
-            'installed'   => strtolower(lang('installed')),
+            'installed' => strtolower(lang('installed')),
             'uninstalled' => strtolower(lang('uninstalled')),
-            'updates'     => strtolower(lang('needs_updates'))
+            'updates' => strtolower(lang('needs_updates'))
         ));
         $status->disableCustomValue();
 
@@ -802,11 +802,11 @@ class Addons extends CP_Controller
         ee()->view->cp_page_title = $info->getName() . ' ' . lang('manual');
 
         $vars = array(
-            'name'        => $info->getName(),
-            'version'     => $this->formatVersionNumber($info->getVersion()),
-            'author'      => $info->getAuthor(),
-            'author_url'  => ee()->cp->masked_url($info->get('author_url')),
-            'docs_url'    => ee()->cp->masked_url($info->get('docs_url')),
+            'name' => $info->getName(),
+            'version' => $this->formatVersionNumber($info->getVersion()),
+            'author' => $info->getAuthor(),
+            'author_url' => ee()->cp->masked_url($info->get('author_url')),
+            'docs_url' => ee()->cp->masked_url($info->get('docs_url')),
             'description' => $info->get('description')
         );
 
@@ -934,13 +934,13 @@ class Addons extends CP_Controller
             ? lang(strtolower($name) . '_module_name') : $info->getName();
 
         $data = array(
-            'developer'		=> $info->getAuthor(),
-            'version'		=> '--',
-            'installed'		=> false,
-            'name'			=> $display_name,
-            'description'   => $info->get('description'),
-            'package'		=> $name,
-            'type'			=> 'module',
+            'developer' => $info->getAuthor(),
+            'version' => '--',
+            'installed' => false,
+            'name' => $display_name,
+            'description' => $info->get('description'),
+            'package' => $name,
+            'type' => 'module',
         );
 
         $module = ee('Model')->get('Module')
@@ -999,13 +999,13 @@ class Addons extends CP_Controller
         }
 
         $data = array(
-            'developer'		=> $info->getAuthor(),
-            'version'		=> '--',
-            'installed'		=> false,
-            'name'			=> $info->getName(),
-            'description'   => $info->get('description'),
-            'package'		=> $name,
-            'type'			=> 'plugin',
+            'developer' => $info->getAuthor(),
+            'version' => '--',
+            'installed' => false,
+            'name' => $info->getName(),
+            'description' => $info->get('description'),
+            'package' => $name,
+            'type' => 'plugin',
         );
 
         $model = ee('Model')->get('Plugin')
@@ -1050,13 +1050,13 @@ class Addons extends CP_Controller
         }
 
         $data = array(
-            'developer'		=> $info->getAuthor(),
-            'version'		=> '--',
-            'installed'		=> false,
-            'name'			=> $info->getName(),
-            'description'   => $info->get('description'),
-            'package'		=> $name,
-            'type'			=> 'fieldtype',
+            'developer' => $info->getAuthor(),
+            'version' => '--',
+            'installed' => false,
+            'name' => $info->getName(),
+            'description' => $info->get('description'),
+            'package' => $name,
+            'type' => 'fieldtype',
         );
 
         $model = ee('Model')->get('Fieldtype')
@@ -1145,14 +1145,14 @@ class Addons extends CP_Controller
         $class_name = ucfirst($name) . '_ext';
 
         $data = array(
-            'developer'		=> $info->getAuthor(),
-            'version'		=> '--',
-            'installed'		=> false,
-            'enabled'		=> null,
-            'name'			=> $info->getName(),
-            'description'   => $info->get('description'),
-            'package'		=> $name,
-            'class'			=> $class_name,
+            'developer' => $info->getAuthor(),
+            'version' => '--',
+            'installed' => false,
+            'enabled' => null,
+            'name' => $info->getName(),
+            'description' => $info->get('description'),
+            'package' => $name,
+            'class' => $class_name,
         );
 
         $extension = ee('Model')->get('Extension')

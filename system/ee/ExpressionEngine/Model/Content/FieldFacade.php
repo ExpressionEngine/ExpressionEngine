@@ -315,8 +315,8 @@ class FieldFacade
         $data = $this->getItem('row');
 
         $this->api->apply('_init', array(array(
-            'row'          => $data,
-            'content_id'   => $this->content_id,
+            'row' => $data,
+            'content_id' => $this->content_id,
             'content_type' => $this->content_type,
         )));
 
@@ -454,12 +454,12 @@ class FieldFacade
         $info = array_merge($defaults, $info);
 
         $settings = array(
-            'field_instructions'	=> trim($info['field_instructions']),
-            'field_text_direction'	=> ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-            'field_fmt'				=> $field_fmt,
-            'field_dt'				=> $field_dt,
-            'field_data'			=> $field_data,
-            'field_name'			=> $field_name
+            'field_instructions' => trim($info['field_instructions']),
+            'field_text_direction' => ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+            'field_fmt' => $field_fmt,
+            'field_dt' => $field_dt,
+            'field_data' => $field_data,
+            'field_name' => $field_name
         );
 
         $field_settings = empty($info['field_settings']) ? array() : $info['field_settings'];

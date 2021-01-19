@@ -31,13 +31,13 @@ class Activity extends Profile
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
         $items = array(
-            'ip_address' 		=> $this->member->ip_address,
-            'join_date'         => $this->getHumanDateOrFalse($this->member->join_date),
-            'last_visit'        => $this->getHumanDateOrFalse($this->member->last_visit),
-            'last_activity'     => $this->getHumanDateOrFalse($this->member->last_activity),
-            'last_entry_date'   => $this->getHumanDateOrFalse($this->member->last_entry_date),
-            'total_entries'     => $this->member->total_entries,
-            'total_comments'    => $this->member->total_comments
+            'ip_address' => $this->member->ip_address,
+            'join_date' => $this->getHumanDateOrFalse($this->member->join_date),
+            'last_visit' => $this->getHumanDateOrFalse($this->member->last_visit),
+            'last_activity' => $this->getHumanDateOrFalse($this->member->last_activity),
+            'last_entry_date' => $this->getHumanDateOrFalse($this->member->last_entry_date),
+            'total_entries' => $this->member->total_entries,
+            'total_comments' => $this->member->total_comments
         );
 
         ee()->load->model('addons_model');

@@ -13,8 +13,8 @@
  */
 class EE_Html_buttons
 {
-    public $allow_img	= false;
-    public $buttons 	= array();
+    public $allow_img = false;
+    public $buttons = array();
 
     /**
      * Resets the class vars.

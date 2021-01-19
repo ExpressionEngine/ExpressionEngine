@@ -91,11 +91,11 @@ class Updater
             'member_groups',
             array(
                 'is_locked' => array(
-                    'name'			=> 'is_locked',
-                    'type'			=> 'char',
-                    'constraint'	=> 1,
-                    'default'		=> 'n',
-                    'null'			=> false
+                    'name' => 'is_locked',
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
                 )
             )
         );
@@ -113,11 +113,11 @@ class Updater
             'statuses',
             array(
                 'highlight' => array(
-                    'name'			=> 'highlight',
-                    'type'			=> 'varchar',
-                    'constraint'	=> 30,
-                    'default'		=> '000000',
-                    'null'			=> false
+                    'name' => 'highlight',
+                    'type' => 'varchar',
+                    'constraint' => 30,
+                    'default' => '000000',
+                    'null' => false
                 )
             )
         );

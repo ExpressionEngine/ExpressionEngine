@@ -17,7 +17,7 @@ class Email_address_Ft extends EE_Fieldtype
      * @var array $info Legacy Fieldtype info array
      */
     public $info = array(
-        'name'    => 'Email Address',
+        'name' => 'Email Address',
         'version' => '1.0.0'
     );
 
@@ -60,8 +60,8 @@ class Email_address_Ft extends EE_Fieldtype
     public function display_field($data)
     {
         $field = array(
-            'name'        => $this->field_name,
-            'value'       => $data,
+            'name' => $this->field_name,
+            'value' => $data,
             'placeholder' => 'username@example.com'
         );
 

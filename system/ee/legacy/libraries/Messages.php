@@ -14,70 +14,70 @@
 class EE_Messages
 {
     // URL Writing
-    public $allegiance			= 'cp';				// Side of the divide: cp or user
-    public $messages_cp		= false;			// CP Object
-    public $base_url			= '';				// Base URL used throughout
-    public $form_url			= '';				// For CP Forms, since Rick was a doofus and changed how they work
-    public $path				= 'member/';		// User Side Path
-    public $request			= 'inbox';			// User Side Request
-    public $cur_id				= '';				// User Side ID, if any
-    public $theme_class		= 'profile_theme';
-    public $images_folder		= '';				// Location of Forum Images
+    public $allegiance = 'cp';				// Side of the divide: cp or user
+    public $messages_cp = false;			// CP Object
+    public $base_url = '';				// Base URL used throughout
+    public $form_url = '';				// For CP Forms, since Rick was a doofus and changed how they work
+    public $path = 'member/';		// User Side Path
+    public $request = 'inbox';			// User Side Request
+    public $cur_id = '';				// User Side ID, if any
+    public $theme_class = 'profile_theme';
+    public $images_folder = '';				// Location of Forum Images
 
     // Member Specific
-    public $member_id			= '';
-    public $private_messages	= '0';				// Number of unread private messages
-    public $block_tracking		= 'n';				// Block Sender Tracking
+    public $member_id = '';
+    public $private_messages = '0';				// Number of unread private messages
+    public $block_tracking = 'n';				// Block Sender Tracking
 
     // Member Group Specific
-    public $allow_pm			= 'y';				// Allowed to PM?
-    public $attach_allowed		= 'y';				// Attachments allowed?
+    public $allow_pm = 'y';				// Allowed to PM?
+    public $attach_allowed = 'y';				// Attachments allowed?
 
     // Private Message Preferences
-    public $storage_limit		= 60;				// Limit for messages to store per user (does not count deleted)
-    public $send_limit			= 20;				// Limit for messages sent a day
-    public $upload_path		= '';				// Upload path for files
-    public $attach_maxsize		= 250;				// Max size for attachments (KB)
-    public $attach_total		= 100;				// Maximum amount for all PM attachments (MB)
-    public $html_format		= 'safe';			// HTML Formatting?
-    public $auto_links			= 'y';				// Auto convert URLs to links
-    public $max_chars			= 6000;				// Maximum number of characters in a messages
-    public $max_attachments	= 1;				// Maximum number of attachments per message
+    public $storage_limit = 60;				// Limit for messages to store per user (does not count deleted)
+    public $send_limit = 20;				// Limit for messages sent a day
+    public $upload_path = '';				// Upload path for files
+    public $attach_maxsize = 250;				// Max size for attachments (KB)
+    public $attach_total = 100;				// Maximum amount for all PM attachments (MB)
+    public $html_format = 'safe';			// HTML Formatting?
+    public $auto_links = 'y';				// Auto convert URLs to links
+    public $max_chars = 6000;				// Maximum number of characters in a messages
+    public $max_attachments = 1;				// Maximum number of attachments per message
 
     // User Data Variables
-    public $total_messages		= '';				// Total Store Messages for User
-    public $current_folder		= '1';				// If any...
-    public $folders			= array();			// Folders for User
-    public $hide_preview		= false;			// Whether to show the Preview of Message
-    public $attachments		= array();			// Attachments for current message
-    public $baddies			= array();			// Blocked List; IDs only
-    public $goodies			= array();			// Buddies List; IDs only
-    public $blocked			= false;			// Blocked List
-    public $buddies			= false;			// Buddies List
-    public $invalid_name		= false;			// Invalid name submitted?
+    public $total_messages = '';				// Total Store Messages for User
+    public $current_folder = '1';				// If any...
+    public $folders = array();			// Folders for User
+    public $hide_preview = false;			// Whether to show the Preview of Message
+    public $attachments = array();			// Attachments for current message
+    public $baddies = array();			// Blocked List; IDs only
+    public $goodies = array();			// Buddies List; IDs only
+    public $blocked = false;			// Blocked List
+    public $buddies = false;			// Buddies List
+    public $invalid_name = false;			// Invalid name submitted?
 
     // Menu Content
-    public $menu_items			= array();			// Abstracted data for creating menu
-    public $menu				= '';				// Menu fully formed
+    public $menu_items = array();			// Abstracted data for creating menu
+    public $menu = '';				// Menu fully formed
 
     // Processing and Returned Data
-    public $title				= '';				// Title of Page
-    public $crumb				= '';				// Crumb text for page
-    public $return_data		= '';				// Output data
-    public $header_javascript  = '';				// User Side Header JavaScript
-    public $error				= '';				// Submission Error
-    public $single_parts		= array();			// Parts of a page: text, form, images, content
-    public $conditionals		= array();			// Conditionals
-    public $mimes				= '';
+    public $title = '';				// Title of Page
+    public $crumb = '';				// Crumb text for page
+    public $return_data = '';				// Output data
+    public $header_javascript = '';				// User Side Header JavaScript
+    public $error = '';				// Submission Error
+    public $single_parts = array();			// Parts of a page: text, form, images, content
+    public $conditionals = array();			// Conditionals
+    public $mimes = '';
 
     // Changeable Class Variables
-    public $default_folders	= array('Inbox', 'Sent');
-    public $max_folders		= 10;				// Maximum number of folders per user
-    public $per_page			= 5;				// Messages on a Folder's Page
-    public $graph_width		= '300';			// Width of Total Messages Graph
-    public $emoticons_per_row  = 5;				// Number of Images Per Table Row
-    public $delete_expiration	= 30;				// Erase deleted messages after X days
-    public $disable_emoticons  = 'n';				// Disable the showing of emoticons
+    public $default_folders = array('Inbox', 'Sent');
+    public $max_folders = 10;				// Maximum number of folders per user
+    public $per_page = 5;				// Messages on a Folder's Page
+    public $graph_width = '300';			// Width of Total Messages Graph
+    public $emoticons_per_row = 5;				// Number of Images Per Table Row
+    public $delete_expiration = 30;				// Erase deleted messages after X days
+    public $disable_emoticons = 'n';				// Disable the showing of emoticons
     public $spellcheck_enabled = true;				// Enabled Spellcheck?
 
     /** -----------------------------------
@@ -88,15 +88,15 @@ class EE_Messages
         /** -----------------------------------
         /**  A Few Things to Define, Batman
         /** -----------------------------------*/
-        $this->member_id	  = ee()->session->userdata['member_id'];
+        $this->member_id = ee()->session->userdata['member_id'];
 
         $this->allow_pm = self::can_send_pm() ? 'y' : 'n';
 
         $this->attach_allowed = (ee()->config->item('prv_msg_allow_attachments') == 'y'
             && ee('Permission')->can('attach_in_private_messages')) ? 'y' : 'n';
 
-        $this->storage_limit	= (ee('Permission')->isSuperAdmin()) ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
-        $this->send_limit		= ee()->session->userdata['prv_msg_send_limit'];
+        $this->storage_limit = (ee('Permission')->isSuperAdmin()) ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
+        $this->send_limit = ee()->session->userdata['prv_msg_send_limit'];
 
         if (! defined('AMP')) {
             define('AMP', '&amp;');
@@ -119,7 +119,7 @@ class EE_Messages
             'prv_msg_max_attachments'
         );
 
-        for ($i=0, $t = count($prefs); $i < $t; ++$i) {
+        for ($i = 0, $t = count($prefs); $i < $t; ++$i) {
             if (false !== ($value = ee()->config->item($prefs[$i]))) {
                 $name = str_replace('prv_msg_', '', $prefs[$i]);
 
@@ -127,7 +127,7 @@ class EE_Messages
             }
         }
 
-        $this->upload_path	 = ee()->config->slash_item('prv_msg_upload_path');
+        $this->upload_path = ee()->config->slash_item('prv_msg_upload_path');
 
         // -----------------------------------
         //  Nearly every page requires this,
@@ -187,7 +187,7 @@ class EE_Messages
     /** -----------------------------------
     /**  Create Path
     /** -----------------------------------*/
-    public function _create_path($uri='', $hidden='')
+    public function _create_path($uri = '', $hidden = '')
     {
         if ($this->allegiance == 'user') {
             return reduce_double_slashes($this->base_url . '/' . $uri);
@@ -331,7 +331,7 @@ class EE_Messages
     /** -----------------------------------
     /**  Fetch Buddy and Block Lists
     /** -----------------------------------*/
-    public function fetch_lists($which='')
+    public function fetch_lists($which = '')
     {
         if ($which == 'buddy') {
             $this->goodies = array();
@@ -391,7 +391,7 @@ class EE_Messages
                 '2' => array(ee('Format')->make('Text', $query->row('folder2_name'))->attributeEscape(), '0')
             );
 
-            for ($i=3; $i <= $this->max_folders; $i++) {
+            for ($i = 3; $i <= $this->max_folders; $i++) {
                 $this->folders[$i] = ee('Format')->make('Text', $query->row('folder' . $i . '_name'))->attributeEscape();
             }
 
@@ -422,16 +422,16 @@ class EE_Messages
     public function folders()
     {
         $template = $this->retrieve_template('message_edit_folders');
-        $rows	  = $this->retrieve_template('message_edit_folders_row');
+        $rows = $this->retrieve_template('message_edit_folders_row');
 
-        $form_details = array('action'	=> $this->base_url . 'edit_folders',
-            'id'		=> 'edit_folders',
-            'secure'	=> ($this->allegiance == 'cp') ? false : true
+        $form_details = array('action' => $this->base_url . 'edit_folders',
+            'id' => 'edit_folders',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['edit_folders'] = ee()->functions->form_declaration($form_details);
         $this->single_parts['include']['current_folders'] = '';
-        $this->single_parts['include']['new_folder']	  = '';
+        $this->single_parts['include']['new_folder'] = '';
 
         if (! isset($this->single_parts['include']['success_message'])) {
             $this->single_parts['include']['success_message'] = '';
@@ -440,7 +440,7 @@ class EE_Messages
         /** -----------------------------------------
         /**  Create Folder Rows
         /** -----------------------------------------*/
-        $t=1;
+        $t = 1;
 
         foreach ($this->folders as $key => $value) {
             if ($value['0'] == '') {
@@ -448,10 +448,10 @@ class EE_Messages
             }
 
             $t++;
-            $this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
-            $this->single_parts['input']['folder_name']	= ee('Security/XSS')->clean($value['0']);
-            $this->single_parts['input']['folder_id']	= $key;
-            $this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
+            $this->single_parts['lang']['required'] = ($key < 3) ? ee()->lang->line('folder_required') : '';
+            $this->single_parts['input']['folder_name'] = ee('Security/XSS')->clean($value['0']);
+            $this->single_parts['input']['folder_id'] = $key;
+            $this->single_parts['style'] = ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
             $this->single_parts['include']['current_folders'] .= $this->_process_template($rows);
         }
@@ -461,10 +461,10 @@ class EE_Messages
         /** -----------------------------------------*/
         if ($t <= $this->max_folders) {
             $t++;
-            $this->single_parts['lang']['required']		= '';
-            $this->single_parts['input']['folder_name']	= '';
-            $this->single_parts['input']['folder_id']	= 'new';
-            $this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
+            $this->single_parts['lang']['required'] = '';
+            $this->single_parts['input']['folder_name'] = '';
+            $this->single_parts['input']['folder_id'] = 'new';
+            $this->single_parts['style'] = ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
             $this->single_parts['include']['new_folder'] = $this->_process_template($rows);
         }
@@ -485,14 +485,14 @@ class EE_Messages
         /** -----------------------------------
         /**  Check Required
         /** -----------------------------------*/
-        if (! isset($_POST['folder_1']) or  ! isset($_POST['folder_2']) or $_POST['folder_1'] == ''  or $_POST['folder_2'] == '') {
+        if (! isset($_POST['folder_1']) or ! isset($_POST['folder_2']) or $_POST['folder_1'] == '' or $_POST['folder_2'] == '') {
             return $this->_error_page('missing_required_field');
         }
 
         /** -----------------------------------
         /**  Get Our Modified Data
         /** -----------------------------------*/
-        for ($i=1, $data = array(); $i <= $this->max_folders; $i++) {
+        for ($i = 1, $data = array(); $i <= $this->max_folders; $i++) {
             if (! isset($_POST['folder_' . $i]) or $_POST['folder_' . $i] == '') {
                 $data['folder' . $i . '_name'] = '';
                 ee()->db->query("UPDATE exp_message_copies SET message_deleted = 'y'
@@ -560,7 +560,7 @@ class EE_Messages
 							 WHERE sender_id = '{$this->member_id}'
 							 AND message_status = 'draft'");
 
-        if ($query->row('count')  > 0) {
+        if ($query->row('count') > 0) {
             $this->menu_items['repeat_items']['folders'][] = array('text' => ee()->lang->line('draft_messages') . ' (' . $query->row('count') . ')',
                 'link' => $this->_create_path('drafts'),
                 'image' => '',
@@ -664,10 +664,10 @@ class EE_Messages
         /**  Open/Close JavaScript
         /** --------------------------------*/
         if (ee()->input->cookie('myaccount_messages') !== false && ee()->input->cookie('myaccount_messages') == 'on') {
-            $text		  = '[-]';
+            $text = '[-]';
             $hidden_style = '';
         } else {
-            $text		  = '[+]';
+            $text = '[+]';
             $hidden_style = 'display: none; padding:0;';
         }
 
@@ -679,23 +679,23 @@ class EE_Messages
         $map = array('bulletin_board', 'compose_message', 'folders', 'edit_folders', 'buddy_list', 'block_list');
 
         $template = $this->retrieve_template('message_menu');
-        $rows	  = $this->retrieve_template('message_menu_rows');
+        $rows = $this->retrieve_template('message_menu_rows');
 
         $this->single_parts['include']['hide_menu_style'] = $hidden_style;
-        $this->single_parts['include']['hide_menu_link']  = $hidden_link;
-        $this->single_parts['include']['hide_menu_js']	  = $this->showhide_js();
+        $this->single_parts['include']['hide_menu_link'] = $hidden_link;
+        $this->single_parts['include']['hide_menu_js'] = $this->showhide_js();
         $this->single_parts['include']['menu_items'] = '';
 
         foreach ($map as $item) {
             if (isset($this->menu_items['repeat_items'][$item])) {
                 foreach ($this->menu_items['repeat_items'][$item] as $item_member) {
                     $this->single_parts['title'] = $item_member['text'];
-                    $this->single_parts['link']  = $item_member['link'];
+                    $this->single_parts['link'] = $item_member['link'];
                     $this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
                 }
             } else {
                 $this->single_parts['title'] = $this->menu_items['single_items'][$item]['text'];
-                $this->single_parts['link']  = $this->menu_items['single_items'][$item]['link'];
+                $this->single_parts['link'] = $this->menu_items['single_items'][$item]['link'];
                 $this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
             }
         }
@@ -730,13 +730,13 @@ class EE_Messages
     /** -----------------------------------*/
     public function drafts()
     {
-        $this->single_parts['lang']['folder_id']	= '1';
+        $this->single_parts['lang']['folder_id'] = '1';
         $this->single_parts['lang']['folder_name'] = ee()->lang->line('draft_messages');
 
-        $this->conditionals['drafts_folder']	= 'y';
-        $this->conditionals['sent_folder']		= 'n';
-        $this->conditionals['trash_folder']		= 'n';
-        $this->conditionals['regular_folder']	= 'n';
+        $this->conditionals['drafts_folder'] = 'y';
+        $this->conditionals['sent_folder'] = 'n';
+        $this->conditionals['trash_folder'] = 'n';
+        $this->conditionals['regular_folder'] = 'n';
 
         /** ---------------------------------------
         /**  Retrieve Folder Contents Query
@@ -799,7 +799,7 @@ class EE_Messages
             $this->title = ee()->lang->line('draft_messages');
             $this->crumb = ee()->lang->line('draft_messages');
 
-            $this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
+            $this->single_parts['include']['folder_rows'] = $this->retrieve_template('message_no_folder_rows');
             $this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
             return $this->return_data = $this->folder_wrapper(
@@ -821,13 +821,13 @@ class EE_Messages
         foreach ($query->result_array() as $row) {
             ++$i;
             $data = $row;
-            $data['msg_id']		  = 'd' . $row['message_id'];
+            $data['msg_id'] = 'd' . $row['message_id'];
             $data['message_date'] = ee()->localize->human_time($data['message_date']);
-            $data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-            $data['message_subject']  = ($censor === false) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
+            $data['style'] = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
+            $data['message_subject'] = ($censor === false) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
 
             if ($this->allegiance == 'user') {
-                $data['message_url']  = $this->base_url . 'compose/' . $row['message_id'] . '/';
+                $data['message_url'] = $this->base_url . 'compose/' . $row['message_id'] . '/';
             } else {
                 $data['message_url'] = $this->base_url . 'compose' . AMP . 'msg=' . $row['message_id'];
             }
@@ -863,7 +863,7 @@ class EE_Messages
     /** -----------------------------------
     /**  View Folder Contents
     /** -----------------------------------*/
-    public function view_folder($folder_id='')
+    public function view_folder($folder_id = '')
     {
         // ---------------------------------
         // Find Requested Folder ID
@@ -916,10 +916,10 @@ class EE_Messages
         /** -----------------------------------
         /**  Folder Conditionals
         /** -----------------------------------*/
-        $this->conditionals['drafts_folder']	= 'n';
-        $this->conditionals['sent_folder']		= 'n';
-        $this->conditionals['trash_folder']		= 'n';
-        $this->conditionals['regular_folder']	= 'n';
+        $this->conditionals['drafts_folder'] = 'n';
+        $this->conditionals['sent_folder'] = 'n';
+        $this->conditionals['trash_folder'] = 'n';
+        $this->conditionals['regular_folder'] = 'n';
 
         if ($folder_id == '0') {
             $this->conditionals['trash_folder'] = 'y';
@@ -998,7 +998,7 @@ class EE_Messages
         /** ----------------------------------------
         /**  If No Messages, we say so.
         /** ----------------------------------------*/
-        if ($query->row('count')  == 0) {
+        if ($query->row('count') == 0) {
             $this->title = $folder_name;
             $this->crumb = $folder_name;
 
@@ -1014,8 +1014,8 @@ class EE_Messages
         /** ----------------------------------------
         /**  Retrieve Folder Contents
         /** ----------------------------------------*/
-        $message_ids			= array();
-        $folder_rows_template	= $this->retrieve_template('message_folder_rows');
+        $message_ids = array();
+        $folder_rows_template = $this->retrieve_template('message_folder_rows');
         $i = 0;
         $r = '';
         $censor = bool_config_item('enable_censoring');
@@ -1024,14 +1024,14 @@ class EE_Messages
 
         foreach ($query->result_array() as $row) {
             $i++;
-            $data			= $row;
-            $message_ids[]	= $row['message_id'];
+            $data = $row;
+            $message_ids[] = $row['message_id'];
 
             $data['message_subject'] = htmlentities($data['message_subject'], ENT_QUOTES, 'UTF-8');
-            $data['msg_id']				= ($row['message_read'] == 'n') ? 'u' . $row['msg_id'] : $row['msg_id'];
-            $data['message_date']		= ee()->localize->human_time($data['message_date']);
-            $data['style']				= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-            $data['message_subject']	= ($censor === false) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
+            $data['msg_id'] = ($row['message_read'] == 'n') ? 'u' . $row['msg_id'] : $row['msg_id'];
+            $data['message_date'] = ee()->localize->human_time($data['message_date']);
+            $data['style'] = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
+            $data['message_subject'] = ($censor === false) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
 
             if ($this->allegiance == 'user') {
                 $data['message_url'] = $this->base_url . 'view_message/' . $row['msg_id'] . '/';
@@ -1096,24 +1096,24 @@ class EE_Messages
     /** ----------------------------------------
     /**  Wrapper for a Folder and its Contents
     /** ----------------------------------------*/
-    public function folder_wrapper($folder_template, $deleted='y', $moved='y', $copied = 'y')
+    public function folder_wrapper($folder_template, $deleted = 'y', $moved = 'y', $copied = 'y')
     {
         $this->folders_pulldown();
 
         $this->single_parts['include']['hidden_js'] = $this->hidden_js();
         $this->single_parts['include']['toggle_js'] = $this->toggle_js();
         $this->single_parts['path']['compose_message'] = $this->_create_path('compose');
-        $this->single_parts['path']['erase_messages']  = $this->_create_path('erase');
+        $this->single_parts['path']['erase_messages'] = $this->_create_path('erase');
 
         $details = array(
-            'hidden_fields'	=> array('this_folder' => $this->single_parts['lang']['folder_id'], 'daction' => ''),
-            'action'			=> $this->_create_path('modify_messages'),
-            'id'				=> 'target',
-            'enctype'			=> 'multi',
-            'secure'			=> ($this->allegiance == 'cp') ? false : true
+            'hidden_fields' => array('this_folder' => $this->single_parts['lang']['folder_id'], 'daction' => ''),
+            'action' => $this->_create_path('modify_messages'),
+            'id' => 'target',
+            'enctype' => 'multi',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
-        $this->single_parts['form']['form_declaration']['modify_messages']  = ee()->functions->form_declaration($details);
+        $this->single_parts['form']['form_declaration']['modify_messages'] = ee()->functions->form_declaration($details);
 
         /** ---------------------------------
         /**  Move, Copy, Delete Buttons
@@ -1133,7 +1133,7 @@ class EE_Messages
     /** ----------------------------------------
     /**  Buttons for Various Pages
     /** ----------------------------------------*/
-    public function _buttons($deleted='y', $moved='y', $copied = 'y')
+    public function _buttons($deleted = 'y', $moved = 'y', $copied = 'y')
     {
         $style = 'buttons';
 
@@ -1182,7 +1182,7 @@ class EE_Messages
                                                           "onclick='dynamic_action(\"reply_all\");'>" .
                                                           "{lang:messages_reply_all}</button>" . NBS . NBS;
 
-        $this->single_parts['form']['add_button']	= $this->list_js() .
+        $this->single_parts['form']['add_button'] = $this->list_js() .
                                                       "<button type='submit' id='add' name='add' value='add' " .
                                                       "class='{$style}' title='{lang:add_member}' " .
                                                       "onclick='list_addition();return false;'>" .
@@ -1192,7 +1192,7 @@ class EE_Messages
     /** ----------------------------------------
     /**  Retrieve a Template for Processing
     /** ----------------------------------------*/
-    public function retrieve_template($which='')
+    public function retrieve_template($which = '')
     {
         if ($which == '') {
             $which = 'message_folder';
@@ -1223,11 +1223,11 @@ class EE_Messages
         }
 
         if (! file_exists($this->theme_path . '/' . $which . '.html')) {
-            $data = array('title' 	=> ee()->lang->line('error'),
-                'heading'	=> ee()->lang->line('general_error'),
-                'content'	=> ee()->lang->line('nonexistent_page'),
-                'redirect'	=> '',
-                'link'		=> array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
+            $data = array('title' => ee()->lang->line('error'),
+                'heading' => ee()->lang->line('general_error'),
+                'content' => ee()->lang->line('nonexistent_page'),
+                'redirect' => '',
+                'link' => array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
             );
 
             return ee()->output->show_message($data, 0);
@@ -1241,8 +1241,8 @@ class EE_Messages
     /** -----------------------------------*/
     public function folders_pulldown()
     {
-        $str=NL;
-        $str2=NL;
+        $str = NL;
+        $str2 = NL;
 
         foreach ($this->folders as $key => $value) {
             if ($value['0'] != '') {
@@ -1254,13 +1254,13 @@ class EE_Messages
 
                 $selected = ($key == $this->current_folder) ? ' selected="selected"' : '';
 
-                $name	= ee()->functions->encode_ee_tags($value['0'], true);
-                $str	.= '<option value="' . $url . '"' . $selected . '>' . $name . '</option>' . NL;
-                $str2	.= '<option value="' . $key . '"' . $selected . '>' . $name . '</option>' . NL;
+                $name = ee()->functions->encode_ee_tags($value['0'], true);
+                $str .= '<option value="' . $url . '"' . $selected . '>' . $name . '</option>' . NL;
+                $str2 .= '<option value="' . $key . '"' . $selected . '>' . $name . '</option>' . NL;
             }
         }
 
-        $str  .= '</select>' . NL;
+        $str .= '</select>' . NL;
         $str2 .= '</select>' . NL;
 
         $yoffset = ($this->allegiance == 'cp') ? 30 : 20;
@@ -1325,7 +1325,7 @@ DOH;
     /** -----------------------------------
     /**  Member Search Popup
     /** -----------------------------------*/
-    public function member_search($message='')
+    public function member_search($message = '')
     {
         $this->title = '';
         $this->crumb = '';
@@ -1337,8 +1337,8 @@ DOH;
         }
 
         $form_details = array('hidden_fields' => array('which_field' => $which_field),
-            'action'	=> $this->_create_path('do_member_search', AMP . 'Z=1'),
-            'secure'	=> ($this->allegiance == 'cp') ? false : true
+            'action' => $this->_create_path('do_member_search', AMP . 'Z=1'),
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
@@ -1386,13 +1386,13 @@ DOH;
         }
 
         $this->single_parts['path']['new_search_url'] = $redirect_url;
-        $this->single_parts['which_field']			  = $which_field;
+        $this->single_parts['which_field'] = $which_field;
 
         /** --------------------------------
         /**  Parse the POST request
         /** --------------------------------*/
-        if ($_POST['screen_name'] 	== '' &&
-            $_POST['email'] 		== ''
+        if ($_POST['screen_name'] == '' &&
+            $_POST['email'] == ''
             ) {
             ee()->functions->redirect($redirect_url);
         }
@@ -1454,7 +1454,7 @@ DOH;
     /** -----------------------------------
     /**  Buddy Search Popup
     /** -----------------------------------*/
-    public function buddy_search($message='')
+    public function buddy_search($message = '')
     {
         $this->title = '';
         $this->crumb = '';
@@ -1466,8 +1466,8 @@ DOH;
         }
 
         $form_details = array('hidden_fields' => array('which' => $which),
-            'action'	=> $this->_create_path('do_buddy_search', AMP . 'Z=1'),
-            'secure'	=> ($this->allegiance == 'cp') ? false : true
+            'action' => $this->_create_path('do_buddy_search', AMP . 'Z=1'),
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
@@ -1519,13 +1519,13 @@ DOH;
         }
 
         $this->single_parts['path']['new_search_url'] = $redirect_url;
-        $this->single_parts['which_field']			  = $which;  // For the results
+        $this->single_parts['which_field'] = $which;  // For the results
 
         /** --------------------------------
         /**  Parse the POST request
         /** --------------------------------*/
-        if ($_POST['screen_name'] 	== '' &&
-            $_POST['email'] 		== ''
+        if ($_POST['screen_name'] == '' &&
+            $_POST['email'] == ''
             ) {
             ee()->functions->redirect($redirect_url);
         }
@@ -1575,7 +1575,7 @@ DOH;
         $r = '';
 
         foreach ($query->result_array() as $row) {
-            $link =  ($which == 'blocked') ? $this->_create_path('add_block') : $this->_create_path('add_buddy');
+            $link = ($which == 'blocked') ? $this->_create_path('add_block') : $this->_create_path('add_buddy');
 
             $link .= ($this->allegiance == 'cp') ? '&mid=' . $row['member_id'] : '/' . $row['member_id'] . '/';
 
@@ -1602,7 +1602,7 @@ DOH;
 				WHERE exp_message_data.sender_id = '{$this->member_id}'
 				AND exp_message_data.message_status = 'draft'";
 
-        $query	= ee()->db->query($sql);
+        $query = ee()->db->query($sql);
         $results = ee()->db->query($tql);
 
         $this->total_messages = $query->row('count') ;
@@ -1621,18 +1621,18 @@ DOH;
         /** ----------------------
         /**  Default
         /** ----------------------*/
-        $this->single_parts['lang']['total_messages']	= $this->total_messages;
-        $this->single_parts['lang']['max_messages']		= ($this->storage_limit == '0') ? ee()->lang->line('unlimited_messages') : $this->storage_limit;
-        $this->single_parts['lang']['usage_percent']	= '0';
+        $this->single_parts['lang']['total_messages'] = $this->total_messages;
+        $this->single_parts['lang']['max_messages'] = ($this->storage_limit == '0') ? ee()->lang->line('unlimited_messages') : $this->storage_limit;
+        $this->single_parts['lang']['usage_percent'] = '0';
 
-        $this->single_parts['image']['messages_graph']['width']		= '1';
-        $this->single_parts['image']['messages_graph']['height']	= '11';
+        $this->single_parts['image']['messages_graph']['width'] = '1';
+        $this->single_parts['image']['messages_graph']['height'] = '11';
 
         /** ----------------------
         /**  Calculate
         /** ----------------------*/
         if ($this->total_messages > 0 && $this->storage_limit > 0) {
-            $this->single_parts['lang']['usage_percent'] 			= round(($this->total_messages / $this->storage_limit) * 100, 1);
+            $this->single_parts['lang']['usage_percent'] = round(($this->total_messages / $this->storage_limit) * 100, 1);
             $this->single_parts['image']['messages_graph']['width'] = ceil(($this->total_messages / $this->storage_limit) * $this->graph_width);
 
             /* We are subtracting some pixels to take into account CSS padding (~6px) */
@@ -1646,9 +1646,9 @@ DOH;
             }
         }
 
-        $this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
+        $this->single_parts['lang']['storage_status'] = str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
 
-        $this->single_parts['lang']['storage_percentage']	= str_replace('%x', $this->single_parts['lang']['usage_percent'], ee()->lang->line('storage_percentage'));
+        $this->single_parts['lang']['storage_percentage'] = str_replace('%x', $this->single_parts['lang']['usage_percent'], ee()->lang->line('storage_percentage'));
     }
 
     /** -----------------------------------
@@ -1698,7 +1698,7 @@ DOH;
                 $this->hide_preview = true;
 
                 return $this->compose($val);
-            } elseif (ee()->input->post('daction')  == 'reply_all') {
+            } elseif (ee()->input->post('daction') == 'reply_all') {
                 $this->hide_preview = true;
 
                 return $this->compose($val);
@@ -1726,9 +1726,9 @@ DOH;
 
                     $row = $query->row_array();
 
-                    $row['copy_id']  = '';
-                    $row['message_folder']   = ee()->db->escape_str($folder_id);
-                    $row['message_deleted']  = 'n';
+                    $row['copy_id'] = '';
+                    $row['message_folder'] = ee()->db->escape_str($folder_id);
+                    $row['message_deleted'] = 'n';
 
                     ee()->db->query(ee()->db->insert_string('exp_message_copies', $row), true);
                 }
@@ -1749,7 +1749,7 @@ DOH;
     /** -----------------------------------
     /**  Erase Messages
     /** -----------------------------------*/
-    public function erase($delete='')
+    public function erase($delete = '')
     {
         // -------------------------------------------
         //  If this is the last copy of a message,
@@ -1768,7 +1768,7 @@ DOH;
         }
 
         if ($query->num_rows() > 0) {
-            $copy_ids	 = array();
+            $copy_ids = array();
             $message_ids = array();
 
             foreach ($query->result_array() as $row) {
@@ -1787,8 +1787,8 @@ DOH;
 										WHERE message_id = '" . ee()->db->escape_str($row['message_id']) . "'
 										AND copy_id NOT IN ('" . implode("','", $copy_ids) . "')");
 
-                if ($results->row('count')  == 0) {
-                    $message_ids[]	= $row['message_id'];
+                if ($results->row('count') == 0) {
+                    $message_ids[] = $row['message_id'];
                 }
             }
 
@@ -1836,7 +1836,7 @@ DOH;
 
     /**  Convert Recipients to Valid List
     /** -----------------------------------*/
-    public function convert_recipients($str, $type='string', $by='screen_name')
+    public function convert_recipients($str, $type = 'string', $by = 'screen_name')
     {
         /** -------------------------------------
         /**  Retrieve Protected Names
@@ -1844,7 +1844,7 @@ DOH;
         $protected = array();
 
         if (preg_match_all("/\<(.*?)\>/", $str, $matches)) {
-            for ($i=0, $s=count($matches['1']); $i < $s; ++$i) {
+            for ($i = 0, $s = count($matches['1']); $i < $s; ++$i) {
                 $protected[] = $matches['1'][$i];
                 $str = str_replace($matches['0'][$i], '', $str);
             }
@@ -1865,10 +1865,10 @@ DOH;
             $str = substr($str, 1);
         }
 
-        $temp_list  = array_merge(explode(',', $str), $protected);
-        $list		= array();
+        $temp_list = array_merge(explode(',', $str), $protected);
+        $list = array();
 
-        for ($i=0, $s = count($temp_list); $i < $s; ++$i) {
+        for ($i = 0, $s = count($temp_list); $i < $s; ++$i) {
             if (trim($temp_list[$i]) != '') {
                 $list[] = ee()->db->escape_str($temp_list[$i]);
             }
@@ -1970,7 +1970,7 @@ DOH;
 
         $query = ee()->db->query($sql);
 
-        if ($query->row('count')  >= $user_storage_limit) {
+        if ($query->row('count') >= $user_storage_limit) {
             return false;
         }
 
@@ -1995,7 +1995,7 @@ DOH;
     /** -----------------------------------
     /**  Compose New Message Form
     /** -----------------------------------*/
-    public function compose($id = '', $errors='')
+    public function compose($id = '', $errors = '')
     {
         if ($id == '') {
             if ($this->allegiance == 'cp' && ee()->input->get_post('msg') !== false && is_numeric(ee()->input->get_post('msg'))) {
@@ -2030,46 +2030,46 @@ DOH;
             $hidden['replying'] = (ee()->input->get_post('daction') == 'reply' or ee()->input->get_post('daction') == 'reply_all') ? $id : ee()->input->get_post('replying');
         }
 
-        $details = array('action'			=> $this->_create_path('send_message'),
-            'id'				=> 'submit_message',
-            'enctype'			=> 'multi',
-            'secure'			=> ($this->allegiance == 'cp') ? false : true
+        $details = array('action' => $this->_create_path('send_message'),
+            'id' => 'submit_message',
+            'enctype' => 'multi',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         /** -------------------------------------
         /**  Default Values for Form
         /** -------------------------------------*/
-        $this->single_parts['include']['emoticons']	= $this->emoticons();
-        $this->single_parts['include']['hidden_js']	= $this->hidden_js();
+        $this->single_parts['include']['emoticons'] = $this->emoticons();
+        $this->single_parts['include']['hidden_js'] = $this->hidden_js();
 
-        $this->single_parts['image']['search_glass']	= '<img src="' . $this->images_folder . 'search_glass.gif" style="border: 0px" width="12" height="12" alt="' . ee()->lang->line('search_glass') . '" />';
-        $this->single_parts['include']['search']['recipients']  = '<a href="#" title="{lang:member_search}" onclick="perform_search(1); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
-        $this->single_parts['include']['search']['cc']			= '<a href="#" title="{lang:member_search}" onclick="perform_search(2); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
-        $this->single_parts['include']['search_js']				= $this->search_js();
-        $this->single_parts['include']['text_counter_js']		= $this->text_counter_js();
+        $this->single_parts['image']['search_glass'] = '<img src="' . $this->images_folder . 'search_glass.gif" style="border: 0px" width="12" height="12" alt="' . ee()->lang->line('search_glass') . '" />';
+        $this->single_parts['include']['search']['recipients'] = '<a href="#" title="{lang:member_search}" onclick="perform_search(1); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
+        $this->single_parts['include']['search']['cc'] = '<a href="#" title="{lang:member_search}" onclick="perform_search(2); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
+        $this->single_parts['include']['search_js'] = $this->search_js();
+        $this->single_parts['include']['text_counter_js'] = $this->text_counter_js();
 
-        $this->conditionals['attachments_allowed']	= $this->attach_allowed;
-        $this->conditionals['attachments_exist']		  = 'n';
+        $this->conditionals['attachments_allowed'] = $this->attach_allowed;
+        $this->conditionals['attachments_exist'] = 'n';
         $this->single_parts['include']['attachments'] = '';
-        $this->single_parts['lang']['max_file_size']  = $this->attach_maxsize;
-        $this->single_parts['lang']['max_chars']	  = $this->max_chars;
+        $this->single_parts['lang']['max_file_size'] = $this->attach_maxsize;
+        $this->single_parts['lang']['max_chars'] = $this->max_chars;
 
-        $this->single_parts['input']['tracking_checked']  = "";
+        $this->single_parts['input']['tracking_checked'] = "";
         $this->single_parts['input']['sent_copy_checked'] = '';
-        $this->single_parts['input']['hide_cc_checked']	  = '';
+        $this->single_parts['input']['hide_cc_checked'] = '';
 
-        $this->single_parts['include']['compose_header_js']		= $this->compose_header_js();
-        $this->single_parts['include']['dynamic_address_book']	= $this->dynamic_address_book();
-        $this->single_parts['include']['submission_error']		= '';
+        $this->single_parts['include']['compose_header_js'] = $this->compose_header_js();
+        $this->single_parts['include']['dynamic_address_book'] = $this->dynamic_address_book();
+        $this->single_parts['include']['submission_error'] = '';
 
         $this->header_javascript .= $this->compose_header_js();
 
         /** -------------------------------------
         /**  Spell Check Related Values
         /** -------------------------------------*/
-        $this->single_parts['include']['spellcheck_js']  = ($this->spellcheck_enabled !== true) ? '' : $this->spellcheck_js(); // goes first for enabled check
+        $this->single_parts['include']['spellcheck_js'] = ($this->spellcheck_enabled !== true) ? '' : $this->spellcheck_js(); // goes first for enabled check
         $this->single_parts['path']['spellcheck_iframe'] = ($this->spellcheck_enabled !== true) ? '' : $this->_create_path('spellcheck_iframe');
-        $this->conditionals['spellcheck']				 = ($this->spellcheck_enabled !== true) ? 'n' : 'y';
+        $this->conditionals['spellcheck'] = ($this->spellcheck_enabled !== true) ? 'n' : 'y';
 
         /** -------------------------------------
         /**  Create the HTML formatting buttons
@@ -2120,8 +2120,8 @@ DOH;
                 // Ensure only one prefix
                 $prefix = (substr($data['subject'], 0, strlen($prefix)) == $prefix) ? '' : $prefix;
 
-                $this->single_parts['input']['subject']				= ($data === false) ? '' : $prefix . $subject;
-                $this->single_parts['input']['body'] 				= '';
+                $this->single_parts['input']['subject'] = ($data === false) ? '' : $prefix . $subject;
+                $this->single_parts['input']['body'] = '';
 
                 if ($data !== false) {
                     if (ee()->input->post('daction') == 'forward') {
@@ -2136,7 +2136,7 @@ DOH;
                     $this->single_parts['input']['body'] .= NL . NL . NL . '[quote]' . NL . $body . NL . '[/quote]';
                 }
 
-                $this->single_parts['input']['recipients']			= ($data === false or ee()->input->post('daction') == 'forward') ? '' : $this->convert_recipients($data['sender_id']);
+                $this->single_parts['input']['recipients'] = ($data === false or ee()->input->post('daction') == 'forward') ? '' : $this->convert_recipients($data['sender_id']);
 
                 if ($data === false or ee()->input->post('daction') != 'reply_all') {
                     $this->single_parts['input']['cc'] = '';
@@ -2151,12 +2151,12 @@ DOH;
                     $this->single_parts['input']['cc'] = implode(', ', $cc);
                 }
 
-                $this->single_parts['include']['preview_message'] 	= '';
+                $this->single_parts['include']['preview_message'] = '';
 
                 if (ee()->input->post('daction') == 'forward' && $data !== false && count($data['attachments']) > 0) {
-                    $this->conditionals['attachments_allowed']		= (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
-                    $this->conditionals['attachments_exist']		= 'y';
-                    $this->single_parts['include']['attachments']	= $this->_display_attachments($data['attachments']);
+                    $this->conditionals['attachments_allowed'] = (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
+                    $this->conditionals['attachments_exist'] = 'y';
+                    $this->single_parts['include']['attachments'] = $this->_display_attachments($data['attachments']);
 
                     $hidden['attach'] = implode('|', $data['attach']);
                 }
@@ -2171,30 +2171,30 @@ DOH;
                     $body = ($data === false) ? '' : $data['body'];
                 }
 
-                $this->single_parts['input']['subject']				= $subject;
-                $this->single_parts['input']['body']				= $body;
-                $this->single_parts['input']['recipients']			= ($data === false) ? '' : $this->convert_recipients($data['recipients']);
-                $this->single_parts['input']['cc']					= ($data === false) ? '' : $this->convert_recipients($data['cc']);
-                $this->single_parts['include']['preview_message']	= ($data === false or $this->hide_preview === true) ? '' : $data['preview'];
+                $this->single_parts['input']['subject'] = $subject;
+                $this->single_parts['input']['body'] = $body;
+                $this->single_parts['input']['recipients'] = ($data === false) ? '' : $this->convert_recipients($data['recipients']);
+                $this->single_parts['input']['cc'] = ($data === false) ? '' : $this->convert_recipients($data['cc']);
+                $this->single_parts['include']['preview_message'] = ($data === false or $this->hide_preview === true) ? '' : $data['preview'];
 
-                $this->single_parts['input']['tracking_checked']	= ($data === false or $data['tracking'] == 'n') ? '' : "checked='checked'";
-                $this->single_parts['input']['sent_copy_checked']	= ($data === false or $data['sent_copy'] == 'n') ? '' : "checked='checked'";
-                $this->single_parts['input']['hide_cc_checked']		= ($data === false or $data['hide_cc'] == 'n') ? '' : "checked='checked'";
+                $this->single_parts['input']['tracking_checked'] = ($data === false or $data['tracking'] == 'n') ? '' : "checked='checked'";
+                $this->single_parts['input']['sent_copy_checked'] = ($data === false or $data['sent_copy'] == 'n') ? '' : "checked='checked'";
+                $this->single_parts['input']['hide_cc_checked'] = ($data === false or $data['hide_cc'] == 'n') ? '' : "checked='checked'";
 
                 if ($data !== false && count($data['attachments']) > 0) {
-                    $this->conditionals['attachments_allowed']		= (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
-                    $this->conditionals['attachments_exist']		= 'y';
-                    $this->single_parts['include']['attachments']	= $this->_display_attachments($data['attachments']);
+                    $this->conditionals['attachments_allowed'] = (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
+                    $this->conditionals['attachments_exist'] = 'y';
+                    $this->single_parts['include']['attachments'] = $this->_display_attachments($data['attachments']);
 
                     $hidden['attach'] = implode('|', $data['attach']);
                 }
             }
         } else {
-            $this->single_parts['input']['subject']				= (! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', true);
-            $this->single_parts['input']['body']				= (! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', true);
-            $this->single_parts['input']['cc']					= '';
-            $this->single_parts['input']['recipients']			= (! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
-            $this->single_parts['include']['preview_message']	= '';
+            $this->single_parts['input']['subject'] = (! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', true);
+            $this->single_parts['input']['body'] = (! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', true);
+            $this->single_parts['input']['cc'] = '';
+            $this->single_parts['input']['recipients'] = (! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
+            $this->single_parts['include']['preview_message'] = '';
         }
 
         $details['hidden_fields'] = $hidden;
@@ -2207,9 +2207,9 @@ DOH;
         // --------------------------------------------
 
         if ($this->upload_path == '') {
-            $this->conditionals['attachments_allowed']		= 'n';
-            $this->conditionals['attachments_exist']		= 'n';
-            $this->single_parts['include']['attachments']	= '';
+            $this->conditionals['attachments_allowed'] = 'n';
+            $this->conditionals['attachments_exist'] = 'n';
+            $this->single_parts['include']['attachments'] = '';
         }
 
         /** ---------------------------------------
@@ -2234,7 +2234,7 @@ DOH;
     //  Massage that message data, si vous plait
     //----------------------------------------
 
-    public function _message_data($id, $sender='', $recipient='')
+    public function _message_data($id, $sender = '', $recipient = '')
     {
         $data = array();
 
@@ -2281,10 +2281,10 @@ DOH;
 
         $data = str_replace('message_', '', $data);
 
-        $data['recipients']  = str_replace('|', ', ', $data['recipients']);
-        $data['cc'] 		 = str_replace('|', ', ', $data['cc']);
+        $data['recipients'] = str_replace('|', ', ', $data['recipients']);
+        $data['cc'] = str_replace('|', ', ', $data['cc']);
         $data['attachments'] = array();
-        $data['date']		 = ee()->localize->human_time($data['date']);
+        $data['date'] = ee()->localize->human_time($data['date']);
 
         $results = ee()->db->query("SELECT screen_name FROM exp_members WHERE member_id = '" . ee()->db->escape_str($data['sender_id']) . "'");
 
@@ -2296,15 +2296,15 @@ DOH;
         ee()->load->library('typography');
         ee()->typography->initialize(
             array(
-                'highlight_code'	=> true)
+                'highlight_code' => true)
         );
 
         $this->single_parts['include']['parsed_message'] = ee()->typography->parse_type(
             stripslashes($data['body']),
             array(
-                'text_format'	=> 'xhtml',
-                'html_format'	=> $this->html_format,
-                'auto_links'	=> $this->auto_links,
+                'text_format' => 'xhtml',
+                'html_format' => $this->html_format,
+                'auto_links' => $this->auto_links,
                 'allow_img_url' => 'n'
             )
         );
@@ -2314,7 +2314,7 @@ DOH;
         /** ---------------------------------
         /**  Fetch Attachment Information
         /** ---------------------------------*/
-        if ($query->row('message_attachments')  == 'y') {
+        if ($query->row('message_attachments') == 'y') {
             $results = ee()->db->query("SELECT attachment_name, attachment_id, attachment_size, attachment_hash
 									FROM exp_message_attachments
 									WHERE message_id = '" . ee()->db->escape_str($mid) . "'");
@@ -2437,13 +2437,13 @@ DOH;
         // Load the XML Helper
         ee()->load->helper('xml');
 
-        $this->single_parts['include']['subject']				= htmlentities($data['subject'], ENT_QUOTES, 'UTF-8');
-        $this->single_parts['include']['body']					= $data['body'];
-        $this->single_parts['include']['recipients']			= xml_convert($this->convert_recipients($data['recipients'], 'string', 'screen_name'));
-        $this->single_parts['include']['cc']					= ($data['cc'] == '') ? '' : xml_convert($this->convert_recipients($data['cc'], 'string', 'screen_name'));
-        $this->single_parts['include']['sender']				= $data['sender'];
-        $this->single_parts['include']['date'] 					= $data['date'];
-        $this->conditionals['attachments_exist']				= 'n';
+        $this->single_parts['include']['subject'] = htmlentities($data['subject'], ENT_QUOTES, 'UTF-8');
+        $this->single_parts['include']['body'] = $data['body'];
+        $this->single_parts['include']['recipients'] = xml_convert($this->convert_recipients($data['recipients'], 'string', 'screen_name'));
+        $this->single_parts['include']['cc'] = ($data['cc'] == '') ? '' : xml_convert($this->convert_recipients($data['cc'], 'string', 'screen_name'));
+        $this->single_parts['include']['sender'] = $data['sender'];
+        $this->single_parts['include']['date'] = $data['date'];
+        $this->conditionals['attachments_exist'] = 'n';
 
         if ($data['sender'] == ee()->session->userdata['screen_name'] && isset($data['folder_id']) && $data['folder_id'] == 2) {
             $this->conditionals['show_cc'] = 'y';
@@ -2459,8 +2459,8 @@ DOH;
         /** -----------------------------------
         /**  Prepare Attachments for Display
         /** -----------------------------------*/
-        $this->conditionals['attachments_exist']			= (count($data['attachments']) > 0) ? 'y' : 'n';
-        $this->single_parts['include']['attachment_links']	= (count($data['attachments']) > 0) ? $this->_attachment_links($data['attachments']) : '';
+        $this->conditionals['attachments_exist'] = (count($data['attachments']) > 0) ? 'y' : 'n';
+        $this->single_parts['include']['attachment_links'] = (count($data['attachments']) > 0) ? $this->_attachment_links($data['attachments']) : '';
 
         // -----------------------------------
         //  Form Declaration
@@ -2468,14 +2468,14 @@ DOH;
         //  NOTE: $data['id'] = $message_id
         // -----------------------------------
 
-        $details = array('hidden_fields'	=> array('message_id' => $copy_id, 'toggle[]' => $copy_id, 'daction' => ''),
-            'action'			=> $this->_create_path('modify_messages'),
-            'id'				=> 'target',
-            'enctype'			=> 'multi',
-            'secure'			=> ($this->allegiance == 'cp') ? false : true
+        $details = array('hidden_fields' => array('message_id' => $copy_id, 'toggle[]' => $copy_id, 'daction' => ''),
+            'action' => $this->_create_path('modify_messages'),
+            'id' => 'target',
+            'enctype' => 'multi',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
-        $this->single_parts['form']['form_declaration']['view_message']  = ee()->functions->form_declaration($details);
+        $this->single_parts['form']['form_declaration']['view_message'] = ee()->functions->form_declaration($details);
 
         /** -----------------------------------
         /**  Various Components
@@ -2498,7 +2498,7 @@ DOH;
         /**  Tracking and Status
         /** -----------------------------------*/
         if ($data['message_read'] == 'n') {
-            $udata = array('message_read' => 'y', 'message_time_read' =>  ee()->localize->now);
+            $udata = array('message_read' => 'y', 'message_time_read' => ee()->localize->now);
             ee()->db->query(ee()->db->update_string('exp_message_copies', $udata, "copy_id = {$copy_id}"));
         }
 
@@ -2540,7 +2540,7 @@ DOH;
         ee()->db->where('recipient_id', $this->member_id);
         $results = ee()->db->get('message_copies');
 
-        if ($results->row('count')  == 0) {
+        if ($results->row('count') == 0) {
             ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
         }
 
@@ -2579,20 +2579,20 @@ DOH;
     /** -----------------------------------
     /**  Buddies List
     /** -----------------------------------*/
-    public function buddies($message='')
+    public function buddies($message = '')
     {
         $template = $this->retrieve_template('buddies_block_list');
 
         $form_details = array('hidden_fields' => array('name' => '','description' => '', 'which' => 'buddy', 'daction' => ''),
-            'action'		  => $this->_create_path('edit_list'),
-            'id'			  => 'target',
-            'secure'		  => ($this->allegiance == 'cp') ? false : true
+            'action' => $this->_create_path('edit_list'),
+            'id' => 'target',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
-        $this->single_parts['lang']['list_title'] =	ee()->lang->line('buddy_list');
+        $this->single_parts['lang']['list_title'] = ee()->lang->line('buddy_list');
         $this->single_parts['include']['toggle_js'] = $this->toggle_js();
-        $this->single_parts['include']['buddy_search_js'] =  $this->buddy_search_js();
+        $this->single_parts['include']['buddy_search_js'] = $this->buddy_search_js();
         $this->single_parts['image']['search_glass'] = '<img src="' . $this->images_folder . 'search_glass.gif" style="border: 0px" width="12" height="12" alt="' . ee()->lang->line('search_glass') . '" />';
         $this->single_parts['include']['member_search'] = '<a href="#" title="{lang:member_search}" onclick="buddy_search(1); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
 
@@ -2614,11 +2614,11 @@ DOH;
         } else {
             $rows = $this->retrieve_template('buddies_block_row');
 
-            for ($i=0; $i < $list_size; ++$i) {
-                $this->single_parts['style']				= ($i % 2) ? 'tableCellOne' : 'tableCellTwo';
-                $this->single_parts['screen_name']			= $this->buddies[$i]['2'];
-                $this->single_parts['member_description']	= $this->buddies[$i]['3'];
-                $this->single_parts['listed_id']			= $this->buddies[$i]['4'];
+            for ($i = 0; $i < $list_size; ++$i) {
+                $this->single_parts['style'] = ($i % 2) ? 'tableCellOne' : 'tableCellTwo';
+                $this->single_parts['screen_name'] = $this->buddies[$i]['2'];
+                $this->single_parts['member_description'] = $this->buddies[$i]['3'];
+                $this->single_parts['listed_id'] = $this->buddies[$i]['4'];
 
                 if ($this->allegiance == 'user') {
                     $this->single_parts['path']['send_pm'] = $this->_create_path('pm') . '/' . $this->buddies[$i]['5'] . '/';
@@ -2641,15 +2641,15 @@ DOH;
     /** -----------------------------------
     /**  Bulletin Board
     /** -----------------------------------*/
-    public function bulletin_board($message='')
+    public function bulletin_board($message = '')
     {
         ee()->db->query("UPDATE exp_members SET last_view_bulletins = '" . ee()->localize->now . "' WHERE member_id = '{$this->member_id}'");
 
         $this->title = ee()->lang->line('bulletin_board');
         $this->crumb = ee()->lang->line('bulletin_board');
 
-        $this->conditionals['bulletins']		= 'n';
-        $this->conditionals['no_bulletins']		 = 'y';
+        $this->conditionals['bulletins'] = 'n';
+        $this->conditionals['no_bulletins'] = 'y';
         $this->conditionals['can_post_bulletin'] = (ee('Permission')->can('send_bulletins')) ? 'y' : 'n';
 
         $this->single_parts['include']['message'] = $message;
@@ -2663,7 +2663,7 @@ DOH;
         /** ---------------------------------------*/
         $dql = "SELECT m.screen_name, b.sender_id, b.bulletin_message, b.bulletin_date, b.bulletin_id ";
 
-        $sql =  "FROM exp_member_bulletin_board b, exp_members m
+        $sql = "FROM exp_member_bulletin_board b, exp_members m
 				 WHERE b.sender_id = m.member_id
 				 AND b.bulletin_group = " . ee()->db->escape_str(ee()->session->userdata('role_id')) . "
 				 AND bulletin_date < " . ee()->localize->now . "
@@ -2728,8 +2728,8 @@ DOH;
         /** ----------------------------------------
         /**  Create Bulletins
         /** ----------------------------------------*/
-        $this->conditionals['bulletins']	= 'y';
-        $this->conditionals['no_bulletins']	= 'n';
+        $this->conditionals['bulletins'] = 'y';
+        $this->conditionals['no_bulletins'] = 'n';
 
         $folder_rows_template = $this->retrieve_template('bulletin');
         $i = 0;
@@ -2738,7 +2738,7 @@ DOH;
 
         $query = ee()->db->query($dql . $sql);
 
-        if ($query->row('bulletin_date')  != ee()->session->userdata['last_bulletin_date']) {
+        if ($query->row('bulletin_date') != ee()->session->userdata['last_bulletin_date']) {
             ee()->db->query(ee()->db->update_string('exp_members', array('last_bulletin_date' => $query->row('bulletin_date')), "role_id = '" . ee()->db->escape_str(ee()->session->userdata('role_id')) . "'"));
         }
 
@@ -2746,18 +2746,18 @@ DOH;
             ++$i;
             $data = $row;
 
-            $this->conditionals['can_delete_bulletin']		= (ee('Permission')->isSuperAdmin() or $row['sender_id'] == ee()->session->userdata['member_id']) ? 'y' : 'n';
+            $this->conditionals['can_delete_bulletin'] = (ee('Permission')->isSuperAdmin() or $row['sender_id'] == ee()->session->userdata['member_id']) ? 'y' : 'n';
 
             if ($this->allegiance == 'cp') {
-                $this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin', AMP . 'bulletin_id=' . $row['bulletin_id']);
+                $this->single_parts['path']['delete_bulletin'] = $this->_create_path('delete_bulletin', AMP . 'bulletin_id=' . $row['bulletin_id']);
             } else {
-                $this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin') . '/' . $row['bulletin_id'];
+                $this->single_parts['path']['delete_bulletin'] = $this->_create_path('delete_bulletin') . '/' . $row['bulletin_id'];
             }
 
             $data['bulletin_message'] = ($censor === false) ? $data['bulletin_message'] : ee('Format')->make('Text', $data['bulletin_message'])->censor();
             $data['bulletin_sender'] = $row['screen_name'];
             $data['bulletin_date'] = ee()->localize->human_time($row['bulletin_date']);
-            $data['style']			= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
+            $data['style'] = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 
             $r .= $this->_process_template($folder_rows_template, $data);
         }
@@ -2791,7 +2791,7 @@ DOH;
 
         if ($query->num_rows() == 0) {
             return $this->bulletin_board();
-        } elseif (! ee('Permission')->isSuperAdmin() && $query->row('sender_id')  != ee()->session->userdata['member_id']) {
+        } elseif (! ee('Permission')->isSuperAdmin() && $query->row('sender_id') != ee()->session->userdata['member_id']) {
             return $this->bulletin_board();
         }
 
@@ -2803,7 +2803,7 @@ DOH;
     /** -----------------------------------
     /**  Send a Bulletin Form for Admins
     /** -----------------------------------*/
-    public function send_bulletin($message='')
+    public function send_bulletin($message = '')
     {
         /** -----------------------------------
         /**  Nasty Little Hobbits! No Sending!
@@ -2818,15 +2818,15 @@ DOH;
         /** ----------------------------------------
         /**  Some Form Data
         /** ----------------------------------------*/
-        $form_details = array('action'	=> $this->base_url . 'sending_bulletin',
-            'id'		=> 'sending_bulletin',
-            'secure'	=> ($this->allegiance == 'cp') ? false : true
+        $form_details = array('action' => $this->base_url . 'sending_bulletin',
+            'id' => 'sending_bulletin',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['sending_bulletin'] = ee()->functions->form_declaration($form_details);
 
-        $this->single_parts['input']['bulletin_date']	 = ee()->localize->human_time(ee()->localize->now);
-        $this->single_parts['input']['bulletin_expires'] = ee()->localize->human_time(ee()->localize->now + 30*24*60*60);
+        $this->single_parts['input']['bulletin_date'] = ee()->localize->human_time(ee()->localize->now);
+        $this->single_parts['input']['bulletin_expires'] = ee()->localize->human_time(ee()->localize->now + 30 * 24 * 60 * 60);
 
         $this->single_parts['include']['message'] = $message;
 
@@ -2922,7 +2922,7 @@ DOH;
             return $this->send_bulletin();
         }
 
-        $begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date'], true, ee()->localize->get_date_format());
+        $begins = ee()->localize->string_to_timestamp($_POST['bulletin_date'], true, ee()->localize->get_date_format());
         $expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires'], true, ee()->localize->get_date_format());
 
         if ($begins == 0) {
@@ -2930,14 +2930,14 @@ DOH;
         }
 
         if ($expires == 0) {
-            $expires = ee()->localize->now + 30*24*60*60;
+            $expires = ee()->localize->now + 30 * 24 * 60 * 60;
         }
 
-        $data = array('sender_id'			=> $this->member_id,
-            'bulletin_date'		=> $begins,
-            'hash'				=> ee()->functions->random('alnum', 10),
-            'bulletin_expires'	=> $expires,
-            'bulletin_message'	=> ee()->input->post('bulletin_message', true)
+        $data = array('sender_id' => $this->member_id,
+            'bulletin_date' => $begins,
+            'hash' => ee()->functions->random('alnum', 10),
+            'bulletin_expires' => $expires,
+            'bulletin_message' => ee()->input->post('bulletin_message', true)
         );
 
         foreach ($groups as $group_id) {
@@ -2989,11 +2989,11 @@ DOH;
                 }
             }
 
-            $data = array('member_id'			=> $this->member_id,
-                'listed_description'	=> ee('Security/XSS')->clean(ee()->functions->char_limiter($_POST['description'], 50)),
-                'listed_type'			=> $which);
+            $data = array('member_id' => $this->member_id,
+                'listed_description' => ee('Security/XSS')->clean(ee()->functions->char_limiter($_POST['description'], 50)),
+                'listed_type' => $which);
 
-            for ($i=0, $s = count($person); $i < $s; ++$i) {
+            for ($i = 0, $s = count($person); $i < $s; ++$i) {
                 if ($this->member_id == $person[$i]) {
                     return $this->_error_page('invalid_username');
                 } elseif ($which == 'buddy' && count($this->goodies) > 0 && in_array($person[$i], $this->goodies)) {
@@ -3066,7 +3066,7 @@ DOH;
     /** -----------------------------------
     /**  Add to Buddy or Block List
     /** -----------------------------------*/
-    public function add_list_member($which='buddy', $id='')
+    public function add_list_member($which = 'buddy', $id = '')
     {
         /** -----------------------------------
         /**  Add to List
@@ -3089,11 +3089,11 @@ DOH;
             }
         }
 
-        $data = array('member_id'			=> $this->member_id,
-            'listed_description'	=> '',
-            'listed_type'			=> $which);
+        $data = array('member_id' => $this->member_id,
+            'listed_description' => '',
+            'listed_type' => $which);
 
-        for ($i=0, $s = count($person); $i < $s; ++$i) {
+        for ($i = 0, $s = count($person); $i < $s; ++$i) {
             if ($this->member_id == $person[$i]) {
                 continue;
             } elseif ($which == 'buddy' && count($this->goodies) > 0 && in_array($person[$i], $this->goodies)) {
@@ -3129,15 +3129,15 @@ DOH;
         $template = $this->retrieve_template('buddies_block_list');
 
         $form_details = array('hidden_fields' => array('name' => '','description' => '', 'which' => 'blocked', 'daction' => ''),
-            'action'		  => $this->_create_path('edit_list'),
-            'id'			  => 'target',
-            'secure'		  => ($this->allegiance == 'cp') ? false : true
+            'action' => $this->_create_path('edit_list'),
+            'id' => 'target',
+            'secure' => ($this->allegiance == 'cp') ? false : true
         );
 
         $this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
-        $this->single_parts['lang']['list_title'] =	ee()->lang->line('blocked_list');
+        $this->single_parts['lang']['list_title'] = ee()->lang->line('blocked_list');
         $this->single_parts['include']['toggle_js'] = $this->toggle_js();
-        $this->single_parts['include']['buddy_search_js'] =  $this->buddy_search_js();
+        $this->single_parts['include']['buddy_search_js'] = $this->buddy_search_js();
         $this->single_parts['image']['search_glass'] = '<img src="' . $this->images_folder . 'search_glass.gif" style="border: 0px" width="12" height="12" alt="' . ee()->lang->line('search_glass') . '" />';
         $this->single_parts['include']['member_search'] = '<a href="#" title="{lang:member_search}" onclick="buddy_search(2); return false;">' . $this->single_parts['image']['search_glass'] . '</a>';
 
@@ -3159,11 +3159,11 @@ DOH;
         } else {
             $rows = $this->retrieve_template('buddies_block_row');
 
-            for ($i=0; $i < $list_size; ++$i) {
-                $this->single_parts['style']				= ($i % 2) ? 'tableCellOne' : 'tableCellTwo';
-                $this->single_parts['screen_name']			= $this->blocked[$i]['2'];
-                $this->single_parts['member_description']	= $this->blocked[$i]['3'];
-                $this->single_parts['listed_id']			= $this->blocked[$i]['4'];
+            for ($i = 0; $i < $list_size; ++$i) {
+                $this->single_parts['style'] = ($i % 2) ? 'tableCellOne' : 'tableCellTwo';
+                $this->single_parts['screen_name'] = $this->blocked[$i]['2'];
+                $this->single_parts['member_description'] = $this->blocked[$i]['3'];
+                $this->single_parts['listed_id'] = $this->blocked[$i]['4'];
 
                 if ($this->allegiance == 'user') {
                     $this->single_parts['path']['send_pm'] = $this->_create_path('pm') . '/' . $this->blocked[$i]['5'];
@@ -3215,7 +3215,7 @@ DOH;
 
     public function maintenance()
     {
-        $deletion_time = ee()->localize->now - ($this->delete_expiration*24*60*60);
+        $deletion_time = ee()->localize->now - ($this->delete_expiration * 24 * 60 * 60);
 
         // Erase old deleted messages
 
@@ -3809,7 +3809,7 @@ MRT;
     public function showhide_js()
     {
         $prefix = (! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix') . '_';
-        $path	= (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
+        $path = (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
         $domain = (! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
         $domain = ($domain == '') ? '' : 'domain=' . $domain;
 
@@ -4287,7 +4287,7 @@ DOD;
 
         $str = '';
 
-        for ($i=0, $s = count($this->buddies); $i < $s; $i++) {
+        for ($i = 0, $s = count($this->buddies); $i < $s; $i++) {
             $str .= NL . "\tbuddies_email[{$i}] = ['" . htmlspecialchars($this->buddies[$i]['2'], ENT_QUOTES) . "'];" . NL;
         }
 

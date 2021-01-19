@@ -18,10 +18,10 @@ class Api_channel_categories extends Api
      * However, we're abusing them in other places, so they are set to public for now.
      * Third-party devs, don't rely on these being public, m'kay?
      */
-    public $assign_cat_parent	= true;
-    public $categories			= array();
-    public $cat_parents			= array();
-    public $cat_array			= array();
+    public $assign_cat_parent = true;
+    public $categories = array();
+    public $cat_parents = array();
+    public $cat_array = array();
 
     /**
      * Constructor
@@ -54,9 +54,9 @@ class Api_channel_categories extends Api
         // reset $this->categories
         $this->initialize(
             array(
-                'categories'	=> array(),
-                'cat_parents'	=> array(),
-                'cat_array'		=> array(),
+                'categories' => array(),
+                'cat_parents' => array(),
+                'cat_array' => array(),
             )
         );
 
@@ -94,7 +94,7 @@ class Api_channel_categories extends Api
         // Assign the query result to a multi-dimensional array
 
         foreach ($query->result_array() as $row) {
-            $cat_array[$row['cat_id']]	= array(
+            $cat_array[$row['cat_id']] = array(
                 $row['parent_id'],
                 $row['cat_name'],
                 $row['group_id'],
@@ -166,7 +166,7 @@ class Api_channel_categories extends Api
      */
     public function category_form_tree($nested = 'y', $categories = false, $sites = false)
     {
-        $order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
+        $order = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
 
         ee()->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
         ee()->db->from('categories');
@@ -207,7 +207,7 @@ class Api_channel_categories extends Api
                 foreach ($categories as $key => $val) {
                     if (0 == $val['3']) {
                         $this->cat_array[] = array($val['0'], $val['1'], $val['2']);
-                        $this->category_form_subtree($val['1'], $categories, $depth=1);
+                        $this->category_form_subtree($val['1'], $categories, $depth = 1);
                     }
                 }
             } else {

@@ -41,7 +41,7 @@ class HasAndBelongsToMany extends Relation
         $options = parent::getInverseOptions();
         $options['pivot'] = [
             'table' => $this->pivot['table'],
-            'left'  => $this->pivot['right'],
+            'left' => $this->pivot['right'],
             'right' => $this->pivot['left'],
         ];
 
@@ -189,7 +189,7 @@ class HasAndBelongsToMany extends Relation
     protected function deriveKeys()
     {
         $from = $this->from_key ?: $this->from_primary_key;
-        $to   = $this->to_key ?: $this->to_primary_key;
+        $to = $this->to_key ?: $this->to_primary_key;
 
         return array($from, $to);
     }

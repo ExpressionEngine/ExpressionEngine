@@ -90,24 +90,24 @@ class ImportConverter extends Utilities
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'member_file',
-                'label'   => 'lang:member_file',
-                'rules'   => 'callback__file_handler'
+                'field' => 'member_file',
+                'label' => 'lang:member_file',
+                'rules' => 'callback__file_handler'
             ),
             array(
-                'field'   => 'delimiter',
-                'label'   => 'lang:delimiting_char',
-                'rules'   => 'required|enum[tab,other,comma,pipe]'
+                'field' => 'delimiter',
+                'label' => 'lang:delimiting_char',
+                'rules' => 'required|enum[tab,other,comma,pipe]'
             ),
             array(
-                'field'   => 'delimiter_special',
-                'label'   => 'lang:delimiting_char',
-                'rules'   => 'trim|callback__not_alphanu'
+                'field' => 'delimiter_special',
+                'label' => 'lang:delimiting_char',
+                'rules' => 'trim|callback__not_alphanu'
             ),
             array(
-                'field'   => 'enclosure',
-                'label'   => 'lang:enclosing_char',
-                'rules'   => 'callback__prep_enclosure'
+                'field' => 'enclosure',
+                'label' => 'lang:enclosing_char',
+                'rules' => 'callback__prep_enclosure'
             ),
         ));
 
@@ -219,8 +219,8 @@ class ImportConverter extends Utilities
 
         ee()->load->library('upload');
         ee()->upload->initialize(array(
-            'allowed_types'	=> '*',
-            'upload_path'	=> $this->cache,
+            'allowed_types' => '*',
+            'upload_path' => $this->cache,
             'overwrite' => true
         ));
 
@@ -300,10 +300,10 @@ class ImportConverter extends Utilities
         $vars['fields'] = $fields;
 
         $vars['form_hidden'] = array(
-            'member_file'		=> ee('Encrypt')->encode($this->member_file_name),
-            'delimiter'			=> ee()->input->post('delimiter'),
-            'enclosure'			=> $enclosure,
-            'delimiter_special'	=> $delimiter
+            'member_file' => ee('Encrypt')->encode($this->member_file_name),
+            'delimiter' => ee()->input->post('delimiter'),
+            'enclosure' => $enclosure,
+            'delimiter_special' => $delimiter
         );
 
         $vars['encrypt'] = '';
@@ -370,14 +370,14 @@ class ImportConverter extends Utilities
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'unique_check',
-                'label'   => 'lang:other',
-                'rules'   => 'callback__unique_required'
+                'field' => 'unique_check',
+                'label' => 'lang:other',
+                'rules' => 'callback__unique_required'
             ),
             array(
-                'field'   => 'encrypt',
-                'label'   => 'lang:plain_text_passwords',
-                'rules'   => 'required'
+                'field' => 'encrypt',
+                'label' => 'lang:plain_text_passwords',
+                'rules' => 'required'
             )
         ));
 
@@ -410,11 +410,11 @@ class ImportConverter extends Utilities
         $vars['paired'] = $paired;
 
         $vars['form_hidden'] = array(
-            'member_file'		=> ee()->input->post('member_file'),
-            'delimiter'			=> ee()->input->post('delimiter'),
-            'enclosure'			=> $enclosure,
-            'delimiter_special'	=> $delimiter,
-            'encrypt'			=> ee()->input->post('encrypt')
+            'member_file' => ee()->input->post('member_file'),
+            'delimiter' => ee()->input->post('delimiter'),
+            'enclosure' => $enclosure,
+            'delimiter_special' => $delimiter,
+            'encrypt' => ee()->input->post('encrypt')
         );
 
         $vars['form_hidden'] = array_merge($vars['form_hidden'], $paired);
@@ -476,12 +476,12 @@ class ImportConverter extends Utilities
         $xml = ee()->xmlparser->parse_xml($contents);
 
         $params = array(
-            'data'			=> $contents,
-            'structure'		=> $structure,
-            'root'			=> 'members',
-            'element'		=> 'member',
-            'delimiter'		=> $delimiter,
-            'enclosure'		=> $enclosure
+            'data' => $contents,
+            'structure' => $structure,
+            'root' => 'members',
+            'element' => 'member',
+            'delimiter' => $delimiter,
+            'enclosure' => $enclosure
         );
 
         $xml = ee()->xmlparser->delimited_to_xml($params, 1);

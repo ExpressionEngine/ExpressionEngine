@@ -30,11 +30,11 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete',
-    'form_url'	=> ee('CP/URL')->make('categories/fields/remove', ee()->cp->get_url_state()),
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove',
-        'group_id'		=> $group_id
+    'name' => 'modal-confirm-delete',
+    'form_url' => ee('CP/URL')->make('categories/fields/remove', ee()->cp->get_url_state()),
+    'hidden' => array(
+        'bulk_action' => 'remove',
+        'group_id' => $group_id
     )
 );
 

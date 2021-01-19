@@ -21,7 +21,7 @@ class DBConfig extends ConfigWithDefaults
     protected $delegate;
     protected $active_group;
     protected $defaults = array(
-        'port'     => 3306,
+        'port' => 3306,
         'hostname' => '127.0.0.1',
         'username' => 'root',
         'password' => '',

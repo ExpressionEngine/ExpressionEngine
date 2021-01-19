@@ -100,7 +100,7 @@ class Installer_Template
         // NOTE If we don't use a tag pair, we have no where for parameters
         // to go.  Maybe check for parameters and make the decision to
         // use tag pair vs single entry then?
-        foreach ($this->related_data as $marker=>$relationship_tag) {
+        foreach ($this->related_data as $marker => $relationship_tag) {
             $tagdata = $relationship_tag['tagdata'];
             if (isset($relationship_tag['var_single'])) {
                 foreach ($relationship_tag['var_single'] as $variable) {
@@ -116,7 +116,7 @@ class Installer_Template
             }
 
             if (isset($relationship_tag['var_pair'])) {
-                foreach ($relationship_tag['var_pair'] as $variable=>$params) {
+                foreach ($relationship_tag['var_pair'] as $variable => $params) {
                     if (! in_array($variable, $channel_pair_variables) && ! in_array($variable, $channel_custom_fields)) {
                         continue;
                     }
@@ -139,7 +139,7 @@ class Installer_Template
         // Now deal with {reverse_related_entries}, just replace each
         // tag pair with a {parents} tag pair and put the parameters from
         // the original tag onto the {parents} tag.
-        foreach ($this->reverse_related_data as $marker=>$relationship_tag) {
+        foreach ($this->reverse_related_data as $marker => $relationship_tag) {
             $tagdata = $relationship_tag['tagdata'];
 
             if (isset($relationship_tag['var_single'])) {
@@ -153,7 +153,7 @@ class Installer_Template
             }
 
             if (isset($relationship_tag['var_pair'])) {
-                foreach ($relationship_tag['var_pair'] as $variable=>$params) {
+                foreach ($relationship_tag['var_pair'] as $variable => $params) {
                     if (! in_array($variable, $channel_pair_variables) && ! in_array($variable, $channel_custom_fields)) {
                         continue;
                     }
@@ -167,7 +167,7 @@ class Installer_Template
             $tagdata = str_replace('{if no_reverse_related_entries}', '{if parents:no_results}', $tagdata);
 
             $parentTag = 'parents ';
-            foreach ($relationship_tag['params'] as $param=>$value) {
+            foreach ($relationship_tag['params'] as $param => $value) {
                 $parentTag .= $param . '="' . $value . '" ';
             }
 
@@ -227,13 +227,13 @@ class Installer_Template
                 $vars = ee('Variables/Parser')->extractVariables($matches[2][$j]);
                 $this->related_id = $matches[1][$j];
                 $this->related_data[$rand] = array(
-                    'marker'			=> $rand,
-                    'field_name'		=> $matches[1][$j],
-                    'tagdata'			=> $matches[2][$j],
-                    'var_single'		=> $vars['var_single'],
-                    'var_pair' 			=> $vars['var_pair'],
-                    'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-                    'no_rel_content'	=> $no_rel_content
+                    'marker' => $rand,
+                    'field_name' => $matches[1][$j],
+                    'tagdata' => $matches[2][$j],
+                    'var_single' => $vars['var_single'],
+                    'var_pair' => $vars['var_pair'],
+                    'var_cond' => ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+                    'no_rel_content' => $no_rel_content
                 );
 
                 $chunk = str_replace($matches[0][$j], $marker, $chunk);
@@ -259,13 +259,13 @@ class Installer_Template
                 }
 
                 $this->reverse_related_data[$rand] = array(
-                    'marker'			=> $rand,
-                    'tagdata'			=> $matches[2][$j],
-                    'var_single'		=> $vars['var_single'],
-                    'var_pair' 			=> $vars['var_pair'],
-                    'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-                    'params'			=> ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
-                    'no_rev_content'	=> $no_rev_content
+                    'marker' => $rand,
+                    'tagdata' => $matches[2][$j],
+                    'var_single' => $vars['var_single'],
+                    'var_pair' => $vars['var_pair'],
+                    'var_cond' => ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+                    'params' => ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
+                    'no_rev_content' => $no_rev_content
                 );
 
                 $chunk = str_replace($matches[0][$j], $marker, $chunk);

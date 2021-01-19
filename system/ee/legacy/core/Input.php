@@ -15,13 +15,13 @@ class EE_Input
 {
     public $SID = ''; // Session ID extracted from the URI segments
 
-    public $ip_address				= false;
-    public $user_agent				= false;
-    public $_allow_get_array		= true;
-    public $_standardize_newlines	= true;
-    public $_enable_xss			= false; // Set automatically based on config setting
+    public $ip_address = false;
+    public $user_agent = false;
+    public $_allow_get_array = true;
+    public $_standardize_newlines = true;
+    public $_enable_xss = false; // Set automatically based on config setting
 
-    protected $headers			= array();
+    protected $headers = array();
 
     /**
      * Constructor
@@ -34,16 +34,16 @@ class EE_Input
     {
         log_message('debug', "Input Class Initialized");
 
-        $this->_allow_get_array	= true;// (config_item('enable_query_strings') === TRUE) ? TRUE : FALSE;
-        $this->_enable_xss		= (config_item('global_xss_filtering') === true) ? true : false;
+        $this->_allow_get_array = true;// (config_item('enable_query_strings') === TRUE) ? TRUE : FALSE;
+        $this->_enable_xss = (config_item('global_xss_filtering') === true) ? true : false;
 
         global $SEC;
-        $this->security =& $SEC;
+        $this->security = & $SEC;
 
         // Do we need the UTF-8 class?
         if (UTF8_ENABLED === true) {
             global $UNI;
-            $this->uni =& $UNI;
+            $this->uni = & $UNI;
         }
 
         // Sanitize global arrays
@@ -182,12 +182,12 @@ class EE_Input
         // Set prefix, path and domain. We'll pull em out of config.
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $data['prefix'] = (! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix;
-            $data['path']	= (! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
+            $data['path'] = (! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
             $data['domain'] = (! ee()->config->cp_cookie_domain) ? '' : ee()->config->cp_cookie_domain;
             $data['httponly'] = (! ee()->config->cp_cookie_httponly) ? 'y' : ee()->config->cp_cookie_httponly;
         } else {
             $data['prefix'] = (! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix') . '_';
-            $data['path']	= (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
+            $data['path'] = (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
             $data['domain'] = (! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
             $data['httponly'] = (! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
         }
@@ -620,8 +620,8 @@ class EE_Input
         }
 
         // Otherwise let's start breaking things up
-        $comparison_ip	= explode('.', $ip);
-        $current_ip		= explode('.', $this->ip_address());
+        $comparison_ip = explode('.', $ip);
+        $current_ip = explode('.', $this->ip_address());
 
         // Check each octet up to the desired accuracy
         for ($octet = 0; $octet < $accuracy; $octet++) {

@@ -77,9 +77,9 @@ class EE_Blockedlist
         }
 
         // Allowed Items
-        $allowedlist_ip		= array();
-        $allowedlist_url	= array();
-        $allowedlist_agent	= array();
+        $allowedlist_ip = array();
+        $allowedlist_url = array();
+        $allowedlist_agent = array();
 
         $results = ee()->db->query("SELECT allowedlist_type, allowedlist_value FROM exp_allowedlist
 										 WHERE allowedlist_value != ''");
@@ -114,7 +114,7 @@ class EE_Blockedlist
         $domains = array('net','com','org','info', 'name','biz','us','de', 'uk');
 
         // blockedlist Checking
-        $query	= ee()->db->query("SELECT blockedlist_type, blockedlist_value FROM exp_blockedlist");
+        $query = ee()->db->query("SELECT blockedlist_type, blockedlist_value FROM exp_blockedlist");
 
         if ($query->num_rows() == 0) {
             unset($_POST['HTTP_REFERER']);

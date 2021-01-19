@@ -38,7 +38,7 @@ class ViewType
         if (in_array(ee()->input->get('viewtype'), $views)) {
             if (!isset($viewtype_prefs[$destination]) || $viewtype != ee()->input->get('viewtype')) {
                 $viewtype_prefs[$destination] = ee()->input->get('viewtype');
-                ee()->input->set_cookie('viewtype', serialize($viewtype_prefs), 60*60*24*365);
+                ee()->input->set_cookie('viewtype', serialize($viewtype_prefs), 60 * 60 * 24 * 365);
             }
             $viewtype = ee()->input->get('viewtype');
         }

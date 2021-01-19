@@ -16,8 +16,8 @@ class Api_channel_structure extends Api
     /**
      * @php4 -- Class properties are protected.
      */
-    public $channel_info	= array();	// cache of previously fetched channel info
-    public $channels		= array();	// cache of previously fetched channels
+    public $channel_info = array();	// cache of previously fetched channel info
+    public $channels = array();	// cache of previously fetched channels
 
     /**
      * Constructor
@@ -164,9 +164,9 @@ class Api_channel_structure extends Api
 
         ee()->load->model('super_model');
 
-        $channel_title		= '';
-        $channel_name		= '';
-        $url_title_prefix	= '';
+        $channel_title = '';
+        $channel_name = '';
+        $url_title_prefix = '';
 
         // turn our array into variables
         extract($data);
@@ -212,7 +212,7 @@ class Api_channel_structure extends Api
         }
 
         // validate template creation options
-        if (isset($create_templates)  && $create_templates != 'no' &&
+        if (isset($create_templates) && $create_templates != 'no' &&
             isset($old_group_id) && isset($group_name) && isset($template_theme)) {
             // load the template structure library
             ee()->load->library('api/api_template_structure', 'template_structure');
@@ -328,8 +328,8 @@ class Api_channel_structure extends Api
         }
 
         // do it do it do it
-        $channel_url	= (! isset($channel_url)) ? ee()->functions->fetch_site_index() : $channel_url;
-        $channel_lang	= (! isset($channel_lang)) ? ee()->config->item('xml_lang') : $channel_lang;
+        $channel_url = (! isset($channel_url)) ? ee()->functions->fetch_site_index() : $channel_url;
+        $channel_lang = (! isset($channel_lang)) ? ee()->config->item('xml_lang') : $channel_lang;
 
         // Assign field group if there is only one
         if (! isset($field_group) or ! is_numeric($field_group)) {
@@ -409,9 +409,9 @@ class Api_channel_structure extends Api
             return false;
         }
 
-        $channel_title		= '';
-        $channel_name		= '';
-        $url_title_prefix	= '';
+        $channel_title = '';
+        $channel_name = '';
+        $url_title_prefix = '';
 
         // turn our array into variables
         extract($data);

@@ -32,8 +32,8 @@ class Keyword extends Filter
     public function render(ViewFactory $view, URL $url)
     {
         $filter = [
-            'name'        => $this->name,
-            'value'       => str_replace('"', '&quot;', $this->value()),
+            'name' => $this->name,
+            'value' => str_replace('"', '&quot;', $this->value()),
             'placeholder' => $this->placeholder
         ];
 

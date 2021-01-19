@@ -27,15 +27,15 @@ class EE_Table
     protected $page_offset = array();
     protected $column_config = array();
 
-    public $rows         = array();
-    public $heading      = array();
-    public $footer       = array();
+    public $rows = array();
+    public $heading = array();
+    public $footer = array();
     public $auto_heading = true;
-    public $caption      = null;
-    public $template     = null;
-    public $newline      = "\n";
-    public $empty_cells  = "";
-    public $function     = false;
+    public $caption = null;
+    public $template = null;
+    public $newline = "\n";
+    public $empty_cells = "";
+    public $function = false;
 
     /**
      * Constructor
@@ -91,9 +91,9 @@ class EE_Table
     public function datasource($func, $options = array(), $params = array())
     {
         $settings = array(
-            'offset'		=> 0,
-            'sort'			=> array(),		// column_name => value
-            'columns'		=> $this->column_config
+            'offset' => 0,
+            'sort' => array(),		// column_name => value
+            'columns' => $this->column_config
         );
 
         // override initial settings
@@ -155,7 +155,7 @@ class EE_Table
             }
 
             ee()->output->send_ajax_response(array(
-                'rows'		 => $data['rows'],
+                'rows' => $data['rows'],
                 'pagination' => $this->_create_pagination($data, true)
             ));
         }
@@ -317,15 +317,15 @@ class EE_Table
         }
 
         $jq_config = array(
-            'base_url'		=> $this->base_url,
-            'columns'		=> $this->column_config,
-            'template'		=> $template,
-            'empty_cells'	=> $this->empty_cells,
-            'no_results'	=> $this->no_results,
-            'pagination'	=> $this->pagination_tmpl,
-            'uniqid'		=> $this->uniqid,
-            'sort'			=> $this->sort,
-            'rows'			=> $this->raw_data
+            'base_url' => $this->base_url,
+            'columns' => $this->column_config,
+            'template' => $template,
+            'empty_cells' => $this->empty_cells,
+            'no_results' => $this->no_results,
+            'pagination' => $this->pagination_tmpl,
+            'uniqid' => $this->uniqid,
+            'sort' => $this->sort,
+            'rows' => $this->raw_data
         );
 
         $table_config_data = 'data-table_config="' . form_prep(json_encode($jq_config)) . '"';
@@ -513,9 +513,9 @@ class EE_Table
 
         $this->jq_template = false;
 
-        $this->rows				= array();
-        $this->heading			= array();
-        $this->auto_heading		= true;
+        $this->rows = array();
+        $this->heading = array();
+        $this->auto_heading = true;
     }
 
     /**
@@ -783,33 +783,33 @@ class EE_Table
     public function _default_template()
     {
         return  array(
-            'table_open'         => '<table border ="0" cellpadding ="4" cellspacing ="0">',
+            'table_open' => '<table border ="0" cellpadding ="4" cellspacing ="0">',
 
-            'thead_open'         => '<thead>',
-            'thead_close'        => '</thead>',
+            'thead_open' => '<thead>',
+            'thead_close' => '</thead>',
 
-            'heading_row_start'  => '<tr>',
-            'heading_row_end'    => '</tr>',
+            'heading_row_start' => '<tr>',
+            'heading_row_end' => '</tr>',
             'heading_cell_start' => '<th>',
-            'heading_cell_end'   => '</th>',
+            'heading_cell_end' => '</th>',
 
-            'tbody_open'         => '<tbody>',
-            'tbody_close'        => '</tbody>',
+            'tbody_open' => '<tbody>',
+            'tbody_close' => '</tbody>',
 
-            'row_start'          => '<tr>',
-            'row_end'            => '</tr>',
-            'cell_start'         => '<td>',
-            'cell_end'           => '</td>',
+            'row_start' => '<tr>',
+            'row_end' => '</tr>',
+            'cell_start' => '<td>',
+            'cell_end' => '</td>',
 
-            'row_alt_start'      => '<tr>',
-            'row_alt_end'        => '</tr>',
-            'cell_alt_start'     => '<td>',
-            'cell_alt_end'       => '</td>',
+            'row_alt_start' => '<tr>',
+            'row_alt_end' => '</tr>',
+            'cell_alt_start' => '<td>',
+            'cell_alt_end' => '</td>',
 
-            'tfoot_open'         => '<tfoot>',
-            'tfoot_close'        => '</tfoot>',
+            'tfoot_open' => '<tfoot>',
+            'tfoot_close' => '</tfoot>',
 
-            'table_close'        => '</table>'
+            'table_close' => '</table>'
         );
     }
 
@@ -831,13 +831,13 @@ class EE_Table
 
         // sensible CP defaults
         $config = array(
-            'base_url'				=> '',
-            'per_page'				=> 50,
-            'cur_page'				=> $this->page_offset,
-            'num_links'				=> 2,
+            'base_url' => '',
+            'per_page' => 50,
+            'cur_page' => $this->page_offset,
+            'num_links' => 2,
 
-            'full_tag_open'			=> '<div class="paginate"><ul>', // @todo having an id here is nonsense, you can have more than one!
-            'full_tag_close'		=> '</ul></div>',
+            'full_tag_open' => '<div class="paginate"><ul>', // @todo having an id here is nonsense, you can have more than one!
+            'full_tag_close' => '</ul></div>',
         );
 
         $config = array_merge($config, $data['pagination']);

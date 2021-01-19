@@ -45,9 +45,9 @@ class SearchIn extends Filter
         }
 
         $filter = array(
-            'label'			=> $this->label,
-            'value'			=> $value,
-            'options'		=> $options,
+            'label' => $this->label,
+            'value' => $value,
+            'options' => $options,
         );
 
         return $view->make('_shared/filters/searchin')->render($filter);

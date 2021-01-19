@@ -72,7 +72,7 @@ $lang = array(
 
     'tools_utilities' => 'Utilities',
 
-    'trans_file_not_writable'=> 'Translation file is not writeable.',
+    'trans_file_not_writable' => 'Translation file is not writeable.',
 
     'translation' => 'Translation',
 

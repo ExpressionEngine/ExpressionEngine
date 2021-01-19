@@ -24,18 +24,18 @@ class ChannelField extends FieldModel
     protected static $_hook_id = 'channel_field';
 
     protected static $_typed_columns = array(
-        'field_pre_populate'   => 'boolString',
+        'field_pre_populate' => 'boolString',
         'field_pre_channel_id' => 'int',
-        'field_pre_field_id'   => 'int',
-        'field_ta_rows'        => 'int',
-        'field_maxl'           => 'int',
-        'field_required'       => 'boolString',
-        'field_search'         => 'boolString',
-        'field_is_hidden'      => 'boolString',
-        'field_show_fmt'       => 'boolString',
-        'field_order'          => 'int',
-        'field_settings'       => 'base64Serialized',
-        'legacy_field_data'    => 'boolString',
+        'field_pre_field_id' => 'int',
+        'field_ta_rows' => 'int',
+        'field_maxl' => 'int',
+        'field_required' => 'boolString',
+        'field_search' => 'boolString',
+        'field_is_hidden' => 'boolString',
+        'field_show_fmt' => 'boolString',
+        'field_order' => 'int',
+        'field_settings' => 'base64Serialized',
+        'legacy_field_data' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -64,22 +64,22 @@ class ChannelField extends FieldModel
     );
 
     protected static $_validation_rules = array(
-        'site_id'              => 'required|integer',
-        'field_name'           => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
-        'field_label'          => 'required|maxLength[50]',
-        'field_type'           => 'validateIsCompatibleWithPreviousValue',
+        'site_id' => 'required|integer',
+        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
+        'field_label' => 'required|maxLength[50]',
+        'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
-        'field_pre_populate'   => 'enum[y,n,v]',
+        'field_pre_populate' => 'enum[y,n,v]',
         'field_pre_channel_id' => 'integer',
-        'field_pre_field_id'   => 'integer',
-        'field_ta_rows'        => 'integer',
-        'field_maxl'           => 'integer',
-        'field_required'       => 'enum[y,n]',
-        'field_search'         => 'enum[y,n]',
-        'field_is_hidden'      => 'enum[y,n]',
-        'field_show_fmt'       => 'enum[y,n]',
-        'field_order'          => 'integer',
-        'legacy_field_data'    => 'enum[y,n]',
+        'field_pre_field_id' => 'integer',
+        'field_ta_rows' => 'integer',
+        'field_maxl' => 'integer',
+        'field_required' => 'enum[y,n]',
+        'field_search' => 'enum[y,n]',
+        'field_is_hidden' => 'enum[y,n]',
+        'field_show_fmt' => 'enum[y,n]',
+        'field_order' => 'integer',
+        'legacy_field_data' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -203,8 +203,8 @@ class ChannelField extends FieldModel
         foreach ($this->getRelatedChannelLayouts() as $channel_layout) {
             $field_layout = $channel_layout->field_layout;
             $field_info = array(
-                'field'     => 'field_id_' . $this->field_id,
-                'visible'   => true,
+                'field' => 'field_id_' . $this->field_id,
+                'visible' => true,
                 'collapsed' => $this->getProperty('field_is_hidden')
             );
             $field_layout[0]['fields'][] = $field_info;

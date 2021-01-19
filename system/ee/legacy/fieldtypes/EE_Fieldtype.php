@@ -466,13 +466,13 @@ abstract class EE_Fieldtype
     {
         // Default custom field additions to channel_data
         $fields['field_id_' . $data['field_id']] = array(
-            'type' 			=> 'text',
-            'null'			=> true
+            'type' => 'text',
+            'null' => true
         );
 
         $fields['field_ft_' . $data['field_id']] = array(
-            'type' 			=> 'tinytext',
-            'null'			=> true,
+            'type' => 'tinytext',
+            'null' => true,
         );
 
         return $fields;
@@ -658,7 +658,7 @@ abstract class EE_Fieldtype
             '<p class="field_format_option select_format_n">' .
                 lang('multi_list_items', $prefix . 'field_list_items') . BR .
                 lang('field_list_instructions') . BR .
-                form_textarea(array('id'=>$prefix . 'field_list_items','name'=>$prefix . 'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>set_value($prefix . 'field_list_items', $data['field_list_items']))) .
+                form_textarea(array('id' => $prefix . 'field_list_items','name' => $prefix . 'field_list_items', 'rows' => 10, 'cols' => 50, 'value' => set_value($prefix . 'field_list_items', $data['field_list_items']))) .
             '</p>
 			<p class="field_format_option select_format_y">' .
                 lang('select_channel_for_field', $prefix . 'field_pre_populate_id') .
@@ -816,7 +816,7 @@ abstract class EE_Fieldtype
      * @param   string  optional content to show for a no selection/empty option
      * @return	array   array of field options
      */
-    protected function _get_field_options($data, $show_empty='')
+    protected function _get_field_options($data, $show_empty = '')
     {
         $field_options = array();
 
@@ -984,9 +984,9 @@ abstract class EE_Fieldtype
     {
         return form_label(lang('grid_limit_input')) . NBS . NBS . NBS .
             form_input(array(
-                'name'	=> 'field_maxl',
-                'value'	=> (isset($data['field_maxl'])) ? $data['field_maxl'] : 256,
-                'class'	=> 'grid_input_text_small'
+                'name' => 'field_maxl',
+                'value' => (isset($data['field_maxl'])) ? $data['field_maxl'] : 256,
+                'class' => 'grid_input_text_small'
             )) . NBS . NBS . NBS .
             '<i class="instruction_text">' . lang('grid_chars_allowed') . '</i>';
     }
@@ -1000,11 +1000,11 @@ abstract class EE_Fieldtype
     public function grid_multi_item_row($data)
     {
         return form_textarea(array(
-            'name'	=> 'field_list_items',
-            'rows'	=> 10,
-            'cols'	=> 24,
-            'value'	=> isset($data['field_list_items']) ? $data['field_list_items'] : '',
-            'class'	=> 'right'
+            'name' => 'field_list_items',
+            'rows' => 10,
+            'cols' => 24,
+            'value' => isset($data['field_list_items']) ? $data['field_list_items'] : '',
+            'class' => 'right'
         )) .
             form_label(lang('multi_list_items')) . '<br>' .
             '<i class="instruction_text">' . lang('field_list_instructions') . '</i>';
@@ -1025,10 +1025,10 @@ abstract class EE_Fieldtype
             array('class' => 'grid_col_setting_label_fixed_width')
         ) .
             form_input(array(
-                'name'	=> 'field_ta_rows',
-                'size'	=> 4,
-                'value'	=> isset($data['field_ta_rows']) ? $data['field_ta_rows'] : $default,
-                'class'	=> 'grid_input_text_small'
+                'name' => 'field_ta_rows',
+                'size' => 4,
+                'value' => isset($data['field_ta_rows']) ? $data['field_ta_rows'] : $default,
+                'class' => 'grid_input_text_small'
             ));
     }
 

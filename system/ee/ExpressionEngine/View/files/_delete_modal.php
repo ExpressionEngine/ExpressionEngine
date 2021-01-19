@@ -12,10 +12,10 @@
 
 <?php
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete-file',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-delete-file',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

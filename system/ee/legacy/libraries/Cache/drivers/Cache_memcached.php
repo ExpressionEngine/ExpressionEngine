@@ -149,9 +149,9 @@ class EE_Cache_memcached extends CI_Driver
         list($data, $time, $ttl) = $stored;
 
         return array(
-            'expire'	=> $time + $ttl,
-            'mtime'		=> $time,
-            'data'		=> $data
+            'expire' => $time + $ttl,
+            'mtime' => $time,
+            'data' => $data
         );
     }
 

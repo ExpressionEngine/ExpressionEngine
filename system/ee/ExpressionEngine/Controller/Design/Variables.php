@@ -58,10 +58,10 @@ class Variables extends AbstractDesignController
                 'encode' => false
             ),
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         );
 
@@ -136,7 +136,7 @@ class Variables extends AbstractDesignController
                 array(
                     'name' => 'selection[]',
                     'value' => $variable->variable_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -153,8 +153,8 @@ class Variables extends AbstractDesignController
                 unset($column[1]);
             }
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 

@@ -150,7 +150,7 @@ class Members extends AbstractDesignController
             array(
                 'template',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
             )
         );
@@ -260,8 +260,8 @@ class Members extends AbstractDesignController
         fclose($fp);
 
         $vars = array(
-            'form_url'      => ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $file),
-            'edit_date'     => ee()->localize->human_time($fstat['mtime']),
+            'form_url' => ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $file),
+            'edit_date' => ee()->localize->human_time($fstat['mtime']),
             'template_data' => file_get_contents($path),
         );
 

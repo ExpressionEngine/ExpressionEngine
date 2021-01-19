@@ -20,7 +20,7 @@ class EE_Typography
     public $block_elements = 'address|article|aside|audio|blockquote|canvas|div|dl|fieldset|figure|footer|form|h\d|header|hgroup|hr|noscript|object|ol|output|p|pre|script|section|table|ul|video';
 
     // Elements that should not have <p> and <br /> tags within them.
-    public $skip_elements	= 'figure|p|pre|ol|ul|dl|object|table|h\d';
+    public $skip_elements = 'figure|p|pre|ol|ul|dl|object|table|h\d';
 
     // Tags we want the parser to completely ignore when splitting the string.
     public $inline_elements = 'a|abbr|acronym|b|bdo|big|br|button|cite|code|del|dfn|em|figcaption|i|img|ins|input|kbd|label|map|mark|q|samp|select|small|span|strong|sub|sup|textarea|tt|var';
@@ -35,44 +35,44 @@ class EE_Typography
     public $protect_braced_quotes = false;
 
     public $single_line_pgfs = true;		// Whether to treat single lines as paragraphs in auto-xhtml
-    public $text_format      = 'xhtml';  // xhtml, markdown, br, none, or lite
-    public $html_format      = 'safe';	// safe, all, none
-    public $auto_links       = 'y';
-    public $allow_img_url    = 'n';
-    public $bbencode_links   = true;
-    public $separate_parser  = false;
-    public $parse_images     = true;
-    public $allow_headings   = true;
-    public $encode_email     = true;
-    public $encode_type      = 'javascript'; // javascript or noscript
-    public $use_span_tags    = true;
-    public $popup_links      = false;
-    public $bounce           = '';
-    public $smiley_array     = false;
-    public $parse_smileys    = true;
-    public $highlight_code   = false;
-    public $convert_curly    = true;		// Convert Curly Brackets Into Entities
-    public $emoticon_url     = '';
-    public $site_index       = '';
-    public $word_censor      = false;
-    public $censored_words   = array();
+    public $text_format = 'xhtml';  // xhtml, markdown, br, none, or lite
+    public $html_format = 'safe';	// safe, all, none
+    public $auto_links = 'y';
+    public $allow_img_url = 'n';
+    public $bbencode_links = true;
+    public $separate_parser = false;
+    public $parse_images = true;
+    public $allow_headings = true;
+    public $encode_email = true;
+    public $encode_type = 'javascript'; // javascript or noscript
+    public $use_span_tags = true;
+    public $popup_links = false;
+    public $bounce = '';
+    public $smiley_array = false;
+    public $parse_smileys = true;
+    public $highlight_code = false;
+    public $convert_curly = true;		// Convert Curly Brackets Into Entities
+    public $emoticon_url = '';
+    public $site_index = '';
+    public $word_censor = false;
+    public $censored_words = array();
     public $censored_replace = '';
-    public $text_fmt_types   = array('xhtml', 'markdown', 'br', 'none', 'lite');
+    public $text_fmt_types = array('xhtml', 'markdown', 'br', 'none', 'lite');
     public $text_fmt_plugins = array();
-    public $html_fmt_types   = array('safe', 'all', 'none');
-    public $yes_no_syntax    = array('y', 'n');
-    public $code_chunks      = array();
-    public $code_counter     = 0;
-    public $http_hidden      = null; // hash to protect URLs in [url] BBCode
+    public $html_fmt_types = array('safe', 'all', 'none');
+    public $yes_no_syntax = array('y', 'n');
+    public $code_chunks = array();
+    public $code_counter = 0;
+    public $http_hidden = null; // hash to protect URLs in [url] BBCode
     public $safe_img_src_end = null; // hash to mark end of image URLs during sanitizing of image tags
 
     // Allowed tags  Note: Specified in initialize()
-    public $safe_encode      = array();
-    public $safe_decode      = array();
+    public $safe_encode = array();
+    public $safe_decode = array();
 
     // A marker used to hide quotes in text
     // before it is passed through the parser.
-    private $quote_marker    = null;
+    private $quote_marker = null;
 
     // tag bracket constants for use in Safe HTML / BBcode parsing
     public const HTML_BRACKETS = 1;
@@ -115,36 +115,36 @@ class EE_Typography
     {
         // reset class properties
         $this->single_line_pgfs = true;		// Whether to treat single lines as paragraphs in auto-xhtml
-        $this->text_format      = 'xhtml';  // xhtml, markdown, br, none, or lite
-        $this->html_format      = 'safe';	// safe, all, none
-        $this->auto_links       = 'y';
-        $this->allow_img_url    = 'n';
-        $this->bbencode_links   = true;
-        $this->separate_parser  = false;
-        $this->parse_images     = true;
-        $this->allow_headings   = true;
-        $this->encode_email     = true;
-        $this->encode_type      = 'javascript'; // javascript or noscript
-        $this->use_span_tags    = true;
-        $this->popup_links      = false;
-        $this->bounce           = '';
-        $this->smiley_array     = false;
-        $this->parse_smileys    = true;
-        $this->highlight_code   = false;
-        $this->convert_curly    = true;		// Convert Curly Brackets Into Entities
-        $this->emoticon_url     = '';
-        $this->site_index       = '';
-        $this->word_censor      = false;
-        $this->censored_words   = array();
+        $this->text_format = 'xhtml';  // xhtml, markdown, br, none, or lite
+        $this->html_format = 'safe';	// safe, all, none
+        $this->auto_links = 'y';
+        $this->allow_img_url = 'n';
+        $this->bbencode_links = true;
+        $this->separate_parser = false;
+        $this->parse_images = true;
+        $this->allow_headings = true;
+        $this->encode_email = true;
+        $this->encode_type = 'javascript'; // javascript or noscript
+        $this->use_span_tags = true;
+        $this->popup_links = false;
+        $this->bounce = '';
+        $this->smiley_array = false;
+        $this->parse_smileys = true;
+        $this->highlight_code = false;
+        $this->convert_curly = true;		// Convert Curly Brackets Into Entities
+        $this->emoticon_url = '';
+        $this->site_index = '';
+        $this->word_censor = false;
+        $this->censored_words = array();
         $this->censored_replace = '';
-        $this->text_fmt_types   = array('xhtml', 'markdown', 'br', 'none', 'lite');
+        $this->text_fmt_types = array('xhtml', 'markdown', 'br', 'none', 'lite');
         $this->text_fmt_plugins = array();
-        $this->html_fmt_types   = array('safe', 'all', 'none');
-        $this->yes_no_syntax    = array('y', 'n');
-        $this->code_chunks      = array();
-        $this->code_counter     = 0;
+        $this->html_fmt_types = array('safe', 'all', 'none');
+        $this->yes_no_syntax = array('y', 'n');
+        $this->code_chunks = array();
+        $this->code_counter = 0;
 
-        $this->http_hidden      = unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+        $this->http_hidden = unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
         $this->safe_img_src_end = unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
         foreach ($config as $key => $val) {
@@ -176,22 +176,22 @@ class EE_Typography
         );
 
         $this->safe_decode = array(
-            'abbr'       => array('tag' => 'abbr', 'properties' => array('title')),
-            'b'          => 'b',
+            'abbr' => array('tag' => 'abbr', 'properties' => array('title')),
+            'b' => 'b',
             'blockquote' => 'blockquote',
-            'cite'       => 'cite',
-            'code'       => array('tag' => 'code', 'properties' => array('class', 'data-language')),
-            'del'        => 'del',
-            'em'         => 'em',
-            'i'          => 'i',
-            'ins'        => 'ins',
-            'mark'       => array('tag' => 'mark', 'properties' => array('class')),
-            'pre'        => 'pre',
-            'quote'      => 'blockquote',
-            'span'       => array('tag' => 'span', 'properties' => array('class')),
-            'strong'     => 'strong',
-            'sub'        => 'sub',
-            'sup'        => 'sup'
+            'cite' => 'cite',
+            'code' => array('tag' => 'code', 'properties' => array('class', 'data-language')),
+            'del' => 'del',
+            'em' => 'em',
+            'i' => 'i',
+            'ins' => 'ins',
+            'mark' => array('tag' => 'mark', 'properties' => array('class')),
+            'pre' => 'pre',
+            'quote' => 'blockquote',
+            'span' => array('tag' => 'span', 'properties' => array('class')),
+            'strong' => 'strong',
+            'sub' => 'sub',
+            'sup' => 'sup'
         );
 
         // enable quote protection within braces for EE {variable="attributes"}
@@ -299,7 +299,7 @@ class EE_Typography
         //		[2] = <closing tag>
         //		Etc...
         //	}
-        $chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+        $chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         $chunks = ($chunks === false) ? (array) $str : $chunks;
 
@@ -317,7 +317,7 @@ class EE_Typography
             // Well also set the "process" flag which allows us to skip <pre> tags and a few other things.
             if (preg_match("#<(/*)(" . $this->block_elements . ").*?>#", $chunk, $match)) {
                 if (preg_match("#" . $this->skip_elements . "#", $match[2])) {
-                    $process =  ($match[1] == '/') ? true : false;
+                    $process = ($match[1] == '/') ? true : false;
                 }
 
                 if ($match[1] == '') {
@@ -365,34 +365,34 @@ class EE_Typography
 
             // If the user submitted their own paragraph tags within the text
             // we will retain them instead of using our tags.
-            '/(<p[^>*?]>)<p>/'	=> '$1',
+            '/(<p[^>*?]>)<p>/' => '$1',
 
             // Reduce multiple instances of opening/closing paragraph tags to a single one
-            '#(</p>)+#'			=> '</p>',
-            '/(<p>\W*<p>)+/'	=> '<p>',
+            '#(</p>)+#' => '</p>',
+            '/(<p>\W*<p>)+/' => '<p>',
 
             // Clean up stray paragraph tags that appear before block level elements
-            '#<p></p><(' . $this->block_elements . ')#'	=> '<$1',
+            '#<p></p><(' . $this->block_elements . ')#' => '<$1',
 
             // Clean up stray non-breaking spaces preceeding block elements
-            '#(&nbsp;\s*)+<(' . $this->block_elements . ')#'	=> '  <$2',
+            '#(&nbsp;\s*)+<(' . $this->block_elements . ')#' => '  <$2',
 
             // Replace the temporary markers we added earlier
-            '/\{@TAG\}/'		=> '<',
-            '/\{@DQ\}/'			=> '"',
-            '/\{@SQ\}/'			=> "'",
-            '/\{@DD\}/'			=> '--',
-            '/\{@NBS\}/'		=> '  ',
+            '/\{@TAG\}/' => '<',
+            '/\{@DQ\}/' => '"',
+            '/\{@SQ\}/' => "'",
+            '/\{@DD\}/' => '--',
+            '/\{@NBS\}/' => '  ',
 
             // An unintended consequence of the _format_newlines function is that
             // some of the newlines get truncated, resulting in <p> tags
             // starting immediately after <block> tags on the same line.
             // This forces a newline after such occurrences, which looks much nicer.
-            "/><p>\n/"			=> ">\n<p>",
+            "/><p>\n/" => ">\n<p>",
 
             // Similarly, there might be cases where a closing </block> will follow
             // a closing </p> tag, so we'll correct it by adding a newline in between
-            "#</p></#"			=> "</p>\n</"
+            "#</p></#" => "</p>\n</"
         );
 
         // Do we need to reduce empty lines?
@@ -431,39 +431,39 @@ class EE_Typography
                 // Note that in all cases, whitespace is the primary determining factor
                 // on which direction to curl, with non-word characters like punctuation
                 // being a secondary factor only after whitespace is addressed.
-                '/\'"(\s|$)/'					=> '&#8217;&#8221;$1',
-                '/(^|\s|<p>)\'"/'				=> '$1&#8216;&#8220;',
-                '/\'"(\W)/'						=> '&#8217;&#8221;$1',
-                '/(\W)\'"/'						=> '$1&#8216;&#8220;',
-                '/"\'(\s|$)/'					=> '&#8221;&#8217;$1',
-                '/(^|\s|<p>)"\'/'				=> '$1&#8220;&#8216;',
-                '/"\'(\W)/'						=> '&#8221;&#8217;$1',
-                '/(\W)"\'/'						=> '$1&#8220;&#8216;',
+                '/\'"(\s|$)/' => '&#8217;&#8221;$1',
+                '/(^|\s|<p>)\'"/' => '$1&#8216;&#8220;',
+                '/\'"(\W)/' => '&#8217;&#8221;$1',
+                '/(\W)\'"/' => '$1&#8216;&#8220;',
+                '/"\'(\s|$)/' => '&#8221;&#8217;$1',
+                '/(^|\s|<p>)"\'/' => '$1&#8220;&#8216;',
+                '/"\'(\W)/' => '&#8221;&#8217;$1',
+                '/(\W)"\'/' => '$1&#8220;&#8216;',
 
                 // single quote smart quotes
-                '/\'(\s|$)/'					=> '&#8217;$1',
-                '/(^|\s|<p>)\'/'				=> '$1&#8216;',
-                '/\'(\W)/'						=> '&#8217;$1',
-                '/(\W)\'/'						=> '$1&#8216;',
+                '/\'(\s|$)/' => '&#8217;$1',
+                '/(^|\s|<p>)\'/' => '$1&#8216;',
+                '/\'(\W)/' => '&#8217;$1',
+                '/(\W)\'/' => '$1&#8216;',
 
                 // double quote smart quotes
-                '/"(\s|$)/'						=> '&#8221;$1',
-                '/(^|\s|<p>)"/'					=> '$1&#8220;',
-                '/"(\W)/'						=> '&#8221;$1',
-                '/(\W)"/'						=> '$1&#8220;',
+                '/"(\s|$)/' => '&#8221;$1',
+                '/(^|\s|<p>)"/' => '$1&#8220;',
+                '/"(\W)/' => '&#8221;$1',
+                '/(\W)"/' => '$1&#8220;',
 
                 // apostrophes
-                "/(\w)'(\w)/"					=> '$1&#8217;$2',
+                "/(\w)'(\w)/" => '$1&#8217;$2',
 
                 // Em dash and ellipses dots
-                '/\s?\-\-\s?/'					=> '&#8212;',
-                '/(\w)\.{3}/'					=> '$1&#8230;',
+                '/\s?\-\-\s?/' => '&#8212;',
+                '/(\w)\.{3}/' => '$1&#8230;',
 
                 // double space after sentences
-                '/(\W)  /'						=> '$1&nbsp; ',
+                '/(\W)  /' => '$1&nbsp; ',
 
                 // ampersands, if not a character entity
-                '/&(?!#?[a-zA-Z0-9]{2,};)/'		=> '&amp;'
+                '/&(?!#?[a-zA-Z0-9]{2,};)/' => '&amp;'
             );
         }
 
@@ -485,7 +485,7 @@ class EE_Typography
             return $str;
         }
 
-        if (strpos($str, "\n") === false  && ! in_array($this->last_block_element, $this->inner_block_required)) {
+        if (strpos($str, "\n") === false && ! in_array($this->last_block_element, $this->inner_block_required)) {
             return $str;
         }
 
@@ -500,7 +500,7 @@ class EE_Typography
             // We trim off the right-side new line so that the closing </p> tag
             // will be positioned immediately following the string, matching
             // the behavior of the opening <p> tag
-            $str =  '<p>' . rtrim($str) . '</p>';
+            $str = '<p>' . rtrim($str) . '</p>';
         }
 
         // Remove empty paragraphs if they are on the first line, as this
@@ -775,14 +775,14 @@ class EE_Typography
                 $this->auto_links = $prefs['auto_links'];
             }
 
-            if (isset($prefs['allow_img_url'])  and in_array($prefs['allow_img_url'], $this->yes_no_syntax)) {
+            if (isset($prefs['allow_img_url']) and in_array($prefs['allow_img_url'], $this->yes_no_syntax)) {
                 $this->allow_img_url = $prefs['allow_img_url'];
             }
         }
 
         // If we're dealing with a separate parser (e.g. Markdown)
         $this->separate_parser = ($this->text_format == 'markdown');
-        $this->auto_links      = ($this->separate_parser) ? 'n' : $this->auto_links;
+        $this->auto_links = ($this->separate_parser) ? 'n' : $this->auto_links;
     }
 
     /**
@@ -1611,15 +1611,15 @@ class EE_Typography
         /**  Convert [url] tags to links
         /** -------------------------------------*/
         if (stripos($str, '[url') !== false) {
-            $bounce	= ((REQ == 'CP' && ee()->input->get('M') != 'send_email') or ee()->config->item('redirect_submitted_links') == 'y') ? ee()->functions->fetch_site_index() . QUERY_MARKER . 'URL=' : '';
+            $bounce = ((REQ == 'CP' && ee()->input->get('M') != 'send_email') or ee()->config->item('redirect_submitted_links') == 'y') ? ee()->functions->fetch_site_index() . QUERY_MARKER . 'URL=' : '';
 
-            $bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie'); // everything else
+            $bad_things = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie'); // everything else
             $bad_things2 = array('[', '(', ')', '!', '*', '>', '<', "\t", 'document.cookie'); // style,title attributes
-            $exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
-            $allowed	 = array('rel', 'title', 'class', 'style', 'target');
+            $exceptions = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
+            $allowed = array('rel', 'title', 'class', 'style', 'target');
 
             if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/is", $str, $matches)) {
-                for ($i=0, $s=count($matches['0']), $add=true; $i < $s; ++$i) {
+                for ($i = 0, $s = count($matches['0']), $add = true; $i < $s; ++$i) {
                     $matches['1'][$i] = trim($matches['1'][$i]);
 
                     $url = ($matches['1'][$i] != '') ? trim($matches['1'][$i]) : $matches['2'][$i];
@@ -1629,7 +1629,7 @@ class EE_Typography
                     // Also force links output in the CP with the Typography class as "safe" so that
                     // any other tag attributes that it might have are not slapped in with the URL
                     if (($this->html_format == 'safe' or REQ == 'CP') && stristr($matches['1'][$i], ' ')) {
-                        for ($a=0, $sa=count($allowed); $a < $sa; ++$a) {
+                        for ($a = 0, $sa = count($allowed); $a < $sa; ++$a) {
                             if (($p1 = strpos($url, $allowed[$a] . '=')) !== false) {
                                 $marker = substr($url, $p1 + strlen($allowed[$a] . '='), 1);
 
@@ -1637,7 +1637,7 @@ class EE_Typography
                                     continue;
                                 }
 
-                                $p2	= strpos(substr($url, $p1 + strlen($allowed[$a] . '=') + 1), $marker);
+                                $p2 = strpos(substr($url, $p1 + strlen($allowed[$a] . '=') + 1), $marker);
 
                                 if ($p2 === false) {
                                     continue;
@@ -1724,14 +1724,14 @@ class EE_Typography
         // [img] and [/img]
 
         if (stripos($str, '[img]') !== false) {
-            $bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
+            $bad_things = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
 
             if ($this->allow_img_url == 'y') {
                 $str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str);
             // $str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
             } elseif ($this->auto_links == 'y' && $this->html_format != 'none') {
                 if (preg_match_all("/\[img\](.*?)\[\/img\]/is", $str, $matches)) {
-                    for ($i=0, $s=count($matches['0']); $i < $s; ++$i) {
+                    for ($i = 0, $s = count($matches['0']); $i < $s; ++$i) {
                         $str = str_replace($matches['0'][$i], '<a href="' . str_replace($bad_things, '', $matches['1'][$i]) . '">' . str_replace($bad_things, '', $matches['1'][$i]) . "</a>", $str);
                     }
                 }
@@ -1933,9 +1933,9 @@ class EE_Typography
 
         $url = str_replace(array('(', ')'), '', $url);
 
-        $alt	= '';
-        $width	= '';
-        $height	= '';
+        $alt = '';
+        $width = '';
+        $height = '';
 
         foreach (array('width', 'height', 'alt') as $attr) {
             if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match)) {
@@ -2035,18 +2035,18 @@ class EE_Typography
         // remap text faces to emoji, is mo betta
         // somewhat arbitrary, based on what some apps auto-convert for you
         $emoji_remap = [
-            ':-)'     => ':blush:',
-            ':)'      => ':blush:',
-            ';-)'     => ':wink:',
-            ';)'      => ':wink:',
-            ':-S'     => ':confounded:',
-            ':-P'     => ':stuck_out_tongue:',
-            '%-P'     => ':stuck_out_tongue_closed_eyes:',
-            ';-P'     => ':stuck_out_tongue_winking_eye:',
-            ':P'      => ':stuck_out_tongue:',
-            '8-/'     => ':face_with_rolling_eyes:',
-            ':-/'     => ':confused:',
-            ':mad:'   => ':angry:',
+            ':-)' => ':blush:',
+            ':)' => ':blush:',
+            ';-)' => ':wink:',
+            ';)' => ':wink:',
+            ':-S' => ':confounded:',
+            ':-P' => ':stuck_out_tongue:',
+            '%-P' => ':stuck_out_tongue_closed_eyes:',
+            ';-P' => ':stuck_out_tongue_winking_eye:',
+            ':P' => ':stuck_out_tongue:',
+            '8-/' => ':face_with_rolling_eyes:',
+            ':-/' => ':confused:',
+            ':mad:' => ':angry:',
         ];
 
         foreach ($emoji_remap as $smiley => $short_name) {
@@ -2225,7 +2225,7 @@ class EE_Typography
 
         ob_start();
 
-        // Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript ?>
+        // Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript?>
 
 <span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script>
 /*<![CDATA[*/
@@ -2321,7 +2321,7 @@ while (--j >= 0)
         static $post;
 
         if (! isset($pre)) {
-            $pre  = (string) ee()->config->item('code_block_pre');
+            $pre = (string) ee()->config->item('code_block_pre');
             $post = (string) ee()->config->item('code_block_post');
         }
 
@@ -2432,14 +2432,14 @@ while (--j >= 0)
      */
     private function unparse_url($parsed_url)
     {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";

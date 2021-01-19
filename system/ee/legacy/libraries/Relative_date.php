@@ -30,12 +30,12 @@ class Relative_date_object
     public $past;
     public $future;
 
-    private $_units				= array();
-    private $_deltas			= array();
-    private $_calculated_units	= array();
-    private $_timestamp			= 0;
-    private $_reference			= 0;
-    private $_valid_units		= array('years', 'months', 'fortnights', 'weeks', 'days', 'hours', 'minutes', 'seconds');
+    private $_units = array();
+    private $_deltas = array();
+    private $_calculated_units = array();
+    private $_timestamp = 0;
+    private $_reference = 0;
+    private $_valid_units = array('years', 'months', 'fortnights', 'weeks', 'days', 'hours', 'minutes', 'seconds');
 
     public function __construct($timestamp, $reference = null)
     {
@@ -50,14 +50,14 @@ class Relative_date_object
 
         // Initializing to NULL so as not to break the magic __get() method
         $this->_units = array(
-            'years'      => null,
-            'months'     => null,
+            'years' => null,
+            'months' => null,
             'fortnights' => null,
-            'weeks'      => null,
-            'days'       => null,
-            'hours'      => null,
-            'minutes'    => null,
-            'seconds'    => null
+            'weeks' => null,
+            'days' => null,
+            'hours' => null,
+            'minutes' => null,
+            'seconds' => null
         );
     }
 
@@ -96,25 +96,25 @@ class Relative_date_object
         }
 
         $this->_units = array(
-            'years'      => 0,
-            'months'     => 0,
+            'years' => 0,
+            'months' => 0,
             'fortnights' => 0,
-            'weeks'      => 0,
-            'days'       => 0,
-            'hours'      => 0,
-            'minutes'    => 0,
-            'seconds'    => 0
+            'weeks' => 0,
+            'days' => 0,
+            'hours' => 0,
+            'minutes' => 0,
+            'seconds' => 0
         );
 
         $seconds = array(
-            'years'      => 31536000,	// 365 * 24 * 60 * 60
-            'months'     => 2628000,	// (365 * 24 * 60 * 60) / 12
+            'years' => 31536000,	// 365 * 24 * 60 * 60
+            'months' => 2628000,	// (365 * 24 * 60 * 60) / 12
             'fortnights' => 1209600,	// 14 * 24 * 60 * 60
-            'weeks'      => 604800,		// 7 * 24 * 60 * 60
-            'days'       => 86400,		// 24 * 60 * 60
-            'hours'      => 3600,		// 60 * 60
-            'minutes'    => 60,
-            'seconds'    => 1
+            'weeks' => 604800,		// 7 * 24 * 60 * 60
+            'days' => 86400,		// 24 * 60 * 60
+            'hours' => 3600,		// 60 * 60
+            'minutes' => 60,
+            'seconds' => 1
         );
 
         $delta = abs($this->_timestamp - $this->_reference);
@@ -165,13 +165,13 @@ class Relative_date_object
                     // These are the number of seconds at which we will round up
                     // based on the delta from the calculation
                     $delta_thresholds = array(
-                        'years'      => 29808000,	// 345 days
-                        'months'     => 2160000,	// 25 days
+                        'years' => 29808000,	// 345 days
+                        'months' => 2160000,	// 25 days
                         'fortnights' => 1036800,	// 12 days
-                        'weeks'      => 518400,		// 6 days
-                        'days'       => 79200,		// 22 hours
-                        'hours'      => 2700,		// 45 minutes
-                        'minutes'    => 45,			// 45 seconds
+                        'weeks' => 518400,		// 6 days
+                        'days' => 79200,		// 22 hours
+                        'hours' => 2700,		// 45 minutes
+                        'minutes' => 45,			// 45 seconds
                     );
 
                     if ($this->_deltas[$round_to] >= $delta_thresholds[$round_to]) {

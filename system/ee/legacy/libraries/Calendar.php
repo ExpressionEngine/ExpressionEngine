@@ -18,12 +18,12 @@ class EE_Calendar
     public $CI;
     public $lang;
     public $local_time;
-    public $template		= '';
-    public $start_day		= 'sunday';
-    public $month_type		= 'long';
-    public $day_type		= 'abr';
-    public $show_next_prev	= false;
-    public $next_prev_url	= '';
+    public $template = '';
+    public $start_day = 'sunday';
+    public $month_type = 'long';
+    public $day_type = 'abr';
+    public $show_next_prev = false;
+    public $next_prev_url = '';
 
     /**
      * Constructor
@@ -76,7 +76,7 @@ class EE_Calendar
     {
         // Set and validate the supplied month/year
         if ($year == '') {
-            $year  = date("Y", $this->local_time);
+            $year = date("Y", $this->local_time);
         }
 
         if ($month == '') {
@@ -97,20 +97,20 @@ class EE_Calendar
 
         $adjusted_date = $this->adjust_date($month, $year);
 
-        $month	= $adjusted_date['month'];
-        $year	= $adjusted_date['year'];
+        $month = $adjusted_date['month'];
+        $year = $adjusted_date['year'];
 
         // Determine the total days in the month
         $total_days = $this->get_total_days($month, $year);
 
         // Set the starting day of the week
-        $start_days	= array('sunday' => 0, 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6);
+        $start_days = array('sunday' => 0, 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6);
         $start_day = (! isset($start_days[$this->start_day])) ? 0 : $start_days[$this->start_day];
 
         // Set the starting day number
         $local_date = mktime(12, 0, 0, $month, 1, $year);
         $date = getdate($local_date);
-        $day  = $start_day + 1 - $date["wday"];
+        $day = $start_day + 1 - $date["wday"];
 
         while ($day > 1) {
             $day -= 7;
@@ -118,9 +118,9 @@ class EE_Calendar
 
         // Set the current month/year/day
         // We use this to determine the "today" date
-        $cur_year	= date("Y", $this->local_time);
-        $cur_month	= date("m", $this->local_time);
-        $cur_day	= date("j", $this->local_time);
+        $cur_year = date("Y", $this->local_time);
+        $cur_month = date("m", $this->local_time);
+        $cur_day = date("j", $this->local_time);
 
         $is_current_month = ($cur_year == $year and $cur_month == $month) ? true : false;
 
@@ -172,7 +172,7 @@ class EE_Calendar
         $day_names = $this->get_day_names();
 
         for ($i = 0; $i < 7; $i ++) {
-            $out .= str_replace('{week_day}', $day_names[($start_day + $i) %7], $this->temp['week_day_cell']);
+            $out .= str_replace('{week_day}', $day_names[($start_day + $i) % 7], $this->temp['week_day_cell']);
         }
 
         $out .= "\n";
@@ -293,8 +293,8 @@ class EE_Calendar
     {
         $date = array();
 
-        $date['month']	= $month;
-        $date['year']	= $year;
+        $date['month'] = $month;
+        $date['year'] = $year;
 
         while ($date['month'] > 12) {
             $date['month'] -= 12;
@@ -323,7 +323,7 @@ class EE_Calendar
      */
     public function get_total_days($month, $year)
     {
-        $days_in_month	= array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+        $days_in_month = array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
         if ($month < 1 or $month > 12) {
             return 0;
@@ -350,27 +350,27 @@ class EE_Calendar
     public function default_template()
     {
         return  array(
-            'table_open'				=> '<table border="0" cellpadding="4" cellspacing="0">',
-            'heading_row_start'			=> '<tr>',
-            'heading_previous_cell'		=> '<th><a href="{previous_url}">&lt;&lt;</a></th>',
-            'heading_title_cell'		=> '<th colspan="{colspan}">{heading}</th>',
-            'heading_next_cell'			=> '<th><a href="{next_url}">&gt;&gt;</a></th>',
-            'heading_row_end'			=> '</tr>',
-            'week_row_start'			=> '<tr>',
-            'week_day_cell'				=> '<td>{week_day}</td>',
-            'week_row_end'				=> '</tr>',
-            'cal_row_start'				=> '<tr>',
-            'cal_cell_start'			=> '<td>',
-            'cal_cell_start_today'		=> '<td>',
-            'cal_cell_content'			=> '<a href="{content}">{day}</a>',
-            'cal_cell_content_today'	=> '<a href="{content}"><strong>{day}</strong></a>',
-            'cal_cell_no_content'		=> '{day}',
-            'cal_cell_no_content_today'	=> '<strong>{day}</strong>',
-            'cal_cell_blank'			=> '&nbsp;',
-            'cal_cell_end'				=> '</td>',
-            'cal_cell_end_today'		=> '</td>',
-            'cal_row_end'				=> '</tr>',
-            'table_close'				=> '</table>'
+            'table_open' => '<table border="0" cellpadding="4" cellspacing="0">',
+            'heading_row_start' => '<tr>',
+            'heading_previous_cell' => '<th><a href="{previous_url}">&lt;&lt;</a></th>',
+            'heading_title_cell' => '<th colspan="{colspan}">{heading}</th>',
+            'heading_next_cell' => '<th><a href="{next_url}">&gt;&gt;</a></th>',
+            'heading_row_end' => '</tr>',
+            'week_row_start' => '<tr>',
+            'week_day_cell' => '<td>{week_day}</td>',
+            'week_row_end' => '</tr>',
+            'cal_row_start' => '<tr>',
+            'cal_cell_start' => '<td>',
+            'cal_cell_start_today' => '<td>',
+            'cal_cell_content' => '<a href="{content}">{day}</a>',
+            'cal_cell_content_today' => '<a href="{content}"><strong>{day}</strong></a>',
+            'cal_cell_no_content' => '{day}',
+            'cal_cell_no_content_today' => '<strong>{day}</strong>',
+            'cal_cell_blank' => '&nbsp;',
+            'cal_cell_end' => '</td>',
+            'cal_cell_end_today' => '</td>',
+            'cal_row_end' => '</tr>',
+            'table_close' => '</table>'
         );
     }
 

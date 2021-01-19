@@ -13,12 +13,12 @@ use ExpressionEngine\Addons\Spam\Service\Training;
 use ExpressionEngine\Addons\Spam\Service\Update;
 
 return array(
-    'author'      => 'ExpressionEngine',
-    'author_url'  => 'https://expressionengine.com/',
-    'name'        => 'ExpressionEngine Spam Module',
+    'author' => 'ExpressionEngine',
+    'author_url' => 'https://expressionengine.com/',
+    'name' => 'ExpressionEngine Spam Module',
     'description' => 'Block spammy comments, forum posts, and member registrations',
-    'version'     => '2.0.0',
-    'namespace'   => 'ExpressionEngine\Addons\Spam',
+    'version' => '2.0.0',
+    'namespace' => 'ExpressionEngine\Addons\Spam',
     'settings_exist' => true,
     'services' => array(
         'Core' => 'Service\Spam',
@@ -51,10 +51,10 @@ return array(
         'SpamTrap' => 'Model\SpamTrap',
     ),
     'models.dependencies' => array(
-        'SpamTrap'   => array(
+        'SpamTrap' => array(
             'ee:Member'
         ),
-        'SpamTraining'   => array(
+        'SpamTraining' => array(
             'ee:Member'
         )
     )

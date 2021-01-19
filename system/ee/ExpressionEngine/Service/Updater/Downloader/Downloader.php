@@ -61,10 +61,10 @@ class Downloader
         $curl = $this->curl->post(
             $payload_url,
             [
-                'action'  => 'download_update',
+                'action' => 'download_update',
                 'license' => $this->license->getRawLicense(),
                 'version' => $this->config->get('app_version'),
-                'domain'  => $this->config->get('site_url')
+                'domain' => $this->config->get('site_url')
             ]
         );
 

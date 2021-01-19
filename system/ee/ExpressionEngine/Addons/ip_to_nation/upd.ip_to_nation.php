@@ -41,22 +41,22 @@ class Ip_to_nation_upd extends Installer
 
         $fields = array(
             'ip_range_low' => array(
-                'type'			=> 'VARBINARY',
-                'constraint'	=> 16,
-                'null'			=> false,
-                'default'		=> 0
+                'type' => 'VARBINARY',
+                'constraint' => 16,
+                'null' => false,
+                'default' => 0
             ),
             'ip_range_high' => array(
-                'type'			=> 'VARBINARY',
-                'constraint'	=> 16,
-                'null'			=> false,
-                'default'		=> 0
+                'type' => 'VARBINARY',
+                'constraint' => 16,
+                'null' => false,
+                'default' => 0
             ),
             'country' => array(
-                'type' 			=> 'char',
-                'constraint'	=> 2,
-                'null'			=> false,
-                'default'		=> ''
+                'type' => 'char',
+                'constraint' => 2,
+                'null' => false,
+                'default' => ''
             )
         );
 
@@ -68,17 +68,17 @@ class Ip_to_nation_upd extends Installer
         ee()->dbforge->drop_table('ip2nation_countries');
 
         $fields = array(
-            'code'	=> array(
-                'type'			=> 'varchar',
-                'constraint'	=> 2,
-                'null'			=> false,
-                'default'		=> ''
+            'code' => array(
+                'type' => 'varchar',
+                'constraint' => 2,
+                'null' => false,
+                'default' => ''
             ),
-            'banned'  => array(
-                'type' 			=> 'varchar',
-                'constraint'	=> 1,
-                'null'			=> false,
-                'default'		=> 'n'
+            'banned' => array(
+                'type' => 'varchar',
+                'constraint' => 1,
+                'null' => false,
+                'default' => 'n'
             )
         );
 
@@ -126,7 +126,7 @@ class Ip_to_nation_upd extends Installer
      * @access	public
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         if ($current == '' or version_compare($current, $this->version, '==')) {
             return false;

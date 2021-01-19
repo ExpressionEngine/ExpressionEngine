@@ -29,14 +29,14 @@ class Edit extends AbstractPublishController
         parent::__construct();
 
         $this->permissions = [
-            'all'    => [],
+            'all' => [],
             'others' => [],
-            'self'   => [],
+            'self' => [],
         ];
 
         foreach ($this->assigned_channel_ids as $channel_id) {
             $this->permissions['others'][] = 'can_edit_other_entries_channel_id_' . $channel_id;
-            $this->permissions['self'][]   = 'can_edit_self_entries_channel_id_' . $channel_id;
+            $this->permissions['self'][] = 'can_edit_self_entries_channel_id_' . $channel_id;
         }
 
         $this->permissions['all'] = array_merge($this->permissions['others'], $this->permissions['self']);
@@ -103,7 +103,7 @@ class Edit extends AbstractPublishController
         // if no entries check to see if we have any channels
         if (empty($count)) {
             // cast to bool
-            $vars['channels_exist']  = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
+            $vars['channels_exist'] = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
         }
 
         $vars['filters'] = $filters->renderEntryFilters($base_url);
@@ -163,7 +163,7 @@ class Edit extends AbstractPublishController
 
         $sort_col = 'entry_id';
         foreach ($table_columns as $table_column) {
-            if ($table_column['label']==$table->sort_col) {
+            if ($table_column['label'] == $table->sort_col) {
                 $sort_col = $table_column['name'];
 
                 break;
@@ -201,8 +201,8 @@ class Edit extends AbstractPublishController
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column_renderer->getRenderedTableRowForEntry($entry)
+                'attrs' => $attrs,
+                'columns' => $column_renderer->getRenderedTableRowForEntry($entry)
             );
         }
 
@@ -249,13 +249,13 @@ class Edit extends AbstractPublishController
             'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
             'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
             'bulkEdit.lang' => [
-                'selectedEntries'       => lang('selected_entries'),
+                'selectedEntries' => lang('selected_entries'),
                 'filterSelectedEntries' => lang('filter_selected_entries'),
-                'noEntriesFound'        => sprintf(lang('no_found'), lang('entries')),
-                'showing'               => lang('showing'),
-                'of'                    => lang('of'),
-                'clearAll'              => lang('clear_all'),
-                'removeFromSelection'   => lang('remove_from_selection'),
+                'noEntriesFound' => sprintf(lang('no_found'), lang('entries')),
+                'showing' => lang('showing'),
+                'of' => lang('of'),
+                'clearAll' => lang('clear_all'),
+                'removeFromSelection' => lang('remove_from_selection'),
             ],
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
         ]);
@@ -281,7 +281,7 @@ class Edit extends AbstractPublishController
         }
 
         if ($channel_id) {
-            $vars['can_edit']   = ee('Permission')->hasAny(
+            $vars['can_edit'] = ee('Permission')->hasAny(
                 'can_edit_self_entries_channel_id_' . $channel_id,
                 'can_edit_other_entries_channel_id_' . $channel_id
             );
@@ -292,7 +292,7 @@ class Edit extends AbstractPublishController
             );
         } else {
             $edit_perms = [];
-            $del_perms  = [];
+            $del_perms = [];
 
             foreach ($entries->all()->pluck('channel_id') as $entry_channel_id) {
                 $edit_perms[] = 'can_edit_self_entries_channel_id_' . $entry_channel_id;
@@ -302,7 +302,7 @@ class Edit extends AbstractPublishController
                 $del_perms[] = 'can_delete_self_entries_channel_id_' . $entry_channel_id;
             }
 
-            $vars['can_edit']   = (empty($edit_perms)) ? false : ee('Permission')->hasAny($edit_perms);
+            $vars['can_edit'] = (empty($edit_perms)) ? false : ee('Permission')->hasAny($edit_perms);
             $vars['can_delete'] = (empty($del_perms)) ? false : ee('Permission')->hasAny($del_perms);
         }
 
@@ -400,8 +400,8 @@ class Edit extends AbstractPublishController
             'in_modal_context' => $sequence_editing
         );
 
-        if (ee()->input->get('hide_closer')==='y' && ee()->input->get('return')!='') {
-            $vars['form_hidden'] = ['return'	=> urldecode(ee()->input->get('return'))];
+        if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('return') != '') {
+            $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
             $vars['hide_sidebar'] = true;
         }
 
@@ -442,12 +442,12 @@ class Edit extends AbstractPublishController
                     ->where('method', 'live_preview')
                     ->get('actions');
                 $preview_url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id . AMP . 'entry_id=' . $entry->entry_id;
-                if (ee()->input->get('return')!='') {
+                if (ee()->input->get('return') != '') {
                     $preview_url .= AMP . 'return=' . urlencode(ee()->input->get('return'));
                 }
                 $modal_vars = [
                     'preview_url' => $preview_url,
-                    'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+                    'hide_closer' => ee()->input->get('hide_closer') === 'y' ? true : false
                 ];
                 $modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
                 ee('CP/Modal')->addModal('live-preview', $modal);

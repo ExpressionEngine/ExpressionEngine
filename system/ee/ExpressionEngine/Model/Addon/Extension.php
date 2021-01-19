@@ -22,7 +22,7 @@ class Extension extends Model
     protected static $_table_name = 'extensions';
 
     protected static $_validation_rules = array(
-        'csrf_exempt'  => 'enum[y,n]'
+        'csrf_exempt' => 'enum[y,n]'
     );
 
     protected static $_typed_columns = array(

@@ -135,8 +135,8 @@ class Members extends CP_Controller
                 'group' => 'verify_password',
                 'fields' => [
                     'verify_password' => [
-                        'type'      => 'password',
-                        'required'  => true,
+                        'type' => 'password',
+                        'required' => true,
                         'maxlength' => PASSWORD_MAX_LENGTH
                     ]
                 ]
@@ -232,8 +232,8 @@ class Members extends CP_Controller
                 'group' => 'verify_password',
                 'fields' => [
                     'verify_password' => [
-                        'type'      => 'password',
-                        'required'  => true,
+                        'type' => 'password',
+                        'required' => true,
                         'maxlength' => PASSWORD_MAX_LENGTH
                     ]
                 ]
@@ -340,7 +340,7 @@ class Members extends CP_Controller
 
         foreach ($members as $member) {
             $swap = array(
-                'email'     => $member->email,
+                'email' => $member->email,
                 'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $member->authcode
             );
 
@@ -420,8 +420,8 @@ class Members extends CP_Controller
                 'group' => 'verify_password',
                 'fields' => [
                     'verify_password' => [
-                        'type'      => 'password',
-                        'required'  => true,
+                        'type' => 'password',
+                        'required' => true,
                         'maxlength' => PASSWORD_MAX_LENGTH
                     ]
                 ]
@@ -451,7 +451,7 @@ class Members extends CP_Controller
 
         $vars['form'] = array(
             'ajax_validate' => true,
-            'base_url'      => $this->base_url,
+            'base_url' => $this->base_url,
             'cp_page_title' => lang('manage_bans'),
             'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
             'save_btn_text_working' => 'btn_saving',
@@ -499,7 +499,7 @@ class Members extends CP_Controller
                     ),
                     array(
                         'title' => 'ban_options',
-                        'desc'  => 'ban_options_desc',
+                        'desc' => 'ban_options_desc',
                         'fields' => array(
                             'ban_action_pt1' => array(
                                 'type' => 'radio',
@@ -535,24 +535,24 @@ class Members extends CP_Controller
         // @TODO: Stop using form_validation
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'banned_usernames',
-                'label'   => 'lang:banned_usernames',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_usernames',
+                'label' => 'lang:banned_usernames',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_screen_names',
-                'label'   => 'lang:banned_screen_names',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_screen_names',
+                'label' => 'lang:banned_screen_names',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_emails',
-                'label'   => 'lang:banned_emails',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_emails',
+                'label' => 'lang:banned_emails',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_ips',
-                'label'   => 'lang:banned_ips',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_ips',
+                'label' => 'lang:banned_ips',
+                'rules' => 'valid_xss_check'
             )
         ));
 
@@ -561,8 +561,8 @@ class Members extends CP_Controller
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $prefs = [
-                'ban_action'      => ee('Request')->post('ban_action'),
-                'ban_message'     => ee('Request')->post('ban_message'),
+                'ban_action' => ee('Request')->post('ban_action'),
+                'ban_message' => ee('Request')->post('ban_message'),
                 'ban_destination' => ee('Request')->post('ban_destination'),
             ];
 
@@ -631,7 +631,7 @@ class Members extends CP_Controller
 
         $vars['form'] = array(
             'ajax_validate' => true,
-            'base_url'      => $this->base_url,
+            'base_url' => $this->base_url,
             'cp_page_title' => lang('manage_bans'),
             'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
             'save_btn_text_working' => 'btn_saving',
@@ -679,7 +679,7 @@ class Members extends CP_Controller
                     ),
                     array(
                         'title' => 'ban_options',
-                        'desc'  => 'ban_options_desc',
+                        'desc' => 'ban_options_desc',
                         'fields' => array(
                             'ban_action_pt1' => array(
                                 'type' => 'radio',
@@ -715,24 +715,24 @@ class Members extends CP_Controller
         // @TODO: Stop using form_validation
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'banned_usernames',
-                'label'   => 'lang:banned_usernames',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_usernames',
+                'label' => 'lang:banned_usernames',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_screen_names',
-                'label'   => 'lang:banned_screen_names',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_screen_names',
+                'label' => 'lang:banned_screen_names',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_emails',
-                'label'   => 'lang:banned_emails',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_emails',
+                'label' => 'lang:banned_emails',
+                'rules' => 'valid_xss_check'
             ),
             array(
-                'field'   => 'banned_ips',
-                'label'   => 'lang:banned_ips',
-                'rules'   => 'valid_xss_check'
+                'field' => 'banned_ips',
+                'label' => 'lang:banned_ips',
+                'rules' => 'valid_xss_check'
             )
         ));
 
@@ -741,8 +741,8 @@ class Members extends CP_Controller
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $prefs = [
-                'ban_action'      => ee('Request')->post('ban_action'),
-                'ban_message'     => ee('Request')->post('ban_message'),
+                'ban_action' => ee('Request')->post('ban_action'),
+                'ban_message' => ee('Request')->post('ban_message'),
                 'ban_destination' => ee('Request')->post('ban_destination'),
             ];
 
@@ -809,7 +809,7 @@ class Members extends CP_Controller
 
         $columns = array(
             'member_id' => array(
-                'type'	=> Table::COL_ID
+                'type' => Table::COL_ID
             ),
             'username' => array(
                 'encode' => false
@@ -824,7 +824,7 @@ class Members extends CP_Controller
 
         if ($checkboxes) {
             $columns[] = array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             );
         }
 
@@ -838,9 +838,9 @@ class Members extends CP_Controller
         $table = $this->initializeTable();
 
         $sort_map = array(
-            'member_id'    => 'member_id',
-            'username'     => 'username',
-            'dates'        => 'join_date',
+            'member_id' => 'member_id',
+            'username' => 'username',
+            'dates' => 'join_date',
             'primary_role' => 'PrimaryRole.name'
         );
 
@@ -929,8 +929,8 @@ class Members extends CP_Controller
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 
@@ -1084,7 +1084,7 @@ class Members extends CP_Controller
         if (! ee('Session')->isWithinAuthTimeout()) {
             $validator = ee('Validation')->make();
             $validator->setRules(array(
-                'verify_password'  => 'required|authenticated'
+                'verify_password' => 'required|authenticated'
             ));
             $password_confirm = $validator->validate($_POST);
 
@@ -1130,7 +1130,7 @@ class Members extends CP_Controller
         if (! ee('Session')->isWithinAuthTimeout()) {
             $validator = ee('Validation')->make();
             $validator->setRules(array(
-                'verify_password'  => 'required|authenticated'
+                'verify_password' => 'required|authenticated'
             ));
             $password_confirm = $validator->validate($_POST);
 
@@ -1289,9 +1289,9 @@ class Members extends CP_Controller
             $notify_address = implode(',', $notify_address);
 
             $swap = array(
-                'name'		=> $member->screen_name,
-                'email'		=> $member->email,
-                'site_name'	=> stripslashes(ee()->config->item('site_name'))
+                'name' => $member->screen_name,
+                'email' => $member->email,
+                'site_name' => stripslashes(ee()->config->item('site_name'))
             );
 
             ee()->lang->loadfile('member');
@@ -1350,7 +1350,7 @@ class Members extends CP_Controller
             $validator = ee('Validation')->make();
             $validator->setRules(array(
                 'confirm_password' => 'required|matches[password]',
-                'verify_password'  => 'whenGroupIdIs[' . implode(',', ee('Permission')->rolesThatCan('access_cp')) . ']|authenticated[useAuthTimeout]'
+                'verify_password' => 'whenGroupIdIs[' . implode(',', ee('Permission')->rolesThatCan('access_cp')) . ']|authenticated[useAuthTimeout]'
             ));
 
             $validator->defineRule('whenGroupIdIs', function ($key, $password, $parameters, $rule) {
@@ -1446,9 +1446,9 @@ class Members extends CP_Controller
 
         $vars = array_merge($vars, [
             'sections' => [],
-            'tabs'     => [
+            'tabs' => [
                 'member' => $this->renderMemberTab($vars['errors']),
-                'roles'  => $this->renderRolesTab($vars['errors']),
+                'roles' => $this->renderRolesTab($vars['errors']),
             ]
         ]);
 
@@ -1460,8 +1460,8 @@ class Members extends CP_Controller
                     'group' => 'verify_password',
                     'fields' => array(
                         'verify_password' => array(
-                            'type'      => 'password',
-                            'required'  => true,
+                            'type' => 'password',
+                            'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )

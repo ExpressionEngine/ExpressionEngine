@@ -70,7 +70,7 @@ class DebugTools extends Utilities
         $data = [];
         foreach ($vars['tags'] as $tag_name => $tag) {
             $modal_name = str_replace(':', '', trim($tag_name, "{}"));
-            $contents =  ee('View')->make('utilities/debug-tools/modals/template_list')->render($tag);
+            $contents = ee('View')->make('utilities/debug-tools/modals/template_list')->render($tag);
 
             // This generates the modal, and adds it to the DOM
             $modal_vars = array(

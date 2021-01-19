@@ -151,10 +151,10 @@ class Addons_installer
             $default_settings = $FT->install();
 
             ee()->db->insert('fieldtypes', array(
-                'name'					=> $fieldtype,
-                'version'				=> $FT->info['version'],
-                'settings'				=> base64_encode(serialize((array) $default_settings)),
-                'has_global_settings'	=> method_exists($FT, 'display_global_settings') ? 'y' : 'n'
+                'name' => $fieldtype,
+                'version' => $FT->info['version'],
+                'settings' => base64_encode(serialize((array) $default_settings)),
+                'has_global_settings' => method_exists($FT, 'display_global_settings') ? 'y' : 'n'
             ));
 
             ee()->load->library('content_types');
@@ -220,7 +220,7 @@ class Addons_installer
             show_error(lang('module_can_not_be_found'));
         }
 
-        $class  = ucfirst($module) . '_upd';
+        $class = ucfirst($module) . '_upd';
 
         if (! class_exists($class)) {
             require $path;

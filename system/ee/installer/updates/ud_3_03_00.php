@@ -51,10 +51,10 @@ class Updater
                 'sessions',
                 array(
                     'can_debug' => array(
-                        'type'       => 'char',
+                        'type' => 'char',
                         'constraint' => 1,
-                        'default'    => 'n',
-                        'null'       => false
+                        'default' => 'n',
+                        'null' => false
                     )
                 )
             );
@@ -76,32 +76,32 @@ class Updater
             'members',
             array(
                 'timezone' => array(
-                    'name'       => 'timezone',
-                    'type'       => 'varchar',
+                    'name' => 'timezone',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'date_format' => array(
-                    'name'       => 'date_format',
-                    'type'       => 'varchar',
+                    'name' => 'date_format',
+                    'type' => 'varchar',
                     'constraint' => 8,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'time_format' => array(
-                    'name'       => 'time_format',
-                    'type'       => 'char',
+                    'name' => 'time_format',
+                    'type' => 'char',
                     'constraint' => 2,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'include_seconds' => array(
-                    'name'       => 'include_seconds',
-                    'type'       => 'char',
+                    'name' => 'include_seconds',
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 )
             )
         );
@@ -117,9 +117,9 @@ class Updater
         $same = true;
 
         $defaults = array(
-            'timezone'        => $msm_config->item('default_site_timezone'),
-            'date_format'     => $msm_config->item('date_format'),
-            'time_format'     => $msm_config->item('time_format'),
+            'timezone' => $msm_config->item('default_site_timezone'),
+            'date_format' => $msm_config->item('date_format'),
+            'time_format' => $msm_config->item('time_format'),
             'include_seconds' => $msm_config->item('include_seconds')
         );
 

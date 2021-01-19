@@ -40,17 +40,17 @@ class Copy extends Model
     ];
 
     protected static $_typed_columns = [
-        'copy_id'               => 'int',
-        'message_id'            => 'int',
-        'sender_id'             => 'int',
-        'recipient_id'          => 'int',
-        'message_received'      => 'boolString',
-        'message_read'          => 'boolString',
-        'message_time_read'     => 'timestamp',
+        'copy_id' => 'int',
+        'message_id' => 'int',
+        'sender_id' => 'int',
+        'recipient_id' => 'int',
+        'message_received' => 'boolString',
+        'message_read' => 'boolString',
+        'message_time_read' => 'timestamp',
         'attachment_downloaded' => 'boolString',
-        'message_authcode'      => 'string',
-        'message_deleted'       => 'boolString',
-        'message_status'        => 'string'
+        'message_authcode' => 'string',
+        'message_deleted' => 'boolString',
+        'message_status' => 'string'
     ];
 
     protected $copy_id;

@@ -87,7 +87,7 @@ class Quicklinks extends Settings
 
         $values = array(
             'name' => ee()->input->get('name'),
-            'url'  => ee('CP/URL')->decodeUrl(ee()->input->get('url'))
+            'url' => ee('CP/URL')->decodeUrl(ee()->input->get('url'))
         );
 
         $id = count($this->quicklinks) + 1;
@@ -245,14 +245,14 @@ class Quicklinks extends Settings
 
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'name',
-                'label'   => 'lang:quicklink_name',
-                'rules'   => 'required|valid_xss_check'
+                'field' => 'name',
+                'label' => 'lang:quicklink_name',
+                'rules' => 'required|valid_xss_check'
             ),
             array(
-                'field'   => 'url',
-                'label'   => 'lang:quicklink_url',
-                'rules'   => 'required|valid_xss_check'
+                'field' => 'url',
+                'label' => 'lang:quicklink_url',
+                'rules' => 'required|valid_xss_check'
             )
         ));
 
@@ -331,7 +331,7 @@ class Quicklinks extends Settings
                 array(
                     'name' => 'selection[]',
                     'value' => $quicklink['order'],
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -344,10 +344,10 @@ class Quicklinks extends Settings
                     'encode' => false
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );

@@ -122,9 +122,9 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                 ee()->load->add_package_path($_ft_path, false);
 
                 $ft->_init(array(
-                    'row'			=> $data,
-                    'content_id'	=> $data['entry_id'],
-                    'content_type'	=> 'channel'
+                    'row' => $data,
+                    'content_id' => $data['entry_id'],
+                    'content_type' => 'channel'
                 ));
 
                 $pre_processed = '';

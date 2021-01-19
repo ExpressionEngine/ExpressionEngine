@@ -68,7 +68,7 @@ class Category_model extends CI_Model
      *
      * @return 	object		db class result object
      */
-    public function get_category_groups($group_id = '', $site_id = true, $include=0)
+    public function get_category_groups($group_id = '', $site_id = true, $include = 0)
     {
         if ($group_id != '') {
             if (! is_array($group_id)) {

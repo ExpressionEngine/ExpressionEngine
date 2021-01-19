@@ -36,8 +36,8 @@ class ActionBar
     {
         $this->left_button = [
             'text' => $text,
-            'url'  => $url,
-            'rel'  => $rel
+            'url' => $url,
+            'rel' => $rel
         ];
 
         return $this;
@@ -56,8 +56,8 @@ class ActionBar
     {
         $this->right_button = [
             'text' => $text,
-            'url'  => $url,
-            'rel'  => $rel
+            'url' => $url,
+            'rel' => $rel
         ];
 
         return $this;

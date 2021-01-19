@@ -37,10 +37,10 @@ class Installer_template_model extends Template_model
             'templates',
             array(
                 'protect_javascript' => array(
-                    'type'			=> 'char',
-                    'constraint'    => 1,
-                    'null'			=> false,
-                    'default'		=> 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'null' => false,
+                    'default' => 'n'
                 )
             )
         );

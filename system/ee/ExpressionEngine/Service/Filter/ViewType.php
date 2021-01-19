@@ -38,8 +38,8 @@ class Viewtype extends Filter
         $this->options = $options;
 
         $this->options = array(
-            'list'  => lang('viewtype_list'),
-            'thumb'  => lang('viewtype_thumb'),
+            'list' => lang('viewtype_list'),
+            'thumb' => lang('viewtype_thumb'),
         );
 
         $this->default_value = $default_value;
@@ -99,10 +99,10 @@ class Viewtype extends Filter
         $options = array_combine(array_keys($original_options), $new_options);
 
         $filter = [
-            'name'        => $this->name,
-            'value'       => str_replace('"', '&quot;', $this->value()),
+            'name' => $this->name,
+            'value' => str_replace('"', '&quot;', $this->value()),
             'placeholder' => $this->placeholder,
-            'options'     => $options
+            'options' => $options
         ];
 
         return $view->make('_shared/filters/viewtype')->render($filter);

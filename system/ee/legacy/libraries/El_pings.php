@@ -41,24 +41,24 @@ class El_pings
 
         if (! $cached or $cached != $exp_response) {
             $payload = array(
-                'domain'           => ee()->config->item('site_url'),
-                'server_name'      => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
-                'ee_version'       => APP_VER,
-                'php_version'      => PHP_VERSION,
-                'mysql_version'    => ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION),
+                'domain' => ee()->config->item('site_url'),
+                'server_name' => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
+                'ee_version' => APP_VER,
+                'php_version' => PHP_VERSION,
+                'mysql_version' => ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION),
                 'installed_addons' => json_encode($this->getInstalledAddons())
             );
 
             if (! $response = $this->_do_ping('https://ping.expressionengine.com/analytics/' . APP_VER, $payload)) {
                 // save the failed request for a day only
-                $this->cache->save('analytics_sent', $response, 60*60*24, Cache::GLOBAL_SCOPE);
+                $this->cache->save('analytics_sent', $response, 60 * 60 * 24, Cache::GLOBAL_SCOPE);
             } else {
                 if ($response != $exp_response) {
                     // may have been a server error, save the failed request for a day
-                    $this->cache->save('analytics_sent', $response, 60*60*24, Cache::GLOBAL_SCOPE);
+                    $this->cache->save('analytics_sent', $response, 60 * 60 * 24, Cache::GLOBAL_SCOPE);
                 } else {
                     // keep for two weeks
-                    $this->cache->save('analytics_sent', $response, 60*60*24*7*2, Cache::GLOBAL_SCOPE);
+                    $this->cache->save('analytics_sent', $response, 60 * 60 * 24 * 7 * 2, Cache::GLOBAL_SCOPE);
                 }
             }
         }
@@ -273,7 +273,7 @@ class El_pings
         for ($res = ''; !empty($str); $str = trim($str)) {
             $pos = strpos($str, "\r\n");
             $len = hexdec(substr($str, 0, $pos));
-            $res.= substr($str, $pos + 2, $len);
+            $res .= substr($str, $pos + 2, $len);
             $str = substr($str, $pos + 2 + $len);
         }
 

@@ -23,8 +23,8 @@ class Administrator extends Model
     protected static $_table_name = 'forum_administrators';
 
     protected static $_typed_columns = array(
-        'board_id'        => 'int',
-        'admin_group_id'  => 'int',
+        'board_id' => 'int',
+        'admin_group_id' => 'int',
         'admin_member_id' => 'int',
     );
 
@@ -33,20 +33,20 @@ class Administrator extends Model
             'type' => 'belongsTo'
         ),
         'Member' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Member',
+            'type' => 'belongsTo',
+            'model' => 'ee:Member',
             'from_key' => 'admin_member_id',
-            'to_key'   => 'member_id',
+            'to_key' => 'member_id',
             'inverse' => array(
                 'name' => 'Administrator',
                 'type' => 'hasMany'
             )
         ),
         'Role' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Role',
+            'type' => 'belongsTo',
+            'model' => 'ee:Role',
             'from_key' => 'admin_group_id',
-            'to_key'   => 'role_id',
+            'to_key' => 'role_id',
             'inverse' => array(
                 'name' => 'Administrator',
                 'type' => 'hasMany'
@@ -55,8 +55,8 @@ class Administrator extends Model
     );
 
     protected static $_validation_rules = array(
-        'board_id'        => 'required',
-        'admin_group_id'  => 'required',
+        'board_id' => 'required',
+        'admin_group_id' => 'required',
         'admin_member_id' => 'required',
     );
 

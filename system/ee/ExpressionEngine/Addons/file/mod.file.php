@@ -13,12 +13,12 @@
  */
 class File
 {
-    public $reserved_cat_segment	= '';
-    public $use_category_names		= false;
-    public $categories				= array();
-    public $catfields				= array();
-    public $valid_thumbs			= array();
-    public $return_data			= '';
+    public $reserved_cat_segment = '';
+    public $use_category_names = false;
+    public $categories = array();
+    public $catfields = array();
+    public $valid_thumbs = array();
+    public $return_data = '';
 
     /**
       * Constructor
@@ -26,8 +26,8 @@ class File
     public function __construct()
     {
         if (ee()->config->item("use_category_name") == 'y' && ee()->config->item("reserved_category_word") != '') {
-            $this->use_category_names	= ee()->config->item("use_category_name");
-            $this->reserved_cat_segment	= ee()->config->item("reserved_category_word");
+            $this->use_category_names = ee()->config->item("use_category_name");
+            $this->reserved_cat_segment = ee()->config->item("reserved_category_word");
         }
     }
 
@@ -74,11 +74,11 @@ class File
       */
     private function _get_file_data($pagination = '')
     {
-        $file_id			= '';
-        $category_id		= false;
-        $category_group		= false;
-        $category_params	= array('category' => 'category_id', 'category_group' => 'category_group');
-        $dynamic			= (ee()->TMPL->fetch_param('dynamic') !== 'no') ? true : false;
+        $file_id = '';
+        $category_id = false;
+        $category_group = false;
+        $category_params = array('category' => 'category_id', 'category_group' => 'category_group');
+        $dynamic = (ee()->TMPL->fetch_param('dynamic') !== 'no') ? true : false;
 
         // Parse the URL query string
         $query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
@@ -168,12 +168,12 @@ class File
         }
 
         // Set order and sort
-        $allowed_orders	= array('title', 'date', 'upload_date', 'random');
-        $order_by		= strtolower(ee()->TMPL->fetch_param('orderby', 'upload_date'));
-        $order_by		= ($order_by == 'date' or ! in_array($order_by, $allowed_orders)) ? 'upload_date' : $order_by;
-        $random			= ($order_by == 'random') ? true : false;
-        $sort			= strtolower(ee()->TMPL->fetch_param('sort', 'desc'));
-        $sort			= ($random) ? 'random' : $sort;
+        $allowed_orders = array('title', 'date', 'upload_date', 'random');
+        $order_by = strtolower(ee()->TMPL->fetch_param('orderby', 'upload_date'));
+        $order_by = ($order_by == 'date' or ! in_array($order_by, $allowed_orders)) ? 'upload_date' : $order_by;
+        $random = ($order_by == 'random') ? true : false;
+        $sort = strtolower(ee()->TMPL->fetch_param('sort', 'desc'));
+        $sort = ($random) ? 'random' : $sort;
 
         if (! $random) {
             ee()->db->select($order_by);
@@ -243,7 +243,7 @@ class File
 
         foreach ($categories as $val) {
             $this->temp_array = array();
-            $this->cat_array  = array();
+            $this->cat_array = array();
             $parents = array();
 
             foreach ($query->result_array() as $row) {
@@ -365,40 +365,40 @@ class File
             $row_prefs = $upload_prefs[$row['upload_location_id']];
 
             //  More Variables, Mostly for Conditionals
-            $row['absolute_count']  = (int) $offset + $count + 1;
-            $row['logged_in']       = (ee()->session->userdata('member_id') == 0) ? false : true;
-            $row['logged_out']      = (ee()->session->userdata('member_id') != 0) ? false : true;
-            $row['directory_id']    = $row['id'];
+            $row['absolute_count'] = (int) $offset + $count + 1;
+            $row['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
+            $row['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+            $row['directory_id'] = $row['id'];
             $row['directory_title'] = $row['name'];
-            $row['entry_id']        = $row['file_id'];
-            $row['extension']       = substr(strrchr($row['file_name'], '.'), 1);
-            $row['path']            = $row_prefs['url'];
-            $row['url']             = rtrim($row_prefs['url'], '/') . '/' . $row['file_name'];
-            $row['viewable_image']  = $this->is_viewable_image($row['file_name']);
+            $row['entry_id'] = $row['file_id'];
+            $row['extension'] = substr(strrchr($row['file_name'], '.'), 1);
+            $row['path'] = $row_prefs['url'];
+            $row['url'] = rtrim($row_prefs['url'], '/') . '/' . $row['file_name'];
+            $row['viewable_image'] = $this->is_viewable_image($row['file_name']);
 
             // Add in the path variable
             $row['id_path'] = array('/' . $row['file_id'], array('path_variable' => true));
 
             // typography on title?
-            $row['title']			= ee()->typography->format_characters($row['title']);
+            $row['title'] = ee()->typography->format_characters($row['title']);
 
             // typography on caption
             ee()->typography->parse_type(
                 $row['description'],
                 array(
-                    'text_format'	=> 'xhtml',
-                    'html_format'	=> 'safe',
-                    'auto_links'	=> 'y',
-                    'allow_img_url'	=> 'y'
+                    'text_format' => 'xhtml',
+                    'html_format' => 'safe',
+                    'auto_links' => 'y',
+                    'allow_img_url' => 'y'
                 )
             );
 
             // Backwards compatible support for some old variables
-            $row['caption']    = $row['description'];
+            $row['caption'] = $row['description'];
             $row['entry_date'] = $row['upload_date'];
-            $row['edit_date']  = $row['modified_date'];
-            $row['filename']   = $row['file_name'];
-            $row['file_url']   = $row['url'];
+            $row['edit_date'] = $row['modified_date'];
+            $row['filename'] = $row['file_name'];
+            $row['file_url'] = $row['url'];
 
             // Get File Size/H/W data
             $size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'] . '/' . $row['filename']));
@@ -434,17 +434,17 @@ class File
                 }
                 // if the file doesn't exist this key is null, and fails isset(), so use array_key_exists
                 elseif (! array_key_exists($data['name'] . '_height', $row)) {
-                    $row['url:' . $data['name']]                     = '';
-                    $row['height:' . $data['name']]                  = '';
-                    $row['width:' . $data['name']]                   = '';
-                    $row['file_size:' . $data['name']]               = '';
-                    $row['file_size:' . $data['name'] . ':human']      = '';
+                    $row['url:' . $data['name']] = '';
+                    $row['height:' . $data['name']] = '';
+                    $row['width:' . $data['name']] = '';
+                    $row['file_size:' . $data['name']] = '';
+                    $row['file_size:' . $data['name'] . ':human'] = '';
                     $row['file_size:' . $data['name'] . ':human_long'] = '';
 
                     // backwards compat
-                    $row[$data['name'] . '_height']   = '';
-                    $row[$data['name'] . '_width']    = '';
-                    $row[$data['name'] . '_size']     = '';
+                    $row[$data['name'] . '_height'] = '';
+                    $row[$data['name'] . '_width'] = '';
+                    $row[$data['name'] . '_size'] = '';
                     $row[$data['name'] . '_file_url'] = '';
                 }
             }
@@ -485,8 +485,8 @@ class File
         if ($filedata['is_image'] && function_exists('getimagesize')) {
             $D = @getimagesize($file_path);
 
-            $filedata['height']	= $D['1'];
-            $filedata['width']	= $D['0'];
+            $filedata['height'] = $D['1'];
+            $filedata['width'] = $D['0'];
         }
 
         $s = get_file_info($file_path, array('size'));
@@ -515,7 +515,7 @@ class File
             $path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
         }
         $mime = ee()->mime_type->ofFile($path);
-        if ($mime=='image/svg') {
+        if ($mime == 'image/svg') {
             $mime = 'image/svg+xml';
         }
         @header('Content-type: ' . $mime);
@@ -533,9 +533,9 @@ class File
     private function _fetch_disable_param()
     {
         $this->enable = array(
-            'categories'		=> true,
-            'category_fields'	=> true,
-            'pagination'		=> true
+            'categories' => true,
+            'category_fields' => true,
+            'pagination' => true
         );
 
         if ($disable = ee()->TMPL->fetch_param('disable')) {

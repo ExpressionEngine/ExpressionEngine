@@ -64,9 +64,9 @@ class Updater
                 'category_field_data',
                 array(
                     $field_name => array(
-                        'name' 			=> $field_name,
-                        'type' 			=> 'text',
-                        'null' 			=> true
+                        'name' => $field_name,
+                        'type' => 'text',
+                        'null' => true
                     )
                 )
             );
@@ -125,7 +125,7 @@ class Updater
     {
         ee()->smartforge->add_column('sessions', array(
             'login_state' => array(
-                'type'       => 'varchar',
+                'type' => 'varchar',
                 'constraint' => 32
             )
         ));

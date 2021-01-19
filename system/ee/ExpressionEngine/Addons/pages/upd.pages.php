@@ -26,18 +26,18 @@ class Pages_upd extends Installer
     public function tabs()
     {
         $tabs['pages'] = array(
-            'pages_template_id'	=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'pages_template_id' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             ),
 
-            'pages_uri'		=> array(
-                'visible'		=> true,
-                'collapse'		=> false,
-                'htmlbuttons'	=> true,
-                'width'			=> '100%'
+            'pages_uri' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
             )
         );
 

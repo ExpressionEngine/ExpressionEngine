@@ -22,7 +22,7 @@ class Markdown implements MarkdownInterface
 {
     ### Version ###
 
-    public const  MARKDOWNLIB_VERSION  =  "1.6.0";
+    public const  MARKDOWNLIB_VERSION = "1.6.0";
 
     ### Simple Function Interface ###
 
@@ -37,7 +37,7 @@ class Markdown implements MarkdownInterface
 
         # try to take parser from the static parser list
         static $parser_list;
-        $parser =& $parser_list[$parser_class];
+        $parser = & $parser_list[$parser_class];
 
         # create the parser it not already set
         if (!$parser) {
@@ -199,7 +199,7 @@ class Markdown implements MarkdownInterface
         # Strip link definitions, store in hashes.
         "stripLinkDefinitions" => 20,
 
-        "runBasicBlockGamut"   => 30,
+        "runBasicBlockGamut" => 30,
     );
 
     protected function stripLinkDefinitions($text)
@@ -245,7 +245,7 @@ class Markdown implements MarkdownInterface
         $link_id = strtolower($matches[1]);
         $url = $matches[2] == '' ? $matches[3] : $matches[2];
         $this->urls[$link_id] = $url;
-        $this->titles[$link_id] =& $matches[4];
+        $this->titles[$link_id] = & $matches[4];
 
         return ''; # String that will replace the block
     }
@@ -399,7 +399,7 @@ class Markdown implements MarkdownInterface
     protected function _hashHTMLBlocks_callback($matches)
     {
         $text = $matches[1];
-        $key  = $this->hashBlock($text);
+        $key = $this->hashBlock($text);
 
         return "\n\n$key\n\n";
     }
@@ -441,12 +441,12 @@ class Markdown implements MarkdownInterface
         # These are all the transformations that form block-level
         # tags like paragraphs, headers, and list items.
         #
-        "doHeaders"         => 10,
+        "doHeaders" => 10,
         "doHorizontalRules" => 20,
 
-        "doLists"           => 40,
-        "doCodeBlocks"      => 50,
-        "doBlockQuotes"     => 60,
+        "doLists" => 40,
+        "doCodeBlocks" => 50,
+        "doBlockQuotes" => 60,
     );
 
     protected function runBlockGamut($text)
@@ -507,21 +507,21 @@ class Markdown implements MarkdownInterface
         #
         # Process character escapes, code spans, and inline HTML
         # in one shot.
-        "parseSpan"           => -30,
+        "parseSpan" => -30,
 
         # Process anchor and image tags. Images must come first,
         # because ![foo][f] looks like an anchor.
-        "doImages"            =>  10,
-        "doAnchors"           =>  20,
+        "doImages" => 10,
+        "doAnchors" => 20,
 
         # Make links out of things like `<https://example.com/>`
         # Must come after doAnchors, because you can use < and >
         # delimiters in inline links like [this](<url>).
-        "doAutoLinks"         =>  30,
-        "encodeAmpsAndAngles" =>  40,
+        "doAutoLinks" => 30,
+        "encodeAmpsAndAngles" => 40,
 
-        "doItalicsAndBold"    =>  50,
-        "doHardBreaks"        =>  60,
+        "doItalicsAndBold" => 50,
+        "doHardBreaks" => 60,
     );
 
     protected function runSpanGamut($text)
@@ -635,9 +635,9 @@ class Markdown implements MarkdownInterface
     }
     protected function _doAnchors_reference_callback($matches)
     {
-        $whole_match =  $matches[1];
-        $link_text   =  $matches[2];
-        $link_id     =& $matches[3];
+        $whole_match = $matches[1];
+        $link_text = $matches[2];
+        $link_id = & $matches[3];
 
         if ($link_id == "") {
             # for shortcut links like [this][] or [this].
@@ -656,7 +656,7 @@ class Markdown implements MarkdownInterface
             if (isset($this->titles[$link_id])) {
                 $title = $this->titles[$link_id];
                 $title = $this->encodeAttribute($title);
-                $result .=  " title=\"$title\"";
+                $result .= " title=\"$title\"";
             }
 
             $link_text = $this->runSpanGamut($link_text);
@@ -670,10 +670,10 @@ class Markdown implements MarkdownInterface
     }
     protected function _doAnchors_inline_callback($matches)
     {
-        $whole_match	=  $matches[1];
-        $link_text		=  $this->runSpanGamut($matches[2]);
-        $url			=  $matches[3] == '' ? $matches[4] : $matches[3];
-        $title			=& $matches[7];
+        $whole_match = $matches[1];
+        $link_text = $this->runSpanGamut($matches[2]);
+        $url = $matches[3] == '' ? $matches[4] : $matches[3];
+        $title = & $matches[7];
 
         // if the URL was of the form <s p a c e s> it got caught by the HTML
         // tag parser and hashed. Need to reverse the process before using the URL.
@@ -687,7 +687,7 @@ class Markdown implements MarkdownInterface
         $result = "<a href=\"$url\"";
         if (isset($title)) {
             $title = $this->encodeAttribute($title);
-            $result .=  " title=\"$title\"";
+            $result .= " title=\"$title\"";
         }
 
         $link_text = $this->runSpanGamut($link_text);
@@ -761,8 +761,8 @@ class Markdown implements MarkdownInterface
     protected function _doImages_reference_callback($matches)
     {
         $whole_match = $matches[1];
-        $alt_text    = $matches[2];
-        $link_id     = strtolower($matches[3]);
+        $alt_text = $matches[2];
+        $link_id = strtolower($matches[3]);
 
         if ($link_id == "") {
             $link_id = strtolower($alt_text); # for shortcut links like ![this][].
@@ -775,7 +775,7 @@ class Markdown implements MarkdownInterface
             if (isset($this->titles[$link_id])) {
                 $title = $this->titles[$link_id];
                 $title = $this->encodeAttribute($title);
-                $result .=  " title=\"$title\"";
+                $result .= " title=\"$title\"";
             }
             $result .= $this->empty_element_suffix;
             $result = $this->hashPart($result);
@@ -788,17 +788,17 @@ class Markdown implements MarkdownInterface
     }
     protected function _doImages_inline_callback($matches)
     {
-        $whole_match	= $matches[1];
-        $alt_text		= $matches[2];
-        $url			= $matches[3] == '' ? $matches[4] : $matches[3];
-        $title			=& $matches[7];
+        $whole_match = $matches[1];
+        $alt_text = $matches[2];
+        $url = $matches[3] == '' ? $matches[4] : $matches[3];
+        $title = & $matches[7];
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeURLAttribute($url);
         $result = "<img src=\"$url\" alt=\"$alt_text\"";
         if (isset($title)) {
             $title = $this->encodeAttribute($title);
-            $result .=  " title=\"$title\""; # $title already quoted
+            $result .= " title=\"$title\""; # $title already quoted
         }
         $result .= $this->empty_element_suffix;
 
@@ -899,8 +899,8 @@ class Markdown implements MarkdownInterface
         $less_than_tab = $this->tab_width - 1;
 
         # Re-usable patterns to match list item bullets and number markers:
-        $marker_ul_re  = '[*+-]';
-        $marker_ol_re  = '\d+[\.]';
+        $marker_ul_re = '[*+-]';
+        $marker_ol_re = '\d+[\.]';
 
         $markers_relist = array(
             $marker_ul_re => $marker_ol_re,
@@ -965,8 +965,8 @@ class Markdown implements MarkdownInterface
     protected function _doLists_callback($matches)
     {
         # Re-usable patterns to match list item bullets and number markers:
-        $marker_ul_re  = '[*+-]';
-        $marker_ol_re  = '\d+[\.]';
+        $marker_ul_re = '[*+-]';
+        $marker_ol_re = '\d+[\.]';
         $marker_any_re = "(?:$marker_ul_re|$marker_ol_re)";
         $marker_ol_start_re = '[0-9]+';
 
@@ -1055,10 +1055,10 @@ class Markdown implements MarkdownInterface
     protected function _processListItems_callback($matches)
     {
         $item = $matches[4];
-        $leading_line =& $matches[1];
-        $leading_space =& $matches[2];
+        $leading_line = & $matches[1];
+        $leading_space = & $matches[2];
         $marker_space = $matches[3];
-        $tailing_blank_line =& $matches[5];
+        $tailing_blank_line = & $matches[5];
 
         if ($leading_line || $tailing_blank_line ||
             preg_match('/\n{2,}/', $item)) {
@@ -1127,17 +1127,17 @@ class Markdown implements MarkdownInterface
     }
 
     protected $em_relist = array(
-        ''  => '(?:(?<!\*)\*(?!\*)|(?<!_)_(?!_))(?![\.,:;]?\s)',
+        '' => '(?:(?<!\*)\*(?!\*)|(?<!_)_(?!_))(?![\.,:;]?\s)',
         '*' => '(?<![\s*])\*(?!\*)',
         '_' => '(?<![\s_])_(?!_)',
     );
     protected $strong_relist = array(
-        ''   => '(?:(?<!\*)\*\*(?!\*)|(?<!_)__(?!_))(?![\.,:;]?\s)',
+        '' => '(?:(?<!\*)\*\*(?!\*)|(?<!_)__(?!_))(?![\.,:;]?\s)',
         '**' => '(?<![\s*])\*\*(?!\*)',
         '__' => '(?<![\s_])__(?!_)',
     );
     protected $em_strong_relist = array(
-        ''    => '(?:(?<!\*)\*\*\*(?!\*)|(?<!_)___(?!_))(?![\.,:;]?\s)',
+        '' => '(?:(?<!\*)\*\*\*(?!\*)|(?<!_)___(?!_))(?![\.,:;]?\s)',
         '***' => '(?<![\s*])\*\*\*(?!\*)',
         '___' => '(?<![\s_])___(?!_)',
     );
@@ -1187,8 +1187,8 @@ class Markdown implements MarkdownInterface
             #
             $parts = preg_split($token_re, $text, 2, PREG_SPLIT_DELIM_CAPTURE);
             $text_stack[0] .= $parts[0];
-            $token =& $parts[1];
-            $text =& $parts[2];
+            $token = & $parts[1];
+            $text = & $parts[2];
 
             if (empty($token)) {
                 # Reached end of text span: empty stack without emitting.
@@ -1216,7 +1216,7 @@ class Markdown implements MarkdownInterface
                 } else {
                     # Other closing marker: close one em or strong and
                     # change current token state to match the other
-                    $token_stack[0] = str_repeat($token[0], 3-$token_len);
+                    $token_stack[0] = str_repeat($token[0], 3 - $token_len);
                     $tag = $token_len == 2 ? "strong" : "em";
                     $span = $text_stack[0];
                     $span = $this->runSpanGamut($span);

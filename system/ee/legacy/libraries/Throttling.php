@@ -15,9 +15,9 @@ class EE_Throttling
 {
     public $throttling_enabled = false;
     public $max_page_loads = 10;
-    public $time_interval	= 5;
-    public $lockout_time	= 30;
-    public $current_data	= false;
+    public $time_interval = 5;
+    public $lockout_time = 30;
+    public $current_data = false;
 
     /** ----------------------------------------------
     /**  Runs the throttling funcitons
@@ -75,12 +75,12 @@ class EE_Throttling
 
             $lockout = time() - $this->lockout_time;
 
-            if ($query->row('locked_out')  == 'y' and $query->row('last_activity')  > $lockout) {
+            if ($query->row('locked_out') == 'y' and $query->row('last_activity') > $lockout) {
                 $this->banish();
                 exit;
             }
 
-            if ($query->row('last_activity')  > $expire) {
+            if ($query->row('last_activity') > $expire) {
                 if ($query->row('hits') >= $this->max_page_loads) {
                     // Lock them out and banish them...
                     ee()->db->query("UPDATE exp_throttle SET locked_out = 'y', last_activity = '" . time() . "' WHERE ip_address= '" . ee()->db->escape_str(ee()->input->ip_address()) . "'");
@@ -121,7 +121,7 @@ class EE_Throttling
     /** ----------------------------------------------*/
     public function banish()
     {
-        $type = ((ee()->config->item('banishment_type') == 'redirect' and ee()->config->item('banishment_url') == '')  or (ee()->config->item('banishment_type') == 'message' and ee()->config->item('banishment_message') == '')) ? '404' : ee()->config->item('banishment_type');
+        $type = ((ee()->config->item('banishment_type') == 'redirect' and ee()->config->item('banishment_url') == '') or (ee()->config->item('banishment_type') == 'message' and ee()->config->item('banishment_message') == '')) ? '404' : ee()->config->item('banishment_type');
 
         switch ($type) {
             case 'redirect':	$loc = (strncasecmp(ee()->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://' . ee()->config->item('banishment_url') : ee()->config->item('banishment_url');

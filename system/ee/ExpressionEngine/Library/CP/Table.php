@@ -61,29 +61,29 @@ class Table
     public function __construct($config = array())
     {
         $defaults = array(
-            'wrap'              => true,
-            'sort_col'          => null,
-            'sort_col_qs_var'   => 'sort_col',
-            'sort_dir'          => 'asc',
-            'sort_dir_qs_var'   => 'sort_dir',
-            'limit'             => 25,
-            'page'              => 1,
-            'total_rows'        => 0,
-            'search'            => null,
-            'sortable'          => true,
-            'autosort'          => false,
-            'autosearch'        => false,
-            'lang_cols'         => true,
-            'subheadings'       => false,
-            'grid_input'        => false,
-            'reorder'           => false,
-            'reorder_header'    => false,
-            'checkbox_header'   => false,
-            'show_add_button'   => true,
-            'class'             => '',
-            'attrs'				=> array(),
-            'no_results'        => array(
-                'text'        => 'no_rows_returned',
+            'wrap' => true,
+            'sort_col' => null,
+            'sort_col_qs_var' => 'sort_col',
+            'sort_dir' => 'asc',
+            'sort_dir_qs_var' => 'sort_dir',
+            'limit' => 25,
+            'page' => 1,
+            'total_rows' => 0,
+            'search' => null,
+            'sortable' => true,
+            'autosort' => false,
+            'autosearch' => false,
+            'lang_cols' => true,
+            'subheadings' => false,
+            'grid_input' => false,
+            'reorder' => false,
+            'reorder_header' => false,
+            'checkbox_header' => false,
+            'show_add_button' => true,
+            'class' => '',
+            'attrs' => array(),
+            'no_results' => array(
+                'text' => 'no_rows_returned',
                 'action_text' => '',
                 'action_link' => ''
             )
@@ -206,11 +206,11 @@ class Table
 
         // Default settings for columns
         $defaults = array(
-            'label'		=> null,
-            'name'      => null,
-            'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
-            'sort'		=> true,
-            'type'		=> self::COL_TEXT
+            'label' => null,
+            'name' => null,
+            'encode' => ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
+            'sort' => true,
+            'type' => self::COL_TEXT
         );
 
         foreach ($columns as $label => $settings) {
@@ -303,8 +303,8 @@ class Table
 
             // Default settings for columns
             $defaults = array(
-                'type'		=> self::COL_TEXT,
-                'encode'	=> false
+                'type' => self::COL_TEXT,
+                'encode' => false
             );
 
             $this->config['total_rows'] = 0;
@@ -345,9 +345,9 @@ class Table
                         // Normal cell content
                         if (! is_array($item)) {
                             $settings = array(
-                                'content' 	=> $item,
-                                'type' 		=> $col_settings[0]['type'],
-                                'encode' 	=> $col_settings[0]['encode']
+                                'content' => $item,
+                                'type' => $col_settings[0]['type'],
+                                'encode' => $col_settings[0]['encode']
                             );
                             $data_row[] = array_merge($defaults, $settings);
                         } else {
@@ -383,8 +383,8 @@ class Table
                     }
 
                     $data_row = array(
-                        'attrs'		=> $attrs,
-                        'columns'	=> $data_row
+                        'attrs' => $attrs,
+                        'columns' => $data_row
                     );
 
                     // Group by subheading only if there is no search criteria,
@@ -505,8 +505,8 @@ class Table
             $search = array_map(function ($column) {
                 return $column['label'];
             }, $columns);
-            $index  = array_search($sort_col, $search);
-            $cmp    = $that->compareData(
+            $index = array_search($sort_col, $search);
+            $cmp = $that->compareData(
                 $a['columns'][$index]['content'],
                 $b['columns'][$index]['content']
             );
@@ -651,15 +651,15 @@ class Table
         return array_merge(
             $view_vars,
             array(
-                'base_url'       => $base_url,
-                'sort_col'       => $this->getSortCol(),
-                'sort_dir'       => $this->getSortDir(),
-                'table_attrs'    => $this->config['attrs'],
-                'columns'        => $this->columns,
-                'data'           => $this->data,
+                'base_url' => $base_url,
+                'sort_col' => $this->getSortCol(),
+                'sort_dir' => $this->getSortDir(),
+                'table_attrs' => $this->config['attrs'],
+                'columns' => $this->columns,
+                'data' => $this->data,
                 'action_buttons' => $this->action_buttons,
                 'action_content' => $this->action_content,
-                'subheadings'    => ($this->config['subheadings'] && empty($this->config['search'])),
+                'subheadings' => ($this->config['subheadings'] && empty($this->config['search'])),
             )
         );
     }
@@ -710,10 +710,10 @@ class Table
     public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false)
     {
         $this->config['no_results'] = array(
-            'text'			=> $text,
-            'action_text'	=> $action_text,
-            'action_link'	=> $action_link,
-            'external'		=> $external
+            'text' => $text,
+            'action_text' => $action_text,
+            'action_link' => $action_link,
+            'external' => $external
         );
     }
 

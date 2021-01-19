@@ -43,7 +43,7 @@ $lang = array(
 
     'sql_query_form' => 'Database Query Form',
 
-    'sql_query_instructions'=> 'Use this form to submit an SQL query',
+    'sql_query_instructions' => 'Use this form to submit an SQL query',
 
     'sql_status' => 'Status Info',
 
@@ -77,7 +77,7 @@ $lang = array(
 
     'choose_below' => '(Choose from the following)',
 
-    'if_replacing_templates'=> 'If you are replacing within templates, <a href="%x">synchronize with the database</a> first, or',
+    'if_replacing_templates' => 'If you are replacing within templates, <a href="%x">synchronize with the database</a> first, or',
 
     'permanent_data_loss' => 'permanent data loss can occur!',
 

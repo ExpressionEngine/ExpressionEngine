@@ -23,18 +23,18 @@ class Moderator extends Model
     protected static $_table_name = 'forum_moderators';
 
     protected static $_typed_columns = array(
-        'board_id'              => 'int',
-        'mod_forum_id'          => 'int',
-        'mod_member_id'         => 'int',
-        'mod_group_id'          => 'int',
-        'mod_can_edit'          => 'boolString',
-        'mod_can_move'          => 'boolString',
-        'mod_can_delete'        => 'boolString',
-        'mod_can_split'         => 'boolString',
-        'mod_can_merge'         => 'boolString',
+        'board_id' => 'int',
+        'mod_forum_id' => 'int',
+        'mod_member_id' => 'int',
+        'mod_group_id' => 'int',
+        'mod_can_edit' => 'boolString',
+        'mod_can_move' => 'boolString',
+        'mod_can_delete' => 'boolString',
+        'mod_can_split' => 'boolString',
+        'mod_can_merge' => 'boolString',
         'mod_can_change_status' => 'boolString',
-        'mod_can_announce'      => 'boolString',
-        'mod_can_view_ip'       => 'boolString',
+        'mod_can_announce' => 'boolString',
+        'mod_can_view_ip' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -42,25 +42,25 @@ class Moderator extends Model
             'type' => 'belongsTo'
         ),
         'Forum' => array(
-            'type'     => 'belongsTo',
+            'type' => 'belongsTo',
             'from_key' => 'mod_forum_id',
-            'to_key'   => 'forum_id'
+            'to_key' => 'forum_id'
         ),
         'Member' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Member',
+            'type' => 'belongsTo',
+            'model' => 'ee:Member',
             'from_key' => 'mod_member_id',
-            'to_key'   => 'member_id',
+            'to_key' => 'member_id',
             'inverse' => array(
                 'name' => 'Moderator',
                 'type' => 'hasMany'
             )
         ),
         'Role' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Role',
+            'type' => 'belongsTo',
+            'model' => 'ee:Role',
             'from_key' => 'mod_group_id',
-            'to_key'   => 'role_id',
+            'to_key' => 'role_id',
             'inverse' => array(
                 'name' => 'Moderator',
                 'type' => 'hasMany'
@@ -69,16 +69,16 @@ class Moderator extends Model
     );
 
     protected static $_validation_rules = array(
-        'mod_forum_id'          => 'required',
-        'mod_member_name'       => 'required',
-        'mod_can_edit'          => 'enum[y,n]',
-        'mod_can_move'          => 'enum[y,n]',
-        'mod_can_delete'        => 'enum[y,n]',
-        'mod_can_split'         => 'enum[y,n]',
-        'mod_can_merge'         => 'enum[y,n]',
+        'mod_forum_id' => 'required',
+        'mod_member_name' => 'required',
+        'mod_can_edit' => 'enum[y,n]',
+        'mod_can_move' => 'enum[y,n]',
+        'mod_can_delete' => 'enum[y,n]',
+        'mod_can_split' => 'enum[y,n]',
+        'mod_can_merge' => 'enum[y,n]',
         'mod_can_change_status' => 'enum[y,n]',
-        'mod_can_announce'      => 'enum[y,n]',
-        'mod_can_view_ip'       => 'enum[y,n]',
+        'mod_can_announce' => 'enum[y,n]',
+        'mod_can_view_ip' => 'enum[y,n]',
     );
 
     protected $mod_id;

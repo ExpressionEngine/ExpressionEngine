@@ -193,10 +193,10 @@ class URL implements \Serializable
     public function serialize()
     {
         $serialize = array(
-            'path'          => $this->path,
-            'session_id'    => $this->session_id,
-            'qs'            => $this->qs,
-            'base'          => $this->base,
+            'path' => $this->path,
+            'session_id' => $this->session_id,
+            'qs' => $this->qs,
+            'base' => $this->base,
             'requested_uri' => $this->requested_uri
         );
 

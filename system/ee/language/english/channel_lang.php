@@ -352,7 +352,7 @@ $lang = array(
 
     'require_email' => 'Require Email?',
 
-    'require_email_desc'=> 'When enabled, a member must provide a valid Email address to submit comments to this channel\'s entries.',
+    'require_email_desc' => 'When enabled, a member must provide a valid Email address to submit comments to this channel\'s entries.',
 
     'require_membership' => 'Require membership?',
 
@@ -604,7 +604,7 @@ $lang = array(
 
     'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
 
-    'edit_in_full_form'	=> 'Edit in full form'
+    'edit_in_full_form' => 'Edit in full form'
 
 );
 

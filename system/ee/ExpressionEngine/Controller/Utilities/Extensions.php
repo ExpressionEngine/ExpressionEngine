@@ -18,8 +18,8 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Extensions extends Utilities
 {
-    public $perpage		= 25;
-    public $params			= array();
+    public $perpage = 25;
+    public $params = array();
     public $base_url;
 
     /**
@@ -122,13 +122,13 @@ break;
             array(
                 'name',
                 'status' => array(
-                    'type'	=> Table::COL_STATUS
+                    'type' => Table::COL_STATUS
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -283,16 +283,16 @@ break;
                 continue;
             }
 
-            $class_name =ucfirst($name) . '_ext';
+            $class_name = ucfirst($name) . '_ext';
 
             $data = array(
-                'developer'		=> $info->getAuthor(),
-                'version'		=> '--',
-                'installed'		=> false,
-                'enabled'		=> null,
-                'name'			=> $info->getName(),
-                'package'		=> $name,
-                'class'			=> $class_name,
+                'developer' => $info->getAuthor(),
+                'version' => '--',
+                'installed' => false,
+                'enabled' => null,
+                'name' => $info->getName(),
+                'package' => $name,
+                'class' => $class_name,
             );
 
             $extension = ee('Model')->get('Extension')

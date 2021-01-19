@@ -13,13 +13,13 @@
  */
 class EE_FTP
 {
-    public $hostname	= '';
-    public $username	= '';
-    public $password	= '';
-    public $port		= 21;
-    public $passive	= true;
-    public $debug		= false;
-    public $conn_id	= false;
+    public $hostname = '';
+    public $username = '';
+    public $password = '';
+    public $port = 21;
+    public $passive = true;
+    public $debug = false;
+    public $conn_id = false;
 
     /**
      * Constructor - Sets Preferences

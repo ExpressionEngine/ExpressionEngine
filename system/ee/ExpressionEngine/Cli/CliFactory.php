@@ -38,7 +38,7 @@ class CliFactory
      */
     public function newContext(array $globals)
     {
-        $env    = isset($globals['_ENV'])
+        $env = isset($globals['_ENV'])
                 ? new Env($globals['_ENV'])
                 : new Env();
 
@@ -46,7 +46,7 @@ class CliFactory
                 ? new Server($globals['_SERVER'])
                 : new Server();
 
-        $argv   = isset($globals['argv'])
+        $argv = isset($globals['argv'])
                 ? new Argv($globals['argv'])
                 : new Argv();
 
@@ -74,7 +74,7 @@ class CliFactory
      *
      */
     public function newStdio(
-        $stdin  = 'php://stdin',
+        $stdin = 'php://stdin',
         $stdout = 'php://stdout',
         $stderr = 'php://stderr'
     ) {

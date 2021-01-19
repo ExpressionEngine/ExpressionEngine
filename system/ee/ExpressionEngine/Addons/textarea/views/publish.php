@@ -1,9 +1,9 @@
 <?php
 $attributes = array(
-    'name'	=> $name,
-    'value'	=> $value,
-    'rows'	=> $settings['field_ta_rows'],
-    'dir'	=> $settings['field_text_direction'],
+    'name' => $name,
+    'value' => $value,
+    'rows' => $settings['field_ta_rows'],
+    'dir' => $settings['field_text_direction'],
     'class' => $class,
 );
 

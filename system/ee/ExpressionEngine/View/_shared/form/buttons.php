@@ -2,7 +2,7 @@
 	<?php
         $submits = [];
         foreach ($buttons as $i => $button) {
-            if (strpos($button['value'], 'save')===0) {
+            if (strpos($button['value'], 'save') === 0) {
                 $submits[] = $button;
                 unset($buttons[$i]);
             }
@@ -72,7 +72,7 @@
 			<div class="dropdown__scroll">
 		<?php endif; ?>
 
-		<?php if (count($submits) > 1 && $i == count($submits)-1) : ?>
+		<?php if (count($submits) > 1 && $i == count($submits) - 1) : ?>
 			</div>
 		</div>
 		<?php endif; ?>

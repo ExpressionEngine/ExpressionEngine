@@ -310,7 +310,7 @@ class Layout_model extends CI_Model
         foreach ($field_layout as $layout_tab => $layout_fields) {
             foreach ($layout_fields as $field_key => $field_settings) {
                 // Setup $current_settings as the layout settings with the tab name as the key
-                $current_settings =& $layout_settings[$layout_tab];
+                $current_settings = & $layout_settings[$layout_tab];
 
                 if ($flatten === true) {
                     // Check to see if the key starts with an underscore, we don't need those
@@ -319,7 +319,7 @@ class Layout_model extends CI_Model
                     }
 
                     // If we're flattening the array, ditch the tab information
-                    $current_settings =& $layout_settings;
+                    $current_settings = & $layout_settings;
                 }
 
                 // If it's numeric, then append 'field_id_'

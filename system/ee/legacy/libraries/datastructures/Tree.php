@@ -40,9 +40,9 @@ class EE_Tree
     {
         $conf = array_merge(
             array(
-                'id'	 		 => 'id',
-                'parent' 	 	 => 'parent_id',
-                'class_name'	 => 'EE_TreeNode'
+                'id' => 'id',
+                'parent' => 'parent_id',
+                'class_name' => 'EE_TreeNode'
             ),
             (array) $conf
         );

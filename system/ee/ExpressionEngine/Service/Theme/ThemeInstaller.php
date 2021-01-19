@@ -404,7 +404,7 @@ class ThemeInstaller
 
                 $entry = ee('Model')->make('ChannelEntry');
                 $entry->setChannel($channel);
-                $entry->site_id =  1;
+                $entry->site_id = 1;
                 $entry->author_id = 1;
                 $entry->ip_address = ee()->input->ip_address();
                 $entry->versioning_enabled = $channel->enable_versioning;
@@ -477,23 +477,23 @@ class ThemeInstaller
         foreach ($comments as $index => $comment_data) {
             $comment_data = array_merge(
                 array(
-                    'site_id'      => 1,
-                    'entry_id'     => $entry->entry_id,
-                    'channel_id'   => $entry->channel_id,
-                    'author_id'    => 0,
-                    'status'       => 'o',
-                    'url'          => '',
-                    'location'     => '',
-                    'ip_address'   => '127.0.0.1',
+                    'site_id' => 1,
+                    'entry_id' => $entry->entry_id,
+                    'channel_id' => $entry->channel_id,
+                    'author_id' => 0,
+                    'status' => 'o',
+                    'url' => '',
+                    'location' => '',
+                    'ip_address' => '127.0.0.1',
                     'comment_date' => time() + $index
                 ),
                 (array) $comment_data
             );
 
             if ($comment_data['author_id'] == 1) {
-                $comment_data['name']     = $author->screen_name;
-                $comment_data['email']    = $author->email;
-                $comment_data['url']      = $this->site_url;
+                $comment_data['name'] = $author->screen_name;
+                $comment_data['email'] = $author->email;
+                $comment_data['url'] = $this->site_url;
                 $comment_data['location'] = $author->location;
             }
 

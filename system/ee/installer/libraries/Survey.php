@@ -46,16 +46,16 @@ class Survey
         $mysql_info = mysqli_get_server_info(ee()->db->conn_id);
 
         return array(
-            'anon_id'			=> md5($site_url),
-            'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-            'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-            'php_version'		=> phpversion(),
-            'php_extensions'	=> json_encode(get_loaded_extensions()),
-            'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
-            'path_info_support'	=> $path_info_support,
-            'addons'			=> json_encode(directory_map(PATH_THIRD, 1)),
-            'forums'			=> (ee()->config->item('forum_is_installed') == "y") ? 'y' : 'n',
-            'msm'				=> (ee()->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
+            'anon_id' => md5($site_url),
+            'os' => preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+            'server_software' => preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+            'php_version' => phpversion(),
+            'php_extensions' => json_encode(get_loaded_extensions()),
+            'mysql_version' => preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
+            'path_info_support' => $path_info_support,
+            'addons' => json_encode(directory_map(PATH_THIRD, 1)),
+            'forums' => (ee()->config->item('forum_is_installed') == "y") ? 'y' : 'n',
+            'msm' => (ee()->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
         );
     }
 

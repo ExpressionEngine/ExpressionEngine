@@ -22,7 +22,7 @@ class Fieldtype extends Model
 
     protected static $_typed_columns = array(
         'has_global_settings' => 'boolString',
-        'settings'            => 'base64Serialized',
+        'settings' => 'base64Serialized',
     );
 
     protected $fieldtype_id;

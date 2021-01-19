@@ -34,9 +34,9 @@ class Spam_upd extends Installer
         parent::install();
 
         $fields = array(
-            'kernel_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'name'		=> array('type' => 'varchar', 'constraint' => '32'),
-            'count'			=> array('type' => 'int', 'constraint' => '10')
+            'kernel_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'name' => array('type' => 'varchar', 'constraint' => '32'),
+            'count' => array('type' => 'int', 'constraint' => '10')
         );
 
         ee()->dbforge->add_field($fields);
@@ -44,10 +44,10 @@ class Spam_upd extends Installer
         ee()->dbforge->create_table('spam_kernels');
 
         $fields = array(
-            'vocabulary_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
-            'term'			=> array('type' => 'text'),
-            'count'			=> array('type' => 'int', 'constraint' => '10')
+            'vocabulary_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'kernel_id' => array('type' => 'int', 'constraint' => '10'),
+            'term' => array('type' => 'text'),
+            'count' => array('type' => 'int', 'constraint' => '10')
         );
 
         ee()->dbforge->add_field($fields);
@@ -55,13 +55,13 @@ class Spam_upd extends Installer
         ee()->dbforge->create_table('spam_vocabulary');
 
         $fields = array(
-            'parameter_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
-            'index'			=> array('type' => 'int', 'constraint' => '10'),
-            'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true),
-            'class'			=> array('type' => 'ENUM("spam","ham")'),
-            'mean'			=> array('type' => 'double'),
-            'variance'		=> array('type' => 'double')
+            'parameter_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'kernel_id' => array('type' => 'int', 'constraint' => '10'),
+            'index' => array('type' => 'int', 'constraint' => '10'),
+            'term' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true),
+            'class' => array('type' => 'ENUM("spam","ham")'),
+            'mean' => array('type' => 'double'),
+            'variance' => array('type' => 'double')
         );
 
         ee()->dbforge->add_field($fields);
@@ -69,12 +69,12 @@ class Spam_upd extends Installer
         ee()->dbforge->create_table('spam_parameters');
 
         $fields = array(
-            'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
-            'author'		=> array('type' => 'int', 'constraint' => '10'),
-            'source'		=> array('type' => 'text'),
-            'type'			=> array('type' => 'varchar', 'constraint' => '32'),
-            'class'			=> array('type' => 'ENUM("spam","ham")')
+            'training_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'kernel_id' => array('type' => 'int', 'constraint' => '10'),
+            'author' => array('type' => 'int', 'constraint' => '10'),
+            'source' => array('type' => 'text'),
+            'type' => array('type' => 'varchar', 'constraint' => '32'),
+            'class' => array('type' => 'ENUM("spam","ham")')
         );
 
         ee()->dbforge->add_field($fields);
@@ -82,14 +82,14 @@ class Spam_upd extends Installer
         ee()->dbforge->create_table('spam_training');
 
         $fields = array(
-            'trap_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
-            'site_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'default' => 1),
-            'trap_date'     => array('type' => 'int', 'constraint' => '10', 'null' => false),
-            'author_id'     => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => 0),
-            'ip_address'    => array('type' => 'varchar', 'constraint' => '45'),
-            'content_type'  => array('type' => 'varchar', 'constraint' => '50', 'null' => false),
-            'document'      => array('type' => 'text', 'null' => false),
-            'entity'        => array('type' => 'mediumtext', 'null' => false),
+            'trap_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
+            'site_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'default' => 1),
+            'trap_date' => array('type' => 'int', 'constraint' => '10', 'null' => false),
+            'author_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => 0),
+            'ip_address' => array('type' => 'varchar', 'constraint' => '45'),
+            'content_type' => array('type' => 'varchar', 'constraint' => '50', 'null' => false),
+            'document' => array('type' => 'text', 'null' => false),
+            'entity' => array('type' => 'mediumtext', 'null' => false),
             'optional_data' => array('type' => 'mediumtext'),
         );
 
@@ -130,7 +130,7 @@ class Spam_upd extends Installer
         return true;
     }
 
-    public function update($current='')
+    public function update($current = '')
     {
         if (version_compare($current, '2.0.0', '<')) {
             $this->do_2_00_00_update();
@@ -210,12 +210,12 @@ class Spam_upd extends Installer
 
         // add menu extension
         $data = array(
-            'class'		=> 'Spam_ext',
-            'method'	=> 'addSpamMenu',
-            'hook'		=> 'cp_custom_menu',
-            'settings'	=> '',
-            'version'	=> $this->version,
-            'enabled'	=> 'y'
+            'class' => 'Spam_ext',
+            'method' => 'addSpamMenu',
+            'hook' => 'cp_custom_menu',
+            'settings' => '',
+            'version' => $this->version,
+            'enabled' => 'y'
         );
 
         ee()->db->insert('extensions', $data);
@@ -412,12 +412,12 @@ class Spam_upd extends Installer
 
             // now that that's all out of the way, save it to the trap
             $data = array(
-                'content_type'  => 'channel',
-                'author_id'     => $entry->author_id,
-                'trap_date'     => $trapped->trap_date,
-                'ip_address'    => $trapped->ip_address,
-                'entity'        => $entry,
-                'document'      => $trapped->document,
+                'content_type' => 'channel',
+                'author_id' => $entry->author_id,
+                'trap_date' => $trapped->trap_date,
+                'ip_address' => $trapped->ip_address,
+                'entity' => $entry,
+                'document' => $trapped->document,
                 'optional_data' => $postdata,
             );
 
@@ -463,12 +463,12 @@ class Spam_upd extends Installer
             // now that that's all out of the way, save it to the trap
             // optional data will be empty, we didn't collect it before
             $data = array(
-                'content_type'  => 'forum',
-                'author_id'     => $trapped->author_id,
-                'trap_date'     => $trapped->trap_date,
-                'ip_address'    => $trapped->ip_address,
-                'entity'        => $sql,
-                'document'      => $trapped->document,
+                'content_type' => 'forum',
+                'author_id' => $trapped->author_id,
+                'trap_date' => $trapped->trap_date,
+                'ip_address' => $trapped->ip_address,
+                'entity' => $sql,
+                'document' => $trapped->document,
                 'optional_data' => array('postdata' => array(), 'redirect' => ''),
             );
 

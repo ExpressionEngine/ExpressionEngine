@@ -24,10 +24,10 @@ class Updater
             'modules',
             array(
                 'has_publish_fields' => array(
-                    'type'				=> 'char',
-                    'constraint'		=> 1,
-                    'null'				=> false,
-                    'default'			=> 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'null' => false,
+                    'default' => 'n'
                 )
             )
         );
@@ -44,8 +44,8 @@ class Updater
             'channel_fields',
             array(
                 'field_settings' => array(
-                    'type'			=> 'text',
-                    'null'			=> true
+                    'type' => 'text',
+                    'null' => true
                 )
             )
         );
@@ -55,11 +55,11 @@ class Updater
             'channel_fields',
             array(
                 'field_type' => array(
-                    'name'			=> 'field_type',
-                    'type'			=> 'varchar',
-                    'constraint'	=> 50,
-                    'null'			=> false,
-                    'default'		=> 'text',
+                    'name' => 'field_type',
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false,
+                    'default' => 'text',
                 ),
             )
         );
@@ -69,30 +69,30 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'fieldtype_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 4,
-                    'unsigned'			=> true,
-                    'null'				=> false,
-                    'auto_increment'	=> true
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false,
+                    'auto_increment' => true
                 ),
                 'name' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 50,
-                    'null'				=> false
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
                 ),
                 'version' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 12,
-                    'null'				=> false
+                    'type' => 'varchar',
+                    'constraint' => 12,
+                    'null' => false
                 ),
                 'settings' => array(
-                    'type'				=> 'text',
-                    'null'				=> true
+                    'type' => 'text',
+                    'null' => true
                 ),
                 'has_global_settings' => array(
-                    'type'				=> 'char',
-                    'constraint'		=> 1,
-                    'default'			=> 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n'
                 )
             )
         );
@@ -106,10 +106,10 @@ class Updater
 
         foreach ($default_fts as $name) {
             $values = array(
-                'name'					=> $name,
-                'version'				=> '1.0',
-                'settings'				=> 'YTowOnt9',
-                'has_global_settings'	=> 'n'
+                'name' => $name,
+                'version' => '1.0',
+                'settings' => 'YTowOnt9',
+                'has_global_settings' => 'n'
             );
 
             ee()->smartforge->insert_set('fieldtypes', $values, $values);
@@ -135,8 +135,8 @@ class Updater
         // Set settings to yes so nothing disappears
 
         $set_to_yes = array(
-            'text'		=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector'),
-            'textarea'	=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector')
+            'text' => array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector'),
+            'textarea' => array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector')
         );
 
         foreach ($set_to_yes as $fieldtype => $yes_settings) {

@@ -23,10 +23,10 @@ class Member_register extends Member
         // Do we allow new member registrations?
         if (ee()->config->item('allow_member_registration') == 'n') {
             $data = array(
-                'title' 	=> lang('member_registration'),
-                'heading'	=> lang('notice'),
-                'content'	=> lang('mbr_registration_not_allowed'),
-                'link'		=> array(
+                'title' => lang('member_registration'),
+                'heading' => lang('notice'),
+                'content' => lang('mbr_registration_not_allowed'),
+                'link' => array(
                     ee()->functions->fetch_site_index(),
                     stripslashes(ee()->config->item('site_name'))
                 )
@@ -63,7 +63,7 @@ class Member_register extends Member
             )) ? $match['1'] : '';
 
             // Next, separate the chunck between the {required} variable pairs
-            $req_chunk	= (preg_match("/{required}(.*?){\/required}/s", $field_chunk, $match)) ? $match['1'] : '';
+            $req_chunk = (preg_match("/{required}(.*?){\/required}/s", $field_chunk, $match)) ? $match['1'] : '';
 
             // Loop through the query result
             $str = '';
@@ -82,8 +82,8 @@ class Member_register extends Member
             ee()->load->library('javascript');
 
             foreach ($query->result_array() as $row) {
-                $field  = '';
-                $temp	= $field_chunk;
+                $field = '';
+                $temp = $field_chunk;
 
                 // Replace {field_name}
                 $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
@@ -174,18 +174,18 @@ class Member_register extends Member
             array(
                 'lang:username_length' => $un_min_len,
                 'lang:password_length' => $pw_min_len,
-                'form:localization'    => ee()->localize->timezone_menu(),
-                'form:date_format'     => form_preference('date_format', $config_fields['fields']['date_format']),
-                'form:time_format'     => form_preference('time_format', $config_fields['fields']['time_format']),
+                'form:localization' => ee()->localize->timezone_menu(),
+                'form:date_format' => form_preference('date_format', $config_fields['fields']['date_format']),
+                'form:time_format' => form_preference('time_format', $config_fields['fields']['time_format']),
                 'form:include_seconds' => form_preference('include_seconds', $config_fields['fields']['include_seconds']),
-                'form:language'        => $this->get_language_listing()
+                'form:language' => $this->get_language_listing()
             )
         );
 
         // Generate Form declaration
         $data['hidden_fields'] = array(
-            'ACT'  => ee()->functions->fetch_action_id('Member', 'register_member'),
-            'RET'  => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : ee()->functions->fetch_site_index(),
+            'ACT' => ee()->functions->fetch_action_id('Member', 'register_member'),
+            'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : ee()->functions->fetch_site_index(),
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params(),
         );
@@ -345,15 +345,15 @@ class Member_register extends Member
 
         // Assign the data
         $data = array(
-            'username'		=> trim_nbs(ee()->input->post('username')),
-            'password'		=> ee()->input->post('password'),
-            'ip_address'	=> ee()->input->ip_address(),
-            'join_date'		=> ee()->localize->now,
-            'email'			=> trim_nbs(ee()->input->post('email')),
-            'screen_name'	=> trim_nbs(ee()->input->post('screen_name')),
+            'username' => trim_nbs(ee()->input->post('username')),
+            'password' => ee()->input->post('password'),
+            'ip_address' => ee()->input->ip_address(),
+            'join_date' => ee()->localize->now,
+            'email' => trim_nbs(ee()->input->post('email')),
+            'screen_name' => trim_nbs(ee()->input->post('screen_name')),
 
             // overridden below if used as optional fields
-            'language'		=> (ee()->config->item('deft_lang')) ?: 'english',
+            'language' => (ee()->config->item('deft_lang')) ?: 'english',
         );
 
         $data = array_merge($data, $custom_data);
@@ -374,12 +374,12 @@ class Member_register extends Member
         // Optional Fields
 
         $optional = array(
-            'bio'				=> 'bio',
-            'language'			=> 'language',
-            'timezone'			=> 'server_timezone',
-            'date_format'		=> 'date_format',
-            'time_format'		=> 'time_format',
-            'include_seconds'	=> 'include_seconds'
+            'bio' => 'bio',
+            'language' => 'language',
+            'timezone' => 'server_timezone',
+            'date_format' => 'date_format',
+            'time_format' => 'time_format',
+            'include_seconds' => 'include_seconds'
         );
 
         foreach ($optional as $key => $value) {
@@ -450,7 +450,7 @@ class Member_register extends Member
         if (ee('Captcha')->shouldRequireCaptcha()) {
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha WHERE word='" . ee()->db->escape_str($_POST['captcha']) . "' AND ip_address = '" . ee()->input->ip_address() . "' AND date > UNIX_TIMESTAMP()-7200");
 
-            if ($query->row('count')  == 0) {
+            if ($query->row('count') == 0) {
                 return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')), '', $return_error_link);
             }
 
@@ -472,11 +472,11 @@ class Member_register extends Member
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
             $swap = array(
-                'name'					=> $name,
-                'site_name'				=> stripslashes(ee()->config->item('site_name')),
-                'control_panel_url'		=> ee()->config->item('cp_url'),
-                'username'				=> $data['username'],
-                'email'					=> $data['email']
+                'name' => $name,
+                'site_name' => stripslashes(ee()->config->item('site_name')),
+                'control_panel_url' => ee()->config->item('cp_url'),
+                'username' => $data['username'],
+                'email' => $data['email']
             );
 
             $template = ee()->functions->fetch_email_template('admin_notify_reg');
@@ -512,7 +512,7 @@ class Member_register extends Member
 
         // Send user notifications
         if (ee()->config->item('req_mbr_activation') == 'email') {
-            $action_id  = ee()->functions->fetch_action_id('Member', 'activate_member');
+            $action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
 
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
@@ -521,12 +521,12 @@ class Member_register extends Member
             $forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id=' . $board_id : '';
 
             $swap = array(
-                'name'				=> $name,
-                'activation_url'	=> ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $data['authcode'] . $forum_id,
-                'site_name'			=> stripslashes(ee()->config->item('site_name')),
-                'site_url'			=> ee()->config->item('site_url'),
-                'username'			=> $data['username'],
-                'email'				=> $data['email']
+                'name' => $name,
+                'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $data['authcode'] . $forum_id,
+                'site_name' => stripslashes(ee()->config->item('site_name')),
+                'site_url' => ee()->config->item('site_url'),
+                'username' => $data['username'],
+                'email' => $data['email']
             );
 
             $template = ee()->functions->fetch_email_template('mbr_activation_instructions');
@@ -563,19 +563,19 @@ class Member_register extends Member
         if (ee()->input->get_post('FROM') == 'forum') {
             $query = $this->_do_form_query();
 
-            $site_name	= $query->row('board_label') ;
-            $return		= parse_config_variables($query->row('board_forum_url'));
+            $site_name = $query->row('board_label') ;
+            $return = parse_config_variables($query->row('board_forum_url'));
         } else {
             $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
             $return = ee()->config->item('site_url');
         }
 
         $data = array(
-            'title' 	=> lang('mbr_registration_complete'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('mbr_registration_completed') . "\n\n" . $message,
-            'redirect'	=> '',
-            'link'		=> array($return, $site_name)
+            'title' => lang('mbr_registration_complete'),
+            'heading' => lang('thank_you'),
+            'content' => lang('mbr_registration_completed') . "\n\n" . $message,
+            'redirect' => '',
+            'link' => array($return, $site_name)
         );
 
         return ee()->functions->redirect($return_link);
@@ -604,21 +604,21 @@ class Member_register extends Member
         if (ee()->input->get_post('r') == 'f') {
             $query = $this->_do_form_query();
 
-            $site_name	= $query->row('board_label') ;
-            $return		= parse_config_variables($query->row('board_forum_url'));
+            $site_name = $query->row('board_label') ;
+            $return = parse_config_variables($query->row('board_forum_url'));
         } else {
-            $return 	= ee()->functions->fetch_site_index();
-            $site_name 	= (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+            $return = ee()->functions->fetch_site_index();
+            $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
         }
 
         // No ID?  Tisk tisk...
-        $id  = ee()->input->get_post('id');
+        $id = ee()->input->get_post('id');
 
         if ($id == false) {
-            $data = array('title' 	=> lang('mbr_activation'),
-                'heading'	=> lang('error'),
-                'content'	=> lang('invalid_url'),
-                'link'		=> array($return, $site_name)
+            $data = array('title' => lang('mbr_activation'),
+                'heading' => lang('error'),
+                'content' => lang('invalid_url'),
+                'link' => array($return, $site_name)
             );
 
             ee()->output->show_message($data);
@@ -634,10 +634,10 @@ class Member_register extends Member
             ->get('members');
 
         if ($query->num_rows() == 0) {
-            $data = array('title' 	=> lang('mbr_activation'),
-                'heading'	=> lang('error'),
-                'content'	=> lang('mbr_problem_activating'),
-                'link'		=> array($return, $site_name)
+            $data = array('title' => lang('mbr_activation'),
+                'heading' => lang('error'),
+                'content' => lang('mbr_problem_activating'),
+                'link' => array($return, $site_name)
             );
 
             ee()->output->show_message($data);
@@ -671,10 +671,10 @@ class Member_register extends Member
         ee()->stats->update_member_stats();
 
         // Show success message
-        $data = array('title' 	=> lang('mbr_activation'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('mbr_activation_success') . "\n\n" . lang('mbr_may_now_log_in'),
-            'link'		=> array($return, $site_name)
+        $data = array('title' => lang('mbr_activation'),
+            'heading' => lang('thank_you'),
+            'content' => lang('mbr_activation_success') . "\n\n" . lang('mbr_may_now_log_in'),
+            'link' => array($return, $site_name)
         );
 
         ee()->output->show_message($data);

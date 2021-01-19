@@ -42,72 +42,72 @@ class Metaweblog_api_upd extends Installer
         ee()->load->dbforge();
 
         $fields = array(
-            'metaweblog_id'         => array(
-                'type'           => 'int',
-                'constraint'     => 5,
-                'unsigned'       => true,
-                'null'           => false,
+            'metaweblog_id' => array(
+                'type' => 'int',
+                'constraint' => 5,
+                'unsigned' => true,
+                'null' => false,
                 'auto_increment' => true
             ),
-            'metaweblog_pref_name'  => array(
-                'type'           => 'varchar',
-                'constraint'     => '80',
-                'null'           => false,
-                'default'        => ''
+            'metaweblog_pref_name' => array(
+                'type' => 'varchar',
+                'constraint' => '80',
+                'null' => false,
+                'default' => ''
             ),
             'metaweblog_parse_type' => array(
-                'type'           => 'varchar',
-                'constraint'     => '1',
-                'null'           => false,
-                'default'        => 'y'
+                'type' => 'varchar',
+                'constraint' => '1',
+                'null' => false,
+                'default' => 'y'
             ),
-            'entry_status'          => array(
-                'type'           => 'varchar',
-                'constraint'     => '50',
-                'null'           => false,
-                'default'        => 'NULL'
+            'entry_status' => array(
+                'type' => 'varchar',
+                'constraint' => '50',
+                'null' => false,
+                'default' => 'NULL'
             ),
-            'channel_id'            => array(
-                'type'           => 'int',
-                'constraint'     => '5',
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 0
+            'channel_id' => array(
+                'type' => 'int',
+                'constraint' => '5',
+                'unsigned' => true,
+                'null' => false,
+                'default' => 0
             ),
-            'excerpt_field_id'      => array(
-                'type'           => 'int',
-                'constraint'     => 7,
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 0
+            'excerpt_field_id' => array(
+                'type' => 'int',
+                'constraint' => 7,
+                'unsigned' => true,
+                'null' => false,
+                'default' => 0
             ),
-            'content_field_id'      => array(
-                'type'           => 'int',
-                'constraint'     => 7,
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 0
+            'content_field_id' => array(
+                'type' => 'int',
+                'constraint' => 7,
+                'unsigned' => true,
+                'null' => false,
+                'default' => 0
             ),
-            'more_field_id'         => array(
-                'type'           => 'int',
-                'constraint'     => 7,
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 0
+            'more_field_id' => array(
+                'type' => 'int',
+                'constraint' => 7,
+                'unsigned' => true,
+                'null' => false,
+                'default' => 0
             ),
-            'keywords_field_id'     => array(
-                'type'           => 'int',
-                'constraint'     => 7,
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 0
+            'keywords_field_id' => array(
+                'type' => 'int',
+                'constraint' => 7,
+                'unsigned' => true,
+                'null' => false,
+                'default' => 0
             ),
-            'upload_dir'            => array(
-                'type'           => 'int',
-                'constraint'     => 5,
-                'unsigned'       => true,
-                'null'           => false,
-                'default'        => 1
+            'upload_dir' => array(
+                'type' => 'int',
+                'constraint' => 5,
+                'unsigned' => true,
+                'null' => false,
+                'default' => 1
             ),
         );
 
@@ -116,9 +116,9 @@ class Metaweblog_api_upd extends Installer
         ee()->dbforge->create_table('metaweblog_api', true);
 
         $data = array(
-            'metaweblog_pref_name' 	=> 'Default',
-            'channel_id' 	=> 1,
-            'content_field_id' 	=> 2
+            'metaweblog_pref_name' => 'Default',
+            'channel_id' => 1,
+            'content_field_id' => 2
         );
         ee()->db->insert('metaweblog_api', $data);
 
@@ -182,12 +182,12 @@ class Metaweblog_api_upd extends Installer
             ee()->load->library('smartforge');
             ee()->smartforge->modify_column('metaweblog_api', array(
                 'field_group_id' => array(
-                    'name'       => 'channel_id',
-                    'type'       => 'int',
+                    'name' => 'channel_id',
+                    'type' => 'int',
                     'constraint' => '5',
-                    'unsigned'   => true,
-                    'null'       => false,
-                    'default'    => 0
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
                 )
             ));
         }

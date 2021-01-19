@@ -13,38 +13,38 @@
  */
 class EE_Pagination
 {
-    public $base_url           = ''; // The page we are linking to
-    public $prefix             = ''; // A custom prefix added to the path.
-    public $suffix             = ''; // A custom suffix added to the path.
+    public $base_url = ''; // The page we are linking to
+    public $prefix = ''; // A custom prefix added to the path.
+    public $suffix = ''; // A custom suffix added to the path.
 
-    public $total_rows         = ''; // Total number of items (database results)
-    public $per_page           = 10; // Max number of items you want shown per page
-    public $num_links          =  2; // Number of "digit" links to show before/after the currently viewed page
-    public $cur_page           =  0; // The current page being viewed
-    public $first_link         = '&lsaquo; First';
-    public $next_link          = '&gt;';
-    public $prev_link          = '&lt;';
-    public $last_link          = 'Last &rsaquo;';
-    public $uri_segment        = 3;
-    public $full_tag_open      = '';
-    public $full_tag_close     = '';
-    public $first_tag_open     = '';
-    public $first_tag_close    = '&nbsp;';
-    public $last_tag_open      = '&nbsp;';
-    public $last_tag_close     = '';
-    public $first_url          = ''; // Alternative URL for the First Page.
-    public $cur_tag_open       = '&nbsp;<strong>';
-    public $cur_tag_close      = '</strong>';
-    public $next_tag_open      = '&nbsp;';
-    public $next_tag_close     = '&nbsp;';
-    public $prev_tag_open      = '&nbsp;';
-    public $prev_tag_close     = '';
-    public $num_tag_open       = '&nbsp;';
-    public $num_tag_close      = '';
-    public $page_query_string  = false;
+    public $total_rows = ''; // Total number of items (database results)
+    public $per_page = 10; // Max number of items you want shown per page
+    public $num_links = 2; // Number of "digit" links to show before/after the currently viewed page
+    public $cur_page = 0; // The current page being viewed
+    public $first_link = '&lsaquo; First';
+    public $next_link = '&gt;';
+    public $prev_link = '&lt;';
+    public $last_link = 'Last &rsaquo;';
+    public $uri_segment = 3;
+    public $full_tag_open = '';
+    public $full_tag_close = '';
+    public $first_tag_open = '';
+    public $first_tag_close = '&nbsp;';
+    public $last_tag_open = '&nbsp;';
+    public $last_tag_close = '';
+    public $first_url = ''; // Alternative URL for the First Page.
+    public $cur_tag_open = '&nbsp;<strong>';
+    public $cur_tag_close = '</strong>';
+    public $next_tag_open = '&nbsp;';
+    public $next_tag_close = '&nbsp;';
+    public $prev_tag_open = '&nbsp;';
+    public $prev_tag_close = '';
+    public $num_tag_open = '&nbsp;';
+    public $num_tag_close = '';
+    public $page_query_string = false;
     public $query_string_segment = 'per_page';
-    public $display_pages      = true;
-    public $anchor_class       = '';
+    public $display_pages = true;
+    public $anchor_class = '';
 
     /**
      * Constructor
@@ -205,7 +205,7 @@ class EE_Pagination
         // Calculate the start and end numbers. These determine
         // which number to start and end the digit links with
         $start = (($this->cur_page - $this->num_links) > 0) ? $this->cur_page - ($this->num_links - 1) : 1;
-        $end   = (($this->cur_page + $this->num_links) < $num_pages) ? $this->cur_page + $this->num_links : $num_pages;
+        $end = (($this->cur_page + $this->num_links) < $num_pages) ? $this->cur_page + $this->num_links : $num_pages;
 
         // Is pagination being used over GET or POST?  If get, add a per_page query
         // string. If post, add a trailing slash to the base URL if needed
@@ -222,8 +222,8 @@ class EE_Pagination
 
         // Render the "First" link
         $link_array['first_page'][0] = array(
-            'pagination_url'    => $first_url,
-            'text'              => $this->first_link
+            'pagination_url' => $first_url,
+            'text' => $this->first_link
         );
 
         // Render the "previous" link
@@ -232,14 +232,14 @@ class EE_Pagination
 
             if ($i == 0 && $this->first_url != '') {
                 $link_array['previous_page'][0] = array(
-                    'pagination_url'    => $this->first_url,
-                    'text'              => $this->prev_link
+                    'pagination_url' => $this->first_url,
+                    'text' => $this->prev_link
                 );
             } else {
                 $i = ($i == 0) ? '' : $this->prefix . $i . $this->suffix;
                 $link_array['previous_page'][0] = array(
-                    'pagination_url'    => $this->base_url . $i,
-                    'text'              => $this->prev_link
+                    'pagination_url' => $this->base_url . $i,
+                    'text' => $this->prev_link
                 );
             }
         } else {
@@ -259,23 +259,23 @@ class EE_Pagination
                         $prepped_offset = ($prepped_offset == '') ? '' : $this->prefix . $prepped_offset . $this->suffix;
 
                         $link_array['page'][] = array(
-                            'pagination_url'            => ($prepped_offset == '') ? $first_url : $this->base_url . $prepped_offset,
-                            'pagination_page_number'    => $loop,
-                            'current_page'              => true
+                            'pagination_url' => ($prepped_offset == '') ? $first_url : $this->base_url . $prepped_offset,
+                            'pagination_page_number' => $loop,
+                            'current_page' => true
                         );
                     } elseif ($prepped_offset == '' && $this->first_url != '') {
                         $link_array['page'][] = array(
-                            'pagination_url'            => $first_url,
-                            'pagination_page_number'    => $loop,
-                            'current_page'              => false
+                            'pagination_url' => $first_url,
+                            'pagination_page_number' => $loop,
+                            'current_page' => false
                         );
                     } else {
                         $prepped_offset = ($prepped_offset == '') ? '' : $this->prefix . $prepped_offset . $this->suffix;
 
                         $link_array['page'][] = array(
-                            'pagination_url'            => $this->base_url . $prepped_offset,
-                            'pagination_page_number'    => $loop,
-                            'current_page'              => false
+                            'pagination_url' => $this->base_url . $prepped_offset,
+                            'pagination_page_number' => $loop,
+                            'current_page' => false
                         );
                     }
                 }
@@ -285,8 +285,8 @@ class EE_Pagination
         // Render the "next" link
         if ($this->next_link !== false and $this->cur_page < $num_pages) {
             $link_array['next_page'][0] = array(
-                'pagination_url'    => $this->base_url . $this->prefix . ($this->cur_page * $this->per_page) . $this->suffix,
-                'text'              => $this->next_link
+                'pagination_url' => $this->base_url . $this->prefix . ($this->cur_page * $this->per_page) . $this->suffix,
+                'text' => $this->next_link
             );
         } else {
             $link_array['next_page'][0] = array();
@@ -296,8 +296,8 @@ class EE_Pagination
         $offset = (($num_pages * $this->per_page) - $this->per_page);
 
         $link_array['last_page'][0] = array(
-            'pagination_url'    => $this->base_url . $this->prefix . $offset . $this->suffix,
-            'text'              => $this->last_link
+            'pagination_url' => $this->base_url . $this->prefix . $offset . $this->suffix,
+            'text' => $this->last_link
         );
 
         $this->_remove_double_slashes($link_array);
@@ -358,31 +358,31 @@ class EE_Pagination
  */
 class Pagination_object
 {
-    public $paginate                = false;
-    public $total_items             = 0;
-    public $total_pages             = 1;
-    public $per_page                = 0;
-    public $offset                  = 0;
-    public $current_page            = 1;
-    public $basepath                = '';
-    public $prefix                  = "P";
+    public $paginate = false;
+    public $total_items = 0;
+    public $total_pages = 1;
+    public $per_page = 0;
+    public $offset = 0;
+    public $current_page = 1;
+    public $basepath = '';
+    public $prefix = "P";
 
     // Field Pagination specific properties
-    public $cfields                 = array();
-    public $field_pagination        = false;
-    public $field_pagination_query  = null;
+    public $cfields = array();
+    public $field_pagination = false;
+    public $field_pagination_query = null;
 
-    private $_template_data             = array();
-    private $_page_array                = array();
-    private $_multi_fields              = '';
-    private $_page_next                 = '';
-    private $_page_previous             = '';
-    private $_page_links                = '';
-    private $_page_links_limit          = 2;
-    private $_type                      = '';
-    private $_position                  = '';
-    private $_pagination_marker         = "pagination_marker";
-    private $_always_show_first_last    = false;
+    private $_template_data = array();
+    private $_page_array = array();
+    private $_multi_fields = '';
+    private $_page_next = '';
+    private $_page_previous = '';
+    private $_page_links = '';
+    private $_page_links_limit = 2;
+    private $_type = '';
+    private $_position = '';
+    private $_pagination_marker = "pagination_marker";
+    private $_always_show_first_last = false;
 
     public function __construct()
     {
@@ -583,7 +583,7 @@ class Pagination_object
                 }
 
                 $this->current_page = floor(($this->offset / $this->per_page) + 1);
-                $this->total_pages  = intval(floor($this->total_items / $this->per_page));
+                $this->total_pages = intval(floor($this->total_items / $this->per_page));
             } else {
                 // Field pagination - base values
                 // If we're doing field pagination and there's not even one
@@ -650,17 +650,17 @@ class Pagination_object
                 }
 
                 $config = array(
-                    'first_url'     => rtrim($this->basepath, '/'),
-                    'base_url'      => $this->basepath,
-                    'prefix'        => $this->prefix,
-                    'total_rows'    => $this->total_items,
-                    'per_page'      => $this->per_page,
+                    'first_url' => rtrim($this->basepath, '/'),
+                    'base_url' => $this->basepath,
+                    'prefix' => $this->prefix,
+                    'total_rows' => $this->total_items,
+                    'per_page' => $this->per_page,
                     // cur_page uses the offset because P45 (or similar) is a page
-                    'cur_page'      => $this->offset,
-                    'num_links'     => $this->_page_links_limit,
-                    'first_link'    => lang('pag_first_link'),
-                    'last_link'     => lang('pag_last_link'),
-                    'uri_segment'   => 0 // Allows $config['cur_page'] to override
+                    'cur_page' => $this->offset,
+                    'num_links' => $this->_page_links_limit,
+                    'first_link' => lang('pag_first_link'),
+                    'last_link' => lang('pag_last_link'),
+                    'uri_segment' => 0 // Allows $config['cur_page'] to override
                 );
 
                 ee()->pagination->initialize($config);
@@ -749,7 +749,7 @@ class Pagination_object
 
             // Parse current_page and total_pages by default
             $parse_array['current_page'] = $this->current_page;
-            $parse_array['total_pages']  = $this->total_pages;
+            $parse_array['total_pages'] = $this->total_pages;
 
             // Parse current_page and total_pages
             $template_data = ee()->TMPL->parse_variables(

@@ -16,8 +16,8 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
 class Text_ft extends EE_Fieldtype
 {
     public $info = array(
-        'name'		=> 'Text Input',
-        'version'	=> '1.0.0'
+        'name' => 'Text Input',
+        'version' => '1.0.0'
     );
 
     // Parser Flag (preparse pairs?)
@@ -102,11 +102,11 @@ class Text_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
-        $type  = $this->get_setting('field_content_type', 'all');
+        $type = $this->get_setting('field_content_type', 'all');
         $field = array(
-            'name'               => $this->field_name,
-            'value'              => $this->_format_number($data, $type),
-            'dir'                => $this->settings['field_text_direction'],
+            'name' => $this->field_name,
+            'value' => $this->_format_number($data, $type),
+            'dir' => $this->settings['field_text_direction'],
             'field_content_type' => $type
         );
 
@@ -132,10 +132,10 @@ class Text_ft extends EE_Fieldtype
             }
 
             $vars = array(
-                'name'            => $this->name(),
-                'field'           => $field,
-                'settings'        => $this->settings,
-                'format_options'  => $format_options,
+                'name' => $this->name(),
+                'field' => $field,
+                'settings' => $this->settings,
+                'format_options' => $format_options,
             );
 
             if ($this->get_setting('field_show_file_selector')) {
@@ -162,8 +162,8 @@ class Text_ft extends EE_Fieldtype
             return ee()->functions->encode_ee_tags($data);
         }
 
-        $type		= isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
-        $decimals	= isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
+        $type = isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
+        $decimals = isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
 
         $data = $this->_format_number($data, $type, $decimals);
 
@@ -172,9 +172,9 @@ class Text_ft extends EE_Fieldtype
         return ee()->typography->parse_type(
             ee()->functions->encode_ee_tags($data),
             array(
-                'text_format'	=> $this->get_format(),
-                'html_format'	=> $this->row('channel_html_formatting', 'all'),
-                'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+                'text_format' => $this->get_format(),
+                'html_format' => $this->row('channel_html_formatting', 'all'),
+                'auto_links' => $this->row('channel_auto_link_urls', 'n'),
                 'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
             )
         );
@@ -295,10 +295,10 @@ class Text_ft extends EE_Fieldtype
     private function _get_content_options()
     {
         return array(
-            'all'		=> lang('all'),
-            'numeric'	=> lang('type_numeric'),
-            'integer'	=> lang('type_integer'),
-            'decimal'	=> lang('type_decimal')
+            'all' => lang('all'),
+            'numeric' => lang('type_numeric'),
+            'integer' => lang('type_integer'),
+            'decimal' => lang('type_decimal')
         );
     }
 
@@ -310,9 +310,9 @@ class Text_ft extends EE_Fieldtype
     public function save_settings($data)
     {
         $defaults = array(
-            'field_maxl'               => 256,
-            'field_content_type'       => '',
-            'field_show_smileys'       => 'n',
+            'field_maxl' => 256,
+            'field_content_type' => '',
+            'field_show_smileys' => 'n',
             'field_show_file_selector' => 'n'
         );
 
@@ -375,29 +375,29 @@ class Text_ft extends EE_Fieldtype
         switch ($data_type) {
             case 'numeric':
                 $fields[$field_name] = array(
-                    'type'		=> 'FLOAT',
-                    'default'	=> 0
+                    'type' => 'FLOAT',
+                    'default' => 0
                 );
 
                 break;
             case 'integer':
                 $fields[$field_name] = array(
-                    'type'		=> 'INT',
-                    'default'	=> 0
+                    'type' => 'INT',
+                    'default' => 0
                 );
 
                 break;
             case 'decimal':
                 $fields[$field_name] = array(
-                    'type'		=> 'DECIMAL(10,4)',
-                    'default'	=> 0
+                    'type' => 'DECIMAL(10,4)',
+                    'default' => 0
                 );
 
                 break;
             default:
                 $fields[$field_name] = array(
-                    'type'		=> 'text',
-                    'null'		=> true
+                    'type' => 'text',
+                    'null' => true
                 );
         }
 

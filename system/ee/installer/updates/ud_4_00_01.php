@@ -46,10 +46,10 @@ class Updater
             'member_groups',
             array(
                 'can_manage_consents' => array(
-                    'type'       => 'CHAR',
+                    'type' => 'CHAR',
                     'constraint' => 1,
-                    'default'    => 'n',
-                    'null'       => false,
+                    'default' => 'n',
+                    'null' => false,
                 )
             )
         );
@@ -74,8 +74,8 @@ class Updater
             'channels',
             array(
                 'preview_url' => array(
-                    'type'    => 'VARCHAR(100)',
-                    'null'    => true,
+                    'type' => 'VARCHAR(100)',
+                    'null' => true,
                 )
             )
         );

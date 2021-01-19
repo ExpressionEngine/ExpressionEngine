@@ -58,10 +58,10 @@ class Snippets extends AbstractDesignController
                 'encode' => false
             ),
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         );
 
@@ -135,7 +135,7 @@ class Snippets extends AbstractDesignController
                 array(
                     'name' => 'selection[]',
                     'value' => $snippet->snippet_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('template_partial') . ': <b>' . htmlentities($snippet->snippet_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -151,8 +151,8 @@ class Snippets extends AbstractDesignController
                 unset($column[1]);
             }
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 

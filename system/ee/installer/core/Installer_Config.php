@@ -14,7 +14,7 @@
 class Installer_Config extends EE_Config
 {
     public $config_path = ''; // Set in the constructor below
-    public $exceptions  = array(); // path.php exceptions
+    public $exceptions = array(); // path.php exceptions
 
     /**
      * Constructor
@@ -221,7 +221,7 @@ class MSM_Config extends EE_Config
 
         // Few More Variables
         $this->config['site_short_name'] = $row['site_name'];
-        $this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
+        $this->config['site_name'] = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 
         // Need this so we know the base url a page belongs to
         if (isset($this->config['site_pages'][$row['site_id']])) {

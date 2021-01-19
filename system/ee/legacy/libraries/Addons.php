@@ -39,10 +39,10 @@ class EE_Addons
     public function get_files($type = 'modules')
     {
         $type_ident = array(
-            'modules'		=> 'mcp',
-            'extensions'	=> 'ext',
-            'plugins'		=> 'pi',
-            'fieldtypes'	=> 'ft'
+            'modules' => 'mcp',
+            'extensions' => 'ext',
+            'plugins' => 'pi',
+            'fieldtypes' => 'ft'
         );
 
         if (! is_array($this->_map)) {
@@ -52,10 +52,10 @@ class EE_Addons
             // are found, we can still return _map[$type] without errors
 
             $this->_map = array(
-                'modules'		=> array(),
-                'extensions'	=> array(),
-                'plugins'		=> array(),
-                'fieldtypes'	=> array()
+                'modules' => array(),
+                'extensions' => array(),
+                'plugins' => array(),
+                'fieldtypes' => array()
             );
 
             foreach (array(PATH_THIRD, PATH_ADDONS) as $path) {
@@ -98,15 +98,15 @@ class EE_Addons
                     if (strncasecmp($file, $abbr . '.', strlen($abbr . '.')) == 0 &&
                         substr($file, -$ext_len) == '.php' &&
                         strlen($file) > strlen($abbr . '.' . '.php')) {
-                        $name	= substr($file, strlen($abbr . '.'), - $ext_len);
-                        $class	= ($abbr == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $abbr;
+                        $name = substr($file, strlen($abbr . '.'), - $ext_len);
+                        $class = ($abbr == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $abbr;
                         $path = ($abbr == 'ext' or $abbr == 'acc' or $abbr == 'ft' or $abbr == 'rte') ? constant('PATH_' . strtoupper($abbr)) : $root_path . $name . '/';
 
                         $this->_map[$type][$name] = array(
-                            'path'	=> $path,
-                            'file'	=> $file,
-                            'name'	=> ucwords(str_replace('_', ' ', $name)),
-                            'class'	=> $class
+                            'path' => $path,
+                            'file' => $file,
+                            'name' => ucwords(str_replace('_', ' ', $name)),
+                            'class' => $class
                         );
                     }
                 }
@@ -132,20 +132,20 @@ class EE_Addons
     public function package_list($map, $type = '', $native = false, $path_prefix = '')
     {
         $type_ident = array(
-            'modules'		=> 'mcp',
-            'extensions'	=> 'ext',
-            'plugins'		=> 'pi',
-            'fieldtypes'	=> 'ft'
+            'modules' => 'mcp',
+            'extensions' => 'ext',
+            'plugins' => 'pi',
+            'fieldtypes' => 'ft'
         );
 
         // First party is plural, third party is singular
         // so we need some inflection references
 
         $_plural_map = array(
-            'modules'		=> 'module',
-            'extensions'	=> 'extension',
-            'plugins'		=> 'plugin',
-            'fieldtypes'	=> 'fieldtype'
+            'modules' => 'module',
+            'extensions' => 'extension',
+            'plugins' => 'plugin',
+            'fieldtypes' => 'fieldtype'
         );
 
         $type = ($type == '') ? '' : $type . '/';
@@ -178,10 +178,10 @@ class EE_Addons
                         $author = ($native) ? 'native' : 'third_party';
 
                         $this->_map[$addon_type][$name] = array(
-                            'path'	=> $path,
-                            'file'	=> $file,
-                            'name'	=> ucwords(str_replace('_', ' ', $name)),
-                            'class'	=> $class,
+                            'path' => $path,
+                            'file' => $file,
+                            'name' => ucwords(str_replace('_', ' ', $name)),
+                            'class' => $class,
                             'package' => $pkg_name,
                             'type' => $author
                         );
@@ -193,9 +193,9 @@ class EE_Addons
                                 $this->_packages[$pkg_name][$_plural_map[$addon_type]] = array();
                             }
 
-                            $this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] =& $this->_map[$addon_type][$name];
+                            $this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] = & $this->_map[$addon_type][$name];
                         } else {
-                            $this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+                            $this->_packages[$pkg_name][$_plural_map[$addon_type]] = & $this->_map[$addon_type][$pkg_name];
                         }
 
                         break;

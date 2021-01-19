@@ -69,7 +69,7 @@ class Updater
     {
         ee()->smartforge->modify_column('member_fields', array(
             'm_field_fmt' => array(
-                'type'       => 'varchar',
+                'type' => 'varchar',
                 'constraint' => 40,
             ),
         ));

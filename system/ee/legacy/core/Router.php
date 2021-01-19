@@ -16,10 +16,10 @@
 class EE_Router
 {
     public $config;
-    public $routes			= array();
-    public $class			= '';
-    public $method			= 'index';
-    public $directory		= '';
+    public $routes = array();
+    public $class = '';
+    public $method = 'index';
+    public $directory = '';
     public $default_controller;
     public $namespace_prefix = '';
 

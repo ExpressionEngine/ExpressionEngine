@@ -70,8 +70,8 @@ class Login extends Profile
                     'desc' => 'existing_password_exp',
                     'fields' => array(
                         'password' => array(
-                            'type'      => 'password',
-                            'required'  => true,
+                            'type' => 'password',
+                            'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )
@@ -86,7 +86,7 @@ class Login extends Profile
         }
 
         if ($this->member->can('access_cp')) {
-            $choices =& $vars['sections'][0][0]['fields']['redirect']['choices'];
+            $choices = & $vars['sections'][0][0]['fields']['redirect']['choices'];
             $choices = array_slice($choices, 0, 1, true)
                 + array('cp_index' => 'cp_index')
                 + array_slice($choices, 1, 1, true);
@@ -160,7 +160,7 @@ class Login extends Profile
         $type = $redirect == 'cp' ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
         if ($type != 's') {
-            ee()->input->set_cookie(ee()->session->c_expire, time()+$expire, $expire);
+            ee()->input->set_cookie(ee()->session->c_expire, time() + $expire, $expire);
             ee()->input->set_cookie(ee()->session->c_anon, 1, $expire);
         }
 

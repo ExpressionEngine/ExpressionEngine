@@ -29,55 +29,55 @@ class Grid_model extends CI_Model
     {
         $columns = array(
             'col_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
             'field_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true
             ),
             'content_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_order' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'col_type' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_label' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 50
+                'type' => 'varchar',
+                'constraint' => 50
             ),
             'col_name' => array(
-                'type'				=> 'varchar',
-                'constraint'		=> 32
+                'type' => 'varchar',
+                'constraint' => 32
             ),
             'col_instructions' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             ),
             'col_required' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1
+                'type' => 'char',
+                'constraint' => 1
             ),
             'col_search' => array(
-                'type'				=> 'char',
-                'constraint'		=> 1
+                'type' => 'char',
+                'constraint' => 1
             ),
             'col_width' => array(
-                'type'				=> 'int',
-                'constraint'		=> 3,
-                'unsigned'			=> true
+                'type' => 'int',
+                'constraint' => 3,
+                'unsigned' => true
             ),
             'col_settings' => array(
-                'type'				=> 'text'
+                'type' => 'text'
             )
         );
 
@@ -133,26 +133,26 @@ class Grid_model extends CI_Model
             // add field columns as necessary
             $db_columns = array(
                 'row_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'auto_increment'	=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
                 ),
                 'entry_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true
                 ),
                 'row_order' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true
                 ),
                 'fluid_field_data_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'default'           => 0
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             );
 
@@ -494,13 +494,13 @@ class Grid_model extends CI_Model
         }
 
         // Gather params and defaults
-        $sort			= element('sort', $params);
-        $orderby		= element('orderby', $params);
-        $limit			= element('limit', $params, 100);
-        $offset			= element('offset', $params, 0);
-        $backspace		= element('backspace', $params, 0);
-        $row_id			= element('row_id', $params, 0);
-        $fixed_order	= element('fixed_order', $params, 0);
+        $sort = element('sort', $params);
+        $orderby = element('orderby', $params);
+        $limit = element('limit', $params, 100);
+        $offset = element('offset', $params, 0);
+        $backspace = element('backspace', $params, 0);
+        $row_id = element('row_id', $params, 0);
+        $fixed_order = element('fixed_order', $params, 0);
 
         // Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
         if (! in_array($sort, array('asc', 'desc'))) {
@@ -566,10 +566,10 @@ class Grid_model extends CI_Model
         // parameters in the code later on  so that even more tags could
         // use the same data set
         $db_params = array(
-            'fixed_order'	=> element('fixed_order', $params),
-            'search'		=> element('search', $params),
-            'orderby'		=> element('orderby', $params),
-            'sort'			=> element('sort', $params),
+            'fixed_order' => element('fixed_order', $params),
+            'search' => element('search', $params),
+            'orderby' => element('orderby', $params),
+            'sort' => element('sort', $params),
         );
 
         return md5(json_encode($db_params));
@@ -693,12 +693,12 @@ class Grid_model extends CI_Model
     protected function _get_ft_api_settings($field_id, $content_type = 'channel')
     {
         return array(
-            'id_field'				=> 'col_id',
-            'type_field'			=> 'col_type',
-            'col_settings_method'	=> 'grid_settings_modify_column',
-            'col_prefix'			=> 'col',
-            'fields_table'			=> $this->_table,
-            'data_table'			=> $this->_data_table($content_type, $field_id),
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'col_settings_method' => 'grid_settings_modify_column',
+            'col_prefix' => 'col',
+            'fields_table' => $this->_table,
+            'data_table' => $this->_data_table($content_type, $field_id),
         );
     }
 

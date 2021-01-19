@@ -43,7 +43,7 @@ class RoleGroup extends Model
     ];
 
     protected static $_validation_rules = [
-        'name'     => 'required',
+        'name' => 'required',
     ];
 
     // protected static $_events = [];

@@ -178,7 +178,7 @@ class Filepicker_mcp
 
             if ($vars['search_allowed']) {
                 $filters->add('Keyword');
-                if (ee()->input->get('filter_by_keyword')!='') {
+                if (ee()->input->get('filter_by_keyword') != '') {
                     $base_url->setQueryStringVariable('filter_by_keyword', ee()->input->get('filter_by_keyword'));
                 }
             }
@@ -434,9 +434,9 @@ class Filepicker_mcp
                     return [
                         'ajax' => true,
                         'body' => [
-                            'status'           => 'duplicate',
-                            'duplicate'        => true,
-                            'fileId'           => $file->getId(),
+                            'status' => 'duplicate',
+                            'duplicate' => true,
+                            'fileId' => $file->getId(),
                             'originalFileName' => $result['upload_response']['file_data_orig_name']
                         ]
                     ];
@@ -446,12 +446,12 @@ class Filepicker_mcp
                     'ajax' => true,
                     'body' => [
                         // Inconsistent casing for backwards compatibility
-                        'status'             => 'success',
-                        'title'              => $file->file_name,
-                        'file_name'          => $file->file_name,
-                        'isImage'            => $file->isImage(),
-                        'isSVG'              => $file->isSVG(),
-                        'thumb_path'         => $file->getAbsoluteThumbnailURL(),
+                        'status' => 'success',
+                        'title' => $file->file_name,
+                        'file_name' => $file->file_name,
+                        'isImage' => $file->isImage(),
+                        'isSVG' => $file->isSVG(),
+                        'thumb_path' => $file->getAbsoluteThumbnailURL(),
                         'upload_location_id' => $file->upload_location_id
                     ]
                 ];
@@ -485,18 +485,18 @@ class Filepicker_mcp
             'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
             'buttons' => array(
                 array(
-                    'name'    => 'submit',
-                    'type'    => 'submit',
-                    'value'   => 'finish',
-                    'text'    => 'btn_finish_upload',
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'finish',
+                    'text' => 'btn_finish_upload',
                     'working' => 'btn_saving'
                 ),
                 array(
-                    'name'    => 'submit',
-                    'type'    => 'submit',
-                    'value'   => 'cancel',
-                    'class'   => 'draft',
-                    'text'    => 'btn_cancel_upload',
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'cancel',
+                    'class' => 'draft',
+                    'text' => 'btn_cancel_upload',
                     'working' => 'btn_canceling'
                 ),
             ),

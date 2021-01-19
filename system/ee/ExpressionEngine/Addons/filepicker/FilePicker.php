@@ -25,7 +25,7 @@ class FilePicker
     public function inject($view)
     {
         // Insert the modal
-        $modal_vars = array('name'=> 'modal-file', 'contents' => '');
+        $modal_vars = array('name' => 'modal-file', 'contents' => '');
         $modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
         ee('CP/Modal')->addModal('modal-file', $modal);
 
@@ -88,8 +88,8 @@ class FilePicker
     public function buildTableFromFileCollection($files, $limit = 20, $selected = null)
     {
         $table = ee('CP/Table', array(
-            'limit'    => $limit,
-            'class'    => 'file-list tbl-fixed',
+            'limit' => $limit,
+            'class' => 'file-list tbl-fixed',
             'autosort' => false
         ));
 
@@ -145,8 +145,8 @@ class FilePicker
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 

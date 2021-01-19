@@ -31,7 +31,7 @@ class EE_Javascript
         // load the requested js library
         ee()->load->library('javascript/' . $js_library_driver, array('autoload' => $autoload));
         // make js to refer to current library
-        $this->js =& ee()->$js_library_driver;
+        $this->js = & ee()->$js_library_driver;
 
         log_message('debug', "Javascript Class Initialized and loaded.  Driver used: $js_library_driver");
     }
@@ -457,7 +457,7 @@ class EE_Javascript
      * @param	string	- element
      * @return	string
      */
-    public function toggleClass($element = 'this', $class='')
+    public function toggleClass($element = 'this', $class = '')
     {
         return $this->js->_toggleClass($element, $class);
     }
@@ -642,14 +642,14 @@ class EE_Javascript
         $sections = explode('.', $var);
         $var_name = array_pop($sections);
 
-        $current =& $this->global_vars;
+        $current = & $this->global_vars;
 
         foreach ($sections as $namespace) {
             if (! isset($current[$namespace])) {
                 $current[$namespace] = array();
             }
 
-            $current =& $current[$namespace];
+            $current = & $current[$namespace];
         }
 
         if (is_array($val) &&

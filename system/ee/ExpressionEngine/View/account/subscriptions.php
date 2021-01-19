@@ -47,10 +47,10 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-remove',
-    'form_url'	=> $table['base_url'],
-    'hidden'	=> array(
-        'bulk_action'	=> 'unsubscribe'
+    'name' => 'modal-confirm-remove',
+    'form_url' => $table['base_url'],
+    'hidden' => array(
+        'bulk_action' => 'unsubscribe'
     )
 );
 

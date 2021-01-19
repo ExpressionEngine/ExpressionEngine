@@ -236,7 +236,7 @@ abstract class AbstractDesign extends CP_Controller
         }
 
         if (ee('Model')->get('Template')->count() > 0 && ee('Permission')->isSuperAdmin()) {
-            $header['toolbar_items']['export'] =array(
+            $header['toolbar_items']['export'] = array(
                 'href' => ee('CP/URL', 'design/export'),
                 'title' => lang('export_all')
             );
@@ -263,9 +263,9 @@ abstract class AbstractDesign extends CP_Controller
 
         ee()->cp->add_js_script(
             array(
-                'plugin'	=> 'ee_codemirror',
-                'ui'		=> 'resizable',
-                'file'		=> array(
+                'plugin' => 'ee_codemirror',
+                'ui' => 'resizable',
+                'file' => array(
                     'vendor/codemirror/codemirror',
                     'vendor/codemirror/closebrackets',
                     'vendor/codemirror/comment',
@@ -397,10 +397,10 @@ abstract class AbstractDesign extends CP_Controller
         }
 
         $columns['manage'] = array(
-            'type'	=> Table::COL_TOOLBAR
+            'type' => Table::COL_TOOLBAR
         );
         $columns[] = array(
-            'type'	=> Table::COL_CHECKBOX
+            'type' => Table::COL_CHECKBOX
         );
 
         $table->setColumns($columns);
@@ -532,8 +532,8 @@ abstract class AbstractDesign extends CP_Controller
             }
 
             $data[] = array(
-                'attrs'		=> $attrs,
-                'columns'	=> $column
+                'attrs' => $attrs,
+                'columns' => $column
             );
         }
 

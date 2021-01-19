@@ -523,7 +523,7 @@ class Roles extends AbstractRolesController
                 foreach ($allowed_perms as $perm) {
                     if (!empty($perm)) {
                         $p = ee('Model')->make('Permission', [
-                            'site_id'    => $site->getId(),
+                            'site_id' => $site->getId(),
                             'permission' => $perm
                         ]);
                         $role->Permissions->getAssociation()->add($p);
@@ -542,8 +542,8 @@ class Roles extends AbstractRolesController
             foreach ($allowed_perms as $perm) {
                 if (!empty($perm)) {
                     ee('Model')->make('Permission', [
-                        'role_id'    => $role->getId(),
-                        'site_id'    => ee()->config->item('site_id'),
+                        'role_id' => $role->getId(),
+                        'site_id' => ee()->config->item('site_id'),
                         'permission' => $perm
                     ])->save();
                 }
@@ -561,10 +561,10 @@ class Roles extends AbstractRolesController
 
         if ($role->getId() != 1) {
             $tabs = [
-                'role'        => $this->renderRoleTab($role, $errors),
+                'role' => $this->renderRoleTab($role, $errors),
                 'site_access' => $this->renderSiteAccessTab($role, $errors),
-                'cp_access'   => $this->renderCPAccessTab($role, $errors),
-                'template_access'   => $this->renderTemplateAccessTab($role, $errors),
+                'cp_access' => $this->renderCPAccessTab($role, $errors),
+                'template_access' => $this->renderTemplateAccessTab($role, $errors),
             ];
         } else {
             $tabs = [
@@ -930,9 +930,9 @@ class Roles extends AbstractRolesController
                     ]
                 ],
                 [
-                    'title'  => 'homepage_news',
-                    'desc'   => 'homepage_news_desc',
-                    'group'  => 'can_access_cp',
+                    'title' => 'homepage_news',
+                    'desc' => 'homepage_news_desc',
+                    'group' => 'can_access_cp',
                     'fields' => [
                         'can_view_homepage_news' => $permissions['fields']['can_view_homepage_news']
                     ]
@@ -1389,11 +1389,11 @@ class Roles extends AbstractRolesController
             $channel_access['choices']['channel_id_' . $id] = [
                 'label' => $title,
                 'children' => [
-                    'can_create_entries_channel_id_' . $id      => lang('can_create_entries'),
-                    'can_edit_self_entries_channel_id_' . $id   => lang('can_edit_self_entries'),
+                    'can_create_entries_channel_id_' . $id => lang('can_create_entries'),
+                    'can_edit_self_entries_channel_id_' . $id => lang('can_edit_self_entries'),
                     'can_delete_self_entries_channel_id_' . $id => lang('can_delete_self_entries'),
-                    'can_edit_other_entries_channel_id_' . $id  => lang('can_edit_other_entries'),
-                    'can_delete_all_entries_channel_id_' . $id  => lang('can_delete_all_entries'),
+                    'can_edit_other_entries_channel_id_' . $id => lang('can_edit_other_entries'),
+                    'can_delete_all_entries_channel_id_' . $id => lang('can_delete_all_entries'),
                     'can_assign_post_authors_channel_id_' . $id => lang('can_assign_post_authors')
                 ]
             ];
@@ -1430,9 +1430,9 @@ class Roles extends AbstractRolesController
                 'label' => $name,
                 'children' => [
                     'can_create_templates_template_group_id_' . $id => lang('can_create_templates'),
-                    'can_edit_templates_template_group_id_' . $id   => lang('can_edit_templates'),
+                    'can_edit_templates_template_group_id_' . $id => lang('can_edit_templates'),
                     'can_delete_templates_template_group_id_' . $id => lang('can_delete_templates'),
-                    'can_manage_settings_template_group_id_' . $id  => lang('can_manage_settings'),
+                    'can_manage_settings_template_group_id_' . $id => lang('can_manage_settings'),
                 ]
             ];
         }
@@ -1453,7 +1453,7 @@ class Roles extends AbstractRolesController
     private function getPermissions(Role $role = null)
     {
         $permissions = [
-            'fields'  => [
+            'fields' => [
                 'can_admin_channels' => [
                     'type' => 'yes_no',
                     'group_toggle' => [
@@ -1556,14 +1556,14 @@ class Roles extends AbstractRolesController
             ],
             'choices' => [
                 'website_access' => [
-                    'can_view_online_system'  => lang('can_view_online_system'),
+                    'can_view_online_system' => lang('can_view_online_system'),
                     'can_view_offline_system' => lang('can_view_offline_system')
                 ],
                 'comment_actions' => [
-                    'can_moderate_comments'   => lang('can_moderate_comments'),
-                    'can_edit_own_comments'   => lang('can_edit_own_comments'),
+                    'can_moderate_comments' => lang('can_moderate_comments'),
+                    'can_edit_own_comments' => lang('can_edit_own_comments'),
                     'can_delete_own_comments' => lang('can_delete_own_comments'),
-                    'can_edit_all_comments'   => lang('can_edit_all_comments'),
+                    'can_edit_all_comments' => lang('can_edit_all_comments'),
                     'can_delete_all_comments' => lang('can_delete_all_comments')
                 ],
                 'footer_helper_links' => [
@@ -1573,60 +1573,60 @@ class Roles extends AbstractRolesController
                 ],
                 'channel_permissions' => [
                     'can_create_channels' => lang('create_channels'),
-                    'can_edit_channels'   => lang('edit_channels'),
+                    'can_edit_channels' => lang('edit_channels'),
                     'can_delete_channels' => lang('delete_channels')
                 ],
                 'channel_field_permissions' => [
                     'can_create_channel_fields' => lang('create_channel_fields'),
-                    'can_edit_channel_fields'   => lang('edit_channel_fields'),
+                    'can_edit_channel_fields' => lang('edit_channel_fields'),
                     'can_delete_channel_fields' => lang('delete_channel_fields')
                 ],
                 'channel_category_permissions' => [
                     'can_create_categories' => lang('create_categories'),
-                    'can_edit_categories'   => lang('edit_categories'),
+                    'can_edit_categories' => lang('edit_categories'),
                     'can_delete_categories' => lang('delete_categories')
                 ],
                 'channel_status_permissions' => [
                     'can_create_statuses' => lang('create_statuses'),
-                    'can_edit_statuses'   => lang('edit_statuses'),
+                    'can_edit_statuses' => lang('edit_statuses'),
                     'can_delete_statuses' => lang('delete_statuses')
                 ],
                 'file_upload_directories' => [
                     'can_create_upload_directories' => lang('create_upload_directories'),
-                    'can_edit_upload_directories'   => lang('edit_upload_directories'),
+                    'can_edit_upload_directories' => lang('edit_upload_directories'),
                     'can_delete_upload_directories' => lang('delete_upload_directories'),
                 ],
                 'files' => [
                     'can_upload_new_files' => lang('upload_new_files'),
-                    'can_edit_files'       => lang('edit_files'),
-                    'can_delete_files'     => lang('delete_files'),
+                    'can_edit_files' => lang('edit_files'),
+                    'can_delete_files' => lang('delete_files'),
                 ],
                 'role_actions' => [
                     'can_create_roles' => lang('create_roles'),
-                    'can_edit_roles'   => lang('edit_roles'),
+                    'can_edit_roles' => lang('edit_roles'),
                     'can_delete_roles' => lang('delete_roles'),
                 ],
                 'member_actions' => [
-                    'can_create_members'     => lang('create_members'),
-                    'can_edit_members'       => lang('edit_members'),
-                    'can_delete_members'     => lang('can_delete_members'),
-                    'can_ban_users'          => lang('can_ban_users'),
+                    'can_create_members' => lang('create_members'),
+                    'can_edit_members' => lang('edit_members'),
+                    'can_delete_members' => lang('can_delete_members'),
+                    'can_ban_users' => lang('can_ban_users'),
                     'can_email_from_profile' => lang('can_email_from_profile'),
-                    'can_edit_html_buttons'  => lang('can_edit_html_buttons')
+                    'can_edit_html_buttons' => lang('can_edit_html_buttons')
                 ],
                 'template_group_permissions' => [
                     'can_create_template_groups' => lang('create_template_groups'),
-                    'can_edit_template_groups'   => lang('edit_template_groups'),
+                    'can_edit_template_groups' => lang('edit_template_groups'),
                     'can_delete_template_groups' => lang('delete_template_groups'),
                 ],
                 'template_partials' => [
                     'can_create_template_partials' => lang('create_template_partials'),
-                    'can_edit_template_partials'   => lang('edit_template_partials'),
+                    'can_edit_template_partials' => lang('edit_template_partials'),
                     'can_delete_template_partials' => lang('delete_template_partials'),
                 ],
                 'template_variables' => [
                     'can_create_template_variables' => lang('create_template_variables'),
-                    'can_edit_template_variables'   => lang('edit_template_variables'),
+                    'can_edit_template_variables' => lang('edit_template_variables'),
                     'can_delete_template_variables' => lang('delete_template_variables'),
                 ],
                 'access_tools' => [
@@ -1656,7 +1656,7 @@ class Roles extends AbstractRolesController
                     ]
                 ],
             ],
-            'values'  => []
+            'values' => []
         ];
 
         if ($role) {
@@ -1737,7 +1737,7 @@ class Roles extends AbstractRolesController
         //not all roles can be removed
         $restricted = $this->getRestrictedRoles();
         $need_to_stay = [];
-        foreach ($role_ids as $i=>$role_id) {
+        foreach ($role_ids as $i => $role_id) {
             if (in_array($role_id, $restricted)) {
                 $need_to_stay[] = $role_id;
                 unset($role_ids[$i]);

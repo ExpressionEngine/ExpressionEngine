@@ -13,7 +13,7 @@
  */
 class File_mcp
 {
-    public $stats_cache	= array(); // Used by mod.stats.php
+    public $stats_cache = array(); // Used by mod.stats.php
 }
 // END CLASS
 

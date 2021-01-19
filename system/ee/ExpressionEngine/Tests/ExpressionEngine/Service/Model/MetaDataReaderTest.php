@@ -85,13 +85,13 @@ namespace ExpressionEngine\Tests\Service\Model {
             'Site' => array(
                 'type' => 'belongsTo',
             ),
-            'TemplateGroup'	=> array(
+            'TemplateGroup' => array(
                 'type' => 'hasMany'
             ),
             'LastAuthor' => array(
-                'type'	=> 'hasOne',
-                'model'	=> 'Member',
-                'key'	=> 'last_author_id'
+                'type' => 'hasOne',
+                'model' => 'Member',
+                'key' => 'last_author_id'
             ),
             'NoAccess' => array(
                 'type' => 'hasAndBelongsToMany',

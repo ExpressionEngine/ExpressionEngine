@@ -32,9 +32,9 @@ class TreeFactory
     {
         $conf = array_merge(
             array(
-                'id'	 		 => 'id',
-                'parent' 	 	 => 'parent_id',
-                'class_name'	 => '\ExpressionEngine\Library\DataStructure\Tree\TreeNode'
+                'id' => 'id',
+                'parent' => 'parent_id',
+                'class_name' => '\ExpressionEngine\Library\DataStructure\Tree\TreeNode'
             ),
             (array) $conf
         );

@@ -21,9 +21,9 @@ class Delete extends Query
 
     public function run()
     {
-        $builder  = $this->builder;
-        $from     = $this->builder->getFrom();
-        $from_pk  = $this->store->getMetaDataReader($from)->getPrimaryKey();
+        $builder = $this->builder;
+        $from = $this->builder->getFrom();
+        $from_pk = $this->store->getMetaDataReader($from)->getPrimaryKey();
 
         $parent_ids = $this->getParentIds($from, $from_pk);
 

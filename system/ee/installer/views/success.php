@@ -1,4 +1,4 @@
-<div class="panel <?=empty($update_notices) || count($update_notices)==1 ? 'success' : 'warn'?>">
+<div class="panel <?=empty($update_notices) || count($update_notices) == 1 ? 'success' : 'warn'?>">
   <div class="panel-heading" style="text-align: center;">
     <h3><?=$title?></h3>
   </div>

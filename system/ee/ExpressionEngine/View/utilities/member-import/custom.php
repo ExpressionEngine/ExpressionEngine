@@ -33,7 +33,7 @@
 							<tr class="last">
 								<td class="first">
 									<?=form_checkbox('create_ids[' . $i . ']', 'y', false, 'class="toggle"')?>
-									<input type="hidden" name="<?='m_field_order[' . $i . ']'?>" value="<?=$order_start+$i?>">
+									<input type="hidden" name="<?='m_field_order[' . $i . ']'?>" value="<?=$order_start + $i?>">
 								</td>
 								<td>
 									<?=form_input(array(

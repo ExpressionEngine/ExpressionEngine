@@ -14,35 +14,35 @@
  */
 class EE_Upload
 {
-    public $max_size                = 0;
-    public $max_width               = 0;
-    public $max_height              = 0;
-    public $max_filename            = 0;
-    public $allowed_types           = "";
-    public $file_temp               = "";
-    public $file_name               = "";
-    public $orig_name               = "";
-    public $file_type               = "";
-    public $file_size               = "";
-    public $file_ext                = "";
-    public $upload_path             = "";
-    public $overwrite               = false;
-    public $encrypt_name            = false;
-    public $is_image                = false;
-    public $image_width             = '';
-    public $image_height            = '';
-    public $image_type              = '';
-    public $image_size_str          = '';
-    public $error_msg               = array();
-    public $mimes                   = array();
-    public $remove_spaces           = true;
-    public $xss_clean               = false;
-    public $temp_prefix             = "temp_file_";
-    public $client_name             = '';
+    public $max_size = 0;
+    public $max_width = 0;
+    public $max_height = 0;
+    public $max_filename = 0;
+    public $allowed_types = "";
+    public $file_temp = "";
+    public $file_name = "";
+    public $orig_name = "";
+    public $file_type = "";
+    public $file_size = "";
+    public $file_ext = "";
+    public $upload_path = "";
+    public $overwrite = false;
+    public $encrypt_name = false;
+    public $is_image = false;
+    public $image_width = '';
+    public $image_height = '';
+    public $image_type = '';
+    public $image_size_str = '';
+    public $error_msg = array();
+    public $mimes = array();
+    public $remove_spaces = true;
+    public $xss_clean = false;
+    public $temp_prefix = "temp_file_";
+    public $client_name = '';
 
-    protected $use_temp_dir         = false;
+    protected $use_temp_dir = false;
     protected $raw_upload = false;
-    protected $_file_name_override  = '';
+    protected $_file_name_override = '';
     protected $blocked_extensions = array();
 
     /**
@@ -173,7 +173,7 @@ class EE_Upload
         $this->file_size = $_FILES[$field]['size'];
         $this->file_type = ee()->mime_type->ofFile($this->file_temp);
         $this->file_name = $this->_prep_filename($_FILES[$field]['name']);
-        $this->file_ext  = $this->get_extension($this->file_name);
+        $this->file_ext = $this->get_extension($this->file_name);
         $this->client_name = $this->file_name;
 
         // Is this a hidden file? Not allowed
@@ -219,7 +219,7 @@ class EE_Upload
         // if we're overriding, let's now make sure the new name and type is allowed
         if ($this->_file_name_override != '') {
             $this->file_name = $this->_prep_filename($this->_file_name_override);
-            $this->file_ext  = $this->get_extension($this->file_name);
+            $this->file_ext = $this->get_extension($this->file_name);
 
             if (! $this->is_allowed_filetype(true)) {
                 $this->set_error('upload_invalid_file');
@@ -336,20 +336,20 @@ class EE_Upload
     public function data()
     {
         return array(
-            'file_name'         => $this->file_name,
-            'file_type'         => $this->file_type,
-            'file_path'         => $this->upload_path,
-            'full_path'         => $this->upload_path . $this->file_name,
-            'raw_name'          => str_replace($this->file_ext, '', $this->file_name),
-            'orig_name'         => $this->orig_name,
-            'client_name'       => $this->client_name,
-            'file_ext'          => $this->file_ext,
-            'file_size'         => $this->file_size,
-            'is_image'          => $this->is_image(),
-            'image_width'       => $this->image_width,
-            'image_height'      => $this->image_height,
-            'image_type'        => $this->image_type,
-            'image_size_str'    => $this->image_size_str,
+            'file_name' => $this->file_name,
+            'file_type' => $this->file_type,
+            'file_path' => $this->upload_path,
+            'full_path' => $this->upload_path . $this->file_name,
+            'raw_name' => str_replace($this->file_ext, '', $this->file_name),
+            'orig_name' => $this->orig_name,
+            'client_name' => $this->client_name,
+            'file_ext' => $this->file_ext,
+            'file_size' => $this->file_size,
+            'is_image' => $this->is_image(),
+            'image_width' => $this->image_width,
+            'image_height' => $this->image_height,
+            'image_type' => $this->image_type,
+            'image_size_str' => $this->image_size_str,
         );
     }
 
@@ -477,10 +477,10 @@ class EE_Upload
             if (false !== ($D = @getimagesize($path))) {
                 $types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
 
-                $this->image_width      = $D['0'];
-                $this->image_height     = $D['1'];
-                $this->image_type       = (! isset($types[$D['2']])) ? 'unknown' : $types[$D['2']];
-                $this->image_size_str   = $D['3'];  // string containing height and width
+                $this->image_width = $D['0'];
+                $this->image_height = $D['1'];
+                $this->image_type = (! isset($types[$D['2']])) ? 'unknown' : $types[$D['2']];
+                $this->image_size_str = $D['3'];  // string containing height and width
             }
         }
     }
@@ -648,9 +648,9 @@ class EE_Upload
 
         $ext = '';
         if (strpos($filename, '.') !== false) {
-            $parts      = explode('.', $filename);
-            $ext        = '.' . array_pop($parts);
-            $filename   = implode('.', $parts);
+            $parts = explode('.', $filename);
+            $ext = '.' . array_pop($parts);
+            $filename = implode('.', $parts);
         }
 
         return substr($filename, 0, ($length - strlen($ext))) . $ext;
@@ -901,31 +901,31 @@ class EE_Upload
         }
 
         $defaults = array(
-            'max_size'          => 0,
-            'max_width'         => 0,
-            'max_height'        => 0,
-            'max_filename'      => 0,
-            'allowed_types'     => "",
-            'file_temp'         => "",
-            'file_name'         => "",
-            'orig_name'         => "",
-            'file_type'         => "",
-            'file_size'         => "",
-            'file_ext'          => "",
-            'upload_path'       => "",
-            'overwrite'         => false,
-            'encrypt_name'      => false,
-            'is_image'          => false,
-            'image_width'       => '',
-            'image_height'      => '',
-            'image_type'        => '',
-            'image_size_str'    => '',
-            'error_msg'         => array(),
-            'mimes'             => array(),
-            'remove_spaces'     => true,
-            'xss_clean'         => false,
-            'temp_prefix'       => "temp_file_",
-            'client_name'       => ''
+            'max_size' => 0,
+            'max_width' => 0,
+            'max_height' => 0,
+            'max_filename' => 0,
+            'allowed_types' => "",
+            'file_temp' => "",
+            'file_name' => "",
+            'orig_name' => "",
+            'file_type' => "",
+            'file_size' => "",
+            'file_ext' => "",
+            'upload_path' => "",
+            'overwrite' => false,
+            'encrypt_name' => false,
+            'is_image' => false,
+            'image_width' => '',
+            'image_height' => '',
+            'image_type' => '',
+            'image_size_str' => '',
+            'error_msg' => array(),
+            'mimes' => array(),
+            'remove_spaces' => true,
+            'xss_clean' => false,
+            'temp_prefix' => "temp_file_",
+            'client_name' => ''
         );
 
         foreach ($defaults as $key => $val) {
@@ -1020,9 +1020,9 @@ class EE_Upload
             return $filename;
         }
 
-        $parts      = explode('.', $filename);
-        $ext        = array_pop($parts);
-        $filename   = array_shift($parts);
+        $parts = explode('.', $filename);
+        $ext = array_pop($parts);
+        $filename = array_shift($parts);
 
         foreach ($parts as $part) {
             $filename .= '.' . $part;

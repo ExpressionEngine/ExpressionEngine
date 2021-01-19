@@ -86,9 +86,9 @@ class Date extends Settings
 
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'site_default',
-                'label'   => 'lang:site_default',
-                'rules'   => 'required'
+                'field' => 'site_default',
+                'label' => 'lang:site_default',
+                'rules' => 'required'
             )
         ));
 

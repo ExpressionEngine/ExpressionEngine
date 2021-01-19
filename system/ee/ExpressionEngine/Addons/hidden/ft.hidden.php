@@ -14,8 +14,8 @@
 class Hidden_ft extends EE_Fieldtype
 {
     public $info = array(
-        'name'		=> 'Hidden Field',
-        'version'	=> '1.0.0'
+        'name' => 'Hidden Field',
+        'version' => '1.0.0'
     );
 
     // Parser Flag (preparse pairs?)

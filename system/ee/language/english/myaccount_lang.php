@@ -514,7 +514,7 @@ $lang = array(
 
     'type' => 'Type',
 
-    'unsubscribe'=> 'Unsubscribe',
+    'unsubscribe' => 'Unsubscribe',
 
     'unsubscribe_success' => 'You have been successfully unsubscribed.',
 

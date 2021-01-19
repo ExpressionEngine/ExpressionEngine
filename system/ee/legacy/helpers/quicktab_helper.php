@@ -22,7 +22,7 @@ if (! defined('BASEPATH')) {
   */
 function generate_quicktab($title = '')
 {
-    $link  = '';
+    $link = '';
     $linkt = '';
     $top_level_items = array('content', 'design', 'addons', 'members', 'admin', 'tools', 'help');
 

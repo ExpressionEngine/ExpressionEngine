@@ -76,10 +76,10 @@ class Stdio
         Handle $stderr,
         Formatter $formatter
     ) {
-        $this->stdin  = $stdin;
+        $this->stdin = $stdin;
         $this->stdout = $stdout;
         $this->stderr = $stderr;
-        $this->formatter  = $formatter;
+        $this->formatter = $formatter;
     }
 
     /**

@@ -628,7 +628,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     protected function getHookTrigger()
     {
-        $in_hook =& $this->_in_hook;
+        $in_hook = & $this->_in_hook;
 
         return function ($name) use ($in_hook) {
             if (in_array($name, $in_hook)) {

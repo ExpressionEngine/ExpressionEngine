@@ -49,19 +49,19 @@ class Relationship_model extends CI_Model
         switch ($node->field_name()) {
             case 'parents':
                 $type = self::PARENT;
-                $relative_child  = 'L0.parent_id';
+                $relative_child = 'L0.parent_id';
                 $relative_parent = 'L0.child_id';
 
                     break;
             case 'siblings':
                 $type = self::SIBLING;
-                $relative_child  = 'L0.child_id';
+                $relative_child = 'L0.child_id';
                 $relative_parent = 'S.child_id';
 
                     break;
             default:
                 $type = self::CHILD;
-                $relative_child  = 'L0.child_id';
+                $relative_child = 'L0.child_id';
                 $relative_parent = 'L0.parent_id';
         }
 

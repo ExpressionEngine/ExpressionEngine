@@ -209,18 +209,18 @@ class Files extends AbstractFilesController
             'sections' => ee('File')->makeUpload()->getRenameOrReplaceform($file, $original_name),
             'buttons' => array(
                 array(
-                    'name'    => 'submit',
-                    'type'    => 'submit',
-                    'value'   => 'finish',
-                    'text'    => 'btn_finish_upload',
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'finish',
+                    'text' => 'btn_finish_upload',
                     'working' => 'btn_saving'
                 ),
                 array(
-                    'name'    => 'submit',
-                    'type'    => 'submit',
-                    'value'   => 'cancel',
-                    'class'   => 'draft',
-                    'text'    => 'btn_cancel_upload',
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'cancel',
+                    'class' => 'draft',
+                    'text' => 'btn_cancel_upload',
                     'working' => 'btn_canceling'
                 ),
             ),

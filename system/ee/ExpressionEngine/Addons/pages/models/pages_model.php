@@ -76,7 +76,7 @@ class Pages_model extends CI_Model
 
         foreach ($data as $key => $value) {
             $config = array(
-                'configuration_name'  => $key,
+                'configuration_name' => $key,
                 'configuration_value' => $value,
                 'site_id' => $this->config->item('site_id')
             );

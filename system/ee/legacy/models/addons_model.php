@@ -31,7 +31,7 @@ class Addons_model extends CI_Model
     public function get_plugin_formatting($include_none = false)
     {
         static $filelist = array();
-        static $plugins  = array();
+        static $plugins = array();
 
         if (empty($plugins)) {
             $plugins = ee('Model')->get('Plugin')
@@ -159,13 +159,13 @@ class Addons_model extends CI_Model
 
             $plugin_info = array(
                 'installed_path' => $plugin['path'],
-                'pi_name'        => $class_name::$name,
-                'pi_version'     => $class_name::$version,
-                'pi_author'      => $class_name::$author,
-                'pi_author_url'  => $class_name::$author_url,
+                'pi_name' => $class_name::$name,
+                'pi_version' => $class_name::$version,
+                'pi_author' => $class_name::$author,
+                'pi_author_url' => $class_name::$author_url,
                 'pi_description' => $class_name::$description,
-                'pi_usage'       => $class_name::usage(),
-                'pi_typography'  => $class_name::$typography
+                'pi_usage' => $class_name::usage(),
+                'pi_typography' => $class_name::$typography
             );
 
             $info[$plugin['name']] = $plugin_info;

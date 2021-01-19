@@ -441,7 +441,7 @@ class Parser extends AbstractParser
      */
     protected function initBuffer()
     {
-        $this->output =& $this->output_buffers[count($this->output_buffers) - 1];
+        $this->output = & $this->output_buffers[count($this->output_buffers) - 1];
     }
 
     /**
@@ -531,8 +531,8 @@ class Parser extends AbstractParser
     {
         $message = $exception->getMessage();
 
-        $location	= $token->context;
-        $lineno		= $token->lineno;
+        $location = $token->context;
+        $lineno = $token->lineno;
 
         return $message . "\n\nIn $location on line $lineno";
     }
@@ -549,10 +549,10 @@ class Parser extends AbstractParser
      */
     private function expectedMessage($expected, $open = null)
     {
-        $value		= $this->value();
-        $found_type	= $this->token->type;
-        $location	= $this->token->context;
-        $lineno		= $this->token->lineno;
+        $value = $this->value();
+        $found_type = $this->token->type;
+        $location = $this->token->context;
+        $lineno = $this->token->lineno;
 
         if ($found_type != 'VARIABLE' && strlen($value) > 23) {
             $value = substr($value, 0, 20) . '...';

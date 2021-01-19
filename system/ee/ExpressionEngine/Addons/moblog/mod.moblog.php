@@ -13,52 +13,52 @@
  */
 class Moblog
 {
-    public $cache_name		= 'moblog_cache';		// Name of cache directory
+    public $cache_name = 'moblog_cache';		// Name of cache directory
     public $url_title_word = 'moblog';				// If duplicate url title, this is added along with number
-    public $message_array  = array();				// Array of return messages
-    public $return_data 	= ''; 					// When silent mode is off
-    public $silent			= ''; 					// yes/no (string) - Returns error information
-    public $moblog_array	= array(); 				// Row information for moblog being processed
+    public $message_array = array();				// Array of return messages
+    public $return_data = ''; 					// When silent mode is off
+    public $silent = ''; 					// yes/no (string) - Returns error information
+    public $moblog_array = array(); 				// Row information for moblog being processed
 
-    public $fp				= ''; 					// fopen resource
-    public $pop_newline	= "\n";					// Newline for POP Server. Switch to \r\n for Microsoft servers
-    public $total_size		= 0;					// Total size of emails being checked in bytes
-    public $checked_size	= 0;					// Accumulated size of emails checked thus far in bytes
-    public $max_size		= 5;					// Maximum amount of email to check, in MB
-    public $email_sizes	= array();				// The sizes of the new emails being checked, in bytes
+    public $fp = ''; 					// fopen resource
+    public $pop_newline = "\n";					// Newline for POP Server. Switch to \r\n for Microsoft servers
+    public $total_size = 0;					// Total size of emails being checked in bytes
+    public $checked_size = 0;					// Accumulated size of emails checked thus far in bytes
+    public $max_size = 5;					// Maximum amount of email to check, in MB
+    public $email_sizes = array();				// The sizes of the new emails being checked, in bytes
 
-    public $boundary 		= false; 				// Boundary marker in emails
+    public $boundary = false; 				// Boundary marker in emails
     public $multi_boundary = '';					// Boundary for multipart content types
-    public $newline		= '1n2e3w4l5i6n7e8'; 	// Newline replacement
-    public $charset		= 'auto';				// Character set for main body of email
+    public $newline = '1n2e3w4l5i6n7e8'; 	// Newline replacement
+    public $charset = 'auto';				// Character set for main body of email
 
-    public $author  		= '';					// Author of current email being processed
-    public $body			= '';					// Main text contents of email being processed
-    public $sender_email	= '';					// Email address that sent email
-    public $uploads		= 0;					// Number of file uploads for this check
-    public $email_files	= array();				// Array containing filenames of uploads for this email
-    public $emails_done	= 0;					// Number of emails processed
-    public $entries_added	= 0;					// Number of entries added
+    public $author = '';					// Author of current email being processed
+    public $body = '';					// Main text contents of email being processed
+    public $sender_email = '';					// Email address that sent email
+    public $uploads = 0;					// Number of file uploads for this check
+    public $email_files = array();				// Array containing filenames of uploads for this email
+    public $emails_done = 0;					// Number of emails processed
+    public $entries_added = 0;					// Number of entries added
     public $upload_dir_code = '';					// {filedir_2} for entry's
-    public $upload_path	= '';					// Server path for upload directory
-    public $entry_data		= array();				// Data for entry's custom fields
-    public $post_data		= array();				// Post data retrieved from email being processed: Subject, IP, Categories, Status
-    public $template		= '';					// Moblog's template
-    public $sticky			= 'n';					// Default Sticky Value
+    public $upload_path = '';					// Server path for upload directory
+    public $entry_data = array();				// Data for entry's custom fields
+    public $post_data = array();				// Post data retrieved from email being processed: Subject, IP, Categories, Status
+    public $template = '';					// Moblog's template
+    public $sticky = 'n';					// Default Sticky Value
 
     // These settings are for a specific problem with AT&T phones
-    public $attach_as_txt	= false;				// Email's Message as txt file?
-    public $attach_text	= '';					// If $attach_as_txt is true, this is the text
-    public $attach_name	= '';					// If $attach_as_txt is true, this is the name
+    public $attach_as_txt = false;				// Email's Message as txt file?
+    public $attach_text = '';					// If $attach_as_txt is true, this is the text
+    public $attach_name = '';					// If $attach_as_txt is true, this is the name
 
-    public $time_offset	= '5';					// Number of seconds entries are offset by negatively, higher if you are putting in many entries
+    public $time_offset = '5';					// Number of seconds entries are offset by negatively, higher if you are putting in many entries
 
-    public $movie			= array();				// Suffixes for accepted movie files
-    public $audio			= array();				// Suffixes for accepted audio files
-    public $image			= array();				// Suffixes for accepted image files
-    public $files			= array();				// Suffixes for other types of accepted files
+    public $movie = array();				// Suffixes for accepted movie files
+    public $audio = array();				// Suffixes for accepted audio files
+    public $image = array();				// Suffixes for accepted image files
+    public $files = array();				// Suffixes for other types of accepted files
 
-    public $txt_override	= false;				// When set to TRUE, all .txt files are treated as message text
+    public $txt_override = false;				// When set to TRUE, all .txt files are treated as message text
 
     /**
      * 	Constructor
@@ -93,8 +93,8 @@ class Moblog
      */
     public function check()
     {
-        $which 	= ee()->TMPL->fetch_param('which', '');
-        $silent	= ee()->TMPL->fetch_param('silent', 'yes');
+        $which = ee()->TMPL->fetch_param('which', '');
+        $silent = ee()->TMPL->fetch_param('silent', 'yes');
 
         // Backwards compatible with previously documented "true/false" parameters (now "yes/no")
         $this->silent = ($silent == 'true' or $silent == 'yes') ? 'yes' : 'no';
@@ -309,7 +309,7 @@ class Moblog
         $valid_emails = array();
         $valid_froms = explode("|", $this->moblog_array['moblog_valid_from']);
 
-        for ($i=1; $i <= $total; $i++) {
+        for ($i = 1; $i <= $total; $i++) {
             if (strncasecmp($this->pop_command("TOP {$i} 0"), '+OK', 3) != 0) {
                 $line = $this->pop_command("QUIT");
                 @fclose($this->fp);
@@ -487,12 +487,12 @@ class Moblog
             /** -------------------------------------*/
             if (! $this->find_boundary($email_data)) { // OR $this->moblog_array['moblog_upload_directory'] == '0')
                 // Figure out content type and subtype
-                $contents		= $this->find_data($email_data, "Content-Type: ", $this->newline);
-                $x				= explode(';', $contents);
-                $content_type	= strtolower($x['0']);
-                $pieces			= explode('/', trim($content_type));
-                $type			= trim($pieces['0']);
-                $subtype		= (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
+                $contents = $this->find_data($email_data, "Content-Type: ", $this->newline);
+                $x = explode(';', $contents);
+                $content_type = strtolower($x['0']);
+                $pieces = explode('/', trim($content_type));
+                $type = trim($pieces['0']);
+                $subtype = (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
 
                 if ($type == 'image' or $type == 'application' or $type == 'audio' or $type == 'video') {
                     /** -------------------------
@@ -614,13 +614,13 @@ class Moblog
                     $this->body = '';
 
                     // First, find wrap point
-                    for ($p=0; $p < count($x); $p++) {
+                    for ($p = 0; $p < count($x); $p++) {
                         $wrap_point = (strlen($x[$p]) > $wrap_point) ? strlen($x[$p]) : $wrap_point;
                     }
 
                     // Unwrap the Content
-                    for ($p=0; $p < count($x); $p++) {
-                        $next = (isset($x[$p+1]) && count($y = explode(' ', $x[$p+1]))) ? $y['0'] : '';
+                    for ($p = 0; $p < count($x); $p++) {
+                        $next = (isset($x[$p + 1]) && count($y = explode(' ', $x[$p + 1]))) ? $y['0'] : '';
                         $this->body .= (strlen($x[$p]) < $wrap_point && strlen($x[$p] . $next) <= $wrap_point) ? $x[$p] . $this->newline : $x[$p];
                     }
                 }
@@ -792,7 +792,7 @@ class Moblog
         }
 
         $site_id = $query->row('site_id');
-        $notify_address = ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails') : '';
+        $notify_address = ($query->row('channel_notify') == 'y' and $query->row('channel_notify_emails') != '') ? $query->row('channel_notify_emails') : '';
 
         // Collect the meta data
 
@@ -810,19 +810,19 @@ class Moblog
         $entry_date = (ee()->localize->now + $this->entries_added - $this->time_offset);
 
         $data = array(
-            'channel_id'		=> $channel_id,
-            'site_id'			=> $site_id,
-            'author_id'			=> $author_id,
-            'title'				=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
-            'ip_address'		=> $this->post_data['ip'],
-            'entry_date'		=> $entry_date,
-            'edit_date'			=> gmdate("YmdHis", $entry_date),
-            'year'				=> gmdate('Y', $entry_date),
-            'month'				=> gmdate('m', $entry_date),
-            'day'				=> gmdate('d', $entry_date),
-            'sticky'			=> (isset($this->post_data['sticky'])) ? $this->post_data['sticky'] : $this->sticky,
-            'status'			=> ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
-            'allow_comments'	=> $query->row('deft_comments')
+            'channel_id' => $channel_id,
+            'site_id' => $site_id,
+            'author_id' => $author_id,
+            'title' => (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
+            'ip_address' => $this->post_data['ip'],
+            'entry_date' => $entry_date,
+            'edit_date' => gmdate("YmdHis", $entry_date),
+            'year' => gmdate('Y', $entry_date),
+            'month' => gmdate('m', $entry_date),
+            'day' => gmdate('d', $entry_date),
+            'sticky' => (isset($this->post_data['sticky'])) ? $this->post_data['sticky'] : $this->sticky,
+            'status' => ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
+            'allow_comments' => $query->row('deft_comments')
         );
         $entry = ee('Model')->make('ChannelEntry');
         $entry->channel_id = $channel_id;
@@ -838,8 +838,8 @@ class Moblog
             $this->body = str_replace($this->moblog_array['moblog_ignore_text'], '', $this->body);
         } elseif ($this->moblog_array['moblog_ignore_text'] != '') {
             // By line
-            $delete_text	= $this->remove_newlines($this->moblog_array['moblog_ignore_text'], $this->newline);
-            $delete_array	= explode($this->newline, $delete_text);
+            $delete_text = $this->remove_newlines($this->moblog_array['moblog_ignore_text'], $this->newline);
+            $delete_array = explode($this->newline, $delete_text);
 
             if (count($delete_array) > 0) {
                 foreach ($delete_array as $ignore) {
@@ -869,19 +869,19 @@ class Moblog
             $results = ee()->db->get();
 
             if ($results->num_rows() > 0) {
-                $field_name  = array();
+                $field_name = array();
                 $field_label = array();
                 $field_format = array();
 
                 foreach ($results->result_array() as $row) {
-                    $field_name[$row['field_id']]	= $row['field_name'];
-                    $field_label[$row['field_id']]	= $row['field_label'];
+                    $field_name[$row['field_id']] = $row['field_name'];
+                    $field_label[$row['field_id']] = $row['field_label'];
                     $field_format[$row['field_id']] = $row['field_fmt'];
                 }
 
                 unset($results);
 
-                for ($i=0; $i < count($matches[0]); $i++) {
+                for ($i = 0; $i < count($matches[0]); $i++) {
                     $x = preg_split("/[\s]+/", $matches['1'][$i]);
 
                     if ($key = array_search($x['0'], $field_name) or $key = array_search($x['0'], $field_label)) {
@@ -914,11 +914,11 @@ class Moblog
         if (! preg_match_all("/" . LD . $tag . "(.*?)" . RD . "(.*?)" . LD . '\/' . $tag . RD . "/s", $this->template, $matches)) {
             $this->parse_field($this->moblog_array['moblog_field_id'], $this->template);
         } else {
-            for ($i=0; $i < count($matches['0']) ; $i++) {
+            for ($i = 0; $i < count($matches['0']) ; $i++) {
                 $params = ee('Variables/Parser')->parseTagParameters($matches['1'][$i]);
 
-                $params['format']	= (! isset($params['format'])) ? '' : $params['format'];
-                $params['name'] 	= (! isset($params['name'])) ? '' : $params['name'];
+                $params['format'] = (! isset($params['format'])) ? '' : $params['format'];
+                $params['name'] = (! isset($params['name'])) ? '' : $params['name'];
 
                 $this->parse_field($params, $matches['2'][$i]);
                 $this->template = str_replace($matches['0'], '', $this->template);
@@ -997,7 +997,7 @@ class Moblog
         // Insert the Entry
 
         // Max URL title length, minus uniqid length, minus separator
-        $url_title = substr(ee('Format')->make('Text', $data['title'])->urlSlug()->compile(), 0, URL_TITLE_MAX_LENGTH-23-1);
+        $url_title = substr(ee('Format')->make('Text', $data['title'])->urlSlug()->compile(), 0, URL_TITLE_MAX_LENGTH - 23 - 1);
 
         $separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
 
@@ -1069,8 +1069,8 @@ class Moblog
 
                 $results = ee()->db->get('channel_fields');
 
-                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
-                $format 	= ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
+                $field_id = ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
+                $format = ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
             } elseif ($params['name'] == '' && $params['format'] == '') {
                 $field_id = $this->moblog_array['moblog_field_id'];
 
@@ -1079,10 +1079,10 @@ class Moblog
 
                 $results = ee()->db->get('channel_fields');
 
-                $format	= $results->row('field_fmt') ;
+                $format = $results->row('field_fmt') ;
             } elseif ($params['name'] == '' && $params['format'] != '') {
-                $field_id	= $this->moblog_array['moblog_field_id'];
-                $format		= $params['format'];
+                $field_id = $this->moblog_array['moblog_field_id'];
+                $format = $params['format'];
             } elseif ($params['name'] != '' && $params['format'] != '') {
                 $xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
@@ -1095,8 +1095,8 @@ class Moblog
 
                 $results = ee()->db->get('channel_fields');
 
-                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
-                $format		= $params['format'];
+                $field_id = ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
+                $format = $params['format'];
             }
         }
 
@@ -1118,9 +1118,9 @@ class Moblog
             foreach (array('thumb', 'image') as $which) {
                 if ($row->id == $this->moblog_array['moblog_' . $which . '_size']) {
                     ${$which . '_data'} = array(
-                        'dir'		=> '_' . $row->short_name . '/',
-                        'height'	=> $row->height,
-                        'width'		=> $row->width
+                        'dir' => '_' . $row->short_name . '/',
+                        'height' => $row->height,
+                        'width' => $row->width
                     );
                 }
             }
@@ -1142,7 +1142,7 @@ class Moblog
                 continue;
             }
 
-            for ($i=0; $i < count($matches['0']) ; $i++) {
+            for ($i = 0; $i < count($matches['0']) ; $i++) {
                 $template_data = '';
 
                 if ($type != 'files' && (! isset($float_data[$type]) or count($float_data[$type]) == 0)) {
@@ -1183,25 +1183,25 @@ class Moblog
                             // most definitely an image
 
                             // Figure out sizes
-                            $file_rel_path		= empty($image_data) ? $file : $image_data['dir'] . $file;
-                            $file_dimensions	= @getimagesize($dir_server_path . $file_rel_path);
-                            $filename			= $this->upload_dir_code . $file_rel_path;
+                            $file_rel_path = empty($image_data) ? $file : $image_data['dir'] . $file;
+                            $file_dimensions = @getimagesize($dir_server_path . $file_rel_path);
+                            $filename = $this->upload_dir_code . $file_rel_path;
 
-                            $thumb_replace		= '';
-                            $thumb_dimensions	= false;
+                            $thumb_replace = '';
+                            $thumb_dimensions = false;
 
                             if (! empty($thumb_data)) {
-                                $thumb_rel_path		= $thumb_data['dir'] . $file;
-                                $thumb_replace		= $this->upload_dir_code . $thumb_rel_path;
-                                $thumb_dimensions	= @getimagesize($dir_server_path . $thumb_rel_path);
+                                $thumb_rel_path = $thumb_data['dir'] . $file;
+                                $thumb_replace = $this->upload_dir_code . $thumb_rel_path;
+                                $thumb_dimensions = @getimagesize($dir_server_path . $thumb_rel_path);
                             }
 
                             $details = array(
-                                'width'			=> $file_dimensions ? $file_dimensions[0] : '',
-                                'height'		=> $file_dimensions ? $file_dimensions[1] : '',
-                                'thumbnail'		=> $thumb_replace,
-                                'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
-                                'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
+                                'width' => $file_dimensions ? $file_dimensions[0] : '',
+                                'height' => $file_dimensions ? $file_dimensions[1] : '',
+                                'thumbnail' => $thumb_replace,
+                                'thumb_width' => $thumb_dimensions ? $thumb_dimensions[0] : '',
+                                'thumb_height' => $thumb_dimensions ? $thumb_dimensions[1] : ''
                             );
 
                             $temp_data = str_replace('{file}', $filename, $matches['2'][$i]);
@@ -1223,25 +1223,25 @@ class Moblog
 
                         // It's an image, work out sizes
                         // Figure out sizes
-                        $file_rel_path		= empty($image_data) ? $file : $image_data['dir'] . $file;
-                        $file_dimensions	= @getimagesize($dir_server_path . $file_rel_path);
-                        $filename			= $this->upload_dir_code . $file_rel_path;
+                        $file_rel_path = empty($image_data) ? $file : $image_data['dir'] . $file;
+                        $file_dimensions = @getimagesize($dir_server_path . $file_rel_path);
+                        $filename = $this->upload_dir_code . $file_rel_path;
 
-                        $thumb_replace		= '';
-                        $thumb_dimensions	= false;
+                        $thumb_replace = '';
+                        $thumb_dimensions = false;
 
                         if (! empty($thumb_data)) {
-                            $thumb_rel_path		= $thumb_data['dir'] . $file;
-                            $thumb_replace		= $this->upload_dir_code . $thumb_rel_path;
-                            $thumb_dimensions	= @getimagesize($dir_server_path . $thumb_rel_path);
+                            $thumb_rel_path = $thumb_data['dir'] . $file;
+                            $thumb_replace = $this->upload_dir_code . $thumb_rel_path;
+                            $thumb_dimensions = @getimagesize($dir_server_path . $thumb_rel_path);
                         }
 
                         $details = array(
-                            'width'			=> $file_dimensions ? $file_dimensions[0] : '',
-                            'height'		=> $file_dimensions ? $file_dimensions[1] : '',
-                            'thumbnail'		=> $thumb_replace,
-                            'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
-                            'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
+                            'width' => $file_dimensions ? $file_dimensions[0] : '',
+                            'height' => $file_dimensions ? $file_dimensions[1] : '',
+                            'thumbnail' => $thumb_replace,
+                            'thumb_width' => $thumb_dimensions ? $thumb_dimensions[0] : '',
+                            'thumb_height' => $thumb_dimensions ? $thumb_dimensions[1] : ''
                         );
 
                         $temp_data = str_replace('{file}', $filename, $matches['2'][$i]);
@@ -1268,8 +1268,8 @@ class Moblog
         /**  Variable Single:  text
         /** ------------------------------*/
         $field_data = str_replace(array('{text}', '{sender_email}'), array($this->body, $this->sender_email), $field_data);
-        $this->entry_data[$field_id]['data'] 	= (! isset($this->entry_data[$field_id])) ? $field_data : $this->entry_data[$field_id]['data'] . "\n" . $field_data;
-        $this->entry_data[$field_id]['format'] 	= $format;
+        $this->entry_data[$field_id]['data'] = (! isset($this->entry_data[$field_id])) ? $field_data : $this->entry_data[$field_id]['data'] . "\n" . $field_data;
+        $this->entry_data[$field_id]['format'] = $format;
     }
 
     /**
@@ -1278,7 +1278,7 @@ class Moblog
      *	@param mixed - Email Data
      * 	@param
      */
-    public function parse_email($email_data, $type='norm')
+    public function parse_email($email_data, $type = 'norm')
     {
         ee()->load->library('filemanager');
 
@@ -1311,16 +1311,16 @@ class Moblog
                 continue;
             }
 
-            $contents		= $this->find_data($value, "Content-Type:", $this->newline);
-            $x				= explode(';', $contents);
-            $content_type	= $x['0'];
+            $contents = $this->find_data($value, "Content-Type:", $this->newline);
+            $x = explode(';', $contents);
+            $content_type = $x['0'];
 
-            $content_type	= strtolower($content_type);
-            $pieces			= explode('/', trim($content_type));
-            $type			= trim($pieces['0']);
-            $subtype		= (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
+            $content_type = strtolower($content_type);
+            $pieces = explode('/', trim($content_type));
+            $type = trim($pieces['0']);
+            $subtype = (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
 
-            $charset		= 'auto';
+            $charset = 'auto';
 
             /** --------------------------
             /**  Outlook Exception
@@ -1353,8 +1353,8 @@ class Moblog
             /** ---------------------------*/
             if ($type == 'text' && $headers != '' &&
                 (($this->txt_override === true && $subtype == 'plain') or ! stristr($headers, 'name='))) {
-                $duo	=  $this->newline . $this->newline;
-                $text  = $this->find_data($value, $duo, '');
+                $duo = $this->newline . $this->newline;
+                $text = $this->find_data($value, $duo, '');
 
                 if ($text == '') {
                     $text = $this->find_data($value, $this->newline, '');
@@ -1457,9 +1457,9 @@ class Moblog
             if (! $data = $this->appledouble($value)) {
                 return true;
             } else {
-                $value 		= $data['value'];
-                $subtype 	= $data['subtype'];
-                $type		= $data['type'];
+                $value = $data['value'];
+                $subtype = $data['subtype'];
+                $type = $data['type'];
                 unset($data);
             }
         }
@@ -1514,7 +1514,7 @@ class Moblog
         $encoding = trim(str_replace('"', '', $encoding));
         $encoding = str_replace($this->newline, '', $encoding);
 
-        if (! stristr($encoding, "base64") &&  ! stristr($encoding, "7bit") &&  ! stristr($encoding, "8bit") && ! stristr($encoding, "quoted-printable")) {
+        if (! stristr($encoding, "base64") && ! stristr($encoding, "7bit") && ! stristr($encoding, "8bit") && ! stristr($encoding, "quoted-printable")) {
             if ($type == 'text') {
                 // RTF and HTML are considered alternative text
                 $subtype = ($subtype != 'html' && $subtype != 'rtf') ? 'plain' : 'alt';
@@ -1644,7 +1644,7 @@ class Moblog
             $file_path,
             $upload_dir_id,
             array(
-                'title'     => $filename,
+                'title' => $filename,
                 'file_name' => $filename
             )
         );
@@ -1677,20 +1677,20 @@ class Moblog
             return false;
         }
 
-        $boundary		= "--" . $this->find_data($data, "boundary=", $this->newline);
-        $boundary		= trim(str_replace('"', '', $boundary));
-        $boundary		= str_replace("+", "\+", $boundary);
-        $email_parts	= explode($boundary, $data);
+        $boundary = "--" . $this->find_data($data, "boundary=", $this->newline);
+        $boundary = trim(str_replace('"', '', $boundary));
+        $boundary = str_replace("+", "\+", $boundary);
+        $email_parts = explode($boundary, $data);
 
         if (count($email_parts) < 2) {
             return false;
         }
 
         foreach ($email_parts as $value) {
-            $content_type	= $this->find_data($value, "Content-Type:", ";");
-            $pieces			= explode('/', trim($content_type));
-            $type			= trim($pieces['0']);
-            $subtype		= (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
+            $content_type = $this->find_data($value, "Content-Type:", ";");
+            $pieces = explode('/', trim($content_type));
+            $type = trim($pieces['0']);
+            $subtype = (! isset($pieces['1'])) ? '0' : trim($pieces['1']);
 
             if ($type == 'image' or $type == 'audio' or $type == 'video') {
                 $data = array('value' => $value,
@@ -1709,8 +1709,8 @@ class Moblog
      */
     public function check_login()
     {
-        $this->body	= trim($this->body);
-        $login		= $this->find_data($this->body, '', $this->newline);
+        $this->body = trim($this->body);
+        $login = $this->find_data($this->body, '', $this->newline);
 
         if ($login == '' or ! stristr($login, ':')) {
             $login = $this->find_data($this->body, 'AUTH:', $this->newline);
@@ -1738,8 +1738,8 @@ class Moblog
             return false;
         }
 
-        $this->author	=  $auth->member('member_id');
-        $this->body		= str_replace($login, '', $this->body);
+        $this->author = $auth->member('member_id');
+        $this->body = str_replace($login, '', $this->body);
 
         return true;
     }
@@ -1790,7 +1790,7 @@ class Moblog
      *	@param	string
      *	@return string
      */
-    public function remove_newlines($str, $replace='')
+    public function remove_newlines($str, $replace = '')
     {
         if (strpos($str, "\r") !== false or strpos($str, "\n") !== false) {
             $str = str_replace(array("\r\n", "\r", "\n"), $replace, $str);
@@ -1847,8 +1847,8 @@ class Moblog
             if ($mime['1'] == '8859-1') {
                 $charHex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 
-                for ($z=0, $sz=count($charHex); $z < $sz; ++$z) {
-                    for ($i=0, $si=count($charHex); $i < $si; ++$i) {
+                for ($z = 0, $sz = count($charHex); $z < $sz; ++$z) {
+                    for ($i = 0, $si = count($charHex); $i < $si; ++$i) {
                         $mime['2'] = str_replace('=' . $charHex[$z] . $charHex[$i], chr(hexdec($charHex[$z] . $charHex[$i])), $mime['2']);
                     }
                 }
@@ -1896,7 +1896,7 @@ class Moblog
             $p2 = strpos(strtolower($str), strtolower($end), $p1);
         }
 
-        $new = substr($str, $p1, ($p2-$p1));
+        $new = substr($str, $p1, ($p2 - $p1));
 
         return $new;
     }

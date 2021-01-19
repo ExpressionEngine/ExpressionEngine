@@ -26,10 +26,10 @@ class Relationship_upd
         ee()->db->insert(
             'modules',
             array(
-                'module_name'			=> $this->name,
-                'module_version'		=> $this->version,
-                'has_cp_backend'		=> 'n',
-                'has_publish_fields'	=> 'n'
+                'module_name' => $this->name,
+                'module_version' => $this->version,
+                'has_cp_backend' => 'n',
+                'has_publish_fields' => 'n'
             )
         );
 
@@ -37,8 +37,8 @@ class Relationship_upd
             'actions',
             array(
                 array(
-                    'class'		=> $this->name,
-                    'method'	=> 'entryList'
+                    'class' => $this->name,
+                    'method' => 'entryList'
                 )
             )
         );

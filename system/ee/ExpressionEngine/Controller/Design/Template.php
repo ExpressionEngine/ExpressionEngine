@@ -378,7 +378,7 @@ class Template extends AbstractDesignController
             }
 
             $data[] = array(
-                'attrs'   => $attrs,
+                'attrs' => $attrs,
                 'columns' => array(
                     $i,
                     ee()->localize->human_time($version->item_date),
@@ -691,12 +691,12 @@ class Template extends AbstractDesignController
     private function getTemplateTypes()
     {
         $template_types = array(
-            'webpage'	=> lang('webpage'),
-            'feed'		=> lang('rss'),
-            'css'		=> lang('css_stylesheet'),
-            'js'		=> lang('js'),
-            'static'	=> lang('static'),
-            'xml'		=> lang('xml')
+            'webpage' => lang('webpage'),
+            'feed' => lang('rss'),
+            'css' => lang('css_stylesheet'),
+            'js' => lang('js'),
+            'static' => lang('static'),
+            'xml' => lang('xml')
         );
 
         // -------------------------------------------

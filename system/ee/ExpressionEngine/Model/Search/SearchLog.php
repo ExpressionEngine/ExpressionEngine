@@ -24,7 +24,7 @@ class SearchLog extends Model
         'Site' => array(
             'type' => 'BelongsTo'
         ),
-        'Member'	=> array(
+        'Member' => array(
             'type' => 'BelongsTo'
         )
     );

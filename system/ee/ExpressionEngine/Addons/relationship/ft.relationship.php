@@ -17,8 +17,8 @@ use ExpressionEngine\Library\CP\Table;
 class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 {
     public $info = array(
-        'name'		=> 'Relationships',
-        'version'	=> '1.0.0'
+        'name' => 'Relationships',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = false;
@@ -116,11 +116,11 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         $data = $post['data'];
 
         $all_rows_where = array(
-            'parent_id'     => $entry_id,
-            'field_id'      => $field_id,
-            'grid_col_id'   => 0,
+            'parent_id' => $entry_id,
+            'field_id' => $field_id,
+            'grid_col_id' => 0,
             'grid_field_id' => 0,
-            'grid_row_id'   => 0,
+            'grid_row_id' => 0,
             'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
         );
 
@@ -244,18 +244,18 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         if ($get_related) {
             $wheres = array(
-                'parent_id'     => $entry_id,
-                'field_id'      => $this->field_id,
-                'grid_col_id'   => 0,
+                'parent_id' => $entry_id,
+                'field_id' => $this->field_id,
+                'grid_col_id' => 0,
                 'grid_field_id' => 0,
-                'grid_row_id'   => 0,
+                'grid_row_id' => 0,
                 'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
             );
 
             if (isset($this->settings['grid_row_id'])) {
-                $wheres['grid_col_id']   = $this->settings['col_id'];
+                $wheres['grid_col_id'] = $this->settings['col_id'];
                 $wheres['grid_field_id'] = $this->settings['grid_field_id'];
-                $wheres['grid_row_id']   = $this->settings['grid_row_id'];
+                $wheres['grid_row_id'] = $this->settings['grid_row_id'];
             }
 
             ee()->db
@@ -294,17 +294,17 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         $settings = array(
-            'channels'    => $this->settings['channels'],
-            'categories'  => $this->settings['categories'],
-            'statuses'    => $this->settings['statuses'],
-            'authors'     => $this->settings['authors'],
-            'limit'       => $this->settings['limit'],
-            'expired'     => $this->settings['expired'],
-            'future'      => $this->settings['future'],
+            'channels' => $this->settings['channels'],
+            'categories' => $this->settings['categories'],
+            'statuses' => $this->settings['statuses'],
+            'authors' => $this->settings['authors'],
+            'limit' => $this->settings['limit'],
+            'expired' => $this->settings['expired'],
+            'future' => $this->settings['future'],
             'order_field' => $this->settings['order_field'],
-            'order_dir'   => $this->settings['order_dir'],
-            'entry_id'    => $entry_id,
-            'field_id'    => $this->field_id
+            'order_dir' => $this->settings['order_dir'],
+            'entry_id' => $entry_id,
+            'field_id' => $this->field_id
         );
 
         ee()->load->library('EntryList');
@@ -352,9 +352,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
             'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
             'relationship.lang.relateEntry' => lang('relate_entry'),
-            'relationship.lang.search' 		=> lang('search'),
-            'relationship.lang.channel' 	=> lang('channel'),
-            'relationship.lang.remove' 		=> lang('remove'),
+            'relationship.lang.search' => lang('search'),
+            'relationship.lang.channel' => lang('channel'),
+            'relationship.lang.remove' => lang('remove'),
         ]);
 
         ee()->cp->add_js_script([
@@ -655,7 +655,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                     'relationship_order_field' => array(
                         'type' => 'radio',
                         'choices' => array(
-                            'title' 	 => lang('rel_ft_order_title'),
+                            'title' => lang('rel_ft_order_title'),
                             'entry_date' => lang('rel_ft_order_date')
                         ),
                         'value' => $values['order_field']
@@ -664,7 +664,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                         'type' => 'radio',
                         'choices' => array(
                             'asc' => lang('rel_ft_order_ascending'),
-                            'desc'	=> lang('rel_ft_order_descending'),
+                            'desc' => lang('rel_ft_order_descending'),
                         ),
                         'value' => $values['order_dir']
                     )
@@ -736,25 +736,25 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         $util = ee()->relationships_ft_cp;
 
         $field_empty_values = array(
-            'channels'		=> '--',
-            'expired'		=> 0,
-            'future'		=> 0,
-            'categories'	=> '--',
-            'authors'		=> '--',
-            'statuses'		=> '--',
-            'limit'			=> 100,
-            'order_field'	=> 'title',
-            'order_dir'		=> 'asc',
-            'allow_multiple'	=> 'n'
+            'channels' => '--',
+            'expired' => 0,
+            'future' => 0,
+            'categories' => '--',
+            'authors' => '--',
+            'statuses' => '--',
+            'limit' => 100,
+            'order_field' => 'title',
+            'order_dir' => 'asc',
+            'allow_multiple' => 'n'
         );
 
         $field_options = array(
-            'channels' 	  => $util->all_channels(),
-            'categories'  => $util->all_categories(),
-            'authors'	  => $util->all_authors(),
-            'statuses'	  => $util->all_statuses(),
+            'channels' => $util->all_channels(),
+            'categories' => $util->all_categories(),
+            'authors' => $util->all_authors(),
+            'statuses' => $util->all_statuses(),
             'order_field' => $util->all_order_options(),
-            'order_dir'	  => $util->all_order_directions()
+            'order_dir' => $util->all_order_directions()
         );
 
         // any default values that are not the empty ones
@@ -784,55 +784,55 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $fields = array(
             'relationship_id' => array(
-                'type'				=> 'int',
-                'constraint'		=> 6,
-                'unsigned'			=> true,
-                'auto_increment'	=> true
+                'type' => 'int',
+                'constraint' => 6,
+                'unsigned' => true,
+                'auto_increment' => true
             ),
-            'parent_id'	=> array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+            'parent_id' => array(
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
-            'child_id'  => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+            'child_id' => array(
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
-            'field_id'  => array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+            'field_id' => array(
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
-            'order' 	=> array(
-                'type'				=> 'int',
-                'constraint'		=> 10,
-                'unsigned'			=> true,
-                'default'			=> 0
+            'order' => array(
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0
             ),
             'grid_field_id' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true,
-                'default'		=> 0,
-                'null'			=> false
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0,
+                'null' => false
             ),
             'grid_col_id' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true,
-                'default'		=> 0,
-                'null'			=> false
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0,
+                'null' => false
             ),
             'grid_row_id' => array(
-                'type'			=> 'int',
-                'constraint'	=> 10,
-                'unsigned'		=> true,
-                'default'		=> 0,
-                'null'			=> false
+                'type' => 'int',
+                'constraint' => 10,
+                'unsigned' => true,
+                'default' => 0,
+                'null' => false
             )
         );
 
@@ -977,8 +977,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     public function getTableColumnConfig()
     {
         return [
-            'encode'	=> false,
-            'type'	=> Table::COL_INFO
+            'encode' => false,
+            'type' => Table::COL_INFO
         ];
     }
 
@@ -988,11 +988,11 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         if ($entry && $field_id) {
             $wheres = array(
-                'parent_id'     => $entry->getId(),
-                'field_id'      => $field_id,
-                'grid_col_id'   => 0,
+                'parent_id' => $entry->getId(),
+                'field_id' => $field_id,
+                'grid_col_id' => 0,
                 'grid_field_id' => 0,
-                'grid_row_id'   => 0,
+                'grid_row_id' => 0,
                 'fluid_field_data_id' => 0
             );
             $related = ee()->db

@@ -21,30 +21,30 @@ class Moblog extends Model
     protected static $_table_name = 'moblogs';
 
     protected static $_typed_columns = array(
-        'moblog_email_login'    => 'base64',
+        'moblog_email_login' => 'base64',
         'moblog_email_password' => 'base64',
-        'moblog_valid_from'     => 'commaDelimited',
-        'moblog_categories'     => 'pipeDelimited'
+        'moblog_valid_from' => 'commaDelimited',
+        'moblog_categories' => 'pipeDelimited'
     );
 
     protected static $_validation_rules = array(
-        'moblog_full_name'	      => 'required|unique',
-        'moblog_short_name'       => 'required|unique',
-        'moblog_auth_required'    => 'required|enum[y,n]',
-        'moblog_auth_delete'      => 'required|enum[y,n]',
-        'moblog_email_type'       => 'required|enum[pop3]', # Only POP3 supported at the moment
-        'moblog_email_address'    => 'required|email',
-        'moblog_email_server'     => 'required',
-        'moblog_email_login'      => 'required',
-        'moblog_email_password'   => 'required',
-        'moblog_time_interval'    => 'required|isNaturalNoZero',
-        'moblog_enabled'          => 'required|enum[y,n]',
-        'moblog_valid_from'       => 'validateEmails',
-        'moblog_allow_overrides'  => 'enum[y,n]',
-        'moblog_sticky_entry'     => 'enum[y,n]',
+        'moblog_full_name' => 'required|unique',
+        'moblog_short_name' => 'required|unique',
+        'moblog_auth_required' => 'required|enum[y,n]',
+        'moblog_auth_delete' => 'required|enum[y,n]',
+        'moblog_email_type' => 'required|enum[pop3]', # Only POP3 supported at the moment
+        'moblog_email_address' => 'required|email',
+        'moblog_email_server' => 'required',
+        'moblog_email_login' => 'required',
+        'moblog_email_password' => 'required',
+        'moblog_time_interval' => 'required|isNaturalNoZero',
+        'moblog_enabled' => 'required|enum[y,n]',
+        'moblog_valid_from' => 'validateEmails',
+        'moblog_allow_overrides' => 'enum[y,n]',
+        'moblog_sticky_entry' => 'enum[y,n]',
         'moblog_upload_directory' => 'isNaturalNoZero',
-        'moblog_image_size'       => 'isNatural',
-        'moblog_thumb_size'       => 'isNatural',
+        'moblog_image_size' => 'isNatural',
+        'moblog_thumb_size' => 'isNatural',
     );
 
     protected $moblog_id;

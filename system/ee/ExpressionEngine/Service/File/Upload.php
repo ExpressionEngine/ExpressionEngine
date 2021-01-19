@@ -305,11 +305,11 @@ class Upload
         }
 
         return array(
-            'file'              => $file,
-            'posted'            => $posted,
-            'uploaded'          => $uploaded,
+            'file' => $file,
+            'posted' => $posted,
+            'uploaded' => $uploaded,
             'validation_result' => $result,
-            'upload_response'   => $upload_response
+            'upload_response' => $upload_response
         );
     }
 
@@ -334,7 +334,7 @@ class Upload
         }
 
         $upload_options = ee()->input->post('upload_options');
-        $original_name  = ee()->input->post('original_name');
+        $original_name = ee()->input->post('original_name');
 
         $result = array(
             'success' => false,
@@ -439,7 +439,7 @@ class Upload
                 }
 
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
-                    $src  = $fd->getAbsolutePath() . $file->file_name;
+                    $src = $fd->getAbsolutePath() . $file->file_name;
                     $dest = $fd->getAbsolutePath() . $original->file_name;
 
                     // non-image files will not have manipulations

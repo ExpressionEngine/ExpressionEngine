@@ -391,7 +391,7 @@ class BooleanExpression
 
         // operator => array(precedence, associativity, [cast])
         return array(
-            '^'  => array(60, self::RIGHT_ASSOC),
+            '^' => array(60, self::RIGHT_ASSOC),
             '**' => array(60, self::RIGHT_ASSOC),
 
             '*' => array(40, self::LEFT_ASSOC),
@@ -402,25 +402,25 @@ class BooleanExpression
             '-' => array(30, self::LEFT_ASSOC),
             '.' => array(30, self::LEFT_ASSOC),
 
-            '<'  => array(20, self::NON_ASSOC),
+            '<' => array(20, self::NON_ASSOC),
             '<=' => array(20, self::NON_ASSOC),
-            '>'  => array(20, self::NON_ASSOC),
+            '>' => array(20, self::NON_ASSOC),
             '>=' => array(20, self::NON_ASSOC),
 
             '^=' => array(20, self::NON_ASSOC),
             '*=' => array(20, self::NON_ASSOC),
             '$=' => array(20, self::NON_ASSOC),
-            '~'  => array(20, self::NON_ASSOC),
+            '~' => array(20, self::NON_ASSOC),
 
             '<>' => array(10, self::NON_ASSOC),
             '==' => array(10, self::NON_ASSOC),
             '!=' => array(10, self::NON_ASSOC),
 
-            '&&'  => array(6, self::NON_ASSOC),
-            '||'  => array(5, self::NON_ASSOC),
+            '&&' => array(6, self::NON_ASSOC),
+            '||' => array(5, self::NON_ASSOC),
             'AND' => array(4, self::NON_ASSOC),
             'XOR' => array(3, self::NON_ASSOC),
-            'OR'  => array(2, self::NON_ASSOC),
+            'OR' => array(2, self::NON_ASSOC),
         );
     }
 

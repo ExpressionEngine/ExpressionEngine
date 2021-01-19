@@ -23,8 +23,8 @@ class PollVote extends Model
     protected static $_table_name = 'forum_pollvotes';
 
     protected static $_typed_columns = array(
-        'poll_id'   => 'int',
-        'topic_id'  => 'int',
+        'poll_id' => 'int',
+        'topic_id' => 'int',
         'member_id' => 'int',
         'choice_id' => 'int',
     );
@@ -47,8 +47,8 @@ class PollVote extends Model
     );
 
     protected static $_validation_rules = array(
-        'poll_id'   => 'required',
-        'topic_id'  => 'required',
+        'poll_id' => 'required',
+        'topic_id' => 'required',
         'member_id' => 'required',
         'choice_id' => 'required',
     );

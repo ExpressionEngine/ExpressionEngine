@@ -140,12 +140,12 @@ function smarty_modifier_smartypants($text, $attr = null)
 class SmartyPants_Parser
 {
     # Options to specify which transformations to make:
-    public $do_nothing   = 0;
-    public $do_quotes    = 0;
+    public $do_nothing = 0;
+    public $do_quotes = 0;
     public $do_backticks = 0;
-    public $do_dashes    = 0;
-    public $do_ellipses  = 0;
-    public $do_stupefy   = 0;
+    public $do_dashes = 0;
+    public $do_ellipses = 0;
+    public $do_stupefy = 0;
     public $convert_quot = 0; # should we translate &quot; entities into normal quotes?
 
     public function __construct($attr = SMARTYPANTS_ATTR)
@@ -169,45 +169,45 @@ class SmartyPants_Parser
         # w : convert &quot; entities to " for Dreamweaver users
         #
         if ($attr == "0") {
-            $this->do_nothing   = 1;
+            $this->do_nothing = 1;
         } elseif ($attr == "1") {
             # Do everything, turn all options on.
-            $this->do_quotes    = 1;
+            $this->do_quotes = 1;
             $this->do_backticks = 1;
-            $this->do_dashes    = 1;
-            $this->do_ellipses  = 1;
+            $this->do_dashes = 1;
+            $this->do_ellipses = 1;
         } elseif ($attr == "2") {
             # Do everything, turn all options on, use old school dash shorthand.
-            $this->do_quotes    = 1;
+            $this->do_quotes = 1;
             $this->do_backticks = 1;
-            $this->do_dashes    = 2;
-            $this->do_ellipses  = 1;
+            $this->do_dashes = 2;
+            $this->do_ellipses = 1;
         } elseif ($attr == "3") {
             # Do everything, turn all options on, use inverted old school dash shorthand.
-            $this->do_quotes    = 1;
+            $this->do_quotes = 1;
             $this->do_backticks = 1;
-            $this->do_dashes    = 3;
-            $this->do_ellipses  = 1;
+            $this->do_dashes = 3;
+            $this->do_ellipses = 1;
         } elseif ($attr == "-1") {
             # Special "stupefy" mode.
-            $this->do_stupefy   = 1;
+            $this->do_stupefy = 1;
         } else {
             $chars = preg_split('//', $attr);
             foreach ($chars as $c) {
                 if ($c == "q") {
-                    $this->do_quotes    = 1;
+                    $this->do_quotes = 1;
                 } elseif ($c == "b") {
                     $this->do_backticks = 1;
                 } elseif ($c == "B") {
                     $this->do_backticks = 2;
                 } elseif ($c == "d") {
-                    $this->do_dashes    = 1;
+                    $this->do_dashes = 1;
                 } elseif ($c == "D") {
-                    $this->do_dashes    = 2;
+                    $this->do_dashes = 2;
                 } elseif ($c == "i") {
-                    $this->do_dashes    = 3;
+                    $this->do_dashes = 3;
                 } elseif ($c == "e") {
-                    $this->do_ellipses  = 1;
+                    $this->do_ellipses = 1;
                 } elseif ($c == "w") {
                     $this->convert_quot = 1;
                 } else {

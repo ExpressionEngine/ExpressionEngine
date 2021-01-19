@@ -54,15 +54,15 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-remove',
-    'form_url'	=> $form_url,
+    'name' => 'modal-confirm-remove',
+    'form_url' => $form_url,
     'title' => lang('confirm_uninstall'),
     'alert' => lang('confirm_uninstall_desc'),
     'button' => [
         'text' => lang('btn_confirm_and_uninstall'),
         'working' => lang('btn_confirm_and_uninstall_working')
     ],
-    'hidden'	=> array(
+    'hidden' => array(
 
     )
 );

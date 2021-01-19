@@ -35,11 +35,11 @@ if (! function_exists('ee_get_encoding')) {
 
         $encoding = strtoupper($encoding);
 
-        if ($encoding ===  '8BIT' || $encoding === 'BINARY') {
+        if ($encoding === '8BIT' || $encoding === 'BINARY') {
             return 'CP850';
         }
 
-        if ($encoding ===  'UTF8') {
+        if ($encoding === 'UTF8') {
             return 'UTF-8';
         }
 

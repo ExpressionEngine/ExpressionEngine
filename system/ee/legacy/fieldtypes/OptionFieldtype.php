@@ -186,7 +186,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
                         'value' => $data['field_pre_populate']
                     ),
                     'value_label_pairs' => array(
-                        'type' =>'html',
+                        'type' => 'html',
                         'margin_left' => true,
                         'content' => ee('View')->make('ee:_shared/form/mini_grid')
                             ->render($grid->viewData())
@@ -309,7 +309,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
                             'value' => $data['field_pre_populate'] ?: 'v'
                         ),
                         'value_label_pairs' => array(
-                            'type' =>'html',
+                            'type' => 'html',
                             'margin_left' => true,
                             'content' => ee('View')->make('ee:_shared/form/mini_grid')
                                 ->render($grid->viewData())
@@ -414,9 +414,9 @@ abstract class OptionFieldtype extends EE_Fieldtype
         return ee()->typography->parse_type(
             ee()->functions->encode_ee_tags($string),
             array(
-                'text_format'	=> $this->get_format(),
-                'html_format'	=> $this->row('channel_html_formatting', 'all'),
-                'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+                'text_format' => $this->get_format(),
+                'html_format' => $this->row('channel_html_formatting', 'all'),
+                'auto_links' => $this->row('channel_auto_link_urls', 'n'),
                 'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
             )
         );

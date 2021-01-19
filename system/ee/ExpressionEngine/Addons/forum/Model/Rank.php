@@ -27,9 +27,9 @@ class Rank extends Model
     );
 
     protected static $_validation_rules = array(
-        'rank_title'     => 'required',
+        'rank_title' => 'required',
         'rank_min_posts' => 'required',
-        'rank_stars'     => 'required',
+        'rank_stars' => 'required',
     );
 
     protected $rank_id;

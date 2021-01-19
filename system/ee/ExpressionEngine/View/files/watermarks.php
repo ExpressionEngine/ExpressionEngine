@@ -39,10 +39,10 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-remove',
-    'form_url'	=> ee('CP/URL')->make('files/watermarks/remove', ee()->cp->get_url_state()),
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-remove',
+    'form_url' => ee('CP/URL')->make('files/watermarks/remove', ee()->cp->get_url_state()),
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

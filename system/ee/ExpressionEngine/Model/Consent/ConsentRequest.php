@@ -21,10 +21,10 @@ class ConsentRequest extends Model
     protected static $_table_name = 'consent_requests';
 
     protected static $_typed_columns = [
-        'consent_request_id'         => 'int',
+        'consent_request_id' => 'int',
         'consent_request_version_id' => 'int',
-        'double_opt_in'              => 'boolString',
-        'user_created'               => 'boolString',
+        'double_opt_in' => 'boolString',
+        'user_created' => 'boolString',
     ];
 
     protected static $_relationships = [
@@ -48,9 +48,9 @@ class ConsentRequest extends Model
     ];
 
     protected static $_validation_rules = [
-        'user_created'  => 'enum[y,n]',
-        'title'         => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-        'consent_name'  => 'required|unique|maxLength[50]|validateName[user_created]',
+        'user_created' => 'enum[y,n]',
+        'title' => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
+        'consent_name' => 'required|unique|maxLength[50]|validateName[user_created]',
         'double_opt_in' => 'enum[y,n]',
     ];
 

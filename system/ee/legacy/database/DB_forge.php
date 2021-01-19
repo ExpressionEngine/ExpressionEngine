@@ -13,10 +13,10 @@
  */
 class CI_DB_forge
 {
-    public $fields			= array();
-    public $keys			= array();
-    public $primary_keys	= array();
-    public $db_char_set	=	'';
+    public $fields = array();
+    public $keys = array();
+    public $primary_keys = array();
+    public $db_char_set = '';
 
     /**
      * Constructor
@@ -112,8 +112,8 @@ class CI_DB_forge
             if ($field == 'id') {
                 $this->add_field(array(
                     'id' => array(
-                        'type'           => 'INT',
-                        'constraint'     => 9,
+                        'type' => 'INT',
+                        'constraint' => 9,
                         'auto_increment' => true
                     )
                 ));
@@ -319,9 +319,9 @@ class CI_DB_forge
      */
     public function _reset()
     {
-        $this->fields		= array();
-        $this->keys			= array();
-        $this->primary_keys	= array();
+        $this->fields = array();
+        $this->keys = array();
+        $this->primary_keys = array();
     }
 }
 

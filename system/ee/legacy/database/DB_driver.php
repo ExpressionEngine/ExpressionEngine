@@ -21,35 +21,35 @@ class CI_DB_driver
     public $password;
     public $hostname;
     public $database;
-    public $dbdriver		= 'mysqli';
-    public $dbprefix		= '';
-    public $char_set		= 'utf8';
-    public $dbcollat		= 'utf8_unicode_ci';
-    public $autoinit		= true; // Whether to automatically initialize the DB
-    public $swap_pre		= '';
-    public $port			= '';
-    public $pconnect		= false;
-    public $conn_id		= false;
-    public $result_id		= false;
-    public $db_debug		= false;
-    public $db_exception	= false;
-    public $benchmark		= 0;
-    public $query_count	= 0;
-    public $bind_marker	= '?';
-    public $last_query		= null;
-    public $data_cache		= array();
-    public $trans_enabled	= true;
-    public $trans_strict	= true;
-    public $_trans_depth	= 0;
-    public $_trans_status	= true; // Used with transactions to determine if a rollback should occur
-    public $cache_on		= false;
-    public $cachedir		= '';
-    public $cache_autodel	= false;
+    public $dbdriver = 'mysqli';
+    public $dbprefix = '';
+    public $char_set = 'utf8';
+    public $dbcollat = 'utf8_unicode_ci';
+    public $autoinit = true; // Whether to automatically initialize the DB
+    public $swap_pre = '';
+    public $port = '';
+    public $pconnect = false;
+    public $conn_id = false;
+    public $result_id = false;
+    public $db_debug = false;
+    public $db_exception = false;
+    public $benchmark = 0;
+    public $query_count = 0;
+    public $bind_marker = '?';
+    public $last_query = null;
+    public $data_cache = array();
+    public $trans_enabled = true;
+    public $trans_strict = true;
+    public $_trans_depth = 0;
+    public $_trans_status = true; // Used with transactions to determine if a rollback should occur
+    public $cache_on = false;
+    public $cachedir = '';
+    public $cache_autodel = false;
     public $CACHE; // The cache class object
 
     // Private variables
-    public $_protect_identifiers	= true;
-    public $_reserved_identifiers	= array('*'); // Identifiers that should NOT be escaped
+    public $_protect_identifiers = true;
+    public $_reserved_identifiers = array('*'); // Identifiers that should NOT be escaped
 
     // These are use with Oracle
     public $stmt_id;
@@ -384,7 +384,7 @@ class CI_DB_driver
         // The count of bind should be 1 less then the count of segments
         // If there are more bind arguments trim it down
         if (count($binds) >= count($segments)) {
-            $binds = array_slice($binds, 0, count($segments)-1);
+            $binds = array_slice($binds, 0, count($segments) - 1);
         }
 
         // Construct the binded query
@@ -962,7 +962,7 @@ class CI_DB_driver
         // in the correct location, assuming the period doesn't indicate that we're dealing
         // with an alias. While we're at it, we will escape the components
         if (strpos($item, '.') !== false) {
-            $parts	= explode('.', $item);
+            $parts = explode('.', $item);
 
             // Does the first segment of the exploded item match
             // one of the aliases previously identified?  If so,

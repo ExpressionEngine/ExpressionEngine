@@ -48,25 +48,25 @@ class Updater
             'members',
             array(
                 'email' => array(
-                    'name'			=> 'email',
-                    'type'			=> 'varchar',
-                    'constraint'	=> 72,
-                    'null'			=> false
+                    'name' => 'email',
+                    'type' => 'varchar',
+                    'constraint' => 72,
+                    'null' => false
                 ),
             )
         );
 
         // If there is no action id, add it
         $values = array(
-            'class'		=> 'channel',
-            'method'	=> 'smiley_pop'
+            'class' => 'channel',
+            'method' => 'smiley_pop'
         );
 
         ee()->smartforge->insert_set('actions', $values, $values);
 
-        $values	= array(
-            'class'		=> 'channel',
-            'method'	=> 'filemanager_endpoint'
+        $values = array(
+            'class' => 'channel',
+            'method' => 'filemanager_endpoint'
         );
 
         ee()->smartforge->insert_set('actions', $values, $values);
@@ -84,7 +84,7 @@ class Updater
 
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
-                    $system_prefs =  base64_decode($row['site_system_preferences']);
+                    $system_prefs = base64_decode($row['site_system_preferences']);
                     $skip = false;
                     $encode_only = false;
 
@@ -140,9 +140,9 @@ class Updater
             'password_lockout',
             array(
                 'username' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 50,
-                    'null'			=> false
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
                 )
             ),
             'user_agent'
@@ -184,7 +184,7 @@ class Updater
     public function array_stripslashes($vals)
     {
         if (is_array($vals)) {
-            foreach ($vals as $key=>$val) {
+            foreach ($vals as $key => $val) {
                 $vals[$key] = $this->array_stripslashes($val);
             }
         } else {

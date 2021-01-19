@@ -366,28 +366,28 @@ class Uploads extends AbstractFilesController
         // Image manipulations Grid
         $grid = ee('CP/GridInput', array(
             'field_name' => 'image_manipulations',
-            'reorder'    => false, // Order doesn't matter here
+            'reorder' => false, // Order doesn't matter here
         ));
         $grid->loadAssets();
         $grid->setColumns(
             array(
                 'image_manip_name' => array(
-                    'desc'  => 'image_manip_name_desc'
+                    'desc' => 'image_manip_name_desc'
                 ),
                 'image_manip_type' => array(
-                    'desc'  => 'image_manip_type_desc'
+                    'desc' => 'image_manip_type_desc'
                 ),
                 'image_manip_width' => array(
-                    'desc'  => 'image_manip_width_desc'
+                    'desc' => 'image_manip_width_desc'
                 ),
                 'image_manip_height' => array(
-                    'desc'  => 'image_manip_height_desc'
+                    'desc' => 'image_manip_height_desc'
                 ),
                 'image_manip_quality' => array(
-                    'desc'  => 'image_manip_quality_desc'
+                    'desc' => 'image_manip_quality_desc'
                 ),
                 'image_manip_watermark' => array(
-                    'desc'  => 'image_manip_watermark_desc'
+                    'desc' => 'image_manip_watermark_desc'
                 )
             )
         );
@@ -410,12 +410,12 @@ class Uploads extends AbstractFilesController
             foreach ($validation_data['rows'] as $row_id => $columns) {
                 $image_sizes[$row_id] = array(
                     // Fix this, multiple new rows won't namespace right
-                    'id'           => str_replace('row_id_', '', $row_id),
-                    'short_name'   => $columns['short_name'],
-                    'resize_type'  => $columns['resize_type'],
-                    'width'        => $columns['width'],
-                    'height'       => $columns['height'],
-                    'quality'      => $columns['quality'],
+                    'id' => str_replace('row_id_', '', $row_id),
+                    'short_name' => $columns['short_name'],
+                    'resize_type' => $columns['resize_type'],
+                    'width' => $columns['width'],
+                    'height' => $columns['height'],
+                    'quality' => $columns['quality'],
                     'watermark_id' => $columns['watermark_id'],
                 );
             }
@@ -462,11 +462,11 @@ class Uploads extends AbstractFilesController
     private function getGridRow($watermarks_choices, $size = array())
     {
         $defaults = array(
-            'short_name'   => '',
-            'resize_type'  => '',
-            'width'        => '',
-            'height'       => '',
-            'quality'      => 90,
+            'short_name' => '',
+            'resize_type' => '',
+            'width' => '',
+            'height' => '',
+            'quality' => 90,
             'watermark_id' => ''
         );
 
@@ -709,11 +709,11 @@ class Uploads extends AbstractFilesController
 
             // For JS sync script
             $js_size[$size->upload_location_id][$size->id] = array(
-                'short_name'   => $size->short_name,
-                'resize_type'  => $size->resize_type,
-                'width'        => $size->width,
-                'height'       => $size->height,
-                'quality'      => $size->quality,
+                'short_name' => $size->short_name,
+                'resize_type' => $size->resize_type,
+                'width' => $size->width,
+                'height' => $size->height,
+                'quality' => $size->quality,
                 'watermark_id' => $size->watermark_id
             );
         }
@@ -742,13 +742,13 @@ class Uploads extends AbstractFilesController
         // Globals needed for JS script
         ee()->javascript->set_global(array(
             'file_manager' => array(
-                'sync_id'         => $upload_id,
-                'sync_files'      => $files,
+                'sync_id' => $upload_id,
+                'sync_files' => $files,
                 'sync_file_count' => $files_count,
-                'sync_sizes'      => $js_size,
-                'sync_baseurl'    => $base_url->compile(),
-                'sync_endpoint'   => ee('CP/URL')->make('files/uploads/do_sync_files')->compile(),
-                'sync_dir_name'   => $upload_destination->name,
+                'sync_sizes' => $js_size,
+                'sync_baseurl' => $base_url->compile(),
+                'sync_endpoint' => ee('CP/URL')->make('files/uploads/do_sync_files')->compile(),
+                'sync_dir_name' => $upload_destination->name,
             )
         ));
 
@@ -788,8 +788,8 @@ class Uploads extends AbstractFilesController
 
         if (! ee('Permission')->can('upload_new_files') or empty($id)) {
             return ee()->output->send_ajax_response([
-                'message_type'	=> 'failure',
-                'errors'		=> lang('unauthorized_access'),
+                'message_type' => 'failure',
+                'errors' => lang('unauthorized_access'),
             ]);
         }
 
@@ -814,8 +814,8 @@ class Uploads extends AbstractFilesController
 
         if (! isset($this->_upload_dirs[$id])) {
             return ee()->output->send_ajax_response([
-                'message_type'	=> 'failure',
-                'errors'		=> lang('unauthorized_access'),
+                'message_type' => 'failure',
+                'errors' => lang('unauthorized_access'),
             ]);
         }
 
@@ -828,7 +828,7 @@ class Uploads extends AbstractFilesController
                 }
 
                 return ee()->output->send_ajax_response(array(
-                    'message_type'	=> 'success'
+                    'message_type' => 'success'
                 ));
             }
 
@@ -917,10 +917,10 @@ class Uploads extends AbstractFilesController
                     $thumb_created = ee()->filemanager->create_thumb(
                         $this->_upload_dirs[$id]['server_path'] . $file['name'],
                         array(
-                            'server_path'	=> $this->_upload_dirs[$id]['server_path'],
-                            'file_name'		=> $file['name'],
-                            'dimensions'	=> $replace_sizes,
-                            'mime_type'		=> $file['mime']
+                            'server_path' => $this->_upload_dirs[$id]['server_path'],
+                            'file_name' => $file['name'],
+                            'dimensions' => $replace_sizes,
+                            'mime_type' => $file['mime']
                         ),
                         true,	// Create thumb
                         false	// Overwrite existing thumbs
@@ -935,10 +935,10 @@ class Uploads extends AbstractFilesController
                 $thumb_created = ee()->filemanager->create_thumb(
                     $this->_upload_dirs[$id]['server_path'] . $file['name'],
                     array(
-                        'server_path'	=> $this->_upload_dirs[$id]['server_path'],
-                        'file_name'		=> $file['name'],
-                        'dimensions'	=> $missing_only_sizes,
-                        'mime_type'		=> $file['mime']
+                        'server_path' => $this->_upload_dirs[$id]['server_path'],
+                        'file_name' => $file['name'],
+                        'dimensions' => $missing_only_sizes,
+                        'mime_type' => $file['mime']
                     ),
                     true, 	// Create thumb
                     true 	// Don't overwrite existing thumbs
@@ -950,9 +950,9 @@ class Uploads extends AbstractFilesController
                 $image_dimensions = ee()->filemanager->get_image_dimensions($file_path_name);
 
                 $file_data = array(
-                    'file_id'				=> $query->row('file_id'),
-                    'file_size'				=> filesize($file_path_name),
-                    'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+                    'file_id' => $query->row('file_id'),
+                    'file_size' => filesize($file_path_name),
+                    'file_hw_original' => $image_dimensions['height'] . ' ' . $image_dimensions['width']
                 );
 
                 ee()->file_model->save_file($file_data);
@@ -978,16 +978,16 @@ class Uploads extends AbstractFilesController
                         : ' ';
 
             $file_data = array(
-                'upload_location_id'	=> $id,
-                'site_id'				=> $this->config->item('site_id'),
-                'mime_type'				=> $file['mime'],
-                'file_name'				=> $file['name'],
-                'file_size'				=> $file['size'],
-                'uploaded_by_member_id'	=> ee()->session->userdata('member_id'),
+                'upload_location_id' => $id,
+                'site_id' => $this->config->item('site_id'),
+                'mime_type' => $file['mime'],
+                'file_name' => $file['name'],
+                'file_size' => $file['size'],
+                'uploaded_by_member_id' => ee()->session->userdata('member_id'),
                 'modified_by_member_id' => ee()->session->userdata('member_id'),
-                'file_hw_original'		=> $imageDimensionsToWrite,
-                'upload_date'			=> $file['date'],
-                'modified_date'			=> $file['date']
+                'file_hw_original' => $imageDimensionsToWrite,
+                'upload_date' => $file['date'],
+                'modified_date' => $file['date']
             );
 
             $saved = ee()->filemanager
@@ -1006,13 +1006,13 @@ class Uploads extends AbstractFilesController
         if (AJAX_REQUEST) {
             if (count($errors)) {
                 return ee()->output->send_ajax_response(array(
-                    'message_type'	=> 'failure',
-                    'errors'		=> $errors
+                    'message_type' => 'failure',
+                    'errors' => $errors
                 ));
             }
 
             return ee()->output->send_ajax_response(array(
-                'message_type'	=> 'success'
+                'message_type' => 'success'
             ));
         }
     }

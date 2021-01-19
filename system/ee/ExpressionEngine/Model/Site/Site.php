@@ -108,7 +108,7 @@ class Site extends Model
     );
 
     protected static $_validation_rules = array(
-        'site_name'  => 'required|validateShortName|unique',
+        'site_name' => 'required|validateShortName|unique',
         'site_label' => 'required',
     );
 
@@ -203,9 +203,9 @@ class Site extends Model
                 ->filter('site_id', 1)
                 ->first();
 
-            $data['total_members']    = $stats->total_members;
+            $data['total_members'] = $stats->total_members;
             $data['recent_member_id'] = $stats->recent_member_id;
-            $data['recent_member']    = $stats->recent_member;
+            $data['recent_member'] = $stats->recent_member;
         }
 
         $this->getModelFacade()->make('Stats', $data)->save();

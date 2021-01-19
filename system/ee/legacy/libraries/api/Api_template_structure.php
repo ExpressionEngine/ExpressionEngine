@@ -17,18 +17,18 @@ class Api_template_structure extends Api
      * @php4 -- All of the class properties are protected.
      * When php4 support is deprecated, make them accessible via __get()
      */
-    public $template_info			= array();				// cache of previously fetched template info
-    public $group_info				= array();				// cache of previously fetched group info
-    public $reserved_names			= array('act', 'css');	// array of reserved template group names
+    public $template_info = array();				// cache of previously fetched template info
+    public $group_info = array();				// cache of previously fetched group info
+    public $reserved_names = array('act', 'css');	// array of reserved template group names
 
     // file extensions used when saving templates as files
-    public $file_extensions	= array(
-        'webpage'	=> '.html',
-        'static'	=> '.html',
-        'feed'		=> '.feed',
-        'css'		=> '.css',
-        'js'		=> '.js',
-        'xml'		=> '.xml'
+    public $file_extensions = array(
+        'webpage' => '.html',
+        'static' => '.html',
+        'feed' => '.feed',
+        'css' => '.css',
+        'js' => '.js',
+        'xml' => '.xml'
     );
 
     /**
@@ -92,7 +92,7 @@ class Api_template_structure extends Api
             return false;
         }
 
-        $group_name	= '';
+        $group_name = '';
 
         // turn our array into variables
         extract($data);
@@ -153,29 +153,29 @@ class Api_template_structure extends Api
         if ($duplicate !== true) {
             // just create the default 'index' template
             $template_data = array(
-                'group_id'	  	=> $group_id,
+                'group_id' => $group_id,
                 'template_name' => 'index',
-                'edit_date'		=> ee()->localize->now,
-                'site_id'		=> $site_id
+                'edit_date' => ee()->localize->now,
+                'site_id' => $site_id
             );
 
             ee()->template_model->create_template($template_data);
         } else {
             foreach ($query->result() as $row) {
                 $data = array(
-                    'group_id'				=> $group_id,
-                    'template_name'  		=> $row->template_name,
-                    'template_notes'  		=> $row->template_notes,
-                    'cache'  				=> $row->cache,
-                    'refresh'  				=> $row->refresh,
-                    'no_auth_bounce'  		=> $row->no_auth_bounce,
-                    'php_parse_location'	=> $row->php_parse_location,
-                    'allow_php'  			=> (ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
-                    'protect_javascript'	=> $row->protect_javascript,
-                    'template_type' 		=> $row->template_type,
-                    'template_data'  		=> $row->template_data,
-                    'edit_date'				=> ee()->localize->now,
-                    'site_id'				=> ee()->config->item('site_id')
+                    'group_id' => $group_id,
+                    'template_name' => $row->template_name,
+                    'template_notes' => $row->template_notes,
+                    'cache' => $row->cache,
+                    'refresh' => $row->refresh,
+                    'no_auth_bounce' => $row->no_auth_bounce,
+                    'php_parse_location' => $row->php_parse_location,
+                    'allow_php' => (ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
+                    'protect_javascript' => $row->protect_javascript,
+                    'template_type' => $row->template_type,
+                    'template_data' => $row->template_data,
+                    'edit_date' => ee()->localize->now,
+                    'site_id' => ee()->config->item('site_id')
                 );
 
                 ee()->template_model->create_template($data);

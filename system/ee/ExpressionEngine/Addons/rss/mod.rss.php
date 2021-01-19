@@ -61,10 +61,10 @@ class Rss
 
         $query = $this->_feed_vars_query($query->row('entry_id'));
 
-        $request 		= ee()->input->request_headers(true);
-        $start_on 		= '';
-        $diffe_request 	= false;
-        $feed_request	= false;
+        $request = ee()->input->request_headers(true);
+        $start_on = '';
+        $diffe_request = false;
+        $feed_request = false;
 
         // Check for 'diff -e' request
         if (isset($request['A-IM']) && stristr($request['A-IM'], 'diffe') !== false) {
@@ -89,8 +89,8 @@ class Rss
         if (ee()->config->item('send_headers') == 'y'
             && isset($request['If-Modified-Since'])
             && trim($request['If-Modified-Since']) != '') {
-            $x				= explode(';', $request['If-Modified-Since']);
-            $modify_tstamp	= strtotime($x[0]);
+            $x = explode(';', $request['If-Modified-Since']);
+            $modify_tstamp = strtotime($x[0]);
 
             //  If new content *and* 'feed' or 'diffe', create start on time.
             //  Otherwise, we send back a Not Modified header
@@ -132,15 +132,15 @@ class Rss
         ee()->load->helper('date');
 
         $dates = array(
-            'date'      => $entry_date,
+            'date' => $entry_date,
             'edit_date' => $edit_date
         );
         ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
         $dates = array(
-            'gmt_date'       => $entry_date,
+            'gmt_date' => $entry_date,
             'gmt_entry_date' => $entry_date,
-            'gmt_edit_date'  => $edit_date
+            'gmt_edit_date' => $edit_date
         );
         ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates, false);
 
@@ -155,16 +155,16 @@ class Rss
 
         $vars = array(
             array(
-                'channel_id'			=> $query->row('channel_id'),
-                'encoding'				=> ee()->config->item('output_charset'),
-                'channel_language'		=> $query->row('channel_lang'),
-                'channel_description'	=> $query->row('channel_description'),
-                'channel_url'			=> parse_config_variables($query->row('channel_url')),
-                'channel_name'			=> $query->row('channel_title'),
-                'email'					=> $query->row('email'),
-                'author'				=> $query->row('screen_name'),
-                'version'				=> APP_VER,
-                'trimmed_url'			=> $trimmed_url,
+                'channel_id' => $query->row('channel_id'),
+                'encoding' => ee()->config->item('output_charset'),
+                'channel_language' => $query->row('channel_lang'),
+                'channel_description' => $query->row('channel_description'),
+                'channel_url' => parse_config_variables($query->row('channel_url')),
+                'channel_name' => $query->row('channel_title'),
+                'email' => $query->row('email'),
+                'author' => $query->row('screen_name'),
+                'version' => APP_VER,
+                'trimmed_url' => $trimmed_url,
                 ''
             )
         );
@@ -172,7 +172,7 @@ class Rss
         ee()->TMPL->tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 
         if (count($chunks) > 0) {
-            $diff_top = ($start_on != '' && $diffe_request !== false) ? "1," . ($diffe_request-1) . "c\n" : '';
+            $diff_top = ($start_on != '' && $diffe_request !== false) ? "1," . ($diffe_request - 1) . "c\n" : '';
 
             // Last Update Time
             ee()->TMPL->tagdata = '<ee:last_update>' . $last_update . "</ee:last_update>\n\n" . $diff_top . trim(ee()->TMPL->tagdata);
@@ -180,7 +180,7 @@ class Rss
             // Diffe stuff before items
             if ($diffe_request !== false) {
                 ee()->TMPL->tagdata = str_replace($marker . '0', "\n.\n" . $diffe_request . "a\n" . $marker . '0', ee()->TMPL->tagdata);
-                ee()->TMPL->tagdata = str_replace($marker . (count($chunks)-1), $marker . (count($chunks)-1) . "\n.\n$\n-1\n;c\n", ee()->TMPL->tagdata);
+                ee()->TMPL->tagdata = str_replace($marker . (count($chunks) - 1), $marker . (count($chunks) - 1) . "\n.\n$\n-1\n;c\n", ee()->TMPL->tagdata);
             }
 
             foreach ($chunks as $key => $val) {
@@ -257,9 +257,9 @@ class Rss
         if ($username = ee()->TMPL->fetch_param('username')) {
             // Shows entries ONLY for currently logged in user
             if ($username == 'CURRENT_USER') {
-                $sql .=  "AND exp_members.member_id = '" . ee()->session->userdata['member_id'] . "' ";
+                $sql .= "AND exp_members.member_id = '" . ee()->session->userdata['member_id'] . "' ";
             } elseif ($username == 'NOT_CURRENT_USER') {
-                $sql .=  "AND exp_members.member_id != '" . ee()->session->userdata['member_id'] . "' ";
+                $sql .= "AND exp_members.member_id != '" . ee()->session->userdata['member_id'] . "' ";
             } else {
                 $sql .= ee()->functions->sql_andor_string($username, 'exp_members.username');
             }
@@ -339,12 +339,12 @@ class Rss
     {
         ee()->lang->loadfile('rss');
 
-        $encoding	= ee()->config->item('charset');
-        $title		= ee()->config->item('site_name');
-        $link		= ee()->config->item('site_url');
-        $version	= APP_VER;
-        $pubdate	= ee()->localize->format_date('%D, %d %M %Y %H:%i:%s GMT', null, false);
-        $content	= ($this->_debug === true && $error != '') ? $error : ee()->lang->line('empty_feed');
+        $encoding = ee()->config->item('charset');
+        $title = ee()->config->item('site_name');
+        $link = ee()->config->item('site_url');
+        $version = APP_VER;
+        $pubdate = ee()->localize->format_date('%D, %d %M %Y %H:%i:%s GMT', null, false);
+        $content = ($this->_debug === true && $error != '') ? $error : ee()->lang->line('empty_feed');
 
         return <<<HUMPTYDANCE
 <?xml version="1.0" encoding="{$encoding}"?>

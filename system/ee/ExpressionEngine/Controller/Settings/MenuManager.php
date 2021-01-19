@@ -68,10 +68,10 @@ class MenuManager extends Settings
                 'sort' => false
             ],
             'manage' => [
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ],
             [
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             ]
         ];
 
@@ -105,7 +105,7 @@ class MenuManager extends Settings
             $checkbox = array(
                 'name' => 'menu_sets[]',
                 'value' => $set->getId(),
-                'data'	=> array(
+                'data' => array(
                     'confirm' => lang('menu_set') . ': <b>' . htmlentities($set->name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
             );
@@ -260,7 +260,7 @@ class MenuManager extends Settings
 
         $grid = ee('CP/GridInput', array(
             'field_name' => 'submenu',
-            'reorder'    => true
+            'reorder' => true
         ));
 
         $grid->loadAssets();
@@ -427,17 +427,17 @@ class MenuManager extends Settings
         $set = ee('Model')->get('MenuSet', $set->getId())->first();
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
-            'field_name'  => 'menu_items',
-            'choices'     => $set->buildItemsTree(),
-            'tooManyLimit'		=> 999,
-            'value'       => null,
-            'multi'       => false,
-            'nested'      => true,
-            'selectable'  => false,
+            'field_name' => 'menu_items',
+            'choices' => $set->buildItemsTree(),
+            'tooManyLimit' => 999,
+            'value' => null,
+            'multi' => false,
+            'nested' => true,
+            'selectable' => false,
             'reorderable' => true,
-            'removable'   => true,
-            'editable'    => true,
-            'reorder_ajax_url'    => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
+            'removable' => true,
+            'editable' => true,
+            'reorder_ajax_url' => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
             'no_results' => [
                 'text' => sprintf(lang('no_found'), lang('menu_items')),
                 'link_text' => 'add_new',
@@ -470,7 +470,7 @@ class MenuManager extends Settings
         $vars = $this->itemForm($set, $item);
 
         $vars['cp_page_title'] = lang('edit_menu_item');
-        $vars['base_url']  = ee('CP/URL')->make('settings/menu-manager/edit-item/' . $set_id . '/' . $item_id);
+        $vars['base_url'] = ee('CP/URL')->make('settings/menu-manager/edit-item/' . $set_id . '/' . $item_id);
 
         return ee('View')->make('_shared/form')->render($vars);
     }
@@ -765,18 +765,18 @@ class MenuManager extends Settings
     {
         $grid = ee('CP/GridInput', array(
             'field_name' => 'submenu',
-            'reorder'    => true
+            'reorder' => true
         ));
 
         $grid->setColumns(
             array(
                 'name' => array(
                     'label' => 'menu_label',
-                    'desc'  => 'menu_label_desc'
+                    'desc' => 'menu_label_desc'
                 ),
                 'data' => array(
                     'label' => 'menu_url',
-                    'desc'  => 'menu_url_desc'
+                    'desc' => 'menu_url_desc'
                 )
             )
         );

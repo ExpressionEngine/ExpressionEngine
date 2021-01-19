@@ -88,9 +88,9 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ee()->load->add_package_path($_ft_path, false);
 
                     $obj->_init(array(
-                        'row'			=> $data,
-                        'content_id'	=> $data['entry_id'],
-                        'content_type'	=> 'channel'
+                        'row' => $data,
+                        'content_id' => $data['entry_id'],
+                        'content_type' => 'channel'
                     ));
 
                     $data = $ft_api->apply('pre_process', array(
@@ -118,9 +118,9 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     $entry = ee()->typography->parse_type(
                         ee()->functions->encode_ee_tags($data['field_id_' . $field_id]),
                         array(
-                            'text_format'	=> $data['field_ft_' . $field_id],
-                            'html_format'	=> $data['channel_html_formatting'],
-                            'auto_links'	=> $data['channel_auto_link_urls'],
+                            'text_format' => $data['field_ft_' . $field_id],
+                            'html_format' => $data['channel_html_formatting'],
+                            'auto_links' => $data['channel_auto_link_urls'],
                             'allow_img_url' => $data['channel_allow_img_urls']
                         )
                     );

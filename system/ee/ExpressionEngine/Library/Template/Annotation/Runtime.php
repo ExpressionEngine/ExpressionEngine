@@ -77,7 +77,7 @@ class Runtime
             static::$shared_store = array();
         }
 
-        $this->store =& static::$shared_store;
+        $this->store = & static::$shared_store;
     }
 
     /**

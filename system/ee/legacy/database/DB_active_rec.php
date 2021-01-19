@@ -15,45 +15,45 @@
  */
 class CI_DB_active_record extends CI_DB_driver
 {
-    public $ar_select				= array();
-    public $ar_distinct			= false;
-    public $ar_from				= array();
-    public $ar_join				= array();
-    public $ar_where				= array();
-    public $ar_like				= array();
-    public $ar_groupby				= array();
-    public $ar_having				= array();
-    public $ar_keys				= array();
-    public $ar_limit				= false;
-    public $ar_offset				= false;
-    public $ar_order				= false;
-    public $ar_orderby				= array();
-    public $ar_set					= array();
-    public $ar_wherein				= array();
-    public $ar_aliased_tables		= array();
-    public $ar_store_array			= array();
+    public $ar_select = array();
+    public $ar_distinct = false;
+    public $ar_from = array();
+    public $ar_join = array();
+    public $ar_where = array();
+    public $ar_like = array();
+    public $ar_groupby = array();
+    public $ar_having = array();
+    public $ar_keys = array();
+    public $ar_limit = false;
+    public $ar_offset = false;
+    public $ar_order = false;
+    public $ar_orderby = array();
+    public $ar_set = array();
+    public $ar_wherein = array();
+    public $ar_aliased_tables = array();
+    public $ar_store_array = array();
 
-    protected $ar_group_count 	= 0;
-    protected $ar_empty_group	= true;
+    protected $ar_group_count = 0;
+    protected $ar_empty_group = true;
 
-    protected $ar_like_group_count 	= 0;
-    protected $ar_empty_like_group	= true;
+    protected $ar_like_group_count = 0;
+    protected $ar_empty_like_group = true;
 
     // Active Record Caching variables
-    public $ar_caching				= false;
-    public $ar_cache_exists		= array();
-    public $ar_cache_select		= array();
-    public $ar_cache_from			= array();
-    public $ar_cache_join			= array();
-    public $ar_cache_where			= array();
-    public $ar_cache_like			= array();
-    public $ar_cache_groupby		= array();
-    public $ar_cache_having		= array();
-    public $ar_cache_orderby		= array();
-    public $ar_cache_set			= array();
+    public $ar_caching = false;
+    public $ar_cache_exists = array();
+    public $ar_cache_select = array();
+    public $ar_cache_from = array();
+    public $ar_cache_join = array();
+    public $ar_cache_where = array();
+    public $ar_cache_like = array();
+    public $ar_cache_groupby = array();
+    public $ar_cache_having = array();
+    public $ar_cache_orderby = array();
+    public $ar_cache_set = array();
 
-    public $ar_no_escape 			= array();
-    public $ar_cache_no_escape		= array();
+    public $ar_no_escape = array();
+    public $ar_cache_no_escape = array();
 
     /**
      * Select
@@ -1221,7 +1221,7 @@ class CI_DB_active_record extends CI_DB_driver
             ksort($row); // puts $row in the same order as our keys
 
             if ($escape === false) {
-                $this->ar_set[] =  '(' . implode(',', $row) . ')';
+                $this->ar_set[] = '(' . implode(',', $row) . ')';
             } else {
                 $clean = array();
 
@@ -1229,7 +1229,7 @@ class CI_DB_active_record extends CI_DB_driver
                     $clean[] = $this->escape($value);
                 }
 
-                $this->ar_set[] =  '(' . implode(',', $clean) . ')';
+                $this->ar_set[] = '(' . implode(',', $clean) . ')';
             }
         }
 
@@ -1916,18 +1916,18 @@ class CI_DB_active_record extends CI_DB_driver
     public function flush_cache()
     {
         $this->_reset_run(array(
-            'ar_cache_select'    => array(),
-            'ar_cache_from'      => array(),
-            'ar_cache_join'      => array(),
-            'ar_cache_where'     => array(),
-            'ar_cache_like'      => array(),
-            'ar_cache_groupby'   => array(),
-            'ar_cache_having'    => array(),
-            'ar_cache_orderby'   => array(),
-            'ar_cache_set'       => array(),
-            'ar_cache_exists'    => array(),
+            'ar_cache_select' => array(),
+            'ar_cache_from' => array(),
+            'ar_cache_join' => array(),
+            'ar_cache_where' => array(),
+            'ar_cache_like' => array(),
+            'ar_cache_groupby' => array(),
+            'ar_cache_having' => array(),
+            'ar_cache_orderby' => array(),
+            'ar_cache_set' => array(),
+            'ar_cache_exists' => array(),
             'ar_cache_no_escape' => array(),
-            'ar_empty_group'     => empty($this->ar_where),
+            'ar_empty_group' => empty($this->ar_where),
         ));
     }
 
@@ -1947,8 +1947,8 @@ class CI_DB_active_record extends CI_DB_driver
         }
 
         foreach ($this->ar_cache_exists as $val) {
-            $ar_variable	= 'ar_' . $val;
-            $ar_cache_var	= 'ar_cache_' . $val;
+            $ar_variable = 'ar_' . $val;
+            $ar_cache_var = 'ar_cache_' . $val;
 
             if (count($this->$ar_cache_var) == 0) {
                 continue;
@@ -1991,24 +1991,24 @@ class CI_DB_active_record extends CI_DB_driver
     public function _reset_select()
     {
         $ar_reset_items = array(
-            'ar_select'           => array(),
-            'ar_from'             => array(),
-            'ar_join'             => array(),
-            'ar_where'            => array(),
-            'ar_like'             => array(),
-            'ar_groupby'          => array(),
-            'ar_having'           => array(),
-            'ar_orderby'          => array(),
-            'ar_wherein'          => array(),
-            'ar_aliased_tables'   => array(),
-            'ar_no_escape'        => array(),
-            'ar_distinct'         => false,
-            'ar_limit'            => false,
-            'ar_offset'           => false,
-            'ar_order'            => false,
-            'ar_empty_group'      => empty($this->ar_cache_where),
+            'ar_select' => array(),
+            'ar_from' => array(),
+            'ar_join' => array(),
+            'ar_where' => array(),
+            'ar_like' => array(),
+            'ar_groupby' => array(),
+            'ar_having' => array(),
+            'ar_orderby' => array(),
+            'ar_wherein' => array(),
+            'ar_aliased_tables' => array(),
+            'ar_no_escape' => array(),
+            'ar_distinct' => false,
+            'ar_limit' => false,
+            'ar_offset' => false,
+            'ar_order' => false,
+            'ar_empty_group' => empty($this->ar_cache_where),
             'ar_empty_like_group' => empty($this->ar_cache_like),
-            'ar_group_count'      => 0,
+            'ar_group_count' => 0,
             'ar_like_group_count' => 0
         );
 
@@ -2026,17 +2026,17 @@ class CI_DB_active_record extends CI_DB_driver
     public function _reset_write()
     {
         $ar_reset_items = array(
-            'ar_set'         	  => array(),
-            'ar_from'        	  => array(),
-            'ar_where'       	  => array(),
-            'ar_like'        	  => array(),
-            'ar_orderby'     	  => array(),
-            'ar_keys'        	  => array(),
-            'ar_limit'       	  => false,
-            'ar_order'       	  => false,
-            'ar_empty_group'      => empty($this->ar_cache_where),
+            'ar_set' => array(),
+            'ar_from' => array(),
+            'ar_where' => array(),
+            'ar_like' => array(),
+            'ar_orderby' => array(),
+            'ar_keys' => array(),
+            'ar_limit' => false,
+            'ar_order' => false,
+            'ar_empty_group' => empty($this->ar_cache_where),
             'ar_empty_like_group' => empty($this->ar_cache_like),
-            'ar_group_count'      => 0,
+            'ar_group_count' => 0,
             'ar_like_group_count' => 0
         );
 

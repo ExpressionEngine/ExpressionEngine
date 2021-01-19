@@ -13,7 +13,7 @@
  */
 class Filepicker_upd
 {
-    public $version	= '1.0';
+    public $version = '1.0';
 
     /**
      * Module Installer
@@ -24,9 +24,9 @@ class Filepicker_upd
     public function install()
     {
         $mod_data = array(
-            'module_name'        => 'Filepicker',
-            'module_version'     => $this->version,
-            'has_cp_backend'     => 'y',
+            'module_name' => 'Filepicker',
+            'module_version' => $this->version,
+            'has_cp_backend' => 'y',
             'has_publish_fields' => 'n'
         );
 

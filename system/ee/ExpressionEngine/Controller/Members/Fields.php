@@ -95,10 +95,10 @@ class Fields extends Members\Members
                 ),
                 'type',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -160,7 +160,7 @@ class Fields extends Members\Members
                 array(
                     'name' => 'selection[]',
                     'value' => $field->m_field_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -294,11 +294,11 @@ class Fields extends Members\Members
     private function form($field_id = null)
     {
         $fieldtype_choices = [
-            'date'     => lang('date'),
-            'text'     => lang('text_input'),
+            'date' => lang('date'),
+            'text' => lang('text_input'),
             'textarea' => lang('textarea'),
-            'select'   => lang('select_dropdown'),
-            'url'      => lang('url'),
+            'select' => lang('select_dropdown'),
+            'url' => lang('url'),
         ];
 
         if ($field_id) {

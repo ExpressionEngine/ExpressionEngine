@@ -210,7 +210,7 @@ class Provider extends InjectionBindingDecorator
             }
 
             //do not namespace models that are root
-            if (strpos($element, '\\')===0) {
+            if (strpos($element, '\\') === 0) {
                 return $element;
             }
 
@@ -241,7 +241,7 @@ class Provider extends InjectionBindingDecorator
             foreach ($aliases as $origClassName => $aliasClassName) {
                 if (is_numeric($origClassName)) {
                     $origClassName = $aliasClassName;
-                    if (strpos($aliasClassName, 'ExpressionEngine\Addons')===0) {
+                    if (strpos($aliasClassName, 'ExpressionEngine\Addons') === 0) {
                         $replace_once = 1;
                         $aliasClassName = str_replace('ExpressionEngine\Addons', 'Addons', $aliasClassName, $replace_once);
                     }

@@ -30,7 +30,7 @@ class File_upload_preferences_model extends CI_Model
             // non admins need to first be checked for restrictions
             // we'll add these into a where_in() check below
             $this->db->select('upload_id');
-            $access = $this->db->get_where('upload_prefs_roles', array('role_id'=>$group_id));
+            $access = $this->db->get_where('upload_prefs_roles', array('role_id' => $group_id));
 
             if ($access->num_rows() > 0) {
                 $allowed = array();

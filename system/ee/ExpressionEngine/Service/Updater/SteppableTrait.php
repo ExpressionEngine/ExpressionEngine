@@ -103,8 +103,8 @@ trait SteppableTrait
     protected function parseStepString($string)
     {
         if (preg_match("/(.*?)\[(.*?)\]$/", $string, $match)) {
-            $rule_name	= $match[1];
-            $parameters	= $match[2];
+            $rule_name = $match[1];
+            $parameters = $match[2];
 
             $parameters = explode(',', $parameters);
             $parameters = array_map('trim', $parameters);
@@ -142,8 +142,8 @@ trait SteppableTrait
 
         $index = array_search($this->currentStep, $this->steps);
 
-        if ($index !== false && isset($this->steps[$index+1])) {
-            return $this->steps[$index+1];
+        if ($index !== false && isset($this->steps[$index + 1])) {
+            return $this->steps[$index + 1];
         }
 
         return false;

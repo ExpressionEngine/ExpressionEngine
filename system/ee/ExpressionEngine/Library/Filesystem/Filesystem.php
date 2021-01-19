@@ -567,7 +567,7 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $filename  = $this->dirname($path) . '/' . $this->filename($path);
+        $filename = $this->dirname($path) . '/' . $this->filename($path);
 
         $files = glob($filename . '_*' . $extension);
 

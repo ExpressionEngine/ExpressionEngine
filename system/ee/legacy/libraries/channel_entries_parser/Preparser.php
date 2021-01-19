@@ -75,14 +75,14 @@ class EE_Channel_preparser
         $this->_site_ids = $site_ids;
         $this->_entry_ids = $entry_ids;
 
-        $this->_prefix	= $parser->prefix();
+        $this->_prefix = $parser->prefix();
         $this->_tagdata = $parser->tagdata();
 
-        $this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
-        $this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
+        $this->pairs = $this->_extract_prefixed(ee()->TMPL->var_pair);
+        $this->singles = $this->_extract_prefixed(ee()->TMPL->var_single);
 
         // Get subscriber totals and modified conditionals
-        $this->subscriber_totals	 = $this->_subscriber_totals();
+        $this->subscriber_totals = $this->_subscriber_totals();
         $this->field_names = $this->getFieldNamesInTagdata();
         $this->grid_field_names = $this->getFieldNamesInTagdata('gfields');
         $this->fluid_field_names = $this->getFieldNamesInTagdata('ffields');
@@ -90,17 +90,17 @@ class EE_Channel_preparser
         // Run through component pre_processing steps, skipping any that
         // were specified as being disabled.
 
-        $tagdata  = $this->_tagdata;
-        $components  = $parser->components();
+        $tagdata = $this->_tagdata;
+        $components = $parser->components();
         $disabled = isset($config['disable']) ? $config['disable'] : array();
 
         foreach (array('pair', 'once', 'single') as $fn) {
             foreach ($components->$fn() as $k => $component) {
-                $skip	 = (bool) $component->disabled($disabled, $this);
+                $skip = (bool) $component->disabled($disabled, $this);
                 $obj_key = spl_object_hash($component);
 
                 $var = '_' . $fn . '_data';
-                $this->_disabled[$obj_key]  = $skip;
+                $this->_disabled[$obj_key] = $skip;
                 $this->{$var}[$obj_key] = $skip ? null : $component->pre_process($tagdata, $this);
             }
         }
@@ -284,7 +284,7 @@ class EE_Channel_preparser
         }
 
         $filtered = array();
-        $tagdata  = $this->_tagdata;
+        $tagdata = $this->_tagdata;
         $regex_prefix = '/^' . preg_quote($this->_prefix, '/') . '.*+( |$)/';
 
         foreach (preg_grep($regex_prefix, array_keys($data)) as $key) {

@@ -21,17 +21,17 @@ class Member_subscriptions extends Member
         ee()->load->library('members');
 
         $swap = array(
-            'form_declaration'	=> ee()->functions->form_declaration(
+            'form_declaration' => ee()->functions->form_declaration(
                 array('action' => $this->_member_path('update_subscriptions'))
             )
         );
 
         // Set some base values
-        $result_data	= array();
-        $pageurl		= $this->_member_path('edit_subscriptions');
-        $perpage		= 50;
-        $page_links		= '';
-        $total_count	= 0;
+        $result_data = array();
+        $pageurl = $this->_member_path('edit_subscriptions');
+        $perpage = 50;
+        $page_links = '';
+        $total_count = 0;
 
         $temp = $this->_var_swap(
             $this->_load_element('subscription_pagination'),
@@ -58,7 +58,7 @@ class Member_subscriptions extends Member
         $total_rows = count($result_data);
 
         if ($total_rows == 0) {
-            $swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> lang('no_subscriptions')));
+            $swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions' => lang('no_subscriptions')));
 
             return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
         }
@@ -70,9 +70,9 @@ class Member_subscriptions extends Member
         $out = $this->_var_swap(
             $this->_load_element('subscription_result_heading'),
             array(
-                'lang:title'		=> lang('title'),
-                'lang:type'			=> lang('type'),
-                'lang:unsubscribe'	=> lang('unsubscribe')
+                'lang:title' => lang('title'),
+                'lang:type' => lang('type'),
+                'lang:unsubscribe' => lang('unsubscribe')
             )
         );
 
@@ -126,8 +126,8 @@ class Member_subscriptions extends Member
         return $this->_var_swap(
             $this->_load_element('success'),
             array(
-                'lang:heading'		=>	lang('subscriptions'),
-                'lang:message'		=>	lang('subscriptions_removed')
+                'lang:heading' => lang('subscriptions'),
+                'lang:message' => lang('subscriptions_removed')
             )
         );
     }

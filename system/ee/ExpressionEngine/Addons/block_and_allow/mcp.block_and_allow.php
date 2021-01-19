@@ -231,7 +231,7 @@ class Block_and_allow_mcp
 
         $domain .= 'SetEnvIfNoCase Referer "^$" GoodHost' . $this->LB;  // If no referrer, they be safe!
 
-        $host  = 'SetEnvIfNoCase Referer ".*(' . preg_quote($site['host']) . ').*" GoodHost' . $this->LB;
+        $host = 'SetEnvIfNoCase Referer ".*(' . preg_quote($site['host']) . ').*" GoodHost' . $this->LB;
 
         if ($urls != '' || $ips != '') {
             $data .= $this->LB . $this->LB . "##EE Spam Block" . $this->LB

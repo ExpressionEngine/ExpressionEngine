@@ -149,7 +149,7 @@ class FolderList
         return $view->make('_shared/sidebar/folder_list')
             ->render(array(
                 'items' => $items,
-                'name'  => $this->name,
+                'name' => $this->name,
                 'remove_url' => $this->remove_url,
                 'removal_key' => $this->removal_key,
                 'can_reorder' => $this->can_reorder

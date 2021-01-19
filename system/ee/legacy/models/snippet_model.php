@@ -27,12 +27,12 @@ class Snippet_model extends CI_Model
      *
      * @return	Snippet_Entity[]	An array of populated Snippet_Entity objects.
      */
-    public function fetch(array $fields=array())
+    public function fetch(array $fields = array())
     {
         $this->db->select();
         $this->db->from('snippets');
 
-        foreach ($fields as $field=>$value) {
+        foreach ($fields as $field => $value) {
             $this->db->where($field, $value);
         }
 
@@ -114,7 +114,7 @@ class Snippet_Entity
      */
     public function __construct(array $snippets_row = array())
     {
-        foreach ($snippets_row as $property=>$value) {
+        foreach ($snippets_row as $property => $value) {
             if (property_exists($this, $property)) {
                 $this->{$property} = $value;
             }
@@ -128,7 +128,7 @@ class Snippet_Entity
      */
     public function __get($name)
     {
-        if (strpos('_', strval($name)) === 0  or ! property_exists($this, $name)) {
+        if (strpos('_', strval($name)) === 0 or ! property_exists($this, $name)) {
             throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
         }
 

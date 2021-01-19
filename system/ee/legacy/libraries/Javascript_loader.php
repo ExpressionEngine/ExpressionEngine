@@ -35,14 +35,14 @@ class Javascript_loader
     {
         ee()->output->enable_profiler(false);
 
-        $contents	= '';
-        $types		= array(
-            'ui'		=> PATH_JAVASCRIPT . 'jquery/ui/jquery.ui.',
-            'plugin'	=> PATH_JAVASCRIPT . 'jquery/plugins/',
-            'file'		=> PATH_JAVASCRIPT,
-            'package'	=> PATH_THIRD,
-            'fp_module'	=> PATH_ADDONS,
-            'pro_file'	=> PATH_PRO_THEMES . 'js/'
+        $contents = '';
+        $types = array(
+            'ui' => PATH_JAVASCRIPT . 'jquery/ui/jquery.ui.',
+            'plugin' => PATH_JAVASCRIPT . 'jquery/plugins/',
+            'file' => PATH_JAVASCRIPT,
+            'package' => PATH_THIRD,
+            'fp_module' => PATH_ADDONS,
+            'pro_file' => PATH_PRO_THEMES . 'js/'
         );
 
         $mock_name = '';
@@ -120,9 +120,9 @@ class Javascript_loader
             return;
         }
 
-        $max_age		= 5184000;
-        $modified		= ($mtime !== false) ? $mtime : @filemtime($file);
-        $modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
+        $max_age = 5184000;
+        $modified = ($mtime !== false) ? $mtime : @filemtime($file);
+        $modified_since = ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
         // Remove anything after the semicolon
 

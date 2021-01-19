@@ -112,25 +112,25 @@ class Update_notices
         ee()->dbforge->add_field(
             array(
                 'notice_id' => array(
-                    'type'			 => 'int',
-                    'constraint'     => 10,
-                    'null'			 => false,
-                    'unsigned'		 => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'message' => array(
-                    'type'			=> 'text'
+                    'type' => 'text'
                 ),
                 'version' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 20,
-                    'null'			=> false
+                    'type' => 'varchar',
+                    'constraint' => 20,
+                    'null' => false
                 ),
                 'is_header' => array(
-                    'type'			=> 'tinyint',
-                    'constaint'		=> 1,
-                    'null'			=> false,
-                    'default'		=> 0
+                    'type' => 'tinyint',
+                    'constaint' => 1,
+                    'null' => false,
+                    'default' => 0
                 )
             )
         );

@@ -17,8 +17,8 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Stats extends Utilities
 {
-    private $forums_exist	= false;
-    private $sources		= array('members', 'channel_titles', 'sites');
+    private $forums_exist = false;
+    private $sources = array('members', 'channel_titles', 'sites');
 
     /**
      * Constructor
@@ -35,7 +35,7 @@ class Stats extends Utilities
         if (ee()->config->item('forum_is_installed') == "y") {
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Forum'");
 
-            if ($query->row('count')  > 0) {
+            if ($query->row('count') > 0) {
                 $this->forums_exist = true;
                 $this->sources = array_merge($this->sources, array('forums', 'forum_topics'));
             }
@@ -52,10 +52,10 @@ class Stats extends Utilities
             'source',
             'record_count',
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         ));
 
@@ -200,11 +200,11 @@ class Stats extends Utilities
                 // Set the rest to 0 for all of the above
 
                 $data = array(
-                    'total_entries'			=> 0,
-                    'total_comments'		=> 0,
-                    'private_messages'		=> 0,
-                    'total_forum_posts'		=> 0,
-                    'total_forum_topics'	=> 0
+                    'total_entries' => 0,
+                    'total_comments' => 0,
+                    'private_messages' => 0,
+                    'total_forum_posts' => 0,
+                    'total_forum_topics' => 0
                 );
 
                 ee()->db->where_not_in('member_id', array_keys($member_entries));
@@ -235,8 +235,8 @@ class Stats extends Utilities
 
             // Set the rest to 0 for all of the above
             $data = array(
-                'comment_total'			=> 0,
-                'recent_comment_date'	=> 0
+                'comment_total' => 0,
+                'recent_comment_date' => 0
             );
 
             if (count($channel_titles) > 0) {
@@ -300,11 +300,11 @@ class Stats extends Utilities
 									AND forum_id = '{$forum_id}'
 									ORDER BY last_post_date DESC LIMIT 1");
 
-                $data['forum_last_post_id'] 		= ($query->num_rows() == 0) ? 0 : $query->row('topic_id') ;
-                $data['forum_last_post_title'] 		= ($query->num_rows() == 0) ? '' : $query->row('title') ;
-                $data['forum_last_post_date'] 		= ($query->num_rows() == 0) ? 0 : $query->row('topic_date') ;
-                $data['forum_last_post_author_id']	= ($query->num_rows() == 0) ? 0 : $query->row('last_post_author_id') ;
-                $data['forum_last_post_author']		= ($query->num_rows() == 0) ? '' : $query->row('screen_name') ;
+                $data['forum_last_post_id'] = ($query->num_rows() == 0) ? 0 : $query->row('topic_id') ;
+                $data['forum_last_post_title'] = ($query->num_rows() == 0) ? '' : $query->row('title') ;
+                $data['forum_last_post_date'] = ($query->num_rows() == 0) ? 0 : $query->row('topic_date') ;
+                $data['forum_last_post_author_id'] = ($query->num_rows() == 0) ? 0 : $query->row('last_post_author_id') ;
+                $data['forum_last_post_author'] = ($query->num_rows() == 0) ? '' : $query->row('screen_name') ;
 
                 $query = ee()->db->query("SELECT post_date, author_id, screen_name
 									FROM exp_forum_posts, exp_members
@@ -313,10 +313,10 @@ class Stats extends Utilities
 									ORDER BY post_date DESC LIMIT 1");
 
                 if ($query->num_rows() > 0) {
-                    if ($query->row('post_date')  > $data['forum_last_post_date']) {
-                        $data['forum_last_post_date'] 		= $query->row('post_date');
-                        $data['forum_last_post_author_id']	= $query->row('author_id');
-                        $data['forum_last_post_author']		= $query->row('screen_name');
+                    if ($query->row('post_date') > $data['forum_last_post_date']) {
+                        $data['forum_last_post_date'] = $query->row('post_date');
+                        $data['forum_last_post_author_id'] = $query->row('author_id');
+                        $data['forum_last_post_author'] = $query->row('screen_name');
                     }
                 }
 
@@ -329,7 +329,7 @@ class Stats extends Utilities
                 $query = ee()->db->query("SELECT forum_id FROM exp_forums");
 
                 $total_topics = 0;
-                $total_posts  = 0;
+                $total_posts = 0;
 
                 foreach ($query->result_array() as $row) {
                     $q = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '" . $row['forum_id'] . "'");
@@ -347,7 +347,7 @@ class Stats extends Utilities
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
                     $res = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE topic_id = '" . $row['topic_id'] . "'");
-                    $count = ($res->row('count') == 0) ? 1 : $res->row('count')  + 1;
+                    $count = ($res->row('count') == 0) ? 1 : $res->row('count') + 1;
 
                     ee()->db->query("UPDATE exp_forum_topics SET thread_total = '{$count}' WHERE topic_id = '" . $row['topic_id'] . "'");
                 }

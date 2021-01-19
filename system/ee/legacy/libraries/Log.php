@@ -14,17 +14,17 @@
 class EE_Log
 {
     protected $_log_path;
-    protected $_threshold	= 1;
-    protected $_date_fmt	= 'Y-m-d H:i:s';
-    protected $_enabled	= true;
-    protected $_levels	= array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'ALL' => '4');
+    protected $_threshold = 1;
+    protected $_date_fmt = 'Y-m-d H:i:s';
+    protected $_enabled = true;
+    protected $_levels = array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'ALL' => '4');
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $config =& get_config();
+        $config = & get_config();
 
         $this->_log_path = SYSPATH . 'user/logs/';
 
@@ -64,7 +64,7 @@ class EE_Log
         }
 
         $filepath = $this->_log_path . 'log-' . date('Y-m-d') . '.php';
-        $message  = '';
+        $message = '';
 
         if (! file_exists($filepath)) {
             $message .= "<" . "?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?" . ">\n\n";

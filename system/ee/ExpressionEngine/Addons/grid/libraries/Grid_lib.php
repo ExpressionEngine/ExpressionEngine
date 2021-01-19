@@ -712,17 +712,17 @@ class Grid_lib
             }
 
             $column_data = array(
-                'field_id'			=> $settings['field_id'],
-                'content_type'		=> $this->content_type,
-                'col_order'			=> $count,
-                'col_type'			=> $column['col_type'],
-                'col_label'			=> $column['col_label'],
-                'col_name'			=> $column['col_name'],
-                'col_instructions'	=> $column['col_instructions'],
-                'col_required'		=> $column['col_required'],
-                'col_search'		=> $column['col_search'],
-                'col_width'			=> str_replace('%', '', $column['col_width']),
-                'col_settings'		=> json_encode($column['col_settings'])
+                'field_id' => $settings['field_id'],
+                'content_type' => $this->content_type,
+                'col_order' => $count,
+                'col_type' => $column['col_type'],
+                'col_label' => $column['col_label'],
+                'col_name' => $column['col_name'],
+                'col_instructions' => $column['col_instructions'],
+                'col_required' => $column['col_required'],
+                'col_search' => $column['col_search'],
+                'col_width' => str_replace('%', '', $column['col_width']),
+                'col_settings' => json_encode($column['col_settings'])
             );
 
             if (isset($columns[$column['col_id']]) && $column['col_search'] != $columns[$column['col_id']]['col_search']) {
@@ -939,8 +939,8 @@ class Grid_lib
         return ee('View')->make('grid:col_tmpl')
             ->render(
                 array(
-                    'field_name'	=> $field_name,
-                    'column'		=> $column
+                    'field_name' => $field_name,
+                    'column' => $column
                 ),
                 true
             );
@@ -1043,9 +1043,9 @@ class Grid_lib
             ->make('grid:col_settings_tmpl')
             ->render(
                 array(
-                    'col_type'		=> $col_type,
-                    'col_settings'	=> (empty($col_settings)) ? [] : $col_settings,
-                    'errors' 		=> $fieldtype_errors
+                    'col_type' => $col_type,
+                    'col_settings' => (empty($col_settings)) ? [] : $col_settings,
+                    'errors' => $fieldtype_errors
                 )
             );
 

@@ -487,7 +487,7 @@ class CI_DB_mysqli_driver extends CI_DB
 
         $sql = "UPDATE " . $table . " SET " . implode(', ', $valstr);
 
-        $sql .= ($where != '' and count($where) >=1) ? " WHERE " . implode(" ", $where) : '';
+        $sql .= ($where != '' and count($where) >= 1) ? " WHERE " . implode(" ", $where) : '';
 
         $sql .= $orderby . $limit;
 
@@ -508,14 +508,14 @@ class CI_DB_mysqli_driver extends CI_DB
     public function _update_batch($table, $values, $index, $where = null)
     {
         $ids = array();
-        $where = ($where != '' and count($where) >=1) ? implode(" ", $where) . ' AND ' : '';
+        $where = ($where != '' and count($where) >= 1) ? implode(" ", $where) . ' AND ' : '';
 
         foreach ($values as $key => $val) {
             $ids[] = $val[$index];
 
             foreach (array_keys($val) as $field) {
                 if ($field != $index) {
-                    $final[$field][] =  'WHEN ' . $index . ' = ' . $val[$index] . ' THEN ' . $val[$field];
+                    $final[$field][] = 'WHEN ' . $index . ' = ' . $val[$index] . ' THEN ' . $val[$field];
                 }
             }
         }

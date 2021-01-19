@@ -53,9 +53,9 @@ class AlertCollection
     public function __construct(EE_Session $session, View $view, EE_Lang $lang)
     {
         $this->alerts = [
-            'inline'   => [],
-            'banner'   => [],
-            'alert'   => []
+            'inline' => [],
+            'banner' => [],
+            'alert' => []
         ];
         $this->session = $session;
         $this->view = $view;

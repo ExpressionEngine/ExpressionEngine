@@ -16,8 +16,8 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
 class Textarea_ft extends EE_Fieldtype
 {
     public $info = array(
-        'name'		=> 'Textarea',
-        'version'	=> '1.0.0'
+        'name' => 'Textarea',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = false;
@@ -145,14 +145,14 @@ class Textarea_ft extends EE_Fieldtype
             }
 
             $vars = array(
-                'name'            => $this->name(),
-                'settings'        => $this->settings,
-                'value'           => $data,
-                'class'           => trim($class),
-                'toolbar'         => $toolbar,
-                'format_options'  => $format_options,
+                'name' => $this->name(),
+                'settings' => $this->settings,
+                'value' => $data,
+                'class' => trim($class),
+                'toolbar' => $toolbar,
+                'format_options' => $format_options,
                 'smileys_enabled' => $smileys_enabled,
-                'smileys'         => $smileys
+                'smileys' => $smileys
             );
 
             if ((isset($this->settings['field_show_file_selector'])
@@ -173,10 +173,10 @@ class Textarea_ft extends EE_Fieldtype
         }
 
         $params = array(
-            'name'     => $this->name(),
-            'value'    => $data,
-            'rows'     => $this->settings['field_ta_rows'],
-            'dir'      => $this->settings['field_text_direction']
+            'name' => $this->name(),
+            'value' => $data,
+            'rows' => $this->settings['field_ta_rows'],
+            'dir' => $this->settings['field_text_direction']
         );
 
         if (isset($this->settings['field_show_formatting_btns']) &&
@@ -203,9 +203,9 @@ class Textarea_ft extends EE_Fieldtype
         return ee()->typography->parse_type(
             $data,
             array(
-                'text_format'	=> $this->get_format(),
-                'html_format'	=> $this->row('channel_html_formatting', 'all'),
-                'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+                'text_format' => $this->get_format(),
+                'html_format' => $this->row('channel_html_formatting', 'all'),
+                'auto_links' => $this->row('channel_auto_link_urls', 'n'),
                 'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
             )
         );
@@ -350,7 +350,7 @@ class Textarea_ft extends EE_Fieldtype
     {
         $defaults = array(
             'field_show_file_selector' => 'n',
-            'db_column_type'       => 'text',
+            'db_column_type' => 'text',
             'field_show_smileys' => 'n',
             'field_show_formatting_btns' => 'n'
         );
@@ -409,8 +409,8 @@ class Textarea_ft extends EE_Fieldtype
 
         $fields = [
             $column . '_id_' . $data[$column . '_id'] => [
-                'type'		=> $field_content_type,
-                'null'		=> true
+                'type' => $field_content_type,
+                'null' => true
             ]
         ];
 
@@ -420,7 +420,7 @@ class Textarea_ft extends EE_Fieldtype
     public function getTableColumnConfig()
     {
         return [
-            'encode'	=> false
+            'encode' => false
         ];
     }
 }

@@ -74,9 +74,9 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
                     $entry = ee()->typography->parse_type(
                         $data['field_id_' . $cfields[$data['site_id']][$item]],
                         array(
-                            'text_format'	=> $data['field_ft_' . $cfields[$data['site_id']][$item]],
-                            'html_format'	=> $data['channel_html_formatting'],
-                            'auto_links'	=> $data['channel_auto_link_urls'],
+                            'text_format' => $data['field_ft_' . $cfields[$data['site_id']][$item]],
+                            'html_format' => $data['channel_html_formatting'],
+                            'auto_links' => $data['channel_auto_link_urls'],
                             'allow_img_url' => $data['channel_allow_img_urls']
                         )
                     );

@@ -68,10 +68,10 @@
 
 <?php
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete-template',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-delete-template',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

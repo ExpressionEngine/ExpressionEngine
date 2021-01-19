@@ -45,10 +45,10 @@ class Stats
                 $query = ee()->db->query($sql);
 
                 $sdata = array(
-                    'total_entries'			=> 0,
-                    'total_comments'		=> 0,
-                    'last_entry_date'		=> 0,
-                    'last_comment_date'		=> 0
+                    'total_entries' => 0,
+                    'total_comments' => 0,
+                    'last_entry_date' => 0,
+                    'last_comment_date' => 0
                 );
 
                 if ($query->num_rows() > 0) {
@@ -81,7 +81,7 @@ class Stats
         $fields = array('total_members', 'total_entries', 'total_forum_topics',
             'total_forum_replies', 'total_forum_posts', 'total_comments',
             'most_visitors', 'total_logged_in', 'total_guests', 'total_anon');
-        $cond	= array();
+        $cond = array();
 
         foreach ($fields as $field) {
             if (isset(ee()->TMPL->var_single[$field])) {

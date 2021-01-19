@@ -1976,7 +1976,7 @@ class JumpMenu extends AbstractJumpMenu
 
         //member quick links
         if (!empty(ee()->session->getMember()->quick_links)) {
-            foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
+            foreach (explode("\n", ee()->session->getMember()->quick_links) as $i => $row) {
                 $x = explode('|', $row);
                 $items[1]['quicklink_' . $i] = array(
                     'icon' => 'fa-link',

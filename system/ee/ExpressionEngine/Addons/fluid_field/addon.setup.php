@@ -3,14 +3,14 @@
 use ExpressionEngine\Addons\FluidField\Service\Tag;
 
 return array(
-    'author'         => 'ExpressionEngine',
-    'author_url'     => 'https://expressionengine.com/',
-    'name'           => 'Fluid',
-    'description'    => 'Fluid Fields',
-    'version'        => '1.0.0',
-    'namespace'      => 'ExpressionEngine\Addons\FluidField',
+    'author' => 'ExpressionEngine',
+    'author_url' => 'https://expressionengine.com/',
+    'name' => 'Fluid',
+    'description' => 'Fluid Fields',
+    'version' => '1.0.0',
+    'namespace' => 'ExpressionEngine\Addons\FluidField',
     'settings_exist' => false,
-    'built_in'       => true,
+    'built_in' => true,
 
     'services' => array(
         'Tag' => function ($ee, $tagdata) {

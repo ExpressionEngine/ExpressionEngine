@@ -25,7 +25,7 @@ class Access extends Profile
         $values = $filters->values();
 
         $this->role_ids = ($values['role']) ?: $this->member->getAllRoles()->pluck('role_id');
-        $this->keyword  = $values['filter_by_keyword'];
+        $this->keyword = $values['filter_by_keyword'];
 
         $data = [];
 
@@ -65,10 +65,10 @@ class Access extends Profile
             ->now();
 
         $vars = [
-            'data'            => $data,
-            'cp_page_title'   => lang('access_overview'),
-            'filters'         => $filters->render(ee('CP/URL')->make($this->base_url, $this->query_string)),
-            'base_url'        => ee('CP/URL')->make($this->base_url, $this->query_string),
+            'data' => $data,
+            'cp_page_title' => lang('access_overview'),
+            'filters' => $filters->render(ee('CP/URL')->make($this->base_url, $this->query_string)),
+            'base_url' => ee('CP/URL')->make($this->base_url, $this->query_string),
         ];
 
         ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
@@ -236,7 +236,7 @@ class Access extends Profile
                 'can_view_profiles',
                 'can_delete_self',
             ],
-            'comments'           => [
+            'comments' => [
                 'can_post_comments',
                 'can_moderate_comments',
                 'can_edit_own_comments',
@@ -244,7 +244,7 @@ class Access extends Profile
                 'can_edit_all_comments',
                 'can_delete_all_comments',
             ],
-            'search'             => [
+            'search' => [
                 'can_search',
             ],
             'personal_messaging' => [
@@ -253,14 +253,14 @@ class Access extends Profile
                 ],
                 'can_send_bulletins',
             ],
-            'control_panel'      => [
+            'control_panel' => [
                 'can_access_cp',
                 'can_access_footer_report_bug',
                 'can_access_footer_new_ticket',
                 'can_access_footer_user_guide',
                 'can_view_homepage_news',
             ],
-            'channel_manager'    => [
+            'channel_manager' => [
                 'can_admin_channels' => [
                     'can_create_channels',
                     'can_edit_channels',
@@ -276,7 +276,7 @@ class Access extends Profile
                     'can_delete_statuses',
                 ],
             ],
-            'file_manager'       => [
+            'file_manager' => [
                 'can_access_files' => [
                     'can_create_upload_directories',
                     'can_edit_upload_directories',
@@ -286,7 +286,7 @@ class Access extends Profile
                     'can_delete_files',
                 ],
             ],
-            'member_manager'     => [
+            'member_manager' => [
                 'can_access_members' => [
                     'can_create_members',
                     'can_edit_members',
@@ -301,7 +301,7 @@ class Access extends Profile
                     'can_delete_roles',
                 ]
             ],
-            'template_manager'   => [
+            'template_manager' => [
                 'can_access_design' => [
                     'can_admin_design',
                     'can_create_template_groups',
@@ -315,11 +315,11 @@ class Access extends Profile
                     'can_delete_template_variables',
                 ],
             ],
-            'add_on_manager'     => [
+            'add_on_manager' => [
                 'can_access_addons',
                 'can_admin_addons',
             ],
-            'utilities'          => [
+            'utilities' => [
                 'can_access_utilities',
                 'can_access_comm' => [
                     'can_email_roles',
@@ -330,10 +330,10 @@ class Access extends Profile
                 'can_access_sql_manager',
                 'can_access_data',
             ],
-            'logs'               => [
+            'logs' => [
                 'can_access_logs',
             ],
-            'settings'           => [
+            'settings' => [
                 'can_access_sys_prefs',
                 'can_access_security_settings',
                 'can_manage_consents',

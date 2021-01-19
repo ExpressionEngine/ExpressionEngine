@@ -195,7 +195,7 @@ class FolderItem extends ListItem
             'edit' => $this->has_edit,
             'remove' => $this->has_remove,
             'edit_url' => $this->edit_url,
-            'modal_name'=> $this->name,
+            'modal_name' => $this->name,
             'confirm' => $this->remove_confirmation,
             'key' => $this->removal_key,
             'value' => $this->removal_key_value,

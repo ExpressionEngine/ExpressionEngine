@@ -52,8 +52,8 @@ class Consent
 
         $form = [
             'action' => ee()->functions->fetch_current_uri(),
-            'id'     => ee()->TMPL->form_id,
-            'class'  => ee()->TMPL->form_class,
+            'id' => ee()->TMPL->form_id,
+            'class' => ee()->TMPL->form_class,
             'hidden_fields' => [
                 'ACT' => ee()->functions->fetch_action_id('Consent', 'submitConsent'),
                 'RET' => ee('Encrypt')->encode(ee()->TMPL->fetch_param('return', ee()->uri->uri_string())),

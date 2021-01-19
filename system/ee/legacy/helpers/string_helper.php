@@ -188,8 +188,8 @@ if (! function_exists('random_string')) {
                     $pool = str_replace(str_split($antipool), '', $pool);
 
                     $str = '';
-                    for ($i=0; $i < $len; $i++) {
-                        $str .= substr($pool, mt_rand(0, strlen($pool) -1), 1);
+                    for ($i = 0; $i < $len; $i++) {
+                        $str .= substr($pool, mt_rand(0, strlen($pool) - 1), 1);
                     }
 
                     return $str;

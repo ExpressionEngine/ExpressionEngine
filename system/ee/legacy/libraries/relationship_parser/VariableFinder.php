@@ -58,7 +58,7 @@ class VariableFinder
     {
         $regex = $this->wrapRegex(LD, RD);
 
-        if (! preg_match_all($regex, $str, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+        if (! preg_match_all($regex, $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
             return array();
         }
 

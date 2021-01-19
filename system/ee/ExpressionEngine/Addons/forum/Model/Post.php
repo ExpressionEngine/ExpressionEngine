@@ -23,25 +23,25 @@ class Post extends Model
     protected static $_table_name = 'forum_posts';
 
     protected static $_typed_columns = array(
-        'topic_id'         => 'int',
-        'forum_id'         => 'int',
-        'board_id'         => 'int',
-        'author_id'        => 'int',
-        'post_date'        => 'timestamp',
-        'post_edit_date'   => 'timestamp',
+        'topic_id' => 'int',
+        'forum_id' => 'int',
+        'board_id' => 'int',
+        'author_id' => 'int',
+        'post_date' => 'timestamp',
+        'post_edit_date' => 'timestamp',
         'post_edit_author' => 'int',
-        'notify'           => 'boolString',
-        'parse_smileys'    => 'boolString',
+        'notify' => 'boolString',
+        'parse_smileys' => 'boolString',
     );
 
     protected static $_relationships = array(
         'Attachments' => array(
-            'type'  => 'hasMany',
+            'type' => 'hasMany',
             'model' => 'Attachment'
         ),
         'Author' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Member',
+            'type' => 'belongsTo',
+            'model' => 'ee:Member',
             'from_key' => 'author_id',
             'inverse' => array(
                 'name' => 'Posts',
@@ -52,10 +52,10 @@ class Post extends Model
             'type' => 'belongsTo'
         ),
         'EditAuthor' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Member',
+            'type' => 'belongsTo',
+            'model' => 'ee:Member',
             'from_key' => 'post_edit_author',
-            'weak'     => true,
+            'weak' => true,
             'inverse' => array(
                 'name' => 'EditedPosts',
                 'type' => 'hasMany'
@@ -65,30 +65,30 @@ class Post extends Model
             'type' => 'belongsTo'
         ),
         'ForumLastPost' => array(
-            'type'     => 'belongsTo',
+            'type' => 'belongsTo',
             'from_key' => 'post_id',
-            'to_key'   => 'forum_last_post_id',
-            'model'    => 'Forum',
+            'to_key' => 'forum_last_post_id',
+            'model' => 'Forum',
         ),
         'Topic' => array(
             'type' => 'belongsTo'
         ),
         'TopicLastPost' => array(
-            'type'     => 'belongsTo',
+            'type' => 'belongsTo',
             'from_key' => 'post_id',
-            'to_key'   => 'last_post_id',
-            'model'    => 'Topic',
+            'to_key' => 'last_post_id',
+            'model' => 'Topic',
         ),
     );
 
     protected static $_validation_rules = array(
-        'topic_id'         => 'boolString',
-        'forum_id'         => 'boolString',
-        'ip_address'       => 'boolString|ipAddress',
-        'body'             => 'boolString',
-        'post_date'        => 'boolString',
-        'notify'           => 'enum[y,n]',
-        'parse_smileys'    => 'enum[y,n]',
+        'topic_id' => 'boolString',
+        'forum_id' => 'boolString',
+        'ip_address' => 'boolString|ipAddress',
+        'body' => 'boolString',
+        'post_date' => 'boolString',
+        'notify' => 'enum[y,n]',
+        'parse_smileys' => 'enum[y,n]',
     );
 
     protected static $_events = array(

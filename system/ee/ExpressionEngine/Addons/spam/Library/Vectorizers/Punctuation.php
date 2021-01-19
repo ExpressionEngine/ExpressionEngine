@@ -30,7 +30,7 @@ class Punctuation implements Vectorizer
 
         $punctuation = preg_match_all('/[!-~]/u', $source, $matches);
 
-        $characters  = ee_mb_strlen($source);
+        $characters = ee_mb_strlen($source);
 
         if ($characters !== 0) {
             $ratio = $punctuation / $characters;

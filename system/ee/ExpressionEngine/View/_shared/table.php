@@ -301,7 +301,7 @@ else: ?>
 	<?php endif ?>
 
 		<tbody>
-			<tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns)+intval($header_sorts))?>">
+			<tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + intval($header_sorts))?>">
 			<?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>

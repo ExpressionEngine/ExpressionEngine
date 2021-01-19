@@ -41,7 +41,7 @@ class Columns extends Filter
         $value = '';
 
         //if we had channel switched and no saved view, make sure to fallback to default
-        if (ee()->input->post('filter_by_channel')!='') {
+        if (ee()->input->post('filter_by_channel') != '') {
             $value = parent::value();
         }
 
@@ -82,8 +82,8 @@ class Columns extends Filter
         }
         $options = array_merge($options, $this->options);
         $filter = array(
-            'label'			=> '<i class=\'fas fa-columns\'></i>',
-            'value'			=> '',
+            'label' => '<i class=\'fas fa-columns\'></i>',
+            'value' => '',
             'available_columns' => $options,
             'selected_columns' => $selected
         );

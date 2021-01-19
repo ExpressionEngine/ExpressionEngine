@@ -325,7 +325,7 @@ class Categories extends AbstractCategoriesController
             /* -------------------------------------*/
 
             ee()->javascript->set_global(array(
-                'publish.foreignChars'   => $foreign_characters,
+                'publish.foreignChars' => $foreign_characters,
                 'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-'
             ));
 

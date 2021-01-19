@@ -20,7 +20,7 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 class GlobalVariable extends FileSyncedModel
 {
     protected static $_primary_key = 'variable_id';
-    protected static $_table_name  = 'global_variables';
+    protected static $_table_name = 'global_variables';
 
     protected static $_hook_id = 'global_variable';
 
@@ -61,7 +61,7 @@ class GlobalVariable extends FileSyncedModel
 
         $path = $this->getFolderPath();
         $file = $this->variable_name;
-        $ext  = '.html';
+        $ext = '.html';
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;

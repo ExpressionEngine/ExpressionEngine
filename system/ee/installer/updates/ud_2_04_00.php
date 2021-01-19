@@ -81,11 +81,11 @@ class Updater
             'file_dimensions',
             array(
                 'site_id' => array(
-                    'type'			=> 'int',
-                    'constraint'	=> 4,
-                    'unsigned'		=> true,
-                    'default'		=> '1',
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'default' => '1',
+                    'null' => false
                 )
             )
         );
@@ -104,12 +104,12 @@ class Updater
             'files',
             array(
                 'credit' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 255
+                    'type' => 'varchar',
+                    'constraint' => 255
                 ),
                 'location' => array(
-                    'type'			=> 'varchar',
-                    'constraint'	=> 255
+                    'type' => 'varchar',
+                    'constraint' => 255
                 )
             )
         );
@@ -146,50 +146,50 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'log_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'auto_increment'	=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
                 ),
                 'timestamp' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true
                 ),
                 'viewed' => array(
-                    'type'				=> 'char',
-                    'constraint'		=> 1,
-                    'default'			=> 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n'
                 ),
                 'description' => array(
-                    'type'				=> 'text',
-                    'null'				=> true
+                    'type' => 'text',
+                    'null' => true
                 ),
                 'function' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 100,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 100,
+                    'null' => true
                 ),
                 'line' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'null'				=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => true
                 ),
                 'file' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 255,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 255,
+                    'null' => true
                 ),
                 'deprecated_since' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 10,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 10,
+                    'null' => true
                 ),
                 'use_instead' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 100,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 100,
+                    'null' => true
                 )
             )
         );
@@ -214,45 +214,45 @@ class Updater
         // for this table so that we can count active remember me's per
         // member per site
         ee()->dbforge->add_field(array(
-            'remember_me_id'	=> array(
-                'type'				=> 'VARCHAR',
-                'constraint'		=> 40,
-                'default'			=> '0'
+            'remember_me_id' => array(
+                'type' => 'VARCHAR',
+                'constraint' => 40,
+                'default' => '0'
             ),
-            'member_id'			=> array(
-                'type'				=> 'INT',
-                'constraint'		=> 10,
-                'default'			=> '0'
+            'member_id' => array(
+                'type' => 'INT',
+                'constraint' => 10,
+                'default' => '0'
             ),
-            'ip_address'		=> array(
-                'type'				=> 'VARCHAR',
-                'constraint'		=> 16,
-                'default'			=> '0'
+            'ip_address' => array(
+                'type' => 'VARCHAR',
+                'constraint' => 16,
+                'default' => '0'
             ),
-            'user_agent'		=> array(
-                'type'				=> 'VARCHAR',
-                'constraint'		=> 120,
-                'default'			=> ''
+            'user_agent' => array(
+                'type' => 'VARCHAR',
+                'constraint' => 120,
+                'default' => ''
             ),
-            'admin_sess'		=> array(
-                'type'				=> 'TINYINT',
-                'constraint'		=> 1,
-                'default'			=> '0'
+            'admin_sess' => array(
+                'type' => 'TINYINT',
+                'constraint' => 1,
+                'default' => '0'
             ),
-            'site_id'			=> array(
-                'type'				=> 'INT',
-                'constraint'		=> 4,
-                'default'			=> '1'
+            'site_id' => array(
+                'type' => 'INT',
+                'constraint' => 4,
+                'default' => '1'
             ),
-            'expiration'		=> array(
-                'type'				=> 'INT',
-                'constraint'		=> 10,
-                'default'			=> '0'
+            'expiration' => array(
+                'type' => 'INT',
+                'constraint' => 10,
+                'default' => '0'
             ),
-            'last_refresh'		=> array(
-                'type'				=> 'INT',
-                'constraint'		=> 10,
-                'default'			=> '0'
+            'last_refresh' => array(
+                'type' => 'INT',
+                'constraint' => 10,
+                'default' => '0'
             )
         ));
 

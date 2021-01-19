@@ -477,7 +477,7 @@ $lang = array(
 
     'delete_group' => 'Delete Group',
 
-    'group'=> 'Group',
+    'group' => 'Group',
 
     'group_name' => 'Group Name',
 

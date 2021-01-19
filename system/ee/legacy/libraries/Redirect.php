@@ -64,7 +64,7 @@ if (substr($_GET['URL'], 0, 1) != '/'
     $str = ee('View')->make('ee:errors/redirect')->render([
         'cp_page_title' => 'Redirect',
         'host' => $url_host,
-        'url'  => htmlspecialchars($url, ENT_COMPAT, 'UTF-8'),
+        'url' => htmlspecialchars($url, ENT_COMPAT, 'UTF-8'),
         'link' => $link,
         'branded' => false,
     ]);

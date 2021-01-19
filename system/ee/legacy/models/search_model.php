@@ -473,7 +473,7 @@ class Search_model extends CI_Model
             $this->db->select('field_id');
             $this->db->where_in('group_id', $fql);
 
-            $query =  $this->db->get('channel_fields');
+            $query = $this->db->get('channel_fields');
 
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {

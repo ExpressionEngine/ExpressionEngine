@@ -52,32 +52,32 @@ class Consent extends Variables
         }
 
         ee()->typography->initialize([
-            'parse_images'		=> true,
-            'allow_headings'	=> true,
-            'word_censor'		=> bool_config_item('comment_word_censoring'),
+            'parse_images' => true,
+            'allow_headings' => true,
+            'word_censor' => bool_config_item('comment_word_censoring'),
         ]);
 
         $typography_prefs = [
-            'text_format'	=> $this->consent['request_format'],
-            'html_format'	=> 'all',
-            'auto_links'	=> false,
+            'text_format' => $this->consent['request_format'],
+            'html_format' => 'all',
+            'auto_links' => false,
             'allow_img_url' => false,
         ];
 
         $this->variables = [
-            'consent_creation_date'    => $this->date($this->consent['create_date']),
-            'consent_double_opt_in'    => $this->consent['double_opt_in'],
-            'consent_expiration_date'  => $this->consent['expiration_date'],
-            'consent_given_via'        => $this->consent['consent_given_via'],
-            'consent_granted'          => $this->consent['has_granted'],
-            'consent_id'               => $this->consent['consent_request_id'],
-            'consent_request'          => $this->typography($this->consent['request'], $typography_prefs),
-            'consent_response_date'    => $this->consent['response_date'],
+            'consent_creation_date' => $this->date($this->consent['create_date']),
+            'consent_double_opt_in' => $this->consent['double_opt_in'],
+            'consent_expiration_date' => $this->consent['expiration_date'],
+            'consent_given_via' => $this->consent['consent_given_via'],
+            'consent_granted' => $this->consent['has_granted'],
+            'consent_id' => $this->consent['consent_request_id'],
+            'consent_request' => $this->typography($this->consent['request'], $typography_prefs),
+            'consent_response_date' => $this->consent['response_date'],
             'consent_retention_period' => $this->consent['retention_period'],
-            'consent_short_name'       => $this->consent['consent_name'],
-            'consent_title'            => $this->consent['title'],
-            'consent_user_created'     => $this->consent['user_created'],
-            'consent_version_id'       => $this->consent['consent_request_version_id'],
+            'consent_short_name' => $this->consent['consent_name'],
+            'consent_title' => $this->consent['title'],
+            'consent_user_created' => $this->consent['user_created'],
+            'consent_version_id' => $this->consent['consent_request_version_id'],
         ];
 
         $this->addActionUrls();

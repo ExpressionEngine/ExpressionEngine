@@ -17,8 +17,8 @@ class Markdown
 
     public function __construct($tagdata = '')
     {
-        $tagdata       = (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
-        $smartypants   = ee()->TMPL->fetch_param('smartypants', 'yes');
+        $tagdata = (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
+        $smartypants = ee()->TMPL->fetch_param('smartypants', 'yes');
         $convert_curly = ee()->TMPL->fetch_param('convert_curly', 'yes');
 
         ee()->load->library('typography');

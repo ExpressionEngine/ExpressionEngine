@@ -314,11 +314,11 @@ class Fluid_field_parser
                 $fluid_field_name . ':count' => $i + 1,
                 $fluid_field_name . ':index' => $i,
                 $fluid_field_name . ':current_field_name' => $field_name,
-                $fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_name : null,
-                $fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_name : null,
+                $fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_name : null,
+                $fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_name : null,
                 $fluid_field_name . ':current_fieldtype' => $fluid_field_data[$i]->ChannelField->field_type,
-                $fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_type : null,
-                $fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : null,
+                $fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_type : null,
+                $fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_type : null,
             ];
 
             // a couple aliases to cover some additionally intuitive names

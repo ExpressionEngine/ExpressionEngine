@@ -43,30 +43,30 @@ class Members
 
         switch ($type) {
             case 'avatar':
-                                $edit_image		= 'edit_avatar';
-                                $enable_pref	= '';
-                                $not_enabled	= '';
-                                $remove			= 'remove_avatar';
-                                $removed		= 'avatar_removed';
-                                $updated		= 'avatar_updated';
+                                $edit_image = 'edit_avatar';
+                                $enable_pref = '';
+                                $not_enabled = '';
+                                $remove = 'remove_avatar';
+                                $removed = 'avatar_removed';
+                                $updated = 'avatar_updated';
 
                 break;
             case 'photo':
-                                $edit_image		= 'edit_photo';
-                                $enable_pref	= 'enable_photos';
-                                $not_enabled	= 'photos_not_enabled';
-                                $remove			= 'remove_photo';
-                                $removed		= 'photo_removed';
-                                $updated		= 'photo_updated';
+                                $edit_image = 'edit_photo';
+                                $enable_pref = 'enable_photos';
+                                $not_enabled = 'photos_not_enabled';
+                                $remove = 'remove_photo';
+                                $removed = 'photo_removed';
+                                $updated = 'photo_updated';
 
                 break;
             case 'sig_img':
-                                $edit_image		= 'edit_signature';
-                                $enable_pref	= 'sig_allow_img_upload';
-                                $not_enabled	= 'sig_img_not_enabled';
-                                $remove			= 'remove_sig_image';
-                                $removed		= 'sig_img_removed';
-                                $updated		= 'signature_updated';
+                                $edit_image = 'edit_signature';
+                                $enable_pref = 'sig_allow_img_upload';
+                                $not_enabled = 'sig_img_not_enabled';
+                                $remove = 'remove_sig_image';
+                                $removed = 'sig_img_removed';
+                                $updated = 'signature_updated';
 
                 break;
         }
@@ -134,8 +134,8 @@ class Members
                 return array('var_swap',
                     array('success',
                         array(
-                            'lang:heading'	=>	lang($remove),
-                            'lang:message'	=>	lang($removed)
+                            'lang:heading' => lang($remove),
+                            'lang:message' => lang($removed)
                         )
                     )
                 );
@@ -183,9 +183,9 @@ class Members
             ee()->output->show_user_error(
                 'submission',
                 sprintf(
-                                                lang('image_max_size_exceeded'),
-                                                $max_size
-                                            )
+                    lang('image_max_size_exceeded'),
+                    $max_size
+                )
             );
         }
 
@@ -211,17 +211,17 @@ class Members
         $filename = $_FILES['userfile']['name'];
 
         if ($type == 'avatar') {
-            $max_width	= (ee()->config->item('avatar_max_width') == '' or ee()->config->item('avatar_max_width') == 0) ? 100 : ee()->config->item('avatar_max_width');
+            $max_width = (ee()->config->item('avatar_max_width') == '' or ee()->config->item('avatar_max_width') == 0) ? 100 : ee()->config->item('avatar_max_width');
             $max_height = (ee()->config->item('avatar_max_height') == '' or ee()->config->item('avatar_max_height') == 0) ? 100 : ee()->config->item('avatar_max_height');
-            $max_kb		= (ee()->config->item('avatar_max_kb') == '' or ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
+            $max_kb = (ee()->config->item('avatar_max_kb') == '' or ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
         } elseif ($type == 'photo') {
-            $max_width	= (ee()->config->item('photo_max_width') == '' or ee()->config->item('photo_max_width') == 0) ? 100 : ee()->config->item('photo_max_width');
+            $max_width = (ee()->config->item('photo_max_width') == '' or ee()->config->item('photo_max_width') == 0) ? 100 : ee()->config->item('photo_max_width');
             $max_height = (ee()->config->item('photo_max_height') == '' or ee()->config->item('photo_max_height') == 0) ? 100 : ee()->config->item('photo_max_height');
-            $max_kb		= (ee()->config->item('photo_max_kb') == '' or ee()->config->item('photo_max_kb') == 0) ? 50 : ee()->config->item('photo_max_kb');
+            $max_kb = (ee()->config->item('photo_max_kb') == '' or ee()->config->item('photo_max_kb') == 0) ? 50 : ee()->config->item('photo_max_kb');
         } else {
-            $max_width	= (ee()->config->item('sig_img_max_width') == '' or ee()->config->item('sig_img_max_width') == 0) ? 100 : ee()->config->item('sig_img_max_width');
+            $max_width = (ee()->config->item('sig_img_max_width') == '' or ee()->config->item('sig_img_max_width') == 0) ? 100 : ee()->config->item('sig_img_max_width');
             $max_height = (ee()->config->item('sig_img_max_height') == '' or ee()->config->item('sig_img_max_height') == 0) ? 100 : ee()->config->item('sig_img_max_height');
-            $max_kb		= (ee()->config->item('sig_img_max_kb') == '' or ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
+            $max_kb = (ee()->config->item('sig_img_max_kb') == '' or ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
         }
 
         // Does the image have a file extension?
@@ -260,7 +260,7 @@ class Members
 
             if (strpos($old_filename, '/') !== false) {
                 $x = explode('/', $old_filename);
-                $old_filename =	 end($x);
+                $old_filename = end($x);
             }
         } elseif ($type == 'photo') {
             $old_filename = $member->photo_filename;
@@ -272,9 +272,9 @@ class Members
         $config['file_name'] = $new_filename;
         $config['upload_path'] = $upload_path;
         $config['is_image'] = true;
-        $config['max_size']	= $max_kb;
-        $config['max_width']  = $max_width;
-        $config['max_height']  = $max_height;
+        $config['max_size'] = $max_kb;
+        $config['max_width'] = $max_width;
+        $config['max_height'] = $max_height;
         $config['overwrite'] = true;
 
         if (ee()->config->item('xss_clean_uploads') == 'n') {
@@ -302,7 +302,7 @@ class Members
         @chmod($file_info['full_path'], FILE_WRITE_MODE);
 
         // Do we need to resize?
-        $width	= $file_info['image_width'];
+        $width = $file_info['image_width'];
         $height = $file_info['image_height'];
 
         // Delete the old file if necessary
@@ -314,21 +314,21 @@ class Members
         if ($type == 'avatar') {
             $avatar = $new_filename;
             $data = array(
-                'avatar_filename' 	=> $avatar,
-                'avatar_width' 		=> $width,
-                'avatar_height' 	=> $height
+                'avatar_filename' => $avatar,
+                'avatar_width' => $width,
+                'avatar_height' => $height
             );
         } elseif ($type == 'photo') {
             $data = array(
-                'photo_filename' 	=> $new_filename,
-                'photo_width' 		=> $width,
-                'photo_height'		=> $height
+                'photo_filename' => $new_filename,
+                'photo_width' => $width,
+                'photo_height' => $height
             );
         } else {
             $data = array(
-                'sig_img_filename' 	=> $new_filename,
-                'sig_img_width' 	=> $width,
-                'sig_img_height' 	=> $height
+                'sig_img_filename' => $new_filename,
+                'sig_img_width' => $width,
+                'sig_img_height' => $height
             );
         }
 
@@ -352,24 +352,24 @@ class Members
         ee()->load->library('image_lib');
 
         if ($type == 'avatar') {
-            $max_width	= ($this->config->item('avatar_max_width') == '' or $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
+            $max_width = ($this->config->item('avatar_max_width') == '' or $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
             $max_height = ($this->config->item('avatar_max_height') == '' or $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
             $image_path = $this->config->slash_item('avatar_path');
         } else {
-            $max_width	= ($this->config->item('photo_max_width') == '' or $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
+            $max_width = ($this->config->item('photo_max_width') == '' or $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
             $max_height = ($this->config->item('photo_max_height') == '' or $this->config->item('photo_max_height') == 0) ? 100 : $this->config->item('photo_max_height');
             $image_path = $this->config->slash_item('photo_path');
         }
 
         $config = array(
-            'image_library'		=> $this->config->item('image_resize_protocol'),
-            'libpath'			=> $this->config->item('image_library_path'),
-            'maintain_ratio'	=> true,
-            'master_dim'		=> $axis,
-            'source_image'		=> $image_path . $filename,
-            'quality'			=> 75,
-            'width'				=> $max_width,
-            'height'			=> $max_height
+            'image_library' => $this->config->item('image_resize_protocol'),
+            'libpath' => $this->config->item('image_library_path'),
+            'maintain_ratio' => true,
+            'master_dim' => $axis,
+            'source_image' => $image_path . $filename,
+            'quality' => 75,
+            'width' => $max_width,
+            'height' => $max_height
         );
 
         ee()->image_lib->clear();
@@ -393,11 +393,11 @@ class Members
         ee()->load->helper('url');
 
         // Set some base values
-        $channel_subscriptions	= false;
-        $forum_subscriptions	= false;
-        $result_ids				= array();
-        $total_count			= 0;
-        $qm						= (ee()->config->item('force_query_string') == 'y') ? '' : '?';
+        $channel_subscriptions = false;
+        $forum_subscriptions = false;
+        $result_ids = array();
+        $total_count = 0;
+        $qm = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
 
         if (ee()->db->table_exists('exp_comment_subscriptions')) {
             // Fetch Comment Subscriptions
@@ -466,7 +466,7 @@ class Members
             $channel_keys = array();
 
             foreach ($result_ids as $key => $val) {
-                if (substr($key, strlen($key)-1) == 'b') {
+                if (substr($key, strlen($key) - 1) == 'b') {
                     $idx .= $val . ",";
                     $channel_keys[$val] = $key;
                 }
@@ -489,8 +489,8 @@ class Members
                             'active_date' => $row['recent_comment_date'],
                             'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
                             'path' => ee()->functions->fetch_site_index() . $qm . 'URL=' . $path,
-                            'id'	=> 'b' . $row['entry_id'],
-                            'type'	=> lang('comment')
+                            'id' => 'b' . $row['entry_id'],
+                            'type' => lang('comment')
                         );
                     }
                 }
@@ -507,7 +507,7 @@ class Members
             $forum_keys = array();
 
             foreach ($result_ids as $key => $val) {
-                if (substr($key, strlen($key)-1) == 'f') {
+                if (substr($key, strlen($key) - 1) == 'f') {
                     $idx .= $val . ",";
                     $forum_keys[$val] = $key;
                 }
@@ -529,8 +529,8 @@ class Members
                             'active_date' => $row['last_post_date'],
                             'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
                             'path' => ee()->functions->fetch_site_index() . $qm . 'URL=' . $path,
-                            'id'	=> 'f' . $row['topic_id'],
-                            'type'	=> lang('forum_post')
+                            'id' => 'f' . $row['topic_id'],
+                            'type' => lang('forum_post')
                         );
                     }
                 }

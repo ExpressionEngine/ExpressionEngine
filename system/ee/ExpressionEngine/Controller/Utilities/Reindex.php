@@ -16,10 +16,10 @@ use ExpressionEngine\Service\Model\Collection;
  */
 class Reindex extends Utilities
 {
-    public const CACHE_KEY  = '/search/reindex';
+    public const CACHE_KEY = '/search/reindex';
 
-    protected $field_ids  = [];
-    protected $entry_ids  = [];
+    protected $field_ids = [];
+    protected $entry_ids = [];
     protected $reindexing = false;
 
     public function __construct()
@@ -38,8 +38,8 @@ class Reindex extends Utilities
             ];
             $this->cache();
         } else {
-            $this->field_ids  = $data['field_ids'];
-            $this->entry_ids  = $data['entry_ids'];
+            $this->field_ids = $data['field_ids'];
+            $this->entry_ids = $data['entry_ids'];
             $this->reindexing = $data['reindexing'];
         }
     }
@@ -125,8 +125,8 @@ class Reindex extends Utilities
     protected function cache()
     {
         $data = [
-            'field_ids'  => $this->field_ids,
-            'entry_ids'  => $this->entry_ids,
+            'field_ids' => $this->field_ids,
+            'entry_ids' => $this->entry_ids,
             'reindexing' => $this->reindexing
         ];
 
@@ -151,14 +151,14 @@ class Reindex extends Utilities
 
         ee()->javascript->set_global([
             'reindex' => [
-                'endpoint'              => ee('CP/URL')->make('utilities/reindex/process')->compile(),
-                'entries'               => [
+                'endpoint' => ee('CP/URL')->make('utilities/reindex/process')->compile(),
+                'entries' => [
                     'all' => count($this->entry_ids['all']),
                     'one' => count($this->entry_ids[$site_id])
                 ],
-                'search_desc'           => lang('search_reindex_desc'),
-                'base_url'              => ee('CP/URL')->make('utilities/reindex')->compile(),
-                'ajax_fail_banner'      => ee('CP/Alert')->makeInline('search-reindex-fail')
+                'search_desc' => lang('search_reindex_desc'),
+                'base_url' => ee('CP/URL')->make('utilities/reindex')->compile(),
+                'ajax_fail_banner' => ee('CP/Alert')->makeInline('search-reindex-fail')
                     ->asIssue()
                     ->withTitle(lang('search_reindex_fail'))
                     ->addToBody('%body%')
@@ -167,18 +167,18 @@ class Reindex extends Utilities
         ]);
 
         $vars = [
-            'base_url'              => ee('CP/URL')->make('utilities/reindex/process')->compile(),
-            'hide_top_buttons'      => true,
-            'save_btn_text'         => 'btn_reindex',
+            'base_url' => ee('CP/URL')->make('utilities/reindex/process')->compile(),
+            'hide_top_buttons' => true,
+            'save_btn_text' => 'btn_reindex',
             'save_btn_text_working' => 'btn_reindex_working',
-            'sections'              => [
+            'sections' => [
                 [
                     [
-                        'title'  => 'search_reindex',
-                        'desc'   => sprintf(lang('search_reindex_desc'), number_format(count($this->entry_ids['all']))),
+                        'title' => 'search_reindex',
+                        'desc' => sprintf(lang('search_reindex_desc'), number_format(count($this->entry_ids['all']))),
                         'fields' => [
                             'progress' => [
-                                'type'    => 'html',
+                                'type' => 'html',
                                 'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
                             ]
                         ]
@@ -189,11 +189,11 @@ class Reindex extends Utilities
 
         if (ee('Model')->get('Site')->count() > 1) {
             $vars['sections'][0][] = [
-                'title'  => 'all_sites',
-                'desc'   => 'all_sites_desc',
+                'title' => 'all_sites',
+                'desc' => 'all_sites_desc',
                 'fields' => [
                     'all_sites' => [
-                        'type'  => 'toggle',
+                        'type' => 'toggle',
                         'value' => 1
                     ]
                 ]

@@ -434,9 +434,9 @@ class Grid_parser
                     $entry_id,
                     $row['row_id'],
                     array(
-                        'modifier'      => $modifier,
+                        'modifier' => $modifier,
                         'full_modifier' => $modifier,
-                        'params'        => $params,
+                        'params' => $params,
                     ),
                     $channel_row,
                     $content,
@@ -574,10 +574,10 @@ class Grid_parser
         // normal field settings
         $fieldtype->_init(
             array(
-                'field_id'		=> $column['col_id'],
-                'field_name'	=> 'col_id_' . $column['col_id'],
-                'content_id'	=> $entry_id,
-                'content_type'	=> 'grid',
+                'field_id' => $column['col_id'],
+                'field_name' => 'col_id_' . $column['col_id'],
+                'content_id' => $entry_id,
+                'content_type' => 'grid',
             )
         );
 
@@ -586,17 +586,17 @@ class Grid_parser
         $fieldtype->settings = array_merge(
             (isset($column['col_settings'])) ? $column['col_settings'] : array(),
             array(
-                'field_label'		=> $column['col_label'],
-                'field_required'	=> $column['col_required'],
-                'col_id'			=> $column['col_id'],
-                'col_name'			=> $column['col_name'],
-                'col_required'		=> $column['col_required'],
-                'entry_id'			=> $entry_id,
-                'grid_field_id'		=> $field_id,
-                'grid_row_name'		=> $row_name,
-                'grid_content_type'	=> $content_type,
-                'fluid_field_data_id'     => $fluid_field_data_id,
-                'in_modal_context'  => $in_modal_context
+                'field_label' => $column['col_label'],
+                'field_required' => $column['col_required'],
+                'col_id' => $column['col_id'],
+                'col_name' => $column['col_name'],
+                'col_required' => $column['col_required'],
+                'entry_id' => $entry_id,
+                'grid_field_id' => $field_id,
+                'grid_row_name' => $row_name,
+                'grid_content_type' => $content_type,
+                'fluid_field_data_id' => $fluid_field_data_id,
+                'in_modal_context' => $in_modal_context
             )
         );
 

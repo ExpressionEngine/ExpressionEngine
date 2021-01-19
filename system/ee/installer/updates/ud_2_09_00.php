@@ -68,10 +68,10 @@ class Updater
             'template_routes',
             array(
                 'order' => array(
-                    'type'			=> 'int',
-                    'constraint'    => 10,
-                    'unsigned'		=> true,
-                    'null'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => true
                 )
             )
         );
@@ -129,10 +129,10 @@ class Updater
             'templates',
             array(
                 'protect_javascript' => array(
-                    'type'			=> 'char',
-                    'constraint'    => 1,
-                    'null'			=> false,
-                    'default'		=> 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'null' => false,
+                    'default' => 'n'
                 )
             )
         );

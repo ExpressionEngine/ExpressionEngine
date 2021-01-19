@@ -126,8 +126,8 @@ class Roles extends Profile
                     'desc' => 'existing_password_exp',
                     'fields' => array(
                         'password_confirm' => array(
-                            'type'      => 'password',
-                            'required'  => true,
+                            'type' => 'password',
+                            'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
                         )
                     )

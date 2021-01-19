@@ -56,10 +56,10 @@ class Updater
                 $table,
                 array(
                     $column => array(
-                        'name' 			=> $column,
-                        'type' 			=> 'VARCHAR',
-                        'constraint' 	=> 75,
-                        'null' 			=> false
+                        'name' => $column,
+                        'type' => 'VARCHAR',
+                        'constraint' => 75,
+                        'null' => false
                     )
                 )
             );

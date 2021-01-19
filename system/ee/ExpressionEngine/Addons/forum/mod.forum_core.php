@@ -43,38 +43,38 @@ class Forum_Core extends Forum
         // In certain cases we may want different URI function names
         // to share common methods
         $remap = array(
-            'viewpost'            => 'view_post_redirect',
-            'viewreply'           => 'view_post_redirect',
-            'viewcategory'        => 'category_page',
-            'viewforum'           => 'topic_page',
-            'viewthread'          => 'thread_page',
-            'viewannounce'        => 'announcement_page',
-            'newtopic'            => 'new_topic_page',
-            'newreply'            => 'new_reply_page',
-            'edittopic'           => 'edit_topic_page',
-            'editreply'           => 'edit_reply_page',
-            'deletetopic'         => 'delete_post_page',
-            'deletereply'         => 'delete_post_page',
-            'movetopic'           => 'move_topic_page',
-            'movereply'           => 'move_reply_page',
-            'quotetopic'          => 'new_reply_page',
-            'quotereply'          => 'new_reply_page',
-            'reporttopic'         => 'report_page',
-            'reportreply'         => 'report_page',
-            'merge'               => 'merge_page',
-            'split'               => 'split_page',
-            'smileys'             => 'emoticon_page',
-            'search'              => 'advanced_search_page',
-            'member_search'       => 'member_search',
-            'new_topic_search'    => 'new_topic_search',
+            'viewpost' => 'view_post_redirect',
+            'viewreply' => 'view_post_redirect',
+            'viewcategory' => 'category_page',
+            'viewforum' => 'topic_page',
+            'viewthread' => 'thread_page',
+            'viewannounce' => 'announcement_page',
+            'newtopic' => 'new_topic_page',
+            'newreply' => 'new_reply_page',
+            'edittopic' => 'edit_topic_page',
+            'editreply' => 'edit_reply_page',
+            'deletetopic' => 'delete_post_page',
+            'deletereply' => 'delete_post_page',
+            'movetopic' => 'move_topic_page',
+            'movereply' => 'move_reply_page',
+            'quotetopic' => 'new_reply_page',
+            'quotereply' => 'new_reply_page',
+            'reporttopic' => 'report_page',
+            'reportreply' => 'report_page',
+            'merge' => 'merge_page',
+            'split' => 'split_page',
+            'smileys' => 'emoticon_page',
+            'search' => 'advanced_search_page',
+            'member_search' => 'member_search',
+            'new_topic_search' => 'new_topic_search',
             'active_topic_search' => 'active_topic_search',
             'view_pending_topics' => 'view_pending_topics',
-            'search_results'      => 'search_results_page',
-            'search_thread'       => 'search_thread_page',
-            'ban_member'          => 'ban_member_form',
-            'do_ban_member'       => 'do_ban_member',
-            'rss'                 => '_feed_builder',
-            'atom'                => '_feed_builder'
+            'search_results' => 'search_results_page',
+            'search_thread' => 'search_thread_page',
+            'ban_member' => 'ban_member_form',
+            'do_ban_member' => 'do_ban_member',
+            'rss' => '_feed_builder',
+            'atom' => '_feed_builder'
         );
 
         if (isset($remap[$function])) {
@@ -147,10 +147,10 @@ class Forum_Core extends Forum
 
         foreach ($m_query->result_array() as $row) {
             $this->moderators[$row['mod_forum_id']][] = array(
-                'mod_member_id' 	=> $row['mod_member_id'],
-                'mod_member_name'	=> $row['mod_member_name'],
-                'mod_group_id' 		=> $row['mod_group_id'],
-                'mod_group_name' 	=> (isset($groups[$row['mod_group_id']])) ? $groups[$row['mod_group_id']] : ''
+                'mod_member_id' => $row['mod_member_id'],
+                'mod_member_name' => $row['mod_member_name'],
+                'mod_group_id' => $row['mod_group_id'],
+                'mod_group_name' => (isset($groups[$row['mod_group_id']])) ? $groups[$row['mod_group_id']] : ''
             );
         }
     }
@@ -379,7 +379,7 @@ class Forum_Core extends Forum
             $new[$key] = $val;
             $i++;
         }
-        $new[$new_id] = ee()->localize->now+3;
+        $new[$new_id] = ee()->localize->now + 3;
 
         return $new;
     }
@@ -423,7 +423,7 @@ class Forum_Core extends Forum
             $new[$key] = $val;
             $i++;
         }
-        $new[$new_id] = ee()->localize->now+3;
+        $new[$new_id] = ee()->localize->now + 3;
 
         return $new;
     }
@@ -440,13 +440,13 @@ class Forum_Core extends Forum
         }
 
         if (preg_match_all("/\<blockquote\s+(.*?)\>/", $str, $matches)) {
-            for ($i=0, $s = count($matches['0']); $i < $s; ++$i) {
+            for ($i = 0, $s = count($matches['0']); $i < $s; ++$i) {
                 // author, date parameters
                 // We do the str_replace because of the XHTML Typography that converts quotes
                 $tagparams = ee('Variables/Parser')->parseTagParameters(trim(str_replace(array('&#8220;', '&#8221;'), '"', $matches['1'][$i])));
 
-                $author	= (! isset($tagparams['author'])) ? '' : $tagparams['author'];
-                $time	= (! isset($tagparams['date'])) ? '' : $tagparams['date'];
+                $author = (! isset($tagparams['author'])) ? '' : $tagparams['author'];
+                $time = (! isset($tagparams['date'])) ? '' : $tagparams['date'];
 
                 $template = str_replace('{quote_author}', $author, $xtemplate);
 
@@ -598,7 +598,7 @@ class Forum_Core extends Forum
             return false;
         }
 
-        if (count($this->admin_members) > 0  or count($this->admin_groups) > 0) {
+        if (count($this->admin_members) > 0 or count($this->admin_groups) > 0) {
             return true;
         }
 
@@ -615,7 +615,7 @@ class Forum_Core extends Forum
 
         if ($query->num_rows() === 0 and count($this->admin_members) == 0) {
             $this->admin_members = false;
-            $this->admin_groups  = false;
+            $this->admin_groups = false;
 
             return false;
         }
@@ -784,16 +784,16 @@ class Forum_Core extends Forum
     public function _fetch_topic_markers()
     {
         return array(
-            'new'		=> $this->image_url . 'marker_new_topic.gif',
-            'old'		=> $this->image_url . 'marker_old_topic.gif',
-            'hot'		=> $this->image_url . 'marker_hot_topic.gif',
-            'hot_old'	=> $this->image_url . 'marker_hot_old_topic.gif',
-            'moved'		=> $this->image_url . 'marker_moved_topic.gif',
-            'closed'	=> $this->image_url . 'marker_closed_topic.gif',
-            'sticky'	=> $this->image_url . 'marker_sticky_topic.gif',
-            'announce'	=> $this->image_url . 'marker_announcements.gif',
-            'poll_new'	=> $this->image_url . 'marker_new_poll.gif',
-            'poll_old'	=> $this->image_url . 'marker_old_poll.gif'
+            'new' => $this->image_url . 'marker_new_topic.gif',
+            'old' => $this->image_url . 'marker_old_topic.gif',
+            'hot' => $this->image_url . 'marker_hot_topic.gif',
+            'hot_old' => $this->image_url . 'marker_hot_old_topic.gif',
+            'moved' => $this->image_url . 'marker_moved_topic.gif',
+            'closed' => $this->image_url . 'marker_closed_topic.gif',
+            'sticky' => $this->image_url . 'marker_sticky_topic.gif',
+            'announce' => $this->image_url . 'marker_announcements.gif',
+            'poll_new' => $this->image_url . 'marker_new_poll.gif',
+            'poll_old' => $this->image_url . 'marker_old_poll.gif'
         );
     }
 
@@ -846,12 +846,12 @@ class Forum_Core extends Forum
     public function _update_post_stats($forum_id)
     {
         $data = array(
-            'forum_last_post_id' 		=> 0,
-            'forum_last_post_type'		=> 'p',
-            'forum_last_post_title'		=> '',
-            'forum_last_post_date'		=> 0,
-            'forum_last_post_author_id'	=> 0,
-            'forum_last_post_author'	=> ''
+            'forum_last_post_id' => 0,
+            'forum_last_post_type' => 'p',
+            'forum_last_post_title' => '',
+            'forum_last_post_date' => 0,
+            'forum_last_post_author_id' => 0,
+            'forum_last_post_author' => ''
         );
 
         ee()->db->select('COUNT(*) as count');
@@ -872,12 +872,12 @@ class Forum_Core extends Forum
         $query = ee()->db->get();
 
         if ($query->num_rows() > 0) {
-            $data['forum_last_post_id'] 		= $query->row('topic_id');
-            $data['forum_last_post_type'] 		= ($query->row('announcement')  == 'n') ? 'p' : 'a';
-            $data['forum_last_post_title'] 		= $query->row('title');
-            $data['forum_last_post_date'] 		= $query->row('topic_date');
-            $data['forum_last_post_author_id']	= $query->row('last_post_author_id');
-            $data['forum_last_post_author']		= $query->row('screen_name');
+            $data['forum_last_post_id'] = $query->row('topic_id');
+            $data['forum_last_post_type'] = ($query->row('announcement') == 'n') ? 'p' : 'a';
+            $data['forum_last_post_title'] = $query->row('title');
+            $data['forum_last_post_date'] = $query->row('topic_date');
+            $data['forum_last_post_author_id'] = $query->row('last_post_author_id');
+            $data['forum_last_post_author'] = $query->row('screen_name');
         }
 
         ee()->db->select('post_date, author_id, screen_name');
@@ -889,10 +889,10 @@ class Forum_Core extends Forum
         $query = ee()->db->get();
 
         if ($query->num_rows() > 0) {
-            if ($query->row('post_date')  > $data['forum_last_post_date']) {
-                $data['forum_last_post_date'] 		= $query->row('post_date') ;
-                $data['forum_last_post_author_id']	= $query->row('author_id') ;
-                $data['forum_last_post_author']		= $query->row('screen_name') ;
+            if ($query->row('post_date') > $data['forum_last_post_date']) {
+                $data['forum_last_post_date'] = $query->row('post_date') ;
+                $data['forum_last_post_author_id'] = $query->row('author_id') ;
+                $data['forum_last_post_author'] = $query->row('screen_name') ;
             }
         }
 
@@ -915,8 +915,8 @@ class Forum_Core extends Forum
         $total_posts = $query->row('count') ;
 
         $d = array(
-            'total_forum_topics'	=> $total_topics,
-            'total_forum_posts'		=> $total_posts
+            'total_forum_topics' => $total_topics,
+            'total_forum_posts' => $total_posts
         );
         ee()->db->where('member_id', ee()->session->userdata('member_id'));
         ee()->db->update('members', $d);
@@ -928,11 +928,11 @@ class Forum_Core extends Forum
     public function _update_global_stats()
     {
         $total_topics = ee()->db->count_all('forum_topics');
-        $total_posts  = ee()->db->count_all('forum_posts');
+        $total_posts = ee()->db->count_all('forum_posts');
 
         ee()->db->update('stats', array(
-            'total_forum_topics'	=> $total_topics,
-            'total_forum_posts'		=> $total_posts));
+            'total_forum_topics' => $total_topics,
+            'total_forum_posts' => $total_posts));
     }
 
     /**
@@ -945,12 +945,12 @@ class Forum_Core extends Forum
         $query = ee()->db->get_where('forum_posts', array('topic_id' => $topic_id));
 
         $this->thread_post_total = $query->row('count') ;
-        $total = ($query->row('count')  + 1);
+        $total = ($query->row('count') + 1);
 
-        if ($query->row('count')  > 0) {
+        if ($query->row('count') > 0) {
             $d = array(
-                'last_post_date'	=> $query->row('last_post'),
-                'thread_total'		=> $total
+                'last_post_date' => $query->row('last_post'),
+                'thread_total' => $total
             );
 
             ee()->db->where('topic_id', $topic_id);
@@ -971,8 +971,8 @@ class Forum_Core extends Forum
             $query = ee()->db->get('forum_posts');
 
             $d = array(
-                'last_post_author_id'	=> $query->row('author_id'),
-                'last_post_id'			=> $query->row('post_id')
+                'last_post_author_id' => $query->row('author_id'),
+                'last_post_id' => $query->row('post_id')
             );
 
             ee()->db->where('topic_id', $topic_id);
@@ -1144,7 +1144,7 @@ class Forum_Core extends Forum
         // Load the requested theme file
         // What RSS type are they requesting?  Can be "rss" or "atom"
 
-        $type = ee()->uri->segment(2+$this->seg_addition);
+        $type = ee()->uri->segment(2 + $this->seg_addition);
         $template = $this->load_element($type . '_page');
 
         // Separate out the "rows" portion of the feed
@@ -1186,7 +1186,7 @@ class Forum_Core extends Forum
         $template = str_replace(LD . 'forum_name' . RD, $this->fetch_pref('board_label'), $template);
 
         $dates = array(
-            'gmt_date'      => $qry->row('last_post_date'),
+            'gmt_date' => $qry->row('last_post_date'),
             'gmt_edit_date' => $qry->row('topic_edit_date')
         );
         $template = ee()->TMPL->parse_date_variables($template, $dates, false);
@@ -1229,14 +1229,14 @@ class Forum_Core extends Forum
 
             $body = $this->_quote_decode(
                 ee()->typography->parse_type(
-                $row['body'],
-                array(
-                    'text_format'	=> $row['forum_text_formatting'],
-                    'html_format'	=> $row['forum_html_formatting'],
-                    'auto_links'	=> $row['forum_auto_link_urls'],
-                    'allow_img_url' => $row['forum_allow_img_urls']
+                    $row['body'],
+                    array(
+                        'text_format' => $row['forum_text_formatting'],
+                        'html_format' => $row['forum_html_formatting'],
+                        'auto_links' => $row['forum_auto_link_urls'],
+                        'allow_img_url' => $row['forum_allow_img_urls']
+                    )
                 )
-            )
             );
 
             $temp = str_replace('{topic_id}', $row['topic_id'], $temp);
@@ -1314,8 +1314,8 @@ class Forum_Core extends Forum
      */
     public function main_forum_list()
     {
-        $return 		= '';
-        $first_row		= false;
+        $return = '';
+        $first_row = false;
         $enable_cluster = true;
 
         // Fetch the Forums
@@ -1348,8 +1348,8 @@ class Forum_Core extends Forum
         ee()->typography->initialize();
         $enable_cluster = true;
 
-        $not_these	= array();
-        $these		= array();
+        $not_these = array();
+        $these = array();
 
         if (isset(ee()->TMPL) && is_object(ee()->TMPL) && ($forums = ee()->TMPL->fetch_param('forums')) != false) {
             if (substr($forums, 0, 4) == 'not ') {
@@ -1363,7 +1363,7 @@ class Forum_Core extends Forum
             if (count($not_these) > 0 && in_array($row['forum_id'], $not_these)) {
                 continue;
             }
-            if (count($these) > 0 &&  ! in_array($row['forum_id'], $these)) {
+            if (count($these) > 0 && ! in_array($row['forum_id'], $these)) {
                 continue;
             }
 
@@ -1388,7 +1388,7 @@ class Forum_Core extends Forum
             }
 
             // Can the user view the current hidden forum?
-            if ($row['forum_status'] == 'c' and  ! $this->_permission('can_view_hidden', $row['forum_permissions'])) {
+            if ($row['forum_status'] == 'c' and ! $this->_permission('can_view_hidden', $row['forum_permissions'])) {
                 if ($row['forum_is_cat'] == 'y') {
                     $enable_cluster = false;
                 }
@@ -1486,7 +1486,7 @@ class Forum_Core extends Forum
             $num_pages = intval($total_posts / $row['forum_posts_perpage']);
 
             if ($num_pages > 0) {
-                if ($total_posts %  $row['forum_posts_perpage']) {
+                if ($total_posts % $row['forum_posts_perpage']) {
                     $num_pages++;
                 }
             }
@@ -1502,7 +1502,7 @@ class Forum_Core extends Forum
 
         // Since announcements have slightly differen URLs we'll append them if needed
         $viewpath = ($row['forum_last_post_type'] == 'a') ? 'viewannounce/' : 'viewthread/';
-        $ann_id	  = ($row['forum_last_post_type'] == 'a') ? '_' . $row['forum_id'] : '';
+        $ann_id = ($row['forum_last_post_type'] == 'a') ? '_' . $row['forum_id'] : '';
 
         // Build the link
         if ($row['forum_post_order'] != 'd') {
@@ -1525,7 +1525,7 @@ class Forum_Core extends Forum
                 if ($tquery->num_rows() > 0) {
                     foreach ($tquery->result_array() as $trow) {
                         if (! isset($read_topics[$trow['topic_id']]) or $read_topics[$trow['topic_id']] < $trow['last_post_date']) {
-                            $topic_marker =  $markers['new'];
+                            $topic_marker = $markers['new'];
 
                             break;
                         }
@@ -1694,12 +1694,12 @@ class Forum_Core extends Forum
             $temp = $this->var_swap(
                 $template,
                 array(
-                    'topic_marker'			=>	$topic_marker,
-                    'topic_title'			=>	$this->_convert_special_chars($row['title']),
-                    'author'				=>	$row['author'],
-                    'total_views'			=>	$row['thread_views'],
-                    'path:member_profile'	=>	$this->profile_path($row['author_id']),
-                    'path:view_thread'		=>	$this->forum_path('/viewannounce/' . $row['topic_id'] . '_' . $this->current_id . '/')
+                    'topic_marker' => $topic_marker,
+                    'topic_title' => $this->_convert_special_chars($row['title']),
+                    'author' => $row['author'],
+                    'total_views' => $row['thread_views'],
+                    'path:member_profile' => $this->profile_path($row['author_id']),
+                    'path:view_thread' => $this->forum_path('/viewannounce/' . $row['topic_id'] . '_' . $this->current_id . '/')
                 )
             );
 
@@ -1729,12 +1729,12 @@ class Forum_Core extends Forum
             return $this->trigger_error('thread_no_exists');
         }
 
-        $forum_id	= $tquery->row('forum_id') ;
+        $forum_id = $tquery->row('forum_id') ;
 
         $formatting = array(
-            'text_format'	=> $tquery->row('forum_text_formatting'),
-            'html_format'	=> $tquery->row('forum_html_formatting'),
-            'auto_links'	=> $tquery->row('forum_auto_link_urls'),
+            'text_format' => $tquery->row('forum_text_formatting'),
+            'html_format' => $tquery->row('forum_html_formatting'),
+            'auto_links' => $tquery->row('forum_auto_link_urls'),
             'allow_img_url' => $tquery->row('forum_allow_img_urls')
         );
 
@@ -1756,29 +1756,29 @@ class Forum_Core extends Forum
 
         if ($attach_query->num_rows() == 0) {
             $attach_query = false;
-            $attach_base 	= '';
+            $attach_base = '';
         } else {
             $attach_base = ee()->functions->fetch_site_index(0, $this->use_sess_id) . ((ee()->config->item('force_query_string') == 'y') ? '&amp;' : '?') . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'display_attachment') . '&amp;fid=' . $forum_id . '&amp;aid=';
         }
 
         // Update the views
-        $views = ($tquery->row('thread_views')  <= 0) ? 1 : $tquery->row('thread_views')  + 1;
+        $views = ($tquery->row('thread_views') <= 0) ? 1 : $tquery->row('thread_views') + 1;
         ee()->db->query("UPDATE exp_forum_topics SET thread_views = '{$views}' WHERE topic_id = '{$this->current_id}'");
 
         // Parse the template with the topic data
         $str = $this->thread_rows(
             array(
-                'query'			=> $tquery,
-                'rank_query'	=> $rank_query,
-                'mod_query'		=> $mod_query,
-                'attach_query'	=> $attach_query,
-                'attach_base'	=> $attach_base,
-                'formatting'	=> $formatting,
-                'super_admins'	=> $super_admins,
-                'is_topic'		=> true,
-                'topic_id'		=> $tquery->row('post_id'),
-                'topic_status'	=> $tquery->row('status'),
-                'forum_id'      => $tquery->row('forum_id')
+                'query' => $tquery,
+                'rank_query' => $rank_query,
+                'mod_query' => $mod_query,
+                'attach_query' => $attach_query,
+                'attach_base' => $attach_base,
+                'formatting' => $formatting,
+                'super_admins' => $super_admins,
+                'is_topic' => true,
+                'topic_id' => $tquery->row('post_id'),
+                'topic_status' => $tquery->row('status'),
+                'forum_id' => $tquery->row('forum_id')
             ),
             true
         );
@@ -1791,7 +1791,7 @@ class Forum_Core extends Forum
      */
     public function topics()
     {
-        $query_limit	= '';
+        $query_limit = '';
 
         // Fetch Topic order and per-page count
         $query = ee()->db->query("SELECT forum_topic_order, forum_topics_perpage, forum_posts_perpage, forum_hot_topic, forum_enable_rss FROM exp_forums WHERE forum_id = '{$this->current_id}'");
@@ -1817,11 +1817,11 @@ class Forum_Core extends Forum
                 break;
         }
 
-        $hot_topic	= $query->row('forum_hot_topic');
+        $hot_topic = $query->row('forum_hot_topic');
         $topic_limit = $query->row('forum_topics_perpage');
-        $post_limit  = $query->row('forum_posts_perpage');
+        $post_limit = $query->row('forum_posts_perpage');
 
-        if ($query->row('forum_enable_rss')  == 'y') {
+        if ($query->row('forum_enable_rss') == 'y') {
             $this->feeds_enabled = true;
             $this->feed_ids = $this->current_id;
         }
@@ -1873,7 +1873,7 @@ class Forum_Core extends Forum
 							AND (t.forum_id = '{$this->current_id}' OR t.moved_forum_id = '{$this->current_id}')
 							{$query_limit}");
 
-        if ($query->row('count')  == 0) {
+        if ($query->row('count') == 0) {
             $str = str_replace('{include:topic_rows}', $this->load_element('topic_no_results'), $str);
 
             $str = $this->deny_if('paginate', $str, '&nbsp;');
@@ -1890,9 +1890,9 @@ class Forum_Core extends Forum
             return $this->var_swap(
                 $str,
                 array(
-                    'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], true),
-                    'forum_description'	=> $fdata[$this->current_id]['forum_description'],
-                    'path:new_topic' 	=> $this->forum_path('/newtopic/' . $this->current_id . '/')
+                    'forum_name' => $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], true),
+                    'forum_description' => $fdata[$this->current_id]['forum_description'],
+                    'path:new_topic' => $this->forum_path('/newtopic/' . $this->current_id . '/')
                 )
             );
         }
@@ -2051,7 +2051,7 @@ class Forum_Core extends Forum
                 $baselink = $this->forum_path('/viewthread/' . $row['topic_id'] . '/');
 
                 for ($i = 0; $i < $num_pages; $i++) {
-                    if ($i == 3 and $num_pages >=5) {
+                    if ($i == 3 and $num_pages >= 5) {
                         $i = $num_pages - 1;
                         $links .= ' &#8230; ';
                     }
@@ -2094,10 +2094,10 @@ class Forum_Core extends Forum
 
             // Swap the <div> id's for the javascript rollovers
             $this->cur_thread_row++;
-            $alpha = array('1'=>'a','2'=>'b','3'=>'c','4'=>'d','5'=>'e','6'=>'f','7'=>'g','8'=>'h','9'=>'i','10'=>'j','11'=>'k','12'=>'l','13'=>'m','14'=>'n','15'=>'o','16'=>'p','17'=>'q','18'=>'r','19'=>'s','20'=>'t','21'=>'u','22'=>'v','23'=>'w','24'=>'x','25'=>'y','26'=>'z');
+            $alpha = array('1' => 'a','2' => 'b','3' => 'c','4' => 'd','5' => 'e','6' => 'f','7' => 'g','8' => 'h','9' => 'i','10' => 'j','11' => 'k','12' => 'l','13' => 'm','14' => 'n','15' => 'o','16' => 'p','17' => 'q','18' => 'r','19' => 's','20' => 't','21' => 'u','22' => 'v','23' => 'w','24' => 'x','25' => 'y','26' => 'z');
             $letter = '';
 
-            for ($i=1; $i < 10; $i++) {
+            for ($i = 1; $i < 10; $i++) {
                 if ($this->cur_thread_row <= 52) {
                     $letter = 'b';
                 } elseif ($this->cur_thread_row <= 78) {
@@ -2142,19 +2142,19 @@ class Forum_Core extends Forum
             $temp = $this->var_swap(
                 $temp,
                 array(
-                    'topic_marker'			=>	$topic_marker,
-                    'topic_type'			=>  $topic_type,
-                    'topic_class'			=>  $topic_class,
-                    'topic_title'			=>	trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
-                    'author'				=>	$row['author'],
-                    'total_views'			=>	$row['thread_views'],
-                    'total_replies'			=>	$row['thread_total'] - 1,
-                    'reply_author'			=>	$row['last_post_author'],
-                    'path:post_link'		=>  $this->forum_path('/viewreply/' . $row['last_post_id'] . '/'),
-                    'path:member_profile'	=>	$this->profile_path($row['author_id']),
-                    'path:view_thread'		=>	$this->forum_path('/viewthread/' . $row['topic_id'] . '/'),
-                    'path:reply_member_profile'	=> $this->profile_path($row['last_post_author_id']),
-                    'path:ignore'			=>	$this->forum_path("ignore_member/{$row['author_id']}"),
+                    'topic_marker' => $topic_marker,
+                    'topic_type' => $topic_type,
+                    'topic_class' => $topic_class,
+                    'topic_title' => trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
+                    'author' => $row['author'],
+                    'total_views' => $row['thread_views'],
+                    'total_replies' => $row['thread_total'] - 1,
+                    'reply_author' => $row['last_post_author'],
+                    'path:post_link' => $this->forum_path('/viewreply/' . $row['last_post_id'] . '/'),
+                    'path:member_profile' => $this->profile_path($row['author_id']),
+                    'path:view_thread' => $this->forum_path('/viewthread/' . $row['topic_id'] . '/'),
+                    'path:reply_member_profile' => $this->profile_path($row['last_post_author_id']),
+                    'path:ignore' => $this->forum_path("ignore_member/{$row['author_id']}"),
                 )
             );
 
@@ -2193,9 +2193,9 @@ class Forum_Core extends Forum
         $str = $this->var_swap(
             $str,
             array(
-                'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], true),
-                'forum_description'	=> $fdata[$this->current_id]['forum_description'],
-                'path:new_topic' 	=> $this->forum_path('/newtopic/' . $this->current_id . '/')
+                'forum_name' => $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], true),
+                'forum_description' => $fdata[$this->current_id]['forum_description'],
+                'path:new_topic' => $this->forum_path('/newtopic/' . $this->current_id . '/')
             )
         );
 
@@ -2237,28 +2237,28 @@ class Forum_Core extends Forum
      */
     public function threads($is_announcement = false, $thread_review = false, $is_split = false)
     {
-        $posts       = '';
+        $posts = '';
         $query_limit = '';
 
         // Fetch/Set the "topic tracker" cookie
         $read_topics = $this->_fetch_read_topics($this->current_id);
 
         if (ee()->session->userdata('member_id') == 0) {
-            $expire = 60*60*24*365;
+            $expire = 60 * 60 * 24 * 365;
             ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
         } else {
             if ($this->read_topics_exist === false) {
                 $d = array(
-                    'member_id'  => ee()->session->userdata('member_id'),
-                    'board_id'   => $this->fetch_pref('board_id'),
-                    'topics'     => serialize($read_topics),
+                    'member_id' => ee()->session->userdata('member_id'),
+                    'board_id' => $this->fetch_pref('board_id'),
+                    'topics' => serialize($read_topics),
                     'last_visit' => ee()->localize->now
                 );
 
                 ee()->db->insert('forum_read_topics', $d);
             } else {
                 $d = array(
-                    'topics'     => serialize($read_topics),
+                    'topics' => serialize($read_topics),
                     'last_visit' => ee()->localize->now
                 );
 
@@ -2292,13 +2292,13 @@ class Forum_Core extends Forum
             return $this->trigger_error('thread_no_exists');
         }
 
-        if ($tquery->row('forum_enable_rss')  == 'y') {
+        if ($tquery->row('forum_enable_rss') == 'y') {
             $this->feeds_enabled = true;
             $this->feed_ids = $tquery->row('forum_id') ;
         }
 
         // If it's an announcement, they are barking up the wrong tree
-        if ($tquery->row('announcement')  != 'n') {
+        if ($tquery->row('announcement') != 'n') {
             ee()->functions->redirect($this->forum_path('viewannounce/' . $this->current_id . '_' . $tquery->row('forum_id')));
             exit;
         }
@@ -2311,21 +2311,21 @@ class Forum_Core extends Forum
         }
 
         // Assign a few variables
-        $order			= ($tquery->row('forum_post_order') == 'a')
+        $order = ($tquery->row('forum_post_order') == 'a')
             ? 'asc' : 'desc';
-        $forum_id		= $tquery->row('forum_id');
-        $limit 			= ($is_split == false)
+        $forum_id = $tquery->row('forum_id');
+        $limit = ($is_split == false)
             ? $tquery->row('forum_posts_perpage') : 100;
-        $attach_base 	= '';
+        $attach_base = '';
 
         if ($limit == 0 or ! is_numeric($limit)) {
             $limit = 15;
         }
 
         $formatting = array(
-            'text_format'   => $tquery->row('forum_text_formatting'),
-            'html_format'   => $tquery->row('forum_html_formatting'),
-            'auto_links'    => $tquery->row('forum_auto_link_urls'),
+            'text_format' => $tquery->row('forum_text_formatting'),
+            'html_format' => $tquery->row('forum_html_formatting'),
+            'auto_links' => $tquery->row('forum_auto_link_urls'),
             'allow_img_url' => $tquery->row('forum_allow_img_urls')
         );
 
@@ -2419,7 +2419,7 @@ class Forum_Core extends Forum
 
             $str = $this->var_swap($str, array(
                 'split_select_options' => $menu,
-                'title'                => $this->_convert_special_chars($tquery->row('title'))
+                'title' => $this->_convert_special_chars($tquery->row('title'))
             ));
 
             $this->form_actions['forum:do_split']['current_page'] = $this->current_page;
@@ -2451,7 +2451,7 @@ class Forum_Core extends Forum
             } else {
                 $str = $this->allow_if('next_topic', $str);
                 $str = $this->var_swap($str, array(
-                    'next_topic_title'    => trim($this->_convert_special_chars($jquery->row('title'))),
+                    'next_topic_title' => trim($this->_convert_special_chars($jquery->row('title'))),
                     'path:next_topic_url' => $this->forum_path('/viewthread/' . $jquery->row('topic_id') . '/')
                 ));
             }
@@ -2473,7 +2473,7 @@ class Forum_Core extends Forum
             } else {
                 $str = $this->allow_if('previous_topic', $str);
                 $str = $this->var_swap($str, array(
-                    'previous_topic_title'    => trim($this->_convert_special_chars($jquery->row('title'))),
+                    'previous_topic_title' => trim($this->_convert_special_chars($jquery->row('title'))),
                     'path:previous_topic_url' => $this->forum_path('/viewthread/' . $jquery->row('topic_id') . '/')
                 ));
             }
@@ -2523,7 +2523,7 @@ class Forum_Core extends Forum
         // Update the views
         $views = ($tquery->row('thread_views') <= 0)
             ? 1
-            : $tquery->row('thread_views')  + 1;
+            : $tquery->row('thread_views') + 1;
 
         ee()->db->where('topic_id', $this->current_id);
         ee()->db->update('forum_topics', array('thread_views' => $views));
@@ -2555,19 +2555,19 @@ class Forum_Core extends Forum
         // Parse the template with the topic data
         $topic = $this->thread_rows(
             array(
-                'query'        => $tquery,
-                'rank_query'   => $rank_query,
-                'mod_query'    => $mod_query,
+                'query' => $tquery,
+                'rank_query' => $rank_query,
+                'mod_query' => $mod_query,
                 'attach_query' => $attach_query,
-                'attach_base'  => $attach_base,
-                'formatting'   => $formatting,
+                'attach_base' => $attach_base,
+                'formatting' => $formatting,
                 'super_admins' => $super_admins,
-                'is_topic'     => true,
-                'topic_id'     => $tquery->row('post_id'),
+                'is_topic' => true,
+                'topic_id' => $tquery->row('post_id'),
                 'topic_status' => $tquery->row('status'),
-                'is_split'     => $is_split,
-                'forum_id'     => $tquery->row('forum_id'),
-                'poll'         => $poll
+                'is_split' => $is_split,
+                'forum_id' => $tquery->row('forum_id'),
+                'poll' => $poll
             ),
             false,
             $thread_review
@@ -2637,18 +2637,18 @@ class Forum_Core extends Forum
             // arse Posts
             $posts = $this->thread_rows(
                 array(
-                    'query'        => $pquery,
-                    'rank_query'   => $rank_query,
-                    'mod_query'    => $mod_query,
+                    'query' => $pquery,
+                    'rank_query' => $rank_query,
+                    'mod_query' => $mod_query,
                     'attach_query' => $attach_query,
-                    'attach_base'  => $attach_base,
-                    'formatting'   => $formatting,
+                    'attach_base' => $attach_base,
+                    'formatting' => $formatting,
                     'super_admins' => $super_admins,
-                    'is_topic'     => false,
-                    'topic_id'     => $this->current_id,
+                    'is_topic' => false,
+                    'topic_id' => $this->current_id,
                     'topic_status' => $tquery->row('status'),
-                    'is_split'     => $is_split,
-                    'forum_id'     => $tquery->row('forum_id')
+                    'is_split' => $is_split,
+                    'forum_id' => $tquery->row('forum_id')
                 ),
                 false,
                 $thread_review
@@ -2668,12 +2668,12 @@ class Forum_Core extends Forum
             $query = ee()->db->get_where(
                 'forum_subscriptions',
                 array(
-                    'topic_id'  => $this->current_id,
+                    'topic_id' => $this->current_id,
                     'member_id' => ee()->session->userdata('member_id')
                 )
             );
 
-            if ($query->row('count')  == 0) {
+            if ($query->row('count') == 0) {
                 $subscription_text = lang('subscribe_to_thread');
                 $subscription_path = $this->forum_path('/subscribe/' . $this->current_id . '/');
             } else {
@@ -2686,7 +2686,7 @@ class Forum_Core extends Forum
         $meta = $this->_fetch_forum_metadata($forum_id);
         $perms = unserialize(stripslashes($meta[$forum_id]['forum_permissions']));
 
-        if (! $this->_permission('can_post_reply', $perms) or ($tquery->row('status')  == 'c' and ! ee('Permission')->isSuperAdmin()) or ee()->session->userdata('member_id') == 0) {
+        if (! $this->_permission('can_post_reply', $perms) or ($tquery->row('status') == 'c' and ! ee('Permission')->isSuperAdmin()) or ee()->session->userdata('member_id') == 0) {
             $str = $this->deny_if('can_post', $str, '&nbsp;');
         } else {
             $str = $this->allow_if('can_post', $str);
@@ -2750,16 +2750,16 @@ class Forum_Core extends Forum
         $str = ee()->TMPL->parse_date_variables($str, array('topic_date' => $tquery->row('date')));
 
         return $this->var_swap($str, array(
-            'topic_title'                => trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
-            'include:' . $thread           => $thread_rows,
+            'topic_title' => trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
+            'include:' . $thread => $thread_rows,
             'include:thread_review_rows' => $thread_review_rows,
-            'path:new_topic'             => $this->forum_path('/newtopic/' . $this->current_id . '/'),
-            'path:post_reply'            => $this->forum_path('/newreply/' . $this->current_id . '/'),
-            'path:thread_review'         => $this->forum_path('/viewthread/' . $this->current_id . '/'),
-            'path:new_topic'             => $this->forum_path('/newtopic/' . $forum_id . '/'),
-            'lang:subscribe'             => $subscription_text,
-            'path:subscribe'             => $subscription_path,
-            'include:poll'               => $poll
+            'path:new_topic' => $this->forum_path('/newtopic/' . $this->current_id . '/'),
+            'path:post_reply' => $this->forum_path('/newreply/' . $this->current_id . '/'),
+            'path:thread_review' => $this->forum_path('/viewthread/' . $this->current_id . '/'),
+            'path:new_topic' => $this->forum_path('/newtopic/' . $forum_id . '/'),
+            'lang:subscribe' => $subscription_text,
+            'path:subscribe' => $subscription_path,
+            'include:poll' => $poll
         ));
     }
 
@@ -2785,7 +2785,7 @@ class Forum_Core extends Forum
             /**  Has the member already voted?
             /** -------------------------------------*/
             $query = ee()->db->query("SELECT COUNT(*) as count FROM exp_forum_pollvotes WHERE poll_id = '{$poll_id}' AND topic_id = '{$this->current_id}' AND member_id = '" . ee()->session->userdata('member_id') . "'");
-            $has_voted = ($query->row('count')  == 0) ? false : true;
+            $has_voted = ($query->row('count') == 0) ? false : true;
 
             /** -------------------------------------
             /**  Is the user casting a vote?
@@ -2800,9 +2800,9 @@ class Forum_Core extends Forum
                     ee()->db->query("UPDATE exp_forum_polls SET poll_answers = '" . addslashes(serialize($answers)) . "', total_votes = '{$total_votes}' WHERE poll_id = '{$poll_id}'");
 
                     $data = array(
-                        'poll_id'	=> $poll_id,
-                        'topic_id'	=> $this->current_id,
-                        'member_id'	=> ee()->session->userdata('member_id'),
+                        'poll_id' => $poll_id,
+                        'topic_id' => $this->current_id,
+                        'member_id' => ee()->session->userdata('member_id'),
                         'choice_id' => $_POST['vote']
                     );
 
@@ -2827,7 +2827,7 @@ class Forum_Core extends Forum
             $template = $this->load_element('poll_questions');
             $poll_row = $this->load_element('poll_question_rows');
 
-            $rows	= '';
+            $rows = '';
             $checked = false;
 
             foreach ($answers as $key => $val) {
@@ -2870,8 +2870,8 @@ class Forum_Core extends Forum
             $template = $this->var_swap(
                 $template,
                 array(
-                    'poll_question'	=> $this->_convert_special_chars($question),
-                    'form_declaration'	=> $form_declaration,
+                    'poll_question' => $this->_convert_special_chars($question),
+                    'form_declaration' => $form_declaration,
                     'include:poll_question_rows' => $rows
                 )
             );
@@ -2883,7 +2883,7 @@ class Forum_Core extends Forum
             $img_m = trim($this->load_element('poll_graph_middle'));
             $img_r = trim($this->load_element('poll_graph_right'));
 
-            $rows	= '';
+            $rows = '';
             foreach ($answers as $key => $val) {
                 $temp = $poll_row;
 
@@ -2923,7 +2923,7 @@ class Forum_Core extends Forum
             $template = $this->var_swap(
                 $template,
                 array(
-                    'poll_question'	=> $this->_convert_special_chars($question),
+                    'poll_question' => $this->_convert_special_chars($question),
                     'include:poll_answer_rows' => $rows,
                     'total_votes' => $total_votes,
                     'lang:voter_message' => (ee()->session->userdata('member_id') == 0) ? lang('must_be_logged_to_vote') : lang('you_have_voted')
@@ -3000,8 +3000,8 @@ class Forum_Core extends Forum
         ee()->typography->initialize();
 
         // Loop through the result
-        $thread_rows  = '';
-        $rank_title	= '';
+        $thread_rows = '';
+        $rank_title = '';
         $stars = '';
         $post_number = 1;
 
@@ -3052,7 +3052,7 @@ class Forum_Core extends Forum
             }
 
             $consoles = array(
-                'email_console'	=> "onclick=\"window.open('" . $this->profile_path('email_console/' . $row['author_id']) . "', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
+                'email_console' => "onclick=\"window.open('" . $this->profile_path('email_console/' . $row['author_id']) . "', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
             );
 
             foreach ($consoles as $key => $val) {
@@ -3069,8 +3069,8 @@ class Forum_Core extends Forum
                 $i = 1;
                 foreach ($rank_query->result_array() as $rank) {
                     if ($num_stars === null) {
-                        $num_stars	= $rank['rank_stars'];
-                        $rank_title	= $rank['rank_title'];
+                        $num_stars = $rank['rank_stars'];
+                        $rank_title = $rank['rank_title'];
                     }
 
                     if ($rank['rank_min_posts'] >= $total_posts) {
@@ -3078,7 +3078,7 @@ class Forum_Core extends Forum
 
                         break;
                     } else {
-                        $num_stars	= $rank['rank_stars'];
+                        $num_stars = $rank['rank_stars'];
                         $rank_title = $rank['rank_title'];
                     }
 
@@ -3205,30 +3205,30 @@ class Forum_Core extends Forum
             if ($row['avatar_filename'] != '') {
                 $avatar_url = ee()->config->slash_item('avatar_url');
 
-                $avatar_path	= $avatar_url . $row['avatar_filename'];
-                $avatar_width	= $row['avatar_width'];
-                $avatar_height	= $row['avatar_height'];
+                $avatar_path = $avatar_url . $row['avatar_filename'];
+                $avatar_width = $row['avatar_width'];
+                $avatar_height = $row['avatar_height'];
 
                 $temp = $this->allow_if('avatar', $temp);
             } else {
-                $avatar_path	= '';
-                $avatar_width	= '';
-                $avatar_height	= '';
+                $avatar_path = '';
+                $avatar_width = '';
+                $avatar_height = '';
 
                 $temp = $this->deny_if('avatar', $temp);
             }
 
             // Parse the photo
             if (ee()->config->item('enable_photos') == 'y' and $row['photo_filename'] != '' and ee()->session->userdata('display_photos') == 'y') {
-                $photo_path	= ee()->config->slash_item('photo_url') . $row['photo_filename'];
-                $photo_width	= $row['photo_width'];
-                $photo_height	= $row['photo_height'];
+                $photo_path = ee()->config->slash_item('photo_url') . $row['photo_filename'];
+                $photo_width = $row['photo_width'];
+                $photo_height = $row['photo_height'];
 
                 $temp = $this->allow_if('photo', $temp);
             } else {
-                $photo_path	= '';
-                $photo_width	= '';
-                $photo_height	= '';
+                $photo_path = '';
+                $photo_width = '';
+                $photo_height = '';
 
                 $temp = $this->deny_if('photo', $temp);
             }
@@ -3260,9 +3260,9 @@ class Forum_Core extends Forum
                     $signature = $this->var_swap(
                         $signature,
                         array(
-                            'path:signature_image'		=> 	ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'],
-                            'signature_image_width'		=> 	$row['sig_img_width'],
-                            'signature_image_height'	=> 	$row['sig_img_height']
+                            'path:signature_image' => ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'],
+                            'signature_image_width' => $row['sig_img_width'],
+                            'signature_image_height' => $row['sig_img_height']
                         )
                     );
                 }
@@ -3270,9 +3270,9 @@ class Forum_Core extends Forum
                 $row['signature'] = ee()->typography->parse_type(
                     $row['signature'],
                     array(
-                        'text_format'	=> 'xhtml',
-                        'html_format'	=> 'safe',
-                        'auto_links'	=> 'y',
+                        'text_format' => 'xhtml',
+                        'html_format' => 'safe',
+                        'auto_links' => 'y',
                         'allow_img_url' => ee()->config->item('sig_allow_img_hotlink')
                     )
                 );
@@ -3305,9 +3305,9 @@ class Forum_Core extends Forum
                     $temp = $this->var_swap(
                         $temp,
                         array(
-                            'lang:change_status' 	=> ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
-                            'path:change_status'	=> ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
-                            'css:status_button'		=> ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
+                            'lang:change_status' => ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
+                            'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
+                            'css:status_button' => ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
                         )
                     );
                 }
@@ -3333,10 +3333,10 @@ class Forum_Core extends Forum
 
             // Swap the <div> id's for the javascript rollovers
             $this->cur_thread_row++;
-            $alpha = array('1'=>'a','2'=>'b','3'=>'c','4'=>'d','5'=>'e','6'=>'f','7'=>'g','8'=>'h','9'=>'i','10'=>'j','11'=>'k','12'=>'l','13'=>'m','14'=>'n','15'=>'o','16'=>'p','17'=>'q','18'=>'r','19'=>'s','20'=>'t','21'=>'u','22'=>'v','23'=>'w','24'=>'x','25'=>'y','26'=>'z');
+            $alpha = array('1' => 'a','2' => 'b','3' => 'c','4' => 'd','5' => 'e','6' => 'f','7' => 'g','8' => 'h','9' => 'i','10' => 'j','11' => 'k','12' => 'l','13' => 'm','14' => 'n','15' => 'o','16' => 'p','17' => 'q','18' => 'r','19' => 's','20' => 't','21' => 'u','22' => 'v','23' => 'w','24' => 'x','25' => 'y','26' => 'z');
             $letter = '';
 
-            for ($i=1; $i < 11; $i++) {
+            for ($i = 1; $i < 11; $i++) {
                 if ($this->cur_thread_row <= 52) {
                     $letter = 'b';
                 } elseif ($this->cur_thread_row <= 78) {
@@ -3393,7 +3393,7 @@ class Forum_Core extends Forum
                 // [quote] or [code] tags -- if they exist
                 foreach (array('quote', 'code') as $val) {
                     if (strpos($row['body'], '[' . $val . ']') !== false && strpos($row['body'], '[/' . $val . ']') === false) {
-                        $row['body'].= '[/' . $val . ']';
+                        $row['body'] .= '[/' . $val . ']';
                     }
                 }
 
@@ -3412,47 +3412,47 @@ class Forum_Core extends Forum
             $temp = $this->var_swap(
                 $temp,
                 array(
-                    'post_id'					=> $row['post_id'],
-                    'post_number'				=> $this->current_page + $post_number,
-                    'path:post_link'			=>  $this->forum_path('/viewreply/' . $row['post_id'] . '/'),
-                    'author'					=> $row['author'],
-                    'ip_address'				=> $row['ip_address'],
-                    'include:signature'			=> $signature,
-                    'include:poll'				=> $poll,
-                    'total_posts'				=> $total_posts,
-                    'path:photos'				=> $photo_path,
-                    'photo_width'				=> $photo_width,
-                    'photo_height'				=> $photo_height,
-                    'path:avatars'				=> $avatar_path,
-                    'avatar_width'				=> $avatar_width,
-                    'avatar_height'				=> $avatar_height,
-                    'rank_class'				=> $rank_class,
-                    'rank_stars'				=> $stars,
-                    'rank_title'				=> $rank_title,
-                    'include:post_attachments'	=> $attachments,
-                    'checked'					=> $checked,
-                    'lang:ban_member'			=> ($row['role_id'] == 2) ? lang('member_is_banned') : lang('ban_member'),
-                    'path:ban_member'			=> $this->forum_path('ban_member/' . $row['author_id']),
-                    'path:delete_post'			=> $this->forum_path('/' . (($is_topic == true) ? 'deletetopic' : 'deletereply') . '/' . $row['post_id'] . '/'),
-                    'path:edit_post'			=> $this->forum_path('/' . (($is_topic == true) ? 'edittopic' : 'editreply') . '/' . $row['post_id'] . '/'),
-                    'path:quote_reply'			=> $this->forum_path('/' . (($is_topic == true) ? 'quotetopic' : 'quotereply') . '/' . $row['post_id'] . '/'),
-                    'path:report'				=> $this->forum_path('/' . (($is_topic == true) ? 'reporttopic' : 'reportreply') . '/' . $row['post_id'] . '/'),
-                    'path:ignore'				=> $this->forum_path("ignore_member/{$row['author_id']}"),
-                    'path:member_profile'		=> $this->profile_path($row['author_id']),
-                    'path:send_private_message'	=> $this->profile_path('messages/pm/' . $row['author_id']),
-                    'path:send_pm'				=> $this->profile_path($row['author_id']),
-                    'body'						=> ee()->functions->encode_ee_tags(
+                    'post_id' => $row['post_id'],
+                    'post_number' => $this->current_page + $post_number,
+                    'path:post_link' => $this->forum_path('/viewreply/' . $row['post_id'] . '/'),
+                    'author' => $row['author'],
+                    'ip_address' => $row['ip_address'],
+                    'include:signature' => $signature,
+                    'include:poll' => $poll,
+                    'total_posts' => $total_posts,
+                    'path:photos' => $photo_path,
+                    'photo_width' => $photo_width,
+                    'photo_height' => $photo_height,
+                    'path:avatars' => $avatar_path,
+                    'avatar_width' => $avatar_width,
+                    'avatar_height' => $avatar_height,
+                    'rank_class' => $rank_class,
+                    'rank_stars' => $stars,
+                    'rank_title' => $rank_title,
+                    'include:post_attachments' => $attachments,
+                    'checked' => $checked,
+                    'lang:ban_member' => ($row['role_id'] == 2) ? lang('member_is_banned') : lang('ban_member'),
+                    'path:ban_member' => $this->forum_path('ban_member/' . $row['author_id']),
+                    'path:delete_post' => $this->forum_path('/' . (($is_topic == true) ? 'deletetopic' : 'deletereply') . '/' . $row['post_id'] . '/'),
+                    'path:edit_post' => $this->forum_path('/' . (($is_topic == true) ? 'edittopic' : 'editreply') . '/' . $row['post_id'] . '/'),
+                    'path:quote_reply' => $this->forum_path('/' . (($is_topic == true) ? 'quotetopic' : 'quotereply') . '/' . $row['post_id'] . '/'),
+                    'path:report' => $this->forum_path('/' . (($is_topic == true) ? 'reporttopic' : 'reportreply') . '/' . $row['post_id'] . '/'),
+                    'path:ignore' => $this->forum_path("ignore_member/{$row['author_id']}"),
+                    'path:member_profile' => $this->profile_path($row['author_id']),
+                    'path:send_private_message' => $this->profile_path('messages/pm/' . $row['author_id']),
+                    'path:send_pm' => $this->profile_path($row['author_id']),
+                    'body' => ee()->functions->encode_ee_tags(
                         $this->_quote_decode(
-                                                        ee()->typography->parse_type(
+                            ee()->typography->parse_type(
                                                             $row['body'],
                                                             array(
-                                                                'text_format'	=> $formatting['text_format'],
-                                                                'html_format'	=> $formatting['html_format'],
-                                                                'auto_links'	=> $formatting['auto_links'],
+                                                                'text_format' => $formatting['text_format'],
+                                                                'html_format' => $formatting['html_format'],
+                                                                'auto_links' => $formatting['auto_links'],
                                                                 'allow_img_url' => $formatting['allow_img_url']
                                                             )
                                                         )
-                                                    ),
+                        ),
                         true
                     )
                 )
@@ -3507,9 +3507,9 @@ class Forum_Core extends Forum
     {
         $img_path = $this->fetch_pref('board_upload_path');
 
-        $thumb_str	= '';
-        $image_str	= '';
-        $file_str	= '';
+        $thumb_str = '';
+        $image_str = '';
+        $file_str = '';
 
         foreach ($query->result_array() as $row) {
             if ($is_topic == false and $row['post_id'] != $post_id) {
@@ -3522,15 +3522,15 @@ class Forum_Core extends Forum
                     $thumb_str .= $this->var_swap(
                         $this->load_element('thumb_attachments'),
                         array(
-                            'filename'			=> $row['filename'],
-                            'thumb_width'		=> $row['t_width'],
-                            'thumb_height'		=> $row['t_height'],
-                            'width'				=> $row['width'],
-                            'height'			=> $row['height'],
-                            'hits'				=> $row['hits'],
-                            'file_size'			=> $row['filesize'] . 'KB',
-                            'attach_thumb_url'	=> $attach_path . $row['filehash'] . '&amp;thumb=1&amp;board_id=' . $this->fetch_pref('board_id'),
-                            'attach_image_url'	=> $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
+                            'filename' => $row['filename'],
+                            'thumb_width' => $row['t_width'],
+                            'thumb_height' => $row['t_height'],
+                            'width' => $row['width'],
+                            'height' => $row['height'],
+                            'hits' => $row['hits'],
+                            'file_size' => $row['filesize'] . 'KB',
+                            'attach_thumb_url' => $attach_path . $row['filehash'] . '&amp;thumb=1&amp;board_id=' . $this->fetch_pref('board_id'),
+                            'attach_image_url' => $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
                         )
                     );
 
@@ -3542,12 +3542,12 @@ class Forum_Core extends Forum
                     $image_str .= $this->var_swap(
                         $this->load_element('image_attachments'),
                         array(
-                            'filename'			=> $row['filename'],
-                            'width'				=> $row['width'],
-                            'height'			=> $row['height'],
-                            'hits'				=> $row['hits'],
-                            'file_size'			=> $row['filesize'] . 'KB',
-                            'attach_image_url'	=> $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
+                            'filename' => $row['filename'],
+                            'width' => $row['width'],
+                            'height' => $row['height'],
+                            'hits' => $row['hits'],
+                            'file_size' => $row['filesize'] . 'KB',
+                            'attach_image_url' => $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
                         )
                     );
 
@@ -3557,10 +3557,10 @@ class Forum_Core extends Forum
                 $file_str .= $this->var_swap(
                     $this->load_element('file_attachments'),
                     array(
-                        'filename'			=> $row['filename'],
-                        'hits'				=> $row['hits'],
-                        'file_size'			=> $row['filesize'] . 'KB',
-                        'attach_file_url'	=> $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
+                        'filename' => $row['filename'],
+                        'hits' => $row['hits'],
+                        'file_size' => $row['filesize'] . 'KB',
+                        'attach_file_url' => $attach_path . $row['filehash'] . '&amp;board_id=' . $this->fetch_pref('board_id')
                     )
                 );
 
@@ -3603,7 +3603,7 @@ class Forum_Core extends Forum
     public function display_attachment()
     {
         $attach_hash = ee()->input->get_post('aid');
-        $forum_id  = ee()->input->get_post('fid');
+        $forum_id = ee()->input->get_post('fid');
 
         if (! preg_match('/^[a-z0-9_]*$/i', $attach_hash) or ! is_numeric($forum_id)) {
             exit;
@@ -3625,7 +3625,7 @@ class Forum_Core extends Forum
             exit;
         }
 
-        $thumb_prefix =  ($query->row('is_image')  == 'y' && $this->fetch_pref('board_use_img_thumbs') == 'y' && ee()->input->get_post('thumb') == 1) ? '_t' : '';
+        $thumb_prefix = ($query->row('is_image') == 'y' && $this->fetch_pref('board_use_img_thumbs') == 'y' && ee()->input->get_post('thumb') == 1) ? '_t' : '';
 
         $filepath = $this->fetch_pref('board_upload_path') . $query->row('filehash') . $thumb_prefix . $query->row('extension') ;
 
@@ -3642,13 +3642,13 @@ class Forum_Core extends Forum
             }
         }
 
-        $hits = ($query->row('hits')  == 0) ? 1 : ($query->row('hits')  + 1);
+        $hits = ($query->row('hits') == 0) ? 1 : ($query->row('hits') + 1);
 
         ee()->db->set('hits', $hits);
         ee()->db->where('filehash', $attach_hash);
         ee()->db->update('forum_attachments');
 
-        if ($query->row('is_image')  == 'y') {
+        if ($query->row('is_image') == 'y') {
             $attachment = '';
         } else {
             $attachment = (isset($_SERVER['HTTP_USER_AGENT']) and strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) ? "" : " attachment;";
@@ -3730,21 +3730,21 @@ class Forum_Core extends Forum
         // We need to fetch polling data too
 
         $data = array(
-            'type'					=> $type,
-            'forum_id'				=> '',
-            'forum_name'			=> '',
-            'topic_id'				=> '',
-            'post_id'				=> '',
-            'status'				=> 'o',
-            'sticky'				=> 'n',
-            'announcement'			=> 'n',
-            'title'					=> '',
-            'body'					=> '',
-            'poll_enabled'			=> true,
-            'poll_question'			=> '',
-            'poll_answers'			=> '',
-            'forum_max_post_chars'	=> $this->max_chars,
-            'forum_allow_img_urls'	=> 'n'
+            'type' => $type,
+            'forum_id' => '',
+            'forum_name' => '',
+            'topic_id' => '',
+            'post_id' => '',
+            'status' => 'o',
+            'sticky' => 'n',
+            'announcement' => 'n',
+            'title' => '',
+            'body' => '',
+            'poll_enabled' => true,
+            'poll_question' => '',
+            'poll_answers' => '',
+            'forum_max_post_chars' => $this->max_chars,
+            'forum_allow_img_urls' => 'n'
         );
 
         // Submitting a New Topic
@@ -3757,8 +3757,8 @@ class Forum_Core extends Forum
                 return $this->trigger_error('not_authorized');
             }
 
-            $data['forum_id']	 = $this->current_id;
-            $data['forum_name']	 = $meta[$this->current_id]['forum_name'];
+            $data['forum_id'] = $this->current_id;
+            $data['forum_name'] = $meta[$this->current_id]['forum_name'];
             $data['permissions'] = $meta[$this->current_id]['forum_permissions'];
             $data['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $data['forum_allow_img_urls'] = $meta[$this->current_id]['forum_allow_img_urls'];
@@ -3800,10 +3800,10 @@ class Forum_Core extends Forum
                                 '[/quote]';
             }
 
-            $data['title']		 = $meta[$this->current_id]['title'];
-            $data['topic_id']	 = $this->current_id;
-            $data['forum_id']	 = $meta[$this->current_id]['forum_id'];
-            $data['forum_name']	 = $meta[$this->current_id]['forum_name'];
+            $data['title'] = $meta[$this->current_id]['title'];
+            $data['topic_id'] = $this->current_id;
+            $data['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $data['forum_name'] = $meta[$this->current_id]['forum_name'];
             $data['permissions'] = $meta[$this->current_id]['forum_permissions'];
             $data['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $data['forum_allow_img_urls'] = $meta[$this->current_id]['forum_allow_img_urls'];
@@ -3819,26 +3819,26 @@ class Forum_Core extends Forum
             // If the user performing the edit is not the original author
             // we'll verify that they have the proper permissions
 
-            if ($meta[$this->current_id]['author_id'] != ee()->session->userdata('member_id')  and ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id'])) {
+            if ($meta[$this->current_id]['author_id'] != ee()->session->userdata('member_id') and ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id'])) {
                 return $this->trigger_error('not_authorized');
             }
 
             // Load the form helper
             ee()->load->helper(array('security', 'form'));
 
-            $data['title']		 			= $meta[$this->current_id]['title'];
-            $data['body']		 			= encode_php_tags(form_prep($meta[$this->current_id]['body']));
-            $data['body'] 					= str_replace('&amp;#40;', '&#40;', $data['body']);
-            $data['forum_id']	 			= $meta[$this->current_id]['forum_id'];
-            $data['status']	 	 			= $meta[$this->current_id]['status'];
-            $data['sticky']	 	 			= $meta[$this->current_id]['sticky'];
-            $data['announcement']			= $meta[$this->current_id]['announcement'];
-            $data['forum_name']	 			= $meta[$this->current_id]['forum_name'];
-            $data['author_id']	 			= $meta[$this->current_id]['author_id'];
-            $data['permissions'] 			= $meta[$this->current_id]['forum_permissions'];
-            $data['forum_max_post_chars'] 	= $meta[$this->current_id]['forum_max_post_chars'];
-            $data['forum_allow_img_urls'] 	= $meta[$this->current_id]['forum_allow_img_urls'];
-            $data['topic_id']	 			= $this->current_id;
+            $data['title'] = $meta[$this->current_id]['title'];
+            $data['body'] = encode_php_tags(form_prep($meta[$this->current_id]['body']));
+            $data['body'] = str_replace('&amp;#40;', '&#40;', $data['body']);
+            $data['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $data['status'] = $meta[$this->current_id]['status'];
+            $data['sticky'] = $meta[$this->current_id]['sticky'];
+            $data['announcement'] = $meta[$this->current_id]['announcement'];
+            $data['forum_name'] = $meta[$this->current_id]['forum_name'];
+            $data['author_id'] = $meta[$this->current_id]['author_id'];
+            $data['permissions'] = $meta[$this->current_id]['forum_permissions'];
+            $data['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
+            $data['forum_allow_img_urls'] = $meta[$this->current_id]['forum_allow_img_urls'];
+            $data['topic_id'] = $this->current_id;
 
             // Fetch poll data if it exists
 
@@ -3846,8 +3846,8 @@ class Forum_Core extends Forum
                 $query = ee()->db->query("SELECT poll_question, poll_answers FROM exp_forum_polls WHERE topic_id = '{$this->current_id}'");
 
                 if ($query->num_rows() == 1) {
-                    $data['poll_question']	= stripslashes($query->row('poll_question'));
-                    $data['poll_answers']	= $this->array_stripslashes(unserialize($query->row('poll_answers')));
+                    $data['poll_question'] = stripslashes($query->row('poll_question'));
+                    $data['poll_answers'] = $this->array_stripslashes(unserialize($query->row('poll_answers')));
                 }
             }
         } elseif ($this->current_request == 'editreply') { // Editing a Post
@@ -3868,21 +3868,21 @@ class Forum_Core extends Forum
             // Load the form helper
             ee()->load->helper(array('security', 'form'));
 
-            $data['title']		 = $meta[$this->current_id]['title'];
-            $data['body']		 = encode_php_tags(form_prep($meta[$this->current_id]['body']));
-            $data['body'] 		 = str_replace('&amp;#40;', '&#40;', $data['body']);
-            $data['topic_id']	 = $meta[$this->current_id]['topic_id'];
-            $data['forum_id']	 = $meta[$this->current_id]['forum_id'];
-            $data['forum_name']	 = $meta[$this->current_id]['forum_name'];
+            $data['title'] = $meta[$this->current_id]['title'];
+            $data['body'] = encode_php_tags(form_prep($meta[$this->current_id]['body']));
+            $data['body'] = str_replace('&amp;#40;', '&#40;', $data['body']);
+            $data['topic_id'] = $meta[$this->current_id]['topic_id'];
+            $data['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $data['forum_name'] = $meta[$this->current_id]['forum_name'];
             $data['permissions'] = $meta[$this->current_id]['forum_permissions'];
-            $data['author_id']	 = $meta[$this->current_id]['author_id'];
+            $data['author_id'] = $meta[$this->current_id]['author_id'];
             $data['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $data['forum_allow_img_urls'] = $meta[$this->current_id]['forum_allow_img_urls'];
-            $data['post_id']	 = $this->current_id;
+            $data['post_id'] = $this->current_id;
         }
 
         // Are RSS Feeds enabled?
-        if ($meta[$this->current_id]['forum_enable_rss']== 'y') {
+        if ($meta[$this->current_id]['forum_enable_rss'] == 'y') {
             $this->feeds_enabled = true;
             $this->feed_ids = $data['forum_id'];
         }
@@ -3905,9 +3905,9 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('submission_page'),
             array(
-                'include:submission_form'	=> $this->_submission_form($data),
-                'include:topic_review'		=> $this->thread_review(),
-                'lang:max_attach_size'		=> lang('max_attach_size') . '&nbsp;' . $this->fetch_pref('board_max_attach_size') . 'KB'
+                'include:submission_form' => $this->_submission_form($data),
+                'include:topic_review' => $this->thread_review(),
+                'lang:max_attach_size' => lang('max_attach_size') . '&nbsp;' . $this->fetch_pref('board_max_attach_size') . 'KB'
             )
         );
     }
@@ -4028,7 +4028,7 @@ class Forum_Core extends Forum
             if ($this->current_request == 'quotetopic') {
                 $res = ee()->db->query("SELECT announcement FROM exp_forum_topics WHERE topic_id = '{$data['topic_id']}'");
 
-                if ($res->row('announcement')  != 'n') {
+                if ($res->row('announcement') != 'n') {
                     return $this->trigger_error('cant_quote_an');
                 }
             }
@@ -4113,7 +4113,7 @@ class Forum_Core extends Forum
                 $at .= $val . '|';
             }
 
-            if (substr($at, strlen($at)-1, 1) == '|') {
+            if (substr($at, strlen($at) - 1, 1) == '|') {
                 $at = substr($at, 0, -1);
             }
 
@@ -4130,14 +4130,14 @@ class Forum_Core extends Forum
         $poll_answer_field = $this->load_element('poll_answer_field');
         $vote_count_field = $this->load_element('poll_vote_count_field');
         $poll_answers = '';
-        $poll_rownum  =  4;
+        $poll_rownum = 4;
 
         // Build the Javascript stuff
         $poll_field = "'" . $poll_answer_field . "'";
         $poll_field = str_replace('{n}', "' + rownum + '", $poll_field);
         $poll_field = str_replace('{answer_number}', "' + rownum + '", $poll_field);
         $poll_field = str_replace('{poll_answer}', '', $poll_field);
-        $poll_field	= str_replace('{include:poll_vote_count_field}', '', $poll_field);
+        $poll_field = str_replace('{include:poll_vote_count_field}', '', $poll_field);
 
         // Add the poll rows
         if (isset($_POST['option']) and is_array($_POST['option'])) {
@@ -4148,7 +4148,7 @@ class Forum_Core extends Forum
                 $temp = $poll_answer_field;
 
                 $temp = str_replace('{poll_answer}', $this->_convert_special_chars(stripslashes($val)), $temp);
-                $temp = str_replace('{answer_number}', ($i+1), $temp);
+                $temp = str_replace('{answer_number}', ($i + 1), $temp);
 
                 if (isset($_POST['votes'][$i])) {
                     $f = str_replace('{vote_total}', $_POST['votes'][$i], $vote_count_field);
@@ -4170,7 +4170,7 @@ class Forum_Core extends Forum
                     $temp = $poll_answer_field;
 
                     $temp = str_replace('{poll_answer}', $this->_convert_special_chars($data['poll_answers'][$i]['answer']), $temp);
-                    $temp = str_replace('{answer_number}', ($i+1), $temp);
+                    $temp = str_replace('{answer_number}', ($i + 1), $temp);
 
                     $f = str_replace('{vote_total}', $data['poll_answers'][$i]['votes'], $vote_count_field);
                     $temp = str_replace('{include:poll_vote_count_field}', $f, $temp);
@@ -4185,7 +4185,7 @@ class Forum_Core extends Forum
                     $temp = $poll_answer_field;
 
                     $temp = str_replace('{poll_answer}', '', $temp);
-                    $temp = str_replace('{answer_number}', ($i+1), $temp);
+                    $temp = str_replace('{answer_number}', ($i + 1), $temp);
                     $temp = str_replace('{include:poll_vote_count_field}', '', $temp);
                     $temp = str_replace('{n}', $i, $temp);
                     $poll_answers .= $temp;
@@ -4204,10 +4204,10 @@ class Forum_Core extends Forum
             } else {
                 if ($this->current_request == 'edittopic') {
                     $query = ee()->db->query("SELECT parse_smileys FROM exp_forum_topics WHERE topic_id = '" . $data['topic_id'] . "'");
-                    $smileys = ($query->row('parse_smileys')  == 'y') ? ' checked="checked" ' : '';
+                    $smileys = ($query->row('parse_smileys') == 'y') ? ' checked="checked" ' : '';
                 } elseif ($this->current_request == 'editreply') {
                     $query = ee()->db->query("SELECT parse_smileys FROM exp_forum_posts WHERE post_id = '" . $data['post_id'] . "'");
-                    $smileys = ($query->row('parse_smileys')  == 'y') ? ' checked="checked" ' : '';
+                    $smileys = ($query->row('parse_smileys') == 'y') ? ' checked="checked" ' : '';
                 } else {
                     $smileys = ' checked="checked" ';
                 }
@@ -4221,7 +4221,7 @@ class Forum_Core extends Forum
 
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_subscriptions WHERE topic_id = '" . $data['topic_id'] . "' AND member_id = '{$aid}'");
 
-            $str = ($query->row('count')  == 0) ?
+            $str = ($query->row('count') == 0) ?
                     str_replace('{notify_checked}', '', $str) :
                     str_replace('{notify_checked}', ' checked="checked" ', $str);
         }
@@ -4270,21 +4270,21 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $str,
             array(
-                'title'						=> $title,
-                'body'						=> $body,
-                'lang:submission_heading' 	=> lang($data['type']),
-                'forum_name'				=> $data['forum_name'],
-                'topic_title'				=> $this->_convert_special_chars($data['title'], true),
-                'poll_question'				=> (! isset($_POST['poll_question'])) ? $this->_convert_special_chars($data['poll_question']) : $this->_convert_special_chars(stripslashes($_POST['poll_question'])),
-                'include:poll_answers'		=> $poll_answers,
-                'poll_answer_field'			=> $poll_field,
-                'poll_rownum'				=> $poll_rownum,
-                'lang:post_poll'			=> ($data['poll_question'] != '' or isset($_POST['poll_question'])) ? lang('edit_poll') : lang('add_a_poll'),
-                'notify_checked'			=> $notify,
-                'smileys_checked'			=> $smileys,
+                'title' => $title,
+                'body' => $body,
+                'lang:submission_heading' => lang($data['type']),
+                'forum_name' => $data['forum_name'],
+                'topic_title' => $this->_convert_special_chars($data['title'], true),
+                'poll_question' => (! isset($_POST['poll_question'])) ? $this->_convert_special_chars($data['poll_question']) : $this->_convert_special_chars(stripslashes($_POST['poll_question'])),
+                'include:poll_answers' => $poll_answers,
+                'poll_answer_field' => $poll_field,
+                'poll_rownum' => $poll_rownum,
+                'lang:post_poll' => ($data['poll_question'] != '' or isset($_POST['poll_question'])) ? lang('edit_poll') : lang('add_a_poll'),
+                'notify_checked' => $notify,
+                'smileys_checked' => $smileys,
                 'include:html_formatting_buttons' => $buttons,
-                'maxchars'					=> $maxchars,
-                'total_characters'			=> $totchars
+                'maxchars' => $maxchars,
+                'total_characters' => $totchars
             )
         );
     }
@@ -4322,9 +4322,9 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('form_attachments'),
             array(
-                'lang:remaining_space' 			=> str_replace('%x', $size . ' KB', lang('remaining_space')),
-                'lang:total_attach_allowed'		=> lang('total_attach_allowed') . '&nbsp;' . $this->fetch_pref('board_max_attach_perpost'),
-                'include:form_attachment_rows'	=> $str
+                'lang:remaining_space' => str_replace('%x', $size . ' KB', lang('remaining_space')),
+                'lang:total_attach_allowed' => lang('total_attach_allowed') . '&nbsp;' . $this->fetch_pref('board_max_attach_perpost'),
+                'include:form_attachment_rows' => $str
             )
         );
     }
@@ -4384,12 +4384,12 @@ class Forum_Core extends Forum
     {
         if (ee()->input->post('preview') !== false or $this->submission_error != '') {
             $type = array(
-                'newtopic'		=> 'new_topic_page',
-                'edittopic'		=> 'edit_topic_page',
-                'newreply'		=> 'new_reply_page',
-                'editreply'		=> 'edit_reply_page',
-                'quotetopic'	=> 'new_reply_page',
-                'quotereply'	=> 'new_reply_page'
+                'newtopic' => 'new_topic_page',
+                'edittopic' => 'edit_topic_page',
+                'newreply' => 'new_reply_page',
+                'editreply' => 'edit_reply_page',
+                'quotetopic' => 'new_reply_page',
+                'quotereply' => 'new_reply_page'
             );
 
             if ($this->use_trigger()) {
@@ -4471,22 +4471,22 @@ class Forum_Core extends Forum
             'parse_smileys' => (isset($_POST['smileys'])) ? true : false
         ));
 
-        $forum_text_formatting  = 'xhtml';
-        $forum_html_formatting 	= 'safe';
-        $forum_auto_link_urls  	= 'y';
-        $forum_allow_img_urls	= 'y';
+        $forum_text_formatting = 'xhtml';
+        $forum_html_formatting = 'safe';
+        $forum_auto_link_urls = 'y';
+        $forum_allow_img_urls = 'y';
 
         switch ($this->current_request) {
             case 'newtopic':
                                     $query = ee()->db->query("SELECT f.forum_id, f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss, f.forum_auto_link_urls, f.forum_allow_img_urls FROM exp_forums f WHERE f.forum_id = '{$this->current_id}'");
 
                                     if ($query->num_rows() > 0) {
-                                        $forum_text_formatting	= $query->row('forum_text_formatting') ;
-                                        $forum_html_formatting 	= $query->row('forum_html_formatting') ;
-                                        $forum_auto_link_urls  	= $query->row('forum_auto_link_urls') ;
-                                        $forum_allow_img_urls	= $query->row('forum_allow_img_urls') ;
+                                        $forum_text_formatting = $query->row('forum_text_formatting') ;
+                                        $forum_html_formatting = $query->row('forum_html_formatting') ;
+                                        $forum_auto_link_urls = $query->row('forum_auto_link_urls') ;
+                                        $forum_allow_img_urls = $query->row('forum_allow_img_urls') ;
 
-                                        if ($query->row('forum_enable_rss')  == 'y') {
+                                        if ($query->row('forum_enable_rss') == 'y') {
                                             $this->feeds_enabled = true;
                                             $this->feed_ids = $query->row('forum_id') ;
                                         }
@@ -4499,12 +4499,12 @@ class Forum_Core extends Forum
                                     $query = ee()->db->query("SELECT f.forum_id, f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss, f.forum_auto_link_urls, f.forum_allow_img_urls FROM exp_forums f, exp_forum_topics t WHERE f.forum_id = t.forum_id AND t.topic_id = '{$this->current_id}'");
 
                                     if ($query->num_rows() > 0) {
-                                        $forum_text_formatting	= $query->row('forum_text_formatting') ;
-                                        $forum_html_formatting 	= $query->row('forum_html_formatting') ;
-                                        $forum_auto_link_urls  	= $query->row('forum_auto_link_urls') ;
-                                        $forum_allow_img_urls	= $query->row('forum_allow_img_urls') ;
+                                        $forum_text_formatting = $query->row('forum_text_formatting') ;
+                                        $forum_html_formatting = $query->row('forum_html_formatting') ;
+                                        $forum_auto_link_urls = $query->row('forum_auto_link_urls') ;
+                                        $forum_allow_img_urls = $query->row('forum_allow_img_urls') ;
 
-                                        if ($query->row('forum_enable_rss')  == 'y') {
+                                        if ($query->row('forum_enable_rss') == 'y') {
                                             $this->feeds_enabled = true;
                                             $this->feed_ids = $query->row('forum_id') ;
                                         }
@@ -4516,12 +4516,12 @@ class Forum_Core extends Forum
                                     $query = ee()->db->query("SELECT f.forum_id, f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss, f.forum_auto_link_urls, f.forum_allow_img_urls FROM exp_forums f, exp_forum_posts p WHERE f.forum_id = p.forum_id AND p.post_id = '{$this->current_id}'");
 
                                     if ($query->num_rows() > 0) {
-                                        $forum_text_formatting	= $query->row('forum_text_formatting') ;
-                                        $forum_html_formatting 	= $query->row('forum_html_formatting') ;
-                                        $forum_auto_link_urls  	= $query->row('forum_auto_link_urls') ;
-                                        $forum_allow_img_urls	= $query->row('forum_allow_img_urls') ;
+                                        $forum_text_formatting = $query->row('forum_text_formatting') ;
+                                        $forum_html_formatting = $query->row('forum_html_formatting') ;
+                                        $forum_auto_link_urls = $query->row('forum_auto_link_urls') ;
+                                        $forum_allow_img_urls = $query->row('forum_allow_img_urls') ;
 
-                                        if ($query->row('forum_enable_rss')  == 'y') {
+                                        if ($query->row('forum_enable_rss') == 'y') {
                                             $this->feeds_enabled = true;
                                             $this->feed_ids = $query->row('forum_id') ;
                                         }
@@ -4536,14 +4536,14 @@ class Forum_Core extends Forum
 
         $body = $this->_quote_decode(
             ee()->typography->parse_type(
-                                ee('Security/XSS')->clean($body),
-                                array(
-                                    'text_format'	=> $forum_text_formatting,
-                                    'html_format'	=> $forum_html_formatting,
-                                    'auto_links'	=> $forum_auto_link_urls,
-                                    'allow_img_url' => $forum_allow_img_urls
-                                )
-                            )
+                ee('Security/XSS')->clean($body),
+                array(
+                    'text_format' => $forum_text_formatting,
+                    'html_format' => $forum_html_formatting,
+                    'auto_links' => $forum_auto_link_urls,
+                    'allow_img_url' => $forum_allow_img_urls
+                )
+            )
         );
 
         $title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->post('title')));
@@ -4551,8 +4551,8 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('preview_post'),
             array(
-                'post_title'	=> stripslashes($this->_convert_special_chars($title)),
-                'post_body' 	=> $body,
+                'post_title' => stripslashes($this->_convert_special_chars($title)),
+                'post_body' => $body,
             )
         );
     }
@@ -4576,7 +4576,7 @@ class Forum_Core extends Forum
 								WHERE board_id = '" . $this->fetch_pref('board_id') . "'");
 
         // Check the paths
-        if ($query->row('board_upload_path')  == '') {
+        if ($query->row('board_upload_path') == '') {
             return $this->submission_error = lang('unable_to_recieve_attach');
         }
 
@@ -4641,8 +4641,8 @@ class Forum_Core extends Forum
 
         // Upload the image
         $config = array(
-            'upload_path'	=> $server_path,
-            'max_size'		=> $query->row('board_max_attach_size')
+            'upload_path' => $server_path,
+            'max_size' => $query->row('board_max_attach_size')
         );
 
         if ($query->row('board_attach_types') !== 'all') {
@@ -4665,16 +4665,16 @@ class Forum_Core extends Forum
 
         @chmod($upload_data['full_path'], DIR_WRITE_MODE);
 
-        $width		= 0;
-        $height		= 0;
-        $t_width	= 0;
-        $t_height	= 0;
+        $width = 0;
+        $height = 0;
+        $t_width = 0;
+        $t_height = 0;
 
         if ($upload_data['is_image']) {
             $width = $upload_data['image_width'];
             $height = $upload_data['image_height'];
 
-            if ($width > $query->row('board_max_width')  or $height > $query->row('board_max_height')) {
+            if ($width > $query->row('board_max_width') or $height > $query->row('board_max_height')) {
                 @unlink($upload_data['full_path']);
                 $error = str_replace('%x', $query->row('board_max_width'), lang("dimensions_too_big"));
                 $error = str_replace('%y', $query->row('board_max_height'), $error);
@@ -4682,25 +4682,25 @@ class Forum_Core extends Forum
                 return $this->submission_error = $error;
             }
 
-            if ($query->row('board_use_img_thumbs')  == 'y') {
+            if ($query->row('board_use_img_thumbs') == 'y') {
                 $res_config = array(
-                    'image_library'		=> ee()->config->item('image_resize_protocol'),
-                    'library_path'		=> ee()->config->item('image_library_path'),
-                    'maintain_ratio'	=> true,
-                    'new_image'			=> $board_upload_path . $filehash . '_t' . $upload_data['file_ext'],
-                    'master_dim'		=> 'height',
-                    'thumb_marker'		=> '_t',
-                    'source_image'		=> $upload_data['full_path'],
-                    'quality'			=> 75,
-                    'width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width') : $width,
-                    'height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height') : $height);
+                    'image_library' => ee()->config->item('image_resize_protocol'),
+                    'library_path' => ee()->config->item('image_library_path'),
+                    'maintain_ratio' => true,
+                    'new_image' => $board_upload_path . $filehash . '_t' . $upload_data['file_ext'],
+                    'master_dim' => 'height',
+                    'thumb_marker' => '_t',
+                    'source_image' => $upload_data['full_path'],
+                    'quality' => 75,
+                    'width' => ($query->row('board_thumb_width') < $width) ? $query->row('board_thumb_width') : $width,
+                    'height' => ($query->row('board_thumb_height') < $height) ? $query->row('board_thumb_height') : $height);
 
                 ee()->load->library('image_lib', $res_config);
 
                 if (ee()->image_lib->resize()) {
                     $props = ee()->image_lib->get_image_properties($board_upload_path . $filehash . '_t' . $upload_data['file_ext'], true);
 
-                    $t_width  = $props['width'];
+                    $t_width = $props['width'];
                     $t_height = $props['height'];
                 }
             }
@@ -4708,21 +4708,21 @@ class Forum_Core extends Forum
 
         // Build the column data
         $data = array(
-            'topic_id'			=> 0,
-            'post_id'			=> 0,
-            'board_id'			=> 0,
-            'member_id'			=> ee()->session->userdata('member_id'),
-            'filename'			=> $upload_data['file_name'],
-            'filehash'			=> $filehash,
-            'filesize'			=> ceil($upload_data['file_size']),
-            'extension'			=> $upload_data['file_ext'],
-            'attachment_date'	=> ee()->localize->now,
-            'is_temp'			=> ($is_preview == true or $this->submission_error != '') ? 'y' : 'n',
-            'width'				=>  $width,
-            'height'			=>  $height,
-            't_width'			=>  $t_width,
-            't_height'			=>  $t_height,
-            'is_image'			=> ($upload_data['is_image']) ? 'y' : 'n'
+            'topic_id' => 0,
+            'post_id' => 0,
+            'board_id' => 0,
+            'member_id' => ee()->session->userdata('member_id'),
+            'filename' => $upload_data['file_name'],
+            'filehash' => $filehash,
+            'filesize' => ceil($upload_data['file_size']),
+            'extension' => $upload_data['file_ext'],
+            'attachment_date' => ee()->localize->now,
+            'is_temp' => ($is_preview == true or $this->submission_error != '') ? 'y' : 'n',
+            'width' => $width,
+            'height' => $height,
+            't_width' => $t_width,
+            't_height' => $t_height,
+            'is_image' => ($upload_data['is_image']) ? 'y' : 'n'
         );
 
         ee()->db->insert('forum_attachments', $data);
@@ -4740,7 +4740,7 @@ class Forum_Core extends Forum
             if (rename($upload_data['full_path'], $final_path)) {
                 chmod($final_path, FILE_WRITE_MODE);
 
-                $thumb_name  = $filehash . '_t' . $upload_data['file_ext'];
+                $thumb_name = $filehash . '_t' . $upload_data['file_ext'];
                 $thumb_final = $final_name . '_t' . $upload_data['file_ext'];
 
                 if (file_exists($upload_data['file_path'] . $thumb_name)) {
@@ -4826,7 +4826,7 @@ class Forum_Core extends Forum
             return;
         }
 
-        $file  = $this->fetch_pref('board_upload_path') . $query->row('filehash') . $query->row('extension') ;
+        $file = $this->fetch_pref('board_upload_path') . $query->row('filehash') . $query->row('extension') ;
         $thumb = $this->fetch_pref('board_upload_path') . $query->row('filehash') . '_t' . $query->row('extension') ;
 
         @unlink($file);
@@ -4858,7 +4858,7 @@ class Forum_Core extends Forum
             $at .= $val . '|';
         }
 
-        if (substr($at, strlen($at)-1, 1) == '|') {
+        if (substr($at, strlen($at) - 1, 1) == '|') {
             $at = substr($at, 0, -1);
         }
 
@@ -4929,11 +4929,11 @@ class Forum_Core extends Forum
                 return $this->trigger_error('not_authorized');
             }
 
-            $orig_author_id			= ee()->session->userdata('member_id');
-            $fdata['forum_id']		= $meta[$this->current_id]['forum_id'];
-            $fdata['forum_parent']	= $meta[$this->current_id]['forum_parent'];
-            $fdata['permissions']	= $meta[$this->current_id]['forum_permissions'];
-            $fdata['forum_max_post_chars']	= $meta[$this->current_id]['forum_max_post_chars'];
+            $orig_author_id = ee()->session->userdata('member_id');
+            $fdata['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $fdata['forum_parent'] = $meta[$this->current_id]['forum_parent'];
+            $fdata['permissions'] = $meta[$this->current_id]['forum_permissions'];
+            $fdata['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $fdata['forum_notify_emails'] = $meta[$this->current_id]['forum_notify_emails'];
             $fdata['forum_notify_emails_topics'] = $meta[$this->current_id]['forum_notify_emails_topics'];
             $fdata['forum_notify_moderators'] = $meta[$this->current_id]['forum_notify_moderators_topics'];
@@ -4946,14 +4946,14 @@ class Forum_Core extends Forum
                 return $this->trigger_error('not_authorized');
             }
 
-            $orig_author_id			= ee()->session->userdata('member_id');
-            $fdata['forum_id']	 	= $meta[$this->current_id]['forum_id'];
-            $fdata['forum_parent']	 = $meta[$this->current_id]['forum_parent'];
-            $fdata['permissions'] 	= $meta[$this->current_id]['forum_permissions'];
+            $orig_author_id = ee()->session->userdata('member_id');
+            $fdata['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $fdata['forum_parent'] = $meta[$this->current_id]['forum_parent'];
+            $fdata['permissions'] = $meta[$this->current_id]['forum_permissions'];
             $fdata['forum_notify_emails'] = $meta[$this->current_id]['forum_notify_emails'];
             $fdata['forum_notify_emails_topics'] = $meta[$this->current_id]['forum_notify_emails_topics'];
             $fdata['forum_notify_moderators'] = $meta[$this->current_id]['forum_notify_moderators_replies'];
-            $fdata['forum_max_post_chars']	= $meta[$this->current_id]['forum_max_post_chars'];
+            $fdata['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $post_per_page = $meta[$this->current_id]['forum_posts_perpage'];
         } elseif ($this->current_request == 'edittopic') {
             // no tampering
@@ -4972,14 +4972,14 @@ class Forum_Core extends Forum
             // If the user performing the edit is not the orginal author
             // we'll verify that they have the proper permissions
 
-            if ($meta[$this->current_id]['author_id'] != ee()->session->userdata('member_id')  and ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id'])) {
+            if ($meta[$this->current_id]['author_id'] != ee()->session->userdata('member_id') and ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id'])) {
                 return $this->trigger_error('not_authorized');
             }
 
-            $orig_author_id 		= $meta[$this->current_id]['author_id'];
-            $fdata['forum_id']		= $meta[$this->current_id]['forum_id'];
-            $fdata['permissions']	= $meta[$this->current_id]['forum_permissions'];
-            $fdata['forum_max_post_chars']	= $meta[$this->current_id]['forum_max_post_chars'];
+            $orig_author_id = $meta[$this->current_id]['author_id'];
+            $fdata['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $fdata['permissions'] = $meta[$this->current_id]['forum_permissions'];
+            $fdata['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
         } elseif ($this->current_request == 'editreply' or $this->current_request == 'quotereply') {
             // no tampering
             if ($this->current_id != ee()->input->post('post_id')) {
@@ -5011,10 +5011,10 @@ class Forum_Core extends Forum
                 }
             }
 
-            $orig_author_id			= $meta[$this->current_id]['author_id'];
-            $fdata['forum_id']		= $meta[$this->current_id]['forum_id'];
-            $fdata['permissions']	= $meta[$this->current_id]['forum_permissions'];
-            $fdata['forum_max_post_chars']	= $meta[$this->current_id]['forum_max_post_chars'];
+            $orig_author_id = $meta[$this->current_id]['author_id'];
+            $fdata['forum_id'] = $meta[$this->current_id]['forum_id'];
+            $fdata['permissions'] = $meta[$this->current_id]['forum_permissions'];
+            $fdata['forum_max_post_chars'] = $meta[$this->current_id]['forum_max_post_chars'];
             $post_per_page = $meta[$this->current_id]['forum_posts_perpage'];
         }
 
@@ -5043,7 +5043,7 @@ class Forum_Core extends Forum
                 return $this->trigger_error();
             }
 
-            if ($query->row('forum_post_timelock')  > 0) {
+            if ($query->row('forum_post_timelock') > 0) {
                 if ((ee()->session->userdata('last_forum_post_date') + $query->row('forum_post_timelock')) > ee()->localize->now) {
                     $this->submission_error = str_replace('%x', $query->row('forum_post_timelock'), lang('post_throttle'));
                 }
@@ -5055,13 +5055,13 @@ class Forum_Core extends Forum
             if (ee()->config->item('deny_duplicate_data') == 'y' and ! ee('Permission')->isSuperAdmin() and ee()->input->post('body') != '') {
                 $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE body = '" . ee()->db->escape_str(ee()->input->post('body')) . "'");
 
-                if ($query->row('count')  > 0) {
+                if ($query->row('count') > 0) {
                     $this->submission_error = lang('duplicate_data_warning');
                 }
 
                 $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE body = '" . ee()->db->escape_str(ee()->input->post('body')) . "'");
 
-                if ($query->row('count')  > 0) {
+                if ($query->row('count') > 0) {
                     $this->submission_error = lang('duplicate_data_warning');
                 }
             }
@@ -5159,13 +5159,13 @@ class Forum_Core extends Forum
                     $body = $this->convert_forum_tags(ee()->input->post('body'));
 
                     $data = array(
-                        'title'			=> ee('Security/XSS')->clean($title),
-                        'body'			=> ee('Security/XSS')->clean($body),
-                        'sticky'		=> (ee()->input->post('sticky') == 'y') ? 'y' : 'n',
-                        'status'		=> (ee()->input->post('status') == 'c') ? 'c' : 'o',
-                        'announcement'	=> $announcement,
-                        'poll'			=> (isset($_POST['poll_question']) and $_POST['poll_question'] != '' and $announcement != 'y') ? 'y' : 'n',
-                        'parse_smileys'	=> (isset($_POST['smileys'])) ? 'y' : 'n'
+                        'title' => ee('Security/XSS')->clean($title),
+                        'body' => ee('Security/XSS')->clean($body),
+                        'sticky' => (ee()->input->post('sticky') == 'y') ? 'y' : 'n',
+                        'status' => (ee()->input->post('status') == 'c') ? 'c' : 'o',
+                        'announcement' => $announcement,
+                        'poll' => (isset($_POST['poll_question']) and $_POST['poll_question'] != '' and $announcement != 'y') ? 'y' : 'n',
+                        'parse_smileys' => (isset($_POST['smileys'])) ? 'y' : 'n'
 
                     );
 
@@ -5188,14 +5188,14 @@ class Forum_Core extends Forum
 
                     // Insert a NEW topic
                     if ($this->current_request == 'newtopic') {
-                        $data['author_id']				= ee()->session->userdata('member_id');
-                        $data['ip_address']				= ee()->input->ip_address();
-                        $data['forum_id'] 				= $this->current_id;
-                        $data['last_post_date'] 		= ee()->localize->now;
-                        $data['last_post_author_id']	= ee()->session->userdata('member_id');
-                        $data['thread_total']			= 1;
-                        $data['topic_date']				= ee()->localize->now;
-                        $data['board_id']				= $this->fetch_pref('board_id');
+                        $data['author_id'] = ee()->session->userdata('member_id');
+                        $data['ip_address'] = ee()->input->ip_address();
+                        $data['forum_id'] = $this->current_id;
+                        $data['last_post_date'] = ee()->localize->now;
+                        $data['last_post_author_id'] = ee()->session->userdata('member_id');
+                        $data['thread_total'] = 1;
+                        $data['topic_date'] = ee()->localize->now;
+                        $data['board_id'] = $this->fetch_pref('board_id');
 
                         $sql = ee()->db->insert_string('exp_forum_topics', $data);
 
@@ -5237,8 +5237,8 @@ class Forum_Core extends Forum
                     } else { // Update an existing topic
                         // Onward....
 
-                        $data['topic_edit_author']	= ee()->session->userdata['member_id'];
-                        $data['topic_edit_date']	= ee()->localize->now;
+                        $data['topic_edit_author'] = ee()->session->userdata['member_id'];
+                        $data['topic_edit_date'] = ee()->localize->now;
 
                         $sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->post('topic_id')));
                         ee()->db->query($sql);
@@ -5276,18 +5276,18 @@ class Forum_Core extends Forum
                     $body = $this->convert_forum_tags(ee()->input->post('body'));
 
                     $data = array(
-                        'topic_id'		=> ee()->db->escape_str(ee()->input->post('topic_id')),
-                        'forum_id'		=> ee()->input->post('forum_id'),
-                        'body'			=> ee('Security/XSS')->clean($body),
-                        'parse_smileys'	=> (isset($_POST['smileys'])) ? 'y' : 'n'
+                        'topic_id' => ee()->db->escape_str(ee()->input->post('topic_id')),
+                        'forum_id' => ee()->input->post('forum_id'),
+                        'body' => ee('Security/XSS')->clean($body),
+                        'parse_smileys' => (isset($_POST['smileys'])) ? 'y' : 'n'
                     );
 
                     // Insert a new post
                     if ($this->current_request == 'newreply') {
-                        $data['author_id']	= ee()->session->userdata('member_id');
-                        $data['ip_address']	= ee()->input->ip_address();
-                        $data['post_date']	= ee()->localize->now;
-                        $data['board_id']	= $this->fetch_pref('board_id');
+                        $data['author_id'] = ee()->session->userdata('member_id');
+                        $data['ip_address'] = ee()->input->ip_address();
+                        $data['post_date'] = ee()->localize->now;
+                        $data['board_id'] = $this->fetch_pref('board_id');
 
                         $sql = ee()->db->insert_string('exp_forum_posts', $data);
 
@@ -5316,8 +5316,8 @@ class Forum_Core extends Forum
                         $redirect = $this->forum_path('/viewthread/' . $data['topic_id'] . '/' . $page);
                     } else { // Update an existing post
                         $data['post_id'] = ee()->input->post('post_id');
-                        $data['post_edit_author']	= ee()->session->userdata['member_id'];
-                        $data['post_edit_date']		= ee()->localize->now;
+                        $data['post_edit_author'] = ee()->session->userdata['member_id'];
+                        $data['post_edit_date'] = ee()->localize->now;
 
                         $sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='" . $data['post_id'] . "'");
                         ee()->db->query($sql);
@@ -5326,7 +5326,7 @@ class Forum_Core extends Forum
                         ee()->db->select('COUNT(*) as count');
                         $query = ee()->db->get_where('forum_posts', array('topic_id' => $data['topic_id']));
 
-                        $total = ($query->row('count')  + 1);
+                        $total = ($query->row('count') + 1);
 
                         $page = $this->_fetch_page_number($query->row('count'), $post_per_page);
                         $redirect = $this->forum_path('/viewthread/' . $data['topic_id'] . '/' . $page);
@@ -5339,12 +5339,12 @@ class Forum_Core extends Forum
             ee('Spam')->moderate('forum', $sql, $text, array('postdata' => $_POST, 'redirect' => $redirect));
             $this->submission_error = lang('spam');
 
-            $data = array('title' 	=> lang('post_is_moderated'),
-                'heading'	=> lang('thank_you'),
-                'content'	=> lang('post_is_moderated'),
-                'redirect'	=> $redirect,
-                'rate'      => 8,
-                'link'		=> array($redirect, '')
+            $data = array('title' => lang('post_is_moderated'),
+                'heading' => lang('thank_you'),
+                'content' => lang('post_is_moderated'),
+                'redirect' => $redirect,
+                'rate' => 8,
+                'link' => array($redirect, '')
             );
 
             return ee()->output->show_message($data);
@@ -5355,7 +5355,7 @@ class Forum_Core extends Forum
             $read_topics = $this->_fetch_read_topics($data['topic_id']);
 
             if (ee()->session->userdata('member_id') == 0) {
-                $expire = 60*60*24*365;
+                $expire = 60 * 60 * 24 * 365;
                 ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
             }
         }
@@ -5373,15 +5373,15 @@ class Forum_Core extends Forum
 
         if (count($this->attachments) > 0) {
             $topic_id = (isset($data['topic_id']) and $data['topic_id'] > 0) ? $data['topic_id'] : 0;
-            $post_id  = (isset($data['post_id'])  and $data['post_id']  > 0) ? $data['post_id'] : 0;
+            $post_id = (isset($data['post_id']) and $data['post_id'] > 0) ? $data['post_id'] : 0;
             $board_id = $this->preferences['board_id'];
 
             foreach ($this->attachments as $id) {
                 $d = array(
-                    'topic_id'		=> $topic_id,
-                    'post_id'		=> $post_id,
-                    'board_id'		=> $board_id,
-                    'is_temp'		=> 'n'
+                    'topic_id' => $topic_id,
+                    'post_id' => $post_id,
+                    'board_id' => $board_id,
+                    'is_temp' => 'n'
                 );
 
                 ee()->db->update('forum_attachments', $d, array('attachment_id' => $id));
@@ -5397,23 +5397,23 @@ class Forum_Core extends Forum
 
             $row = $query->row_array();
 
-            if ($row['count']  > 1) {
+            if ($row['count'] > 1) {
                 ee()->db->where('topic_id', $data['topic_id']);
                 ee()->db->where('member_id', $orig_author_id);
                 ee()->db->delete('forum_subscriptions');
 
-                $row['count']  = 0;
+                $row['count'] = 0;
             }
 
             if ($row['count'] == 0) {
                 $rand = $orig_author_id . ee()->functions->random('alnum', 8);
 
                 $d = array(
-                    'topic_id'				=> $data['topic_id'],
-                    'board_id'				=> $this->preferences['board_id'],
-                    'member_id'				=> $orig_author_id,
-                    'subscription_date'		=> ee()->localize->now,
-                    'hash'					=> $rand
+                    'topic_id' => $data['topic_id'],
+                    'board_id' => $this->preferences['board_id'],
+                    'member_id' => $orig_author_id,
+                    'subscription_date' => ee()->localize->now,
+                    'hash' => $rand
                 );
 
                 ee()->db->insert('forum_subscriptions', $d);
@@ -5426,7 +5426,7 @@ class Forum_Core extends Forum
 
         // Send them to their post if they have edited
         // Since we don't need to sent notifications when editing, we're done...
-        if ($this->current_request == 'edittopic' or  $this->current_request == 'editreply') {
+        if ($this->current_request == 'edittopic' or $this->current_request == 'editreply') {
             ee()->functions->redirect($redirect);
             exit;
         }
@@ -5503,9 +5503,9 @@ class Forum_Core extends Forum
         $body = ee()->typography->parse_type(
             $data['body'],
             array(
-                'text_format'	=> 'none',
-                'html_format'	=> 'none',
-                'auto_links'	=> 'n',
+                'text_format' => 'none',
+                'html_format' => 'none',
+                'auto_links' => 'n',
                 'allow_img_url' => 'n'
             )
         );
@@ -5513,13 +5513,13 @@ class Forum_Core extends Forum
         // Send admin notification
         if (is_array($notify_addresses) and count($notify_addresses) > 0) {
             $swap = array(
-                'name_of_poster'	=> ee()->session->userdata('screen_name'),
-                'forum_name'		=> $this->fetch_pref('board_label'),
-                'title'				=> $title,
-                'body'				=> $body,
-                'topic_id'			=> $data['topic_id'],
-                'thread_url'		=> ee()->input->remove_session_id($redirect),
-                'post_url'			=> (isset($data['post_id'])) ? $this->forum_path() . "viewreply/{$data['post_id']}/" : ee()->input->remove_session_id($redirect)
+                'name_of_poster' => ee()->session->userdata('screen_name'),
+                'forum_name' => $this->fetch_pref('board_label'),
+                'title' => $title,
+                'body' => $body,
+                'topic_id' => $data['topic_id'],
+                'thread_url' => ee()->input->remove_session_id($redirect),
+                'post_url' => (isset($data['post_id'])) ? $this->forum_path() . "viewreply/{$data['post_id']}/" : ee()->input->remove_session_id($redirect)
             );
 
             $template = ee()->functions->fetch_email_template('admin_notify_forum_post');
@@ -5579,16 +5579,16 @@ class Forum_Core extends Forum
             exit;
         }
 
-        $action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
+        $action_id = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
 
         $swap = array(
-            'name_of_poster'	=> ee()->session->userdata('screen_name'),
-            'forum_name'		=> $this->fetch_pref('board_label'),
-            'title'				=> $title,
-            'body'				=> $body,
-            'topic_id'			=> $data['topic_id'],
-            'thread_url'		=> ee()->input->remove_session_id($redirect),
-            'post_url'			=> (isset($data['post_id'])) ? $this->forum_path() . "viewreply/{$data['post_id']}/" : ee()->input->remove_session_id($redirect)
+            'name_of_poster' => ee()->session->userdata('screen_name'),
+            'forum_name' => $this->fetch_pref('board_label'),
+            'title' => $title,
+            'body' => $body,
+            'topic_id' => $data['topic_id'],
+            'thread_url' => ee()->input->remove_session_id($redirect),
+            'post_url' => (isset($data['post_id'])) ? $this->forum_path() . "viewreply/{$data['post_id']}/" : ee()->input->remove_session_id($redirect)
         );
 
         $template = ee()->functions->fetch_email_template('forum_post_notification');
@@ -5639,11 +5639,11 @@ class Forum_Core extends Forum
             }
 
             $personalized_swap = array(
-                'name_of_recipient'			=> $row['screen_name'],
-                'notification_removal_url'	=> ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $row['hash'] . '&board_id=' . $this->preferences['board_id']
+                'name_of_recipient' => $row['screen_name'],
+                'notification_removal_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $row['hash'] . '&board_id=' . $this->preferences['board_id']
             );
 
-            $title	 = ee()->functions->var_swap($email_tit, $personalized_swap);
+            $title = ee()->functions->var_swap($email_tit, $personalized_swap);
             $message = ee()->functions->var_swap($email_msg, $personalized_swap);
 
             // Load the text helper
@@ -5660,8 +5660,8 @@ class Forum_Core extends Forum
             // Flip notification flag
             ee()->db->set('notification_sent', 'y');
             ee()->db->where(array(
-                'topic_id'	=> $data['topic_id'],
-                'member_id'	=> $row['member_id']
+                'topic_id' => $data['topic_id'],
+                'member_id' => $row['member_id']
             ));
             ee()->db->update('forum_subscriptions');
         }
@@ -5693,24 +5693,24 @@ class Forum_Core extends Forum
                 continue;
             }
 
-            $temp['answer']	= ee('Security/XSS')->clean($val);
-            $temp['votes']	= (isset($_POST['votes'][$key]) and is_numeric($_POST['votes'][$key])) ? $_POST['votes'][$key] : 0;
+            $temp['answer'] = ee('Security/XSS')->clean($val);
+            $temp['votes'] = (isset($_POST['votes'][$key]) and is_numeric($_POST['votes'][$key])) ? $_POST['votes'][$key] : 0;
 
-            $answers[]	= $temp;
+            $answers[] = $temp;
 
             $total_votes = $temp['votes'] + $total_votes;
         }
 
-        $data['poll_question']	= ee('Security/XSS')->clean($_POST['poll_question']);
-        $data['poll_answers']	= serialize($answers);
+        $data['poll_question'] = ee('Security/XSS')->clean($_POST['poll_question']);
+        $data['poll_answers'] = serialize($answers);
 
         $query = ee()->db->query("SELECT count(*) AS count FROM exp_forum_polls WHERE topic_id = '{$topic_id}'");
 
-        if ($query->row('count')  == 0) {
-            $data['author_id']		= ee()->session->userdata('member_id');
-            $data['poll_date']		= ee()->localize->now;
-            $data['topic_id']		= $topic_id;
-            $data['total_votes']	= 0;
+        if ($query->row('count') == 0) {
+            $data['author_id'] = ee()->session->userdata('member_id');
+            $data['poll_date'] = ee()->localize->now;
+            $data['topic_id'] = $topic_id;
+            $data['total_votes'] = 0;
 
             ee()->db->query(ee()->db->insert_string('exp_forum_polls', $data));
         } else {
@@ -5727,7 +5727,7 @@ class Forum_Core extends Forum
     public function delete_post_page()
     {
         $post_id = '';
-        $title	 = '';
+        $title = '';
 
         // Fetch some meta data based on the request
         if ($this->current_request == 'deletereply') {
@@ -5795,13 +5795,13 @@ class Forum_Core extends Forum
         $str = $this->var_swap(
             $str,
             array(
-                'title'	=> $this->_convert_special_chars($title),
-                'body'	=> ee()->typography->parse_type(
+                'title' => $this->_convert_special_chars($title),
+                'body' => ee()->typography->parse_type(
                     $body,
                     array(
-                        'text_format'	=> $forum_text_formatting,
-                        'html_format'	=> $forum_html_formatting,
-                        'auto_links'	=> $forum_auto_link_urls,
+                        'text_format' => $forum_text_formatting,
+                        'html_format' => $forum_html_formatting,
+                        'auto_links' => $forum_auto_link_urls,
                         'allow_img_url' => $forum_allow_img_urls
                     )
                 )
@@ -5819,7 +5819,7 @@ class Forum_Core extends Forum
         $id = '';
 
         // No ID?  Bah....
-        if (! isset($_POST['post_id']) and  ! isset($_POST['topic_id'])) {
+        if (! isset($_POST['post_id']) and ! isset($_POST['topic_id'])) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
 
@@ -5891,7 +5891,7 @@ class Forum_Core extends Forum
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $file  = $this->fetch_pref('board_upload_path') . $row['filehash'] . $row['extension'];
+                $file = $this->fetch_pref('board_upload_path') . $row['filehash'] . $row['extension'];
                 $thumb = $this->fetch_pref('board_upload_path') . $row['filehash'] . '_t' . $row['extension'];
 
                 @unlink($file);
@@ -5929,22 +5929,22 @@ class Forum_Core extends Forum
         }
 
         // Are they allowed to swap the status?
-        $viewpath = ($query->row('announcement')  == 'n') ? 'viewthread/' : 'viewannounce/';
-        $viewpath .= ($query->row('announcement')  == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
+        $viewpath = ($query->row('announcement') == 'n') ? 'viewthread/' : 'viewannounce/';
+        $viewpath .= ($query->row('announcement') == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
 
         if (! $this->_mod_permission('can_change_status', $query->row('forum_id'))) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
 
         // Update the status
-        $status = ($query->row('status')  == 'o') ? 'c' : 'o';
+        $status = ($query->row('status') == 'o') ? 'c' : 'o';
 
         ee()->db->query("UPDATE exp_forum_topics SET status = '{$status}' WHERE topic_id = '" . ee()->db->escape_str($_GET['topic_id']) . "'");
 
         // Update edit date
         $data = array();
-        $data['topic_edit_author']	= ee()->session->userdata['member_id'];
-        $data['topic_edit_date']	= ee()->localize->now;
+        $data['topic_edit_author'] = ee()->session->userdata['member_id'];
+        $data['topic_edit_date'] = ee()->localize->now;
 
         ee()->db->query(ee()->db->update_string('exp_forum_topics', $data, "topic_id='" . $_GET['topic_id'] . "'"));
 
@@ -6002,7 +6002,7 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('move_topic_confirmation'),
             array(
-                'move_select_options'	=> $menu,
+                'move_select_options' => $menu,
                 'title' => $this->_convert_special_chars($query->row('title'))
             )
         );
@@ -6057,11 +6057,11 @@ class Forum_Core extends Forum
             $query2 = ee()->db->query("SELECT email, screen_name FROM exp_members where member_id = '{$author_id}'");
 
             $swap = array(
-                'forum_name'		=> $this->fetch_pref('board_label'),
-                'title'				=> $title,
-                'name_of_recipient'	=> $query2->row('screen_name'),
+                'forum_name' => $this->fetch_pref('board_label'),
+                'title' => $title,
+                'name_of_recipient' => $query2->row('screen_name'),
                 'moderation_action' => lang('moved_action'),
-                'thread_url'		=> ee()->input->remove_session_id(ee()->input->post('RET'))
+                'thread_url' => ee()->input->remove_session_id(ee()->input->post('RET'))
             );
 
             $template = ee()->functions->fetch_email_template('forum_moderation_notification');
@@ -6117,9 +6117,9 @@ class Forum_Core extends Forum
         $body = ee()->typography->parse_type(
             $query->row('body'),
             array(
-                'text_format'	=> $query->row('forum_text_formatting'),
-                'html_format'	=> $query->row('forum_html_formatting'),
-                'auto_links'	=> $query->row('forum_auto_link_urls'),
+                'text_format' => $query->row('forum_text_formatting'),
+                'html_format' => $query->row('forum_html_formatting'),
+                'auto_links' => $query->row('forum_auto_link_urls'),
                 'allow_img_url' => $query->row('forum_allow_img_urls')
             )
         );
@@ -6134,8 +6134,8 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $template,
             array(
-                'body'		=> $body,
-                'author'	=> $query->row('screen_name')
+                'body' => $body,
+                'author' => $query->row('screen_name')
             )
         );
     }
@@ -6163,10 +6163,10 @@ class Forum_Core extends Forum
             return $this->trigger_error('not_authorized');
         }
 
-        $post_id		= $query->row('post_id') ;
-        $author_id		= $query->row('author_id') ;
-        $old_topic_id	= $query->row('topic_id') ;
-        $old_forum_id	= $query->row('forum_id') ;
+        $post_id = $query->row('post_id') ;
+        $author_id = $query->row('author_id') ;
+        $old_topic_id = $query->row('topic_id') ;
+        $old_forum_id = $query->row('forum_id') ;
 
         // Gather the target topic ID
 
@@ -6216,11 +6216,11 @@ class Forum_Core extends Forum
             $query = ee()->db->query("SELECT email, screen_name FROM exp_members WHERE member_id = '{$author_id}'");
 
             $swap = array(
-                'forum_name'		=> $this->fetch_pref('board_label'),
-                'title'				=> $title,
-                'name_of_recipient'	=> $query->row('screen_name'),
+                'forum_name' => $this->fetch_pref('board_label'),
+                'title' => $title,
+                'name_of_recipient' => $query->row('screen_name'),
                 'moderation_action' => lang('moved_reply_action'),
-                'thread_url'		=> ee()->input->post('forum_path') . 'viewreply/' . $post_id . '/'
+                'thread_url' => ee()->input->post('forum_path') . 'viewreply/' . $post_id . '/'
             );
 
             $template = ee()->functions->fetch_email_template('forum_moderation_notification');
@@ -6268,11 +6268,11 @@ class Forum_Core extends Forum
             ee()->db->query("UPDATE exp_members SET last_visit = '" . ee()->localize->now . "' WHERE member_id = '" . ee()->session->userdata('member_id') . "'");
         }
 
-        $data = array('title' 	=> lang('post_marked_read'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('post_marked_read'),
-            'redirect'	=> ee()->functions->create_url($this->trigger),
-            'link'		=> array(ee()->functions->create_url($this->trigger), '')
+        $data = array('title' => lang('post_marked_read'),
+            'heading' => lang('thank_you'),
+            'content' => lang('post_marked_read'),
+            'redirect' => ee()->functions->create_url($this->trigger),
+            'link' => array(ee()->functions->create_url($this->trigger), '')
         );
 
         return ee()->output->show_message($data);
@@ -6302,21 +6302,21 @@ class Forum_Core extends Forum
 
         $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '" . ee()->session->userdata('member_id') . "'");
 
-        if ($query->row('count')  > 1) {
+        if ($query->row('count') > 1) {
             ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '" . ee()->session->userdata('member_id') . "'");
             $query->set_row('count', 0);
         }
-        if ($query->row('count')  == 0) {
+        if ($query->row('count') == 0) {
             $rand = ee()->session->userdata('member_id') . ee()->functions->random('alnum', 8);
             ee()->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$topic_id}', '{$this->preferences['board_id']}', '" . ee()->session->userdata('member_id') . "', '" . ee()->localize->now . "', '{$rand}')");
         }
 
-        $data = array('title' 	=> lang('thank_you'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('you_have_been_subscribed') . '<br /><br /><b>' . $title . '</b>',
-            'redirect'	=> $this->forum_path('/viewthread/' . $topic_id . '/'),
-            'rate'		=> 3,
-            'link'		=> array($this->forum_path('/viewthread/' . $topic_id . '/'), '')
+        $data = array('title' => lang('thank_you'),
+            'heading' => lang('thank_you'),
+            'content' => lang('you_have_been_subscribed') . '<br /><br /><b>' . $title . '</b>',
+            'redirect' => $this->forum_path('/viewthread/' . $topic_id . '/'),
+            'rate' => 3,
+            'link' => array($this->forum_path('/viewthread/' . $topic_id . '/'), '')
         );
 
         return ee()->output->show_message($data);
@@ -6346,12 +6346,12 @@ class Forum_Core extends Forum
 
         ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$topic_id}' AND member_id = '" . ee()->session->userdata('member_id') . "'");
 
-        $data = array('title' 	=> lang('thank_you'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('you_have_been_unsubscribed') . '<br /><br /><b>' . $title . '</b>',
-            'redirect'	=> $this->forum_path('/viewthread/' . $topic_id . '/'),
-            'rate'		=> 3,
-            'link'		=> array($this->forum_path('/viewthread/' . $topic_id . '/'), '')
+        $data = array('title' => lang('thank_you'),
+            'heading' => lang('thank_you'),
+            'content' => lang('you_have_been_unsubscribed') . '<br /><br /><b>' . $title . '</b>',
+            'redirect' => $this->forum_path('/viewthread/' . $topic_id . '/'),
+            'rate' => 3,
+            'link' => array($this->forum_path('/viewthread/' . $topic_id . '/'), '')
         );
 
         return ee()->output->show_message($data);
@@ -6373,32 +6373,32 @@ class Forum_Core extends Forum
         $query = ee()->db->query("SELECT title FROM exp_forum_topics t, exp_forum_subscriptions s WHERE t.topic_id = s.topic_id AND s.hash = '" . ee()->db->escape_str($hash) . "' ");
 
         if ($query->num_rows() != 1) {
-            $title	 = lang('error');
+            $title = lang('error');
             $heading = lang('error');
             $content = lang('not_subscribed_to_topic');
         } else {
             // prompt for confirmation
             if (! ee()->input->get('confirm')) {
-                $data['title']	 = lang('confirm_subscription_removal');
+                $data['title'] = lang('confirm_subscription_removal');
                 $data['heading'] = lang('confirm_subscription_removal');
                 $data['content'] = lang('remove_subscription_question') . "<br /><br /><b>" . $this->_convert_special_chars($query->row('title')) . "</b>";
-                $data['link']	 = array(ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->input->get('ACT') . '&id=' . $hash . '&board_id=' . $this->preferences['board_id'] . '&confirm=yes', lang('subscription_confirmation_link'));
+                $data['link'] = array(ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->input->get('ACT') . '&id=' . $hash . '&board_id=' . $this->preferences['board_id'] . '&confirm=yes', lang('subscription_confirmation_link'));
 
                 return ee()->output->show_message($data);
             }
 
             ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE hash = '" . ee()->db->escape_str($hash) . "'");
 
-            $title	 = lang('subscription_cancelled');
+            $title = lang('subscription_cancelled');
             $heading = lang('thank_you');
             $content = lang('your_subscription_cancelled') . '<br /><br /><b>' . $this->_convert_special_chars($query->row('title')) . '</b>';
         }
 
-        $data = array('title' 	=> $title,
-            'heading'	=> $heading,
-            'content'	=> $content,
-            'redirect'	=> '',
-            'link'		=> array($this->fetch_pref('board_forum_url'), $this->fetch_pref('board_label'))
+        $data = array('title' => $title,
+            'heading' => $heading,
+            'content' => $content,
+            'redirect' => '',
+            'link' => array($this->fetch_pref('board_forum_url'), $this->fetch_pref('board_label'))
         );
 
         return ee()->output->show_message($data);
@@ -6410,7 +6410,7 @@ class Forum_Core extends Forum
     public function merge_page()
     {
         $post_id = '';
-        $title	 = '';
+        $title = '';
 
         // Fetch some meta data
         $query = ee()->db->query("SELECT topic_id, forum_id, title FROM exp_forum_topics WHERE topic_id = '{$this->current_id}'");
@@ -6474,10 +6474,10 @@ class Forum_Core extends Forum
             return $this->trigger_error('not_authorized');
         }
 
-        $topic_id	= $query->row('topic_id') ;
-        $forum_id	= $query->row('forum_id') ;
-        $topic_fid	= $query->row('forum_id') ;
-        $title 		= $query->row('title') ;
+        $topic_id = $query->row('topic_id') ;
+        $forum_id = $query->row('forum_id') ;
+        $topic_fid = $query->row('forum_id') ;
+        $title = $query->row('title') ;
 
         // Gather the merge ID
 
@@ -6511,27 +6511,27 @@ class Forum_Core extends Forum
         }
 
         // The merged topic is newer.  It will then become a post
-        if ($result->row('topic_date')  > $query->row('topic_date')) {
+        if ($result->row('topic_date') > $query->row('topic_date')) {
             $query = ee()->db->query("SELECT * FROM exp_forum_topics WHERE topic_id = '" . ee()->db->escape_str($merge_id) . "'");
             $merge_fid = $query->row('forum_id') ;
         } else {
             // If the merge topic is older, the origial topic becomes a post
-            $merge_id  = $topic_id;
+            $merge_id = $topic_id;
             $merge_fid = $result->row('forum_id') ;
-            $topic_id  = $result->row('topic_id') ;
-            $forum_id  = $result->row('forum_id') ;
+            $topic_id = $result->row('topic_id') ;
+            $forum_id = $result->row('forum_id') ;
         }
 
         // Compile and insert the post data
         $data = array(
-            'topic_id'		=> $topic_id,
-            'forum_id'		=> $forum_id,
-            'body'			=> $query->row('body'),
-            'parse_smileys'	=> $query->row('parse_smileys'),
-            'author_id'		=> $query->row('author_id'),
-            'ip_address'	=> $query->row('ip_address'),
-            'post_date'		=> $query->row('topic_date'),
-            'board_id'		=> $this->fetch_pref('board_id')
+            'topic_id' => $topic_id,
+            'forum_id' => $forum_id,
+            'body' => $query->row('body'),
+            'parse_smileys' => $query->row('parse_smileys'),
+            'author_id' => $query->row('author_id'),
+            'ip_address' => $query->row('ip_address'),
+            'post_date' => $query->row('topic_date'),
+            'board_id' => $this->fetch_pref('board_id')
         );
 
         ee()->db->query(ee()->db->insert_string('exp_forum_posts', $data));
@@ -6601,11 +6601,11 @@ class Forum_Core extends Forum
             $query = ee()->db->query("SELECT email, screen_name FROM exp_members WHERE member_id = '{$data['author_id']}'");
 
             $swap = array(
-                'forum_name'		=> $this->fetch_pref('board_label'),
-                'title'				=> $title,
-                'name_of_recipient'	=> $query->row('screen_name'),
+                'forum_name' => $this->fetch_pref('board_label'),
+                'title' => $title,
+                'name_of_recipient' => $query->row('screen_name'),
                 'moderation_action' => lang('merged_action'),
-                'thread_url'		=> ee()->input->post('forum_path') . 'viewthread/' . $topic_id . '/'
+                'thread_url' => ee()->input->post('forum_path') . 'viewthread/' . $topic_id . '/'
             );
 
             $template = ee()->functions->fetch_email_template('forum_moderation_notification');
@@ -6728,22 +6728,22 @@ class Forum_Core extends Forum
 
         $title = $this->convert_forum_tags(ee()->input->get_post('title'));
         $data = array(
-            'forum_id'				=> $new_forum_id,
-            'title'					=> ee('Security/XSS')->clean($title),
-            'body'					=> $query->row('body'),
-            'sticky'				=> 'n',
-            'status'				=> 'o',
-            'announcement'			=> 'n',
-            'poll'					=> 'n',
-            'parse_smileys'			=> $query->row('parse_smileys'),
-            'author_id'				=> $query->row('author_id'),
-            'ip_address'			=> $query->row('ip_address'),
-            'parse_smileys'			=> $query->row('parse_smileys'),
-            'topic_date'			=> $query->row('post_date'),
-            'thread_total'			=> count($post_ids) + 1,  // Add back the topic
-            'last_post_date' 		=> $last_post,
-            'last_post_author_id'	=> $last_author,
-            'board_id'				=> $this->fetch_pref('board_id')
+            'forum_id' => $new_forum_id,
+            'title' => ee('Security/XSS')->clean($title),
+            'body' => $query->row('body'),
+            'sticky' => 'n',
+            'status' => 'o',
+            'announcement' => 'n',
+            'poll' => 'n',
+            'parse_smileys' => $query->row('parse_smileys'),
+            'author_id' => $query->row('author_id'),
+            'ip_address' => $query->row('ip_address'),
+            'parse_smileys' => $query->row('parse_smileys'),
+            'topic_date' => $query->row('post_date'),
+            'thread_total' => count($post_ids) + 1,  // Add back the topic
+            'last_post_date' => $last_post,
+            'last_post_author_id' => $last_author,
+            'board_id' => $this->fetch_pref('board_id')
         );
 
         ee()->db->query(ee()->db->insert_string('exp_forum_topics', $data));
@@ -6782,11 +6782,11 @@ class Forum_Core extends Forum
             $query = ee()->db->query("SELECT email, screen_name FROM exp_members WHERE member_id = '{$data['author_id']}'");
 
             $swap = array(
-                'forum_name'		=> $this->fetch_pref('board_label'),
-                'title'				=> $data['title'],
-                'name_of_recipient'	=> $query->row('screen_name'),
+                'forum_name' => $this->fetch_pref('board_label'),
+                'title' => $data['title'],
+                'name_of_recipient' => $query->row('screen_name'),
                 'moderation_action' => lang('split_action'),
-                'thread_url'		=> str_replace('viewforum', 'viewthread', $_POST['RET']) . $topic_id . '/'
+                'thread_url' => str_replace('viewforum', 'viewthread', $_POST['RET']) . $topic_id . '/'
             );
 
             $template = ee()->functions->fetch_email_template('forum_moderation_notification');
@@ -6886,20 +6886,20 @@ class Forum_Core extends Forum
         $str = $this->var_swap(
             $str,
             array(
-                'body'	 => ee()->typography->parse_type(
+                'body' => ee()->typography->parse_type(
                     $body,
                     array(
-                        'text_format'	=> $query->row('forum_text_formatting'),
-                        'html_format'	=> $query->row('forum_html_formatting'),
-                        'auto_links'	=> $query->row('forum_auto_link_urls'),
+                        'text_format' => $query->row('forum_text_formatting'),
+                        'html_format' => $query->row('forum_html_formatting'),
+                        'auto_links' => $query->row('forum_auto_link_urls'),
                         'allow_img_url' => $query->row('forum_allow_img_urls')
                     )
                 ),
-                'author'				=> $author,
-                'title'					=> ($is_topic and isset($title)) ? $title : '',
-                'reporter_name'			=> ee()->session->userdata['screen_name'],
-                'path:reporter_profile'	=> $this->profile_path(ee()->session->userdata['member_id']),
-                'path:post'				=> $this->forum_path('/' . (($is_topic) ? 'viewtopic' : 'viewreply') . "/{$this->current_id}/")
+                'author' => $author,
+                'title' => ($is_topic and isset($title)) ? $title : '',
+                'reporter_name' => ee()->session->userdata['screen_name'],
+                'path:reporter_profile' => $this->profile_path(ee()->session->userdata['member_id']),
+                'path:post' => $this->forum_path('/' . (($is_topic) ? 'viewtopic' : 'viewreply') . "/{$this->current_id}/")
             )
         );
 
@@ -6989,13 +6989,13 @@ class Forum_Core extends Forum
         // Send the notifications
 
         $swap = array(
-            'forum_name'		=> $this->fetch_pref('board_label'),
-            'reporter_name'		=> ee()->session->userdata['screen_name'],
-            'author'			=> $author,
-            'body'				=> ee('Security/XSS')->clean($body),
-            'reasons'			=> $reason_text,
-            'notes'				=> (ee()->input->post('notes')) ? ee('Security/XSS')->clean($_POST['notes']) : '',
-            'post_url'			=> ($is_topic) ? "{$forum_path}viewthread/{$post_id}/" : "{$forum_path}viewreply/{$post_id}/"
+            'forum_name' => $this->fetch_pref('board_label'),
+            'reporter_name' => ee()->session->userdata['screen_name'],
+            'author' => $author,
+            'body' => ee('Security/XSS')->clean($body),
+            'reasons' => $reason_text,
+            'notes' => (ee()->input->post('notes')) ? ee('Security/XSS')->clean($_POST['notes']) : '',
+            'post_url' => ($is_topic) ? "{$forum_path}viewthread/{$post_id}/" : "{$forum_path}viewreply/{$post_id}/"
         );
 
         $template = ee()->functions->fetch_email_template('forum_report_notification');
@@ -7063,7 +7063,7 @@ class Forum_Core extends Forum
         $template = $this->var_swap(
             $this->load_element('user_banning_warning'),
             array(
-                'name'	=> $this->_convert_special_chars($query->row('screen_name')),
+                'name' => $this->_convert_special_chars($query->row('screen_name')),
                 'form_declaration' => $form
             )
         );
@@ -7080,7 +7080,7 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('user_banning_page'),
             array(
-                'include:user_banning_element'	=> $template
+                'include:user_banning_element' => $template
             )
         );
     }
@@ -7107,7 +7107,7 @@ class Forum_Core extends Forum
         }
 
         $screen_name = $member->screen_name;
-        $ip_address  = $member->ip_address;
+        $ip_address = $member->ip_address;
 
         // Super-admins can't be banned
         if ($member->isSuperAdmin()) {
@@ -7213,7 +7213,7 @@ class Forum_Core extends Forum
         $template = $this->var_swap(
             $this->load_element('user_banning_report'),
             array(
-                'name'	=> $this->_convert_special_chars($screen_name),
+                'name' => $this->_convert_special_chars($screen_name),
                 'lang:member_banned' => $ban_msg
             )
         );
@@ -7261,7 +7261,7 @@ class Forum_Core extends Forum
         $template = $this->var_swap(
             $this->load_element('ignore_member_confirmation'),
             array(
-                'name'	=> $this->_convert_special_chars($query->row('screen_name')),
+                'name' => $this->_convert_special_chars($query->row('screen_name')),
                 'form_declaration' => $form
             )
         );
@@ -7278,7 +7278,7 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('ignore_member_page'),
             array(
-                'include:member_ignore_element'	=> $template
+                'include:member_ignore_element' => $template
             )
         );
     }
@@ -7342,11 +7342,11 @@ class Forum_Core extends Forum
 
         // Parse Date-based stats
         $dates = array(
-            'last_entry_date'      => ee()->stats->statdata('last_entry_date'),
+            'last_entry_date' => ee()->stats->statdata('last_entry_date'),
             'last_forum_post_date' => ee()->stats->statdata('last_forum_post_date'),
-            'last_comment_date'    => ee()->stats->statdata('last_comment_date'),
-            'last_visitor_date'    => ee()->stats->statdata('last_visitor_date'),
-            'most_visitor_date'    => ee()->stats->statdata('most_visitor_date')
+            'last_comment_date' => ee()->stats->statdata('last_comment_date'),
+            'last_visitor_date' => ee()->stats->statdata('last_visitor_date'),
+            'most_visitor_date' => ee()->stats->statdata('most_visitor_date')
         );
         $str = ee()->TMPL->parse_date_variables($str, $dates);
 
@@ -7360,8 +7360,8 @@ class Forum_Core extends Forum
 
         // Recent Member Registration List
         if (preg_match("/\{recent_member_names(.*?)\}(.*?){\/recent_member_names\}/s", $str, $match)) {
-            $limit	= (preg_match("/.*limit=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : 10;
-            $back	= (preg_match("/.*backspace=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : '';
+            $limit = (preg_match("/.*limit=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : 10;
+            $back = (preg_match("/.*backspace=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : '';
 
             ee()->db->select('screen_name, member_id');
             ee()->db->where('role_id != 2');
@@ -7518,9 +7518,9 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('advanced_search_form'),
             array(
-                'forum_select_options'			=> $options,
-                'member_group_select_options'	=> $groups,
-                'form_declaration'				=> $form
+                'forum_select_options' => $options,
+                'member_group_select_options' => $groups,
+                'form_declaration' => $form
             )
         );
     }
@@ -7559,7 +7559,7 @@ class Forum_Core extends Forum
                 continue;
             }
 
-            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or  ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
+            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
                 continue;
             }
 
@@ -7593,15 +7593,15 @@ class Forum_Core extends Forum
         $hash = ee()->functions->random('md5');
 
         $data = array(
-            'search_id'		=> $hash,
-            'search_date'	=> time(),
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'keywords'		=> $keywords,
-            'sort_order'	=> $sort_order,
-            'ip_address'	=> ee()->input->ip_address(),
-            'topic_ids'		=> addslashes(serialize($topic_ids)),
-            'post_ids'		=> addslashes(serialize($post_ids)),
-            'board_id'		=> $this->fetch_pref('board_id')
+            'search_id' => $hash,
+            'search_date' => time(),
+            'member_id' => ee()->session->userdata('member_id'),
+            'keywords' => $keywords,
+            'sort_order' => $sort_order,
+            'ip_address' => ee()->input->ip_address(),
+            'topic_ids' => addslashes(serialize($topic_ids)),
+            'post_ids' => addslashes(serialize($post_ids)),
+            'board_id' => $this->fetch_pref('board_id')
         );
 
         ee()->db->query(ee()->db->insert_string('exp_forum_search', $data));
@@ -7726,10 +7726,10 @@ class Forum_Core extends Forum
         if ($member_id == '' and $new_topic_search == false and $view_pending_topics == false) {
             if (! isset($_POST['member_name']) or $_POST['member_name'] == '') {
                 if (! isset($_POST['keywords']) or $_POST['keywords'] == "") {
-                    $data = array('title' 	=> lang('error'),
-                        'heading'	=> lang('error'),
-                        'content'	=> lang('search_no_keywords'),
-                        'link'		=> array($this->forum_path('search'), lang('advanced_search'))
+                    $data = array('title' => lang('error'),
+                        'heading' => lang('error'),
+                        'content' => lang('search_no_keywords'),
+                        'link' => array($this->forum_path('search'), lang('advanced_search'))
                     );
 
                     return ee()->output->show_message($data);
@@ -7750,10 +7750,10 @@ class Forum_Core extends Forum
 
             // Is the search term long enough?
             if (strlen($this->keywords) < $this->min_length) {
-                $data = array('title' 	=> lang('error'),
-                    'heading'	=> lang('error'),
-                    'content'	=> str_replace("%x", $this->min_length, lang('search_min_length')),
-                    'link'		=> array($this->forum_path('search'), lang('advanced_search'))
+                $data = array('title' => lang('error'),
+                    'heading' => lang('error'),
+                    'content' => str_replace("%x", $this->min_length, lang('search_min_length')),
+                    'link' => array($this->forum_path('search'), lang('advanced_search'))
                 );
 
                 return ee()->output->show_message($data);
@@ -7799,7 +7799,7 @@ class Forum_Core extends Forum
                 $role_join .= "\nLEFT JOIN exp_roles_role_groups rrg ON rg.group_id = rrg.group_id \n";
 
                 $sql_topic_join = $role_join . "\nLEFT JOIN exp_members ON exp_forum_topics.author_id = exp_members.member_id \n";
-                $sql_post_join	= $role_join . "\nLEFT JOIN exp_members ON p.author_id = exp_members.member_id \n";
+                $sql_post_join = $role_join . "\nLEFT JOIN exp_members ON p.author_id = exp_members.member_id \n";
                 $groups = "'" . implode("','", $_POST['member_group']) . "'";
             }
         }
@@ -7807,8 +7807,8 @@ class Forum_Core extends Forum
         // Are we searching by name?
         // If so, we'll fetch the member_id number
 
-        $author_id		= 0;
-        $screen_name	= '';
+        $author_id = 0;
+        $screen_name = '';
 
         if (isset($_POST['member_name']) and $_POST['member_name'] != "") {
             $screen_name = $_POST['member_name'];
@@ -7834,20 +7834,20 @@ class Forum_Core extends Forum
             $query = ee()->db->query($sql);
 
             if ($query->num_rows() == 0) {
-                $data = array('title' 	=> lang('error'),
-                    'heading'	=> lang('error'),
-                    'content'	=> lang('no_name_result'),
-                    'link'		=> array($this->forum_path('search'), lang('advanced_search'))
+                $data = array('title' => lang('error'),
+                    'heading' => lang('error'),
+                    'content' => lang('no_name_result'),
+                    'link' => array($this->forum_path('search'), lang('advanced_search'))
                 );
 
                 return ee()->output->show_message($data);
             }
 
             if ($query->num_rows() > 1) {
-                $data = array('title' 	=> lang('error'),
-                    'heading'	=> lang('error'),
-                    'content'	=> lang('too_many_name_results'),
-                    'link'		=> array($this->forum_path('search'), lang('advanced_search'))
+                $data = array('title' => lang('error'),
+                    'heading' => lang('error'),
+                    'content' => lang('too_many_name_results'),
+                    'link' => array($this->forum_path('search'), lang('advanced_search'))
                 );
 
                 return ee()->output->show_message($data);
@@ -7863,15 +7863,15 @@ class Forum_Core extends Forum
         }
 
         // Set the default preferences
-        $search_in		= (! isset($_POST['search_in']) or ! in_array($_POST['search_in'], array('titles', 'posts', 'all'))) ? 'all' : $_POST['search_in'];
-        $criteria 		= (! isset($_POST['search_criteria']) or ! in_array($_POST['search_criteria'], array('any', 'all', 'exact'))) ? 'all' : $_POST['search_criteria'];
-        $date			= (! isset($_POST['date']) or ! is_numeric($_POST['date'])) ? '0' : $_POST['date'];
-        $order_by 		= (! isset($_POST['order_by']) or ! in_array($_POST['order_by'], array('date', 'title', 'most_posts', 'recent_post'))) ? 'date' : $_POST['order_by'];
-        $date_order 	= (! isset($_POST['date_order']) or ! in_array($_POST['date_order'], array('newer', 'older'))) ? 'newer' : $_POST['date_order'];
-        $sort_order 	= (! isset($_POST['sort_order']) or ! in_array($_POST['sort_order'], array('asc', 'desc'))) ? 'desc' : $_POST['sort_order'];
-        $keywords		= $this->keywords;
-        $keywords_like	= ee()->db->escape_like_str(trim($keywords));
-        $keywords		= ee()->db->escape_str(trim($keywords));
+        $search_in = (! isset($_POST['search_in']) or ! in_array($_POST['search_in'], array('titles', 'posts', 'all'))) ? 'all' : $_POST['search_in'];
+        $criteria = (! isset($_POST['search_criteria']) or ! in_array($_POST['search_criteria'], array('any', 'all', 'exact'))) ? 'all' : $_POST['search_criteria'];
+        $date = (! isset($_POST['date']) or ! is_numeric($_POST['date'])) ? '0' : $_POST['date'];
+        $order_by = (! isset($_POST['order_by']) or ! in_array($_POST['order_by'], array('date', 'title', 'most_posts', 'recent_post'))) ? 'date' : $_POST['order_by'];
+        $date_order = (! isset($_POST['date_order']) or ! in_array($_POST['date_order'], array('newer', 'older'))) ? 'newer' : $_POST['date_order'];
+        $sort_order = (! isset($_POST['sort_order']) or ! in_array($_POST['sort_order'], array('asc', 'desc'))) ? 'desc' : $_POST['sort_order'];
+        $keywords = $this->keywords;
+        $keywords_like = ee()->db->escape_like_str(trim($keywords));
+        $keywords = ee()->db->escape_str(trim($keywords));
 
         // Do we have multiple search terms?
         // If so, break them up into discreet words so we can
@@ -7916,7 +7916,7 @@ class Forum_Core extends Forum
         $this->date_limit = '';
 
         if ($date > 0 and $member_id == '') {
-            $cutoff = ee()->localize->now - (60*60*24*$date);
+            $cutoff = ee()->localize->now - (60 * 60 * 24 * $date);
 
             if ($date_order == 'older') {
                 $this->date_limit .= " {dd} < " . $cutoff . " ";
@@ -7947,7 +7947,7 @@ class Forum_Core extends Forum
             $sql .= " forum_id = '{$id}' OR";
         }
 
-        $sql  = substr($sql, 0, -2);
+        $sql = substr($sql, 0, -2);
         $sql .= ') ';
 
         // Filter by date
@@ -7958,7 +7958,7 @@ class Forum_Core extends Forum
 
         // Limit to topics with no replies
         if ($view_pending_topics == true and $active_topic_search == false) {
-            $one_month_ago = time() - (60*60*24*30);
+            $one_month_ago = time() - (60 * 60 * 24 * 30);
             $sql .= "AND thread_total = 1 AND topic_date > " . $one_month_ago;
         }
 
@@ -8143,11 +8143,11 @@ class Forum_Core extends Forum
 
             $search_id = $this->_cache_search_result($topic_ids, array(), $words, $order);
 
-            $data = array('title' 	=> lang('search'),
-                'heading'	=> lang('thank_you'),
-                'content'	=> lang('search_redirect_msg'),
-                'redirect'	=> $this->forum_path('search_results/' . $search_id),
-                'link'		=> array($this->forum_path('search_results/' . $search_id), $this->fetch_pref('forum_name'))
+            $data = array('title' => lang('search'),
+                'heading' => lang('thank_you'),
+                'content' => lang('search_redirect_msg'),
+                'redirect' => $this->forum_path('search_results/' . $search_id),
+                'link' => array($this->forum_path('search_results/' . $search_id), $this->fetch_pref('forum_name'))
             );
 
             return ee()->output->show_message($data);
@@ -8165,7 +8165,7 @@ class Forum_Core extends Forum
             $sql .= " p.forum_id = '{$id}' OR";
         }
 
-        $sql  = substr($sql, 0, -2);
+        $sql = substr($sql, 0, -2);
         $sql .= ') ';
 
         // Ignore topics
@@ -8282,11 +8282,11 @@ class Forum_Core extends Forum
         $search_id = $this->_cache_search_result($topic_ids, $post_ids, $words, $order);
 
         $data = array(
-            'title' 	=> lang('search'),
-            'heading'	=> lang('thank_you'),
-            'content'	=> lang('search_redirect_msg'),
-            'redirect'	=> $this->forum_path('search_results/' . $search_id),
-            'link'		=> array($this->forum_path('search_results/' . $search_id), $this->fetch_pref('forum_name'))
+            'title' => lang('search'),
+            'heading' => lang('thank_you'),
+            'content' => lang('search_redirect_msg'),
+            'redirect' => $this->forum_path('search_results/' . $search_id),
+            'link' => array($this->forum_path('search_results/' . $search_id), $this->fetch_pref('forum_name'))
         );
 
         return ee()->output->show_message($data);
@@ -8320,12 +8320,12 @@ class Forum_Core extends Forum
         }
 
         $topic_ids = unserialize(stripslashes($query->row('topic_ids')));
-        $post_ids  = unserialize(stripslashes($query->row('post_ids')));
+        $post_ids = unserialize(stripslashes($query->row('post_ids')));
 
         // Load the XML Helper
         ee()->load->helper('xml');
 
-        $keywords	= xml_convert($query->row('keywords'));
+        $keywords = xml_convert($query->row('keywords'));
         $sort_order = $query->row('sort_order');
 
         // Load the template
@@ -8487,7 +8487,7 @@ class Forum_Core extends Forum
                 $baselink = $this->forum_path('/viewthread/' . $row['topic_id'] . '/');
 
                 for ($i = 0; $i < $num_pages; $i++) {
-                    if ($i == 3 and $num_pages >=5) {
+                    if ($i == 3 and $num_pages >= 5) {
                         $i = $num_pages - 1;
                         $links .= ' &#8230; ';
                     }
@@ -8531,10 +8531,10 @@ class Forum_Core extends Forum
                     $r_temp = $this->var_swap(
                         $r_temp,
                         array(
-                            'author'				=>	$reply_info[$post_id]['screen_name'],
-                            'path:member_profile'	=>	$this->profile_path($reply_info[$post_id]['member_id']),
-                            'snippet'				=>	ee()->functions->encode_ee_tags($reply_info[$post_id]['snippet'], true),
-                            'path:viewreply'		=>	$this->forum_path('/viewreply/' . $post_id . '/')
+                            'author' => $reply_info[$post_id]['screen_name'],
+                            'path:member_profile' => $this->profile_path($reply_info[$post_id]['member_id']),
+                            'snippet' => ee()->functions->encode_ee_tags($reply_info[$post_id]['snippet'], true),
+                            'path:viewreply' => $this->forum_path('/viewreply/' . $post_id . '/')
                         )
                     );
 
@@ -8553,19 +8553,19 @@ class Forum_Core extends Forum
             $temp = $this->var_swap(
                 $temp,
                 array(
-                    'topic_marker'			=>	$topic_marker,
-                    'topic_type'			=>  $topic_type,
-                    'topic_title'			=>	$title,
-                    'forum_name'			=>  $tquery->row('forum_name'),
-                    'author'				=>	$row['author'],
-                    'total_views'			=>	$row['thread_views'],
-                    'total_posts'			=>	$row['thread_total'],
-                    'reply_author'			=>	$row['last_post_author'],
-                    'path:member_profile'	=>	$this->profile_path($row['author_id']),
-                    'path:viewforum'		=>	$this->forum_path('/viewforum/' . $tquery->row('forum_id') . '/'),
-                    'path:view_thread'		=>	$this->forum_path('/viewthread/' . $row['topic_id'] . '/'),
-                    'path:search_thread'	=>	$this->forum_path('/search_thread/' . $this->current_id . $row['topic_id'] . '/'),
-                    'path:reply_member_profile'	=> $this->profile_path($row['last_post_author_id'])
+                    'topic_marker' => $topic_marker,
+                    'topic_type' => $topic_type,
+                    'topic_title' => $title,
+                    'forum_name' => $tquery->row('forum_name'),
+                    'author' => $row['author'],
+                    'total_views' => $row['thread_views'],
+                    'total_posts' => $row['thread_total'],
+                    'reply_author' => $row['last_post_author'],
+                    'path:member_profile' => $this->profile_path($row['author_id']),
+                    'path:viewforum' => $this->forum_path('/viewforum/' . $tquery->row('forum_id') . '/'),
+                    'path:view_thread' => $this->forum_path('/viewthread/' . $row['topic_id'] . '/'),
+                    'path:search_thread' => $this->forum_path('/search_thread/' . $this->current_id . $row['topic_id'] . '/'),
+                    'path:reply_member_profile' => $this->profile_path($row['last_post_author_id'])
                 )
             );
 
@@ -8583,10 +8583,10 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('search_results_page'),
             array(
-                'include:search_results'	=> $str,
-                'keywords'					=> ee()->functions->encode_ee_tags($keywords),
-                'total_results'				=> $total_rows,
-                'path:new_topic' 			=> $this->forum_path('/newtopic/' . $this->current_id . '/')
+                'include:search_results' => $str,
+                'keywords' => ee()->functions->encode_ee_tags($keywords),
+                'total_results' => $total_rows,
+                'path:new_topic' => $this->forum_path('/newtopic/' . $this->current_id . '/')
             )
         );
     }
@@ -8623,7 +8623,7 @@ class Forum_Core extends Forum
             );
         }
 
-        $post_ids  = unserialize(stripslashes($query->row('post_ids')));
+        $post_ids = unserialize(stripslashes($query->row('post_ids')));
 
         if (! isset($post_ids[$topic_id])) {
             return ee()->output->show_user_error(
@@ -8637,8 +8637,8 @@ class Forum_Core extends Forum
         ee()->load->helper('xml');
 
         // we are only concerned about posts for this topic
-        $post_ids	= $post_ids[$topic_id];
-        $keywords	= xml_convert($query->row('keywords'));
+        $post_ids = $post_ids[$topic_id];
+        $keywords = xml_convert($query->row('keywords'));
 
         // Load the template
         $str = $this->load_element('thread_search_results');
@@ -8652,8 +8652,8 @@ class Forum_Core extends Forum
         }
 
         // Load up pagination and start parsing
-        $post_limit	= 20;
-        $total_rows	= count($post_ids);
+        $post_limit = 20;
+        $total_rows = count($post_ids);
         ee()->load->library('pagination');
         $pagination = ee()->pagination->create();
         $pagination->position = 'inline';
@@ -8755,12 +8755,12 @@ class Forum_Core extends Forum
             $temp = $this->var_swap(
                 $temp,
                 array(
-                    'topic_marker'			=>	$topic_marker,
-                    'topic_type'			=>  $topic_type,
-                    'author'				=>	$row['author'],
-                    'snippet'				=>  ee()->functions->encode_ee_tags($snippet, true),
-                    'path:member_profile'	=>	$this->profile_path($row['author_id']),
-                    'path:viewreply'		=>	$this->forum_path('/viewreply/' . $row['post_id'] . '/')
+                    'topic_marker' => $topic_marker,
+                    'topic_type' => $topic_type,
+                    'author' => $row['author'],
+                    'snippet' => ee()->functions->encode_ee_tags($snippet, true),
+                    'path:member_profile' => $this->profile_path($row['author_id']),
+                    'path:viewreply' => $this->forum_path('/viewreply/' . $row['post_id'] . '/')
                 )
             );
 
@@ -8784,10 +8784,10 @@ class Forum_Core extends Forum
         return $this->var_swap(
             $this->load_element('search_thread_page'),
             array(
-                'include:thread_search_results'	=> $str,
-                'keywords'					=> $keywords,
-                'total_results'				=> $total_rows,
-                'topic_title'				=> $topic_title
+                'include:thread_search_results' => $str,
+                'keywords' => $keywords,
+                'total_results' => $total_rows,
+                'topic_title' => $topic_title
             )
         );
     }
@@ -8878,7 +8878,7 @@ class Forum_Core extends Forum
                 continue;
             }
 
-            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or  ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
+            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
                 continue;
             }
 
@@ -8895,7 +8895,7 @@ class Forum_Core extends Forum
             }
 
             $temp = str_replace('{title}', $title, $temp);
-            $temp = str_replace('{replies}', $row['thread_total']-1, $temp);
+            $temp = str_replace('{replies}', $row['thread_total'] - 1, $temp);
             $temp = str_replace('{views}', $row['thread_views'], $temp);
             $temp = str_replace('{author}', $this->_convert_special_chars($member_name[$row['author_id']]), $temp);
             $temp = str_replace('{path:member_profile}', $this->profile_path($row['author_id']), $temp);
@@ -9013,7 +9013,7 @@ class Forum_Core extends Forum
                 continue;
             }
 
-            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or  ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
+            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
                 continue;
             }
 
@@ -9030,7 +9030,7 @@ class Forum_Core extends Forum
             }
 
             $temp = str_replace('{title}', $title, $temp);
-            $temp = str_replace('{replies}', $row['thread_total']-1, $temp);
+            $temp = str_replace('{replies}', $row['thread_total'] - 1, $temp);
             $temp = str_replace('{views}', $row['thread_views'], $temp);
             $temp = str_replace('{path:member_profile}', $this->profile_path($row['author_id']), $temp);
             $temp = str_replace('{author}', $this->_convert_special_chars($member_name[$row['author_id']]), $temp);
@@ -9167,7 +9167,7 @@ class Forum_Core extends Forum
     {
         ee()->TMPL->disable_caching = false;
 
-        $sort  = (! in_array(ee()->TMPL->fetch_param('sort'), array('asc', 'desc'))) ? 'asc' : ee()->TMPL->fetch_param('sort');
+        $sort = (! in_array(ee()->TMPL->fetch_param('sort'), array('asc', 'desc'))) ? 'asc' : ee()->TMPL->fetch_param('sort');
         $limit = (! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '10' : ee()->TMPL->fetch_param('limit');
 
         ee()->db->select('forum_topics.topic_id, forum_topics.author_id, forum_topics.last_post_author_id,
@@ -9275,9 +9275,9 @@ class Forum_Core extends Forum
         }
 
         $formatting = array(
-            'text_format'	=> $query->row('forum_text_formatting'),
-            'html_format'	=> $query->row('forum_html_formatting'),
-            'auto_links'	=> $query->row('forum_auto_link_urls'),
+            'text_format' => $query->row('forum_text_formatting'),
+            'html_format' => $query->row('forum_html_formatting'),
+            'auto_links' => $query->row('forum_auto_link_urls'),
             'allow_img_url' => $query->row('forum_allow_img_urls')
         );
 
@@ -9296,7 +9296,7 @@ class Forum_Core extends Forum
                 continue;
             }
 
-            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or  ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
+            if (! $this->_permission('can_view_forum', $row['forum_permissions']) or ! $this->_permission('can_view_topics', $row['forum_permissions'])) {
                 continue;
             }
 
@@ -9308,9 +9308,9 @@ class Forum_Core extends Forum
 
             // Conditionals
             $cond = $row;
-            $cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? false : true;
-            $cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? false : true;
-            $cond['post_total']	= $row['thread_total'];  // this variable makes me want raisin bran
+            $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
+            $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+            $cond['post_total'] = $row['thread_total'];  // this variable makes me want raisin bran
             $cond['views'] = $row['thread_views'];
 
             $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -9383,7 +9383,7 @@ class Forum_Core extends Forum
                 }
 
                 $dates = array(
-                    'topic_date'     => $row['topic_date'],
+                    'topic_date' => $row['topic_date'],
                     'last_post_date' => $row['last_post_date']
                 );
                 $tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
@@ -9404,14 +9404,14 @@ class Forum_Core extends Forum
 
                     $content = $this->_quote_decode(
                         ee()->typography->parse_type(
-                        $row['body'],
-                        array(
-                            'text_format'	=> $formatting['text_format'],
-                            'html_format'	=> $formatting['html_format'],
-                            'auto_links'	=> $formatting['auto_links'],
-                            'allow_img_url' => $formatting['allow_img_url']
+                            $row['body'],
+                            array(
+                                'text_format' => $formatting['text_format'],
+                                'html_format' => $formatting['html_format'],
+                                'auto_links' => $formatting['auto_links'],
+                                'allow_img_url' => $formatting['allow_img_url']
+                            )
                         )
-                    )
                     );
 
                     $tagdata = ee()->TMPL->swap_var_single($key, $content, $tagdata);
@@ -9423,14 +9423,14 @@ class Forum_Core extends Forum
 
                     $content = $this->_quote_decode(
                         ee()->typography->parse_type(
-                        $replies[$row['topic_id']]['last_reply'],
-                        array(
-                            'text_format'	=> $formatting['text_format'],
-                            'html_format'	=> $formatting['html_format'],
-                            'auto_links'	=> $formatting['auto_links'],
-                            'allow_img_url' => $formatting['allow_img_url']
+                            $replies[$row['topic_id']]['last_reply'],
+                            array(
+                                'text_format' => $formatting['text_format'],
+                                'html_format' => $formatting['html_format'],
+                                'auto_links' => $formatting['auto_links'],
+                                'allow_img_url' => $formatting['allow_img_url']
+                            )
                         )
-                    )
                     );
 
                     $tagdata = ee()->TMPL->swap_var_single('last_reply', $content, $tagdata);
@@ -9484,14 +9484,14 @@ class Forum_Core extends Forum
 
         $this->auth_attempt = true;
 
-        $required = array('uri'			=> '',
-            'response'	=> '',
-            'realm'		=> $this->realm,
-            'username'	=> '',
-            'nonce'		=> 1,
-            'nc'			=> 1,
-            'cnonce'		=> 1,
-            'qop'			=> 1);
+        $required = array('uri' => '',
+            'response' => '',
+            'realm' => $this->realm,
+            'username' => '',
+            'nonce' => 1,
+            'nc' => 1,
+            'cnonce' => 1,
+            'qop' => 1);
 
         $params = ee('Variables/Parser')->parseTagParameters($_SERVER['PHP_AUTH_DIGEST']);
 

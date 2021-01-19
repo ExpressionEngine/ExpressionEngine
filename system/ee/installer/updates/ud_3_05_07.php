@@ -55,10 +55,10 @@ class Updater
                 'channel_data',
                 array(
                     $field_name => array(
-                        'name'       => $field_name,
-                        'type'       => 'VARCHAR',
+                        'name' => $field_name,
+                        'type' => 'VARCHAR',
                         'constraint' => 8,
-                        'null'       => true
+                        'null' => true
                     )
                 )
             );

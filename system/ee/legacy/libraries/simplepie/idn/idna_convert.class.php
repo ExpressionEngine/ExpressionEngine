@@ -65,31 +65,31 @@ class idna_convert
 
     // Internal settings, do not mess with them
     public $_punycode_prefix = 'xn--';
-    public $_invalid_ucs =     0x80000000;
-    public $_max_ucs =         0x10FFFF;
-    public $_base =            36;
-    public $_tmin =            1;
-    public $_tmax =            26;
-    public $_skew =            38;
-    public $_damp =            700;
-    public $_initial_bias =    72;
-    public $_initial_n =       0x80;
-    public $_sbase =           0xAC00;
-    public $_lbase =           0x1100;
-    public $_vbase =           0x1161;
-    public $_tbase =           0x11A7;
-    public $_lcount =          19;
-    public $_vcount =          21;
-    public $_tcount =          28;
-    public $_ncount =          588;   // _vcount * _tcount
-    public $_scount =          11172; // _lcount * _tcount * _vcount
-    public $_error =           false;
+    public $_invalid_ucs = 0x80000000;
+    public $_max_ucs = 0x10FFFF;
+    public $_base = 36;
+    public $_tmin = 1;
+    public $_tmax = 26;
+    public $_skew = 38;
+    public $_damp = 700;
+    public $_initial_bias = 72;
+    public $_initial_n = 0x80;
+    public $_sbase = 0xAC00;
+    public $_lbase = 0x1100;
+    public $_vbase = 0x1161;
+    public $_tbase = 0x11A7;
+    public $_lcount = 19;
+    public $_vcount = 21;
+    public $_tcount = 28;
+    public $_ncount = 588;   // _vcount * _tcount
+    public $_scount = 11172; // _lcount * _tcount * _vcount
+    public $_error = false;
 
     // See {@link set_paramter()} for details of how to change the following
     // settings from within your script / application
-    public $_api_encoding   =  'utf8'; // Default input charset is UTF-8
-    public $_allow_overlong =  false;  // Overlong UTF-8 encodings are forbidden
-    public $_strict_mode    =  false;  // Behave strict or not
+    public $_api_encoding = 'utf8'; // Default input charset is UTF-8
+    public $_allow_overlong = false;  // Overlong UTF-8 encodings are forbidden
+    public $_strict_mode = false;  // Behave strict or not
 
     // The constructor
     public function __construct($options = false)
@@ -341,11 +341,11 @@ class idna_convert
                     // Skip first char
                     if ($k) {
                         $encoded = '';
-                        $encoded = $this->_encode(array_slice($decoded, $last_begin, (($k)-$last_begin)));
+                        $encoded = $this->_encode(array_slice($decoded, $last_begin, (($k) - $last_begin)));
                         if ($encoded) {
                             $output .= $encoded;
                         } else {
-                            $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($k)-$last_begin)));
+                            $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($k) - $last_begin)));
                         }
                         $output .= chr($decoded[$k]);
                     }
@@ -357,11 +357,11 @@ class idna_convert
         if ($last_begin) {
             $inp_len = sizeof($decoded);
             $encoded = '';
-            $encoded = $this->_encode(array_slice($decoded, $last_begin, (($inp_len)-$last_begin)));
+            $encoded = $this->_encode(array_slice($decoded, $last_begin, (($inp_len) - $last_begin)));
             if ($encoded) {
                 $output .= $encoded;
             } else {
-                $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($inp_len)-$last_begin)));
+                $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($inp_len) - $last_begin)));
             }
 
             return $output;
@@ -418,9 +418,9 @@ class idna_convert
 
         // Wandering through the strings; init
         $is_first = true;
-        $bias     = $this->_initial_bias;
-        $idx      = 0;
-        $char     = $this->_initial_n;
+        $bias = $this->_initial_bias;
+        $idx = 0;
+        $char = $this->_initial_n;
 
         for ($enco_idx = ($delim_pos) ? ($delim_pos + 1) : 0; $enco_idx < $enco_len; ++$deco_len) {
             for ($old_idx = $idx, $w = 1, $k = $this->_base; 1 ; $k += $this->_base) {
@@ -487,7 +487,7 @@ class idna_convert
             return false;
         } // NAMEPREP failed
 
-        $deco_len  = count($decoded);
+        $deco_len = count($decoded);
         if (!$deco_len) {
             return false;
         } // Empty array
@@ -518,10 +518,10 @@ class idna_convert
         }
 
         // Now find and encode all non-basic code points
-        $is_first  = true;
-        $cur_code  = $this->_initial_n;
-        $bias      = $this->_initial_bias;
-        $delta     = 0;
+        $is_first = true;
+        $cur_code = $this->_initial_n;
+        $bias = $this->_initial_bias;
+        $delta = 0;
         while ($codecount < $deco_len) {
             // Find the smallest code point >= the current code point and
             // remember the last ouccrence of it in the input
@@ -549,7 +549,7 @@ class idna_convert
                         $q = (int) (($q - $t) / ($this->_base - $t));
                     }
                     $encoded .= $this->_encode_digit($q);
-                    $bias = $this->_adapt($delta, $codecount+1, $is_first);
+                    $bias = $this->_adapt($delta, $codecount + 1, $is_first);
                     $codecount++;
                     $delta = 0;
                     $is_first = false;
@@ -660,9 +660,9 @@ class idna_convert
         //
         // Combine code points
         //
-        $last_class   = 0;
+        $last_class = 0;
         $last_starter = 0;
-        $out_len      = count($output);
+        $out_len = count($output);
         for ($i = 0; $i < $out_len; ++$i) {
             $class = $this->_get_combining_class($output[$i]);
             if ((!$last_class || $last_class > $class) && $class) {
@@ -674,15 +674,15 @@ class idna_convert
                 if ($out) {
                     $output[$last_starter] = $out;
                     if (count($out) != $seq_len) {
-                        for ($j = $i+1; $j < $out_len; ++$j) {
-                            $output[$j-1] = $output[$j];
+                        for ($j = $i + 1; $j < $out_len; ++$j) {
+                            $output[$j - 1] = $output[$j];
                         }
                         unset($output[$out_len]);
                     }
                     // Rewind the for loop by one, since there can be more possible compositions
                     $i--;
                     $out_len--;
-                    $last_class = ($i == $last_starter) ? 0 : $this->_get_combining_class($output[$i-1]);
+                    $last_class = ($i == $last_starter) ? 0 : $this->_get_combining_class($output[$i - 1]);
 
                     continue;
                 }
@@ -792,17 +792,17 @@ class idna_convert
         while ($swap) {
             $swap = false;
             $last = $this->_get_combining_class(intval($input[0]));
-            for ($i = 0; $i < $size-1; ++$i) {
-                $next = $this->_get_combining_class(intval($input[$i+1]));
+            for ($i = 0; $i < $size - 1; ++$i) {
+                $next = $this->_get_combining_class(intval($input[$i + 1]));
                 if ($next != 0 && $last > $next) {
                     // Move item leftward until it fits
                     for ($j = $i + 1; $j > 0; --$j) {
-                        if ($this->_get_combining_class(intval($input[$j-1])) <= $next) {
+                        if ($this->_get_combining_class(intval($input[$j - 1])) <= $next) {
                             break;
                         }
                         $t = intval($input[$j]);
-                        $input[$j] = intval($input[$j-1]);
-                        $input[$j-1] = $t;
+                        $input[$j] = intval($input[$j - 1]);
+                        $input[$j - 1] = $t;
                         $swap = true;
                     }
                     // Reentering the loop looking at the old character again

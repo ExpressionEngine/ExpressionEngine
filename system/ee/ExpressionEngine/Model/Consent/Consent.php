@@ -21,13 +21,13 @@ class Consent extends Model
     protected static $_table_name = 'consents';
 
     protected static $_typed_columns = [
-        'consent_id'                 => 'int',
-        'consent_request_id'         => 'int',
+        'consent_id' => 'int',
+        'consent_request_id' => 'int',
         'consent_request_version_id' => 'int',
-        'member_id'                  => 'int',
-        'consent_given'              => 'boolString',
-        'expiration_date'            => 'timestamp',
-        'response_date'              => 'timestamp',
+        'member_id' => 'int',
+        'consent_given' => 'boolString',
+        'expiration_date' => 'timestamp',
+        'response_date' => 'timestamp',
     ];
 
     protected static $_relationships = [
@@ -47,11 +47,11 @@ class Consent extends Model
     ];
 
     protected static $_validation_rules = [
-        'consent_id'                 => 'required',
-        'consent_request_id'         => 'required',
+        'consent_id' => 'required',
+        'consent_request_id' => 'required',
         'consent_request_version_id' => 'required',
-        'member_id'                  => 'required',
-        'consent_given'              => 'enum[y,n]',
+        'member_id' => 'required',
+        'consent_given' => 'enum[y,n]',
     ];
 
     // protected static $_events = [];

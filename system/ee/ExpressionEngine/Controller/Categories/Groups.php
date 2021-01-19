@@ -261,9 +261,9 @@ class Groups extends AbstractCategoriesController
                     'field_html_formatting' => array(
                         'type' => 'radio',
                         'choices' => array(
-                            'all'	=> lang('allow_all_html'),
-                            'safe'	=> lang('allow_safe_html'),
-                            'none'	=> lang('convert_to_entities')
+                            'all' => lang('allow_all_html'),
+                            'safe' => lang('allow_safe_html'),
+                            'none' => lang('convert_to_entities')
                         ),
                         'value' => $cat_group->field_html_formatting
                     )
@@ -303,7 +303,7 @@ class Groups extends AbstractCategoriesController
     {
         $excluded_roles = [1, 2, 3, 4];
 
-        $can_edit_categories   = array_diff(ee('Permission')->rolesThatHave('can_edit_categories'), $excluded_roles);
+        $can_edit_categories = array_diff(ee('Permission')->rolesThatHave('can_edit_categories'), $excluded_roles);
         $can_delete_categories = array_diff(ee('Permission')->rolesThatHave('can_delete_categories'), $excluded_roles);
 
         $section = array(
@@ -402,18 +402,18 @@ class Groups extends AbstractCategoriesController
         }
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
-            'field_name'  => 'category_fields',
-            'choices'     => $choices,
-            'tooManyLimit'		=> 999,
-            'value'       => null,
+            'field_name' => 'category_fields',
+            'choices' => $choices,
+            'tooManyLimit' => 999,
+            'value' => null,
             'force_react' => true,
-            'multi'       => false,
-            'nested'      => false,
-            'selectable'  => false,
+            'multi' => false,
+            'nested' => false,
+            'selectable' => false,
             'reorderable' => true,
-            'removable'   => true,
-            'editable'    => true,
-            'reorder_ajax_url'    => ee('CP/URL', 'categories/fields/reorder/' . $cat_group->getId())->compile(),
+            'removable' => true,
+            'editable' => true,
+            'reorder_ajax_url' => ee('CP/URL', 'categories/fields/reorder/' . $cat_group->getId())->compile(),
             'no_results' => [
                 'text' => sprintf(lang('no_found'), lang('fields')),
                 'link_text' => 'add_new',

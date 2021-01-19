@@ -13,59 +13,59 @@
  */
 class Forum
 {
-    public $version				= '3.1.20';
-    public $build				= '20150501';
-    public $use_site_profile	= false;
-    public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
-    public $return_data 		= '';
-    public $body_extra			= '';
-    public $theme				= '';
-    public $image_url			= '';
-    public $forum_trigger		= '';
-    public $trigger				= '';
-    public $current_page		= 0;
-    public $current_id			= '';
-    public $return_override		= '';
-    public $seg_addition		= 0;
-    public $announce_id			= '';
-    public $current_request		= '';
-    public $current_page_name	= '';
-    public $javascript			= '';
-    public $head_extra			= '';
-    public $submission_error	= '';
-    public $error_message		= '';
-    public $mimes				= '';
-    public $basepath			= '';
-    public $keywords			= '';
-    public $min_length			= 3;	// Minimum length of search keywords
-    public $cache_expire		= 24;	// How many hours should we keep search caches?
-    public $max_chars			= 6000;
-    public $cur_thread_row		= 0;
-    public $thread_post_total	= 0;	// Used for new entry submission to determine redirect page number
-    public $trigger_error_page	= false;
-    public $is_table_open		= false;
-    public $preview_override	= false;
-    public $mbr_class_loaded	= false;
-    public $read_topics_exist	= false;
-    public $SPELL				= false;
-    public $spellcheck_enabled 	= false;
-    public $feeds_enabled		= null;
-    public $feed_ids			= '';
-    public $realm				= "ExpressionEngine Forums";
-    public $auth_attempt		= false;
-    public $use_sess_id			= 0;	// Used in calls to ee()->functions->fetch_site_index() in certain URLs, like attachments
-    public $forum_ids			= array();
-    public $attachments			= array();
-    public $forum_metadata		= array();
-    public $topic_metadata		= array();
-    public $post_metadata		= array();
-    public $admin_members		= array();
-    public $admin_groups		= array();
-    public $moderators			= array();
-    public $current_moderator	= array();
-    public $preferences			= array();
-    public $form_actions		= array();
-    public $uri_segments 		= array(
+    public $version = '3.1.20';
+    public $build = '20150501';
+    public $use_site_profile = false;
+    public $search_limit = 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
+    public $return_data = '';
+    public $body_extra = '';
+    public $theme = '';
+    public $image_url = '';
+    public $forum_trigger = '';
+    public $trigger = '';
+    public $current_page = 0;
+    public $current_id = '';
+    public $return_override = '';
+    public $seg_addition = 0;
+    public $announce_id = '';
+    public $current_request = '';
+    public $current_page_name = '';
+    public $javascript = '';
+    public $head_extra = '';
+    public $submission_error = '';
+    public $error_message = '';
+    public $mimes = '';
+    public $basepath = '';
+    public $keywords = '';
+    public $min_length = 3;	// Minimum length of search keywords
+    public $cache_expire = 24;	// How many hours should we keep search caches?
+    public $max_chars = 6000;
+    public $cur_thread_row = 0;
+    public $thread_post_total = 0;	// Used for new entry submission to determine redirect page number
+    public $trigger_error_page = false;
+    public $is_table_open = false;
+    public $preview_override = false;
+    public $mbr_class_loaded = false;
+    public $read_topics_exist = false;
+    public $SPELL = false;
+    public $spellcheck_enabled = false;
+    public $feeds_enabled = null;
+    public $feed_ids = '';
+    public $realm = "ExpressionEngine Forums";
+    public $auth_attempt = false;
+    public $use_sess_id = 0;	// Used in calls to ee()->functions->fetch_site_index() in certain URLs, like attachments
+    public $forum_ids = array();
+    public $attachments = array();
+    public $forum_metadata = array();
+    public $topic_metadata = array();
+    public $post_metadata = array();
+    public $admin_members = array();
+    public $admin_groups = array();
+    public $moderators = array();
+    public $current_moderator = array();
+    public $preferences = array();
+    public $form_actions = array();
+    public $uri_segments = array(
         'viewcategory', 'viewpost', 'viewreply', 'viewforum', 'viewthread',
         'viewannounce', 'newtopic', 'quotetopic', 'quotereply',
         'reporttopic', 'reportreply', 'do_report', 'newreply', 'edittopic',
@@ -78,7 +78,7 @@ class Forum
         'rss', 'atom', 'ignore_member', 'do_ignore_member'
     );
 
-    public $include_exceptions	= array(
+    public $include_exceptions = array(
         'head_extra', 'spellcheck_js', 'body_extra');
 
     protected $forum_core; // the "core" class object. Refactor, ho!
@@ -182,9 +182,9 @@ class Forum
 
                 if (isset(ee()->uri->segments[$i]) &&
                 ! in_array(ee()->uri->segments[$i], $this->uri_segments)) {
-                    if (! isset(ee()->uri->segments[$i+1])
-                        or (isset(ee()->uri->segments[$i+1]) &&
-                        ! in_array(ee()->uri->segments[$i+1], $this->uri_segments))) {
+                    if (! isset(ee()->uri->segments[$i + 1])
+                        or (isset(ee()->uri->segments[$i + 1]) &&
+                        ! in_array(ee()->uri->segments[$i + 1], $this->uri_segments))) {
                         $this->seg_addition++;
                     }
 
@@ -195,7 +195,7 @@ class Forum
             }
 
             if ($i > 1) {
-                $this->trigger = implode('/', array_slice(ee()->uri->segments, 0, $i-1));
+                $this->trigger = implode('/', array_slice(ee()->uri->segments, 0, $i - 1));
             }
         }
 
@@ -203,7 +203,7 @@ class Forum
         // Functions are called automatically based on the
         // second segment of the URL. However, we don't want
         // to allow any of the private function to be called directly.
-        if (substr(ee()->uri->segment(2+$this->seg_addition), 0, 1) == '_') {
+        if (substr(ee()->uri->segment(2 + $this->seg_addition), 0, 1) == '_') {
             exit;
         }
 
@@ -224,10 +224,10 @@ class Forum
         // Determine the function call
         // The function is based on the 2nd segment of the URI
         if ($function == '') {
-            if (! ee()->uri->segment(2+$this->seg_addition)) {
+            if (! ee()->uri->segment(2 + $this->seg_addition)) {
                 $function = 'forum_homepage';
             } else {
-                $function = ee()->uri->segment(2+$this->seg_addition);
+                $function = ee()->uri->segment(2 + $this->seg_addition);
             }
         }
 
@@ -236,8 +236,8 @@ class Forum
         // to share common methods
         $remap = array(
             ee()->config->item('profile_trigger') => '_load_member_class',
-            'ban_member'                          => 'ban_member_form',
-            'do_ban_member'                       => 'do_ban_member'
+            'ban_member' => 'ban_member_form',
+            'do_ban_member' => 'do_ban_member'
         );
         if (isset($remap[$function])) {
             $function = $remap[$function];
@@ -417,15 +417,15 @@ class Forum
         if ($this->current_request == 'viewannounce' && strpos($this->current_id, '_') !== false) {
             $x = explode("_", $this->current_id);
 
-            $this->current_id	= $x['0'];
-            $this->announce_id	= $x['1'];
+            $this->current_id = $x['0'];
+            $this->announce_id = $x['1'];
         }
 
         // Another special case
 
         if ($this->current_request == '' and $this->current_id == 'search') {
-            $this->current_request	= 'search';
-            $this->current_id		= '';
+            $this->current_request = 'search';
+            $this->current_id = '';
         }
 
         if ($this->current_request != 'search_results' and $this->current_request != 'search_thread' and ! is_numeric($this->current_id)) {
@@ -445,10 +445,10 @@ class Forum
         if (ee()->config->item('forum_is_installed') == "y"
             && ee()->config->item('forum_trigger') != ''
             && in_array(
-                ee()->uri->segment(1+$this->seg_addition),
+                ee()->uri->segment(1 + $this->seg_addition),
                 preg_split('/\|/', ee()->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY)
             )) {
-            $this->forum_trigger = ee()->uri->segment(1+$this->seg_addition);
+            $this->forum_trigger = ee()->uri->segment(1 + $this->seg_addition);
 
             return true;
         }
@@ -563,11 +563,11 @@ class Forum
         // -------------------------------------------
 
         if (! $classname) {
-            $data = array('title' 	=> lang('error'),
-                'heading'	=> lang('general_error'),
-                'content'	=> lang('nonexistent_page'),
-                'redirect'	=> '',
-                'link'		=> array($this->forum_path(), $this->fetch_pref('board_label'))
+            $data = array('title' => lang('error'),
+                'heading' => lang('general_error'),
+                'content' => lang('nonexistent_page'),
+                'redirect' => '',
+                'link' => array($this->forum_path(), $this->fetch_pref('board_label'))
             );
 
             return ee()->output->show_message($data, 0);
@@ -620,7 +620,7 @@ class Forum
      * @param 	integer		board id
      *
      */
-    protected function _load_preferences($board_id='')
+    protected function _load_preferences($board_id = '')
     {
         if ($board_id != '') {
             ee()->db->where('board_id', $board_id);
@@ -692,7 +692,7 @@ class Forum
         if ($this->use_site_profile == true) {
             $this->preferences['member_profile_path'] = ee()->functions->create_url(ee()->config->item('profile_trigger') . '/');
         } else {
-            $this->preferences['member_profile_path'] 	= $this->forum_path(ee()->config->item('profile_trigger') . '/');
+            $this->preferences['member_profile_path'] = $this->forum_path(ee()->config->item('profile_trigger') . '/');
         }
     }
 
@@ -713,17 +713,17 @@ class Forum
 
         $this->MBR->_set_properties(
             array(
-                'trigger'			=> ee()->config->item('profile_trigger'),
-                'theme_class'		=> 'theme_member',
-                'in_forum'			=> true,
-                'is_admin'			=> true,
-                'enable_breadcrumb'	=> false,
-                'basepath'			=> $this->forum_path(ee()->config->item('profile_trigger')),
-                'forum_path'		=> $this->forum_path(),
-                'image_url'			=> $this->image_url,
-                'theme_path'		=> ee('Theme')->getPath('forum/' . $this->theme . '/forum_member/'),
-                'css_file_path'		=> '',
-                'board_id'			=> $this->fetch_pref('board_id')
+                'trigger' => ee()->config->item('profile_trigger'),
+                'theme_class' => 'theme_member',
+                'in_forum' => true,
+                'is_admin' => true,
+                'enable_breadcrumb' => false,
+                'basepath' => $this->forum_path(ee()->config->item('profile_trigger')),
+                'forum_path' => $this->forum_path(),
+                'image_url' => $this->image_url,
+                'theme_path' => ee('Theme')->getPath('forum/' . $this->theme . '/forum_member/'),
+                'css_file_path' => '',
+                'board_id' => $this->fetch_pref('board_id')
             )
         );
 
@@ -811,9 +811,9 @@ class Forum
         list($class, $method) = explode(':', $form);
 
         $hidden = array(
-            'ACT'	=> ee()->functions->fetch_action_id($class, $method),
-            'FROM'	=> 'forum',
-            'mbase'	=> $this->forum_path(ee()->config->item('profile_trigger')),
+            'ACT' => ee()->functions->fetch_action_id($class, $method),
+            'FROM' => 'forum',
+            'mbase' => $this->forum_path(ee()->config->item('profile_trigger')),
             'board_id' => $this->fetch_pref('original_board_id')
         );
 
@@ -857,11 +857,11 @@ class Forum
 
         return ee()->functions->form_declaration(
             array(
-                'hidden_fields'	=> $hidden,
-                'action'		=> $action,
-                'name'			=> ($method == 'submit_post') ? $method : '',
-                'id'			=> ($method == 'submit_post') ? $method : '',
-                'enctype'		=> ($method == 'submit_post' and $this->current_request != 'viewthread') ? 'multi' : ''
+                'hidden_fields' => $hidden,
+                'action' => $action,
+                'name' => ($method == 'submit_post') ? $method : '',
+                'id' => ($method == 'submit_post') ? $method : '',
+                'enctype' => ($method == 'submit_post' and $this->current_request != 'viewthread') ? 'multi' : ''
             )
         );
     }
@@ -1053,12 +1053,12 @@ class Forum
 
         // Parse the forum segments and board prefs
         $conds = array(
-            'current_request'	=> $this->current_request,
-            'current_id'		=> $this->current_id,
-            'current_page'		=> $this->current_page,
-            'pm_enabled'		=> EE_Messages::can_send_pm(),
-            'logged_in'			=> ee()->session->userdata('member_id') != 0,
-            'logged_out'		=> ee()->session->userdata('member_id') == 0
+            'current_request' => $this->current_request,
+            'current_id' => $this->current_id,
+            'current_page' => $this->current_page,
+            'pm_enabled' => EE_Messages::can_send_pm(),
+            'logged_in' => ee()->session->userdata('member_id') != 0,
+            'logged_out' => ee()->session->userdata('member_id') == 0
         );
 
         // parse certain board preferences as well
@@ -1071,46 +1071,46 @@ class Forum
         $str = $this->var_swap(
             $str,
             array(
-                'lang'                     => ee()->config->item('xml_lang'),
-                'charset'                  => ee()->config->item('output_charset'),
-                'include:head_extra'       => $this->head_extra,
-                'include:body_extra'       => $this->body_extra,
-                'include:spellcheck_js'    => $this->spellcheck_js(),
-                'path:spellcheck_iframe'   => $this->forum_path('/spellcheck_iframe/'),
-                'screen_name'              => $this->_convert_special_chars(ee()->session->userdata('screen_name')),
-                'path:logout'              => ee()->functions->create_url('logout') . '&amp;FROM=forum&amp;board_id=' . $this->fetch_pref('original_board_id'),
-                'path:image_url'           => $this->image_url,
-                'path:forum_home'          => $this->forum_path(),
-                'path:your_control_panel'  => $this->profile_path('profile'),
-                'path:your_profile'        => $this->profile_path(ee()->session->userdata('member_id')),
-                'path:login'               => $this->profile_path('login'),
-                'path:register'            => $this->profile_path('register'),
-                'path:memberlist'          => $this->profile_path('memberlist'),
-                'path:forgot'              => $this->profile_path('forgot_password'),
-                'path:private_messages'    => $this->profile_path('messages/view_folder/1'),
-                'path:recent_poster'       => $this->profile_path($this->fetch_pref('board_recent_poster_id')),
-                'path:advanced_search'     => $this->forum_path('/search/'),
-                'path:view_new_topics'     => $this->forum_path('/new_topic_search'),
-                'path:view_active_topics'  => $this->forum_path('/active_topic_search'),
+                'lang' => ee()->config->item('xml_lang'),
+                'charset' => ee()->config->item('output_charset'),
+                'include:head_extra' => $this->head_extra,
+                'include:body_extra' => $this->body_extra,
+                'include:spellcheck_js' => $this->spellcheck_js(),
+                'path:spellcheck_iframe' => $this->forum_path('/spellcheck_iframe/'),
+                'screen_name' => $this->_convert_special_chars(ee()->session->userdata('screen_name')),
+                'path:logout' => ee()->functions->create_url('logout') . '&amp;FROM=forum&amp;board_id=' . $this->fetch_pref('original_board_id'),
+                'path:image_url' => $this->image_url,
+                'path:forum_home' => $this->forum_path(),
+                'path:your_control_panel' => $this->profile_path('profile'),
+                'path:your_profile' => $this->profile_path(ee()->session->userdata('member_id')),
+                'path:login' => $this->profile_path('login'),
+                'path:register' => $this->profile_path('register'),
+                'path:memberlist' => $this->profile_path('memberlist'),
+                'path:forgot' => $this->profile_path('forgot_password'),
+                'path:private_messages' => $this->profile_path('messages/view_folder/1'),
+                'path:recent_poster' => $this->profile_path($this->fetch_pref('board_recent_poster_id')),
+                'path:advanced_search' => $this->forum_path('/search/'),
+                'path:view_new_topics' => $this->forum_path('/new_topic_search'),
+                'path:view_active_topics' => $this->forum_path('/active_topic_search'),
                 'path:view_pending_topics' => $this->forum_path('/view_pending_topics'),
-                'path:mark_all_read'       => rtrim($this->forum_path('/mark_all_read/' . CSRF_TOKEN), '/'),
-                'path:do_search'           => $this->forum_path('/do_search/'),
-                'path:smileys'             => $this->forum_path('/smileys/'),
-                'path:rss'                 => $this->forum_path('/rss/' . $this->feed_ids),
-                'path:atom'                => $this->forum_path('/atom/' . $this->feed_ids),
-                'path:set_theme'           => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'set_theme') . '&board_id=' . $this->fetch_pref('original_board_id'),
-                'recent_poster'            => $this->fetch_pref('board_recent_poster'),
-                'forum_name'               => $this->_convert_special_chars($this->fetch_pref('board_label'), true),
-                'forum_url'                => $this->fetch_pref('board_forum_url'),
-                'page_title'               => $this->_convert_special_chars($this->current_page_name, true),
-                'module_version'           => $this->version,
-                'forum_build'              => $this->build,
-                'error_message'            => $this->error_message,
-                'path:theme_css'           => '',
-                'path:theme_js'            => ee('Theme')->getUrl('forum/' . $this->theme . '/theme/javascript/'),
-                'site_url'                 => ee()->config->item('site_url'),
-                'username_max_length'      => USERNAME_MAX_LENGTH,
-                'password_max_length'      => PASSWORD_MAX_LENGTH
+                'path:mark_all_read' => rtrim($this->forum_path('/mark_all_read/' . CSRF_TOKEN), '/'),
+                'path:do_search' => $this->forum_path('/do_search/'),
+                'path:smileys' => $this->forum_path('/smileys/'),
+                'path:rss' => $this->forum_path('/rss/' . $this->feed_ids),
+                'path:atom' => $this->forum_path('/atom/' . $this->feed_ids),
+                'path:set_theme' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'set_theme') . '&board_id=' . $this->fetch_pref('original_board_id'),
+                'recent_poster' => $this->fetch_pref('board_recent_poster'),
+                'forum_name' => $this->_convert_special_chars($this->fetch_pref('board_label'), true),
+                'forum_url' => $this->fetch_pref('board_forum_url'),
+                'page_title' => $this->_convert_special_chars($this->current_page_name, true),
+                'module_version' => $this->version,
+                'forum_build' => $this->build,
+                'error_message' => $this->error_message,
+                'path:theme_css' => '',
+                'path:theme_js' => ee('Theme')->getUrl('forum/' . $this->theme . '/theme/javascript/'),
+                'site_url' => ee()->config->item('site_url'),
+                'username_max_length' => USERNAME_MAX_LENGTH,
+                'password_max_length' => PASSWORD_MAX_LENGTH
             )
         );
 
@@ -1140,139 +1140,139 @@ class Forum
     protected function _fetch_filename($index)
     {
         $matrix = array(
-            'forum_css'						=> 'forum_css',
+            'forum_css' => 'forum_css',
             // --------------------------------------------------------
-            'html_header'					=> 'forum_global',
-            'meta_tags'						=> 'forum_global',
-            'html_footer'					=> 'forum_global',
-            'top_bar'						=> 'forum_global',
-            'top_bar_spacer'				=> 'forum_global',
-            'page_header'					=> 'forum_global',
-            'page_header_simple'			=> 'forum_global',
-            'page_subheader'				=> 'forum_global',
-            'page_subheader_simple'			=> 'forum_global',
-            'private_message_box'			=> 'forum_global',
+            'html_header' => 'forum_global',
+            'meta_tags' => 'forum_global',
+            'html_footer' => 'forum_global',
+            'top_bar' => 'forum_global',
+            'top_bar_spacer' => 'forum_global',
+            'page_header' => 'forum_global',
+            'page_header_simple' => 'forum_global',
+            'page_subheader' => 'forum_global',
+            'page_subheader_simple' => 'forum_global',
+            'private_message_box' => 'forum_global',
             // --------------------------------------------------------
-            'javascript'					=> 'forum_javascript',
-            'javascript_show_hide_forums'	=> 'forum_javascript',
-            'javascript_forum_array'		=> 'forum_javascript',
-            'javascript_set_show_hide'		=> 'forum_javascript',
+            'javascript' => 'forum_javascript',
+            'javascript_show_hide_forums' => 'forum_javascript',
+            'javascript_forum_array' => 'forum_javascript',
+            'javascript_set_show_hide' => 'forum_javascript',
             // --------------------------------------------------------
-            'breadcrumb'					=> 'forum_breadcrumb',
-            'breadcrumb_trail'				=> 'forum_breadcrumb',
-            'breadcrumb_current_page'		=> 'forum_breadcrumb',
+            'breadcrumb' => 'forum_breadcrumb',
+            'breadcrumb_trail' => 'forum_breadcrumb',
+            'breadcrumb_current_page' => 'forum_breadcrumb',
             // --------------------------------------------------------
-            'offline_page'					=> 'forum_offline',
+            'offline_page' => 'forum_offline',
             // --------------------------------------------------------
-            'forum_homepage'				=> 'forum_index',
-            'main_forum_list'				=> 'forum_index',
-            'forum_table_heading'			=> 'forum_index',
-            'forum_table_rows'				=> 'forum_index',
-            'forum_table_footer'			=> 'forum_index',
+            'forum_homepage' => 'forum_index',
+            'main_forum_list' => 'forum_index',
+            'forum_table_heading' => 'forum_index',
+            'forum_table_rows' => 'forum_index',
+            'forum_table_footer' => 'forum_index',
             // --------------------------------------------------------
-            'category_page'					=> 'forum_category',
+            'category_page' => 'forum_category',
             // --------------------------------------------------------
-            'announcement_page'				=> 'forum_announcements',
-            'announcement_topics'			=> 'forum_announcements',
-            'announcement_topic_rows'		=> 'forum_announcements',
-            'announcement'					=> 'forum_announcements',
+            'announcement_page' => 'forum_announcements',
+            'announcement_topics' => 'forum_announcements',
+            'announcement_topic_rows' => 'forum_announcements',
+            'announcement' => 'forum_announcements',
             // --------------------------------------------------------
-            'topic_page'					=> 'forum_topics',
-            'topics'						=> 'forum_topics',
-            'topic_rows'					=> 'forum_topics',
-            'topic_no_results'				=> 'forum_topics',
+            'topic_page' => 'forum_topics',
+            'topics' => 'forum_topics',
+            'topic_rows' => 'forum_topics',
+            'topic_no_results' => 'forum_topics',
             // --------------------------------------------------------
-            'thread_page'					=> 'forum_threads',
-            'threads'						=> 'forum_threads',
-            'thread_rows'					=> 'forum_threads',
-            'thread_review'					=> 'forum_threads',
-            'thread_review_rows'			=> 'forum_threads',
-            'post_attachments'				=> 'forum_threads',
-            'thumb_attachments'				=> 'forum_threads',
-            'image_attachments'				=> 'forum_threads',
-            'file_attachments'				=> 'forum_threads',
-            'signature'						=> 'forum_threads',
-            'quoted_author'					=> 'forum_threads',
+            'thread_page' => 'forum_threads',
+            'threads' => 'forum_threads',
+            'thread_rows' => 'forum_threads',
+            'thread_review' => 'forum_threads',
+            'thread_review_rows' => 'forum_threads',
+            'post_attachments' => 'forum_threads',
+            'thumb_attachments' => 'forum_threads',
+            'image_attachments' => 'forum_threads',
+            'file_attachments' => 'forum_threads',
+            'signature' => 'forum_threads',
+            'quoted_author' => 'forum_threads',
             // --------------------------------------------------------
-            'submission_page'				=> 'forum_submission',
-            'submission_errors'				=> 'forum_submission',
-            'submission_form'				=> 'forum_submission',
-            'preview_post'					=> 'forum_submission',
-            'form_attachments'				=> 'forum_submission',
-            'form_attachment_rows'			=> 'forum_submission',
-            'poll_answer_field'				=> 'forum_submission',
-            'poll_vote_count_field'			=> 'forum_submission',
-            'fast_reply_form'				=> 'forum_submission',
+            'submission_page' => 'forum_submission',
+            'submission_errors' => 'forum_submission',
+            'submission_form' => 'forum_submission',
+            'preview_post' => 'forum_submission',
+            'form_attachments' => 'forum_submission',
+            'form_attachment_rows' => 'forum_submission',
+            'poll_answer_field' => 'forum_submission',
+            'poll_vote_count_field' => 'forum_submission',
+            'fast_reply_form' => 'forum_submission',
             // --------------------------------------------------------
-            'poll_questions'				=> 'forum_poll',
-            'poll_question_rows'			=> 'forum_poll',
-            'poll_answers'					=> 'forum_poll',
-            'poll_answer_rows'				=> 'forum_poll',
-            'poll_graph_left'				=> 'forum_poll',
-            'poll_graph_middle'				=> 'forum_poll',
-            'poll_graph_right'				=> 'forum_poll',
+            'poll_questions' => 'forum_poll',
+            'poll_question_rows' => 'forum_poll',
+            'poll_answers' => 'forum_poll',
+            'poll_answer_rows' => 'forum_poll',
+            'poll_graph_left' => 'forum_poll',
+            'poll_graph_middle' => 'forum_poll',
+            'poll_graph_right' => 'forum_poll',
             // --------------------------------------------------------
-            'visitor_stats'					=> 'forum_stats',
+            'visitor_stats' => 'forum_stats',
             // --------------------------------------------------------
-            'forum_legend'					=> 'forum_legends',
-            'topic_legend'					=> 'forum_legends',
+            'forum_legend' => 'forum_legends',
+            'topic_legend' => 'forum_legends',
             // --------------------------------------------------------
-            'recent_posts'					=> 'forum_archives',
-            'most_recent_topics'			=> 'forum_archives',
-            'most_popular_posts'			=> 'forum_archives',
+            'recent_posts' => 'forum_archives',
+            'most_recent_topics' => 'forum_archives',
+            'most_popular_posts' => 'forum_archives',
             // --------------------------------------------------------
-            'member_page'					=> 'forum_member',
+            'member_page' => 'forum_member',
             // --------------------------------------------------------
-            'user_banning_page'				=> 'forum_user_banning',
-            'user_banning_warning'			=> 'forum_user_banning',
-            'user_banning_report'			=> 'forum_user_banning',
+            'user_banning_page' => 'forum_user_banning',
+            'user_banning_warning' => 'forum_user_banning',
+            'user_banning_report' => 'forum_user_banning',
             // --------------------------------------------------------
-            'advanced_search_page'			=> 'forum_search',
-            'quick_search_form'				=> 'forum_search',
-            'advanced_search_form'			=> 'forum_search',
-            'search_results_page'			=> 'forum_search',
-            'search_thread_page'			=> 'forum_search',
-            'search_results'				=> 'forum_search',
-            'thread_search_results'			=> 'forum_search',
-            'forum_quick_search_form'		=> 'forum_search',
-            'reply_results'					=> 'forum_search',
-            'result_rows'					=> 'forum_search',
-            'thread_result_rows'			=> 'forum_search',
-            'no_search_result'				=> 'forum_search',
+            'advanced_search_page' => 'forum_search',
+            'quick_search_form' => 'forum_search',
+            'advanced_search_form' => 'forum_search',
+            'search_results_page' => 'forum_search',
+            'search_thread_page' => 'forum_search',
+            'search_results' => 'forum_search',
+            'thread_search_results' => 'forum_search',
+            'forum_quick_search_form' => 'forum_search',
+            'reply_results' => 'forum_search',
+            'result_rows' => 'forum_search',
+            'thread_result_rows' => 'forum_search',
+            'no_search_result' => 'forum_search',
             // --------------------------------------------------------
-            'login_required_page'			=> 'forum_login',
-            'login_form'					=> 'forum_login',
-            'login_form_mini'				=> 'forum_login',
+            'login_required_page' => 'forum_login',
+            'login_form' => 'forum_login',
+            'login_form_mini' => 'forum_login',
             // --------------------------------------------------------
-            'move_topic_page'				=> 'forum_move_topic',
-            'move_topic_confirmation'		=> 'forum_move_topic',
+            'move_topic_page' => 'forum_move_topic',
+            'move_topic_confirmation' => 'forum_move_topic',
             // --------------------------------------------------------
-            'move_reply_page'				=> 'forum_move_reply',
-            'move_reply_confirmation'		=> 'forum_move_reply',
+            'move_reply_page' => 'forum_move_reply',
+            'move_reply_confirmation' => 'forum_move_reply',
             // --------------------------------------------------------
-            'merge_page'					=> 'forum_merge',
-            'merge_interface'				=> 'forum_merge',
+            'merge_page' => 'forum_merge',
+            'merge_interface' => 'forum_merge',
             // --------------------------------------------------------
-            'split_page'					=> 'forum_split',
-            'split_data'					=> 'forum_split',
-            'split_thread_rows'				=> 'forum_split',
+            'split_page' => 'forum_split',
+            'split_data' => 'forum_split',
+            'split_thread_rows' => 'forum_split',
             // --------------------------------------------------------
-            'report_page'					=> 'forum_report',
-            'report_form'					=> 'forum_report',
+            'report_page' => 'forum_report',
+            'report_form' => 'forum_report',
             // --------------------------------------------------------
-            'ignore_member_page'			=> 'forum_ignore',
-            'ignore_member_confirmation'	=> 'forum_ignore',
+            'ignore_member_page' => 'forum_ignore',
+            'ignore_member_confirmation' => 'forum_ignore',
             // --------------------------------------------------------
-            'delete_post_page'				=> 'forum_delete_post',
-            'delete_post_warning'			=> 'forum_delete_post',
+            'delete_post_page' => 'forum_delete_post',
+            'delete_post_warning' => 'forum_delete_post',
             // --------------------------------------------------------
-            'emoticon_page'					=> 'forum_emoticons',
+            'emoticon_page' => 'forum_emoticons',
             // --------------------------------------------------------
-            'error_page'					=> 'forum_error',
-            'error_message'					=> 'forum_error',
+            'error_page' => 'forum_error',
+            'error_message' => 'forum_error',
             // --------------------------------------------------------
-            'atom_page'						=> 'forum_atom',
-            'rss_page'						=> 'forum_rss'
+            'atom_page' => 'forum_atom',
+            'rss_page' => 'forum_rss'
         );
 
         return (! isset($matrix[$index])) ? false : $matrix[$index];
@@ -1406,7 +1406,7 @@ class Forum
         return $this->var_swap(
             $this->load_element('forum_quick_search_form'),
             array(
-                'form_declaration'	=> $form,
+                'form_declaration' => $form,
                 'forum_id' => $this->current_id
             )
         );
@@ -1458,12 +1458,12 @@ class Forum
         // Define the first crumb (forum homepage link)
         $crumbs = $this->_crumb_trail(
             array(
-                'link'	=> $this->forum_path('/'),
-                'title'	=> lang('home')
+                'link' => $this->forum_path('/'),
+                'title' => lang('home')
             )
         );
 
-        $request = ee()->uri->segment(2+$this->seg_addition);
+        $request = ee()->uri->segment(2 + $this->seg_addition);
 
         // Is this the search page?
         if ($request == 'search') {
@@ -1496,15 +1496,15 @@ class Forum
 
         // Are we showing the member profile pages?
         if ($request == ee()->config->item('profile_trigger')) {
-            if (ee()->uri->segment(3+$this->seg_addition) == '') {
+            if (ee()->uri->segment(3 + $this->seg_addition) == '') {
                 return $this->_build_crumbs(lang('member_profile'), $crumbs, lang('member_profile'));
             }
 
-            if (is_numeric(ee()->uri->segment(3+$this->seg_addition))) {
+            if (is_numeric(ee()->uri->segment(3 + $this->seg_addition))) {
                 ee()->db->select('screen_name');
                 $query = ee()->db->get_where(
                     'members',
-                    array('member_id' => ee()->uri->segment(3+$this->seg_addition))
+                    array('member_id' => ee()->uri->segment(3 + $this->seg_addition))
                 );
 
                 $crumbs .= $this->_crumb_trail(
@@ -1517,13 +1517,13 @@ class Forum
                 return $this->_build_crumbs($this->_convert_special_chars($query->row('screen_name')), $crumbs, $this->_convert_special_chars($query->row('screen_name')));
             }
 
-            if (ee()->uri->segment(3+$this->seg_addition) == 'memberlist') {
+            if (ee()->uri->segment(3 + $this->seg_addition) == 'memberlist') {
                 return $this->_build_crumbs(lang('mbr_memberlist'), $crumbs, lang('mbr_memberlist'));
-            } elseif (ee()->uri->segment(3+$this->seg_addition) == 'member_search') {
+            } elseif (ee()->uri->segment(3 + $this->seg_addition) == 'member_search') {
                 return $this->_build_crumbs(lang('member_search'), $crumbs, lang('member_search'));
             }
 
-            if (ee()->uri->segment(3+$this->seg_addition) != 'profile') {
+            if (ee()->uri->segment(3 + $this->seg_addition) != 'profile') {
                 $crumbs .= $this->_crumb_trail(
                     array(
                         'link' => $this->forum_path('/' . ee()->config->item('profile_trigger') . '/profile'),
@@ -1532,12 +1532,12 @@ class Forum
                 );
             }
 
-            if (false !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(3+$this->seg_addition)))) {
+            if (false !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(3 + $this->seg_addition)))) {
                 return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
             }
 
-            if (ee()->uri->segment(3+$this->seg_addition) == 'messages') {
-                if (false !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(4+$this->seg_addition)))) {
+            if (ee()->uri->segment(3 + $this->seg_addition) == 'messages') {
+                if (false !== ($mbr_crumb = $this->MBR->_fetch_member_crumb(ee()->uri->segment(4 + $this->seg_addition)))) {
                     return $this->_build_crumbs(lang($mbr_crumb), $crumbs, lang($mbr_crumb));
                 }
             }
@@ -1562,8 +1562,8 @@ class Forum
         // Is this a forum view?
         if ($request == 'viewforum') {
             if (false !== ($meta = $this->_fetch_forum_metadata($this->current_id))) {
-                $pid	= $meta[$this->current_id]['forum_parent'];
-                $meta2	= $this->_fetch_forum_metadata($pid);
+                $pid = $meta[$this->current_id]['forum_parent'];
+                $meta2 = $this->_fetch_forum_metadata($pid);
 
                 $crumbs .= $this->_crumb_trail(
                     array(
@@ -1583,7 +1583,7 @@ class Forum
         // Is this the thread view?
         if ($request == 'viewthread' or $request == 'split' or $request == 'merge') {
             if (false !== ($meta = $this->_fetch_topic_metadata($this->current_id))) {
-                $pid 	= $meta[$this->current_id]['forum_parent'];
+                $pid = $meta[$this->current_id]['forum_parent'];
                 $meta2 = $this->_fetch_forum_metadata($pid);
 
                 $crumbs .= $this->_crumb_trail(
@@ -1623,7 +1623,7 @@ class Forum
         // Is this the announce view?
         if ($request == 'viewannounce') {
             if (false !== ($meta = $this->_fetch_forum_metadata($this->announce_id))) {
-                $pid 	= $meta[$this->announce_id]['forum_parent'];
+                $pid = $meta[$this->announce_id]['forum_parent'];
                 $meta2 = $this->_fetch_forum_metadata($pid);
                 $meta3 = $this->_fetch_topic_metadata($this->current_id);
 
@@ -1657,15 +1657,15 @@ class Forum
 
                 $crumbs .= $this->_crumb_trail(
                     array(
-                        'link'	=> $this->forum_path('/viewcategory/' . $meta[$this->current_id]['forum_parent'] . '/'),
+                        'link' => $this->forum_path('/viewcategory/' . $meta[$this->current_id]['forum_parent'] . '/'),
                         'title' => $meta2[$pid]['forum_name']
                     )
                 );
 
                 $crumbs .= $this->_crumb_trail(
                     array(
-                        'link'	=> $this->forum_path('/viewforum/' . $this->current_id . '/'),
-                        'title'	=> $meta[$this->current_id]['forum_name']
+                        'link' => $this->forum_path('/viewforum/' . $this->current_id . '/'),
+                        'title' => $meta[$this->current_id]['forum_name']
                     )
                 );
 
@@ -1679,17 +1679,17 @@ class Forum
 
         // Is this one of the post submission pages?
         $type = array(
-            'edittopic'		=> 'edit_topic',
-            'quotetopic'	=> 'post_reply',
-            'quotereply'	=> 'post_reply',
-            'newreply'		=> 'post_reply',
-            'editreply'		=> 'edit_reply',
-            'movetopic'		=> 'move_topic',
-            'movereply'		=> 'move_reply',
-            'deletetopic'	=> 'delete_thread',
-            'deletereply'	=> 'delete_reply',
-            'reporttopic'	=> 'report_topic',
-            'reportreply'	=> 'report_reply'
+            'edittopic' => 'edit_topic',
+            'quotetopic' => 'post_reply',
+            'quotereply' => 'post_reply',
+            'newreply' => 'post_reply',
+            'editreply' => 'edit_reply',
+            'movetopic' => 'move_topic',
+            'movereply' => 'move_reply',
+            'deletetopic' => 'delete_thread',
+            'deletereply' => 'delete_reply',
+            'reporttopic' => 'report_topic',
+            'reportreply' => 'report_reply'
         );
 
         if (isset($type[$request])) {
@@ -1705,15 +1705,15 @@ class Forum
 
                 $crumbs .= $this->_crumb_trail(
                     array(
-                        'link'	=> $this->forum_path('/viewcategory/' . $meta[$this->current_id]['forum_parent'] . '/'),
-                        'title'	=> $meta2[$pid]['forum_name']
+                        'link' => $this->forum_path('/viewcategory/' . $meta[$this->current_id]['forum_parent'] . '/'),
+                        'title' => $meta2[$pid]['forum_name']
                     )
                 );
 
                 $crumbs .= $this->_crumb_trail(
                     array(
-                        'link'	=> $this->forum_path('/viewforum/' . $meta[$this->current_id]['forum_id'] . '/'),
-                        'title'	=> $meta[$this->current_id]['forum_name']
+                        'link' => $this->forum_path('/viewforum/' . $meta[$this->current_id]['forum_id'] . '/'),
+                        'title' => $meta[$this->current_id]['forum_name']
                     )
                 );
 
@@ -1723,8 +1723,8 @@ class Forum
 
                 $crumbs .= $this->_crumb_trail(
                     array(
-                        'link'	=> $this->forum_path('/viewthread/' . $thread_id . '/'),
-                        'title'	=> lang('thread')
+                        'link' => $this->forum_path('/viewthread/' . $thread_id . '/'),
+                        'title' => lang('thread')
                     )
                 );
 
@@ -1762,15 +1762,15 @@ class Forum
      */
     public function _crumb_trail($data)
     {
-        $trail	= $this->load_element('breadcrumb_trail');
+        $trail = $this->load_element('breadcrumb_trail');
 
         $crumbs = '';
 
         $crumbs .= $this->var_swap(
             $trail,
             array(
-                'crumb_link'	=> $data['link'],
-                'crumb_title'	=> $this->_convert_special_chars($data['title'])
+                'crumb_link' => $data['link'],
+                'crumb_title' => $this->_convert_special_chars($data['title'])
             )
         );
 
@@ -1821,7 +1821,7 @@ class Forum
         $this->_forum_set_basepath();
 
         // Set a cookie!
-        $expire = 60*60*24*365;
+        $expire = 60 * 60 * 24 * 365;
         ee()->input->set_cookie('forum_theme', $theme, $expire);
 
         if (isset(ee()->session->tracker[0])) {
@@ -1949,8 +1949,8 @@ class Forum
     public function array_stripslashes($vals)
     {
         if (is_array($vals)) {
-            foreach ($vals as $key=>$val) {
-                $vals[$key]=$this->array_stripslashes($val);
+            foreach ($vals as $key => $val) {
+                $vals[$key] = $this->array_stripslashes($val);
             }
         } else {
             $vals = stripslashes($vals);

@@ -140,19 +140,19 @@ class MemberImport extends Utilities
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'member_xml_file',
-                'label'   => 'lang:member_xml_file',
-                'rules'   => 'callback__file_handler'
+                'field' => 'member_xml_file',
+                'label' => 'lang:member_xml_file',
+                'rules' => 'callback__file_handler'
             ),
             array(
-                'field'   => 'role_id',
-                'label'   => 'lang:role',
-                'rules'   => 'required'
+                'field' => 'role_id',
+                'label' => 'lang:role',
+                'rules' => 'required'
             ),
             array(
-                'field'   => 'auto_custom_field',
-                'label'   => 'lang:auto_custom_field',
-                'rules'   => ''
+                'field' => 'auto_custom_field',
+                'label' => 'lang:auto_custom_field',
+                'rules' => ''
             )
         ));
 
@@ -218,8 +218,8 @@ class MemberImport extends Utilities
 
         ee()->load->library('upload');
         ee()->upload->initialize(array(
-            'allowed_types'	=> 'xml',
-            'upload_path'	=> $this->cache,
+            'allowed_types' => 'xml',
+            'upload_path' => $this->cache,
             'overwrite' => true
         ));
 
@@ -262,13 +262,13 @@ class MemberImport extends Utilities
         $this->xml_file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode($this->input->post('xml_file_name'));
 
         $data = array(
-            'xml_file_name'   		=> ee('Encrypt')->encode($this->xml_file_name),
-            'role_id' 			=> (int) ee()->input->post('role_id'),
-            'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : form_prep(ee()->input->post('language')),
-            'timezones' 		=> form_prep(ee()->input->post('timezones')),
-            'date_format' 		=> form_prep(ee()->input->post('date_format')),
-            'time_format' 		=> form_prep(ee()->input->post('time_format')),
-            'include_seconds' 	=> (ee()->input->post('include_seconds') == 'y') ? 'y' : 'n',
+            'xml_file_name' => ee('Encrypt')->encode($this->xml_file_name),
+            'role_id' => (int) ee()->input->post('role_id'),
+            'language' => (ee()->input->post('language') == lang('none')) ? '' : form_prep(ee()->input->post('language')),
+            'timezones' => form_prep(ee()->input->post('timezones')),
+            'date_format' => form_prep(ee()->input->post('date_format')),
+            'time_format' => form_prep(ee()->input->post('time_format')),
+            'include_seconds' => (ee()->input->post('include_seconds') == 'y') ? 'y' : 'n',
             'auto_custom_field' => (ee()->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
         );
 
@@ -277,14 +277,14 @@ class MemberImport extends Utilities
         $added_fields = form_prep(ee()->input->post('added_fields'));
 
         $vars = array(
-            'added_fields'		=> $added_fields,
-            'xml_file_name'   		=> $data['xml_file_name'],
-            'default_role_id'	=> $group_name,
-            'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
-            'timezones' 		=> $data['timezones'],
-            'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
-            'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
-            'include_seconds' 	=> ($data['include_seconds'] == 'y') ? lang('yes') : lang('no'),
+            'added_fields' => $added_fields,
+            'xml_file_name' => $data['xml_file_name'],
+            'default_role_id' => $group_name,
+            'language' => ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+            'timezones' => $data['timezones'],
+            'date_format' => lang($localization_cfg['date_format'][1][$data['date_format']]),
+            'time_format' => lang($localization_cfg['time_format'][1][$data['time_format']]),
+            'include_seconds' => ($data['include_seconds'] == 'y') ? lang('yes') : lang('no'),
             'auto_custom_field' => ($data['auto_custom_field'] == 'y' || ($added_fields && count($added_fields) > 0)) ? lang('yes') : lang('no')
         );
 
@@ -414,15 +414,15 @@ class MemberImport extends Utilities
         $this->lang->loadfile('member_import');
         $this->load->library('validate');
 
-        $this->validate->member_id			= '';
-        $this->validate->val_type			= 'new';
-        $this->validate->fetch_lang			= true;
-        $this->validate->require_cpw		= false;
-        $this->validate->enable_log			= false;
-        $this->validate->cur_username		= '';
-        $this->validate->cur_screen_name	= '';
-        $this->validate->cur_password		= '';
-        $this->validate->cur_email			= '';
+        $this->validate->member_id = '';
+        $this->validate->val_type = 'new';
+        $this->validate->fetch_lang = true;
+        $this->validate->require_cpw = false;
+        $this->validate->enable_log = false;
+        $this->validate->cur_username = '';
+        $this->validate->cur_screen_name = '';
+        $this->validate->cur_password = '';
+        $this->validate->cur_email = '';
 
         $i = 0;
 
@@ -528,9 +528,9 @@ class MemberImport extends Utilities
                         }
                     }
 
-                    $username 		= (isset($this->members[$i]['username'])) ? $this->members[$i]['username'] : '';
-                    $screen_name 	= (isset($this->members[$i]['screen_name'])) ? $this->members[$i]['screen_name'] : '';
-                    $email 			= (isset($this->members[$i]['email'])) ? $this->members[$i]['email'] : '';
+                    $username = (isset($this->members[$i]['username'])) ? $this->members[$i]['username'] : '';
+                    $screen_name = (isset($this->members[$i]['screen_name'])) ? $this->members[$i]['screen_name'] : '';
+                    $email = (isset($this->members[$i]['email'])) ? $this->members[$i]['email'] : '';
 
                     /* -------------------------------------
                     /*  Validate separately to display
@@ -609,14 +609,14 @@ class MemberImport extends Utilities
         }
 
         //  Set our optional default values
-        $this->default_fields['role_id']			= $this->input->post('role_id');
-        $this->default_fields['language']			= ($this->input->post('language') == lang('none') or $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-        $this->default_fields['timezone']			= $this->input->post('timezones') ?: null;
-        $this->default_fields['date_format']		= $this->input->post('date_format') ?: null;
-        $this->default_fields['time_format']		= $this->input->post('time_format') ?: null;
-        $this->default_fields['include_seconds']	= $this->input->post('include_seconds') ?: null;
-        $this->default_fields['ip_address']			= '0.0.0.0';
-        $this->default_fields['join_date']			= $this->localize->now;
+        $this->default_fields['role_id'] = $this->input->post('role_id');
+        $this->default_fields['language'] = ($this->input->post('language') == lang('none') or $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
+        $this->default_fields['timezone'] = $this->input->post('timezones') ?: null;
+        $this->default_fields['date_format'] = $this->input->post('date_format') ?: null;
+        $this->default_fields['time_format'] = $this->input->post('time_format') ?: null;
+        $this->default_fields['include_seconds'] = $this->input->post('include_seconds') ?: null;
+        $this->default_fields['ip_address'] = '0.0.0.0';
+        $this->default_fields['join_date'] = $this->localize->now;
 
         //  Rev it up, no turning back!
         $new_ids = array();
@@ -799,20 +799,20 @@ class MemberImport extends Utilities
         foreach ($_POST['create_ids'] as $k => $v) {
             $field = ee('Model')->make('MemberField');
 
-            $field->m_field_name        = $_POST['m_field_name'][$k];
-            $field->m_field_label       = $_POST['m_field_label'][$k];
+            $field->m_field_name = $_POST['m_field_name'][$k];
+            $field->m_field_label = $_POST['m_field_label'][$k];
             $field->m_field_description = (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k] : '';
-            $field->m_field_type        = (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
-            $field->m_field_list_items  = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
-            $field->m_field_ta_rows     = (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';
-            $field->m_field_maxl        = (isset($_POST['m_field_maxl'][$k])) ? $_POST['m_field_maxl'][$k] : '100';
-            $field->m_field_width       = (isset($_POST['m_field_width'][$k])) ? $_POST['m_field_width'][$k] : '100%';
-            $field->m_field_search      = 'y';
-            $field->m_field_required    = (isset($_POST['required'][$k])) ? 'y' : 'n';
-            $field->m_field_public      = (isset($_POST['public'][$k])) ? 'y' : 'n';
-            $field->m_field_reg         = (isset($_POST['reg_form'][$k])) ? 'y' : 'n';
-            $field->m_field_fmt         = (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
-            $field->m_field_order       = (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
+            $field->m_field_type = (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
+            $field->m_field_list_items = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
+            $field->m_field_ta_rows = (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';
+            $field->m_field_maxl = (isset($_POST['m_field_maxl'][$k])) ? $_POST['m_field_maxl'][$k] : '100';
+            $field->m_field_width = (isset($_POST['m_field_width'][$k])) ? $_POST['m_field_width'][$k] : '100%';
+            $field->m_field_search = 'y';
+            $field->m_field_required = (isset($_POST['required'][$k])) ? 'y' : 'n';
+            $field->m_field_public = (isset($_POST['public'][$k])) ? 'y' : 'n';
+            $field->m_field_reg = (isset($_POST['reg_form'][$k])) ? 'y' : 'n';
+            $field->m_field_fmt = (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
+            $field->m_field_order = (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
 
             $field->save();
 

@@ -189,14 +189,14 @@ abstract class Filter
         $url_without_filter->removeQueryStringVariable($this->name);
 
         $filter = array(
-            'label'              => $this->label,
-            'name'               => $this->name,
-            'value'              => $value,
-            'has_list_filter'    => $this->has_list_filter,
-            'has_custom_value'   => $this->has_custom_value,
-            'custom_value'       => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
-            'placeholder'        => $this->placeholder,
-            'options'            => $options,
+            'label' => $this->label,
+            'name' => $this->name,
+            'value' => $value,
+            'has_list_filter' => $this->has_list_filter,
+            'has_custom_value' => $this->has_custom_value,
+            'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
+            'placeholder' => $this->placeholder,
+            'options' => $options,
             'url_without_filter' => $url_without_filter,
         );
 

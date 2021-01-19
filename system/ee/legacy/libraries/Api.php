@@ -16,9 +16,9 @@
  */
 class Api
 {
-    public $errors	= array();  // holds any and all errors on failure
+    public $errors = array();  // holds any and all errors on failure
 
-    private $apis	= array(	// apis available to initialize when loading the parent Api class
+    private $apis = array(	// apis available to initialize when loading the parent Api class
         'channel_structure', 'channel_entries', 'channel_fields',
         'channel_categories', 'channel_statuses', 'channel_uploads',
         'template_structure',

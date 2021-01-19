@@ -21,17 +21,17 @@ class SpamTrap extends Model
     protected static $_primary_key = 'trap_id';
 
     protected static $_typed_columns = array(
-        'entity'        => 'serialized',
+        'entity' => 'serialized',
         'optional_data' => 'serialized',
-        'trap_date'     => 'timestamp',
+        'trap_date' => 'timestamp',
     );
 
     protected static $_relationships = array(
         'Author' => array(
-            'type'     => 'belongsTo',
-            'model'    => 'ee:Member',
+            'type' => 'belongsTo',
+            'model' => 'ee:Member',
             'from_key' => 'author_id',
-            'weak'     => true,
+            'weak' => true,
             'inverse' => array(
                 'name' => 'trap_id',
                 'type' => 'hasMany'

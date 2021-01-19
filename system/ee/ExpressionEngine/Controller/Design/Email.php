@@ -53,7 +53,7 @@ class Email extends AbstractDesignController
                     'encode' => false
                 ),
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
             )
         );
@@ -267,7 +267,7 @@ class Email extends AbstractDesignController
      */
     private function renderVariablesPartial($template, $errors)
     {
-        $html  = '<ul class="arrow-list">';
+        $html = '<ul class="arrow-list">';
 
         foreach ($template->getAvailableVariables() as $variable) {
             $html .= '<li><a href="">{' . $variable . '}</a></li>';

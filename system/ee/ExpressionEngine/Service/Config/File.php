@@ -15,7 +15,7 @@ namespace ExpressionEngine\Service\Config;
  */
 class File extends ConfigWithDefaults
 {
-    protected $config   = array();
+    protected $config = array();
 
     /**
      * Create a new Config\File object

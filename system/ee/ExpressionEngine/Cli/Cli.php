@@ -44,12 +44,12 @@ class Cli
      * @var array
      */
     public $internalCommands = [
-        'hello'           => Commands\CommandHelloWorld::class,
-        'list'            => Commands\CommandListCommands::class,
-        'update'          => Commands\CommandUpdate::class,
+        'hello' => Commands\CommandHelloWorld::class,
+        'list' => Commands\CommandListCommands::class,
+        'update' => Commands\CommandUpdate::class,
         'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
         'run-update-hook' => Commands\CommandRunUpdateHook::class,
-        'cache:clear'     => Commands\CommandClearCaches::class,
+        'cache:clear' => Commands\CommandClearCaches::class,
     ];
 
     /**
@@ -333,7 +333,7 @@ class Cli
         $commandOptions = array_merge(
             $this->commandOptions,
             [
-                'help,h'    => 'See help'
+                'help,h' => 'See help'
             ]
         );
 

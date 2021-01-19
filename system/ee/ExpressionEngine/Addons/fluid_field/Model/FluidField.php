@@ -22,11 +22,11 @@ class FluidField extends Model
     protected static $_table_name = 'fluid_field_data';
 
     protected static $_typed_columns = array(
-        'fluid_field_id'      => 'int',
-        'entry_id'      => 'int',
-        'field_id'      => 'int',
+        'fluid_field_id' => 'int',
+        'entry_id' => 'int',
+        'field_id' => 'int',
         'field_data_id' => 'int',
-        'order'         => 'int',
+        'order' => 'int',
     );
 
     protected static $_relationships = array(
@@ -53,7 +53,7 @@ class FluidField extends Model
         'FieldField' => array(
             'type' => 'belongsTo',
             'from_key' => 'fluid_field_id',
-            'to_key'   => 'field_id',
+            'to_key' => 'field_id',
             'model' => 'ee:ChannelField',
             'weak' => true,
             'inverse' => array(

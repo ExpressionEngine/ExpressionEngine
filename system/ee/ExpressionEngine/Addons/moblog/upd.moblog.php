@@ -35,39 +35,39 @@ class Moblog_upd extends Installer
         ee()->load->dbforge();
 
         $fields = array(
-            'moblog_id'					=> array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'auto_increment' => true),
-            'moblog_full_name'			=> array('type' => 'varchar', 'constraint' => 80, 'default' => ''),
-            'moblog_short_name'			=> array('type' => 'varchar', 'constraint' => 20, 'default' => ''),
-            'moblog_enabled'			=> array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
-            'moblog_file_archive'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
-            'moblog_time_interval'		=> array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '0'),
-            'moblog_type'				=> array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
-            'moblog_gallery_id'			=> array('type' => 'int', 'constraint' => 6, 'default' => '0'),
-            'moblog_gallery_category'	=> array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '0'),
-            'moblog_gallery_status'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
-            'moblog_gallery_comments'	=> array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
-            'moblog_gallery_author'		=> array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '1'),
-            'moblog_channel_id'			=> array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '1'),
-            'moblog_categories'			=> array('type' => 'varchar', 'constraint' => 25, 'default' => ''),
-            'moblog_field_id'			=> array('type' => 'varchar', 'constraint' => 5, 'default' => ''),
-            'moblog_status'				=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
-            'moblog_author_id'			=> array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '1'),
-            'moblog_sticky_entry'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
-            'moblog_allow_overrides'	=> array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
-            'moblog_auth_required'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
-            'moblog_auth_delete'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
-            'moblog_upload_directory'	=> array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '1'),
-            'moblog_template'			=> array('type' => 'text'),
-            'moblog_image_size'			=> array('type' => 'int', 'constraint' => 10, 'default' => '0'),
-            'moblog_thumb_size'			=> array('type' => 'int', 'constraint' => 10, 'default' => '0'),
-            'moblog_email_type'			=> array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
-            'moblog_email_address'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
-            'moblog_email_server'		=> array('type' => 'varchar', 'constraint' => 100, 'default' => ''),
-            'moblog_email_login'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
-            'moblog_email_password'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
-            'moblog_subject_prefix'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
-            'moblog_valid_from'			=> array('type' => 'text'),
-            'moblog_ignore_text'		=> array('type' => 'text')
+            'moblog_id' => array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'auto_increment' => true),
+            'moblog_full_name' => array('type' => 'varchar', 'constraint' => 80, 'default' => ''),
+            'moblog_short_name' => array('type' => 'varchar', 'constraint' => 20, 'default' => ''),
+            'moblog_enabled' => array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
+            'moblog_file_archive' => array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+            'moblog_time_interval' => array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '0'),
+            'moblog_type' => array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
+            'moblog_gallery_id' => array('type' => 'int', 'constraint' => 6, 'default' => '0'),
+            'moblog_gallery_category' => array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '0'),
+            'moblog_gallery_status' => array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+            'moblog_gallery_comments' => array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
+            'moblog_gallery_author' => array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '1'),
+            'moblog_channel_id' => array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '1'),
+            'moblog_categories' => array('type' => 'varchar', 'constraint' => 25, 'default' => ''),
+            'moblog_field_id' => array('type' => 'varchar', 'constraint' => 5, 'default' => ''),
+            'moblog_status' => array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+            'moblog_author_id' => array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '1'),
+            'moblog_sticky_entry' => array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+            'moblog_allow_overrides' => array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
+            'moblog_auth_required' => array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+            'moblog_auth_delete' => array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+            'moblog_upload_directory' => array('type' => 'int', 'constraint' => 4, 'unsigned' => true, 'default' => '1'),
+            'moblog_template' => array('type' => 'text'),
+            'moblog_image_size' => array('type' => 'int', 'constraint' => 10, 'default' => '0'),
+            'moblog_thumb_size' => array('type' => 'int', 'constraint' => 10, 'default' => '0'),
+            'moblog_email_type' => array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
+            'moblog_email_address' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+            'moblog_email_server' => array('type' => 'varchar', 'constraint' => 100, 'default' => ''),
+            'moblog_email_login' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+            'moblog_email_password' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+            'moblog_subject_prefix' => array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+            'moblog_valid_from' => array('type' => 'text'),
+            'moblog_ignore_text' => array('type' => 'text')
         );
 
         ee()->dbforge->add_field($fields);
@@ -115,7 +115,7 @@ class Moblog_upd extends Installer
                     'alter' => array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
                     'after' => 'moblog_time_interval'
                 ),
-                'moblog_gallery_id'	=> array(
+                'moblog_gallery_id' => array(
                     'alter' => array('type' => 'int', 'constraint' => 6, 'default' => '0'),
                     'after' => 'moblog_type'
                 ),
@@ -157,11 +157,11 @@ class Moblog_upd extends Installer
             ee()->dbforge->drop_column('moblogs', 'user_blog_id');
             ee()->dbforge->modify_column('moblogs', array(
                 'moblog_weblog_id' => array(
-                    'name'			=> 'moblog_channel_id',
-                    'type'			=> 'int',
-                    'constraint'	=> 4,
-                    'unsigned'		=> true,
-                    'default'		=> 1
+                    'name' => 'moblog_channel_id',
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'default' => 1
                 )
             ));
         }
@@ -289,22 +289,22 @@ class Moblog_upd extends Installer
     {
         // Check to see if upload size already exists for upload_location, height and width
         ee()->db->where(array(
-            'upload_location_id'	=> $upload_id,
-            'width'					=> $width,
-            'height'				=> $height
+            'upload_location_id' => $upload_id,
+            'width' => $width,
+            'height' => $height
         ));
 
         $qry = ee()->db->get('file_dimensions');
 
         if (! $qry->num_rows()) {
             ee()->db->insert('file_dimensions', array(
-                'upload_location_id'	=> $upload_id,
-                'title'					=> $size_name,
-                'short_name'			=> $size_name,
-                'resize_type'			=> 'constrain', // Default to constrain, not crop
-                'width'					=> $width,
-                'height'				=> $height,
-                'watermark_id'			=> 0
+                'upload_location_id' => $upload_id,
+                'title' => $size_name,
+                'short_name' => $size_name,
+                'resize_type' => 'constrain', // Default to constrain, not crop
+                'width' => $width,
+                'height' => $height,
+                'watermark_id' => 0
             ));
 
             return ee()->db->insert_id();

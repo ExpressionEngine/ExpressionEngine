@@ -27,9 +27,9 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-moderators',
-    'form_url'	=> $remove_url,
-    'hidden'	=> array(
+    'name' => 'modal-confirm-moderators',
+    'form_url' => $remove_url,
+    'hidden' => array(
         'id' => ''
     )
 );

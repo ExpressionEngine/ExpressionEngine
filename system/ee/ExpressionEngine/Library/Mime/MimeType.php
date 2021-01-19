@@ -19,7 +19,7 @@ use InvalidArgumentException;
 class MimeType
 {
     protected $whitelist = array();
-    protected $images    = array();
+    protected $images = array();
 
     /**
      * Constructor
@@ -101,7 +101,7 @@ class MimeType
             $fres = @finfo_file($finfo, $path);
             if (($fres !== false)
                 && is_string($fres)
-                && (strlen($fres)>0)) {
+                && (strlen($fres) > 0)) {
                 $mime = $fres;
             }
 
@@ -165,7 +165,7 @@ class MimeType
             $fres = @finfo_buffer($finfo, $buffer);
             if (($fres !== false)
                 && is_string($fres)
-                && (strlen($fres)>0)) {
+                && (strlen($fres) > 0)) {
                 $mime = $fres;
             }
 

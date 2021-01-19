@@ -110,7 +110,7 @@ class BelongsTo extends Relation
      */
     protected function deriveKeys()
     {
-        $to   = $this->to_key ?: $this->to_primary_key;
+        $to = $this->to_key ?: $this->to_primary_key;
         $from = $this->from_key ?: $to;
 
         return array($from, $to);

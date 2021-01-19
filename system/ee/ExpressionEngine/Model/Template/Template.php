@@ -27,12 +27,12 @@ class Template extends FileSyncedModel
     protected static $_hook_id = 'template';
 
     protected static $_typed_columns = array(
-        'cache'              => 'boolString',
-        'enable_http_auth'   => 'boolString',
-        'allow_php'          => 'boolString',
+        'cache' => 'boolString',
+        'enable_http_auth' => 'boolString',
+        'allow_php' => 'boolString',
         'protect_javascript' => 'boolString',
-        'refresh'            => 'int',
-        'hits'               => 'int',
+        'refresh' => 'int',
+        'hits' => 'int',
     );
 
     protected static $_relationships = array(
@@ -43,17 +43,17 @@ class Template extends FileSyncedModel
             'type' => 'BelongsTo'
         ),
         'LastAuthor' => array(
-            'type'     => 'BelongsTo',
-            'model'    => 'Member',
+            'type' => 'BelongsTo',
+            'model' => 'Member',
             'from_key' => 'last_author_id',
-            'weak'     => true
+            'weak' => true
         ),
         'Roles' => array(
-            'type'  => 'HasAndBelongsToMany',
+            'type' => 'HasAndBelongsToMany',
             'model' => 'Role',
             'pivot' => array(
                 'table' => 'templates_roles',
-                'left'  => 'template_id',
+                'left' => 'template_id',
                 'right' => 'role_id'
             )
         ),
@@ -72,16 +72,16 @@ class Template extends FileSyncedModel
     );
 
     protected static $_validation_rules = array(
-        'site_id'            => 'required|isNatural',
-        'group_id'           => 'required|isNatural',
-        'template_name'      => 'required|unique[group_id]|alphaDashPeriodEmoji|validateTemplateName',
-        'template_type'      => 'required',
-        'cache'              => 'enum[y,n]',
-        'refresh'            => 'isNatural',
-        'enable_http_auth'   => 'enum[y,n]',
-        'allow_php'          => 'enum[y,n]',
+        'site_id' => 'required|isNatural',
+        'group_id' => 'required|isNatural',
+        'template_name' => 'required|unique[group_id]|alphaDashPeriodEmoji|validateTemplateName',
+        'template_type' => 'required',
+        'cache' => 'enum[y,n]',
+        'refresh' => 'isNatural',
+        'enable_http_auth' => 'enum[y,n]',
+        'allow_php' => 'enum[y,n]',
         'php_parse_location' => 'enum[i,o]',
-        'hits'               => 'isNatural',
+        'hits' => 'isNatural',
         'protect_javascript' => 'enum[y,n]',
     );
 
@@ -143,7 +143,7 @@ class Template extends FileSyncedModel
 
         $path = $group->getFolderPath();
         $file = $this->template_name;
-        $ext  = $this->getFileExtension();
+        $ext = $this->getFileExtension();
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;
@@ -218,7 +218,7 @@ class Template extends FileSyncedModel
 
         $path = $group->getFolderPath();
         $file = $parts['template_name'];
-        $ext  = $this->getFileExtension($parts['template_type']);
+        $ext = $this->getFileExtension($parts['template_type']);
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;

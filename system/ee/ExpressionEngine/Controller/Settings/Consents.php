@@ -48,19 +48,19 @@ class Consents extends Settings
         }
 
         $vars = [
-            'base_url'      => ee('CP/URL', 'settings/consents'),
-            'cp_page_title' =>lang('consent_requests'),
-            'create_url'    => ee('CP/URL', 'settings/consents/create'),
-            'filters'       => [
-                'app'  => null,
+            'base_url' => ee('CP/URL', 'settings/consents'),
+            'cp_page_title' => lang('consent_requests'),
+            'create_url' => ee('CP/URL', 'settings/consents/create'),
+            'filters' => [
+                'app' => null,
                 'user' => null
             ],
-            'requests'      => [
-                'app'  => [],
+            'requests' => [
+                'app' => [],
                 'user' => []
             ],
-            'heading'       => [
-                'app'  => lang('app_consent_requests'),
+            'heading' => [
+                'app' => lang('app_consent_requests'),
                 'user' => lang('user_consent_requests')
             ]
         ];
@@ -141,12 +141,12 @@ class Consents extends Settings
             $href = ee('CP/URL')->make('settings/consents/new_version/' . $request->getId());
 
             $toolbar['add'] = [
-                'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
+                'href' => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
                 'title' => lang('new_version'),
             ];
 
             $toolbar['view'] = [
-                'href'  => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
+                'href' => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
                 'title' => lang('consent_list_versions'),
             ];
 
@@ -174,8 +174,8 @@ class Consents extends Settings
         }
 
         return [
-            'requests'   => $data,
-            'filters'    => $filters
+            'requests' => $data,
+            'filters' => $filters
         ];
     }
 
@@ -243,12 +243,12 @@ class Consents extends Settings
         $table->setColumns(
             [
                 'id' => [
-                    'type'	=> Table::COL_ID
+                    'type' => Table::COL_ID
                 ],
                 'date',
                 'author',
                 'manage' => [
-                    'type'=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ],
             ]
         );

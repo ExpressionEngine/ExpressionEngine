@@ -24,10 +24,10 @@
 <?php
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete',
-    'form_url'	=> ee('CP/URL')->make('msm', ee()->cp->get_url_state()),
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-delete',
+    'form_url' => ee('CP/URL')->make('msm', ee()->cp->get_url_state()),
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

@@ -37,7 +37,7 @@ class Categories extends Column
     public function getTableColumnConfig()
     {
         return [
-            'type'	=> Table::COL_INFO
+            'type' => Table::COL_INFO
         ];
     }
 

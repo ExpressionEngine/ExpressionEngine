@@ -10,7 +10,7 @@
  */
 class Block_and_allow
 {
-    public $return_data  = '';
+    public $return_data = '';
 
     /**
      * Constructor

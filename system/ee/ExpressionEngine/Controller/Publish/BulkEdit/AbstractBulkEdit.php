@@ -103,10 +103,10 @@ abstract class AbstractBulkEdit extends CP_Controller
         }
 
         return ee('View')->make('fluid_field:publish')->render([
-            'fields'          => $displayed_fields_markup,
+            'fields' => $displayed_fields_markup,
             'field_templates' => $template_fields_markup,
-            'filters'         => $filters,
-            'is_bulk_edit'	  => true
+            'filters' => $filters,
+            'is_bulk_edit' => true
         ]);
     }
 

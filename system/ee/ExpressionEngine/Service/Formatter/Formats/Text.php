@@ -90,9 +90,9 @@ class Text extends Formatter
     public function attributeSafe($options = [])
     {
         $options = [
-            'double_encode'       => (isset($options['double_encode'])) ? get_bool_from_string($options['double_encode']) : false,
-            'end_char'            => (isset($options['end_char'])) ? $options['end_char'] : '&#8230;',
-            'limit'               => (isset($options['limit'])) ? (int) $options['limit'] : false,
+            'double_encode' => (isset($options['double_encode'])) ? get_bool_from_string($options['double_encode']) : false,
+            'end_char' => (isset($options['end_char'])) ? $options['end_char'] : '&#8230;',
+            'limit' => (isset($options['limit'])) ? (int) $options['limit'] : false,
             'unicode_punctuation' => (isset($options['unicode_punctuation'])) ? get_bool_from_string($options['unicode_punctuation']) : true,
         ];
 
@@ -109,7 +109,7 @@ class Text extends Formatter
                 '&#8220;' => '“', // left double curly
                 '&#8212;' => '—', // em-dash
                 '&#8230;' => '…', // ellipses
-                '&nbsp;'  => ' '
+                '&nbsp;' => ' '
             ];
 
             $this->content = str_replace(array_keys($punctuation), array_values($punctuation), $this->content);

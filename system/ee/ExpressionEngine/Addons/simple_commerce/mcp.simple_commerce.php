@@ -15,13 +15,13 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Simple_commerce_mcp
 {
-    public $export_type		= 'tab';
-    public $perform_redirects	= true;
-    public $menu_email			= array();
-    public $menu_groups		= array();
-    public $nest_categories	= 'y';
-    public $perpage			= 50;
-    public $pipe_length 		= 5;
+    public $export_type = 'tab';
+    public $perform_redirects = true;
+    public $menu_email = array();
+    public $menu_groups = array();
+    public $nest_categories = 'y';
+    public $perpage = 50;
+    public $pipe_length = 5;
 
     /**
      * Constructor
@@ -68,21 +68,21 @@ class Simple_commerce_mcp
             'subscribers',
             'purchases',
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         ));
 
         $table->setNoResultsText(sprintf(lang('no_found'), lang('items')), 'create_new_item', ee('CP/URL')->make('addons/settings/simple_commerce/create-item'));
 
         $sort_map = array(
-            'name'        => 'ChannelEntry.title',
-            'price_sale'  => 'item_regular_price',
-            'frequency'   => 'subscription_frequency',
+            'name' => 'ChannelEntry.title',
+            'price_sale' => 'item_regular_price',
+            'frequency' => 'subscription_frequency',
             'subscribers' => 'current_subscriptions',
-            'purchases'   => 'item_purchases'
+            'purchases' => 'item_purchases'
         );
 
         $items = ee('Model')->get('simple_commerce:Item')->with('ChannelEntry');
@@ -121,7 +121,7 @@ class Simple_commerce_mcp
                 array(
                     'name' => 'items[]',
                     'value' => $item->getId(),
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('item') . ': <b>' . htmlentities($item->ChannelEntry->title, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -222,10 +222,10 @@ class Simple_commerce_mcp
                 ),
                 'column_entry_date',
                 'column_status' => array(
-                    'type'	=> Table::COL_STATUS
+                    'type' => Table::COL_STATUS
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -285,7 +285,7 @@ class Simple_commerce_mcp
 
         if (AJAX_REQUEST) {
             ee()->output->send_ajax_response([
-                'html' =>  ee('View')->make('simple_commerce:entry_list')->render($vars),
+                'html' => ee('View')->make('simple_commerce:entry_list')->render($vars),
                 'url' => $base_url->compile()
             ]);
         }
@@ -684,10 +684,10 @@ class Simple_commerce_mcp
             'sub_end_date',
             'cost',
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         ));
 
@@ -695,11 +695,11 @@ class Simple_commerce_mcp
 
         $sort_map = array(
             // Change when relationships work
-            'item'             => 'ChannelEntry.title',
-            'purchaser'        => 'Member.screen_name',
+            'item' => 'ChannelEntry.title',
+            'purchaser' => 'Member.screen_name',
             'date_of_purchase' => 'purchase_date',
-            'sub_end_date'     => 'subscription_end_date',
-            'cost'             => 'item_cost'
+            'sub_end_date' => 'subscription_end_date',
+            'cost' => 'item_cost'
         );
 
         $purchases = ee('Model')->get('simple_commerce:Purchase')->with(array('Item' => 'ChannelEntry'));
@@ -732,7 +732,7 @@ class Simple_commerce_mcp
                 array(
                     'name' => 'purchases[]',
                     'value' => $purchase->getId(),
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->Item->ChannelEntry->title, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -1006,10 +1006,10 @@ class Simple_commerce_mcp
         $table->setColumns(array(
             'name',
             'manage' => array(
-                'type'	=> Table::COL_TOOLBAR
+                'type' => Table::COL_TOOLBAR
             ),
             array(
-                'type'	=> Table::COL_CHECKBOX
+                'type' => Table::COL_CHECKBOX
             )
         ));
 
@@ -1045,7 +1045,7 @@ class Simple_commerce_mcp
                 array(
                     'name' => 'templates[]',
                     'value' => $template->getId(),
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('template') . ': <b>' . htmlentities($template->getId(), ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -1366,12 +1366,12 @@ class Simple_commerce_mcp
 
         if (! empty($_POST)) {
             $result = ee('Validation')->make(array(
-                'sc_paypal_account'     => 'email',
-                'sc_encrypt_buttons'    => 'enum[y,n]',
+                'sc_paypal_account' => 'email',
+                'sc_encrypt_buttons' => 'enum[y,n]',
                 'sc_public_certificate' => 'fileExists',
-                'sc_private_key'        => 'fileExists',
+                'sc_private_key' => 'fileExists',
                 'sc_paypal_certificate' => 'fileExists',
-                'sc_temp_path'          => 'fileExists'
+                'sc_temp_path' => 'fileExists'
             ))->validate($_POST);
 
             if (ee()->input->is_ajax_request()) {
@@ -1443,12 +1443,12 @@ class Simple_commerce_mcp
         $this->export('items');
     }
 
-    public function export($which='purchases')
+    public function export($which = 'purchases')
     {
         ee()->load->helper('download');
 
-        $tab  = ($this->export_type == 'csv') ? ',' : "\t";
-        $cr	  = "\n";
+        $tab = ($this->export_type == 'csv') ? ',' : "\t";
+        $cr = "\n";
         $data = '';
 
         $filename = $which . '_' . ee()->localize->format_date('%y%m%d') . '.txt';

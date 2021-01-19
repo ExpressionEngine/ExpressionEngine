@@ -959,7 +959,7 @@ class SimplePie_IRI
             $removed = $this->remove_dot_segments($valid);
 
             $cache[$ipath] = array($valid, $removed);
-            $this->ipath =  ($this->scheme !== null) ? $removed : $valid;
+            $this->ipath = ($this->scheme !== null) ? $removed : $valid;
         }
 
         $this->scheme_normalization();

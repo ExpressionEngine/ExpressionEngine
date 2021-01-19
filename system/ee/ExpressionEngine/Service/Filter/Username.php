@@ -181,14 +181,14 @@ class Username extends Filter
         }
 
         $filter = array(
-            'label'            => $this->label,
-            'name'             => $this->name,
-            'value'            => $value,
+            'label' => $this->label,
+            'name' => $this->name,
+            'value' => $value,
             'has_custom_value' => $this->has_custom_value,
-            'has_list_filter'  => $this->has_list_filter,
-            'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
-            'placeholder'      => $this->placeholder,
-            'options'          => $options,
+            'has_list_filter' => $this->has_list_filter,
+            'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
+            'placeholder' => $this->placeholder,
+            'options' => $options,
         );
 
         return $view->make('_shared/filters/filter')->render($filter);

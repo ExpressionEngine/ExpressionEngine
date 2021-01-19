@@ -13,8 +13,8 @@
  */
 class EE_Core
 {
-    public $native_modules     = array();      // List of native modules with EE
-    public $native_plugins     = array();      // List of native plugins with EE
+    public $native_modules = array();      // List of native modules with EE
+    public $native_plugins = array();      // List of native plugins with EE
 
     private $bootstrapped = false;
     private $ee_loaded = false;
@@ -146,8 +146,8 @@ class EE_Core
 
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $cookie_prefix = ee()->config->item('cookie_prefix');
-            $cookie_path  = ee()->config->item('cookie_path');
-            $cookie_domain =  ee()->config->item('cookie_domain');
+            $cookie_path = ee()->config->item('cookie_path');
+            $cookie_domain = ee()->config->item('cookie_domain');
             $cookie_httponly = ee()->config->item('cookie_httponly');
 
             if ($cookie_prefix) {
@@ -159,8 +159,8 @@ class EE_Core
             }
 
             ee()->config->cp_cookie_prefix = $cookie_prefix;
-            ee()->config->cp_cookie_path  = $cookie_path;
-            ee()->config->cp_cookie_domain =  $cookie_domain;
+            ee()->config->cp_cookie_path = $cookie_path;
+            ee()->config->cp_cookie_domain = $cookie_domain;
             ee()->config->cp_cookie_httponly = $cookie_httponly;
         }
 
@@ -595,9 +595,9 @@ class EE_Core
 
         // Look for a page in the pages module
         if ($template_group == '' && $template == '') {
-            $pages      = ee()->config->item('site_pages');
-            $site_id    = ee()->config->item('site_id');
-            $entry_id   = false;
+            $pages = ee()->config->item('site_pages');
+            $site_id = ee()->config->item('site_id');
+            $entry_id = false;
 
             // If we have pages, we'll look for an entry id
             if ($pages && isset($pages[$site_id]['uris'])) {
@@ -674,7 +674,7 @@ class EE_Core
 
         if (isset($last_clear) && ee()->localize->now > $last_clear) {
             $data = array(
-                'last_cache_clear'  => ee()->localize->now + (60 * 60 * 24 * 7)
+                'last_cache_clear' => ee()->localize->now + (60 * 60 * 24 * 7)
             );
 
             ee()->db->where('site_id', ee()->config->item('site_id'));

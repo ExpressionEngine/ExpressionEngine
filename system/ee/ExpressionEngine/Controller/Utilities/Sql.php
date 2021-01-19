@@ -83,10 +83,10 @@ class Sql extends Utilities
                     'encode' => false
                 ),
                 'manage' => array(
-                    'type'	=> CP\Table::COL_TOOLBAR
+                    'type' => CP\Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> CP\Table::COL_CHECKBOX
+                    'type' => CP\Table::COL_CHECKBOX
                 )
             )
         );

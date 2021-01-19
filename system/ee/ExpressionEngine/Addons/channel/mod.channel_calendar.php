@@ -29,14 +29,14 @@ class Channel_calendar extends Channel
         /** ----------------------------------------
         /**  Determine the Month and Year
         /** ----------------------------------------*/
-        $year  = '';
+        $year = '';
         $month = '';
 
         // Hard-coded month/year via tag parameters
 
         if (ee()->TMPL->fetch_param('month') and ee()->TMPL->fetch_param('year')) {
-            $year 	= ee()->TMPL->fetch_param('year');
-            $month	= ee()->TMPL->fetch_param('month');
+            $year = ee()->TMPL->fetch_param('year');
+            $month = ee()->TMPL->fetch_param('month');
 
             if (strlen($month) == 1) {
                 $month = '0' . $month;
@@ -70,19 +70,19 @@ class Channel_calendar extends Channel
         ee()->load->library('calendar');
         $adjusted_date = ee()->calendar->adjust_date($month, $year);
 
-        $month	= $adjusted_date['month'];
-        $year	= $adjusted_date['year'];
+        $month = $adjusted_date['month'];
+        $year = $adjusted_date['year'];
 
         ee()->load->helper('date');
         $total_days = days_in_month($month, $year);
 
-        $previous_date 	= mktime(12, 0, 0, $month-1, 1, $year);
-        $next_date 		= mktime(12, 0, 0, $month+1, 1, $year);
+        $previous_date = mktime(12, 0, 0, $month - 1, 1, $year);
+        $next_date = mktime(12, 0, 0, $month + 1, 1, $year);
 
         /** ---------------------------------------
         /**  Determine the total days of the previous month
         /** ---------------------------------------*/
-        $adj_prev_date = ee()->calendar->adjust_date($month-1, $year);
+        $adj_prev_date = ee()->calendar->adjust_date($month - 1, $year);
 
         $prev_month = $adj_prev_date['month'];
         $prev_year = $adj_prev_date['year'];
@@ -100,7 +100,7 @@ class Channel_calendar extends Channel
 
         $start_day = (isset($start_days[ee()->TMPL->fetch_param('start_day')])) ? $start_days[ee()->TMPL->fetch_param('start_day')] : 0;
 
-        $day  = $start_day + 1 - ee()->localize->format_date('%w', $date, false);
+        $day = $start_day + 1 - ee()->localize->format_date('%w', $date, false);
 
         while ($day > 1) {
             $day -= 7;
@@ -204,9 +204,9 @@ class Channel_calendar extends Channel
                     array(LD . 'lang:weekday_abrev' . RD,
                         LD . 'lang:weekday_short' . RD,
                         LD . 'lang:weekday_long' . RD),
-                    array($day_names_a[($start_day + $i) %7],
-                        $day_names_s[($start_day + $i) %7],
-                        $day_names_l[($start_day + $i) %7]),
+                    array($day_names_a[($start_day + $i) % 7],
+                        $day_names_s[($start_day + $i) % 7],
+                        $day_names_l[($start_day + $i) % 7]),
                     trim($match['1']) . "\n"
                 );
             }
@@ -224,26 +224,26 @@ class Channel_calendar extends Channel
         // in the template which we will replace with the final
         // data later
 
-        $row_start 			= '';
-        $row_end 			= '';
+        $row_start = '';
+        $row_end = '';
 
-        $row_chunk 			= '';
-        $row_chunk_m		= '94838dkAJDei8azDKDKe01';
+        $row_chunk = '';
+        $row_chunk_m = '94838dkAJDei8azDKDKe01';
 
-        $entries 			= '';
-        $entries_m			= 'Gm983TGxkedSPoe0912NNk';
+        $entries = '';
+        $entries_m = 'Gm983TGxkedSPoe0912NNk';
 
-        $if_today 			= '';
-        $if_today_m			= 'JJg8e383dkaadPo20qxEid';
+        $if_today = '';
+        $if_today_m = 'JJg8e383dkaadPo20qxEid';
 
-        $if_entries 		= '';
-        $if_entries_m		= 'Rgh43K0L0Dff9003cmqQw1';
+        $if_entries = '';
+        $if_entries_m = 'Rgh43K0L0Dff9003cmqQw1';
 
-        $if_not_entries 	= '';
-        $if_not_entries_m	= 'yr83889910BvndkGei8ti3';
+        $if_not_entries = '';
+        $if_not_entries_m = 'yr83889910BvndkGei8ti3';
 
-        $if_blank 			= '';
-        $if_blank_m			= '43HDueie4q7pa8dAAseit6';
+        $if_blank = '';
+        $if_blank_m = '43HDueie4q7pa8dAAseit6';
 
         if (preg_match("/" . LD . "calendar_rows" . RD . "(.*?)" . LD . '\/' . "calendar_rows" . RD . "/s", ee()->TMPL->tagdata, $match)) {
             $row_chunk = trim($match['1']);
@@ -351,7 +351,7 @@ class Channel_calendar extends Channel
 
                 ee()->load->library('typography');
                 ee()->typography->initialize(array(
-                    'convert_curly'	=> false
+                    'convert_curly' => false
                 ));
 
                 /** ----------------------------------------
@@ -359,24 +359,24 @@ class Channel_calendar extends Channel
                 /** ----------------------------------------*/
                 foreach ($query->result_array() as $row) {
                     $overrides = ee()->config->get_cached_site_prefs($row['entry_site_id']);
-                    $row['channel_url']	= parse_config_variables($row['channel_url'], $overrides);
-                    $row['comment_url']	= parse_config_variables($row['comment_url'], $overrides);
+                    $row['channel_url'] = parse_config_variables($row['channel_url'], $overrides);
+                    $row['comment_url'] = parse_config_variables($row['comment_url'], $overrides);
 
                     /** ----------------------------------------
                     /**  Define empty arrays and strings
                     /** ----------------------------------------*/
                     $defaults = array(
-                        'entry_date'					=> 'a',
-                        'permalink'						=> 'a',
-                        'title_permalink'				=> 'a',
-                        'author'						=> 's',
-                        'profile_path'					=> 'a',
-                        'id_path'						=> 'a',
-                        'base_fields' 					=> 'a',
-                        'day_path'						=> 'a',
-                        'comment_auto_path'				=> 's',
-                        'comment_entry_id_auto_path'	=> 's',
-                        'comment_url_title_auto_path'	=> 's'
+                        'entry_date' => 'a',
+                        'permalink' => 'a',
+                        'title_permalink' => 'a',
+                        'author' => 's',
+                        'profile_path' => 'a',
+                        'id_path' => 'a',
+                        'base_fields' => 'a',
+                        'day_path' => 'a',
+                        'comment_auto_path' => 's',
+                        'comment_entry_id_auto_path' => 's',
+                        'comment_url_title_auto_path' => 's'
                     );
 
                     foreach ($defaults as $key => $val) {

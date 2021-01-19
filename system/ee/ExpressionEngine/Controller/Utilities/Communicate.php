@@ -40,21 +40,21 @@ class Communicate extends Utilities
     public function index(EmailCache $email = null)
     {
         $default = array(
-            'from'		 	=> ee()->session->userdata('email'),
-            'recipient'  	=> '',
-            'cc'			=> '',
-            'bcc'			=> '',
-            'subject' 		=> '',
-            'message'		=> '',
-            'plaintext_alt'	=> '',
-            'mailtype'		=> ee()->config->item('mail_format'),
-            'wordwrap'		=> ee()->config->item('word_wrap')
+            'from' => ee()->session->userdata('email'),
+            'recipient' => '',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => '',
+            'message' => '',
+            'plaintext_alt' => '',
+            'mailtype' => ee()->config->item('mail_format'),
+            'wordwrap' => ee()->config->item('word_wrap')
         );
 
         $vars['mailtype_options'] = array(
-            'text'		=> lang('plain_text'),
-            'markdown'	=> lang('markdown'),
-            'html'		=> lang('html')
+            'text' => lang('plain_text'),
+            'markdown' => lang('markdown'),
+            'html' => lang('html')
         );
 
         $roles = array();
@@ -238,7 +238,7 @@ class Communicate extends Utilities
         }
 
         $cache_data = array(
-            'recipient'	=> $member->email,
+            'recipient' => $member->email,
             'from_email' => ee()->session->userdata('email')
         );
 
@@ -339,22 +339,22 @@ class Communicate extends Utilities
 
         // Assign data for caching
         $cache_data = array(
-            'cache_date'		=> ee()->localize->now,
-            'total_sent'		=> 0,
-            'from_name'	 		=> $name,
-            'from_email'		=> $from,
-            'recipient'			=> $recipient,
-            'cc'				=> $cc,
-            'bcc'				=> $bcc,
-            'recipient_array'	=> array(),
-            'subject'			=> $subject,
-            'message'			=> $message,
-            'mailtype'			=> $mailtype,
-            'wordwrap'	  		=> $wordwrap,
-            'text_fmt'			=> $text_fmt,
-            'total_sent'		=> 0,
-            'plaintext_alt'		=> $plaintext_alt,
-            'attachments'		=> $this->attachments,
+            'cache_date' => ee()->localize->now,
+            'total_sent' => 0,
+            'from_name' => $name,
+            'from_email' => $from,
+            'recipient' => $recipient,
+            'cc' => $cc,
+            'bcc' => $bcc,
+            'recipient_array' => array(),
+            'subject' => $subject,
+            'message' => $message,
+            'mailtype' => $mailtype,
+            'wordwrap' => $wordwrap,
+            'text_fmt' => $text_fmt,
+            'total_sent' => 0,
+            'plaintext_alt' => $plaintext_alt,
+            'attachments' => $this->attachments,
         );
 
         $email = ee('Model')->make('EmailCache', $cache_data);
@@ -498,7 +498,7 @@ class Communicate extends Utilities
             $stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
             $stats = str_replace("%y", ($email->total_sent), $stats);
 
-            $message = $stats . BR . BR . lang('emails_remaining') . NBS . NBS . (count($email->recipient_array)-$email->total_sent);
+            $message = $stats . BR . BR . lang('emails_remaining') . NBS . NBS . (count($email->recipient_array) - $email->total_sent);
 
             ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id)->compile(), 6, true);
 
@@ -631,8 +631,8 @@ class Communicate extends Utilities
     private function deliverEmail(EmailCache $email, $to, $cc = null, $bcc = null)
     {
         ee()->email->clear(true);
-        ee()->email->wordwrap  = $email->wordwrap;
-        ee()->email->mailtype  = $email->mailtype;
+        ee()->email->wordwrap = $email->wordwrap;
+        ee()->email->mailtype = $email->mailtype;
         ee()->email->from($email->from_email, $email->from_name);
         ee()->email->to($to);
 
@@ -668,15 +668,15 @@ class Communicate extends Utilities
             ee()->load->library('typography');
             ee()->typography->initialize(array(
                 'bbencode_links' => false,
-                'parse_images'	=> false,
-                'parse_smileys'	=> false
+                'parse_images' => false,
+                'parse_smileys' => false
             ));
 
             $message = ee()->typography->parse_type($email->message, array(
-                'text_format'    => $email->text_fmt,
-                'html_format'    => 'all',
-                'auto_links'	 => 'n',
-                'allow_img_url'  => 'y'
+                'text_format' => $email->text_fmt,
+                'html_format' => 'all',
+                'auto_links' => 'n',
+                'allow_img_url' => 'y'
             ));
         }
 
@@ -721,10 +721,10 @@ class Communicate extends Utilities
                 'date',
                 'total_sent',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -794,9 +794,9 @@ class Communicate extends Utilities
                     )
                 )),
                 array(
-                    'name'  => 'selection[]',
+                    'name' => 'selection[]',
                     'value' => $email->cache_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('view_email_cache') . ': <b>' . $email->subject . '(x' . $email->total_sent . ')</b>'
                     )
                 )
@@ -805,15 +805,15 @@ class Communicate extends Utilities
             ee()->load->library('typography');
             ee()->typography->initialize(array(
                 'bbencode_links' => false,
-                'parse_images'	=> false,
-                'parse_smileys'	=> false
+                'parse_images' => false,
+                'parse_smileys' => false
             ));
 
             $email->message = ee()->typography->parse_type($email->message, array(
-                'text_format'    => ($email->text_fmt == 'markdown') ? 'markdown' : 'xhtml',
-                'html_format'    => 'all',
-                'auto_links'	 => 'n',
-                'allow_img_url'  => 'y'
+                'text_format' => ($email->text_fmt == 'markdown') ? 'markdown' : 'xhtml',
+                'html_format' => 'all',
+                'auto_links' => 'n',
+                'allow_img_url' => 'y'
             ));
 
             $vars['emails'][] = $email;
@@ -890,8 +890,8 @@ class Communicate extends Utilities
 
         ee()->load->library('upload');
         ee()->upload->initialize(array(
-            'allowed_types'	=> '*',
-            'use_temp_dir'	=> true
+            'allowed_types' => '*',
+            'use_temp_dir' => true
         ));
 
         if (! ee()->upload->do_upload('attachment')) {

@@ -274,7 +274,7 @@ if (! function_exists('safe_mailto')) {
         if ($attributes != '') {
             if (is_array($attributes)) {
                 foreach ($attributes as $key => $val) {
-                    $x[] =  ' ' . $key . '="';
+                    $x[] = ' ' . $key . '="';
                     for ($i = 0; $i < strlen($val); $i++) {
                         $x[] = "|" . ord(substr($val, $i, 1));
                     }

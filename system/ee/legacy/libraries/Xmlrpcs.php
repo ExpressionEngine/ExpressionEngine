@@ -20,17 +20,17 @@ if (! class_exists('EE_Xmlrpc')) {
  */
 class EE_Xmlrpcs extends EE_Xmlrpc
 {
-    public $methods		= array();	//array of methods mapped to function names and signatures
-    public $debug_msg		= '';		// Debug Message
+    public $methods = array();	//array of methods mapped to function names and signatures
+    public $debug_msg = '';		// Debug Message
     public $system_methods = array();	// XML RPC Server methods
     public $controller_obj;
 
-    public $object			= false;
+    public $object = false;
 
     /**
      * Constructor
      */
-    public function __construct($config=array())
+    public function __construct($config = array())
     {
         parent::__construct();
         $this->set_system_methods();
@@ -46,7 +46,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     //  Initialize Prefs and Serve
     //-------------------------------------
 
-    public function initialize($config=array())
+    public function initialize($config = array())
     {
         if (isset($config['functions']) && is_array($config['functions'])) {
             $this->methods = array_merge($this->methods, $config['functions']);
@@ -72,11 +72,11 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function set_system_methods()
     {
         $this->methods = array(
-            'system.listMethods'	 => array(
+            'system.listMethods' => array(
                 'function' => 'this.listMethods',
                 'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString), array($this->xmlrpcArray)),
                 'docstring' => 'Returns an array of available methods on this server'),
-            'system.methodHelp'		 => array(
+            'system.methodHelp' => array(
                 'function' => 'this.methodHelp',
                 'signature' => array(array($this->xmlrpcString, $this->xmlrpcString)),
                 'docstring' => 'Returns a documentation string for the specified method'),
@@ -84,7 +84,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                 'function' => 'this.methodSignature',
                 'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString)),
                 'docstring' => 'Returns an array describing the return type and required parameters of a method'),
-            'system.multicall'		 => array(
+            'system.multicall' => array(
                 'function' => 'this.multicall',
                 'signature' => array(array($this->xmlrpcArray, $this->xmlrpcArray)),
                 'docstring' => 'Combine multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader$1208 for details')
@@ -99,7 +99,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     {
         $r = $this->parseRequest();
 
-        $payload  = '<?xml version="1.0" encoding="' . $this->xmlrpc_defencoding . '"?' . '>' . "\n";
+        $payload = '<?xml version="1.0" encoding="' . $this->xmlrpc_defencoding . '"?' . '>' . "\n";
         $payload .= $this->debug_msg;
         $payload .= $r->prepare_response();
 
@@ -115,7 +115,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function add_to_map($methodname, $function, $sig, $doc)
     {
         $this->methods[$methodname] = array(
-            'function'  => $function,
+            'function' => $function,
             'signature' => $sig,
             'docstring' => $doc
         );
@@ -125,7 +125,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     //  Parse Server Request
     //-------------------------------------
 
-    public function parseRequest($data='')
+    public function parseRequest($data = '')
     {
         // $HTTP_RAW_POST_DATA is deprecated in PHP 5.6 and removed in 7.0
 
@@ -151,13 +151,13 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $parser_object = new XML_RPC_Message("filler");
 
         $parser_name = (string) $parser;
-        $parser_object->xh[$parser_name]               = array();
-        $parser_object->xh[$parser_name]['isf']        = 0;
+        $parser_object->xh[$parser_name] = array();
+        $parser_object->xh[$parser_name]['isf'] = 0;
         $parser_object->xh[$parser_name]['isf_reason'] = '';
-        $parser_object->xh[$parser_name]['params']     = array();
-        $parser_object->xh[$parser_name]['stack']      = array();
+        $parser_object->xh[$parser_name]['params'] = array();
+        $parser_object->xh[$parser_name]['stack'] = array();
         $parser_object->xh[$parser_name]['valuestack'] = array();
-        $parser_object->xh[$parser_name]['method']     = '';
+        $parser_object->xh[$parser_name]['method'] = '';
 
         xml_set_object($parser, $parser_object);
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
@@ -175,10 +175,10 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                 0,
                 $this->xmlrpcerrxml + xml_get_error_code($parser),
                 sprintf(
-                'XML error: %s at line %d',
-                xml_error_string(xml_get_error_code($parser)),
-                xml_get_current_line_number($parser)
-            )
+                    'XML error: %s at line %d',
+                    xml_error_string(xml_get_error_code($parser)),
+                    xml_get_current_line_number($parser)
+                )
             );
             xml_parser_free($parser);
         } elseif ($parser_object->xh[$parser_name]['isf']) {
@@ -187,9 +187,9 @@ class EE_Xmlrpcs extends EE_Xmlrpc
             xml_parser_free($parser);
 
             $m = new XML_RPC_Message($parser_object->xh[$parser_name]['method']);
-            $plist='';
+            $plist = '';
 
-            for ($i=0; $i < count($parser_object->xh[$parser_name]['params']); $i++) {
+            for ($i = 0; $i < count($parser_object->xh[$parser_name]['params']); $i++) {
                 if ($this->debug === true) {
                     $plist .= "$i - " . print_r(get_object_vars($parser_object->xh[$parser_name]['params'][$i]), true) . ";\n";
                 }
@@ -265,17 +265,17 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
         if (isset($this->methods[$methName]['signature'])) {
             $sig = $this->methods[$methName]['signature'];
-            for ($i=0; $i<count($sig); $i++) {
+            for ($i = 0; $i < count($sig); $i++) {
                 $current_sig = $sig[$i];
 
-                if (count($current_sig) == count($m->params)+1) {
-                    for ($n=0; $n < count($m->params); $n++) {
+                if (count($current_sig) == count($m->params) + 1) {
+                    for ($n = 0; $n < count($m->params); $n++) {
                         $p = $m->params[$n];
                         $pt = ($p->kindOf() == 'scalar') ? $p->scalarval() : $p->kindOf();
 
-                        if ($pt != $current_sig[$n+1]) {
-                            $pno = $n+1;
-                            $wanted = $current_sig[$n+1];
+                        if ($pt != $current_sig[$n + 1]) {
+                            $pno = $n + 1;
+                            $wanted = $current_sig[$n + 1];
 
                             return new XML_RPC_Response(
                                 0,
@@ -323,7 +323,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         }
 
         foreach ($this->system_methods as $key => $value) {
-            $output[]= new XML_RPC_Values($key, 'string');
+            $output[] = new XML_RPC_Values($key, 'string');
         }
 
         $v->addArray($output);
@@ -345,13 +345,13 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                 $sigs = array();
                 $signature = $this->methods[$method_name]['signature'];
 
-                for ($i=0; $i < count($signature); $i++) {
+                for ($i = 0; $i < count($signature); $i++) {
                     $cursig = array();
                     $inSig = $signature[$i];
-                    for ($j=0; $j<count($inSig); $j++) {
-                        $cursig[]= new XML_RPC_Values($inSig[$j], 'string');
+                    for ($j = 0; $j < count($inSig); $j++) {
+                        $cursig[] = new XML_RPC_Values($inSig[$j], 'string');
                     }
-                    $sigs[]= new XML_RPC_Values($cursig, 'array');
+                    $sigs[] = new XML_RPC_Values($cursig, 'array');
                 }
                 $r = new XML_RPC_Response(new XML_RPC_Values($sigs, 'array'));
             } else {
@@ -400,9 +400,9 @@ class EE_Xmlrpcs extends EE_Xmlrpc
             //$attempt = $this->_execute(new XML_RPC_Message($value[0], $value[1]));
 
             $m = new XML_RPC_Message($value[0]);
-            $plist='';
+            $plist = '';
 
-            for ($i=0; $i < count($value[1]); $i++) {
+            for ($i = 0; $i < count($value[1]); $i++) {
                 $m->addParam(new XML_RPC_Values($value[1][$i], 'string'));
             }
 
@@ -424,7 +424,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
     public function multicall_error($err)
     {
-        $str  = is_string($err) ? $this->xmlrpcstr["multicall_${err}"] : $err->faultString();
+        $str = is_string($err) ? $this->xmlrpcstr["multicall_${err}"] : $err->faultString();
         $code = is_string($err) ? $this->xmlrpcerr["multicall_${err}"] : $err->faultCode();
 
         $struct['faultCode'] = new XML_RPC_Values($code, 'int');

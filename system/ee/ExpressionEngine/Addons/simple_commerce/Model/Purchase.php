@@ -27,11 +27,11 @@ class Purchase extends Model
     );
 
     protected static $_validation_rules = array(
-        'txn_id'        => 'required',
-        'item_id'       => 'required',
-        'member_id'     => 'required|validateScreenName',
+        'txn_id' => 'required',
+        'item_id' => 'required',
+        'member_id' => 'required|validateScreenName',
         'purchase_date' => 'required|integer',
-        'item_cost'     => 'required|numeric'
+        'item_cost' => 'required|numeric'
     );
 
     protected static $_relationships = array(

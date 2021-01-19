@@ -40,13 +40,13 @@ class File extends Model
             'from_key' => 'upload_location_id',
         ),
         'UploadAuthor' => array(
-            'type'     => 'BelongsTo',
-            'model'    => 'Member',
+            'type' => 'BelongsTo',
+            'model' => 'Member',
             'from_key' => 'uploaded_by_member_id'
         ),
         'ModifyAuthor' => array(
-            'type'     => 'BelongsTo',
-            'model'    => 'Member',
+            'type' => 'BelongsTo',
+            'model' => 'Member',
             'from_key' => 'modified_by_member_id'
         ),
         'Categories' => array(
@@ -61,10 +61,10 @@ class File extends Model
     );
 
     protected static $_validation_rules = array(
-        'title'       => 'xss',
+        'title' => 'xss',
         'description' => 'xss',
-        'credit'      => 'xss',
-        'location'    => 'xss',
+        'credit' => 'xss',
+        'location' => 'xss',
     );
 
     protected $file_id;
@@ -226,7 +226,7 @@ class File extends Model
         }
 
         // Remove front-end manipulations
-        $manipulations =  ['resize', 'crop', 'rotate', 'webp'];
+        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
         foreach ($manipulations as $manipulation) {
             $ext = strrchr($this->file_name, '.');
             $basename = ($ext === false) ? $this->file_name : substr($this->file_name, 0, -strlen($ext));

@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'author'         => 'ExpressionEngine',
-    'author_url'     => 'https://expressionengine.com/',
-    'name'           => 'Consent',
-    'description'    => 'Front end Consent management',
-    'version'        => '1.0.0',
-    'namespace'      => 'ExpressionEngine\Addons\Consent',
+    'author' => 'ExpressionEngine',
+    'author_url' => 'https://expressionengine.com/',
+    'name' => 'Consent',
+    'description' => 'Front end Consent management',
+    'version' => '1.0.0',
+    'namespace' => 'ExpressionEngine\Addons\Consent',
     'settings_exist' => false,
-    'built_in'       => true,
+    'built_in' => true,
 
     // Consent Requests
     'consent.requests' => [

@@ -37,10 +37,10 @@ class Cache extends Utilities
                         'cache_type' => array(
                             'type' => 'radio',
                             'choices' => array(
-                                'all'  => lang('all_caches'),
+                                'all' => lang('all_caches'),
                                 'page' => lang('templates'),
-                                'tag'  => lang('tags'),
-                                'db'   => lang('database')
+                                'tag' => lang('tags'),
+                                'db' => lang('database')
                             ),
                             'value' => set_value('cache_type', 'all'),
                             'required' => true

@@ -116,7 +116,7 @@ class DebugOutput extends Settings
                     'desc' => 'use_newrelic_desc',
                     'fields' => array(
                         'use_newrelic' => array(
-                            'type'  => 'yes_no',
+                            'type' => 'yes_no',
                             'value' => (ee()->config->item('use_newrelic')) ?: 'y'
                         ),
                     )

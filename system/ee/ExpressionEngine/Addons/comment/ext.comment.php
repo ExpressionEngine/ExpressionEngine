@@ -69,12 +69,12 @@ class Comment_ext
     public function activate_extension()
     {
         ee('Model')->make('Extension', [
-            'class'		=> __CLASS__,
-            'method'	=> 'addCommentMenu',
-            'hook'		=> 'cp_custom_menu',
-            'settings'	=> [],
-            'version'	=> $this->version,
-            'enabled'	=> 'y'
+            'class' => __CLASS__,
+            'method' => 'addCommentMenu',
+            'hook' => 'cp_custom_menu',
+            'settings' => [],
+            'version' => $this->version,
+            'enabled' => 'y'
         ])->save();
     }
 

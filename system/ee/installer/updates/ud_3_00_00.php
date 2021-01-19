@@ -134,8 +134,8 @@ class Updater
             'email_cache',
             array(
                 'attachments' => array(
-                    'type'			=> 'mediumtext',
-                    'null'			=> true
+                    'type' => 'mediumtext',
+                    'null' => true
                 )
             )
         );
@@ -207,32 +207,32 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'plugin_id' => array(
-                    'type'			 => 'int',
-                    'constraint'     => 10,
-                    'null'			 => false,
-                    'unsigned'		 => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'plugin_name' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 50,
-                    'null'			=> false
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
                 ),
                 'plugin_package' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 50,
-                    'null'			=> false
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
                 ),
                 'plugin_version' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 12,
-                    'null'			=> false
+                    'type' => 'varchar',
+                    'constraint' => 12,
+                    'null' => false
                 ),
                 'is_typography_related' => array(
-                    'type'			=> 'char',
-                    'constraint'    => 1,
-                    'default'		=> 'n',
-                    'null'		    => false
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
                 )
             )
         );
@@ -278,32 +278,32 @@ class Updater
         ee()->smartforge->add_column(
             'specialty_templates',
             array(
-                'template_notes'   => array(
-                    'type'         => 'text',
-                    'null'         => true
+                'template_notes' => array(
+                    'type' => 'text',
+                    'null' => true
                 ),
-                'template_type'    => array(
-                    'type'         => 'varchar',
-                    'constraint'   => 16,
-                    'null'         => true
+                'template_type' => array(
+                    'type' => 'varchar',
+                    'constraint' => 16,
+                    'null' => true
                 ),
                 'template_subtype' => array(
-                    'type'         => 'varchar',
-                    'constraint'   => 16,
-                    'null'         => true
+                    'type' => 'varchar',
+                    'constraint' => 16,
+                    'null' => true
                 ),
-                'edit_date'        => array(
-                    'type'         => 'int',
-                    'constraint'   => 10,
-                    'null'         => false,
-                    'default'      => 0
+                'edit_date' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'default' => 0
                 ),
-                'last_author_id'   => array(
-                    'type'         => 'int',
-                    'constraint'   => 10,
-                    'null'         => false,
-                    'unsigned'     => true,
-                    'default'      => 0
+                'last_author_id' => array(
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
+                    'default' => 0
                 ),
             )
         );
@@ -410,16 +410,16 @@ class Updater
         ee()->dbforge->add_field(
             array(
                 'layout_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 10,
-                    'null'       => false,
-                    'unsigned'   => true
+                    'null' => false,
+                    'unsigned' => true
                 ),
                 'group_id' => array(
-                    'type'       => 'int',
+                    'type' => 'int',
                     'constraint' => 4,
-                    'null'       => false,
-                    'unsigned'   => true
+                    'null' => false,
+                    'unsigned' => true
                 )
             )
         );
@@ -430,9 +430,9 @@ class Updater
             'layout_publish',
             array(
                 'layout_name' => array(
-                    'type'       => 'varchar',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => false
+                    'null' => false
                 ),
             )
         );
@@ -662,22 +662,22 @@ class Updater
         // Add footer permissions
         ee()->smartforge->add_column('member_groups', array(
             'can_access_footer_report_bug' => array(
-                'type'       => 'char',
+                'type' => 'char',
                 'constraint' => 1,
-                'default'    => 'n',
-                'null'       => false
+                'default' => 'n',
+                'null' => false
             ),
             'can_access_footer_new_ticket' => array(
-                'type'       => 'char',
+                'type' => 'char',
                 'constraint' => 1,
-                'default'    => 'n',
-                'null'       => false
+                'default' => 'n',
+                'null' => false
             ),
             'can_access_footer_user_guide' => array(
-                'type'       => 'char',
+                'type' => 'char',
                 'constraint' => 1,
-                'default'    => 'n',
-                'null'       => false
+                'default' => 'n',
+                'null' => false
             )
         ));
 
@@ -740,10 +740,10 @@ class Updater
 
         foreach ($permissions as $permission) {
             $columns[$permission] = array(
-                'type'       => 'char',
+                'type' => 'char',
                 'constraint' => 1,
-                'default'    => 'n',
-                'null'       => false
+                'default' => 'n',
+                'null' => false
             );
         }
 
@@ -918,10 +918,10 @@ class Updater
                 'member_fields',
                 array(
                     'm_field_show_fmt' => array(
-                        'type'    => 'char',
+                        'type' => 'char',
                         'constraint' => 1,
                         'default' => 'n',
-                        'null'    => false
+                        'null' => false
                     )
                 )
             );
@@ -931,10 +931,10 @@ class Updater
                 'member_fields',
                 array(
                     'm_field_text_direction' => array(
-                        'type'    => 'char',
+                        'type' => 'char',
                         'constraint' => 3,
                         'default' => 'ltr',
-                        'null'    => false
+                        'null' => false
                     )
                 )
             );
@@ -953,8 +953,8 @@ class Updater
                 'members',
                 array(
                     'bookmarklets' => array(
-                        'type'    => 'TEXT',
-                        'null'    => true
+                        'type' => 'TEXT',
+                        'null' => true
                     )
                 )
             );
@@ -965,8 +965,8 @@ class Updater
                 'members',
                 array(
                     'rte_enabled' => array(
-                        'type'    => 'CHAR(1)',
-                        'null'    => false,
+                        'type' => 'CHAR(1)',
+                        'null' => false,
                         'default' => 'y'
                     )
                 )
@@ -978,9 +978,9 @@ class Updater
                 'members',
                 array(
                     'rte_toolset_id' => array(
-                        'type'       => 'INT(10)',
-                        'null'       => false,
-                        'default'    => '0'
+                        'type' => 'INT(10)',
+                        'null' => false,
+                        'default' => '0'
                     )
                 )
             );
@@ -995,12 +995,12 @@ class Updater
     private function _update_html_buttons()
     {
         $data = array(
-            'b'          => 'html-bold',
-            'i'          => 'html-italic',
-            'ul'         => 'html-order-list',
-            'ol'         => 'html-order-list',
-            'a'          => 'html-link',
-            'img'        => 'html-upload',
+            'b' => 'html-bold',
+            'i' => 'html-italic',
+            'ul' => 'html-order-list',
+            'ol' => 'html-order-list',
+            'a' => 'html-link',
+            'img' => 'html-upload',
             'blockquote' => 'html-quote',
         );
 
@@ -1033,8 +1033,8 @@ class Updater
                 'upload_prefs',
                 array(
                     'module_id' => array(
-                        'type'    => 'INT(4)',
-                        'null'    => false,
+                        'type' => 'INT(4)',
+                        'null' => false,
                         'default' => 0
                     )
                 )
@@ -1046,8 +1046,8 @@ class Updater
                 'upload_prefs',
                 array(
                     'default_modal_view' => array(
-                        'type'    => 'VARCHAR(5)',
-                        'null'    => false,
+                        'type' => 'VARCHAR(5)',
+                        'null' => false,
                         'default' => 'list',
                     )
                 )
@@ -1081,12 +1081,12 @@ class Updater
 
             if (empty($avatar_uploads)) {
                 $member_directories['Avatars'] = array(
-                    'server_path'   => ee()->config->item('avatar_path'),
-                    'url'           => ee()->config->item('avatar_url'),
+                    'server_path' => ee()->config->item('avatar_path'),
+                    'url' => ee()->config->item('avatar_url'),
                     'allowed_types' => 'img',
-                    'max_width'     => ee()->config->item('avatar_max_width'),
-                    'max_height'    => ee()->config->item('avatar_max_height'),
-                    'max_size'      => ee()->config->item('avatar_max_kb'),
+                    'max_width' => ee()->config->item('avatar_max_width'),
+                    'max_height' => ee()->config->item('avatar_max_height'),
+                    'max_size' => ee()->config->item('avatar_max_kb'),
                 );
             }
         }
@@ -1097,12 +1097,12 @@ class Updater
 
             if (empty($member_photo_uploads)) {
                 $member_directories['Member Photos'] = array(
-                    'server_path'   => ee()->config->item('photo_path'),
-                    'url'           => ee()->config->item('photo_url'),
+                    'server_path' => ee()->config->item('photo_path'),
+                    'url' => ee()->config->item('photo_url'),
                     'allowed_types' => 'img',
-                    'max_width'     => ee()->config->item('photo_max_width'),
-                    'max_height'    => ee()->config->item('photo_max_height'),
-                    'max_size'      => ee()->config->item('photo_max_kb'),
+                    'max_width' => ee()->config->item('photo_max_width'),
+                    'max_height' => ee()->config->item('photo_max_height'),
+                    'max_size' => ee()->config->item('photo_max_kb'),
                 );
             }
         }
@@ -1113,12 +1113,12 @@ class Updater
 
             if (empty($signature_uploads)) {
                 $member_directories['Signature Attachments'] = array(
-                    'server_path'   => ee()->config->item('sig_img_path'),
-                    'url'           => ee()->config->item('sig_img_url'),
+                    'server_path' => ee()->config->item('sig_img_path'),
+                    'url' => ee()->config->item('sig_img_url'),
                     'allowed_types' => 'img',
-                    'max_width'     => ee()->config->item('sig_img_max_width'),
-                    'max_height'    => ee()->config->item('sig_img_max_height'),
-                    'max_size'      => ee()->config->item('sig_img_max_kb'),
+                    'max_width' => ee()->config->item('sig_img_max_width'),
+                    'max_height' => ee()->config->item('sig_img_max_height'),
+                    'max_size' => ee()->config->item('sig_img_max_kb'),
                 );
             }
         }
@@ -1130,14 +1130,14 @@ class Updater
 
             if (empty($pm_uploads)) {
                 $member_directories['PM Attachments'] = array(
-                    'server_path'   => ee()->config->item('prv_msg_upload_path'),
-                    'url'           => str_replace(
+                    'server_path' => ee()->config->item('prv_msg_upload_path'),
+                    'url' => str_replace(
                         'avatars',
                         'pm_attachments',
                         ee()->config->item('avatar_url')
                     ),
                     'allowed_types' => 'img',
-                    'max_size'      => ee()->config->item('prv_msg_attach_maxsize')
+                    'max_size' => ee()->config->item('prv_msg_attach_maxsize')
                 );
             }
         }
@@ -1180,8 +1180,8 @@ class Updater
                 'sites',
                 array(
                     'site_pages' => array(
-                        'type'    => 'TEXT',
-                        'null'    => false
+                        'type' => 'TEXT',
+                        'null' => false
                     )
                 )
             );
@@ -1285,8 +1285,8 @@ class Updater
                 'channels',
                 array(
                     'title_field_label' => array(
-                        'type'    => 'CHAR(100)',
-                        'null'    => false,
+                        'type' => 'CHAR(100)',
+                        'null' => false,
                         'default' => 'Title'
                     )
                 )
@@ -1298,10 +1298,10 @@ class Updater
                 'channels',
                 array(
                     'extra_publish_controls' => array(
-                        'type'       => 'char',
+                        'type' => 'char',
                         'constraint' => 1,
-                        'default'    => 'n',
-                        'null'       => false
+                        'default' => 'n',
+                        'null' => false
                     )
                 )
             );
@@ -1351,19 +1351,19 @@ class Updater
             'member_groups',
             array(
                 'cp_homepage' => array(
-                    'type'		=> 'varchar(20)',
-                    'null'		=> true,
-                    'default'	=> null
+                    'type' => 'varchar(20)',
+                    'null' => true,
+                    'default' => null
                 ),
                 'cp_homepage_channel' => array(
-                    'type'		=> 'int',
-                    'unsigned'	=> true,
-                    'null'		=> false,
+                    'type' => 'int',
+                    'unsigned' => true,
+                    'null' => false,
                 ),
                 'cp_homepage_custom' => array(
-                    'type'		=> 'varchar(100)',
-                    'null'		=> true,
-                    'default'	=> null
+                    'type' => 'varchar(100)',
+                    'null' => true,
+                    'default' => null
                 )
             )
         );
@@ -1372,19 +1372,19 @@ class Updater
             'members',
             array(
                 'cp_homepage' => array(
-                    'type'		=> 'varchar(20)',
-                    'null'		=> true,
-                    'default'	=> null
+                    'type' => 'varchar(20)',
+                    'null' => true,
+                    'default' => null
                 ),
                 'cp_homepage_channel' => array(
-                    'type'		=> 'varchar(255)',
-                    'null'		=> true,
-                    'default'	=> null
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                    'default' => null
                 ),
                 'cp_homepage_custom' => array(
-                    'type'		=> 'varchar(100)',
-                    'null'		=> true,
-                    'default'	=> null
+                    'type' => 'varchar(100)',
+                    'null' => true,
+                    'default' => null
                 )
             )
         );
@@ -1398,11 +1398,11 @@ class Updater
     private function _remove_path_configs()
     {
         ee()->config->_update_config(array(), array(
-            'addons_path'        => '',
-            'third_party_path'   => '',
+            'addons_path' => '',
+            'third_party_path' => '',
             'tmpl_file_basepath' => '',
-            'cache_path'         => '',
-            'log_path'           => ''
+            'cache_path' => '',
+            'log_path' => ''
         ));
     }
 

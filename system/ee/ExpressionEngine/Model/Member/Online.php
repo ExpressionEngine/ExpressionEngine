@@ -30,14 +30,14 @@ class Online extends Model
     ];
 
     protected static $_typed_columns = [
-        'online_id'  => 'int',
-        'site_id'    => 'int',
-        'member_id'  => 'int',
-        'in_forum'   => 'boolString',
-        'name'       => 'string',
+        'online_id' => 'int',
+        'site_id' => 'int',
+        'member_id' => 'int',
+        'in_forum' => 'boolString',
+        'name' => 'string',
         'ip_address' => 'string',
-        'date'       => 'timestamp',
-        'anon'       => 'boolString'
+        'date' => 'timestamp',
+        'anon' => 'boolString'
     ];
 
     protected $online_id;

@@ -36,15 +36,15 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
     {
         //  Set default date header variables
         $c = new StdClass();
-        $c->heading_date_hourly  = 0;
-        $c->heading_flag_hourly  = 0;
-        $c->heading_flag_weekly  = 1;
-        $c->heading_date_daily	 = 0;
-        $c->heading_flag_daily	 = 0;
+        $c->heading_date_hourly = 0;
+        $c->heading_flag_hourly = 0;
+        $c->heading_flag_weekly = 1;
+        $c->heading_date_daily = 0;
+        $c->heading_flag_daily = 0;
         $c->heading_date_monthly = 0;
         $c->heading_flag_monthly = 0;
-        $c->heading_date_yearly  = 0;
-        $c->heading_flag_yearly  = 0;
+        $c->heading_date_yearly = 0;
+        $c->heading_flag_yearly = 0;
 
         return $c;
     }

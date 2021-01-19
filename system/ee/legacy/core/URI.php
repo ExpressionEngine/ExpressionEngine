@@ -15,17 +15,17 @@ class EE_URI
 {
     public $uri_string;
 
-    public $keyval         = array();
-    public $segments       = array();
-    public $rsegments      = array();
+    public $keyval = array();
+    public $segments = array();
+    public $rsegments = array();
 
-    public $query_string       = 'index';  // Only the query segment of the URI: 124
-    public $page_query_string  = '';       // For a Pages request, this contains the Entry ID for the Page
-    public $session_id         = '';
+    public $query_string = 'index';  // Only the query segment of the URI: 124
+    public $page_query_string = '';       // For a Pages request, this contains the Entry ID for the Page
+    public $session_id = '';
 
     // These are reserved words that have special meaning when they are the first
     // segment of a URI string.  Template groups can not be named any of these words
-    public $reserved  = array('css');
+    public $reserved = array('css');
 
     /**
      * Constructor
@@ -279,8 +279,8 @@ class EE_URI
         }
 
         // Convert programatic characters to entities
-        $bad    = array('$',        '(',        ')',        '%28',      '%29');
-        $good   = array('&#36;',    '&#40;',    '&#41;',    '&#40;',    '&#41;');
+        $bad = array('$',        '(',        ')',        '%28',      '%29');
+        $good = array('&#36;',    '&#40;',    '&#41;',    '&#40;',    '&#41;');
 
         return str_replace($bad, $good, $str);
     }
@@ -327,7 +327,7 @@ class EE_URI
 
             $session_id = trim($matches[2], '&');
             $controller = trim($matches[3], '&');
-            $query_str  = trim($matches[4], '&');
+            $query_str = trim($matches[4], '&');
 
             $controller = preg_replace('/&?[DCM]=/', '/', $controller);
 
@@ -567,7 +567,7 @@ class EE_URI
 
         $i = 0;
         $lastval = '';
-        $retval  = array();
+        $retval = array();
         foreach ($segments as $seg) {
             if ($i % 2) {
                 $retval[$lastval] = $seg;
@@ -649,13 +649,13 @@ class EE_URI
      */
     public function _slash_segment($n, $where = 'trailing', $which = 'segment')
     {
-        $leading    = '/';
-        $trailing   = '/';
+        $leading = '/';
+        $trailing = '/';
 
         if ($where == 'trailing') {
-            $leading    = '';
+            $leading = '';
         } elseif ($where == 'leading') {
-            $trailing   = '';
+            $trailing = '';
         }
 
         return $leading . $this->$which($n) . $trailing;

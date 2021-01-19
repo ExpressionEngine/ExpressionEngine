@@ -15,9 +15,9 @@ class EE_Subscription
 {
     public $hash;
     public $module;				// module, also used as table name
-    public $anonymous	= false;	// allow anonymous subscriptions? if true, table must have email column
+    public $anonymous = false;	// allow anonymous subscriptions? if true, table must have email column
 
-    public $publisher	= array();
+    public $publisher = array();
 
     public $table;
 
@@ -29,11 +29,11 @@ class EE_Subscription
      */
     public function init($module, $publisher = array(), $anonymous = false)
     {
-        $this->module	 = $module;
+        $this->module = $module;
         $this->publisher = $publisher;
         $this->anonymous = $anonymous;
 
-        $this->table	 = $module . '_subscriptions';
+        $this->table = $module . '_subscriptions';
     }
 
     /**
@@ -136,7 +136,7 @@ class EE_Subscription
         $new_emails = array_diff($emails, $existing_emails);
 
         if (count($new_member_ids) or count($new_emails)) {
-            $data	 = array();
+            $data = array();
             $default = $this->publisher;
 
             // Add member ids
@@ -144,10 +144,10 @@ class EE_Subscription
                 $rand = $id . ee()->functions->random('alnum', 8);
 
                 $data[] = array_merge($default, array(
-                    'hash'				=> $rand,
-                    'member_id'			=> $id,
-                    'email'				=> '',
-                    'subscription_date'	=> ee()->localize->now
+                    'hash' => $rand,
+                    'member_id' => $id,
+                    'email' => '',
+                    'subscription_date' => ee()->localize->now
                 ));
             }
 
@@ -156,10 +156,10 @@ class EE_Subscription
                 $rand = ee()->functions->random('alnum', 15);
 
                 $data[] = array_merge($default, array(
-                    'hash'				=> $rand,
-                    'member_id'			=> 0,
-                    'email'				=> $email,
-                    'subscription_date'	=> ee()->localize->now
+                    'hash' => $rand,
+                    'member_id' => 0,
+                    'email' => $email,
+                    'subscription_date' => ee()->localize->now
                 ));
             }
 
@@ -270,8 +270,8 @@ class EE_Subscription
      */
     public function get_subscriptions($ignore = false, $include_screen_names = false)
     {
-        $emails		= array();
-        $member_ids	= array();
+        $emails = array();
+        $member_ids = array();
 
         // Grab them all
         if ($this->anonymous) {
@@ -327,8 +327,8 @@ class EE_Subscription
     {
         static $current_user = '';
 
-        $emails		= array();
-        $member_ids	= array();
+        $emails = array();
+        $member_ids = array();
 
         // No user specified? Use the current one
         if ($identifiers == false) {

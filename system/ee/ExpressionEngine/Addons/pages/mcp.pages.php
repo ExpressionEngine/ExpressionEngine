@@ -15,8 +15,8 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Pages_mcp
 {
-    public $page_array		    = array();
-    public $pages			    = array();
+    public $page_array = array();
+    public $pages = array();
     public $homepage_display;
 
     /**
@@ -74,10 +74,10 @@ class Pages_mcp
                 'page_name',
                 'page_url',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -106,7 +106,7 @@ class Pages_mcp
                 $checkbox = array(
                     'name' => 'selection[]',
                     'value' => $entry_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 );

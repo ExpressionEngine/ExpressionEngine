@@ -66,14 +66,14 @@ class UploadDestination extends Model
     );
 
     protected static $_validation_rules = array(
-        'name'               => 'required|xss|noHtml|unique[site_id]',
-        'server_path'        => 'required|fileExists|writable',
-        'url'                => 'required|validateUrl',
-        'allowed_types'      => 'enum[img,all]',
+        'name' => 'required|xss|noHtml|unique[site_id]',
+        'server_path' => 'required|fileExists|writable',
+        'url' => 'required|validateUrl',
+        'allowed_types' => 'enum[img,all]',
         'default_modal_view' => 'enum[list,thumb]',
-        'max_size'           => 'numeric|greaterThan[0]',
-        'max_height'         => 'isNatural',
-        'max_width'          => 'isNatural'
+        'max_size' => 'numeric|greaterThan[0]',
+        'max_height' => 'isNatural',
+        'max_width' => 'isNatural'
     );
 
     protected $_property_overrides = array();

@@ -13,56 +13,56 @@
  */
 class EE_Image_lib
 {
-    public $image_library		= 'gd2';	// Can be:  imagemagick, netpbm, gd, gd2
-    public $library_path		= '';
-    public $dynamic_output		= false;	// Whether to send to browser or write to disk
-    public $source_image		= '';
-    public $new_image			= '';
-    public $width				= '';
-    public $height				= '';
-    public $quality			= '90';
-    public $create_thumb		= false;
-    public $thumb_marker		= '_thumb';
-    public $maintain_ratio		= true;		// Whether to maintain aspect ratio when resizing or use hard values
-    public $master_dim			= 'auto';	// auto, height, or width.  Determines what to use as the master dimension
-    public $rotation_angle		= '';
-    public $x_axis				= '';
-    public $y_axis				= '';
+    public $image_library = 'gd2';	// Can be:  imagemagick, netpbm, gd, gd2
+    public $library_path = '';
+    public $dynamic_output = false;	// Whether to send to browser or write to disk
+    public $source_image = '';
+    public $new_image = '';
+    public $width = '';
+    public $height = '';
+    public $quality = '90';
+    public $create_thumb = false;
+    public $thumb_marker = '_thumb';
+    public $maintain_ratio = true;		// Whether to maintain aspect ratio when resizing or use hard values
+    public $master_dim = 'auto';	// auto, height, or width.  Determines what to use as the master dimension
+    public $rotation_angle = '';
+    public $x_axis = '';
+    public $y_axis = '';
 
     // Watermark Vars
-    public $wm_text			= '';			// Watermark text if graphic is not used
-    public $wm_type			= 'text';		// Type of watermarking.  Options:  text/overlay
-    public $wm_x_transp		= 4;
-    public $wm_y_transp		= 4;
-    public $wm_overlay_path	= '';			// Watermark image path
-    public $wm_font_path		= '';			// TT font
-    public $wm_font_size		= 17;			// Font size (different versions of GD will either use points or pixels)
-    public $wm_vrt_alignment	= 'B';			// Vertical alignment:   T M B
-    public $wm_hor_alignment	= 'C';			// Horizontal alignment: L R C
-    public $wm_padding			= 0;			// Padding around text
-    public $wm_hor_offset		= 0;			// Lets you push text to the right
-    public $wm_vrt_offset		= 0;			// Lets you push  text down
-    public $wm_font_color		= '#ffffff';	// Text color
-    public $wm_shadow_color	= '';			// Dropshadow color
-    public $wm_shadow_distance	= 2;			// Dropshadow distance
-    public $wm_opacity			= 50;			// Image opacity: 1 - 100  Only works with image
+    public $wm_text = '';			// Watermark text if graphic is not used
+    public $wm_type = 'text';		// Type of watermarking.  Options:  text/overlay
+    public $wm_x_transp = 4;
+    public $wm_y_transp = 4;
+    public $wm_overlay_path = '';			// Watermark image path
+    public $wm_font_path = '';			// TT font
+    public $wm_font_size = 17;			// Font size (different versions of GD will either use points or pixels)
+    public $wm_vrt_alignment = 'B';			// Vertical alignment:   T M B
+    public $wm_hor_alignment = 'C';			// Horizontal alignment: L R C
+    public $wm_padding = 0;			// Padding around text
+    public $wm_hor_offset = 0;			// Lets you push text to the right
+    public $wm_vrt_offset = 0;			// Lets you push  text down
+    public $wm_font_color = '#ffffff';	// Text color
+    public $wm_shadow_color = '';			// Dropshadow color
+    public $wm_shadow_distance = 2;			// Dropshadow distance
+    public $wm_opacity = 50;			// Image opacity: 1 - 100  Only works with image
 
     // Private Vars
-    public $source_folder		= '';
-    public $dest_folder		= '';
-    public $mime_type			= '';
-    public $orig_width			= '';
-    public $orig_height		= '';
-    public $image_type			= '';
-    public $size_str			= '';
-    public $full_src_path		= '';
-    public $full_dst_path		= '';
-    public $create_fnc			= 'imagecreatetruecolor';
-    public $copy_fnc			= 'imagecopyresampled';
-    public $error_msg			= array();
-    public $wm_use_drop_shadow	= false;
-    public $wm_use_truetype	= false;
-    public $wm_use_opacity		= false;
+    public $source_folder = '';
+    public $dest_folder = '';
+    public $mime_type = '';
+    public $orig_width = '';
+    public $orig_height = '';
+    public $image_type = '';
+    public $size_str = '';
+    public $full_src_path = '';
+    public $full_dst_path = '';
+    public $create_fnc = 'imagecreatetruecolor';
+    public $copy_fnc = 'imagecopyresampled';
+    public $error_msg = array();
+    public $wm_use_drop_shadow = false;
+    public $wm_use_truetype = false;
+    public $wm_use_opacity = false;
 
     /**
      * Constructor
@@ -217,7 +217,7 @@ class EE_Image_lib
             $this->thumb_marker = '';
         }
 
-        $xp	= $this->explode_name($this->dest_image);
+        $xp = $this->explode_name($this->dest_image);
 
         $filename = $xp['name'];
         $file_ext = $xp['ext'];
@@ -369,11 +369,11 @@ class EE_Image_lib
 
         // Reassign the width and height
         if ($this->rotation_angle == 90 or $this->rotation_angle == 270) {
-            $this->width	= $this->orig_height;
-            $this->height	= $this->orig_width;
+            $this->width = $this->orig_height;
+            $this->height = $this->orig_width;
         } else {
-            $this->width	= $this->orig_width;
-            $this->height	= $this->orig_height;
+            $this->width = $this->orig_width;
+            $this->height = $this->orig_height;
         }
 
         // Choose resizing function
@@ -420,7 +420,7 @@ class EE_Image_lib
         // Let's set up our values based on the action
         if ($action == 'crop') {
             //  Reassign the source width/height if cropping
-            $this->orig_width  = $this->width;
+            $this->orig_width = $this->width;
             $this->orig_height = $this->height;
 
             // GD 2.0 has a cropping bug so we'll test for it
@@ -447,11 +447,11 @@ class EE_Image_lib
         //
         //  if ($this->image_library == 'gd2' AND function_exists('imagecreatetruecolor') AND $v2_override == FALSE)
         if ($this->image_library == 'gd2' and function_exists('imagecreatetruecolor')) {
-            $create	= 'imagecreatetruecolor';
-            $copy	= 'imagecopyresampled';
+            $create = 'imagecreatetruecolor';
+            $copy = 'imagecopyresampled';
         } else {
-            $create	= 'imagecreate';
-            $copy	= 'imagecopyresized';
+            $create = 'imagecreate';
+            $copy = 'imagecopyresized';
         }
 
         $dst_img = $create($this->width, $this->height);
@@ -578,18 +578,18 @@ class EE_Image_lib
         //  Build the resizing command
         switch ($this->image_type) {
             case IMAGETYPE_GIF:
-                        $cmd_in		= 'giftopnm';
-                        $cmd_out	= 'ppmtogif';
+                        $cmd_in = 'giftopnm';
+                        $cmd_out = 'ppmtogif';
 
                 break;
             case IMAGETYPE_JPEG:
-                        $cmd_in		= 'jpegtopnm';
-                        $cmd_out	= 'ppmtojpeg';
+                        $cmd_in = 'jpegtopnm';
+                        $cmd_out = 'ppmtojpeg';
 
                 break;
             case IMAGETYPE_PNG:
-                        $cmd_in		= 'pngtopnm';
-                        $cmd_out	= 'ppmtopng';
+                        $cmd_in = 'pngtopnm';
+                        $cmd_out = 'ppmtopng';
 
                 break;
         }
@@ -682,7 +682,7 @@ class EE_Image_lib
         // Set the background color
         // Transparent PNGs will be able to retain their transparency,
         // GIFs and JPEGs will have a white background
-        $white	= imagecolorallocate($src_img, 255, 255, 255);
+        $white = imagecolorallocate($src_img, 255, 255, 255);
 
         //  Rotate it!
         $dst_img = imagerotate($src_img, $this->rotation_angle, $white);
@@ -726,7 +726,7 @@ class EE_Image_lib
             return false;
         }
 
-        $width  = $this->orig_width;
+        $width = $this->orig_width;
         $height = $this->orig_height;
 
         $new_img = imagecreatetruecolor($width, $height);
@@ -850,13 +850,13 @@ class EE_Image_lib
         $this->get_image_properties();
 
         //  Fetch watermark image properties
-        $props			= $this->get_image_properties($this->wm_overlay_path, true);
-        $wm_img_type	= $props['image_type'];
-        $wm_width		= $props['width'];
-        $wm_height		= $props['height'];
+        $props = $this->get_image_properties($this->wm_overlay_path, true);
+        $wm_img_type = $props['image_type'];
+        $wm_width = $props['width'];
+        $wm_height = $props['height'];
 
         //  Create two image resources
-        $wm_img  = $this->image_create_gd($this->wm_overlay_path, $wm_img_type);
+        $wm_img = $this->image_create_gd($this->wm_overlay_path, $wm_img_type);
         $src_img = $this->image_create_gd($this->full_src_path);
 
         // Reverse the offset if necessary
@@ -975,8 +975,8 @@ class EE_Image_lib
         $this->get_image_properties();
 
         // Set RGB values for text and shadow
-        $this->wm_font_color	= str_replace('#', '', $this->wm_font_color);
-        $this->wm_shadow_color	= str_replace('#', '', $this->wm_shadow_color);
+        $this->wm_font_color = str_replace('#', '', $this->wm_font_color);
+        $this->wm_shadow_color = str_replace('#', '', $this->wm_shadow_color);
 
         $R1 = hexdec(substr($this->wm_font_color, 0, 2));
         $G1 = hexdec(substr($this->wm_font_color, 2, 2));
@@ -986,8 +986,8 @@ class EE_Image_lib
         $G2 = hexdec(substr($this->wm_shadow_color, 2, 2));
         $B2 = hexdec(substr($this->wm_shadow_color, 4, 2));
 
-        $txt_color	= imagecolorclosest($src_img, $R1, $G1, $B1);
-        $drp_color	= imagecolorclosest($src_img, $R2, $G2, $B2);
+        $txt_color = imagecolorclosest($src_img, $R1, $G1, $B1);
+        $drp_color = imagecolorclosest($src_img, $R2, $G2, $B2);
 
         // Reverse the vertical offset
         // When the image is positioned at the bottom
@@ -1025,11 +1025,11 @@ class EE_Image_lib
                 $this->wm_font_size = '17';
             }
 
-            $fontwidth  = $this->wm_font_size-($this->wm_font_size/4);
+            $fontwidth = $this->wm_font_size - ($this->wm_font_size / 4);
             $fontheight = $this->wm_font_size;
             $this->wm_vrt_offset += $this->wm_font_size;
         } else {
-            $fontwidth  = imagefontwidth($this->wm_font_size);
+            $fontwidth = imagefontwidth($this->wm_font_size);
             $fontheight = imagefontheight($this->wm_font_size);
         }
 
@@ -1046,11 +1046,11 @@ class EE_Image_lib
             case "T":
                 break;
             case "M":
-                $y_axis += ($this->orig_height/2)+($fontheight/2);
+                $y_axis += ($this->orig_height / 2) + ($fontheight / 2);
 
                 break;
             case "B":
-                $y_axis += ($this->orig_height - $fontheight - $this->wm_shadow_distance - ($fontheight/2));
+                $y_axis += ($this->orig_height - $fontheight - $this->wm_shadow_distance - ($fontheight / 2));
 
                 break;
         }
@@ -1064,16 +1064,16 @@ class EE_Image_lib
                 break;
             case "R":
                 if ($this->wm_use_drop_shadow) {
-                    $x_shad += ($this->orig_width - $fontwidth*strlen($this->wm_text));
+                    $x_shad += ($this->orig_width - $fontwidth * strlen($this->wm_text));
                 }
-                $x_axis += ($this->orig_width - $fontwidth*strlen($this->wm_text));
+                $x_axis += ($this->orig_width - $fontwidth * strlen($this->wm_text));
 
                 break;
             case "C":
                 if ($this->wm_use_drop_shadow) {
-                    $x_shad += floor(($this->orig_width - $fontwidth*strlen($this->wm_text))/2);
+                    $x_shad += floor(($this->orig_width - $fontwidth * strlen($this->wm_text)) / 2);
                 }
-                $x_axis += floor(($this->orig_width  -$fontwidth*strlen($this->wm_text))/2);
+                $x_axis += floor(($this->orig_width - $fontwidth * strlen($this->wm_text)) / 2);
 
                 break;
         }
@@ -1320,10 +1320,10 @@ class EE_Image_lib
             return;
         }
 
-        $new_width	= ceil($this->orig_width*$this->height/$this->orig_height);
-        $new_height	= ceil($this->width*$this->orig_height/$this->orig_width);
+        $new_width = ceil($this->orig_width * $this->height / $this->orig_height);
+        $new_height = ceil($this->width * $this->orig_height / $this->orig_width);
 
-        $ratio = (($this->orig_height/$this->orig_width) - ($this->height/$this->width));
+        $ratio = (($this->orig_height / $this->orig_width) - ($this->height / $this->width));
 
         if ($this->master_dim != 'width' and $this->master_dim != 'height') {
             $this->master_dim = ($ratio < 0) ? 'width' : 'height';
@@ -1369,20 +1369,20 @@ class EE_Image_lib
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
 
         if ($return == true) {
-            $v['width']			= $vals['0'];
-            $v['height']		= $vals['1'];
-            $v['image_type']	= $vals['2'];
-            $v['size_str']		= $vals['3'];
-            $v['mime_type']		= $mime;
+            $v['width'] = $vals['0'];
+            $v['height'] = $vals['1'];
+            $v['image_type'] = $vals['2'];
+            $v['size_str'] = $vals['3'];
+            $v['mime_type'] = $mime;
 
             return $v;
         }
 
-        $this->orig_width	= $vals['0'];
-        $this->orig_height	= $vals['1'];
-        $this->image_type	= $vals['2'];
-        $this->size_str		= $vals['3'];
-        $this->mime_type	= $mime;
+        $this->orig_width = $vals['0'];
+        $this->orig_height = $vals['1'];
+        $this->image_type = $vals['2'];
+        $this->size_str = $vals['3'];
+        $this->mime_type = $mime;
 
         return true;
     }
@@ -1424,9 +1424,9 @@ class EE_Image_lib
         }
 
         if ($vals['new_width'] == 0) {
-            $vals['new_width'] = ceil($vals['width']*$vals['new_height']/$vals['height']);
+            $vals['new_width'] = ceil($vals['width'] * $vals['new_height'] / $vals['height']);
         } elseif ($vals['new_height'] == 0) {
-            $vals['new_height'] = ceil($vals['new_width']*$vals['height']/$vals['width']);
+            $vals['new_height'] = ceil($vals['new_width'] * $vals['height'] / $vals['width']);
         }
 
         return $vals;

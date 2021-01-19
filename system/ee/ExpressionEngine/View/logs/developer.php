@@ -50,12 +50,12 @@
 // Individual confirm delete modals
 foreach ($rows as $row) {
     $modal_vars = array(
-        'name'      => 'modal-confirm-' . $row['log_id'],
-        'form_url'	=> $form_url,
-        'hidden'	=> array(
-            'delete'	=> $row['log_id']
+        'name' => 'modal-confirm-' . $row['log_id'],
+        'form_url' => $form_url,
+        'hidden' => array(
+            'delete' => $row['log_id']
         ),
-        'checklist'	=> array(
+        'checklist' => array(
             array(
                 'kind' => lang('view_developer_log'),
                 'desc' => $row['description']
@@ -69,12 +69,12 @@ foreach ($rows as $row) {
 
 // Confirm delete all modal
 $modal_vars = array(
-    'name'      => 'modal-confirm-all',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'delete'	=> 'all'
+    'name' => 'modal-confirm-all',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'delete' => 'all'
     ),
-    'checklist'	=> array(
+    'checklist' => array(
         array(
             'kind' => lang('view_developer_log'),
             'desc' => lang('all')

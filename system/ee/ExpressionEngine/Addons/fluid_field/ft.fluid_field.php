@@ -26,7 +26,7 @@ class Fluid_field_ft extends EE_Fieldtype
     {
         $addon = ee('Addon')->get('fluid_field');
         $this->info = array(
-            'name'    => $addon->getName(),
+            'name' => $addon->getName(),
             'version' => $addon->getVersion()
         );
 
@@ -417,9 +417,9 @@ class Fluid_field_ft extends EE_Fieldtype
             ));
 
             return ee('View')->make('fluid_field:publish')->render(array(
-                'fields'          => $fields,
+                'fields' => $fields,
                 'field_templates' => $templates,
-                'filters'         => $filters,
+                'filters' => $filters,
             ));
         }
     }
@@ -444,8 +444,8 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $settings = array(
             array(
-                'title'     => 'custom_fields',
-                'fields'    => array(
+                'title' => 'custom_fields',
+                'fields' => array(
                     'field_channel_fields' => array(
                         'type' => 'checkbox',
                         'choices' => $custom_field_options,

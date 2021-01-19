@@ -61,7 +61,7 @@ class CI_DB_mysqli_connection
         $char_set = $this->config['char_set'];
         $pconnect = $this->config['pconnect'];
         $dbcollat = $this->config['dbcollat'];
-        $port     = $this->config['port'];
+        $port = $this->config['port'];
 
         $dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
@@ -118,7 +118,7 @@ class CI_DB_mysqli_connection
         $memory_end = memory_get_usage();
 
         if (isset($this->log)) {
-            $this->log->addQuery($query, $time_end-$time_start, $memory_end-$memory_start);
+            $this->log->addQuery($query, $time_end - $time_start, $memory_end - $memory_start);
         }
 
         return $result;

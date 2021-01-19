@@ -99,10 +99,10 @@ class Spam_mcp
                 'ip',
                 'spam_type',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -144,7 +144,7 @@ class Spam_mcp
                 array(
                     'name' => 'selection[]',
                     'value' => $spam->trap_id,
-                    'data'	=> array(
+                    'data' => array(
                         'confirm' => lang('spam') . ': <b>' . htmlentities($summary, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
@@ -189,7 +189,7 @@ class Spam_mcp
         );
 
         return array(
-            'body'       => ee('View')->make('spam:index')->render($data),
+            'body' => ee('View')->make('spam:index')->render($data),
             'heading' => lang('all_spam')
         );
     }
@@ -256,19 +256,19 @@ class Spam_mcp
 
         ee()->form_validation->set_rules(array(
             array(
-                'field'   => 'spam_sensitivity',
-                'label'   => 'lang:spam_sensitivity',
-                'rules'   => 'required|numeric'
+                'field' => 'spam_sensitivity',
+                'label' => 'lang:spam_sensitivity',
+                'rules' => 'required|numeric'
             ),
             array(
-                'field'   => 'spam_word_limit',
-                'label'   => 'lang:spam_word_limit',
-                'rules'   => 'required|is_natural_no_zero'
+                'field' => 'spam_word_limit',
+                'label' => 'lang:spam_word_limit',
+                'rules' => 'required|is_natural_no_zero'
             ),
             array(
-                'field'   => 'spam_content_limit',
-                'label'   => 'lang:spam_content_limit',
-                'rules'   => 'required|is_natural_no_zero'
+                'field' => 'spam_content_limit',
+                'label' => 'lang:spam_content_limit',
+                'rules' => 'required|is_natural_no_zero'
             )
         ));
 
@@ -337,7 +337,7 @@ class Spam_mcp
         ee()->javascript->set_global('alert.download_ajax_fail', $download_ajax_fail->render());
 
         return array(
-            'body'       => ee('View')->make('spam:form')->render(array('data' => $vars)),
+            'body' => ee('View')->make('spam:form')->render(array('data' => $vars)),
             'breadcrumb' => array(
                 ee('CP/URL')->make('addons/settings/spam')->compile() => lang('spam')
             ),

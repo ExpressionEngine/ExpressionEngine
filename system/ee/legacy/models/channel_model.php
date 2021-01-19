@@ -182,8 +182,8 @@ class Channel_model extends CI_Model
                 break;
             case 'entry':
             default:
-                $table 		= 'channel_titles';
-                $fields[] 	= 'channel_id';
+                $table = 'channel_titles';
+                $fields[] = 'channel_id';
         }
 
         $this->db->select($fields)
@@ -420,7 +420,7 @@ class Channel_model extends CI_Model
     {
         $search_method = '_field_search';
 
-        if (strncmp($terms, '=', 1) ==  0) {
+        if (strncmp($terms, '=', 1) == 0) {
             // Remove the '=' sign that specified exact match.
             $terms = substr($terms, 1);
 
@@ -567,7 +567,7 @@ class Channel_model extends CI_Model
         }
 
         if ($not && ! $empty) {
-            $search_sql =  '(' . $search_sql . ') OR (' . $col_name . ' IS NULL) ';
+            $search_sql = '(' . $search_sql . ') OR (' . $col_name . ' IS NULL) ';
         }
 
         return $search_sql;

@@ -14,8 +14,8 @@
 class Date_ft extends EE_Fieldtype
 {
     public $info = array(
-        'name'		=> 'Date',
-        'version'	=> '1.0.0'
+        'name' => 'Date',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = false;
@@ -281,14 +281,14 @@ class Date_ft extends EE_Fieldtype
     public function settings_modify_column($data)
     {
         $fields['field_id_' . $data['field_id']] = array(
-            'type' 			=> 'INT',
-            'constraint'	=> 10,
-            'default'		=> 0
+            'type' => 'INT',
+            'constraint' => 10,
+            'default' => 0
         );
 
         $fields['field_dt_' . $data['field_id']] = array(
-            'type' 			=> 'VARCHAR',
-            'constraint'	=> 50
+            'type' => 'VARCHAR',
+            'constraint' => 50
         );
 
         return $fields;
@@ -298,9 +298,9 @@ class Date_ft extends EE_Fieldtype
     {
         return array('col_id_' . $data['col_id'] =>
             array(
-                'type' 			=> 'VARCHAR',
-                'constraint'	=> 60,
-                'default'		=> null
+                'type' => 'VARCHAR',
+                'constraint' => 60,
+                'default' => null
             )
         );
     }
@@ -329,7 +329,7 @@ class Date_ft extends EE_Fieldtype
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        if ($data==0) {
+        if ($data == 0) {
             return '';
         }
 

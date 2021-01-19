@@ -79,7 +79,7 @@ class EE_Route
 
         foreach ($this->segments as $segment) {
             if ($segment->hasValue()) {
-                $url[] =  urlencode($segment->value());
+                $url[] = urlencode($segment->value());
             }
         }
 
@@ -185,7 +185,7 @@ class EE_Route
             $this->segments[$index] = $segment;
 
             foreach ($segment->parts as $part) {
-                $this->variables[$part->name] =& $this->segments[$index];
+                $this->variables[$part->name] = & $this->segments[$index];
             }
 
             $index++;

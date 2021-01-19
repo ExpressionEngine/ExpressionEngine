@@ -126,9 +126,9 @@ class Members extends Settings
                             'type' => 'radio',
                             'choices' => array(
                                 'member_id' => lang('id'),
-                                'username'  => lang('username'),
-                                'dates'     => lang('join_date'),
-                                'role'      => lang('role')
+                                'username' => lang('username'),
+                                'dates' => lang('join_date'),
+                                'role' => lang('role')
                             )
                         )
                     )

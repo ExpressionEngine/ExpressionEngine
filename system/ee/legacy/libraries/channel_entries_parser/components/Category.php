@@ -103,10 +103,10 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                 $cats = '';
                 $i = 0;
 
-                $not_these		  = array();
-                $these			  = array();
+                $not_these = array();
+                $these = array();
                 $not_these_groups = array();
-                $these_groups	  = array();
+                $these_groups = array();
 
                 if (isset($catval[1]['show'])) {
                     if (strncmp($catval[1]['show'], 'not ', 4) == 0) {
@@ -168,19 +168,19 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                     $cat_image = ee()->file_field->parse_field($v[3]);
 
                     $cat_vars = array(
-                        'category_count'         => ++$count,
+                        'category_count' => ++$count,
                         'category_reverse_count' => $total_results - $count + 1,
                         'category_total_results' => $total_results,
-                        'category_name'          => ee()->typography->format_characters(
+                        'category_name' => ee()->typography->format_characters(
                             ee()->functions->encode_ee_tags($v[2])
                         ),
-                        'category_url_title'     => $v[6],
-                        'category_description'   => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
-                        'category_group'         => (isset($v[5])) ? $v[5] : '',
-                        'category_image'         => (isset($cat_image['url'])) ? $cat_image['url'] : '',
-                        'category_id'            => $v[0],
-                        'parent_id'              => $v[1],
-                        'active'                 => ($active_cat == $v[0] || $active_cat == $v[6])
+                        'category_url_title' => $v[6],
+                        'category_description' => (isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
+                        'category_group' => (isset($v[5])) ? $v[5] : '',
+                        'category_image' => (isset($cat_image['url'])) ? $cat_image['url'] : '',
+                        'category_id' => $v[0],
+                        'parent_id' => $v[1],
+                        'active' => ($active_cat == $v[0] || $active_cat == $v[6])
                     );
 
                     $cond = $cat_vars;

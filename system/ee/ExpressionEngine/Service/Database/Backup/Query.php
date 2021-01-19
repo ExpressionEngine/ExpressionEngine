@@ -201,7 +201,7 @@ class Query
                 $inserts .= $insert_prepend . "\n\t" . implode(",\n\t", $row_chunk);
             }
 
-            $inserts .=  ";\n";
+            $inserts .= ";\n";
         }
 
         return [

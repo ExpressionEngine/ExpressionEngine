@@ -52,32 +52,32 @@ class Updater
             'members',
             array(
                 'timezone' => array(
-                    'name'       => 'timezone',
-                    'type'       => 'varchar',
+                    'name' => 'timezone',
+                    'type' => 'varchar',
                     'constraint' => 50,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'date_format' => array(
-                    'name'       => 'date_format',
-                    'type'       => 'varchar',
+                    'name' => 'date_format',
+                    'type' => 'varchar',
                     'constraint' => 8,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'time_format' => array(
-                    'name'       => 'time_format',
-                    'type'       => 'char',
+                    'name' => 'time_format',
+                    'type' => 'char',
                     'constraint' => 2,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 ),
                 'include_seconds' => array(
-                    'name'       => 'include_seconds',
-                    'type'       => 'char',
+                    'name' => 'include_seconds',
+                    'type' => 'char',
                     'constraint' => 1,
-                    'null'       => true,
-                    'default'    => null
+                    'null' => true,
+                    'default' => null
                 )
             )
         );
@@ -105,8 +105,8 @@ class Updater
                 'category_fields',
                 array(
                     'legacy_field_data' => array(
-                        'type'    => 'CHAR(1)',
-                        'null'    => false,
+                        'type' => 'CHAR(1)',
+                        'null' => false,
                         'default' => 'n'
                     )
                 )

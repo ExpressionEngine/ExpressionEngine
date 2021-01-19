@@ -269,5 +269,5 @@ $lang = array(
 
     'open_in_new_tab' => 'Open in a new tab',
 
-    ''=>''
+    '' => ''
 );

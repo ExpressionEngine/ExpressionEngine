@@ -13,9 +13,9 @@
  */
 class EE_LDAP
 {
-    public $conn			= false;
-    public $info			= false;
-    public $eedata			= array('screen_name',
+    public $conn = false;
+    public $info = false;
+    public $eedata = array('screen_name',
         'username',
         'email',
         'unique_id',
@@ -73,9 +73,9 @@ class EE_LDAP
         /** -------------------------------------
         /**  Set Main Attributes
         /** -------------------------------------*/
-        $insert['cn']	= $data['screen_name'];
-        $insert['uid']	= $data['username'];
-        $insert['mail']	= $data['email'];
+        $insert['cn'] = $data['screen_name'];
+        $insert['uid'] = $data['username'];
+        $insert['mail'] = $data['email'];
 
         $insert['inetOrgPerson']['0'] = 'inetOrgPerson';
 
@@ -143,9 +143,9 @@ class EE_LDAP
         /** -------------------------------------
         /**  Set Attributes
         /** -------------------------------------*/
-        $insert['cn']	= $data['screen_name'];
-        $insert['uid']	= $data['username'];
-        $insert['mail']	= $data['email'];
+        $insert['cn'] = $data['screen_name'];
+        $insert['uid'] = $data['username'];
+        $insert['mail'] = $data['email'];
 
         foreach ($this->eedata as $value) {
             if (isset($data[$value])) {
@@ -196,7 +196,7 @@ class EE_LDAP
         /** -------------------------------------
         /**  Perform Search for User
         /** -------------------------------------*/
-        $search		= "(&(uid=$username))";
+        $search = "(&(uid=$username))";
         $attributes = array('cn', 'sn');
 
         foreach ($this->eedata as $value) {
@@ -347,14 +347,14 @@ class EE_LDAP
     /** -------------------------------------
     /**  Output an LDAP Error
     /** -------------------------------------*/
-    public function output_error($error='')
+    public function output_error($error = '')
     {
         if (ee()->config->item('ldap_debugging') == 'y') {
             $error_no = '';
 
             if ($error == '') {
                 $error_no = @ldap_errno($this->conn);
-                $error	  = @ldap_err2str($error_no);
+                $error = @ldap_err2str($error_no);
             }
 
             @trigger_error(printf("<b>LDAP Error</b>: " . $error_no . ": %s<br />\n\n", $error), E_USER_WARNING);

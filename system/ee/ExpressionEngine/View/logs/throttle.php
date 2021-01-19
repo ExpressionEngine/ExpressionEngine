@@ -55,12 +55,12 @@ if (! $disabled) {
     // Individual confirm delete modals
     foreach ($logs as $log) {
         $modal_vars = array(
-            'name'      => 'modal-confirm-' . $log->throttle_id,
-            'form_url'	=> $form_url,
-            'hidden'	=> array(
-                'delete'	=> $log->throttle_id
+            'name' => 'modal-confirm-' . $log->throttle_id,
+            'form_url' => $form_url,
+            'hidden' => array(
+                'delete' => $log->throttle_id
             ),
-            'checklist'	=> array(
+            'checklist' => array(
                 array(
                     'kind' => lang('view_throttle_log'),
                     'desc' => $log->ip_address . ' ' . lang('hits') . ': ' . $log->hits
@@ -74,12 +74,12 @@ if (! $disabled) {
 
     // Confirm delete all modal
     $modal_vars = array(
-        'name'      => 'modal-confirm-all',
-        'form_url'	=> $form_url,
-        'hidden'	=> array(
-            'delete'	=> 'all'
+        'name' => 'modal-confirm-all',
+        'form_url' => $form_url,
+        'hidden' => array(
+            'delete' => 'all'
         ),
-        'checklist'	=> array(
+        'checklist' => array(
             array(
                 'kind' => lang('view_throttle_log'),
                 'desc' => lang('all')

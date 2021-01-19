@@ -47,9 +47,9 @@ class Updater
 
         if (! $installed) {
             ee('Model')->make('Fieldtype', [
-                'name'                => 'file_grid',
-                'version'             => '1.0',
-                'settings'            => [],
+                'name' => 'file_grid',
+                'version' => '1.0',
+                'settings' => [],
                 'has_global_settings' => 'n',
             ])->save();
         }

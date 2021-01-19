@@ -14,8 +14,8 @@ require_once PATH_ADDONS . 'grid/ft.grid.php';
 class file_grid_ft extends Grid_ft
 {
     public $info = [
-        'name'		=> 'File Grid',
-        'version'	=> '1.0.0'
+        'name' => 'File Grid',
+        'version' => '1.0.0'
     ];
 
     public $settings_form_field_name = 'file_grid';
@@ -39,10 +39,10 @@ class file_grid_ft extends Grid_ft
         ]);
 
         return ee('View')->make('grid:file_grid')->render([
-            'grid_markup'        => $grid_markup,
-            'allowed_directory'  => $this->get_setting('allowed_directories', 'all'),
-            'content_type'       => $this->get_setting('field_content_type', 'all'),
-            'grid_max_rows'      => $this->get_setting('grid_max_rows')
+            'grid_markup' => $grid_markup,
+            'allowed_directory' => $this->get_setting('allowed_directories', 'all'),
+            'content_type' => $this->get_setting('field_content_type', 'all'),
+            'grid_max_rows' => $this->get_setting('grid_max_rows')
         ]);
     }
 
@@ -168,7 +168,7 @@ class file_grid_ft extends Grid_ft
                 'col_search' => 'n',
                 'col_width' => '',
                 'col_settings' => [
-                    'field_content_type'  => 'image',
+                    'field_content_type' => 'image',
                     'allowed_directories' => 'all'
                 ],
                 'col_hidden' => true
@@ -197,7 +197,7 @@ class file_grid_ft extends Grid_ft
             foreach ($_POST[$this->settings_form_field_name]['cols'] as $col_field => &$column) {
                 if ($column['col_name'] == 'file') {
                     $column['col_settings'] = [
-                        'field_content_type'  => ee('Request')->post('field_content_type'),
+                        'field_content_type' => ee('Request')->post('field_content_type'),
                         'allowed_directories' => ee('Request')->post('allowed_directories')
                     ];
                 }

@@ -31,7 +31,7 @@ class Factory
 
         ee()->javascript->set_global([
             'categories.createUrl' => ee('CP/URL')->make('categories/create/###')->compile(),
-            'categories.editUrl'   => ee('CP/URL')->make('categories/edit/###')->compile(),
+            'categories.editUrl' => ee('CP/URL')->make('categories/edit/###')->compile(),
             'categories.removeUrl' => ee('CP/URL')->make('categories/remove-single/')->compile(),
             'categories.fieldUrl' => ee('CP/URL')->make('categories/category-group-publish-field/###')->compile()
         ]);

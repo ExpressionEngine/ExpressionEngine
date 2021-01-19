@@ -62,7 +62,7 @@ class Block_and_allow_upd extends Installer
                     'unsigned' => true,
                     'auto_increment' => true
                 ),
-                'allowedlist_type'  => array(
+                'allowedlist_type' => array(
                     'type' => 'varchar',
                     'constraint' => '20',
                 ),
@@ -136,7 +136,7 @@ class Block_and_allow_upd extends Installer
                         'unsigned' => true,
                         'auto_increment' => true
                     ),
-                    'whitelisted_type'  => array(
+                    'whitelisted_type' => array(
                         'type' => 'varchar',
                         'constraint' => '20',
                     ),
@@ -188,7 +188,7 @@ class Block_and_allow_upd extends Installer
                     'unsigned' => true,
                     'auto_increment' => true
                 ),
-                'whitelisted_type'  => array(
+                'whitelisted_type' => array(
                     'name' => 'allowedlist_type',
                     'type' => 'varchar',
                     'constraint' => '20',

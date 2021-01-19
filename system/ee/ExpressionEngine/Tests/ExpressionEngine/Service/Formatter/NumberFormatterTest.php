@@ -125,7 +125,7 @@ class NumberFormatterTest extends TestCase
             [112358.13, 'UAH', 'en', '112358.13', 0],
             ['fake', null, null, '$0.00', 0],
         ];
-        if (PHP_OS!="WINNT") {
+        if (PHP_OS != "WINNT") {
             $currency = array_merge($currency, $no_intl);
         }
 

@@ -20,16 +20,16 @@ class RoleSetting extends Model
     protected static $_table_name = 'role_settings';
 
     protected static $_typed_columns = [
-        'role_id'                 => 'int',
-        'site_id'                 => 'int',
-        'menu_set_id'             => 'int',
+        'role_id' => 'int',
+        'site_id' => 'int',
+        'menu_set_id' => 'int',
         'exclude_from_moderation' => 'boolString',
-        'search_flood_control'    => 'int',
-        'prv_msg_send_limit'      => 'int',
-        'prv_msg_storage_limit'   => 'int',
-        'include_in_authorlist'   => 'boolString',
-        'include_in_memberlist'   => 'boolString',
-        'cp_homepage_channel'     => 'int',
+        'search_flood_control' => 'int',
+        'prv_msg_send_limit' => 'int',
+        'prv_msg_storage_limit' => 'int',
+        'include_in_authorlist' => 'boolString',
+        'include_in_memberlist' => 'boolString',
+        'cp_homepage_channel' => 'int',
     ];
 
     protected static $_relationships = [

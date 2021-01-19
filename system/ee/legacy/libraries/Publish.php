@@ -18,20 +18,20 @@ class Publish
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_categories');
 
-        $default	= array(
-            'string_override'		=> lang('no_categories'),
-            'field_id'				=> 'category',
-            'field_name'			=> 'category',
-            'field_label'			=> lang('categories'),
-            'field_required'		=> 'n',
-            'field_type'			=> 'multiselect',
-            'field_text_direction'	=> 'ltr',
-            'field_data'			=> '',
-            'field_fmt'				=> 'text',
-            'field_instructions'	=> '',
-            'field_show_fmt'		=> 'n',
-            'selected'				=> 'n',
-            'options'				=> array()
+        $default = array(
+            'string_override' => lang('no_categories'),
+            'field_id' => 'category',
+            'field_name' => 'category',
+            'field_label' => lang('categories'),
+            'field_required' => 'n',
+            'field_type' => 'multiselect',
+            'field_text_direction' => 'ltr',
+            'field_data' => '',
+            'field_fmt' => 'text',
+            'field_instructions' => '',
+            'field_show_fmt' => 'n',
+            'selected' => 'n',
+            'options' => array()
         );
 
         // No categories? Easy peasy
@@ -47,8 +47,8 @@ class Publish
 
         ee()->legacy_api->instantiate('channel_categories');
 
-        $catlist	= array();
-        $categories	= array();
+        $catlist = array();
+        $categories = array();
 
         // Figure out selected categories
         if (! count($_POST) && ! $entry_id && $default_category) {
@@ -108,7 +108,7 @@ class Publish
 
                 foreach ($link_info as $val) {
                     $edit_links[] = array(
-                        'url' =>  ee('CP/URL')->make('admin_content/category_editor', array('group_id' => $val['group_id'])),
+                        'url' => ee('CP/URL')->make('admin_content/category_editor', array('group_id' => $val['group_id'])),
                         'group_name' => $val['group_name']
                     );
                 }
@@ -119,8 +119,8 @@ class Publish
         ee()->lang->loadfile('admin_content');
         ee()->javascript->set_global(array(
             'publish.lang' => array(
-                'update'		=> lang('update'),
-                'edit_category'	=> lang('edit_category')
+                'update' => lang('update'),
+                'edit_category' => lang('edit_category')
             )
         ));
 
@@ -129,7 +129,7 @@ class Publish
         // Build the mess
         $data = compact('categories', 'edit_links');
 
-        $default['options']			= $categories;
+        $default['options'] = $categories;
         $default['string_override'] = ee()->load->view('content/_assets/categories', $data, true);
 
         return array('category' => $default);

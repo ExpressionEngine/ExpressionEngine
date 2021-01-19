@@ -42,7 +42,7 @@ class EE_Stylesheet
         }
 
         if (! isset($this->style_cache[$stylesheet])) {
-            $ex =  explode("/", $stylesheet);
+            $ex = explode("/", $stylesheet);
 
             if (count($ex) != 2) {
                 show_404();
@@ -123,8 +123,8 @@ class EE_Stylesheet
     public function _send_css($stylesheet, $modified)
     {
         if (ee()->config->item('send_headers') == 'y') {
-            $max_age		= 604800;
-            $modified_since	= ee()->input->server('HTTP_IF_MODIFIED_SINCE');
+            $max_age = 604800;
+            $modified_since = ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
             // Remove anything after the semicolon
 

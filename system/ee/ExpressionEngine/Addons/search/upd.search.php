@@ -94,7 +94,7 @@ class Search_upd
      * @access	public
      * @return	bool
      */
-    public function update($current='')
+    public function update($current = '')
     {
         if (version_compare($current, '2.1', '<')) {
             ee()->load->library('utf8_db_convert');
@@ -113,11 +113,11 @@ class Search_upd
             foreach ($tables as $table) {
                 $column_settings = array(
                     'ip_address' => array(
-                        'name' 			=> 'ip_address',
-                        'type' 			=> 'varchar',
-                        'constraint'	=> '45',
-                        'default'		=> '0',
-                        'null'			=> false
+                        'name' => 'ip_address',
+                        'type' => 'varchar',
+                        'constraint' => '45',
+                        'default' => '0',
+                        'null' => false
                     )
                 );
 
@@ -133,8 +133,8 @@ class Search_upd
             ee()->load->library('smartforge');
 
             $fields = array(
-                'site_id'		=> array('type' => 'int',		'constraint' => '4',	'null' => false,	'default' => 1),
-                'per_page'		=> array('type' => 'tinyint',	'constraint' => '3',	'unsigned' => true,	'null' => false),
+                'site_id' => array('type' => 'int',		'constraint' => '4',	'null' => false,	'default' => 1),
+                'per_page' => array('type' => 'tinyint',	'constraint' => '3',	'unsigned' => true,	'null' => false),
             );
 
             ee()->smartforge->modify_column('search', $fields);

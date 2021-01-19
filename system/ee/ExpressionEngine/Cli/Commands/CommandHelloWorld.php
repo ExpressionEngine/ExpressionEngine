@@ -41,9 +41,9 @@ class CommandHelloWorld extends Cli
      * @var array
      */
     public $commandOptions = [
-        'verbose,v'     => 'Hello world, but longer',
+        'verbose,v' => 'Hello world, but longer',
         'interactive,i' => 'Let\'s interact!',
-        'confirm,c'     => 'Test the confirmation',
+        'confirm,c' => 'Test the confirmation',
     ];
 
     /**

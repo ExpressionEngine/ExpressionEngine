@@ -13,11 +13,11 @@
  */
 class EE_Extensions
 {
-    public $extensions 	= array();
-    public $end_script		= false;	// To return or not to return
-    public $last_call		= false;	// The data returned from the last called method for this hook
-    public $in_progress	= '';		// Last hook called.  Prevents loops.
-    public $s_cache		= array();	// Array of previously unserialized settings
+    public $extensions = array();
+    public $end_script = false;	// To return or not to return
+    public $last_call = false;	// The data returned from the last called method for this hook
+    public $in_progress = '';		// Last hook called.  Prevents loops.
+    public $s_cache = array();	// Array of previously unserialized settings
     public $version_numbers = array(); // To track the version of an extension
 
     /**
@@ -79,7 +79,7 @@ class EE_Extensions
     {
         // Reset Our Variables
         $this->end_script = false;
-        $this->last_call  = false;
+        $this->last_call = false;
 
         // Anything to Do Here?
         if (! isset($this->extensions[$which])) {
@@ -164,7 +164,7 @@ class EE_Extensions
         }
 
         // A Bit of Meta
-        $method	= $metadata['0'];
+        $method = $metadata['0'];
 
         // Unserializing and serializing is relatively slow, so we
         // cache the settings just in case multiple hooks are calling the

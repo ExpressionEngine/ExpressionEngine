@@ -18,8 +18,8 @@ use ExpressionEngine\Library\CP;
  */
 class Logs extends CP_Controller
 {
-    public $perpage		= 25;
-    public $params			= array();
+    public $perpage = 25;
+    public $params = array();
     public $base_url;
     protected $search_installed = false;
 

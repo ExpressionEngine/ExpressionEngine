@@ -79,9 +79,9 @@ class App
         }
 
         $directory = $RTR->fetch_directory();
-        $class     = $RTR->fetch_class();
-        $method    = $RTR->fetch_method();
-        $segments  = array_slice($URI->rsegments, 2);
+        $class = $RTR->fetch_class();
+        $method = $RTR->fetch_method();
+        $segments = array_slice($URI->rsegments, 2);
 
         return compact('directory', 'class', 'method', 'segments');
     }
@@ -180,9 +180,9 @@ class App
     protected function overrideRoutingConfig()
     {
         $routing_config = array(
-            'directory_trigger'    => 'D',
-            'controller_trigger'   => 'C',
-            'function_trigger'     => 'M',
+            'directory_trigger' => 'D',
+            'controller_trigger' => 'C',
+            'function_trigger' => 'M',
             'enable_query_strings' => false
         );
 
@@ -210,14 +210,14 @@ class App
         // in php 5.4 $GLOBALS is a JIT variable, so this is
         // technically a performance hit. Yet another reason
         // to ditch it all very soon.
-        $GLOBALS['BM']   = load_class('Benchmark', 'core');
-        $GLOBALS['CFG']  = load_class('Config', 'core');
-        $GLOBALS['UNI']  = load_class('Utf8', 'core');
-        $GLOBALS['URI']  = load_class('URI', 'core');
-        $GLOBALS['RTR']  = load_class('Router', 'core');
-        $GLOBALS['OUT']  = load_class('Output', 'core');
-        $GLOBALS['SEC']  = load_class('Security', 'core');
-        $GLOBALS['IN']   = load_class('Input', 'core');
+        $GLOBALS['BM'] = load_class('Benchmark', 'core');
+        $GLOBALS['CFG'] = load_class('Config', 'core');
+        $GLOBALS['UNI'] = load_class('Utf8', 'core');
+        $GLOBALS['URI'] = load_class('URI', 'core');
+        $GLOBALS['RTR'] = load_class('Router', 'core');
+        $GLOBALS['OUT'] = load_class('Output', 'core');
+        $GLOBALS['SEC'] = load_class('Security', 'core');
+        $GLOBALS['IN'] = load_class('Input', 'core');
         $GLOBALS['LANG'] = load_class('Lang', 'core');
     }
 

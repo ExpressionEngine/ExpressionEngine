@@ -37,19 +37,19 @@ class Message extends Model
     ];
 
     protected static $_typed_columns = [
-        'message_id'          => 'int',
-        'sender_id'           => 'int',
-        'message_date'        => 'timestamp',
-        'message_subject'     => 'string',
-        'message_body'        => 'string',
-        'message_tracking'    => 'boolString',
+        'message_id' => 'int',
+        'sender_id' => 'int',
+        'message_date' => 'timestamp',
+        'message_subject' => 'string',
+        'message_body' => 'string',
+        'message_tracking' => 'boolString',
         'message_attachments' => 'boolString',
-        'message_recipients'  => 'string',
-        'message_cc'          => 'string',
-        'message_hide_cc'     => 'boolString',
-        'message_sent_copy'   => 'boolString',
-        'total_recipients'    => 'int',
-        'message_status'      => 'string'
+        'message_recipients' => 'string',
+        'message_cc' => 'string',
+        'message_hide_cc' => 'boolString',
+        'message_sent_copy' => 'boolString',
+        'total_recipients' => 'int',
+        'message_status' => 'string'
     ];
 
     protected $message_id;

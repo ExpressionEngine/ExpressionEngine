@@ -19,11 +19,11 @@
  */
 class EE_Zip
 {
-    public $zipdata	= '';
-    public $directory	= '';
-    public $entries	= 0;
-    public $file_num	= 0;
-    public $offset		= 0;
+    public $zipdata = '';
+    public $directory = '';
+    public $entries = 0;
+    public $file_num = 0;
+    public $offset = 0;
     public $now;
 
     /**
@@ -163,7 +163,7 @@ class EE_Zip
         $filepath = str_replace("\\", "/", $filepath);
 
         $uncompressed_size = strlen($data);
-        $crc32  = crc32($data);
+        $crc32 = crc32($data);
 
         $gzdata = gzcompress($data);
         $gzdata = substr($gzdata, 2, -4);
@@ -339,7 +339,7 @@ class EE_Zip
 
         $get_zip = $this->get_zip();
 
-        $zip_content =& $get_zip;
+        $zip_content = & $get_zip;
 
         force_download($filename, $zip_content);
     }
@@ -355,11 +355,11 @@ class EE_Zip
      */
     public function clear_data()
     {
-        $this->zipdata		= '';
-        $this->directory	= '';
-        $this->entries		= 0;
-        $this->file_num		= 0;
-        $this->offset		= 0;
+        $this->zipdata = '';
+        $this->directory = '';
+        $this->entries = 0;
+        $this->file_num = 0;
+        $this->offset = 0;
     }
 }
 

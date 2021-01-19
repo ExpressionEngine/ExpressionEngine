@@ -13,18 +13,18 @@
  */
 class EE_Functions
 {
-    public $seed               = false; // Whether we've seeded our rand() function.  We only seed once per script execution
-    public $cached_url         = array();
-    public $cached_path        = array();
-    public $cached_index       = array();
-    public $cached_captcha     = '';
-    public $template_map       = array();
-    public $template_type      = '';
-    public $action_ids         = array();
-    public $file_paths         = array();
-    public $conditional_debug  = false;
-    public $catfields          = array();
-    public static $protected_data   = array();
+    public $seed = false; // Whether we've seeded our rand() function.  We only seed once per script execution
+    public $cached_url = array();
+    public $cached_path = array();
+    public $cached_index = array();
+    public $cached_captcha = '';
+    public $template_map = array();
+    public $template_type = '';
+    public $action_ids = array();
+    public $file_paths = array();
+    public $conditional_debug = false;
+    public $catfields = array();
+    public static $protected_data = array();
 
     /**
      * Fetch base site index
@@ -413,7 +413,7 @@ class EE_Functions
      * @param	string
      * @return	void
      */
-    public function redirect($location, $method = false, $status_code=null)
+    public function redirect($location, $method = false, $status_code = null)
     {
         // Remove hard line breaks and carriage returns
         $location = str_replace(array("\n", "\r"), '', $location);
@@ -489,14 +489,14 @@ class EE_Functions
         ee()->load->helper('form');
 
         $deft = array(
-            'hidden_fields'	=> array(),
-            'action'		=> '',
-            'id'			=> '',
-            'class'			=> '',
-            'secure'		=> true,
-            'enctype' 		=> '',
-            'onsubmit'		=> '',
-            'target'		=> ''
+            'hidden_fields' => array(),
+            'action' => '',
+            'id' => '',
+            'class' => '',
+            'secure' => true,
+            'enctype' => '',
+            'onsubmit' => '',
+            'target' => ''
         );
 
         foreach ($deft as $key => $val) {
@@ -546,16 +546,16 @@ class EE_Functions
             $data['action'] = substr($data['action'], 0, -1);
         }
 
-        $data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
-        $data['id']		= ($data['id'] != '') ? 'id="' . $data['id'] . '" ' : '';
-        $data['class']	= ($data['class'] != '') ? 'class="' . $data['class'] . '" ' : '';
-        $data['target']	= ($data['target'] != '') ? 'target="' . $data['target'] . '" ' : '';
+        $data['name'] = (isset($data['name']) && $data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
+        $data['id'] = ($data['id'] != '') ? 'id="' . $data['id'] . '" ' : '';
+        $data['class'] = ($data['class'] != '') ? 'class="' . $data['class'] . '" ' : '';
+        $data['target'] = ($data['target'] != '') ? 'target="' . $data['target'] . '" ' : '';
 
         if ($data['enctype'] == 'multi' or strtolower($data['enctype']) == 'multipart/form-data') {
             $data['enctype'] = 'enctype="multipart/form-data" ';
         }
 
-        $form  = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . ">\n";
+        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . ">\n";
 
         if ($data['secure'] == true) {
             unset($data['hidden_fields']['XID']);
@@ -776,7 +776,7 @@ class EE_Functions
             return array('title' => '', 'data' => '');
         }
 
-        if ($query->row('enable_template')  == 'y') {
+        if ($query->row('enable_template') == 'y') {
             return array('title' => $query->row('data_title'), 'data' => $query->row('template_data'));
         }
 
@@ -937,13 +937,13 @@ class EE_Functions
         ee()->load->helper('xml');
 
         $search_log = array(
-            'member_id'		=> ee()->session->userdata('member_id'),
-            'screen_name'	=> ee()->session->userdata('screen_name'),
-            'ip_address'	=> ee()->input->ip_address(),
-            'search_date'	=> ee()->localize->now,
-            'search_type'	=> $type,
-            'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee('Security/XSS')->clean($terms), true)),
-            'site_id'		=> ee()->config->item('site_id')
+            'member_id' => ee()->session->userdata('member_id'),
+            'screen_name' => ee()->session->userdata('screen_name'),
+            'ip_address' => ee()->input->ip_address(),
+            'search_date' => ee()->localize->now,
+            'search_type' => $type,
+            'search_terms' => xml_convert(ee()->functions->encode_ee_tags(ee('Security/XSS')->clean($terms), true)),
+            'site_id' => ee()->config->item('site_id')
         );
 
         ee()->db->query(ee()->db->insert_string('exp_search_log', $search_log));
@@ -958,7 +958,7 @@ class EE_Functions
             $row = $query->row_array();
 
             if (isset($row['search_id']) && $row['search_id'] > $max) {
-                ee()->db->query("DELETE FROM exp_search_log WHERE site_id = '" . ee()->db->escape_str(ee()->config->item('site_id')) . "' AND id < " . ($row['search_id'] -$max) . "");
+                ee()->db->query("DELETE FROM exp_search_log WHERE site_id = '" . ee()->db->escape_str(ee()->config->item('site_id')) . "' AND id < " . ($row['search_id'] - $max) . "");
             }
         }
     }
@@ -1163,7 +1163,7 @@ class EE_Functions
      * @param	bool
      * @return	string
      */
-    public function sql_andor_string($str, $field, $prefix = '', $null=false)
+    public function sql_andor_string($str, $field, $prefix = '', $null = false)
     {
         if ($str == "" or $field == "") {
             return '';
@@ -1232,7 +1232,7 @@ class EE_Functions
      * @param	string
      * @param	bool
      */
-    public function ar_andor_string($str, $field, $prefix = '', $null=false)
+    public function ar_andor_string($str, $field, $prefix = '', $null = false)
     {
         if ($str == "" or $field == "") {
             return '';
@@ -1309,8 +1309,8 @@ class EE_Functions
         // and a numeric value that corresponds to the depth of nesting.
         // The second half parses out the chunks
 
-        $conds 		= array();
-        $var_cond	= array();
+        $conds = array();
+        $var_cond = array();
 
         $modified_str = $str; // Not an alias!
 
@@ -1339,7 +1339,7 @@ class EE_Functions
                 $modified_string_length = strlen($eek[1][$i]);
                 $replace_value[$i] = $LD . 'if' . $i;
                 $p1 = strpos($modified_str, $eek[0][$i]);
-                $p2 = $p1+strlen($replace_value[$i] . $eek[1][$i])-strlen($i);
+                $p2 = $p1 + strlen($replace_value[$i] . $eek[1][$i]) - strlen($i);
                 $p3 = strlen($modified_str);
                 $modified_str = substr($modified_str, 0, $p1) . $replace_value[$i] . $eek[1][$i] . substr($modified_str, $p2, $p3);
             }
@@ -1347,7 +1347,7 @@ class EE_Functions
 
         // Mark all closing conditions.
         $closed_position = array();
-        for ($t=$i-1; $t >= 0; $t--) {
+        for ($t = $i - 1; $t >= 0; $t--) {
             // Find the conditional's start
             $coordinate = strpos($modified_str, $LD . 'if' . $t);
 
@@ -1368,7 +1368,7 @@ class EE_Functions
         for ($i = 0; $i < $total_conditionals; $i++) {
             $p1 = strpos($modified_str, $LD . 'if' . $i . ' ');
             $p2 = strpos($modified_str, $LD . $slash . 'if' . $i . $RD);
-            $length = $p2-$p1;
+            $length = $p2 - $p1;
             $text_range = substr($modified_str, $p1, $length);
 
             // We use \d here because we want to look for one of the 'marked' conditionals, but
@@ -1396,7 +1396,7 @@ class EE_Functions
             $float = substr($float, $open_tag);
 
             $temp = $float;
-            $len  = 0;
+            $len = 0;
             $duplicates = array();
 
             $i = 1;
@@ -1446,7 +1446,7 @@ class EE_Functions
         // Parse Order
         $final_conds = array();
 
-        for ($i=$start; $i > 0; --$i) {
+        for ($i = $start; $i > 0; --$i) {
             if (isset($var_cond[$i])) {
                 $final_conds = array_merge($final_conds, $var_cond[$i]);
             }
@@ -1477,7 +1477,7 @@ class EE_Functions
      *
      * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
      */
-    public function full_tag($str, $chunk='', $open='', $close='')
+    public function full_tag($str, $chunk = '', $open = '', $close = '')
     {
         ee()->load->library('logger');
         ee()->logger->deprecated('4.0', "ee('Variables/Parser')->getFullTag()");
@@ -1490,7 +1490,7 @@ class EE_Functions
             $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
         }
         if ($open == '') {
-            $open  = LD;
+            $open = LD;
         }
         if ($close == '') {
             $close = RD;
@@ -1565,8 +1565,8 @@ class EE_Functions
             $cond = trim($match[1]) . ' ' . trim($match[2]) . ' ' . trim($match[3]);
         }
 
-        $rcond	= substr($cond, strpos($cond, ' '));
-        $cond	= str_replace($rcond, $rcond, $cond);
+        $rcond = substr($cond, strpos($cond, ' '));
+        $cond = str_replace($rcond, $rcond, $cond);
 
         // Since we allow the following shorthand condition: {if username}
         // but it's not legal PHP, we'll correct it by adding:  != ''
@@ -1703,7 +1703,7 @@ class EE_Functions
         $str = str_replace("%uFFD4", "\'", $str);
         $str = str_replace("%uFFD5", "\'", $str);
 
-        $str =	preg_replace("/\%u([0-9A-F]{4,4})/", "'&#'.base_convert('\\1',16,10).';'", $str);
+        $str = preg_replace("/\%u([0-9A-F]{4,4})/", "'&#'.base_convert('\\1',16,10).';'", $str);
 
         $str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 

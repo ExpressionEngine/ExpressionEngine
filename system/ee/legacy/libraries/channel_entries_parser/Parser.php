@@ -143,17 +143,17 @@ class EE_Channel_data_parser
 
         // data options
         $entries = $this->data('entries', array());
-        $absolute_offset  = $this->data('absolute_offset', 0);
+        $absolute_offset = $this->data('absolute_offset', 0);
         $absolute_results = $this->data('absolute_results');
 
         // config options
-        $disabled	= isset($config['disable']) ? $config['disable'] : array();
-        $callbacks	= isset($config['callbacks']) ? $config['callbacks'] : array();
+        $disabled = isset($config['disable']) ? $config['disable'] : array();
+        $callbacks = isset($config['callbacks']) ? $config['callbacks'] : array();
 
-        $pairs	 = $pre->pairs;
+        $pairs = $pre->pairs;
         $singles = $pre->singles;
 
-        $prefix	 = $this->_prefix;
+        $prefix = $this->_prefix;
         $channel = $this->_channel;
 
         $subscriber_totals = $pre->subscriber_totals;
@@ -184,7 +184,7 @@ class EE_Channel_data_parser
 
         ee()->load->library('typography');
         ee()->typography->initialize(array(
-            'convert_curly'	=> false
+            'convert_curly' => false
         ));
 
         ee()->load->helper('date');
@@ -195,17 +195,17 @@ class EE_Channel_data_parser
 
             $this->_count = $count;
 
-            $row['count']                    = $count + 1;
-            $row['reverse_count']            = $total_results - $row['count'] + 1;
-            $row['page_uri']                 = '';
-            $row['page_url']                 = '';
-            $row['total_results']            = $total_results;
-            $row['absolute_count']           = $absolute_offset + $row['count'];
-            $row['absolute_results']         = ($absolute_results === null) ? $total_results : $absolute_results;
-            $row['absolute_reverse_count']   = $row['absolute_results'] - $row['absolute_count'] + 1;
+            $row['count'] = $count + 1;
+            $row['reverse_count'] = $total_results - $row['count'] + 1;
+            $row['page_uri'] = '';
+            $row['page_url'] = '';
+            $row['total_results'] = $total_results;
+            $row['absolute_count'] = $absolute_offset + $row['count'];
+            $row['absolute_results'] = ($absolute_results === null) ? $total_results : $absolute_results;
+            $row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;
             $row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
-            $row['has_categories']           = ! empty($data['categories'][$row['entry_id']]);
-            $row['cp_edit_entry_url']        = ee('CP/URL')
+            $row['has_categories'] = ! empty($data['categories'][$row['entry_id']]);
+            $row['cp_edit_entry_url'] = ee('CP/URL')
                 ->make(
                     'publish/edit/entry/' . $row['entry_id'],
                     array('site_id' => $row['site_id']),
@@ -465,8 +465,8 @@ class EE_Channel_data_parser
         $pre = $this->_preparser;
 
         $cond = $row;
-        $cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? false : true;
-        $cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? false : true;
+        $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
+        $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
 
         foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv) {
             if (! isset($row[$pv])) {
@@ -474,27 +474,27 @@ class EE_Channel_data_parser
             }
         }
 
-        $cond['allow_comments']			= $this->_commenting_allowed($row) ? true : false;
-        $cond['signature_image']		= ($row['sig_img_filename'] == '' or ee()->config->item('enable_signatures') == 'n' or ee()->session->userdata('display_signatures') == 'n') ? false : true;
-        $cond['avatar']					= ($row['avatar_filename'] == '') ? false : true;
-        $cond['photo']					= ($row['photo_filename'] == '' or ee()->config->item('enable_photos') == 'n' or ee()->session->userdata('display_photos') == 'n') ? false : true;
-        $cond['forum_topic']			= (empty($row['forum_topic_id'])) ? false : true;
-        $cond['not_forum_topic']		= (! empty($row['forum_topic_id'])) ? false : true;
-        $cond['category_request']		= ($channel->cat_request === false) ? false : true;
-        $cond['not_category_request']	= ($channel->cat_request !== false) ? false : true;
-        $cond['channel']				= $row['channel_title'];
-        $cond['channel_short_name']		= $row['channel_name'];
-        $cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-        $cond['photo_url']				= ee()->config->slash_item('photo_url') . $row['photo_filename'];
-        $cond['photo_image_width']		= $row['photo_width'];
-        $cond['photo_image_height']		= $row['photo_height'];
-        $cond['avatar_url']				= ee()->config->slash_item('avatar_url') . $row['avatar_filename'];
-        $cond['avatar_image_width']		= $row['avatar_width'];
-        $cond['avatar_image_height']	= $row['avatar_height'];
-        $cond['signature_image_url']	= ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'];
-        $cond['signature_image_width']	= $row['sig_img_width'];
-        $cond['signature_image_height']	= $row['sig_img_height'];
-        $cond['relative_date']			= timespan($row['entry_date']);
+        $cond['allow_comments'] = $this->_commenting_allowed($row) ? true : false;
+        $cond['signature_image'] = ($row['sig_img_filename'] == '' or ee()->config->item('enable_signatures') == 'n' or ee()->session->userdata('display_signatures') == 'n') ? false : true;
+        $cond['avatar'] = ($row['avatar_filename'] == '') ? false : true;
+        $cond['photo'] = ($row['photo_filename'] == '' or ee()->config->item('enable_photos') == 'n' or ee()->session->userdata('display_photos') == 'n') ? false : true;
+        $cond['forum_topic'] = (empty($row['forum_topic_id'])) ? false : true;
+        $cond['not_forum_topic'] = (! empty($row['forum_topic_id'])) ? false : true;
+        $cond['category_request'] = ($channel->cat_request === false) ? false : true;
+        $cond['not_category_request'] = ($channel->cat_request !== false) ? false : true;
+        $cond['channel'] = $row['channel_title'];
+        $cond['channel_short_name'] = $row['channel_name'];
+        $cond['author'] = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+        $cond['photo_url'] = ee()->config->slash_item('photo_url') . $row['photo_filename'];
+        $cond['photo_image_width'] = $row['photo_width'];
+        $cond['photo_image_height'] = $row['photo_height'];
+        $cond['avatar_url'] = ee()->config->slash_item('avatar_url') . $row['avatar_filename'];
+        $cond['avatar_image_width'] = $row['avatar_width'];
+        $cond['avatar_image_height'] = $row['avatar_height'];
+        $cond['signature_image_url'] = ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'];
+        $cond['signature_image_width'] = $row['sig_img_width'];
+        $cond['signature_image_height'] = $row['sig_img_height'];
+        $cond['relative_date'] = timespan($row['entry_date']);
 
         //-- we need to prep the default dates
 

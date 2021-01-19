@@ -23,7 +23,7 @@ class MemberFieldDataGateway extends VariableColumnGateway
     protected static $_related_gateways = array(
         'member_id' => array(
             'gateway' => 'MemberGateway',
-            'key'	 => 'member_id'
+            'key' => 'member_id'
         )
     );
 

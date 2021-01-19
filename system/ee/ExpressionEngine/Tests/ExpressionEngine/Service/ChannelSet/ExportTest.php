@@ -39,9 +39,9 @@ class ExportTest extends TestCase
     {
         $channel_field = new \StdClass();
         $channel_field->field_settings = array(
-            'num_existing'        => 50,
-            'show_existing'       => 'y',
-            'field_content_type'  => 'all',
+            'num_existing' => 50,
+            'show_existing' => 'y',
+            'field_content_type' => 'all',
             'allowed_directories' => 'all'
         );
 
@@ -70,9 +70,9 @@ class ExportTest extends TestCase
 
         $channel_field = new \StdClass();
         $channel_field->field_settings = array(
-            'num_existing'        => 50,
-            'show_existing'       => 'y',
-            'field_content_type'  => 'all',
+            'num_existing' => 50,
+            'show_existing' => 'y',
+            'field_content_type' => 'all',
             'allowed_directories' => '1'
         );
 

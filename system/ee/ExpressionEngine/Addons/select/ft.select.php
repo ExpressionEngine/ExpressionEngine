@@ -15,16 +15,16 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 class Select_ft extends OptionFieldtype
 {
     public $info = array(
-        'name'		=> 'Select Dropdown',
-        'version'	=> '1.0.0'
+        'name' => 'Select Dropdown',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = true;
 
     public function validate($data)
     {
-        $valid			= false;
-        $field_options	= $this->_get_field_options($data, '--');
+        $valid = false;
+        $field_options = $this->_get_field_options($data, '--');
 
         if ($data == '') {
             return true;
@@ -59,10 +59,10 @@ class Select_ft extends OptionFieldtype
 
         if (REQ == 'CP' && $this->content_type() !== 'grid') {
             return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
-                'field_name'     => $this->field_name,
-                'choices'        => $this->_get_field_options($data),
-                'value'          => $data,
-                'empty_text'     => lang('choose_wisely'),
+                'field_name' => $this->field_name,
+                'choices' => $this->_get_field_options($data),
+                'value' => $data,
+                'empty_text' => lang('choose_wisely'),
                 'field_disabled' => $this->get_setting('field_disabled')
             ]);
         }

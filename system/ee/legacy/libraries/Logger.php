@@ -54,12 +54,12 @@ class EE_Logger
             $this->logger_db()->insert_string(
                 'exp_cp_log',
                 array(
-                    'member_id'	=> ee()->session->userdata('member_id'),
-                    'username'	=> ee()->session->userdata['username'],
-                    'ip_address'=> ee()->input->ip_address(),
-                    'act_date'	=> ee()->localize->now,
-                    'action'	=> $action,
-                    'site_id'	=> ee()->config->item('site_id')
+                    'member_id' => ee()->session->userdata('member_id'),
+                    'username' => ee()->session->userdata['username'],
+                    'ip_address' => ee()->input->ip_address(),
+                    'act_date' => ee()->localize->now,
+                    'action' => $action,
+                    'site_id' => ee()->config->item('site_id')
                 )
             )
         );
@@ -127,7 +127,7 @@ class EE_Logger
                 // was previously set not to update, so update based on timestamp too
                 $this->logger_db()->where(
                     array(
-                        'hash'		=> $hash,
+                        'hash' => $hash,
                         'timestamp' => $this->_dev_log_hashes[$hash]
                     )
                 );
@@ -136,7 +136,7 @@ class EE_Logger
                 $this->logger_db()->update(
                     'developer_log',
                     array(
-                        'viewed'	=> 'n',
+                        'viewed' => 'n',
                         'timestamp' => ee()->localize->now
                     )
                 );
@@ -195,11 +195,11 @@ class EE_Logger
 
         // Information we are capturing from the incident
         $deprecated = array(
-            'function'			=> $function . '()',				// Name of deprecated function
-            'line'				=> $line,						// Line where 'function' was called
-            'file'				=> $file,						// File where 'function' was called
-            'deprecated_since'	=> $version,					// Version function was deprecated
-            'use_instead'		=> (! empty($use_instead))		// Function to use instead
+            'function' => $function . '()',				// Name of deprecated function
+            'line' => $line,						// Line where 'function' was called
+            'file' => $file,						// File where 'function' was called
+            'deprecated_since' => $version,					// Version function was deprecated
+            'use_instead' => (! empty($use_instead))		// Function to use instead
                 ? htmlentities($use_instead) : null
         );
 
@@ -466,16 +466,16 @@ class EE_Logger
         $this->_setup_update_log();
 
         $data = array(
-            'timestamp'	=> ee()->localize->now,
-            'message'		=> $log_message,
+            'timestamp' => ee()->localize->now,
+            'message' => $log_message,
         );
 
         if ($exception === true) {
-            $backtrace		= element(1, debug_backtrace(false));
+            $backtrace = element(1, debug_backtrace(false));
 
-            $data['method']	= $backtrace['class'] . '::' . $backtrace['function'];
-            $data['line']	= $backtrace['line'];
-            $data['file']	= $backtrace['file'];
+            $data['method'] = $backtrace['class'] . '::' . $backtrace['function'];
+            $data['line'] = $backtrace['line'];
+            $data['file'] = $backtrace['file'];
         }
 
         $this->logger_db()->insert('update_log', $data);
@@ -504,35 +504,35 @@ class EE_Logger
 
             $fields = array(
                 'log_id' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'auto_increment'	=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'auto_increment' => true
                 ),
                 'timestamp' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true
                 ),
                 'message' => array(
-                    'type'				=> 'text',
-                    'null'				=> true
+                    'type' => 'text',
+                    'null' => true
                 ),
                 'method' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 100,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 100,
+                    'null' => true
                 ),
                 'line' => array(
-                    'type'				=> 'int',
-                    'constraint'		=> 10,
-                    'unsigned'			=> true,
-                    'null'				=> true
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => true
                 ),
                 'file' => array(
-                    'type'				=> 'varchar',
-                    'constraint'		=> 255,
-                    'null'				=> true
+                    'type' => 'varchar',
+                    'constraint' => 255,
+                    'null' => true
                 )
             );
 

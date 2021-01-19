@@ -51,10 +51,10 @@ class Metaweblog_api_mcp
                 'name',
                 'metaweblog_config_url',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -66,7 +66,7 @@ class Metaweblog_api_mcp
             $checkbox = array(
                 'name' => 'selection[]',
                 'value' => $metaweblog->metaweblog_id,
-                'data'	=> array(
+                'data' => array(
                     'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
             );
@@ -441,16 +441,16 @@ class Metaweblog_api_mcp
             }
 
             return array(
-                'heading'    => $vars['cp_page_title'],
+                'heading' => $vars['cp_page_title'],
                 'breadcrumb' => array(ee('CP/URL')->make('addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
-                'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
+                'body' => ee('View')->make('metaweblog_api:create_modify')->render($vars)
             );
         } else {
-            $fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'channel_id', 'entry_status',
+            $fields = array('metaweblog_pref_name', 'metaweblog_parse_type', 'channel_id', 'entry_status',
                 'excerpt_field_id','content_field_id',
                 'more_field_id','keywords_field_id','upload_dir');
 
-            $data		= array();
+            $data = array();
 
             foreach ($fields as $var) {
                 if (! isset($_POST[$var]) or $_POST[$var] == '') {

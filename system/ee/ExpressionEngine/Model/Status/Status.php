@@ -24,9 +24,9 @@ class Status extends Model
     protected static $_hook_id = 'status';
 
     protected static $_typed_columns = array(
-        'site_id'         => 'int',
-        'group_id'        => 'int',
-        'status_order'    => 'int'
+        'site_id' => 'int',
+        'group_id' => 'int',
+        'status_order' => 'int'
     );
 
     protected static $_relationships = array(

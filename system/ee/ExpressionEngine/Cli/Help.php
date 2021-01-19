@@ -314,7 +314,7 @@ class Help
             return;
         }
 
-        $arg =  '<' . $option->alias . '>';
+        $arg = '<' . $option->alias . '>';
 
         if ($option->param == 'argument-optional') {
             $arg = "[{$arg}]";

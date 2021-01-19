@@ -5,10 +5,10 @@ $this->extend('_templates/default-nav');
 $this->embed('publish/partials/edit_list_table');
 
 $modal_vars = array(
-    'name'		=> 'modal-confirm-delete-entry',
-    'form_url'	=> $form_url,
-    'hidden'	=> array(
-        'bulk_action'	=> 'remove'
+    'name' => 'modal-confirm-delete-entry',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
     )
 );
 

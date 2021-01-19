@@ -23,9 +23,9 @@ class Search extends Model
     protected static $_table_name = 'forum_search';
 
     protected static $_typed_columns = array(
-        'board_id'    => 'int',
+        'board_id' => 'int',
         'search_date' => 'timestamp',
-        'member_id'   => 'int',
+        'member_id' => 'int',
     );
 
     protected static $_relationships = array(
@@ -33,7 +33,7 @@ class Search extends Model
             'type' => 'belongsTo'
         ),
         'Member' => array(
-            'type'  => 'belongsTo',
+            'type' => 'belongsTo',
             'model' => 'ee:Member',
             'inverse' => array(
                 'name' => 'Search',
@@ -44,12 +44,12 @@ class Search extends Model
 
     protected static $_validation_rules = array(
         'search_date' => 'required',
-        'keywords'    => 'required',
-        'member_id'   => 'required',
-        'ip_address'  => 'required|ipAddress',
-        'topic_ids'   => 'required',
-        'post_ids'    => 'required',
-        'sort_order'  => 'required',
+        'keywords' => 'required',
+        'member_id' => 'required',
+        'ip_address' => 'required|ipAddress',
+        'topic_ids' => 'required',
+        'post_ids' => 'required',
+        'sort_order' => 'required',
     );
 
     protected $search_id;

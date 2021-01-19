@@ -14,8 +14,8 @@
 class Grid_ft extends EE_Fieldtype
 {
     public $info = array(
-        'name'		=> 'Grid',
-        'version'	=> '1.0.0'
+        'name' => 'Grid',
+        'version' => '1.0.0'
     );
 
     public $has_array_data = true;
@@ -163,11 +163,11 @@ class Grid_ft extends EE_Fieldtype
     public function display_field($data)
     {
         $grid = ee('CP/GridInput', array(
-            'field_name' 	=> $this->name(),
-            'lang_cols' 	=> false,
+            'field_name' => $this->name(),
+            'lang_cols' => false,
             'grid_min_rows' => $this->settings['grid_min_rows'],
             'grid_max_rows' => $this->settings['grid_max_rows'],
-            'reorder'		=> isset($this->settings['allow_reorder'])
+            'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
                 : true
         ));
@@ -306,9 +306,9 @@ class Grid_ft extends EE_Fieldtype
         }
 
         ee()->table->set_template(array(
-            'table_open'	=> '<table' . $table_attributes . '>',
-            'tbody_open'	=> '<tbody>' . $row_data_marker,
-            'tbody_close'	=> $row_data_marker . '</tbody>'
+            'table_open' => '<table' . $table_attributes . '>',
+            'tbody_open' => '<tbody>' . $row_data_marker,
+            'tbody_close' => $row_data_marker . '</tbody>'
         ));
 
         ee()->table->set_heading($column_headings);

@@ -77,7 +77,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 {site_url}';
 
         $new_data = array(
-            'template_data'=>'{name},
+            'template_data' => '{name},
 
 To reset your password, please go to the following page:
 
@@ -205,33 +205,33 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->dbforge->add_field(
             array(
                 'route_id' => array(
-                    'type'			 => 'int',
-                    'constraint'     => 10,
-                    'null'			 => false,
-                    'unsigned'		 => true,
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'null' => false,
+                    'unsigned' => true,
                     'auto_increment' => true
                 ),
                 'template_id' => array(
-                    'type'			=> 'int',
-                    'constraint'    => 10,
-                    'unsigned'		 => true,
-                    'null'			=> false
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false
                 ),
                 'route' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 512,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 512,
+                    'null' => true
                 ),
                 'route_parsed' => array(
-                    'type'			=> 'varchar',
-                    'constraint'    => 512,
-                    'null'			=> true
+                    'type' => 'varchar',
+                    'constraint' => 512,
+                    'null' => true
                 ),
                 'route_required' => array(
-                    'type'			=> 'char',
-                    'constraint'    => 1,
-                    'default'		=> 'n',
-                    'null'		    => false
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
                 )
             )
         );
@@ -368,17 +368,17 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->smartforge->add_column(
             'members',
             array(
-                'date_format'    => array(
-                    'type'       => 'varchar',
+                'date_format' => array(
+                    'type' => 'varchar',
                     'constraint' => 8,
-                    'null'       => false,
-                    'default'    => '%n/%j/%y'
+                    'null' => false,
+                    'default' => '%n/%j/%y'
                 ),
                 'include_seconds' => array(
-                    'type'        => 'char',
-                    'constraint'  => 1,
-                    'null'        => false,
-                    'default'     => 'n'
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'null' => false,
+                    'default' => 'n'
                 )
             ),
             'time_format'
@@ -388,12 +388,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
         ee()->smartforge->modify_column(
             'members',
             array(
-                'time_format'    => array(
-                    'name'       => 'time_format',
-                    'type'       => 'char',
+                'time_format' => array(
+                    'name' => 'time_format',
+                    'type' => 'char',
                     'constraint' => 2,
-                    'null'       => false,
-                    'default'    => '12'
+                    'null' => false,
+                    'default' => '12'
                 )
             )
         );
@@ -457,7 +457,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         $remove_config_items = array(
             'admin_session_type' => '',
-            'user_session_type'  => '',
+            'user_session_type' => '',
         );
 
         ee()->config->_update_config($new_config_items, $remove_config_items);

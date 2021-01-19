@@ -331,10 +331,10 @@ class EE_Jquery extends EE_Javascript
      * @param	string	- element
      * @return	string
      */
-    public function _addClass($element = 'this', $class='')
+    public function _addClass($element = 'this', $class = '')
     {
         $element = $this->_prep_element($element);
-        $str  = "$({$element}).addClass(\"$class\");";
+        $str = "$({$element}).addClass(\"$class\");";
 
         return $str;
     }
@@ -357,7 +357,7 @@ class EE_Jquery extends EE_Javascript
 
         $animations = "\t\t\t";
 
-        foreach ($params as $param=>$value) {
+        foreach ($params as $param => $value) {
             $animations .= $param . ': \'' . $value . '\', ';
         }
 
@@ -371,7 +371,7 @@ class EE_Jquery extends EE_Javascript
             $extra = ', ' . $extra;
         }
 
-        $str  = "$({$element}).animate({\n$animations\n\t\t}" . $speed . $extra . ");";
+        $str = "$({$element}).animate({\n$animations\n\t\t}" . $speed . $extra . ");";
 
         return $str;
     }
@@ -396,7 +396,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).fadeIn({$speed}{$callback});";
+        $str = "$({$element}).fadeIn({$speed}{$callback});";
 
         return $str;
     }
@@ -421,7 +421,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).fadeOut({$speed}{$callback});";
+        $str = "$({$element}).fadeOut({$speed}{$callback});";
 
         return $str;
     }
@@ -446,7 +446,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).hide({$speed}{$callback});";
+        $str = "$({$element}).hide({$speed}{$callback});";
 
         return $str;
     }
@@ -460,10 +460,10 @@ class EE_Jquery extends EE_Javascript
      * @param	string	- element
      * @return	string
      */
-    public function _removeClass($element = 'this', $class='')
+    public function _removeClass($element = 'this', $class = '')
     {
         $element = $this->_prep_element($element);
-        $str  = "$({$element}).removeClass(\"$class\");";
+        $str = "$({$element}).removeClass(\"$class\");";
 
         return $str;
     }
@@ -488,7 +488,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).slideUp({$speed}{$callback});";
+        $str = "$({$element}).slideUp({$speed}{$callback});";
 
         return $str;
     }
@@ -513,7 +513,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).slideDown({$speed}{$callback});";
+        $str = "$({$element}).slideDown({$speed}{$callback});";
 
         return $str;
     }
@@ -538,7 +538,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).slideToggle({$speed}{$callback});";
+        $str = "$({$element}).slideToggle({$speed}{$callback});";
 
         return $str;
     }
@@ -555,7 +555,7 @@ class EE_Jquery extends EE_Javascript
     public function _toggle($element = 'this')
     {
         $element = $this->_prep_element($element);
-        $str  = "$({$element}).toggle();";
+        $str = "$({$element}).toggle();";
 
         return $str;
     }
@@ -569,10 +569,10 @@ class EE_Jquery extends EE_Javascript
      * @param	string	- element
      * @return	string
      */
-    public function _toggleClass($element = 'this', $class='')
+    public function _toggleClass($element = 'this', $class = '')
     {
         $element = $this->_prep_element($element);
-        $str  = "$({$element}).toggleClass(\"$class\");";
+        $str = "$({$element}).toggleClass(\"$class\");";
 
         return $str;
     }
@@ -597,7 +597,7 @@ class EE_Jquery extends EE_Javascript
             $callback = ", function(){\n{$callback}\n}";
         }
 
-        $str  = "$({$element}).show({$speed}{$callback});";
+        $str = "$({$element}).show({$speed}{$callback});";
 
         return $str;
     }
@@ -655,7 +655,7 @@ class EE_Jquery extends EE_Javascript
     {
         $class = ($class != '') ? '.' . $class : '';
 
-        $zebra  = "\t\$(\"table{$class} tbody tr:nth-child(even)\").addClass(\"{$odd}\");";
+        $zebra = "\t\$(\"table{$class} tbody tr:nth-child(even)\").addClass(\"{$odd}\");";
 
         $this->jquery_code_for_compile[] = $zebra;
 
@@ -751,7 +751,7 @@ class EE_Jquery extends EE_Javascript
     {
         if (count($options) > 0) {
             $sort_options = array();
-            foreach ($options as $k=>$v) {
+            foreach ($options as $k => $v) {
                 $sort_options[] = "\n\t\t" . $k . ': ' . $v . "";
             }
             $sort_options = implode(",", $sort_options);

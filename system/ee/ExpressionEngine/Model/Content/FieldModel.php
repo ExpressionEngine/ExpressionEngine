@@ -404,17 +404,17 @@ abstract class FieldModel extends Model
 
         $fields = array(
             'id' => array(
-                'type'           => 'int',
-                'constraint'     => 10,
-                'null'           => false,
-                'unsigned'       => true,
+                'type' => 'int',
+                'constraint' => 10,
+                'null' => false,
+                'unsigned' => true,
                 'auto_increment' => true
             ),
             $this->getForeignKey() => array(
-                'type'           => 'int',
-                'constraint'     => 10,
-                'null'           => false,
-                'unsigned'       => true,
+                'type' => 'int',
+                'constraint' => 10,
+                'null' => false,
+                'unsigned' => true,
             )
         );
 
@@ -458,9 +458,9 @@ abstract class FieldModel extends Model
         $fieldtype = $this->getFieldtypeInstance();
         $settings = $this->getSettingsValues();
         $field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
-        $settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
+        $settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' => $field_fmt));
         $modifier = (! empty($variable_mods['modifier'])) ? $variable_mods['modifier'] : '';
-        $params =  (! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
+        $params = (! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
 
         if ($this->field_type == 'date') {
             // Set 0 to NULL, kill any formatting
@@ -469,12 +469,12 @@ abstract class FieldModel extends Model
         }
 
         $fieldtype->_init(array(
-            'row'			=> $row,
-            'field_id'		=> $this->getId(),
-            'content_id'	=> $content_id,
-            'content_type'	=> $content_type,
-            'field_fmt'		=> $field_fmt,
-            'settings'		=> $settings['field_settings']
+            'row' => $row,
+            'field_id' => $this->getId(),
+            'content_id' => $content_id,
+            'content_type' => $content_type,
+            'field_fmt' => $field_fmt,
+            'settings' => $settings['field_settings']
         ));
 
         $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';

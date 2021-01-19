@@ -48,7 +48,7 @@ class System extends AbstractDesignController
             array(
                 'template',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
             )
         );

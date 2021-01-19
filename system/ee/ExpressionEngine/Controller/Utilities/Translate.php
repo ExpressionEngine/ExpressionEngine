@@ -191,10 +191,10 @@ class Translate extends Utilities
             array(
                 'file_name',
                 'manage' => array(
-                    'type'	=> Table::COL_TOOLBAR
+                    'type' => Table::COL_TOOLBAR
                 ),
                 array(
-                    'type'	=> Table::COL_CHECKBOX
+                    'type' => Table::COL_CHECKBOX
                 )
             )
         );
@@ -298,7 +298,7 @@ class Translate extends Utilities
         $file = ee()->security->sanitize_filename($file);
 
         $path = $this->getLanguageDirectory($language);
-        $filename =  $file . '_lang.php';
+        $filename = $file . '_lang.php';
 
         if (file_exists($path . $filename) && ! is_readable($path . $filename)) {
             $message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
@@ -364,7 +364,7 @@ class Translate extends Utilities
         $file = ee()->security->sanitize_filename($file);
 
         $dest_dir = $this->languages_dir . $language . '/';
-        $filename =  $file . '_lang.php';
+        $filename = $file . '_lang.php';
         $dest_loc = $dest_dir . $filename;
 
         $str = '<?php' . "\n" . '$lang = array(' . "\n\n\n";

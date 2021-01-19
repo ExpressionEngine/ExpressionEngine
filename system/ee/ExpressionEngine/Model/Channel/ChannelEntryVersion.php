@@ -21,9 +21,9 @@ class ChannelEntryVersion extends Model
     protected static $_table_name = 'entry_versioning';
 
     protected static $_typed_columns = array(
-        'entry_id'     => 'int',
-        'channel_id'   => 'int',
-        'author_id'    => 'int',
+        'entry_id' => 'int',
+        'channel_id' => 'int',
+        'author_id' => 'int',
         'version_date' => 'timestamp',
         'version_data' => 'serialized',
     );
@@ -32,17 +32,17 @@ class ChannelEntryVersion extends Model
         'ChannelEntry' => array(
             'type' => 'belongsTo',
         ),
-        'Author'	=> array(
+        'Author' => array(
             'type' => 'belongsTo',
             'model' => 'Member',
-            'from_key' 	=> 'author_id'
+            'from_key' => 'author_id'
         ),
     );
 
     protected static $_validation_rules = array(
-        'entry_id'     => 'required',
-        'channel_id'   => 'required',
-        'author_id'    => 'required',
+        'entry_id' => 'required',
+        'channel_id' => 'required',
+        'author_id' => 'required',
         'version_date' => 'required',
         'version_data' => 'required',
     );

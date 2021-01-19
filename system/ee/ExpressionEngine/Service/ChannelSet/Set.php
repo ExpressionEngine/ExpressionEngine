@@ -63,9 +63,9 @@ class Set
      */
     private $assignments = array(
         'channel_field_groups' => array(),
-        'channel_fields'       => array(),
-        'field_group_fields'   => array(),
-        'statuses'             => array(),
+        'channel_fields' => array(),
+        'field_group_fields' => array(),
+        'statuses' => array(),
     );
 
     /**
@@ -956,8 +956,8 @@ class Set
         $field_data = array_merge($defaults, $field_data);
 
         // rewrite any that might be wonky after that rather heavy conversion
-        $field_data['expired']        = (int) ($field_data['expired'] === 'y');
-        $field_data['future']         = (int) ($field_data['future'] === 'y');
+        $field_data['expired'] = (int) ($field_data['expired'] === 'y');
+        $field_data['future'] = (int) ($field_data['future'] === 'y');
         $field_data['allow_multiple'] = (int) ($field_data['allow_multiple'] === 'y');
 
         if (isset($field_data['channels'])) {

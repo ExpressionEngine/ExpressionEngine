@@ -21,7 +21,7 @@ class ResetPassword extends Model
     protected static $_table_name = 'reset_password';
 
     protected static $_relationships = array(
-        'Member'	=> array(
+        'Member' => array(
             'type' => 'belongsTo'
         )
     );

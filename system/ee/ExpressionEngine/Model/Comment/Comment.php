@@ -44,13 +44,13 @@ class Comment extends Model
     );
 
     protected static $_validation_rules = array(
-        'site_id'    => 'required|isNatural',
-        'entry_id'   => 'required|isNatural',
+        'site_id' => 'required|isNatural',
+        'entry_id' => 'required|isNatural',
         'channel_id' => 'required|isNatural',
-        'author_id'  => 'required|isNatural',
-        'status'     => 'enum[o,c,p,s]',
+        'author_id' => 'required|isNatural',
+        'status' => 'enum[o,c,p,s]',
         'ip_address' => 'ip_address',
-        'comment'    => 'required',
+        'comment' => 'required',
     );
 
     protected static $_events = array(

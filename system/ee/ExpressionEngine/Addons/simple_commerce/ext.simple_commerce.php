@@ -29,12 +29,12 @@ class Simple_commerce_ext
 
         foreach ($hooks as $hook => $method) {
             ee('Model')->make('Extension', [
-                'class'    => __CLASS__,
-                'method'   => $method,
-                'hook'     => $hook,
+                'class' => __CLASS__,
+                'method' => $method,
+                'hook' => $hook,
                 'settings' => [],
-                'version'  => $this->version,
-                'enabled'  => 'y'
+                'version' => $this->version,
+                'enabled' => 'y'
             ])->save();
         }
     }
