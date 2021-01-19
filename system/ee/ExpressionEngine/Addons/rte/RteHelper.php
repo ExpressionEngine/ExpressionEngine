@@ -15,7 +15,6 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class RteHelper
 {
-
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
     private static $_fileTags;
@@ -23,7 +22,6 @@ class RteHelper
     private static $_extraTags;
     private static $_sitePages;
     private static $_pageData;
-
 
     // --------------------------------------------------------------------
 
@@ -180,7 +178,7 @@ class RteHelper
     public static function insertConfigJsById($configId = null)
     {
         ee()->lang->loadfile('rte');
-        
+
         // starting point
         $baseConfig = static::defaultConfigSettings();
 
@@ -275,6 +273,7 @@ class RteHelper
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
                     $fileBrowser->addJs($uploadDir);
+
                     break;
                 }
             }
@@ -295,14 +294,14 @@ class RteHelper
         //link
         $config['link'] = (object) ['decorators' => [
             'openInNewTab' => [
-                    'mode' => 'manual',
-                    'label' => lang('open_in_new_tab'),
-                    'attributes' => [
-                        'target' => '_blank',
-                        'rel' => 'noopener noreferrer'
-                    ]
+                'mode' => 'manual',
+                'label' => lang('open_in_new_tab'),
+                'attributes' => [
+                    'target' => '_blank',
+                    'rel' => 'noopener noreferrer'
                 ]
             ]
+        ]
         ];
 
         // -------------------------------------------
@@ -412,7 +411,6 @@ class RteHelper
             }
         }
     }
-
 
     // --------------------------------------------------------------------
 

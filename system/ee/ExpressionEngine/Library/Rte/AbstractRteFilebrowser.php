@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\Rte;
  */
 abstract class AbstractRteFilebrowser implements RteFilebrowserInterface
 {
-
     /**
      * Function which will be called when displaying field
      * Should include all necessary JS/CSS and define `window.Artee_browseImages` JS function
@@ -31,9 +30,9 @@ abstract class AbstractRteFilebrowser implements RteFilebrowserInterface
      * @param String $data Field data
      * @return String $data Field data
      */
-	public function replaceTags($data)
-	{
-		return $data;
+    public function replaceTags($data)
+    {
+        return $data;
     }
 
     /**
@@ -43,9 +42,9 @@ abstract class AbstractRteFilebrowser implements RteFilebrowserInterface
      * @return String $data Field data
      */
     public function replaceUrls($data)
-	{
-		return $data;
-	}
+    {
+        return $data;
+    }
 
     /**
      * Return array of upload destinations available
@@ -56,5 +55,4 @@ abstract class AbstractRteFilebrowser implements RteFilebrowserInterface
      * @return Array
      */
     abstract public function getUploadDestinations();
-
 }

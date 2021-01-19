@@ -1,7 +1,7 @@
 <?php $this->embed('_shared/file_upload/iframe_header'); ?>
 
 <div class="upload_edit">
-	<?=form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => 'edit_file_metadata'), $hidden)?>
+	<?=form_open('C=content_files_modal' . AMP . 'M=edit_file', array('id' => 'edit_file_metadata'), $hidden)?>
 		<ul class="panel-menu group">
 			<?php foreach ($tabs as $index => $tab): ?>
 				<li class="<?=($index == 0) ? 'current' : ''?>">
@@ -32,20 +32,20 @@
 							<li>
 								<?=lang('resize_height', 'resize_height')?>
 								<?=form_input(array(
-									'name'			=> 'resize_height',
-									'value'			=> $file['dimensions'][0],
-									'id'			=> 'resize_height',
-									'data-default'	=> $file['dimensions'][0]
+								    'name'			=> 'resize_height',
+								    'value'			=> $file['dimensions'][0],
+								    'id'			=> 'resize_height',
+								    'data-default'	=> $file['dimensions'][0]
 								))?>
 								<?=form_hidden('resize_height_default', $file['dimensions'][0])?>
 							</li>
 							<li>
 								<?=lang('resize_width', 'resize_width')?>
 								<?=form_input(array(
-									'name'			=> 'resize_width',
-									'value'			=> $file['dimensions'][1],
-									'id'			=> 'resize_width',
-									'data-default'	=> $file['dimensions'][1]
+								    'name'			=> 'resize_width',
+								    'value'			=> $file['dimensions'][1],
+								    'id'			=> 'resize_width',
+								    'data-default'	=> $file['dimensions'][1]
 								))?>
 								<?=form_hidden('resize_width_default', $file['dimensions'][1])?>
 							</li>
@@ -57,10 +57,10 @@
 							<li class="rotate_90">
 								<label>
 									<?php // Rotate 90 degrees right is 270 because
-										  // the image lib rotates counter-clockwise ?>
+                                          // the image lib rotates counter-clockwise?>
 									<?=form_radio(array(
-										'name'	=> 'rotate',
-										'value'	=> 270
+									    'name'	=> 'rotate',
+									    'value'	=> 270
 									))?>
 									<?=lang('rotate_90r')?>
 								</label>
@@ -68,8 +68,8 @@
 							<li class="rotate_270">
 								<label>
 									<?=form_radio(array(
-										'name'	=> 'rotate',
-										'value'	=> 90
+									    'name'	=> 'rotate',
+									    'value'	=> 90
 									))?>
 									<?=lang('rotate_90l')?>
 								</label>
@@ -79,8 +79,8 @@
 							<li class="rotate_vrt">
 								<label style="background-image: url(<?=PATH_CP_GBL_IMG?>it-vert-arrow.png)">
 									<?=form_radio(array(
-										'name'	=> 'rotate',
-										'value'	=> 'vrt'
+									    'name'	=> 'rotate',
+									    'value'	=> 'vrt'
 									))?>
 									<?=lang('rotate_flip_vert')?>
 								</label>
@@ -88,8 +88,8 @@
 							<li class="rotate_hor">
 								<label style="background-image: url(<?=PATH_CP_GBL_IMG?>it-horz-arrow.png)">
 									<?=form_radio(array(
-										'name'	=> 'rotate',
-										'value'	=> 'hor'
+									    'name'	=> 'rotate',
+									    'value'	=> 'hor'
 									))?>
 									<?=lang('rotate_flip_hor')?>
 								</label>

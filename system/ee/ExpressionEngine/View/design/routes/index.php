@@ -13,7 +13,7 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php $this->embed('_shared/pagination'); ?>
   </div>
-    <?php if ( ! empty($table['data'])): ?>
+    <?php if (! empty($table['data'])): ?>
       <div class="panel-footer">
   			<div class="form-btns">
   				<input class="button button--primary" type="submit" value="<?=lang('update')?>">

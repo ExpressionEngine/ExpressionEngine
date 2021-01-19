@@ -14,20 +14,22 @@
     <div class="panel-body">
     <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $fields]); ?>
-			<?php if (isset($pagination)) echo $pagination; ?>
+			<?php if (isset($pagination)) {
+    echo $pagination;
+} ?>
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-				'options' => [
-					[
-						'value' => "",
-						'text' => '-- ' . lang('with_selected') . ' --'
-					],
-					[
-						'value' => "remove",
-						'text' => lang('delete'),
-						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-					]
-				],
-				'modal' => true
+			    'options' => [
+			        [
+			            'value' => "",
+			            'text' => '-- ' . lang('with_selected') . ' --'
+			        ],
+			        [
+			            'value' => "remove",
+			            'text' => lang('delete'),
+			            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+			        ]
+			    ],
+			    'modal' => true
 			]); ?>
     </div>
 		</form>
@@ -37,11 +39,11 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-delete',
-	'form_url'	=> ee('CP/URL')->make('fields', ee()->cp->get_url_state()),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	)
+    'name'		=> 'modal-confirm-delete',
+    'form_url'	=> ee('CP/URL')->make('fields', ee()->cp->get_url_state()),
+    'hidden'	=> array(
+        'bulk_action'	=> 'remove'
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

@@ -23,9 +23,9 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 
 <script>
 	<?php
-	$lines = file_get_contents('./fields.md');
-	$js = json_encode($lines);
-	?>
+    $lines = file_get_contents('./fields.md');
+    $js = json_encode($lines);
+    ?>
 
 	var text = <?php echo $js; ?>;
 	var html = new showdown.Converter().makeHtml(text);

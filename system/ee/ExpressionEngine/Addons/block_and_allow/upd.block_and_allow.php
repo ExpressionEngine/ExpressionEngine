@@ -29,7 +29,6 @@ class Block_and_allow_upd extends Installer
      * @access public
      * @return bool
      */
-
     public function install()
     {
         $installed = parent::install();
@@ -76,6 +75,7 @@ class Block_and_allow_upd extends Installer
             ee()->dbforge->add_key('allowedlist_id', true);
             ee()->dbforge->create_table('allowedlist');
         }
+
         return $installed;
     }
 
@@ -93,6 +93,7 @@ class Block_and_allow_upd extends Installer
             ee()->dbforge->drop_table('blockedlist');
             ee()->dbforge->drop_table('allowedlist');
         }
+
         return $uninstalled;
     }
 

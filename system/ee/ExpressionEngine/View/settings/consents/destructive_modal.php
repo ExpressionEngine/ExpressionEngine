@@ -9,10 +9,10 @@
 						<h1><?=lang('important')?></h1>
 					</div>
 					<?=ee('CP/Alert')
-						->makeInline()
-						->asIssue()
-						->addToBody(lang('new_consent_version_notice'))
-						->render()?>
+					    ->makeInline()
+					    ->asIssue()
+					    ->addToBody(lang('new_consent_version_notice'))
+					    ->render()?>
 					<div class="txt-wrap">
 					</div>
 					<div class="form-btns">

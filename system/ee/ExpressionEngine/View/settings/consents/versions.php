@@ -11,11 +11,13 @@
 
        <?php $this->embed('_shared/table', $table); ?>
 
-       <?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
+       <?php if (! empty($pagination)) {
+    $this->embed('_shared/pagination', $pagination);
+} ?>
 
 <?=form_close()?>
 
-<?php foreach($versions as $version): ?>
+<?php foreach ($versions as $version): ?>
 	<?php ee('CP/Modal')->startModal('modal-consent-request-' . $version->getId()); ?>
 		<div class="app-modal app-modal--center" rev="modal-consent-request-<?=$version->getId()?>">
 			<div class="app-modal__content">

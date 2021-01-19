@@ -15,212 +15,204 @@ use Mockery as m;
 use stdClass;
 use PHPUnit\Framework\TestCase;
 
-class SiteTest extends TestCase {
+class SiteTest extends TestCase
+{
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-	use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+    protected $sites = array(
+        '1' => "Main",
+        '2' => "Site 2"
+    );
 
-	protected $sites = array(
-		'1' => "Main",
-		'2' => "Site 2"
-	);
+    public function tearDown(): void
+    {
+        unset($_POST['filter_by_site']);
+        unset($_GET['filter_by_site']);
 
-	public function tearDown() : void
-	{
-		unset($_POST['filter_by_site']);
-		unset($_GET['filter_by_site']);
+        m::close();
+    }
 
-		m::close();
-	}
+    public function testDefault()
+    {
+        $filter = new Site();
+        $this->assertNull($filter->value(), 'The value is NULL by default.');
+        $this->assertTrue($filter->isValid(), 'The default is valid');
 
-	public function testDefault()
-	{
-		$filter = new Site();
-		$this->assertNull($filter->value(), 'The value is NULL by default.');
-		$this->assertTrue($filter->isValid(), 'The default is valid');
+        $vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
+        $url = m::mock('ExpressionEngine\Library\CP\URL');
 
-		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
-		$url = m::mock('ExpressionEngine\Library\CP\URL');
+        // $vf->shouldReceive('make->render');
+        // $url->shouldReceive('setQueryStringVariable', 'compile');
 
-		// $vf->shouldReceive('make->render');
-		// $url->shouldReceive('setQueryStringVariable', 'compile');
+        $this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+    }
 
-		$this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+    public function testValidConstructors()
+    {
+        // Test constructor with bool
+        $filter = new Site();
+        $this->assertEquals(array(), $filter->getOptions());
 
-	}
+        $filter = new Site($this->sites);
+        $this->assertEquals($this->sites, $filter->getOptions());
+    }
 
-	public function testValidConstructors()
-	{
-		// Test constructor with bool
-		$filter = new Site();
-		$this->assertEquals(array(), $filter->getOptions());
+    /**
+     * @dataProvider invalidConstructorProvider
+     */
+    public function testInvalidConstructors($array)
+    {
+        $this->expectException('TypeError');
 
-		$filter = new Site($this->sites);
-		$this->assertEquals($this->sites, $filter->getOptions());
-	}
+        new Site($array);
+    }
 
-	/**
-	 * @dataProvider invalidConstructorProvider
-	 */
-	public function testInvalidConstructors($array)
-	{
-		$this->expectException('TypeError');
+    public function invalidConstructorProvider()
+    {
+        return array(
+            array("string"),
+            array(1),
+            array(0x539),
+            array(02471),
+            array(1337e0),
+            array(9.1),
+            array(false),
+            array(null),
+            array(new stdClass()),
+            array(function () {
+                return array();
+            }),
+        );
+    }
 
-		new Site($array);
-	}
+    public function testSetMSMEnabledFalse()
+    {
+        $vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
+        $url = m::mock('ExpressionEngine\Library\CP\URL');
 
-	public function invalidConstructorProvider()
-	{
-		return array(
-			array("string"),
-			array(1),
-			array(0x539),
-			array(02471),
-			array(1337e0),
-			array(9.1),
-			array(FALSE),
-			array(NULL),
-			array(new stdClass),
-			array(function() {return array();}),
-		);
-	}
+        $filter = new Site();
+        $filter->disableMSM();
+        $this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+    }
 
-	public function testSetMSMEnabledFalse()
-	{
-		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
-		$url = m::mock('ExpressionEngine\Library\CP\URL');
+    public function testSetMSMEnabledTrue()
+    {
+        $vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
+        $url = m::mock('ExpressionEngine\Library\CP\URL');
 
-		$filter = new Site();
-		$filter->disableMSM();
-		$this->assertEquals('', $filter->render($vf, $url), 'Rendering is bypassed when disabled');
+        $filter = new Site(['one', 'two']);
+        $filter->enableMSM();
 
-	}
+        $vf->shouldReceive('make->render')->atLeast()->once();
+        $url->shouldReceive('removeQueryStringVariable', 'setQueryStringVariable', 'compile')->atLeast()->once();
 
-	public function testSetMSMEnabledTrue()
-	{
-		$vf = m::mock('ExpressionEngine\Service\View\ViewFactory');
-		$url = m::mock('ExpressionEngine\Library\CP\URL');
+        $filter->render($vf, $url);
+    }
 
-		$filter = new Site(['one', 'two']);
-		$filter->enableMSM();
+    public function testPOST()
+    {
+        $_POST['filter_by_site'] = 1;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(1, $filter->value(), 'The value reflects the POSTed value');
+        $this->assertTrue($filter->isValid(), 'POSTing a number is valid');
+    }
 
-		$vf->shouldReceive('make->render')->atLeast()->once();
-		$url->shouldReceive('removeQueryStringVariable', 'setQueryStringVariable', 'compile')->atLeast()->once();
+    public function testGET()
+    {
+        $_GET['filter_by_site'] = 1;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(1, $filter->value(), 'The value reflects the GETed value');
+        $this->assertTrue($filter->isValid(), 'GETing a number is valid');
+    }
 
-		$filter->render($vf, $url);
+    public function testPOSTOverGET()
+    {
+        $_POST['filter_by_site'] = 1;
+        $_GET['filter_by_site'] = 2;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(1, $filter->value(), 'Use POST over GET');
+    }
 
-	}
+    // Use GET when POST is present but "empty"
+    public function testGETWhenPOSTIsEmpty()
+    {
+        $_POST['filter_by_site'] = '';
+        $_GET['filter_by_site'] = 2;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(2, $filter->value(), 'Use GET when POST is an empty string');
 
-	public function testPOST()
-	{
-		$_POST['filter_by_site'] = 1;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(1, $filter->value(), 'The value reflects the POSTed value');
-		$this->assertTrue($filter->isValid(), 'POSTing a number is valid');
-	}
+        $_POST['filter_by_site'] = null;
+        $_GET['filter_by_site'] = 2;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(2, $filter->value(), 'Use GET when POST is NULL');
 
-	public function testGET()
-	{
-		$_GET['filter_by_site'] = 1;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(1, $filter->value(), 'The value reflects the GETed value');
-		$this->assertTrue($filter->isValid(), 'GETing a number is valid');
-	}
+        $_POST['filter_by_site'] = 0;
+        $_GET['filter_by_site'] = 2;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(2, $filter->value(), 'Use GET when POST is 0');
 
-	public function testPOSTOverGET()
-	{
-		$_POST['filter_by_site'] = 1;
-		$_GET['filter_by_site'] = 2;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(1, $filter->value(), 'Use POST over GET');
-	}
+        $_POST['filter_by_site'] = "0";
+        $_GET['filter_by_site'] = 2;
+        $filter = new Site($this->sites);
+        $filter->enableMSM();
+        $this->assertEquals(2, $filter->value(), 'Use GET when POST is "0"');
+    }
 
-	// Use GET when POST is present but "empty"
-	public function testGETWhenPOSTIsEmpty()
-	{
-		$_POST['filter_by_site'] = '';
-		$_GET['filter_by_site'] = 2;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(2, $filter->value(), 'Use GET when POST is an empty string');
+    /**
+     * @dataProvider validityDataProvider
+     */
+    public function testValdity($submitted, $valid)
+    {
+        $_POST['filter_by_site'] = $submitted;
+        $filter = new Site($this->sites);
+        $filter->disableMSM();
+        $this->assertEquals($submitted, $filter->value());
+        $this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when disabled');
 
-		$_POST['filter_by_site'] = NULL;
-		$_GET['filter_by_site'] = 2;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(2, $filter->value(), 'Use GET when POST is NULL');
+        $filter->enableMSM();
+        if ($valid) {
+            $this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when enabled');
+        } else {
+            $this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid when enabled');
+        }
 
-		$_POST['filter_by_site'] = 0;
-		$_GET['filter_by_site'] = 2;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(2, $filter->value(), 'Use GET when POST is 0');
+        unset($_POST['filter_by_site']);
+        $_GET['filter_by_site'] = $submitted;
+        $filter = new Site($this->sites);
+        $filter->disableMSM();
+        $this->assertEquals($submitted, $filter->value());
+        $this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when disabled');
 
-		$_POST['filter_by_site'] = "0";
-		$_GET['filter_by_site'] = 2;
-		$filter = new Site($this->sites);
-		$filter->enableMSM();
-		$this->assertEquals(2, $filter->value(), 'Use GET when POST is "0"');
-	}
+        $filter->enableMSM();
+        if ($valid) {
+            $this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when enabled');
+        } else {
+            $this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid when enabled');
+        }
+    }
 
-	/**
-	 * @dataProvider validityDataProvider
-	 */
-	public function testValdity($submitted, $valid)
-	{
-		$_POST['filter_by_site'] = $submitted;
-		$filter = new Site($this->sites);
-		$filter->disableMSM();
-		$this->assertEquals($submitted, $filter->value());
-		$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when disabled');
+    public function validityDataProvider()
+    {
+        return array(
+            array(1, true),
+            array("1", true),
+            array(2, true),
 
-		$filter->enableMSM();
-		if ($valid)
-		{
-			$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when enabled');
-		}
-		else
-		{
-			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid when enabled');
-		}
+            array(0x1, true),
+            array(01, true),
+            array(1e0, true),
 
-		unset($_POST['filter_by_site']);
-		$_GET['filter_by_site'] = $submitted;
-		$filter = new Site($this->sites);
-		$filter->disableMSM();
-		$this->assertEquals($submitted, $filter->value());
-		$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when disabled');
-
-		$filter->enableMSM();
-		if ($valid)
-		{
-			$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid when enabled');
-		}
-		else
-		{
-			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid when enabled');
-		}
-	}
-
-	public function validityDataProvider()
-	{
-		return array(
-			array(1, TRUE),
-			array("1", TRUE),
-			array(2, TRUE),
-
-			array(0x1, TRUE),
-			array(01, TRUE),
-			array(1e0, TRUE),
-
-			array(3, FALSE),
-			array("string", FALSE),
-			array(9.1, FALSE),
-			array(FALSE, FALSE),
-			array(NULL, FALSE),
-		);
-	}
-
+            array(3, false),
+            array("string", false),
+            array(9.1, false),
+            array(false, false),
+            array(null, false),
+        );
+    }
 }

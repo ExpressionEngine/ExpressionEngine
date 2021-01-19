@@ -4,7 +4,7 @@
 	<?php $this->embed('ee:_shared/ee-logo')?>
 </div>
 
-<div class="panel updating<?php if ($warn_message !== NULL): ?> hidden<?php endif ?>">
+<div class="panel updating<?php if ($warn_message !== null): ?> hidden<?php endif ?>">
   <div class="panel-heading" style="text-align: center;">
     <h3><?=sprintf(lang('updating_to_from'), $site_name, $current_version, $to_version)?></h3>
   </div>
@@ -23,7 +23,7 @@
 </div>
 
 
-<div class="panel updater-stopped<?php if ($warn_message === NULL): ?> hidden<?php endif ?>"">
+<div class="panel updater-stopped<?php if ($warn_message === null): ?> hidden<?php endif ?>"">
   <div class="panel-heading" style="text-align: center;">
     <h3><?=lang('update_stopped')?> <span class="updater-fade hidden">(<a class="toggle" rel="updater-stack-trace" href=""><?=lang('view_stack_trace')?></a>)</span></h3>
   </div>
@@ -44,24 +44,24 @@
 			</div>
 		</div>
 
-		<p class="msg-choices warn-choices <?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('troubleshoot'), ee('CP/URL')->make('updater'))?></p>
-		<p class="warn-choices<?php if ($warn_message === NULL): ?> hidden<?php endif ?>"><?=sprintf(lang('or_return_to_cp'), ee('CP/URL')->make('homepage'))?></p>
+		<p class="msg-choices warn-choices <?php if ($warn_message === null): ?> hidden<?php endif ?>"><?=sprintf(lang('troubleshoot'), ee('CP/URL')->make('updater'))?></p>
+		<p class="warn-choices<?php if ($warn_message === null): ?> hidden<?php endif ?>"><?=sprintf(lang('or_return_to_cp'), ee('CP/URL')->make('homepage'))?></p>
 
 		<p class="msg-choices issue-choices hidden"><a href="" rel="rollback"><?=sprintf(lang('rollback_to'), strip_tags($current_version))?></a></p>
-		<p class="issue-choices hidden"><?=sprintf(lang('cannot_rollback'), DOC_URL.'installation/update.html')?></p>
+		<p class="issue-choices hidden"><?=sprintf(lang('cannot_rollback'), DOC_URL . 'installation/update.html')?></p>
 	</div>
   </div>
 </div>
 
 
 <?=ee()->javascript->get_global()
-	. ee()->view->script_tag('jquery/jquery.js')
-	. ee()->view->script_tag('cp/updater.js');
+    . ee()->view->script_tag('jquery/jquery.js')
+    . ee()->view->script_tag('cp/updater.js');
 ?>
 
 <script type="text/javascript">
 	Updater.init();
-	<?php if ( ! $warn_message && $next_step): ?>
+	<?php if (! $warn_message && $next_step): ?>
 		Updater.runStep('<?=$next_step?>');
 	<?php endif ?>
 </script>

@@ -13,8 +13,7 @@ namespace ExpressionEngine\Model\Content\Display;
 /**
  * Layout Interface
  */
-interface LayoutInterface {
-
-	public function transform(array $fields);
-
+interface LayoutInterface
+{
+    public function transform(array $fields);
 }

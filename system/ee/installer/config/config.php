@@ -75,8 +75,7 @@ $config['charset'] = "UTF-8";
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
-
+$config['enable_hooks'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +90,6 @@ $config['enable_hooks'] = FALSE;
 |
 */
 $config['subclass_prefix'] = 'Installer_';
-
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +109,6 @@ $config['subclass_prefix'] = 'Installer_';
 |
 */
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
-
 
 /*
 |--------------------------------------------------------------------------
@@ -135,7 +132,7 @@ $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
 | use segment based URLs.
 |
 */
-$config['enable_query_strings'] = FALSE;
+$config['enable_query_strings'] = false;
 $config['controller_trigger'] = 'c';
 $config['function_trigger'] = 'm';
 
@@ -161,7 +158,6 @@ $config['function_trigger'] = 'm';
 */
 $config['log_threshold'] = 0;
 
-
 /*
 |--------------------------------------------------------------------------
 | Date Format for Logs
@@ -172,7 +168,6 @@ $config['log_threshold'] = 0;
 |
 */
 $config['log_date_format'] = 'Y-m-d H:i:s';
-
 
 /*
 |--------------------------------------------------------------------------
@@ -199,11 +194,11 @@ $config['encryption_key'] = "";
 */
 $config['sess_cookie_name']		= 'ci_session';
 $config['sess_expiration']		= 7200;
-$config['sess_encrypt_cookie']	= FALSE;
-$config['sess_use_database']	= FALSE;
+$config['sess_encrypt_cookie']	= false;
+$config['sess_use_database']	= false;
 $config['sess_table_name']		= 'ci_sessions';
-$config['sess_match_ip']		= FALSE;
-$config['sess_match_useragent']	= TRUE;
+$config['sess_match_ip']		= false;
+$config['sess_match_useragent']	= true;
 $config['sess_time_to_update'] 		= 300;
 
 /*
@@ -229,7 +224,7 @@ $config['cookie_path']		= "";
 | COOKIE data is encountered
 |
 */
-$config['global_xss_filtering'] = FALSE;
+$config['global_xss_filtering'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -248,7 +243,7 @@ $config['global_xss_filtering'] = FALSE;
 | by the output class.  Do not "echo" any values with compression enabled.
 |
 */
-$config['compress_output'] = FALSE;
+$config['compress_output'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -263,7 +258,6 @@ $config['compress_output'] = FALSE;
 */
 $config['time_reference'] = 'local';
 
-
 /*
 |--------------------------------------------------------------------------
 | Rewrite PHP Short Tags
@@ -274,6 +268,6 @@ $config['time_reference'] = 'local';
 | in your view files.  Options are TRUE or FALSE (boolean)
 |
 */
-$config['rewrite_short_tags'] = TRUE;
+$config['rewrite_short_tags'] = true;
 
 // EOF

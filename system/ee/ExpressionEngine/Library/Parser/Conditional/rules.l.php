@@ -20,32 +20,29 @@ use ExpressionEngine\Library\Parser\Conditional\Token\StringLiteral;
 use ExpressionEngine\Library\Parser\Conditional\Token\Tag;
 use ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
-
 /**
  * Helper function to create the operator pattern which is somewhat
  * complicated.
  */
 function compileOperatorPattern()
 {
-	$pattern = '';
-	$operators = array(
-		'^=', '*=', '$=', '~',
-		'==', '!=', '<=', '>=', '<>', '<', '>',
-		'**', '%', '+', '-', '*', '/',
-		'.', '!', '^',
-		'||', '&&',
-		'AND', 'OR', 'XOR'
-	);
+    $pattern = '';
+    $operators = array(
+        '^=', '*=', '$=', '~',
+        '==', '!=', '<=', '>=', '<>', '<', '>',
+        '**', '%', '+', '-', '*', '/',
+        '.', '!', '^',
+        '||', '&&',
+        'AND', 'OR', 'XOR'
+    );
 
-	foreach ($operators as $operator)
-	{
-		$operator = preg_quote($operator, '/');
-		$pattern .= $operator.'|';
-	}
+    foreach ($operators as $operator) {
+        $operator = preg_quote($operator, '/');
+        $pattern .= $operator . '|';
+    }
 
-	return $pattern = '('.substr($pattern, 0, -1).')';
+    return $pattern = '(' . substr($pattern, 0, -1) . ')';
 }
-
 
 /**
  * Conditional Lexer Rules
@@ -57,164 +54,146 @@ function compileOperatorPattern()
 
 return array(
 
-	// comments are valid anywhere
-	'/{!--(.*?)--}/' => function($lexeme, $scanner)
-	{
-		return new Token('COMMENT', $lexeme);
-	},
+    // comments are valid anywhere
+    '/{!--(.*?)--}/' => function ($lexeme, $scanner) {
+        return new Token('COMMENT', $lexeme);
+    },
 
-	// template strings
-	'<INITIAL>/[^{]+/' => function($lexeme, $scanner)
-	{
-		return new Token('TEMPLATE_STRING', $lexeme);
-	},
+    // template strings
+    '<INITIAL>/[^{]+/' => function ($lexeme, $scanner) {
+        return new Token('TEMPLATE_STRING', $lexeme);
+    },
 
-	// conditionals that start an expression
-	'<INITIAL>/\{if(:elseif)?\s/' => function($lexeme, $scanner)
-	{
-		$scanner->state = 'EXPRESSION';
-		$scanner->index--; // backtrack on the whitespace
+    // conditionals that start an expression
+    '<INITIAL>/\{if(:elseif)?\s/' => function ($lexeme, $scanner) {
+        $scanner->state = 'EXPRESSION';
+        $scanner->index--; // backtrack on the whitespace
 
-		$tokens = array();
-		$tokens[] = new Token('LD', '{');
+        $tokens = array();
+        $tokens[] = new Token('LD', '{');
 
-		switch (trim($lexeme))
-		{
-			case '{if': $tokens[] = new Token('IF', 'if');
-				break;
-			case '{if:elseif': $tokens[] = new Token('ELSEIF', 'if:elseif');
-				break;
-		}
+        switch (trim($lexeme)) {
+            case '{if': $tokens[] = new Token('IF', 'if');
 
-		return $tokens;
-	},
+                break;
+            case '{if:elseif': $tokens[] = new Token('ELSEIF', 'if:elseif');
 
-	// other conditional builtins that don't start
-	// an expression {/if} and {if:else}
-	'<INITIAL>/{(\/if|if:else)\}/' => function($lexeme, $scanner)
-	{
-		$tokens = array();
-		$tokens[] = new Token('LD', '{');
+                break;
+        }
 
-		switch ($lexeme)
-		{
-			case '{/if}': $tokens[] = new Token('ENDIF', '/if');
-				break;
-			case '{if:else}': $tokens[] = new Token('ELSE', 'if:else');
-				break;
-		}
+        return $tokens;
+    },
 
-		$tokens[] = new Token('RD', '}');
-		return $tokens;
-	},
+    // other conditional builtins that don't start
+    // an expression {/if} and {if:else}
+    '<INITIAL>/{(\/if|if:else)\}/' => function ($lexeme, $scanner) {
+        $tokens = array();
+        $tokens[] = new Token('LD', '{');
 
-	// valid in expressions
+        switch ($lexeme) {
+            case '{/if}': $tokens[] = new Token('ENDIF', '/if');
 
-	// whitespace
-	'<EXPRESSION>/\s+/' => function($lexeme, $scanner)
-	{
-		return new Token('WHITESPACE', $lexeme);
-	},
+                break;
+            case '{if:else}': $tokens[] = new Token('ELSE', 'if:else');
 
-	// booleans
-	'<EXPRESSION>/(TRUE|FALSE)/i' => function($lexeme, $scanner)
-	{
-		return new Token('BOOL', $lexeme);
-	},
+                break;
+        }
 
-	// parentheses
-	'<EXPRESSION>/[()]/' => function($lexeme, $scanner)
-	{
-		$token = ($lexeme == '(') ? 'LP' : 'RP';
-		return new Token($token, $lexeme);
-	},
+        $tokens[] = new Token('RD', '}');
 
-	// numbers
-	'<EXPRESSION>/([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)/' => function($lexeme, $scanner)
-	{
-		return new Token('NUMBER', $lexeme);
-	},
+        return $tokens;
+    },
 
-	// operators
-	'<EXPRESSION>/'.compileOperatorPattern().'/i' => function($lexeme, $scanner)
-	{
-		return new Token('OPERATOR', $lexeme);
-	},
+    // valid in expressions
 
-	// variables
-	'<EXPRESSION>/\w*([a-zA-Z]+([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z]+)\w*/i' => function($lexeme, $scanner)
-	{
-		return new Token('VARIABLE', $lexeme);
-	},
+    // whitespace
+    '<EXPRESSION>/\s+/' => function ($lexeme, $scanner) {
+        return new Token('WHITESPACE', $lexeme);
+    },
 
-	// open tag
-	'<EXPRESSION|TAG>/{/' => function($lexeme, $scanner)
-	{
-		if ($scanner->state != 'TAG')
-		{
-			$scanner->tag_buffer = '';
-			$scanner->state = 'TAG';
-			$scanner->tag_depth = 0;
-		}
+    // booleans
+    '<EXPRESSION>/(TRUE|FALSE)/i' => function ($lexeme, $scanner) {
+        return new Token('BOOL', $lexeme);
+    },
 
-		$scanner->tag_depth++;
-		$scanner->tag_buffer .= $lexeme;
-	},
+    // parentheses
+    '<EXPRESSION>/[()]/' => function ($lexeme, $scanner) {
+        $token = ($lexeme == '(') ? 'LP' : 'RP';
 
-	// end expression
-	'<EXPRESSION>/}/' => function($lexeme, $scanner)
-	{
-		$scanner->state = 'INITIAL';
-		return new Token('RD', $lexeme);
-	},
+        return new Token($token, $lexeme);
+    },
 
-	// seek through tag, avoiding strings and nested
-	// tags. They will be handled separately
-	'<TAG>/[^{}\'"]+/' => function($lexeme, $scanner)
-	{
-		$scanner->tag_buffer .= $lexeme;
-	},
+    // numbers
+    '<EXPRESSION>/([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)/' => function ($lexeme, $scanner) {
+        return new Token('NUMBER', $lexeme);
+    },
 
-	// end tag
-	'<TAG>/}/' => function($lexeme, $scanner)
-	{
-		$scanner->tag_depth--;
-		$scanner->tag_buffer .= $lexeme;
+    // operators
+    '<EXPRESSION>/' . compileOperatorPattern() . '/i' => function ($lexeme, $scanner) {
+        return new Token('OPERATOR', $lexeme);
+    },
 
-		if ($scanner->tag_depth == 0)
-		{
-			$scanner->state = 'EXPRESSION';
-			return new Token('TAG', $scanner->tag_buffer);
-		}
-	},
+    // variables
+    '<EXPRESSION>/\w*([a-zA-Z]+([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z]+)\w*/i' => function ($lexeme, $scanner) {
+        return new Token('VARIABLE', $lexeme);
+    },
 
-	// strings are valid in tags and expressions
+    // open tag
+    '<EXPRESSION|TAG>/{/' => function ($lexeme, $scanner) {
+        if ($scanner->state != 'TAG') {
+            $scanner->tag_buffer = '';
+            $scanner->state = 'TAG';
+            $scanner->tag_depth = 0;
+        }
 
-	// single quoted string
-	"<TAG|EXPRESSION>/'(\\|\'|[^'])*?'/" => function($lexeme, $scanner)
-	{
-		if ($scanner->state == 'TAG')
-		{
-			$scanner->tag_buffer .= $lexeme;
-		}
-		else
-		{
-			return new Token('STRING', substr($lexeme, 1, -1));
-		}
-	},
+        $scanner->tag_depth++;
+        $scanner->tag_buffer .= $lexeme;
+    },
 
-	// double quoted string
-	'<TAG|EXPRESSION>/"(\\|\"|[^"])*?"/' => function($lexeme, $scanner)
-	{
-		if ($scanner->state == 'TAG')
-		{
-			$scanner->tag_buffer .= $lexeme;
-		}
-		else
-		{
-			return new Token('STRING', substr($lexeme, 1, -1));
-		}
-	},
+    // end expression
+    '<EXPRESSION>/}/' => function ($lexeme, $scanner) {
+        $scanner->state = 'INITIAL';
+
+        return new Token('RD', $lexeme);
+    },
+
+    // seek through tag, avoiding strings and nested
+    // tags. They will be handled separately
+    '<TAG>/[^{}\'"]+/' => function ($lexeme, $scanner) {
+        $scanner->tag_buffer .= $lexeme;
+    },
+
+    // end tag
+    '<TAG>/}/' => function ($lexeme, $scanner) {
+        $scanner->tag_depth--;
+        $scanner->tag_buffer .= $lexeme;
+
+        if ($scanner->tag_depth == 0) {
+            $scanner->state = 'EXPRESSION';
+
+            return new Token('TAG', $scanner->tag_buffer);
+        }
+    },
+
+    // strings are valid in tags and expressions
+
+    // single quoted string
+    "<TAG|EXPRESSION>/'(\\|\'|[^'])*?'/" => function ($lexeme, $scanner) {
+        if ($scanner->state == 'TAG') {
+            $scanner->tag_buffer .= $lexeme;
+        } else {
+            return new Token('STRING', substr($lexeme, 1, -1));
+        }
+    },
+
+    // double quoted string
+    '<TAG|EXPRESSION>/"(\\|\"|[^"])*?"/' => function ($lexeme, $scanner) {
+        if ($scanner->state == 'TAG') {
+            $scanner->tag_buffer .= $lexeme;
+        } else {
+            return new Token('STRING', substr($lexeme, 1, -1));
+        }
+    },
 
 );
 

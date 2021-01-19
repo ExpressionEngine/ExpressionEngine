@@ -41,13 +41,11 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-
 // autoloader
 spl_autoload_register(array(new SimplePie_Autoloader(), 'autoload'));
 
-if (!class_exists('SimplePie'))
-{
-	trigger_error('Autoloader not registered properly', E_USER_ERROR);
+if (!class_exists('SimplePie')) {
+    trigger_error('Autoloader not registered properly', E_USER_ERROR);
 }
 
 /**
@@ -58,28 +56,27 @@ if (!class_exists('SimplePie'))
  */
 class SimplePie_Autoloader
 {
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->path = dirname(__FILE__);
-	}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->path = dirname(__FILE__);
+    }
 
-	/**
-	 * Autoloader
-	 *
-	 * @param string $class The name of the class to attempt to load.
-	 */
-	public function autoload($class)
-	{
-		// Only load the class if it starts with "SimplePie"
-		if (strpos($class, 'SimplePie') !== 0)
-		{
-			return;
-		}
+    /**
+     * Autoloader
+     *
+     * @param string $class The name of the class to attempt to load.
+     */
+    public function autoload($class)
+    {
+        // Only load the class if it starts with "SimplePie"
+        if (strpos($class, 'SimplePie') !== 0) {
+            return;
+        }
 
-		$filename = $this->path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-		include $filename;
-	}
+        $filename = $this->path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+        include $filename;
+    }
 }

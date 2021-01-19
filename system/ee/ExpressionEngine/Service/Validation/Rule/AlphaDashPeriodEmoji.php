@@ -15,34 +15,33 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Alphabetical, Dashes, Periods, and Emoji Validation Rule
  */
-class AlphaDashPeriodEmoji extends ValidationRule {
+class AlphaDashPeriodEmoji extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        $emojiless = $this->stripEmojis($value);
 
-	public function validate($key, $value)
-	{
-		$emojiless = $this->stripEmojis($value);
+        // If the only value we were given were emoji(s) then it's valid
+        if (strlen($value) > 0 && strlen($emojiless) < 1) {
+            return true;
+        }
 
-		// If the only value we were given were emoji(s) then it's valid
-		if (strlen($value) > 0 && strlen($emojiless) < 1)
-		{
-			return TRUE;
-		}
+        return (bool) preg_match("/^([-a-z0-9_.-])+$/i", $emojiless);
+    }
 
-		return (bool) preg_match("/^([-a-z0-9_.-])+$/i", $emojiless);
-	}
+    protected function stripEmojis($value)
+    {
+        $regex = '/(?:' . EMOJI_REGEX . ')/u';
 
-	protected function stripEmojis($value)
-	{
-		$regex = '/(?:'.EMOJI_REGEX.')/u';
+        $value = preg_replace($regex, '', $value);
 
-		$value = preg_replace($regex, '', $value);
+        return $value;
+    }
 
-		return $value;
-	}
-
-	public function getLanguageKey()
-	{
-		return 'alpha_dash_period';
-	}
+    public function getLanguageKey()
+    {
+        return 'alpha_dash_period';
+    }
 }
 
 // EOF

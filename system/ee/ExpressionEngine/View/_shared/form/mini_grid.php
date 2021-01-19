@@ -1,7 +1,7 @@
 <div class="fields-keyvalue<?=(isset($classes)) ? $classes : ''?>">
 	<div class="field-no-results hidden">
 		<p><?=lang($no_results['text'])?>
-			<?php if ( ! empty($no_results['action_text'])): ?>
+			<?php if (! empty($no_results['action_text'])): ?>
 				<a<?=$no_results['external'] ? ' rel="external"' : '' ?> rel="add_row" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 			<?php endif ?>
 		</p>
@@ -15,15 +15,14 @@
 	</div>
 	<div class="keyvalue-item-container">
 		<?php foreach ($data as $heading => $rows):
-			$rows = array($rows); ?>
+            $rows = array($rows); ?>
 			<?php foreach ($rows as $row): ?>
 				<?php
-				if ( ! isset($row['attrs']['class']))
-				{
-					$row['attrs']['class'] = '';
-				}
-				$row['attrs']['class'] .= ' fields-keyvalue-item';
-				?>
+                if (! isset($row['attrs']['class'])) {
+                    $row['attrs']['class'] = '';
+                }
+                $row['attrs']['class'] .= ' fields-keyvalue-item';
+                ?>
 				<div<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach ?>>
 					<?php if ($reorder): ?>
 						<ul class="toolbar">

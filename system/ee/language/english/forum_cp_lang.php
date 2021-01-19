@@ -2,588 +2,575 @@
 
 $lang = array(
 
-/* Required for MODULES page */
-'forum_listing' => 'Forum Listing',
+    /* Required for MODULES page */
+    'forum_listing' => 'Forum Listing',
 
-'forum_manager' => 'Forum Manager',
+    'forum_manager' => 'Forum Manager',
 
-'forum_module_description' => 'Discussion Forum Module',
+    'forum_module_description' => 'Discussion Forum Module',
 
-'forum_module_name' => 'Discussion Forum',
+    'forum_module_name' => 'Discussion Forum',
 
-'new_category' => 'New Category',
+    'new_category' => 'New Category',
 
+    /* Sidebar */
+    'create_new_board' => 'Create new forum board',
 
-/* Sidebar */
-'create_new_board' => 'Create new forum board',
+    'forum_alias' => 'Forum Alias',
 
-'forum_alias' => 'Forum Alias',
+    'forum_aliases' => 'Forum Aliases',
 
-'forum_aliases' => 'Forum Aliases',
+    'forum_board' => 'Forum Board',
 
-'forum_board' => 'Forum Board',
+    'templates' => 'Templates',
 
-'templates' => 'Templates',
+    /* List / Index */
+    'categories' => 'Categories',
 
+    'create_new_category' => 'Create new category',
 
-/* List / Index */
-'categories' => 'Categories',
+    'create_new_forum' => 'Create new forum',
 
-'create_new_category' => 'Create new category',
+    'forums_ajax_reorder_fail' => 'Attention: Failed to save forum order',
 
-'create_new_forum' => 'Create new forum',
+    'forums_ajax_reorder_fail_desc' => 'We failed to save your new forum order. Refresh the page and make sure you\'re logged in.',
 
-'forums_ajax_reorder_fail' => 'Attention: Failed to save forum order',
+    'new_forum' => 'New forum',
 
-'forums_ajax_reorder_fail_desc' => 'We failed to save your new forum order. Refresh the page and make sure you\'re logged in.',
+    /* "Common" */
+    'recipients' => 'recipients',
 
-'new_forum' => 'New forum',
+    /* Create / Edit Forum Alias Form */
+    'alias_url' => 'Alias <abbr title="Unified Resource Locator">URL</abbr>',
 
+    'alias_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the alias.',
 
-/* "Common" */
-'recipients' => 'recipients',
+    'alias_url_segment' => 'Alias <abbr title="Unified Resource Locator">URL</abbr> segment',
 
+    'alias_url_segment_desc' => 'Word that triggers alias display. <b>Cannot</b> be the same as a template or template group.',
 
-/* Create / Edit Forum Alias Form */
-'alias_url' => 'Alias <abbr title="Unified Resource Locator">URL</abbr>',
+    'btn_save_alias' => 'Save Alias',
 
-'alias_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the alias.',
+    'create_forum_alias' => 'Create Forum Alias',
 
-'alias_url_segment' => 'Alias <abbr title="Unified Resource Locator">URL</abbr> segment',
+    'create_forum_alias_error' => 'Cannot Create Forum Alias',
 
-'alias_url_segment_desc' => 'Word that triggers alias display. <b>Cannot</b> be the same as a template or template group.',
+    'create_forum_alias_error_desc' => 'We were unable to create this forum alias, please review and fix errors below.',
 
-'btn_save_alias' => 'Save Alias',
+    'create_forum_alias_success' => 'Forum Alias Created',
 
-'create_forum_alias' => 'Create Forum Alias',
+    'create_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been created.',
 
-'create_forum_alias_error' => 'Cannot Create Forum Alias',
+    'edit_forum_alias_error' => 'Cannot Update Forum Alias',
 
-'create_forum_alias_error_desc' => 'We were unable to create this forum alias, please review and fix errors below.',
+    'edit_forum_alias_error_desc' => 'We were unable to update this forum alias, please review and fix errors below.',
 
-'create_forum_alias_success' => 'Forum Alias Created',
+    'edit_forum_alias_success' => 'Forum Alias Updated',
 
-'create_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been created.',
+    'edit_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been updated.',
 
-'edit_forum_alias_error' => 'Cannot Update Forum Alias',
+    'enable_alias' => 'Enable alias',
 
-'edit_forum_alias_error_desc' => 'We were unable to update this forum alias, please review and fix errors below.',
+    'forum_alias_removed' => 'Forum Alias Removed',
 
-'edit_forum_alias_success' => 'Forum Alias Updated',
+    'forum_alias_removed_desc' => 'The forum alias <b>%s</b> was removed.',
 
-'edit_forum_alias_success_desc' => 'The forum alias <b>%s</b> has been updated.',
+    'forum_board_desc' => 'Choose which forum board you want to create an alias for.',
 
-'enable_alias' => 'Enable alias',
+    /* Create / Edit Forum Board Form */
+    'all_files' => 'All file types',
 
-'forum_alias_removed' => 'Forum Alias Removed',
+    'allow_image_hotlinking' => 'Allow image hot-linking?',
 
-'forum_alias_removed_desc' => 'The forum alias <b>%s</b> was removed.',
+    'allow_image_hotlinking_desc' => 'When enabled, users will be allowed to hot-link an image in a forum post.',
 
-'forum_board_desc' => 'Choose which forum board you want to create an alias for.',
+    'allow_php' => 'Allow PHP?',
 
+    'allow_php_desc' => 'Allows the use of standard PHP within forum templates.',
 
-/* Create / Edit Forum Board Form */
-'all_files' => 'All file types',
+    'allowed_characters' => 'Allowed characters',
 
-'allow_image_hotlinking' => 'Allow image hot-linking?',
+    'allowed_characters_desc' => 'Maximum number of characters allowed within a single post.',
 
-'allow_image_hotlinking_desc' => 'When enabled, users will be allowed to hot-link an image in a forum post.',
+    'allowed_file_types' => 'Allowed file types?',
 
-'allow_php' => 'Allow PHP?',
+    'attachment_settings' => 'Attachment Settings',
 
-'allow_php_desc' => 'Allows the use of standard PHP within forum templates.',
+    'attachments_per_post' => 'Attachments per post',
 
-'allowed_characters' => 'Allowed characters',
+    'attachments_per_post_desc' => 'Maximum attachments allowed per post.',
 
-'allowed_characters_desc' => 'Maximum number of characters allowed within a single post.',
+    'autolink_urls' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
 
-'allowed_file_types' => 'Allowed file types?',
+    'autolink_urls_desc' => "When enabled, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this forum's posts.",
 
-'attachment_settings' => 'Attachment Settings',
+    'board' => 'Board',
 
-'attachments_per_post' => 'Attachments per post',
+    'btn_save_board' => 'Save Board',
 
-'attachments_per_post_desc' => 'Maximum attachments allowed per post.',
+    'create_forum_board' => 'Create Forum Board',
 
-'autolink_urls' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
+    'create_forum_board_error' => 'Cannot Create Forum Board',
 
-'autolink_urls_desc' => "When enabled, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this forum's posts.",
+    'create_forum_board_error_desc' => 'We were unable to create this forum board, please review and fix errors below.',
 
-'board' => 'Board',
+    'create_forum_board_success' => 'Forum Board Created',
 
-'btn_save_board' => 'Save Board',
+    'create_forum_board_success_desc' => 'The forum board <b>%s</b> has been created.',
 
-'create_forum_board' => 'Create Forum Board',
+    'default_theme' => 'Default theme',
 
-'create_forum_board_error' => 'Cannot Create Forum Board',
+    'disable' => 'Disable',
 
-'create_forum_board_error_desc' => 'We were unable to create this forum board, please review and fix errors below.',
+    'edit_forum_board' => 'Edit %s',
 
-'create_forum_board_success' => 'Forum Board Created',
+    'edit_forum_board_error' => 'Cannot Update Forum Board',
 
-'create_forum_board_success_desc' => 'The forum board <b>%s</b> has been created.',
+    'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
 
-'default_theme' => 'Default theme',
+    'edit_forum_board_success' => 'Forum Board Updated',
 
-'disable' => 'Disable',
+    'edit_forum_board_success_desc' => 'The forum board <b>%s</b> has been updated.',
 
-'edit_forum_board' => 'Edit %s',
+    'enable' => 'Enable',
 
-'edit_forum_board_error' => 'Cannot Update Forum Board',
+    'enable_board' => 'Enable board',
 
-'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
+    'enable_board_desc' => 'When enabled, this forum board will be accessible to member groups with proper permissions.',
 
-'edit_forum_board_success' => 'Forum Board Updated',
+    'enable_default_permissions' => 'Enable Default Permissions?',
 
-'edit_forum_board_success_desc' => 'The forum board <b>%s</b> has been updated.',
+    'enable_default_permissions_desc' => 'When enabled, these permissions will be the default permissions for all created forums.',
 
-'enable' => 'Enable',
+    'enable_http_auth_for_rss' => 'Enable <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> authentication for <abbr title="Really Simple Syndication">RSS</abbr>?',
 
-'enable_board' => 'Enable board',
+    'enable_http_auth_for_rss_desc' => 'When enabled, users will need to enter authentication to access <abbr title="Really Simple Syndication">RSS</abbr> for forums.',
 
-'enable_board_desc' => 'When enabled, this forum board will be accessible to member groups with proper permissions.',
+    'enable_rss' => 'Enable <abbr title="Really Simple Syndication">RSS</abbr>?',
 
-'enable_default_permissions' => 'Enable Default Permissions?',
+    'enable_rss_desc' => 'When enabled, <abbr title="Really Simple Syndication">RSS</abbr> will be available for forums.',
 
-'enable_default_permissions_desc' => 'When enabled, these permissions will be the default permissions for all created forums.',
+    'enable_thumbnail_creation' => 'Enable thumbnail creation?',
 
-'enable_http_auth_for_rss' => 'Enable <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> authentication for <abbr title="Really Simple Syndication">RSS</abbr>?',
+    'enable_thumbnail_creation_desc' => 'When enabled, clickable thumbnails will be shown in posts.',
 
-'enable_http_auth_for_rss_desc' => 'When enabled, users will need to enter authentication to access <abbr title="Really Simple Syndication">RSS</abbr> for forums.',
+    'file_size' => 'File size',
 
-'enable_rss' => 'Enable <abbr title="Really Simple Syndication">RSS</abbr>?',
+    'file_size_desc' => 'Maximum file size in kilobytes.',
 
-'enable_rss_desc' => 'When enabled, <abbr title="Really Simple Syndication">RSS</abbr> will be available for forums.',
+    'forum_directory' => 'Forum directory',
 
-'enable_thumbnail_creation' => 'Enable thumbnail creation?',
+    'forum_directory_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the forum.',
 
-'enable_thumbnail_creation_desc' => 'When enabled, clickable thumbnails will be shown in posts.',
+    'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group or template so it is not available',
 
-'file_size' => 'File size',
+    'forum_url_segment' => 'Forum <abbr title="Unified Resource Locator">URL</abbr> segment',
 
-'file_size_desc' => 'Maximum file size in kilobytes.',
+    'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
 
-'forum_directory' => 'Forum directory',
+    'forums' => 'Forums',
 
-'forum_directory_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the forum.',
+    'hot_topics' => 'Hot topics',
 
-'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group or template so it is not available',
+    'hot_topics_desc' => 'Number of posts required to mark a topic as hot.',
 
-'forum_url_segment' => 'Forum <abbr title="Unified Resource Locator">URL</abbr> segment',
+    'html_all' => 'Allow all HTML',
 
-'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
+    'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
-'forums' => 'Forums',
+    'html_none' => 'Convert to HTML entities',
 
-'hot_topics' => 'Hot topics',
+    'html_safe' => 'Allow only safe HTML',
 
-'hot_topics_desc' => 'Number of posts required to mark a topic as hot.',
+    'image_height' => 'Image height',
 
-'html_all' => 'Allow all HTML',
+    'image_height_desc' => 'Maximum image height in pixels.',
 
-'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
+    'image_width' => 'Image width',
 
-'html_none' => 'Convert to HTML entities',
+    'image_width_desc' => 'Maximum image width in pixels.',
 
-'html_safe' => 'Allow only safe HTML',
+    'images_only' => 'Images only',
 
-'image_height' => 'Image height',
+    'input' => 'Input',
 
-'image_height_desc' => 'Maximum image height in pixels.',
+    'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
 
-'image_width' => 'Image width',
+    'most_recent_first' => 'Most recent first',
 
-'image_width_desc' => 'Maximum image width in pixels.',
+    'most_recent_last' => 'Most recent last',
 
-'images_only' => 'Images only',
+    'most_recent_post' => 'By most recent post',
 
-'input' => 'Input',
+    'name' => 'Name',
 
-'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
+    'name_desc' => 'Full descriptive name of this board.',
 
-'most_recent_first' => 'Most recent first',
+    'new_replies' => 'New replies',
 
-'most_recent_last' => 'Most recent last',
+    'new_topics' => 'New topics',
 
-'most_recent_post' => 'By most recent post',
+    'notification_settings' => 'Notification Settings',
 
-'name' => 'Name',
+    'notify_moderators' => 'Moderator notifications',
 
-'name_desc' => 'Full descriptive name of this board.',
+    'output' => 'Output',
 
-'new_replies' => 'New replies',
+    'permissions' => 'Permissions',
 
-'new_topics' => 'New topics',
+    'permissions_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
 
-'notification_settings' => 'Notification Settings',
+    'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
 
-'notify_moderators' => 'Moderator notifications',
+    'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
 
-'output' => 'Output',
+    'php_parsing' => '<abbr title="PHP: Hypertext Preprocessor">PHP</abbr> Parsing',
 
-'permissions' => 'Permissions',
+    'php_parsing_stage' => 'PHP parsing stage',
 
-'permissions_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
+    'php_parsing_stage_desc' => 'When set to <b>output</b>, PHP will be parsed after the template.',
 
-'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+    'post_ordering' => 'Post ordering',
 
-'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
+    'post_ordering_desc' => 'Order of posts in topic listing.',
 
-'php_parsing' => '<abbr title="PHP: Hypertext Preprocessor">PHP</abbr> Parsing',
+    'posting_throttle' => 'Posting throttle',
 
-'php_parsing_stage' => 'PHP parsing stage',
+    'posting_throttle_desc' => 'Number of seconds that must pass before a member can post a new post or topic.',
 
-'php_parsing_stage_desc' => 'When set to <b>output</b>, PHP will be parsed after the template.',
+    'posts_per_page' => 'Posts per page',
 
-'post_ordering' => 'Post ordering',
+    'posts_per_page_desc' => 'Maximum number of posts that will be shown per page.',
 
-'post_ordering_desc' => 'Order of posts in topic listing.',
+    'reply_notification' => 'Reply notifications',
 
-'posting_throttle' => 'Posting throttle',
+    'reply_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
 
-'posting_throttle_desc' => 'Number of seconds that must pass before a member can post a new post or topic.',
+    'reply_to_topics' => 'Reply to topics',
 
-'posts_per_page' => 'Posts per page',
+    'reply_to_topics_desc' => 'Allow the following member groups to reply to topics.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'posts_per_page_desc' => 'Maximum number of posts that will be shown per page.',
+    'report' => 'Report',
 
-'reply_notification' => 'Reply notifications',
+    'report_desc' => 'Allow the following member groups to use the report feature.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'reply_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
+    'rss_settings' => '<abbr title="Really Simple Syndication">RSS</abbr> Settings',
 
-'reply_to_topics' => 'Reply to topics',
+    'search' => 'Search',
 
-'reply_to_topics_desc' => 'Allow the following member groups to reply to topics.</em><em>Super Administrators are <b>always</b> allowed.',
+    'search_desc' => 'Allow the following member groups to use the search feature.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'report' => 'Report',
+    'short_name' => 'Short name',
 
-'report_desc' => 'Allow the following member groups to use the report feature.</em><em>Super Administrators are <b>always</b> allowed.',
+    'short_name_desc' => 'Short name for this board.<br><i>No spaces. Underscores and dashes are allowed.</i>',
 
-'rss_settings' => '<abbr title="Really Simple Syndication">RSS</abbr> Settings',
+    'show_editing_dates' => 'Show editing dates?',
 
-'search' => 'Search',
+    'show_editing_dates_desc' => 'When enabled, the date and time a post was edited will be shown in the post.',
 
-'search_desc' => 'Allow the following member groups to use the search feature.</em><em>Super Administrators are <b>always</b> allowed.',
+    'site' => 'Site',
 
-'short_name' => 'Short name',
+    'start_topics' => 'Start topics',
 
-'short_name_desc' => 'Short name for this board.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+    'start_topics_desc' => 'Allow the following member groups to start new topics.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'show_editing_dates' => 'Show editing dates?',
+    'text_and_html_formatting' => 'Text and HTML Formatting',
 
-'show_editing_dates_desc' => 'When enabled, the date and time a post was edited will be shown in the post.',
+    'text_formatting' => 'Text formatting',
 
-'site' => 'Site',
+    'text_formatting_desc' => 'Type of formatting for comment text.',
 
-'start_topics' => 'Start topics',
+    'thumbnail_height' => 'Thumbnail height',
 
-'start_topics_desc' => 'Allow the following member groups to start new topics.</em><em>Super Administrators are <b>always</b> allowed.',
+    'thumbnail_height_desc' => 'Maximum thumbnail height in pixels.',
 
-'text_and_html_formatting' => 'Text and HTML Formatting',
+    'thumbnail_width' => 'Thumbnail width',
 
-'text_formatting' => 'Text formatting',
+    'thumbnail_width_desc' => 'Maximum thumbnail width in pixels.',
 
-'text_formatting_desc' => 'Type of formatting for comment text.',
+    'topic_notification' => 'Topic notifications',
 
-'thumbnail_height' => 'Thumbnail height',
+    'topic_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
 
-'thumbnail_height_desc' => 'Maximum thumbnail height in pixels.',
+    'topic_ordering' => 'Topic ordering',
 
-'thumbnail_width' => 'Thumbnail width',
+    'topic_ordering_desc' => 'Order of topics in forum listing.',
 
-'thumbnail_width_desc' => 'Maximum thumbnail width in pixels.',
+    'topics_per_page' => 'Topics per page',
 
-'topic_notification' => 'Topic notifications',
+    'topics_per_page_desc' => 'Maximum number of topics that will be shown per page.',
 
-'topic_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <code>comma (,)</code>.',
+    'unwritable_upload_path' => 'Your image upload folder is not writable. Please make sure the file permissions are set to 777.',
 
-'topic_ordering' => 'Topic ordering',
+    'upload' => 'Upload',
 
-'topic_ordering_desc' => 'Order of topics in forum listing.',
+    'upload_desc' => 'Allow the following member groups to use the upload feature.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'topics_per_page' => 'Topics per page',
+    'upload_directory' => 'Upload directory',
 
-'topics_per_page_desc' => 'Maximum number of topics that will be shown per page.',
+    'upload_directory_desc' => 'Full path location of this <code>upload</code> directory.',
 
-'unwritable_upload_path' => 'Your image upload folder is not writable. Please make sure the file permissions are set to 777.',
+    'view_forums' => 'View forums',
 
-'upload' => 'Upload',
+    'view_forums_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'upload_desc' => 'Allow the following member groups to use the upload feature.</em><em>Super Administrators are <b>always</b> allowed.',
+    'view_hidden_forums' => 'View hidden forums',
 
-'upload_directory' => 'Upload directory',
+    'view_hidden_forums_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'upload_directory_desc' => 'Full path location of this <code>upload</code> directory.',
+    'view_posts' => 'View posts',
 
-'view_forums' => 'View forums',
+    'view_posts_desc' => 'Allow the following member groups to view posts.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'view_forums_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
+    /* Create/Edit Category Form */
+    'btn_save_category' => 'Save Category',
 
-'view_hidden_forums' => 'View hidden forums',
+    'create_category' => 'Create Category',
 
-'view_hidden_forums_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
+    'create_category_error' => 'Cannot Create Category',
 
-'view_posts' => 'View posts',
+    'create_category_error_desc' => 'We were unable to create this category, please review and fix errors below.',
 
-'view_posts_desc' => 'Allow the following member groups to view posts.</em><em>Super Administrators are <b>always</b> allowed.',
+    'create_category_success' => 'Category Created',
 
+    'create_category_success_desc' => 'The category <b>%s</b> has been created.',
 
-/* Create/Edit Category Form */
-'btn_save_category' => 'Save Category',
+    'description_desc' => 'Brief description of this category.',
 
-'create_category' => 'Create Category',
+    'edit_category' => 'Edit Category',
 
-'create_category_error' => 'Cannot Create Category',
+    'edit_category_error' => 'Cannot Update Category',
 
-'create_category_error_desc' => 'We were unable to create this category, please review and fix errors below.',
+    'edit_category_error_desc' => 'We were unable to update this category, please review and fix errors below.',
 
-'create_category_success' => 'Category Created',
+    'edit_category_success' => 'Category Updated',
 
-'create_category_success_desc' => 'The category <b>%s</b> has been created.',
+    'edit_category_success_desc' => 'The category <b>%s</b> has been updated.',
 
-'description_desc' => 'Brief description of this category.',
+    'hidden' => 'Hidden',
 
-'edit_category' => 'Edit Category',
+    'live' => 'Live',
 
-'edit_category_error' => 'Cannot Update Category',
+    'read_only' => 'Read Only',
 
-'edit_category_error_desc' => 'We were unable to update this category, please review and fix errors below.',
+    'status_desc' => 'Status assigned to this category.',
 
-'edit_category_success' => 'Category Updated',
+    /* Create/Edit Forum Form */
+    'btn_save_forum' => 'Save forum',
 
-'edit_category_success_desc' => 'The category <b>%s</b> has been updated.',
+    'create_forum' => 'Create Forum',
 
-'hidden' => 'Hidden',
+    'create_forum_error' => 'Cannot Create Forum',
 
-'live' => 'Live',
+    'create_forum_error_desc' => 'We were unable to create this forum, please review and fix errors below.',
 
-'read_only' => 'Read Only',
+    'create_forum_success' => 'Forum Created',
 
-'status_desc' => 'Status assigned to this category.',
+    'create_forum_success_desc' => 'The forum <b>%s</b> has been created.',
 
+    'edit_forum' => 'Edit Forum',
 
-/* Create/Edit Forum Form */
-'btn_save_forum' => 'Save forum',
+    'edit_forum_error' => 'Cannot Update Forum',
 
-'create_forum' => 'Create Forum',
+    'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
 
-'create_forum_error' => 'Cannot Create Forum',
+    'edit_forum_success' => 'Forum Updated',
 
-'create_forum_error_desc' => 'We were unable to create this forum, please review and fix errors below.',
+    'edit_forum_success_desc' => 'The forum <b>%s</b> has been updated.',
 
-'create_forum_success' => 'Forum Created',
+    'forum_board_removed' => 'Forums Removed',
 
-'create_forum_success_desc' => 'The forum <b>%s</b> has been created.',
+    'forum_board_removed_desc' => 'The following forums were removed',
 
-'edit_forum' => 'Edit Forum',
+    'topic_and_post_settings' => 'Topic and Post Settings',
 
-'edit_forum_error' => 'Cannot Update Forum',
+    /* Category Permissions */
+    'btn_save_permissions' => 'Save Permissions',
 
-'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
+    'category_permissions' => '%s Permissions',
 
-'edit_forum_success' => 'Forum Updated',
+    'edit_category_settings_success' => 'Category Permissions Updated',
 
-'edit_forum_success_desc' => 'The forum <b>%s</b> has been updated.',
+    'edit_category_settings_success_desc' => 'The permissions for category <b>%s</b> have been updated.',
 
-'forum_board_removed' => 'Forums Removed',
+    'view_category' => 'View category',
 
-'forum_board_removed_desc' => 'The following forums were removed',
+    'view_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
 
-'topic_and_post_settings' => 'Topic and Post Settings',
+    'view_hidden_category' => 'View hidden category',
 
+    'view_hidden_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
 
-/* Category Permissions */
-'btn_save_permissions' => 'Save Permissions',
+    /* Forum Permissions */
+    'edit_forum_settings_success' => 'Forum Permissions Updated',
 
-'category_permissions' => '%s Permissions',
+    'edit_forum_settings_success_desc' => 'The permissions for forum <b>%s</b> have been updated.',
 
-'edit_category_settings_success' => 'Category Permissions Updated',
+    'forum_permissions' => '%s Permissions',
 
-'edit_category_settings_success_desc' => 'The permissions for category <b>%s</b> have been updated.',
+    'view_forum' => 'View forum',
 
-'view_category' => 'View category',
+    'view_forum_desc' => 'Allow the following member groups to view this forum.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'view_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+    'view_hidden_forum' => 'View hidden forums',
 
-'view_hidden_category' => 'View hidden category',
+    'view_hidden_forum_desc' => 'Allow the following member groups to view this forum when hidden.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'view_hidden_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+    /* Member Ranks */
+    'btn_save_rank' => 'Save Rank',
 
+    'create_member_rank' => 'Create Member Rank',
 
-/* Forum Permissions */
-'edit_forum_settings_success' => 'Forum Permissions Updated',
+    'create_new_rank' => 'Create new rank',
 
-'edit_forum_settings_success_desc' => 'The permissions for forum <b>%s</b> have been updated.',
+    'create_rank_error' => 'Cannot Create Rank',
 
-'forum_permissions' => '%s Permissions',
+    'create_rank_error_desc' => 'We were unable to create this rank, please review and fix errors below.',
 
-'view_forum' => 'View forum',
+    'create_rank_success' => 'Rank Created',
 
-'view_forum_desc' => 'Allow the following member groups to view this forum.</em><em>Super Administrators are <b>always</b> allowed.',
+    'create_rank_success_desc' => 'The rank <b>%s</b> has been created.',
 
-'view_hidden_forum' => 'View hidden forums',
+    'edit_member_rank' => 'Edit Member Rank',
 
-'view_hidden_forum_desc' => 'Allow the following member groups to view this forum when hidden.</em><em>Super Administrators are <b>always</b> allowed.',
+    'edit_rank_error' => 'Cannot Update Rank',
 
+    'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
-/* Member Ranks */
-'btn_save_rank' => 'Save Rank',
+    'edit_rank_success' => 'Rank Updated',
 
-'create_member_rank' => 'Create Member Rank',
+    'edit_rank_success_desc' => 'The rank <b>%s</b> has been updated.',
 
-'create_new_rank' => 'Create new rank',
+    'member_ranks' => 'Member Ranks',
 
-'create_rank_error' => 'Cannot Create Rank',
+    'no_ranks' => 'No ranks available',
 
-'create_rank_error_desc' => 'We were unable to create this rank, please review and fix errors below.',
+    'posts' => 'Posts',
 
-'create_rank_success' => 'Rank Created',
+    'posts_desc' => 'Minimum number of posts a user must have to reach this rank.',
 
-'create_rank_success_desc' => 'The rank <b>%s</b> has been created.',
+    'rank_title' => 'Title',
 
-'edit_member_rank' => 'Edit Member Rank',
+    'rank_title_desc' => 'Full descriptive name of this rank.',
 
-'edit_rank_error' => 'Cannot Update Rank',
+    'ranks_removed' => 'Member Ranks Removed',
 
-'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
+    'ranks_removed_desc' => 'The following ranks were removed',
 
-'edit_rank_success' => 'Rank Updated',
+    'stars' => 'Stars',
 
-'edit_rank_success_desc' => 'The rank <b>%s</b> has been updated.',
+    'stars_desc' => 'Number of stars to show with this rank.',
 
-'member_ranks' => 'Member Ranks',
+    /* Administrators */
+    'admin_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
 
-'no_ranks' => 'No ranks available',
+    'admin_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
 
-'posts' => 'Posts',
+    'administrator_type' => 'Administrator type',
 
-'posts_desc' => 'Minimum number of posts a user must have to reach this rank.',
+    'administrator_type_desc' => 'Select the type of administrator you want to add.',
 
-'rank_title' => 'Title',
+    'administrators' => 'Administrators',
 
-'rank_title_desc' => 'Full descriptive name of this rank.',
+    'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
 
-'ranks_removed' => 'Member Ranks Removed',
+    'admins_removed' => 'Administrators Removed',
 
-'ranks_removed_desc' => 'The following ranks were removed',
+    'admins_removed_desc' => 'The following administrators were removed',
 
-'stars' => 'Stars',
+    'btn_save_administrator' => 'Save administrator',
 
-'stars_desc' => 'Number of stars to show with this rank.',
+    'create_administrator' => 'Create Administrator',
 
+    'create_administrator_error' => 'Cannot Create Administrator',
 
-/* Administrators */
-'admin_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
+    'create_administrator_error_desc' => 'We were unable to create this administrator, please review and fix errors below.',
 
-'admin_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
+    'create_administrator_success' => 'Administrator Created',
 
-'administrator_type' => 'Administrator type',
+    'create_administrator_success_desc' => 'The administrator <b>%s</b> has been created.',
 
-'administrator_type_desc' => 'Select the type of administrator you want to add.',
+    'create_new_admin' => 'Create new admin',
 
-'administrators' => 'Administrators',
+    'forum_admins' => 'Forum Administrators',
 
-'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
+    'group' => 'group',
 
-'admins_removed' => 'Administrators Removed',
+    'individual' => 'individual',
 
-'admins_removed_desc' => 'The following administrators were removed',
+    'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 
-'btn_save_administrator' => 'Save administrator',
+    'invalid_username' => 'The username you submitted does not appear to be valid',
 
-'create_administrator' => 'Create Administrator',
+    /* Moderators */
+    'btn_save_moderator' => 'Save moderator',
 
-'create_administrator_error' => 'Cannot Create Administrator',
+    'create_moderator' => 'Create Moderator',
 
-'create_administrator_error_desc' => 'We were unable to create this administrator, please review and fix errors below.',
+    'create_moderator_error' => 'Cannot Create Moderator',
 
-'create_administrator_success' => 'Administrator Created',
+    'create_moderator_error_desc' => 'We were unable to create this moderator, please review and fix errors below.',
 
-'create_administrator_success_desc' => 'The administrator <b>%s</b> has been created.',
+    'create_moderator_in' => 'Create Moderator in %s',
 
-'create_new_admin' => 'Create new admin',
+    'create_moderator_success' => 'Moderator Created',
 
-'forum_admins' => 'Forum Administrators',
+    'create_moderator_success_desc' => 'The moderator <b>%s</b> has been created.',
 
-'group' => 'group',
+    'edit_moderator' => 'Edit Moderator',
 
-'individual' => 'individual',
+    'edit_moderator_error' => 'Cannot Update Moderator',
 
-'invalid_member_group' => 'The member group you submitted does not appear to be valid',
+    'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
 
-'invalid_username' => 'The username you submitted does not appear to be valid',
+    'edit_moderator_in' => 'Edit Moderator in %s',
 
+    'edit_moderator_success' => 'Moderator Updated',
 
-/* Moderators */
-'btn_save_moderator' => 'Save moderator',
+    'edit_moderator_success_desc' => 'The moderator <b>%s</b> has been updated.',
 
-'create_moderator' => 'Create Moderator',
+    'mod_can_announce' => 'Create announcements',
 
-'create_moderator_error' => 'Cannot Create Moderator',
+    'mod_can_change_status' => 'Change status',
 
-'create_moderator_error_desc' => 'We were unable to create this moderator, please review and fix errors below.',
+    'mod_can_delete' => 'Delete',
 
-'create_moderator_in' => 'Create Moderator in %s',
+    'mod_can_edit' => 'Edit',
 
-'create_moderator_success' => 'Moderator Created',
+    'mod_can_merge' => 'Merge',
 
-'create_moderator_success_desc' => 'The moderator <b>%s</b> has been created.',
+    'mod_can_move' => 'Move',
 
-'edit_moderator' => 'Edit Moderator',
+    'mod_can_split' => 'Split',
 
-'edit_moderator_error' => 'Cannot Update Moderator',
+    'mod_can_view_ip' => 'View IP addresses',
 
-'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
+    'moderator_removed' => 'Moderator Removed',
 
-'edit_moderator_in' => 'Edit Moderator in %s',
+    'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
 
-'edit_moderator_success' => 'Moderator Updated',
+    'moderator_type' => 'Moderator type',
 
-'edit_moderator_success_desc' => 'The moderator <b>%s</b> has been updated.',
+    'moderator_type_desc' => 'Select the type of moderator you want to add.',
 
-'mod_can_announce' => 'Create announcements',
+    'moderator_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
 
-'mod_can_change_status' => 'Change status',
+    'moderator_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
 
-'mod_can_delete' => 'Delete',
+    'moderators' => 'Moderators',
 
-'mod_can_edit' => 'Edit',
+    'moderators_desc' => 'Have access to assigned tools for forums they are assigned to.',
 
-'mod_can_merge' => 'Merge',
+    'permissions_desc' => 'Moderators of this forum may take the following actions.',
 
-'mod_can_move' => 'Move',
+    'remove_moderator' => 'remove moderator',
 
-'mod_can_split' => 'Split',
+    /* Forum Publish Tab */
+    'no_forum_permissions' => 'You do not have permissions to post to this forum.',
 
-'mod_can_view_ip' => 'View IP addresses',
+    'no_forum_topic_id' => 'There is no forum topic with that ID.',
 
-'moderator_removed' => 'Moderator Removed',
-
-'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
-
-'moderator_type' => 'Moderator type',
-
-'moderator_type_desc' => 'Select the type of moderator you want to add.',
-
-'moderator_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
-
-'moderator_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
-
-'moderators' => 'Moderators',
-
-'moderators_desc' => 'Have access to assigned tools for forums they are assigned to.',
-
-'permissions_desc' => 'Moderators of this forum may take the following actions.',
-
-'remove_moderator' => 'remove moderator',
-
-
-/* Forum Publish Tab */
-'no_forum_permissions' => 'You do not have permissions to post to this forum.',
-
-'no_forum_topic_id' => 'There is no forum topic with that ID.',
-
-'only_forum_topic_id' => 'Do not specify a forum Title or Body when setting a Forum Topic ID.',
+    'only_forum_topic_id' => 'Do not specify a forum Title or Body when setting a Forum Topic ID.',
 
 );
 

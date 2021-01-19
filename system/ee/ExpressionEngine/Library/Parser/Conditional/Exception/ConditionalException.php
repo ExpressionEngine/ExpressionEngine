@@ -15,4 +15,6 @@ use Exception;
 /**
  * Conditional Exception
  */
-class ConditionalException extends Exception {}
+class ConditionalException extends Exception
+{
+}

@@ -13,16 +13,15 @@ namespace ExpressionEngine\Addons\Spam\Library;
 /**
  * Spam Document Vectorizer Interface
  */
-interface Vectorizer {
-
-	/**
-	 * Return an array of floats computed from the source string
-	 *
-	 * @param string $source
-	 * @return float
-	 */
-	public function vectorize($source);
-
+interface Vectorizer
+{
+    /**
+     * Return an array of floats computed from the source string
+     *
+     * @param string $source
+     * @return float
+     */
+    public function vectorize($source);
 }
 
 // EOF

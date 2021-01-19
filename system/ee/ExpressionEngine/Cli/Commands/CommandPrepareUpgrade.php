@@ -8,7 +8,6 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class CommandPrepareUpgrade extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -123,7 +122,7 @@ class CommandPrepareUpgrade extends Cli
 
         // Move templates
         $this->moveTemplates();
-        
+
         // @TODO: Move addons
         $this->moveAddons();
 
@@ -147,9 +146,7 @@ class CommandPrepareUpgrade extends Cli
         $this->info('Running preflight hooks');
 
         foreach ($this->upgradeConfig['preflight_hooks'] as $hook) {
- 
             call_user_func_array($hook, func_get_args());
-
         }
     }
 
@@ -162,9 +159,7 @@ class CommandPrepareUpgrade extends Cli
         $this->info('Running postflight hooks');
 
         foreach ($this->upgradeConfig['postflight_hooks'] as $hook) {
-
             call_user_func_array($hook, func_get_args());
-
         }
     }
 
@@ -177,7 +172,7 @@ class CommandPrepareUpgrade extends Cli
                 $upgradeValue = $upgradeValue ? 'true' : 'false';
             }
 
-            if(! is_array($upgradeValue)) {
+            if (! is_array($upgradeValue)) {
                 $this->write("<<green>>{$upgradeKey}<<reset>>: {$upgradeValue}");
             }
         }
@@ -222,15 +217,16 @@ class CommandPrepareUpgrade extends Cli
             return;
         }
 
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $customConfig = $this->getConfigPath();
 
-        if( ! $customConfig) {
+        if (! $customConfig) {
             $path = $this->ask('What is the path to your upgrade.config.php? (defaults to SYSPATH, currently ' . SYSPATH . ')');
 
             if (! ($customConfig = $this->getConfigPath($path))) {
                 $this->error('Custom config not found.');
+
                 return;
             }
         }
@@ -310,7 +306,7 @@ class CommandPrepareUpgrade extends Cli
     private function moveOriginalSiteToTmp()
     {
         // Need to copy system/, index.php, admin.php and themes folder
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = $this->prepTmpDirectory();
 
@@ -326,7 +322,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function prepTmpDirectory()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'];
 
@@ -341,7 +337,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function copyNewEEFiles()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $filesystem->copy(
             SYSPATH,
@@ -373,19 +369,19 @@ class CommandPrepareUpgrade extends Cli
 
     private function copyOriginalConfig()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
         // We should check if this is EE2 or EE3+
-        if($filesystem->exists($tmp_folder . '/system/expressionengine')) {
+        if ($filesystem->exists($tmp_folder . '/system/expressionengine')) {
             // It's EE2!
             $filesystem->copy(
                 $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['config_file'],
                 rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['config_file'], '/')
             );
 
-            if(isset($this->filemap['database_file']) && $this->filemap['database_file'] !== 'config.php') {
+            if (isset($this->filemap['database_file']) && $this->filemap['database_file'] !== 'config.php') {
                 $filesystem->copy(
                     $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['database_file'],
                     rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
@@ -393,7 +389,6 @@ class CommandPrepareUpgrade extends Cli
 
                 $this->info('We found a database file. Please move this information in to config.php');
             }
-
         } else {
             // It's EE3+!
             $filesystem->copy(
@@ -410,12 +405,11 @@ class CommandPrepareUpgrade extends Cli
 
     private function moveTemplates()
     {
-
-        if( ! $this->upgradeConfig['should_move_template_path']) {
+        if (! $this->upgradeConfig['should_move_template_path']) {
             return;
         }
 
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         // $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
@@ -423,12 +417,10 @@ class CommandPrepareUpgrade extends Cli
             rtrim($this->upgradeConfig['old_template_path'], '/'),
             rtrim($this->upgradeConfig['new_template_path'], '/')
         );
-
     }
 
     private function moveAddons()
     {
-
     }
 
     private function checkIfPathAllowed($path)

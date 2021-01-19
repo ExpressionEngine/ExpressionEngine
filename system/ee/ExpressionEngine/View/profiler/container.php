@@ -1,5 +1,5 @@
-<?php if (REQ == 'PAGE' OR ee('LivePreview')->hasEntryData()): ?>
-	<link rel="stylesheet" href="<?=URL_THEMES.'debug/css/eecms-debug.min.css'?>" type="text/css" media="screen" />
+<?php if (REQ == 'PAGE' or ee('LivePreview')->hasEntryData()): ?>
+	<link rel="stylesheet" href="<?=URL_THEMES . 'debug/css/eecms-debug.min.css'?>" type="text/css" media="screen" />
 <?php endif; ?>
 
 <section class="ee-debugger">
@@ -9,22 +9,21 @@
 			<div class="tab-bar">
 				<div class="tab-bar__tabs">
 					<?php foreach ($sections as $i => $section): ?>
-						<button type="button" class="tab-bar__tab js-tab-button <?=($i==0)?'active':''?>" rel="t-<?=$i?>"><?=$section->getSummary()?></button>
+						<button type="button" class="tab-bar__tab js-tab-button <?=($i==0) ? 'active' : ''?>" rel="t-<?=$i?>"><?=$section->getSummary()?></button>
 					<?php endforeach; ?>
 				</div>
 			</div>
 			<?php
-			foreach ($rendered_sections as $rendered_section)
-			{
-				echo $rendered_section;
-			}
-			?>
+            foreach ($rendered_sections as $rendered_section) {
+                echo $rendered_section;
+            }
+            ?>
 		</div>
 	</div>
 </section>
 
 
-<?php if (REQ == 'PAGE' OR ee('LivePreview')->hasEntryData()): ?>
+<?php if (REQ == 'PAGE' or ee('LivePreview')->hasEntryData()): ?>
 	<script>
 	!function() {
 		"use strict";

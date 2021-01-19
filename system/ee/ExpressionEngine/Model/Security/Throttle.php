@@ -15,21 +15,20 @@ use ExpressionEngine\Service\Model\Model;
 /**
  * Throttle Model
  */
-class Throttle extends Model {
+class Throttle extends Model
+{
+    protected static $_primary_key = 'throttle_id';
+    protected static $_table_name = 'throttle';
 
-	protected static $_primary_key = 'throttle_id';
-	protected static $_table_name = 'throttle';
+    protected static $_validation_rules = array(
+        'ip_address' => 'ip_address'
+    );
 
-	protected static $_validation_rules = array(
-		'ip_address' => 'ip_address'
-	);
-
-	protected $throttle_id;
-	protected $ip_address;
-	protected $last_activity;
-	protected $hits;
-	protected $locked_out;
-
+    protected $throttle_id;
+    protected $ip_address;
+    protected $last_activity;
+    protected $hits;
+    protected $locked_out;
 }
 
 // EOF

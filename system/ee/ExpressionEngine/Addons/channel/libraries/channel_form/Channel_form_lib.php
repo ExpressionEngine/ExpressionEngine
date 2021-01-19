@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
@@ -68,7 +67,6 @@ class Channel_form_lib
 
     protected $member;
 
-
     private $all_params = array(
         'allow_comments', 'author_only', 'category', 'channel', 'class', 'datepicker',
         'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
@@ -76,7 +74,6 @@ class Channel_form_lib
         'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
         'secure_action', 'secure_return', 'site', 'url_title', 'use_live_url'
     );
-
 
     /**
      * constructor
@@ -86,7 +83,7 @@ class Channel_form_lib
     public function __construct()
     {
         //set a global object
-    //  ee()->set('safecracker', $this); // deprecated
+        //  ee()->set('safecracker', $this); // deprecated
         ee()->set('channel_form', $this);
         ee()->lang->loadfile('channel_form');
     }
@@ -153,6 +150,7 @@ class Channel_form_lib
 
         if (! $this->member) {
             $this->switch_site($current_site_id);
+
             return ee()->TMPL->no_results();
         }
 
@@ -161,6 +159,7 @@ class Channel_form_lib
         // Can they post?
         if (! in_array($this->channel('channel_id'), $assigned_channels) && ! ee('Permission')->isSuperAdmin()) {
             $this->switch_site($current_site_id);
+
             return ee()->TMPL->no_results();
         }
 
@@ -184,6 +183,7 @@ class Channel_form_lib
         if (! $this->entry('entry_id') && $this->bool_string(ee()->TMPL->fetch_param('require_entry'))) {
             if (ee()->TMPL->no_results()) {
                 $this->switch_site($current_site_id);
+
                 return ee()->TMPL->no_results();
             }
 
@@ -257,6 +257,7 @@ class Channel_form_lib
             ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
             if (ee()->extensions->end_script === true) {
                 $this->switch_site($current_site_id);
+
                 return;
             }
         }
@@ -335,7 +336,6 @@ class Channel_form_lib
         if (! empty($this->markitup)) {
             ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
         }
-
 
         foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams) {
             $tag_name = current(preg_split('/\s/', $tag_pair_open));
@@ -453,10 +453,10 @@ class Channel_form_lib
                     foreach ($options as $option) {
                         if ($field_type_match == "rel") {
                             if (! empty($option['selected']) or ! empty($option['checked'])) {
-                                $selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
+                                $selected_option = (! empty($match[2])) ? $option['option_name'] : $option['option_value'];
                             }
                         } elseif ($option['option_value'] == $this->entry($match[1])) {
-                            $selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
+                            $selected_option = (! empty($match[2])) ? $option['option_name'] : $option['option_value'];
                         }
                     }
 
@@ -464,7 +464,7 @@ class Channel_form_lib
                 } elseif (preg_match('/^instructions:(.*)$/', $key, $match)) {
                     $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
                 } elseif (preg_match('/^error:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = ( ! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
+                    $this->parse_variables[$match[0]] = (! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
                 } else {
                     $name = $key;
 
@@ -506,8 +506,8 @@ class Channel_form_lib
 
             $this->form_hidden(
                 array(
-                      'entry_id' => $this->entry('entry_id'),
-                      'author_id' => $this->entry('author_id')
+                    'entry_id' => $this->entry('entry_id'),
+                    'author_id' => $this->entry('author_id')
                 )
             );
         } elseif ($this->channel('channel_id')) {
@@ -590,7 +590,7 @@ class Channel_form_lib
                 $this->parse_variables['selected_option:' . $field->field_name] = '';
                 $this->parse_variables['label:' . $field->field_name] = $field->field_label;
                 $this->parse_variables['instructions:' . $field->field_name] = $field->field_instructions;
-                $this->parse_variables['error:' . $field->field_name] = ( ! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
+                $this->parse_variables['error:' . $field->field_name] = (! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
 
                 //let's not needlessly call this, otherwise we could get duplicate fields rendering
                 if (strpos(ee()->TMPL->tagdata, LD . 'field:' . $field->field_name . RD) !== false) {
@@ -697,16 +697,13 @@ class Channel_form_lib
 
         $form_attributes = array_merge($form_attributes, $this->_form_attributes);
 
-
         $return = ee()->functions->form_declaration($form_attributes);
         $return .= ee()->TMPL->tagdata;
         $return .= "</form>";
 
-
         $this->_build_javascript();
 
         $this->switch_site($current_site_id);
-
 
         //make head appear by default
         if (preg_match('/' . LD . 'channel_form_assets' . RD . '/', $return)) {
@@ -806,15 +803,15 @@ class Channel_form_lib
 
         $addt_js = array(
             'publish' => array(
-                'title_focus'       => (( ! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
+                'title_focus'       => ((! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
                 'smileys'           => ($this->_installed_mods['smileys']) ? true : false,
                 'url_title_prefix'  => $this->channel('url_title_prefix'),
                 'default_entry_title' => $this->channel('default_entry_title')
             ),
             'user_id' => $this->member->getId(),
             'lang' => array(
-                    'confirm_exit'          => lang('confirm_exit'),
-                    'add_new_html_button'   => lang('add_new_html_button')
+                'confirm_exit'          => lang('confirm_exit'),
+                'add_new_html_button'   => lang('add_new_html_button')
             )
         );
 
@@ -863,7 +860,6 @@ class Channel_form_lib
                 lang('sa'),
             );
         }
-
 
         ee()->lang->loadfile('content');
 
@@ -1084,7 +1080,7 @@ GRID_FALLBACK;
                 'radio'         => 0,
                 'display_field' => '',
                 'options'       => $this->get_field_options($field_name),
-                'error'         => ( ! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
+                'error'         => (! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
             );
 
             $custom_field_equivalent = $this->custom_fields[$field_name];
@@ -1137,7 +1133,7 @@ GRID_FALLBACK;
 
         foreach ($this->title_fields as $field) {
             if (isset(ee()->TMPL->var_single['error:' . $field])) {
-                $conditional_errors['error:' . $field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
+                $conditional_errors['error:' . $field] = (! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
             }
         }
 
@@ -1298,6 +1294,7 @@ GRID_FALLBACK;
             foreach ($this->statuses as $status_array) {
                 if ($status == $status_array['status']) {
                     $valid_status = true;
+
                     break;
                 }
             }
@@ -1330,6 +1327,7 @@ GRID_FALLBACK;
                 if (! isset($_POST[$checkbox])) {
                     if ($checkbox == 'allow_comments') {
                         $_POST[$checkbox] = 'n';
+
                         continue;
                     }
 
@@ -1391,7 +1389,7 @@ GRID_FALLBACK;
                     //for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
                     //to prevent xss_clean
                     //i had some people complain about not being able to submit <object>'s
-                    $xss_clean = ( ! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
+                    $xss_clean = (! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
 
                     $_POST['field_id_' . $field->field_id] = ee()->input->post($key, $xss_clean);
 
@@ -1651,6 +1649,7 @@ GRID_FALLBACK;
             }
 
             ee()->core->generate_page();
+
             return;
         }
 
@@ -1688,7 +1687,7 @@ GRID_FALLBACK;
         $return = ($this->_meta['return'])
             ? (
                 (strpos($this->_meta['return'], 'http://') === 0 || strpos($this->_meta['return'], 'https://') === 0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
-                )
+            )
             : ee()->functions->fetch_site_index();
 
         if (strpos($return, 'ENTRY_ID') !== false) {
@@ -1890,7 +1889,6 @@ GRID_FALLBACK;
         return $selected;
     }
 
-
     /**
      * Load categories
      *
@@ -2081,7 +2079,6 @@ GRID_FALLBACK;
 
         $channel_site_id = (isset($this->_meta['site_id'])) ? $this->_meta['site_id'] : $this->site_id;
 
-
         if (! $logged_out_member_id && $this->channel('channel_id')
             && ! empty($this->settings['allow_guest_posts'][$channel_site_id][$this->channel('channel_id')])
             && ! empty($this->settings['default_author'][$channel_site_id][$this->channel('channel_id')])) {
@@ -2240,7 +2237,6 @@ GRID_FALLBACK;
         $this->_hidden_fields[$name] = $value;
     }
 
-
     protected function entry_match_check($params)
     {
         // Whoa there big conditional, what's going on here?
@@ -2314,7 +2310,6 @@ GRID_FALLBACK;
 
         return ee('Encrypt')->encode($meta, ee()->config->item('session_crypt_key'));
     }
-
 
     /**
      * get Meta vars
@@ -2470,7 +2465,6 @@ GRID_FALLBACK;
                 }
             }
 
-
             if ($field->field_pre_populate == 'y') {
                 $pop_entries = ee('Model')->get('ChannelEntry')
                     ->fields('field_id_' . $field->field_pre_field_id)
@@ -2574,9 +2568,11 @@ GRID_FALLBACK;
                     switch ($author[0]) {
                         case 'g':
                             $groups[] = substr($author, 2);
+
                             break;
                         case 'm':
                             $members[] = substr($author, 2);
+
                             break;
                     }
                 }
@@ -2827,36 +2823,36 @@ GRID_FALLBACK;
         $this->fetch_settings();
 
         $this->option_fields = $this->native_option_fields;
-/*
-        ee()->config->load('config');
+        /*
+                ee()->config->load('config');
 
-        if (is_array(ee()->config->item('safecracker_option_fields')))
-        {
-            $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
+                if (is_array(ee()->config->item('safecracker_option_fields')))
+                {
+                    $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
 
-            $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
-        }
+                    $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
+                }
 
-        if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
-        {
-            $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
-        }
+                if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
+                {
+                    $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
+                }
 
-        if (is_array(ee()->config->item('safecracker_file_fields')))
-        {
-            $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
-        }
+                if (is_array(ee()->config->item('safecracker_file_fields')))
+                {
+                    $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
+                }
 
-        if (is_array(ee()->config->item('safecracker_require_save_call')))
-        {
-            $this->require_save_call = ee()->config->item('safecracker_require_save_call');
-        }
+                if (is_array(ee()->config->item('safecracker_require_save_call')))
+                {
+                    $this->require_save_call = ee()->config->item('safecracker_require_save_call');
+                }
 
-        if (is_array(ee()->config->item('safecracker_field_extra_js')))
-        {
-            $this->extra_js = ee()->config->item('safecracker_field_extra_js');
-        }
-    */
+                if (is_array(ee()->config->item('safecracker_field_extra_js')))
+                {
+                    $this->extra_js = ee()->config->item('safecracker_field_extra_js');
+                }
+            */
     }
 
     /**
@@ -3141,7 +3137,6 @@ SCRIPT;
         return $ret;
     }
 
-
     /**
      * Assigns proper group id to logged out users
      *
@@ -3155,7 +3150,7 @@ SCRIPT;
             return;
         }
 
-        $id = ( ! $reset) ? $this->member->PrimaryRole->getId() : 0;
+        $id = (! $reset) ? $this->member->PrimaryRole->getId() : 0;
 
         ee()->session->userdata['group_id'] = $id;
     }

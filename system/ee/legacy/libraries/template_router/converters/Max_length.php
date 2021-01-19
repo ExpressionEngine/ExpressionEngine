@@ -11,17 +11,17 @@
 /**
  * Template Router Max length Converter
  */
-class EE_Template_router_max_length_converter implements EE_Template_router_converter {
+class EE_Template_router_max_length_converter implements EE_Template_router_converter
+{
+    public function __construct($length)
+    {
+        $this->length = $length;
+    }
 
-	public function __construct($length) {
-		$this->length = $length;
-	}
-
-	public function validator()
-	{
-		return "(.{1,{$this->length}})";
-	}
-
+    public function validator()
+    {
+        return "(.{1,{$this->length}})";
+    }
 }
 
 // EOF

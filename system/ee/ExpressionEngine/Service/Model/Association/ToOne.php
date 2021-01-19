@@ -15,70 +15,62 @@ use ExpressionEngine\Service\Model\Collection;
 /**
  * Model Service: To One Association
  */
-class ToOne extends Association {
+class ToOne extends Association
+{
+    private $fk_value = null;
 
-	private $fk_value = NULL;
+    public function foreignKeyChanged($value)
+    {
+        if ($value != $this->fk_value) {
+            return parent::foreignKeyChanged($value);
+        }
+    }
 
-	public function foreignKeyChanged($value)
-	{
-		if ($value != $this->fk_value)
-		{
-			return parent::foreignKeyChanged($value);
-		}
-	}
+    public function fill($related, $_skip_inverse = false)
+    {
+        if ($related instanceof Collection) {
+            $related = $related->first();
+        }
 
-	public function fill($related, $_skip_inverse = FALSE)
-	{
-		if ($related instanceOf Collection)
-		{
-			$related = $related->first();
-		}
+        if (is_array($related)) {
+            $related = array_shift($related);
+        }
 
-		if (is_array($related))
-		{
-			$related = array_shift($related);
-		}
+        $this->cacheFKValue($related);
 
-		$this->cacheFKValue($related);
+        return parent::fill($related, $_skip_inverse);
+    }
 
-		return parent::fill($related, $_skip_inverse);
-	}
+    protected function ensureExists($model)
+    {
+        if ($this->related !== $model) {
+            $this->cacheFKValue($model);
 
-	protected function ensureExists($model)
-	{
-		if ($this->related !== $model)
-		{
-			$this->cacheFKValue($model);
+            $this->related = $model;
+            parent::ensureExists($model);
+        }
+    }
 
-			$this->related = $model;
-			parent::ensureExists($model);
-		}
-	}
+    protected function ensureDoesNotExist($model)
+    {
+        if ($this->related === $model) {
+            $this->cacheFKValue(null);
 
-	protected function ensureDoesNotExist($model)
-	{
-		if ($this->related === $model)
-		{
-			$this->cacheFKValue(NULL);
+            $this->related = null;
+            parent::ensureDoesNotExist($model);
+        }
+    }
 
-			$this->related = NULL;
-			parent::ensureDoesNotExist($model);
-		}
-	}
+    private function cacheFKValue($model)
+    {
+        $fk = $this->getForeignKey();
 
-	private function cacheFKValue($model)
-	{
-		$fk = $this->getForeignKey();
-
-		if ($model && $model->hasProperty($fk))
-		{
-			$this->fk_value = $model->$fk;
-		}
-		else
-		{
-			$this->fk_value = NULL;
-		}
-	}
+        if ($model && $model->hasProperty($fk)) {
+            $this->fk_value = $model->$fk;
+        } else {
+            $this->fk_value = null;
+        }
+    }
 }
 
 // EOF

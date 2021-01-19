@@ -22,7 +22,6 @@ class Rte_ft extends EE_Fieldtype
         'version' => '2.0.0'
     ];
 
-
     /**
      * Implements EntryManager\ColumnInterface
      */
@@ -32,6 +31,7 @@ class Rte_ft extends EE_Fieldtype
         if (strlen($out) > 255) {
             $out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
         }
+
         return html_entity_decode($out);
     }
 
@@ -201,6 +201,7 @@ class Rte_ft extends EE_Fieldtype
             'class' => 'rte-textarea',
             'data-defer' => ($defer ? 'y' : 'n')
         );
+
         return form_textarea($field);
     }
 
@@ -256,6 +257,7 @@ class Rte_ft extends EE_Fieldtype
             'rows' => 10,
             'data-config' => $configHandle
         );
+
         return form_textarea($field);
     }
 
@@ -668,7 +670,7 @@ class Rte_ft extends EE_Fieldtype
         // offset and limit params
         if (isset($params['offset']) || isset($params['limit'])) {
             $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
-            $limit  = isset($params['limit'])  ? (int) $params['limit']  : (!empty($images) ? count($images) : 0);
+            $limit  = isset($params['limit']) ? (int) $params['limit'] : (!empty($images) ? count($images) : 0);
 
             $images = array_splice($images, $offset, $limit);
         }

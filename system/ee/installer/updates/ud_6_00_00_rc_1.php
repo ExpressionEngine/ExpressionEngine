@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Version_6_0_0_rc_1;
  */
 class Updater
 {
-
     public $version_suffix = '';
 
     /**
@@ -41,7 +40,6 @@ class Updater
     {
         ee('Config')->getFile()->set('legacy_member_templates', 'y', true);
     }
-
 }
 
 // EOF

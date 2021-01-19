@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli\Context;
 
 /**
@@ -48,6 +49,7 @@ class OptionFactory
 
         if (substr($string, 0, 1) == '#') {
             $this->setArgument($option, $string);
+
             return $option;
         }
 
@@ -55,6 +57,7 @@ class OptionFactory
         $this->setNewOptionParam($option, $string);
         $this->setNewOptionMulti($option, $string);
         $this->setNewOptionNameAlias($option, $string);
+
         return $option;
     }
 
@@ -178,6 +181,7 @@ class OptionFactory
         if (strlen($name) == 1) {
             return "-$name";
         }
+
         return "--$name";
     }
 }

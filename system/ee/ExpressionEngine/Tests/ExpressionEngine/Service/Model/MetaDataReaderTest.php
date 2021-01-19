@@ -2,126 +2,123 @@
 
 // This file contains multiple namespaces as part of testing
 // that the gateway is loaded from .\gateway\<class>
+
 namespace ExpressionEngine\Tests\Service\Model {
 
-	use Mockery as m;
-	use ExpressionEngine\Service\Model\Model;
-	use ExpressionEngine\Service\Model\Gateway;
-	use ExpressionEngine\Service\Model\MetaDataReader;
-	use PHPUnit\Framework\TestCase;
+    use Mockery as m;
+    use ExpressionEngine\Service\Model\Model;
+    use ExpressionEngine\Service\Model\Gateway;
+    use ExpressionEngine\Service\Model\MetaDataReader;
+    use PHPUnit\Framework\TestCase;
 
-	class MetaDataReaderTest extends TestCase {
+    class MetaDataReaderTest extends TestCase
+    {
+        public function setUp(): void
+        {
+            $this->model_class = __NAMESPACE__ . '\\MetaDataModelStub';
+            $this->reader = new MetaDataReader('Stub', $this->model_class);
+        }
 
-		public function setUp() : void
-		{
-			$this->model_class = __NAMESPACE__.'\\MetaDataModelStub';
-			$this->reader = new MetaDataReader('Stub', $this->model_class);
-		}
+        public function tearDown(): void
+        {
+            $this->reader = null;
+            m::close();
+        }
 
-		public function tearDown() : void
-		{
-			$this->reader = NULL;
-			m::close();
-		}
+        public function testGetName()
+        {
+            $this->assertEquals('Stub', $this->reader->getName());
+        }
 
+        public function testGetClass()
+        {
+            $this->assertEquals($this->model_class, $this->reader->getClass());
+        }
 
-		public function testGetName()
-		{
-			$this->assertEquals('Stub', $this->reader->getName());
-		}
+        public function testGetPrimaryKey()
+        {
+            $this->assertEquals('stub_id', $this->reader->getPrimaryKey());
+        }
 
-		public function testGetClass()
-		{
-			$this->assertEquals($this->model_class, $this->reader->getClass());
-		}
+        public function testGetGateways()
+        {
+            $gates = $this->reader->getGateways();
 
-		public function testGetPrimaryKey()
-		{
-			$this->assertEquals('stub_id', $this->reader->getPrimaryKey());
-		}
+            $name = 'MetaDataTestStubGateway';
+            $class = __NAMESPACE__ . '\\Gateway\\' . $name;
 
-		public function testGetGateways()
-		{
-			$gates = $this->reader->getGateways();
+            $this->assertTrue(array_key_exists($name, $gates));
+            $this->assertInstanceOf($class, $gates[$name]);
+        }
 
-			$name = 'MetaDataTestStubGateway';
-			$class = __NAMESPACE__.'\\Gateway\\'.$name;
+        public function testGetTables()
+        {
+            $actual = $this->reader->getTables();
+            $expected = array(
+                'stub_table' => array(
+                    'stub_id',
+                    'first_name',
+                    'last_name',
+                    'age'
+                )
+            );
 
-			$this->assertTrue(array_key_exists($name, $gates));
-			$this->assertInstanceOf($class, $gates[$name]);
-		}
+            $this->assertEquals($expected, $actual);
+        }
 
-		public function testGetTables()
-		{
-			$actual = $this->reader->getTables();
-			$expected = array(
-				'stub_table' => array(
-					'stub_id',
-					'first_name',
-					'last_name',
-					'age'
-				)
-			);
+        public function getValidationRules()
+        {
+        }
 
-			$this->assertEquals($expected, $actual);
-		}
+        public function testGetRelationships()
+        {
+            $this->markTestSkipped('Not implemented.');
+        }
+    }
 
-		public function getValidationRules()
-		{
+    class MetaDataModelStub extends Model
+    {
+        protected static $_primary_key = 'stub_id';
+        protected static $_gateway_names = array('MetaDataTestStubGateway');
 
-		}
+        protected static $_relationships = array(
+            'Site' => array(
+                'type' => 'belongsTo',
+            ),
+            'TemplateGroup'	=> array(
+                'type' => 'hasMany'
+            ),
+            'LastAuthor' => array(
+                'type'	=> 'hasOne',
+                'model'	=> 'Member',
+                'key'	=> 'last_author_id'
+            ),
+            'NoAccess' => array(
+                'type' => 'hasAndBelongsToMany',
+                'model' => 'MemberGroup'
+            )
+        );
 
-		public function testGetRelationships()
-		{
-			$this->markTestSkipped('Not implemented.');
-		}
-	}
-
-	class MetaDataModelStub extends Model {
-
-		protected static $_primary_key = 'stub_id';
-		protected static $_gateway_names = array('MetaDataTestStubGateway');
-
-		protected static $_relationships = array(
-			'Site' => array(
-				'type' => 'belongsTo',
-			),
-			'TemplateGroup'	=> array(
-				'type' => 'hasMany'
-			),
-			'LastAuthor' => array(
-				'type'	=> 'hasOne',
-				'model'	=> 'Member',
-				'key'	=> 'last_author_id'
-			),
-			'NoAccess' => array(
-				'type' => 'hasAndBelongsToMany',
-				'model' => 'MemberGroup'
-			)
-		);
-
-		protected $stub_id;
-		protected $first_name;
-		protected $last_name;
-		protected $age;
-
-	}
+        protected $stub_id;
+        protected $first_name;
+        protected $last_name;
+        protected $age;
+    }
 }
 
 namespace ExpressionEngine\Tests\Service\Model\Gateway {
 
-	use ExpressionEngine\Service\Model\Gateway;
+    use ExpressionEngine\Service\Model\Gateway;
 
-	class MetaDataTestStubGateway extends Gateway {
+    class MetaDataTestStubGateway extends Gateway
+    {
+        protected static $_table_name = 'stub_table';
 
-		protected static $_table_name = 'stub_table';
-
-		protected $stub_id;
-		protected $first_name;
-		protected $last_name;
-		protected $age;
-
-	}
+        protected $stub_id;
+        protected $first_name;
+        protected $last_name;
+        protected $age;
+    }
 }
 
 // EOF

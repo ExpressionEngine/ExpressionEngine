@@ -13,14 +13,14 @@
 */
 
 return array(
-	'sess_cookie_name'		=> 'ci_session',
-	'sess_expiration'		=> 7200,
-	'sess_encrypt_cookie'	=> FALSE,
-	'sess_use_database'		=> FALSE,
-	'sess_table_name'		=> 'ci_sessions',
-	'sess_match_ip'			=> FALSE,
-	'sess_match_useragent'	=> TRUE,
-	'sess_time_to_update'	=> 300
+    'sess_cookie_name'		=> 'ci_session',
+    'sess_expiration'		=> 7200,
+    'sess_encrypt_cookie'	=> false,
+    'sess_use_database'		=> false,
+    'sess_table_name'		=> 'ci_sessions',
+    'sess_match_ip'			=> false,
+    'sess_match_useragent'	=> true,
+    'sess_time_to_update'	=> 300
 );
 
 // EOF

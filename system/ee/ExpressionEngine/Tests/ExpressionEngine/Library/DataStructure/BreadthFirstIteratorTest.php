@@ -12,10 +12,10 @@ namespace ExpressionEngine\Tests\Library\DataStructure\Tree;
 
 use PHPUnit\Framework\TestCase;
 
-class BreadthFirstIteratorTest extends TestCase {
-
-	public function testBreadthFirstIterator()
-	{
-		$this->markTestIncomplete('not yet implemented');
-	}
+class BreadthFirstIteratorTest extends TestCase
+{
+    public function testBreadthFirstIterator()
+    {
+        $this->markTestIncomplete('not yet implemented');
+    }
 }

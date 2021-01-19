@@ -15,17 +15,17 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Valid Base 64 Value Validation Rule
  */
-class ValidBase64 extends ValidationRule {
+class ValidBase64 extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match('/^[a-zA-Z0-9\/\+=]+$/', $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match('/^[a-zA-Z0-9\/\+=]+$/', $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'valid_base64';
-	}
+    public function getLanguageKey()
+    {
+        return 'valid_base64';
+    }
 }
 
 // EOF

@@ -13,20 +13,18 @@
 <?php endif; ?>
 <?php
 $params = [
-	'value' => $value,
-	'name' => $field_name,
-	'rel' => 'date-picker',
-	'data-date-format' => $date_format
+    'value' => $value,
+    'name' => $field_name,
+    'rel' => 'date-picker',
+    'data-date-format' => $date_format
 ];
 
-if ($value)
-{
-	$params['data-timestamp'] = ee()->localize->string_to_timestamp($value, ($localized == 'y'), $date_format);
+if ($value) {
+    $params['data-timestamp'] = ee()->localize->string_to_timestamp($value, ($localized == 'y'), $date_format);
 }
 
-if ($disabled)
-{
-	$params['disabled']	= 'disabled';
+if ($disabled) {
+    $params['disabled']	= 'disabled';
 }
 
 echo form_input($params);

@@ -18,7 +18,6 @@ use ExpressionEngine\Library\Advisor;
 */
 class DebugTools extends Utilities
 {
-
     /**
      * Deny access from non-superadmins
      */
@@ -100,10 +99,10 @@ class DebugTools extends Utilities
 
         $table->setColumns(
             array(
-            'debug_tools_installed',
-            'debug_tools_tag' => ['encode' => false],
-            'debug_tools_addon',
-            'debug_tools_count')
+                'debug_tools_installed',
+                'debug_tools_tag' => ['encode' => false],
+                'debug_tools_addon',
+                'debug_tools_count')
         );
 
         $table->setData($data);
@@ -143,8 +142,6 @@ class DebugTools extends Utilities
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
     }
-
-
 }
 // END CLASS
 

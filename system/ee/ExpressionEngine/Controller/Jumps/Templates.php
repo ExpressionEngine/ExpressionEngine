@@ -15,138 +15,137 @@ use CP_Controller;
 /**
  * Member Create Controller
  */
-class Templates extends Jumps {
+class Templates extends Jumps
+{
+    public function __construct()
+    {
+        parent::__construct();
+        if (!ee('Permission')->can('access_design')) {
+            $this->sendResponse([]);
+        }
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
-		if (!ee('Permission')->can('access_design'))
-		{
-			$this->sendResponse([]);
-		}
-	}
+    /**
+     * Publish Jump Data
+     */
+    public function index()
+    {
+        // Should never be here without another segment.
+        show_error(lang('unauthorized_access'), 403);
+    }
 
-	/**
-	 * Publish Jump Data
-	 */
-	public function index()
-	{
-		// Should never be here without another segment.
-		show_error(lang('unauthorized_access'), 403);
-	}
+    public function view()
+    {
+        $groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
 
-	public function view()
-	{
-		$groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($groups as $group) {
+            $response['viewTemplateGroup' . $group->group_name] = array(
+                'icon' => 'fa-eye',
+                'command' => $group->group_name,
+                'command_title' => $group->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('design/manager/' . $group->group_name)->compile()
+            );
+        }
 
-		foreach ($groups as $group) {
-			$response['viewTemplateGroup' . $group->group_name] = array(
-				'icon' => 'fa-eye',
-				'command' => $group->group_name,
-				'command_title' => $group->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('design/manager/' . $group->group_name)->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function create()
+    {
+        $groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
 
-	public function create()
-	{
-		$groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($groups as $group) {
+            $response['createTemplateIn' . $group->group_name] = array(
+                'icon' => 'fa-plus',
+                'command' => $group->group_name,
+                'command_title' => $group->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('design/template/create/' . $group->group_name)->compile()
+            );
+        }
 
-		foreach ($groups as $group) {
-			$response['createTemplateIn' . $group->group_name] = array(
-				'icon' => 'fa-plus',
-				'command' => $group->group_name,
-				'command_title' => $group->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('design/template/create/' . $group->group_name)->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function group()
+    {
+        $groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
 
-	public function group()
-	{
-		$groups = $this->loadTemplateGroups(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($groups as $group) {
+            $response['editTemplateGroup' . $group->group_name] = array(
+                'icon' => 'fa-pencil-alt',
+                'command' => $group->group_name,
+                'command_title' => $group->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('design/group/edit/' . $group->group_name)->compile()
+            );
+        }
 
-		foreach ($groups as $group) {
-			$response['editTemplateGroup' . $group->group_name] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $group->group_name,
-				'command_title' => $group->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('design/group/edit/' . $group->group_name)->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function edit()
+    {
+        $templates = $this->loadTemplates(ee()->input->post('searchString'));
 
-	public function edit()
-	{
-		$templates = $this->loadTemplates(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($templates as $template) {
+            $id = $template->getId();
 
-		foreach ($templates as $template) {
-			$id = $template->getId();
+            $response['editTemplate' . $template->getId()] = array(
+                'icon' => 'fa-pencil-alt',
+                'command' => $template->template_name,
+                'command_title' => $template->template_name,
+                'command_context' => $template->getTemplateGroup()->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('design/template/edit/' . $template->getId())->compile()
+            );
+        }
 
-			$response['editTemplate' . $template->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $template->template_name,
-				'command_title' => $template->template_name,
-				'command_context' => $template->getTemplateGroup()->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('design/template/edit/' . $template->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    private function loadTemplateGroups($searchString = false)
+    {
+        $groups = ee('Model')->get('TemplateGroup');
 
-	private function loadTemplateGroups($searchString = false)
-	{
-		$groups = ee('Model')->get('TemplateGroup');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $groups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$groups->filter('group_name', 'LIKE', '%' . $keyword . '%');
-			}
-		}
+        return $groups->order('group_name', 'ASC')->limit(11)->all();
+    }
 
-		return $groups->order('group_name', 'ASC')->limit(11)->all();
-	}
+    private function loadTemplates($searchString = false)
+    {
+        $templates = ee('Model')->get('Template');
 
-	private function loadTemplates($searchString = false)
-	{
-		$templates = ee('Model')->get('Template');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $templates->filter('template_name', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$templates->filter('template_name', 'LIKE', '%' . $keyword . '%');
-			}
-		}
-
-		return $templates->order('template_name', 'ASC')->limit(11)->all();
-	}
+        return $templates->order('template_name', 'ASC')->limit(11)->all();
+    }
 }

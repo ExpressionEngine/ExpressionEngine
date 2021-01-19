@@ -13,59 +13,58 @@ namespace ExpressionEngine\Updater\Version_2_7_3;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        ee()->load->dbforge();
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		ee()->load->dbforge();
+        $steps = new \ProgressIterator(
+            array(
+                '_update_email_db_columns',
+            )
+        );
 
-		$steps = new \ProgressIterator(
-			array(
-				'_update_email_db_columns',
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
-		return TRUE;
-	}
+        return true;
+    }
 
-	/**
-	 * Change email columns to varchar(75)
-	 * @return void
-	 */
-	private function _update_email_db_columns()
-	{
-		$changes = array(
-			'members' => 'email',
-			'email_cache' => 'from_email',
-			'email_console_cache' => 'recipient',
-		);
+    /**
+     * Change email columns to varchar(75)
+     * @return void
+     */
+    private function _update_email_db_columns()
+    {
+        $changes = array(
+            'members' => 'email',
+            'email_cache' => 'from_email',
+            'email_console_cache' => 'recipient',
+        );
 
-		foreach ($changes as $table => $column)
-		{
-			ee()->smartforge->modify_column(
-				$table,
-				array(
-					$column => array(
-						'name' 			=> $column,
-						'type' 			=> 'VARCHAR',
-						'constraint' 	=> 75,
-						'null' 			=> FALSE
-					)
-				)
-			);
-		}
-	}
+        foreach ($changes as $table => $column) {
+            ee()->smartforge->modify_column(
+                $table,
+                array(
+                    $column => array(
+                        'name' 			=> $column,
+                        'type' 			=> 'VARCHAR',
+                        'constraint' 	=> 75,
+                        'null' 			=> false
+                    )
+                )
+            );
+        }
+    }
 }
 /* END CLASS */
 

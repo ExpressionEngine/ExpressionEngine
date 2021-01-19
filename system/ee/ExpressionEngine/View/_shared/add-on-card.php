@@ -36,7 +36,9 @@
 			<a href="<?= $addon['settings_url'] ?>" class="dropdown__link"><?= lang('settings') ?></a>
 		<?php endif; ?>
 		<?php if (isset($addon['manual_url'])) : ?>
-			<a href="<?= $addon['manual_url'] ?>" class="dropdown__link" <?php if ($addon['manual_external']) echo 'rel="external"'; ?>><?= lang('manual') ?></a>
+			<a href="<?= $addon['manual_url'] ?>" class="dropdown__link" <?php if ($addon['manual_external']) {
+    echo 'rel="external"';
+} ?>><?= lang('manual') ?></a>
 		<?php endif; ?>
 
 		<?php if (ee('Permission')->hasAll('can_admin_addons') && $addon['installed']) : ?>

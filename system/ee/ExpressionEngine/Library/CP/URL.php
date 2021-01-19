@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\CP;
  */
 class URL implements \Serializable
 {
-
     /**
      * @var string $path The path (i.e. 'logs/cp')
      */
@@ -107,6 +106,7 @@ class URL implements \Serializable
     public function removeQueryStringVariable($key)
     {
         unset($this->qs[$key]);
+
         return $this;
     }
 
@@ -121,6 +121,7 @@ class URL implements \Serializable
     public function setQueryStringVariable($key, $value)
     {
         $this->qs[$key] = $value;
+
         return $this;
     }
 
@@ -136,6 +137,7 @@ class URL implements \Serializable
         foreach ($values as $key => $value) {
             $this->setQueryStringVariable($key, $value);
         }
+
         return $this;
     }
 
@@ -166,7 +168,7 @@ class URL implements \Serializable
             $qs['S'] = $this->session_id;
         }
 
-        $qs = ( ! empty($qs)) ? http_build_query($qs, AMP) : '';
+        $qs = (! empty($qs)) ? http_build_query($qs, AMP) : '';
 
         // Remove AMP from the beginning of the query string if it exists
         $qs = preg_replace('#^' . AMP . '#', '', $qs);
@@ -180,7 +182,7 @@ class URL implements \Serializable
             }
         }
 
-        return $this->base.$path.$qs;
+        return $this->base . $path . $qs;
     }
 
     /**

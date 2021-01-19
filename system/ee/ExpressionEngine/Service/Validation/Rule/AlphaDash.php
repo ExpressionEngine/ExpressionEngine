@@ -15,17 +15,17 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Alphabetical and Dashes Validation Rule
  */
-class AlphaDash extends ValidationRule {
+class AlphaDash extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match("/^([-a-z0-9_-])+$/i", $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match("/^([-a-z0-9_-])+$/i", $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'alpha_dash';
-	}
+    public function getLanguageKey()
+    {
+        return 'alpha_dash';
+    }
 }
 
 // EOF

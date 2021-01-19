@@ -15,13 +15,12 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Boolean Validation Rule
  */
-class Boolean extends ValidationRule {
-
-	public function validate($key, $value)
-	{
-		return is_bool($value);
-	}
-
+class Boolean extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return is_bool($value);
+    }
 }
 
 // EOF

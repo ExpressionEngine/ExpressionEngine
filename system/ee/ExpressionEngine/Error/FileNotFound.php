@@ -13,6 +13,8 @@ namespace ExpressionEngine\Error;
 /**
  * FileNotFound Error
  */
-class FileNotFound extends \Exception {}
+class FileNotFound extends \Exception
+{
+}
 
 // EOF

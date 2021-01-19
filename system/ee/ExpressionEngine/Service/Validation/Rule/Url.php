@@ -15,16 +15,15 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * URL Validation Rule
  */
-class Url extends ValidationRule {
+class Url extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) filter_var($value, FILTER_VALIDATE_URL);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) filter_var($value, FILTER_VALIDATE_URL);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'valid_url';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'valid_url';
+    }
 }

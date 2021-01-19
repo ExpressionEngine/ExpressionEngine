@@ -29,20 +29,20 @@
 
 			<?php $this->embed('_shared/table', $table); ?>
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-				'options' => [
-					[
-						'value' => "none",
-						'text' => '-- ' . lang('with_selected') . ' --'
-					],
-					[
-						'value' => "REPAIR",
-						'text' => lang('repair')
-					],
-					[
-						'value' => "OPTIMIZE",
-						'text' => lang('optimize')
-					]
-				]
+			    'options' => [
+			        [
+			            'value' => "none",
+			            'text' => '-- ' . lang('with_selected') . ' --'
+			        ],
+			        [
+			            'value' => "REPAIR",
+			            'text' => lang('repair')
+			        ],
+			        [
+			            'value' => "OPTIMIZE",
+			            'text' => lang('optimize')
+			        ]
+			    ]
 			]); ?>
 		</form>
 	</div>

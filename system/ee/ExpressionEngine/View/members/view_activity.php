@@ -12,7 +12,7 @@
     <ul class="list-data">
         <?php foreach ($items as $item => $value): ?>
             <li<?php if (end($items) === $value): ?> class="last"<?php endif ?>>
-                <b><?=lang($item)?></b> <span><?=($value)?:'&mdash;'?></span>
+                <b><?=lang($item)?></b> <span><?=($value) ?: '&mdash;'?></span>
             </li>
         <?php endforeach; ?>
     </ul>

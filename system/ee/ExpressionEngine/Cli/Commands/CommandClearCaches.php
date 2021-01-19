@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Cli;
  */
 class CommandClearCaches extends Cli
 {
-
     /**
      * name of command
      * @var string

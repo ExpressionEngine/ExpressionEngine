@@ -13,7 +13,6 @@
  */
 class Wizard extends CI_Controller
 {
-
     public $version           = '6.0.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
@@ -164,8 +163,8 @@ class Wizard extends CI_Controller
         $this->userdata['app_version'] = $this->version;
         $this->userdata['default_site_timezone'] = date_default_timezone_get();
 
-         // Load the helpers we intend to use
-         $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
+        // Load the helpers we intend to use
+        $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
 
         // Load the language pack.  English is loaded on the installer home
         // page along with some radio buttons for each installed language pack.
@@ -251,6 +250,7 @@ class Wizard extends CI_Controller
             if ($this->is_installed) {
                 //remove the update notices from previous installations
                 $this->update_notices->clear();
+
                 return $this->update_form();
             } else {
                 return $this->install_form();
@@ -279,6 +279,7 @@ class Wizard extends CI_Controller
         // Is the config file readable?
         if (! include($this->config->config_path)) {
             $this->set_output('error', array('error' => lang('unreadable_config')));
+
             return false;
         }
 
@@ -294,12 +295,14 @@ class Wizard extends CI_Controller
         // Is the config file writable?
         if (! is_really_writable($this->config->config_path)) {
             $this->set_output('error', array('error' => lang('unwritable_config')));
+
             return false;
         }
 
         // Is the cache folder writable?
         if (! is_really_writable(PATH_CACHE)) {
             $this->set_output('error', array('error' => lang('unwritable_cache_folder')));
+
             return false;
         }
 
@@ -312,12 +315,14 @@ class Wizard extends CI_Controller
             // this later
             if (! file_exists(SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
                 $this->set_output('error', array('error' => lang('unreadable_email')));
+
                 return false;
             }
 
             // Are the DB schemas available?
             if (! is_dir(APPPATH . 'schema/')) {
                 $this->set_output('error', array('error' => lang('unreadable_schema')));
+
                 return false;
             }
 
@@ -327,6 +332,7 @@ class Wizard extends CI_Controller
             // At this point we are reasonably sure that this is a first time
             // installation. We will set the flag and bail out since we're done
             $this->is_installed = false;
+
             return true;
         }
 
@@ -335,12 +341,14 @@ class Wizard extends CI_Controller
             $db = $this->getDbConfig();
         } catch (Exception $e) {
             $this->set_output('error', array('error' => lang('database_no_data')));
+
             return false;
         }
 
         // Can we connect?
         if ($this->db_connect($db) !== true) {
             $this->set_output('error', array('error' => lang('database_no_config')));
+
             return false;
         }
 
@@ -356,6 +364,7 @@ class Wizard extends CI_Controller
 
             $this->is_installed = isset($config);
             $this->set_output('error', array('error' => implode('<br>', $failed)));
+
             return false;
         }
 
@@ -369,13 +378,13 @@ class Wizard extends CI_Controller
             $config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
         }
 
-
         // OK, now let's determine if the update files are available and whether
         // the currently installed version is older then the most recent update
 
         // If this returns false it means the "updates" folder was not readable
         if (! $this->fetch_updates($config['app_version'])) {
             $this->set_output('error', array('error' => lang('unreadable_update')));
+
             return false;
         }
 
@@ -439,6 +448,7 @@ class Wizard extends CI_Controller
 
             $this->is_installed = true;
             $this->show_success($type, $vars);
+
             return false;
         }
 
@@ -447,6 +457,7 @@ class Wizard extends CI_Controller
 
         if (! include(APPPATH . 'updates/' . $ud_file)) {
             $this->set_output('error', array('error' => lang('unreadable_files')));
+
             return false;
         }
 
@@ -470,8 +481,7 @@ class Wizard extends CI_Controller
     {
         ee()->functions->clear_caching('all');
 
-        foreach (ee('Model')->get('Channel')->all() as $channel)
-        {
+        foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
@@ -560,6 +570,7 @@ class Wizard extends CI_Controller
             || ! ee()->input->post('db_username')
         ) {
             $callable();
+
             return false;
         }
 
@@ -575,6 +586,7 @@ class Wizard extends CI_Controller
 
         if ($this->db_connect_attempt === $error_number) {
             $callable();
+
             return false;
         }
 
@@ -640,6 +652,7 @@ class Wizard extends CI_Controller
                 'valid_db_prefix',
                 lang('database_prefix_invalid_characters')
             );
+
             return false;
         }
 
@@ -649,6 +662,7 @@ class Wizard extends CI_Controller
                 'valid_db_prefix',
                 lang('database_prefix_contains_exp_')
             );
+
             return false;
         }
 
@@ -662,6 +676,7 @@ class Wizard extends CI_Controller
                 'license_agreement',
                 lang('license_agreement_not_accepted')
             );
+
             return false;
         }
 
@@ -816,6 +831,7 @@ class Wizard extends CI_Controller
         if (count($errors) > 0) {
             $this->userdata['errors'] = $errors;
             $this->set_output('install_form', $this->userdata);
+
             return false;
         }
 
@@ -884,6 +900,7 @@ class Wizard extends CI_Controller
         // Install Database Tables!
         if (! $this->schema->install_tables_and_data()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -892,6 +909,7 @@ class Wizard extends CI_Controller
         // visible for module and accessory installers
         if ($this->write_config_data() == false) {
             $this->set_output('error', array('error' => lang('unwritable_config')));
+
             return false;
         }
 
@@ -903,6 +921,7 @@ class Wizard extends CI_Controller
         // Install Modules!
         if (! $this->install_modules()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -913,6 +932,7 @@ class Wizard extends CI_Controller
         if ($this->userdata['install_default_theme'] == 'y'
             && ! $this->install_site_theme()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -940,6 +960,7 @@ class Wizard extends CI_Controller
                 'template_path_writeable',
                 lang('unwritable_templates')
             );
+
             return false;
         }
 
@@ -953,6 +974,7 @@ class Wizard extends CI_Controller
                 'themes_user_writable',
                 lang('unwritable_themes_user')
             );
+
             return false;
         }
 
@@ -1068,7 +1090,7 @@ class Wizard extends CI_Controller
             $host .= $_SERVER['HTTP_HOST'] . '/';
         }
 
-        $self = ( ! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+        $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
         $self = htmlspecialchars($self, ENT_QUOTES);
 
         $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . EESELF;
@@ -1142,7 +1164,7 @@ class Wizard extends CI_Controller
         // if any of the underlying code uses caching, make sure we do nothing
         ee()->config->set_item('cache_driver', 'dummy');
 
-        if($this->shouldBackupDatabase) {
+        if ($this->shouldBackupDatabase) {
             $this->backupDatabase();
             $this->shouldBackupDatabase = false;
         }
@@ -1161,6 +1183,7 @@ class Wizard extends CI_Controller
             $this->refresh_url = $this->set_qstr('do_update&agree=yes');
             $this->title = sprintf(lang('updating_title'), $this->version);
             $this->subtitle = sprintf(lang('running_updates'), $next_version);
+
             return $this->set_output(
                 'update_msg',
                 array(
@@ -1179,10 +1202,10 @@ class Wizard extends CI_Controller
 
         // Instantiate the updater class
         if (class_exists('Updater')) {
-            $UD = new Updater;
+            $UD = new Updater();
         } else {
             $class = '\ExpressionEngine\Updater\Version_' . str_replace(['.', '-'], '_', $next_version) . '\Updater';
-            $UD = new $class;
+            $UD = new $class();
         }
 
         $method = 'do_update';
@@ -1196,6 +1219,7 @@ class Wizard extends CI_Controller
 
             if (! method_exists($UD, $method)) {
                 $this->set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
+
                 return false;
             }
         }
@@ -1257,6 +1281,7 @@ class Wizard extends CI_Controller
             }
 
             $this->set_output('error', array('error' => $error_msg));
+
             return false;
         }
 
@@ -1402,7 +1427,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        } 
+        }
 
         return $path;
     }
@@ -1505,6 +1530,7 @@ class Wizard extends CI_Controller
     private function set_qstr($method = '')
     {
         $query_string = 'C=wizard&M=' . $method . '&language=' . $this->mylang;
+
         return $this->config->item('index_page') . '?' . $query_string;
     }
 
@@ -1533,7 +1559,6 @@ class Wizard extends CI_Controller
 
         return true;
     }
-
 
     /**
      * Install the Modules
@@ -1892,7 +1917,7 @@ class Wizard extends CI_Controller
                     require $path . 'upd.' . $module . '.php';
                 }
 
-                $UPD = new $class;
+                $UPD = new $class();
                 $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
@@ -1974,19 +1999,15 @@ class Wizard extends CI_Controller
 
     private function runAddonUpdaterHook($version)
     {
-
-        if( ! $this->shouldUpgradeAddons ) {
-
+        if (! $this->shouldUpgradeAddons) {
             return;
-
         }
 
         $addons = ee('Addon')->all();
 
         $results = [];
 
-        foreach ($addons as $name => $info)
-        {
+        foreach ($addons as $name => $info) {
             $info = ee('Addon')->get($name);
 
             // If it's built in, we'll skip it
@@ -1995,48 +2016,39 @@ class Wizard extends CI_Controller
             }
 
             // If it doesn't have an upgrader, there's nothing to do
-            if( ! $info->hasUpgrader() ) {
+            if (! $info->hasUpgrader()) {
                 continue;
             }
 
             try {
-
                 $upgrader = $info->getUpgraderClass();
 
-                $success = (new $upgrader)->upgrade($version);
-
+                $success = (new $upgrader())->upgrade($version);
             } catch (\Exception $e) {
-
                 $success = false;
-
             }
 
             $results[$name] = $success;
-
         }
 
         return $results;
-
     }
 
     private function backupDatabase()
     {
-
-        if ( ! ee('Filesystem')->isWritable(PATH_CACHE)) {
-
+        if (! ee('Filesystem')->isWritable(PATH_CACHE)) {
             return false;
-
         }
 
         $table_name = null;
         $offset = 0;
 
         $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
-        $file_path = PATH_CACHE.ee()->db->database.'_'.$date.'.sql';
+        $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
 
         // Some tables might be resource-intensive, do what we can
         @set_time_limit(0);
-        @ini_set('memory_limit','512M');
+        @ini_set('memory_limit', '512M');
 
         $backup = ee('Database/Backup', $file_path);
 
@@ -2051,7 +2063,6 @@ class Wizard extends CI_Controller
         $returned = true;
 
         do {
-
             try {
                 $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
             } catch (Exception $e) {
@@ -2062,13 +2073,11 @@ class Wizard extends CI_Controller
                 $table_name = $returned['table_name'];
                 $offset     = $returned['offset'];
             }
-
         } while ($returned !== false);
 
         $backup->endFile();
 
         return true;
-
     }
 }
 

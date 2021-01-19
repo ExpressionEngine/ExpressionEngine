@@ -16,20 +16,19 @@ namespace ExpressionEngine\Addons\Spam\Library;
  * to attach extra information to each piece of text which can be used for
  * Naive Bayes.
  */
-class Source {
+class Source
+{
+    private $text;
 
-	private $text;
+    public function __construct($text)
+    {
+        $this->text = $text;
+    }
 
-	public function __construct($text)
-	{
-		$this->text = $text;
-	}
-
-	public function __toString()
-	{
-		return $this->text;
-	}
-
+    public function __toString()
+    {
+        return $this->text;
+    }
 }
 
 // EOF

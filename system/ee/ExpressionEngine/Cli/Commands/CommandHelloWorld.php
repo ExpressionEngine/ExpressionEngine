@@ -6,7 +6,6 @@ use ExpressionEngine\Cli\Cli;
 
 class CommandHelloWorld extends Cli
 {
-
     /**
      * name of command
      * @var string

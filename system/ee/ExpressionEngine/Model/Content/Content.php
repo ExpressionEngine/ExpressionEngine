@@ -13,4 +13,6 @@ namespace ExpressionEngine\Model\Content;
 /**
  * Content interface
  */
-interface Content {}
+interface Content
+{
+}

@@ -6,7 +6,7 @@
     <div class="updater-msg">
   		<p style="margin-bottom: 20px;"><?=$success_note?></p>
 
-  		<?php if ( ! empty($update_notices)): ?>
+  		<?php if (! empty($update_notices)): ?>
   			<?php foreach ($update_notices as $notice): ?>
   				<div class="alert alert--attention">
             <div class="alert__icon">

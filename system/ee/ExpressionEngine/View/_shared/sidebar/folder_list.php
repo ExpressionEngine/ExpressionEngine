@@ -7,11 +7,11 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-' . $name,
-	'form_url'	=> $remove_url,
-	'hidden'	=> array(
-		$removal_key => ''
-	)
+    'name'		=> 'modal-confirm-' . $name,
+    'form_url'	=> $remove_url,
+    'hidden'	=> array(
+        $removal_key => ''
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

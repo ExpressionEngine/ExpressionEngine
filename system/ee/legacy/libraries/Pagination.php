@@ -13,7 +13,6 @@
  */
 class EE_Pagination
 {
-
     public $base_url           = ''; // The page we are linking to
     public $prefix             = ''; // A custom prefix added to the path.
     public $suffix             = ''; // A custom suffix added to the path.
@@ -359,7 +358,6 @@ class EE_Pagination
  */
 class Pagination_object
 {
-
     public $paginate                = false;
     public $total_items             = 0;
     public $total_pages             = 1;
@@ -676,7 +674,7 @@ class Pagination_object
                 }
 
                 // If a page_previous should exist, create it
-                if (($this->offset - $this->per_page ) >= 0) {
+                if (($this->offset - $this->per_page) >= 0) {
                     $this->_page_previous = reduce_double_slashes($this->basepath . '/P' . ($this->offset - $this->per_page));
                 }
             } else {
@@ -776,9 +774,11 @@ class Pagination_object
         switch ($this->_position) {
             case "top":
                 return implode($this->_template_data) . $return_data;
+
                 break;
             case "both":
                 return implode($this->_template_data) . $return_data . implode($this->_template_data);
+
                 break;
             case "inline":
                 foreach ($this->_template_data as $hash => $template_partial) {
@@ -788,13 +788,18 @@ class Pagination_object
                         $return_data
                     );
                 }
+
                 return $return_data;
+
                 break;
+
             return $return_data;
+
             break;
             case "bottom":
             default:
                 return $return_data . implode($this->_template_data);
+
                 break;
         }
     }

@@ -17,51 +17,54 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 abstract class Column implements EntryManager\ColumnInterface
 {
-	protected $identifier;
+    protected $identifier;
 
-	public function __construct($identifier)
-	{
-		$this->identifier = $identifier;
-	}
+    public function __construct($identifier)
+    {
+        $this->identifier = $identifier;
+    }
 
-	public function getEntryManagerColumnModels() {
-		return [];
-	}
+    public function getEntryManagerColumnModels()
+    {
+        return [];
+    }
 
-	public function getEntryManagerColumnFields() {
-		return [];
-	}
+    public function getEntryManagerColumnFields()
+    {
+        return [];
+    }
 
-	public function getEntryManagerColumnSortField() {
-		return $this->identifier;
-	}
+    public function getEntryManagerColumnSortField()
+    {
+        return $this->identifier;
+    }
 
-	public function getTableColumnIdentifier()
-	{
-		return $this->identifier;
-	}
+    public function getTableColumnIdentifier()
+    {
+        return $this->identifier;
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return '';
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return '';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [];
-	}
+    public function getTableColumnConfig()
+    {
+        return [];
+    }
 
-	protected function canEdit($entry)
-	{
-		return (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-			|| (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
-				$entry->author_id == ee()->session->userdata('member_id')));
-	}
+    protected function canEdit($entry)
+    {
+        return (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
+            || (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
+                $entry->author_id == ee()->session->userdata('member_id')));
+    }
 
-	protected function canDelete($entry)
-	{
-		return (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
-				|| (ee('Permission')->can('delete_self_entries_channel_id_' . $entry->channel_id) &&
-					$entry->author_id == ee()->session->userdata('member_id')));
-	}
+    protected function canDelete($entry)
+    {
+        return (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
+                || (ee('Permission')->can('delete_self_entries_channel_id_' . $entry->channel_id) &&
+                    $entry->author_id == ee()->session->userdata('member_id')));
+    }
 }

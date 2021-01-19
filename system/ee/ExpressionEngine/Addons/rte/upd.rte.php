@@ -14,7 +14,6 @@ use ExpressionEngine\Service\Addon\Installer;
 
 class Rte_upd extends Installer
 {
-
     public $actions = [
         [
             'method' => 'pages_autocomplete'

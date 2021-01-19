@@ -15,15 +15,15 @@ namespace ExpressionEngine\Service\Validation;
  * than just fancy arrays. Opens up access to internal
  * validate* callbacks and rules.
  */
-interface ValidationAware {
+interface ValidationAware
+{
+    /**
+     * Return an array of validation data.
+     */
+    public function getValidationData();
 
-	/**
-	 * Return an array of validation data.
-	 */
-	public function getValidationData();
-
-	/**
-	 * Return an array of validation rules
-	 */
-	public function getValidationRules();
+    /**
+     * Return an array of validation rules
+     */
+    public function getValidationRules();
 }

@@ -11,11 +11,9 @@
 /**
  * Channel Module control panel
  */
-
-class Channel_mcp {
-
-	var $stats_cache	= array(); // Used by mod.stats.php
-
+class Channel_mcp
+{
+    public $stats_cache	= array(); // Used by mod.stats.php
 }
 // END CLASS
 

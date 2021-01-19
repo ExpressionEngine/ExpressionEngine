@@ -13,7 +13,6 @@
  */
 class EE_Core
 {
-
     public $native_modules     = array();      // List of native modules with EE
     public $native_plugins     = array();      // List of native plugins with EE
 
@@ -110,8 +109,6 @@ class EE_Core
         } else {
             define('IS_PRO', false);
         }
-
-
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
@@ -222,7 +219,6 @@ class EE_Core
         define('PATH_THEME_TEMPLATES', SYSPATH . 'ee/templates/_themes/');
         define('PATH_THIRD_THEME_TEMPLATES', SYSPATH . 'user/templates/_themes/');
 
-
         unset($theme_path);
 
         // Load the very, very base classes
@@ -252,7 +248,7 @@ class EE_Core
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-             'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'simple_commerce', 'spam', 'stats'
         );
 
         // Is this a stylesheet request?  If so, we're done.
@@ -297,9 +293,10 @@ class EE_Core
 
         // Now that we have a session we'll enable debugging if the user is a super admin
         if (ee()->config->item('debug') == 1
-            && (ee('Permission')->isSuperAdmin()
+            && (
+                ee('Permission')->isSuperAdmin()
                 || ee()->session->userdata('can_debug') == 'y'
-                )
+            )
             ) {
             $this->_enable_debugging();
         }
@@ -408,7 +405,6 @@ class EE_Core
             $get = array();
         }
 
-
         // Load our view library
         ee()->load->library('view');
 
@@ -421,7 +417,6 @@ class EE_Core
         /** ------------------------------------
         /**  Instantiate Admin Log Class
         /** ------------------------------------*/
-
         ee()->load->library('logger');
         ee()->load->library('cp');
 
@@ -463,6 +458,7 @@ class EE_Core
             $request = $get;
             array_shift($request);
             $request = implode('/', $request);
+
             return 'CP: ' . $request;
         });
 
@@ -557,6 +553,7 @@ class EE_Core
             require PATH_MOD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
+
             return;
         }
 
@@ -572,12 +569,14 @@ class EE_Core
             // Clean up the URLs to remove unnecessary detail
             $this->set_newrelic_transaction(function () {
                 $request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+
                 return preg_replace('/search\/.*$/', 'search', $request);
             });
 
             $member = new Member();
             $member->_set_properties(array('trigger' => $profile_trigger));
             ee()->output->set_output($member->manager());
+
             return;
         }
 

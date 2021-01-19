@@ -73,8 +73,8 @@ class Updater
         foreach ($category_fields as $id => $field) {
             ee()->db->update(
                 'category_field_data',
-                array('field_ft_'.$id => $field->field_default_fmt),
-                array('field_ft_'.$id => null)
+                array('field_ft_' . $id => $field->field_default_fmt),
+                array('field_ft_' . $id => null)
             );
         }
     }

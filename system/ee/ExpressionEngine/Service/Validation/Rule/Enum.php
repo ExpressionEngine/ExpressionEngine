@@ -15,22 +15,22 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Enum Validation Rule
  */
-class Enum extends ValidationRule {
+class Enum extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return in_array($value, $this->parameters);
+    }
 
-	public function validate($key, $value)
-	{
-		return in_array($value, $this->parameters);
-	}
+    /**
+     * Return the language data for the validation error.
+     */
+    public function getLanguageData()
+    {
+        $list = implode(', ', $this->parameters);
 
-	/**
-	 * Return the language data for the validation error.
-	 */
-	public function getLanguageData()
-	{
-		$list = implode(', ', $this->parameters);
-		return array($this->getName(), $list);
-	}
-
+        return array($this->getName(), $list);
+    }
 }
 
 // EOF

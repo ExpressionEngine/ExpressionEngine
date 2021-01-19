@@ -15,10 +15,10 @@
   <div class="panel-body">
 
 		<?=ee('CP/Alert')
-			->makeInline()
-			->asImportant()
-			->addToBody(lang('sandr_warning'))
-			->render()?>
+		    ->makeInline()
+		    ->asImportant()
+		    ->addToBody(lang('sandr_warning'))
+		    ->render()?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<fieldset class="fieldset-required <?=form_error_class('search_term')?>">
 			<div class="field-instruct">
@@ -47,7 +47,7 @@
 				<select name="replace_where">
 					<?php foreach ($replace_options as $label => $option): ?>
 						<option value="">----</option>
-						<?php if ( ! isset($option['choices'])): ?>
+						<?php if (! isset($option['choices'])): ?>
 							<option value="<?=$label?>"<?=set_select('replace_where', $label)?>><?=$option['name']?></option>
 						<?php else: ?>
 							<option value=""><?=$option['name']?> <?=lang('choose_below')?></option>

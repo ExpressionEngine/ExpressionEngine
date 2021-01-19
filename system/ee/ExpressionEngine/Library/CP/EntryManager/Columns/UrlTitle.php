@@ -17,13 +17,13 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class UrlTitle extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'url_title';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'url_title';
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return $entry->url_title;
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $entry->url_title;
+    }
 }

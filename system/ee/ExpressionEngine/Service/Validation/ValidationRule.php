@@ -25,175 +25,171 @@ namespace ExpressionEngine\Service\Validation;
  *
  * 	class Required extends ValidationRule { ... }
  */
-abstract class ValidationRule {
+abstract class ValidationRule
+{
+    public const STOP = 'STOP';
+    public const SKIP = 'SKIP';
 
-	const STOP = 'STOP';
-	const SKIP = 'SKIP';
+    /**
+     * @var array Rule parameters
+     */
+    protected $parameters = array();
 
-	/**
-	 * @var array Rule parameters
-	 */
-	protected $parameters = array();
+    /**
+     * @var string Stop/Skipped state
+     */
+    protected $state = '';
 
-	/**
-	 * @var string Stop/Skipped state
-	 */
-	protected $state = '';
+    /**
+     * Validate a Value
+     *
+     * Validate a value against this rule. If it is valid, return TRUE
+     * otherwise, return FALSE.
+     *
+     * @param  mixed   $value  The value to validate.
+     * @return boolean Success?
+     */
+    abstract public function validate($key, $value);
 
-	/**
-	 * Validate a Value
-	 *
-	 * Validate a value against this rule. If it is valid, return TRUE
-	 * otherwise, return FALSE.
-	 *
-	 * @param  mixed   $value  The value to validate.
-	 * @return boolean Success?
-	 */
-	abstract public function validate($key, $value);
+    /**
+     * Optional if you need access to other values
+     *
+     * Defaults to blank since we don't want to store
+     * all that information if we're not going to need it.
+     */
+    public function setAllValues(array $values)
+    { /* blank */
+    }
 
-	/**
-	 * Optional if you need access to other values
-	 *
-	 * Defaults to blank since we don't want to store
-	 * all that information if we're not going to need it.
-	 */
-	public function setAllValues(array $values) { /* blank */ }
+    /**
+     * Internal: Set any rule parameters
+     */
+    public function setParameters(array $parameters)
+    {
+        $this->parameters = $parameters;
+    }
 
-	/**
-	 * Internal: Set any rule parameters
-	 */
-	public function setParameters(array $parameters)
-	{
-		$this->parameters = $parameters;
-	}
+    /**
+     *
+     */
+    public function assertParameters()
+    {
+        $names = func_get_args();
 
-	/**
-	 *
-	 */
-	public function assertParameters()
-	{
-		$names = func_get_args();
+        $count_needed = count($names);
+        $count_given = count($this->parameters);
 
-		$count_needed = count($names);
-		$count_given = count($this->parameters);
+        if ($count_needed > $count_given) {
+            $this->throwNeedsParameters(array_slice($names, $count_given));
+        }
 
-		if ($count_needed > $count_given)
-		{
-			$this->throwNeedsParameters(array_slice($names, $count_given));
-		}
+        return $this->parameters;
+    }
 
-		return $this->parameters;
-	}
+    /**
+     * Hard failure. Will mark the rule as failed and stop processing rules
+     * for this field.
+     */
+    public function stop()
+    {
+        $this->state = self::STOP;
+    }
 
-	/**
-	 * Hard failure. Will mark the rule as failed and stop processing rules
-	 * for this field.
-	 */
-	public function stop()
-	{
-		$this->state = self::STOP;
-	}
+    /**
+     * Soft failure. Skips the rest of the validation process, but does not
+     * mark the rule as failed.
+     */
+    public function skip()
+    {
+        $this->state = self::SKIP;
+    }
 
-	/**
-	 * Soft failure. Skips the rest of the validation process, but does not
-	 * mark the rule as failed.
-	 */
-	public function skip()
-	{
-		$this->state = self::SKIP;
-	}
+    /**
+     * Report hard failure status.
+     *
+     * @return 	bool	Hard failure or not
+     */
+    public function isStopped()
+    {
+        return $this->state == self::STOP;
+    }
 
-	/**
-	 * Report hard failure status.
-	 *
-	 * @return 	bool	Hard failure or not
-	 */
-	public function isStopped()
-	{
-		return $this->state == self::STOP;
-	}
+    /**
+     * Report soft failure status.
+     *
+     * @return 	bool	Soft failure or not
+     */
+    public function isFailed()
+    {
+        return $this->state == self::SKIP;
+    }
 
-	/**
-	 * Report soft failure status.
-	 *
-	 * @return 	bool	Soft failure or not
-	 */
-	public function isFailed()
-	{
-		return $this->state == self::SKIP;
-	}
+    /**
+     *
+     */
+    public function getName()
+    {
+        return strtolower(basename(str_replace('\\', '/', get_class($this))));
+    }
 
-	/**
-	 *
-	 */
-	public function getName()
-	{
-		return strtolower(basename(str_replace('\\', '/', get_class($this))));
-	}
+    /**
+     *
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
 
-	/**
-	 *
-	 */
-	public function getParameters()
-	{
-		return $this->parameters;
-	}
+    /**
+     *
+     */
+    public function getLanguageKey()
+    {
+        return $this->getName();
+    }
 
-	/**
-	 *
-	 */
-	public function getLanguageKey()
-	{
-		return $this->getName();
-	}
+    /**
+     * Return the language data for the validation error.
+     */
+    public function getLanguageData()
+    {
+        return array($this->getLanguageKey(), $this->getParameters());
+    }
 
-	/**
-	 * Return the language data for the validation error.
-	 */
-	public function getLanguageData()
-	{
-		return array($this->getLanguageKey(), $this->getParameters());
-	}
+    /**
+     *
+     */
+    protected function throwNeedsParameters($missing = array())
+    {
+        $rule_id = "the {$this->getName()} validation rule";
 
-	/**
-	 *
-	 */
-	protected function throwNeedsParameters($missing = array())
-	{
-		$rule_id = "the {$this->getName()} validation rule";
+        if (count($missing) == 1) {
+            throw new \Exception("Missing {$missing[0]} parameter for {$rule_id}.");
+        }
 
-		if (count($missing) == 1)
-		{
-			throw new \Exception("Missing {$missing[0]} parameter for {$rule_id}.");
-		}
+        $last = array_pop($missing);
+        $init = implode(', ', $missing);
 
-		$last = array_pop($missing);
-		$init = implode(', ', $missing);
+        throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");
+    }
 
-		throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");
-	}
+    protected function numericOrConstantParameter($param)
+    {
+        if (is_numeric($param)) {
+            return $param;
+        }
 
-	protected function numericOrConstantParameter($param)
-	{
-		if (is_numeric($param))
-		{
-			return $param;
-		}
+        if (defined($param)) {
+            $value = constant($param);
+            foreach ($this->parameters as $i => $p) {
+                if ($p === $param) {
+                    $this->parameters[$i] = $value;
+                }
+            }
 
-		if (defined($param))
-		{
-			$value = constant($param);
-			foreach ($this->parameters as $i => $p)
-			{
-				if ($p === $param)
-				{
-					$this->parameters[$i] = $value;
-				}
-			}
+            return $value;
+        }
 
-			return $value;
-		}
-
-		return FALSE;
-	}
+        return false;
+    }
 }

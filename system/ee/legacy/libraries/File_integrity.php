@@ -13,7 +13,6 @@
  */
 class File_integrity
 {
-
     public $emailed = array();
     public $checksums = array();
 
@@ -50,7 +49,6 @@ class File_integrity
 
             $bootstraps[$site['site_id']] = $data;
         }
-
 
         $altered = array();
         $removed = array();

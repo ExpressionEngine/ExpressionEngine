@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli\Stdio;
 
 /**
@@ -76,7 +77,6 @@ class Formatter
                      . ')(\s*))+)>>';
     }
 
-
     /**
      *
      * Converts <<markup>> in text to VT100 control codes for POSIX, or
@@ -114,6 +114,7 @@ class Formatter
     protected function formatCallback(array $matches)
     {
         $str = preg_replace('/(\s+)/msi', ';', $matches[1]);
+
         return chr(27) . '[' . strtr($str, $this->codes) . 'm';
     }
 }

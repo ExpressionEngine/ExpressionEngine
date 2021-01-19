@@ -11,51 +11,51 @@
 /**
  * Installer Session
  */
-class Installer_Session {
+class Installer_Session
+{
+    public $userdata = array();
+    protected $cache = array();
 
-	public $userdata = array();
-	protected $cache = array();
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
+    }
 
-	public function cache($class, $key, $default = FALSE)
-	{
-		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
-	}
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
 
-	public function set_cache($class, $key, $val)
-	{
-		if ( ! isset($this->cache[$class]))
-		{
-			$this->cache[$class] = array();
-		}
+        $this->cache[$class][$key] = $val;
 
-		$this->cache[$class][$key] = $val;
-		return $this;
-	}
+        return $this;
+    }
 
-	public function userdata($which, $default = FALSE)
-	{
-		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
-	}
+    public function userdata($which, $default = false)
+    {
+        return (! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+    }
 
-	public function all_userdata()
-	{
-		return $this->userdata;
-	}
+    public function all_userdata()
+    {
+        return $this->userdata;
+    }
 
-	public function getMember()
-	{
-		return ee('Model')->get('Member', 1)->first();
-	}
+    public function getMember()
+    {
+        return ee('Model')->get('Member', 1)->first();
+    }
 
-	public function session_id($which = '')
-	{
-		return 0;
-	}
+    public function session_id($which = '')
+    {
+        return 0;
+    }
 
-	public function setSessionCookies()
-	{
-		return;
-	}
+    public function setSessionCookies()
+    {
+        return;
+    }
 }
 // END CLASS
 

@@ -13,278 +13,275 @@
  */
 class Toggle_ft extends EE_Fieldtype
 {
+    public $info = array(
+        'name' => 'Toggle',
+        'version' => '1.0.0'
+    );
 
-	public $info = array(
-		'name' => 'Toggle',
-		'version' => '1.0.0'
-	);
+    public $has_array_data = false;
 
-	var $has_array_data = FALSE;
+    // used in display_field() below to set
+    // some defaults for third party usage
+    public $settings_vars = array(
+        'field_default_value'	=> '0',
+    );
 
-	// used in display_field() below to set
-	// some defaults for third party usage
-	var $settings_vars = array(
-		'field_default_value'	=> '0',
-	);
+    /**
+     * Fetch the fieldtype's name and version from it's addon.setup.php file.
+     */
+    public function __construct()
+    {
+        $addon = ee('Addon')->get('toggle');
+        $this->info = array(
+            'name'    => $addon->getName(),
+            'version' => $addon->getVersion()
+        );
+    }
 
-	/**
-	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
-	 */
-	public function __construct()
-	{
-		$addon = ee('Addon')->get('toggle');
-		$this->info = array(
-			'name'    => $addon->getName(),
-			'version' => $addon->getVersion()
-		);
-	}
+    /**
+     * @see EE_Fieldtype::validate()
+     */
+    public function validate($data)
+    {
+        if ($this->get_setting('yes_no', false)) {
+            return in_array($data, ['y', 'n']);
+        }
 
-	/**
-	 * @see EE_Fieldtype::validate()
-	 */
-	public function validate($data)
-	{
-		if ($this->get_setting('yes_no', FALSE))
-		{
-			return in_array($data, ['y', 'n']);
-		}
+        if ($data === false
+            || $data == ''
+            || $data == '1'
+            || $data == '0') {
+            return true;
+        }
 
-		if ($data === FALSE
-			|| $data == ''
-			|| $data == '1'
-			|| $data == '0')
-		{
-			return TRUE;
-		}
+        return ee()->lang->line('invalid_selection');
+    }
 
-		return ee()->lang->line('invalid_selection');
-	}
+    /**
+     * @see EE_Fieldtype::save()
+     */
+    public function save($data)
+    {
+        if ($this->get_setting('yes_no', false)) {
+            return ($data == 'y') ? 'y' : 'n';
+        }
 
-	/**
-	 * @see EE_Fieldtype::save()
-	 */
-	public function save($data)
-	{
-		if ($this->get_setting('yes_no', FALSE))
-		{
-			return ($data == 'y') ? 'y' : 'n';
+        return (int) $data;
+    }
 
-		}
+    /**
+     * :length modifier
+     */
+    public function replace_length($data, $params = array(), $tagdata = false)
+    {
+        return (int) $data;
+    }
 
-		return (int) $data;
-	}
+    /**
+     * @see EE_Fieldtype::display_field()
+     */
+    public function display_field($data)
+    {
+        return $this->_display_field($data);
+    }
 
-	/**
-	 * :length modifier
-	 */
-	public function replace_length($data, $params = array(), $tagdata = FALSE)
-	{
-		return (int) $data;
-	}
+    /**
+     * @see _display_field()
+     */
+    public function grid_display_field($data)
+    {
+        return $this->_display_field(form_prep($data), 'grid');
+    }
 
-	/**
-	 * @see EE_Fieldtype::display_field()
-	 */
-	public function display_field($data)
-	{
-		return $this->_display_field($data);
-	}
+    /**
+     * Displays the field for the CP or Frontend, and accounts for grid
+     *
+     * @param string $data Stored data for the field
+     * @param string $container What type of container is this field in, 'fieldset' or 'grid'?
+     * @return string Field display
+     */
+    private function _display_field($data, $container = 'fieldset')
+    {
+        $this->settings = array_merge($this->settings_vars, $this->settings);
 
-	/**
-	 * @see _display_field()
-	 */
-	public function grid_display_field($data)
-	{
-		return $this->_display_field(form_prep($data), 'grid');
-	}
+        $data = (is_null($data) or $data === '') ? $this->settings['field_default_value'] : $data;
 
-	/**
-	 * Displays the field for the CP or Frontend, and accounts for grid
-	 *
-	 * @param string $data Stored data for the field
-	 * @param string $container What type of container is this field in, 'fieldset' or 'grid'?
-	 * @return string Field display
-	 */
-	private function _display_field($data, $container = 'fieldset')
-	{
-		$this->settings = array_merge($this->settings_vars, $this->settings);
+        if (REQ == 'CP') {
+            return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
+                'field_name' => $this->field_name,
+                'value'      => $data,
+                'disabled'   => $this->get_setting('field_disabled'),
+                'yes_no'     => $this->get_setting('yes_no', false)
+            ));
+        }
 
-		$data = (is_null($data) OR $data === '') ? $this->settings['field_default_value'] : $data;
+        $field_options = array(
+            lang('on') => 1,
+            lang('off') => 0
+        );
 
-		if (REQ == 'CP')
-		{
-			return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
-				'field_name' => $this->field_name,
-				'value'      => $data,
-				'disabled'   => $this->get_setting('field_disabled'),
-				'yes_no'     => $this->get_setting('yes_no', FALSE)
-			));
-		}
+        $html = '';
+        $class = 'choice mr';
 
-		$field_options = array(
-			lang('on') => 1,
-			lang('off') => 0
-		);
+        foreach ($field_options as $key => $value) {
+            $selected = ($value == $data);
 
-		$html = '';
-		$class = 'choice mr';
+            $html .= '<label>' . form_radio($this->field_name, $value, $selected) . NBS . $key . '</label>';
+        }
 
-		foreach($field_options as $key => $value)
-		{
-			$selected = ($value == $data);
+        switch ($container) {
+            case 'grid':
+                $html = $this->grid_padding_container($html);
 
-			$html .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
-		}
+                break;
 
-		switch ($container)
-		{
-			case 'grid':
-				$html = $this->grid_padding_container($html);
-				break;
+            default:
+                $html = form_fieldset('') . $html . form_fieldset_close();
 
-			default:
-				$html = form_fieldset('').$html.form_fieldset_close();
-				break;
-		}
+                break;
+        }
 
-		return $html;
-	}
+        return $html;
+    }
 
-	function display_settings($data)
-	{
-		$defaults = array(
-			'field_default_value' => 0
-		);
+    public function display_settings($data)
+    {
+        $defaults = array(
+            'field_default_value' => 0
+        );
 
-		foreach ($defaults as $setting => $value)
-		{
-			$data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
-		}
+        foreach ($defaults as $setting => $value) {
+            $data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
+        }
 
-		$this->field_name = 'field_default_value';
+        $this->field_name = 'field_default_value';
 
-		$settings = array(
-			array(
-				'title'     => 'default_value',
-				'desc'      => 'toggle_default_value_desc',
-				'desc_cont' => 'toggle_default_value_desc_cont',
-				'fields'    => array(
-					'field_default_value' => array(
-						'type' => 'html',
-						'content' => $this->_display_field($data['field_default_value'])
-					)
-				)
-			),
-		);
+        $settings = array(
+            array(
+                'title'     => 'default_value',
+                'desc'      => 'toggle_default_value_desc',
+                'desc_cont' => 'toggle_default_value_desc_cont',
+                'fields'    => array(
+                    'field_default_value' => array(
+                        'type' => 'html',
+                        'content' => $this->_display_field($data['field_default_value'])
+                    )
+                )
+            ),
+        );
 
-		if ($this->content_type() == 'grid')
-		{
-			return array('field_options' => $settings);
-		}
+        if ($this->content_type() == 'grid') {
+            return array('field_options' => $settings);
+        }
 
-		return array('field_options_toggle' => array(
-			'label' => 'field_options',
-			'group' => 'toggle',
-			'settings' => $settings
-		));
-	}
+        return array('field_options_toggle' => array(
+            'label' => 'field_options',
+            'group' => 'toggle',
+            'settings' => $settings
+        ));
+    }
 
-	function save_settings($data)
-	{
-		$all = array_merge($this->settings_vars, $data);
+    public function save_settings($data)
+    {
+        $all = array_merge($this->settings_vars, $data);
 
-		return array_intersect_key($all, $this->settings_vars);
-	}
+        return array_intersect_key($all, $this->settings_vars);
+    }
 
-	/**
-	 * Set the column to be TINYINT
-	 *
-	 * @param array $data The field data
-	 * @return array  [column => column_definition]
-	 */
-	public function settings_modify_column($data)
-	{
-		return $this->get_column_type($data);
-	}
+    /**
+     * Set the column to be TINYINT
+     *
+     * @param array $data The field data
+     * @return array  [column => column_definition]
+     */
+    public function settings_modify_column($data)
+    {
+        return $this->get_column_type($data);
+    }
 
-	/**
-	 * Set the grid column to be TINYINT
-	 *
-	 * @param array $data The field data
-	 * @return array  [column => column_definition]
-	 */
-	public function grid_settings_modify_column($data)
-	{
-		return $this->get_column_type($data, TRUE);
-	}
+    /**
+     * Set the grid column to be TINYINT
+     *
+     * @param array $data The field data
+     * @return array  [column => column_definition]
+     */
+    public function grid_settings_modify_column($data)
+    {
+        return $this->get_column_type($data, true);
+    }
 
-	/**
-	 * Helper method for column definitions
-	 *
-	 * @param array $data The field data
-	 * @param bool  $grid Is grid field?
-	 * @return array  [column => column_definition]
-	 */
-	protected function get_column_type($data, $grid = FALSE)
-	{
-		$id = ($grid) ? 'col_id' : 'field_id';
+    /**
+     * Helper method for column definitions
+     *
+     * @param array $data The field data
+     * @param bool  $grid Is grid field?
+     * @return array  [column => column_definition]
+     */
+    protected function get_column_type($data, $grid = false)
+    {
+        $id = ($grid) ? 'col_id' : 'field_id';
 
-		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
-		{
-			return [$id.'_'.$data[$id] => []];
-		}
+        if (isset($data['ee_action']) && $data['ee_action'] == 'delete') {
+            return [$id . '_' . $data[$id] => []];
+        }
 
-		$default_value = ($grid) ? $data['field_default_value'] : $data['field_settings']['field_default_value'];
+        $default_value = ($grid) ? $data['field_default_value'] : $data['field_settings']['field_default_value'];
 
-		return array(
-			$id.'_'.$data[$id] => array(
-				'type'		=> 'TINYINT',
-				'null'      => FALSE,
-				'default'   => $default_value
-			)
-		);
-	}
+        return array(
+            $id . '_' . $data[$id] => array(
+                'type'		=> 'TINYINT',
+                'null'      => false,
+                'default'   => $default_value
+            )
+        );
+    }
 
-	/**
-	 * Accept all content types.
-	 *
-	 * @param string  The name of the content type
-	 * @return bool   Accepts all content types
-	 */
-	public function accepts_content_type($name)
-	{
-		return TRUE;
-	}
+    /**
+     * Accept all content types.
+     *
+     * @param string  The name of the content type
+     * @return bool   Accepts all content types
+     */
+    public function accepts_content_type($name)
+    {
+        return true;
+    }
 
-	/**
-	 * Update the fieldtype
-	 *
-	 * @param string $version The version being updated to
-	 * @return boolean TRUE if successful, FALSE otherwise
-	 */
-	public function update($version)
-	{
-		return TRUE;
-	}
+    /**
+     * Update the fieldtype
+     *
+     * @param string $version The version being updated to
+     * @return boolean TRUE if successful, FALSE otherwise
+     */
+    public function update($version)
+    {
+        return true;
+    }
 
-	public function renderTableCell($data, $field_id, $entry) {
-		switch (true) {
-			case ($data==='y'):
-				$out = lang('yes');
-				break;
-			case ($data==='n'):
-				$out = lang('no');
-				break;
-			case ($data===1):
-				$out = lang('on');
-				break;
-			case ($data===0):
-			default:
-				$out = lang('off');
-				break;
-		}
-		return $out;
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        switch (true) {
+            case ($data==='y'):
+                $out = lang('yes');
+
+                break;
+            case ($data==='n'):
+                $out = lang('no');
+
+                break;
+            case ($data===1):
+                $out = lang('on');
+
+                break;
+            case ($data===0):
+            default:
+                $out = lang('off');
+
+                break;
+        }
+
+        return $out;
+    }
 }
 
 // EOF

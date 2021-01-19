@@ -442,7 +442,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-deft_lang' => array(
                         'trail' => [
                             'settings',
-                             // 'general_settings'
+                            // 'general_settings'
                         ],
                         'command' => 'timezone',
                         'command_title' => 'timezone'
@@ -451,7 +451,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-date_format-time_format' => array(
                         'trail' => [
                             'settings',
-                             // 'general_settings'
+                            // 'general_settings'
                         ],
                         'command' => 'date_time_fmt',
                         'command_title' => 'date_time_fmt'
@@ -460,7 +460,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-include_seconds' => array(
                         'trail' => [
                             'settings',
-                             // 'general_settings'
+                            // 'general_settings'
                         ],
                         'command' => 'include_seconds',
                         'command_title' => 'include_seconds'
@@ -1675,7 +1675,6 @@ class JumpMenu extends AbstractJumpMenu
         return ! empty(self::$items);
     }
 
-
     /**
      * Get all items in the menu
      *
@@ -1692,6 +1691,7 @@ class JumpMenu extends AbstractJumpMenu
             return $items;
         }
         $this->primeCache();
+
         return self::$items;
     }
 
@@ -1699,7 +1699,6 @@ class JumpMenu extends AbstractJumpMenu
      * clear all caches
      * for now we're just forcing file driver, but that might change later
      */
-
     public function clearAllCaches()
     {
         ee()->cache->file->delete('/jumpmenu/');
@@ -1835,7 +1834,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'member_theme member_theme_desc',
                 'command_title' => 'member_theme'
             );
-            
+
             $items[1]['systemSettingsUrls']['anchors']['fieldset-profile_trigger'] = array(
                 'trail' => [
                     'settings',
@@ -1872,20 +1871,17 @@ class JumpMenu extends AbstractJumpMenu
 
         //add custom menu links (addons to be included later)
         $menuItems = ee('Model')->get('MenuItem')
-			->fields('MenuItem.*', 'Children.*')
+            ->fields('MenuItem.*', 'Children.*')
             ->with(array('Set' => 'RoleSettings'), 'Children')
             ->filter('type', 'IN', ['link', 'submenu'])
-			->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
-			->order('MenuItem.sort')
-			->order('Children.sort')
-			->all();
+            ->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+            ->order('MenuItem.sort')
+            ->order('Children.sort')
+            ->all();
 
-		foreach ($menuItems as $item)
-		{
-			if ($item->type == 'submenu')
-			{
-				foreach ($item->Children as $child)
-				{
+        foreach ($menuItems as $item) {
+            if ($item->type == 'submenu') {
+                foreach ($item->Children as $child) {
                     $items[1]['custom_' . $child->item_id] = array(
                         'icon' => 'fa-link',
                         'command' => 'menu_manager ' . $child->name,
@@ -1893,10 +1889,8 @@ class JumpMenu extends AbstractJumpMenu
                         'dynamic' => false,
                         'target' => $child->data
                     );
-				}
-			}
-			elseif ($item->parent_id == 0)
-			{
+                }
+            } elseif ($item->parent_id == 0) {
                 $items[1]['custom_' . $item->item_id] = array(
                     'icon' => 'fa-link',
                     'command' => 'menu_manager ' . $item->name,
@@ -1904,8 +1898,8 @@ class JumpMenu extends AbstractJumpMenu
                     'dynamic' => false,
                     'target' => $item->data
                 );
-			}
-		}
+            }
+        }
 
         foreach ($items[1] as $name => $item) {
             if (!ee('Permission')->isSuperAdmin() && !empty($item['permission']) && !ee('Permission')->hasAny($item['permission'])) {
@@ -1982,7 +1976,7 @@ class JumpMenu extends AbstractJumpMenu
 
         //member quick links
         if (!empty(ee()->session->getMember()->quick_links)) {
-           foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
+            foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
                 $x = explode('|', $row);
                 $items[1]['quicklink_' . $i] = array(
                     'icon' => 'fa-link',
@@ -2005,7 +1999,6 @@ class JumpMenu extends AbstractJumpMenu
                 $items[1][$index]['command'] = implode(' ', $commands_translated);
             }
         }
-
 
         // Cache our items. We're bypassing the checks for the default
         // cache driver because we want this to be cached and working

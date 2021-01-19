@@ -11,10 +11,9 @@
 /**
  * File Module control panel
  */
-class File_mcp {
-
-	var $stats_cache	= array(); // Used by mod.stats.php
-
+class File_mcp
+{
+    public $stats_cache	= array(); // Used by mod.stats.php
 }
 // END CLASS
 
