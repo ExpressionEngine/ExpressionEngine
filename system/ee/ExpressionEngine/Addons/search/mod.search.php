@@ -1649,7 +1649,7 @@ function changemenu(index)
                             $last_group = $v['0'];
                         }
 
-                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page ?>
+                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page?>
 			categories[i] = new Option("<?php echo addslashes($v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
                     }
                 }
@@ -1658,7 +1658,7 @@ function changemenu(index)
 		} // END if channels
 
 		<?php
-        } // END OUTER FOREACH ?>
+        } // END OUTER FOREACH?>
 
 		if (reset > 1)
 		{

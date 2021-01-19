@@ -1227,14 +1227,14 @@ class Forum_Core extends Forum
 
             $body = $this->_quote_decode(
                 ee()->typography->parse_type(
-                $row['body'],
-                array(
+                    $row['body'],
+                    array(
                             'text_format'	=> $row['forum_text_formatting'],
                             'html_format'	=> $row['forum_html_formatting'],
                             'auto_links'	=> $row['forum_auto_link_urls'],
                             'allow_img_url' => $row['forum_allow_img_urls']
                             )
-            )
+                )
             );
 
             $temp = str_replace('{topic_id}', $row['topic_id'], $temp);
@@ -3441,7 +3441,7 @@ class Forum_Core extends Forum
                         'path:send_pm'				=> $this->profile_path($row['author_id']),
                         'body'						=> ee()->functions->encode_ee_tags(
                             $this->_quote_decode(
-                                                            ee()->typography->parse_type(
+                                ee()->typography->parse_type(
                                                                 $row['body'],
                                                                 array(
                                                                     'text_format'	=> $formatting['text_format'],
@@ -3450,7 +3450,7 @@ class Forum_Core extends Forum
                                                                     'allow_img_url' => $formatting['allow_img_url']
                                                                 )
                                                             )
-                                                        ),
+                            ),
                             true
                         )
                     )
@@ -4534,14 +4534,14 @@ class Forum_Core extends Forum
 
         $body = $this->_quote_decode(
             ee()->typography->parse_type(
-                                ee('Security/XSS')->clean($body),
-                                array(
+                ee('Security/XSS')->clean($body),
+                array(
                                                                 'text_format'	=> $forum_text_formatting,
                                                                 'html_format'	=> $forum_html_formatting ,
                                                                 'auto_links'	=> $forum_auto_link_urls,
                                                                 'allow_img_url' => $forum_allow_img_urls
                                                                     )
-                            )
+            )
         );
 
         $title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->post('title')));
@@ -9408,14 +9408,14 @@ class Forum_Core extends Forum
 
                     $content = $this->_quote_decode(
                         ee()->typography->parse_type(
-                        $row['body'],
-                        array(
+                            $row['body'],
+                            array(
                                                         'text_format'	=> $formatting['text_format'],
                                                         'html_format'	=> $formatting['html_format'],
                                                         'auto_links'	=> $formatting['auto_links'],
                                                         'allow_img_url' => $formatting['allow_img_url']
                                                      )
-                    )
+                        )
                     );
 
                     $tagdata = ee()->TMPL->swap_var_single($key, $content, $tagdata);
@@ -9427,14 +9427,14 @@ class Forum_Core extends Forum
 
                     $content = $this->_quote_decode(
                         ee()->typography->parse_type(
-                        $replies[$row['topic_id']]['last_reply'],
-                        array(
+                            $replies[$row['topic_id']]['last_reply'],
+                            array(
                                                                 'text_format'	=> $formatting['text_format'],
                                                                 'html_format'	=> $formatting['html_format'],
                                                                 'auto_links'	=> $formatting['auto_links'],
                                                                 'allow_img_url' => $formatting['allow_img_url']
                                                              )
-                    )
+                        )
                     );
 
                     $tagdata = ee()->TMPL->swap_var_single('last_reply', $content, $tagdata);

@@ -287,10 +287,10 @@ class Pages_tab
                     "#[^a-zA-Z0-9_\-/\.]+$#i",
                     '',
                     str_replace(
-                                        ee()->config->item('site_url'),
-                                        '',
-                                        $values['pages_uri']
-                                    )
+                        ee()->config->item('site_url'),
+                        '',
+                        $values['pages_uri']
+                    )
                 );
 
                 $page = '/' . trim($page, '/');

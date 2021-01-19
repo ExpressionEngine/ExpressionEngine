@@ -114,8 +114,7 @@ class Auth
     public function authenticate_http_basic(
         $not_allowed_groups = array(),
         $realm='Authentication Required'
-    )
-    {
+    ) {
         $always_disallowed = array(2, 3, 4);
 
         $not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);

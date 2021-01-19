@@ -179,10 +179,10 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                 0,
                 $this->xmlrpcerrxml + xml_get_error_code($parser),
                 sprintf(
-                'XML error: %s at line %d',
-                xml_error_string(xml_get_error_code($parser)),
-                xml_get_current_line_number($parser)
-            )
+                    'XML error: %s at line %d',
+                    xml_error_string(xml_get_error_code($parser)),
+                    xml_get_current_line_number($parser)
+                )
             );
             xml_parser_free($parser);
         } elseif ($parser_object->xh[$parser_name]['isf']) {

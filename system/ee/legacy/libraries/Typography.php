@@ -2214,7 +2214,7 @@ class EE_Typography
 
         ob_start();
 
-        // Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript ?>
+        // Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript?>
 
 <span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script>
 /*<![CDATA[*/

@@ -1827,9 +1827,9 @@ class SimplePie
                     '&amp;',
                     '&',
                     $this->sanitize(
-                                       $this->permanent_url,
-                                       SIMPLEPIE_CONSTRUCT_IRI
-                                   )
+                        $this->permanent_url,
+                        SIMPLEPIE_CONSTRUCT_IRI
+                    )
                 );
             }
         } else {
@@ -1838,9 +1838,9 @@ class SimplePie
                     '&amp;',
                     '&',
                     $this->sanitize(
-                                       $this->feed_url,
-                                       SIMPLEPIE_CONSTRUCT_IRI
-                                   )
+                        $this->feed_url,
+                        SIMPLEPIE_CONSTRUCT_IRI
+                    )
                 );
             }
         }

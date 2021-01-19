@@ -183,9 +183,9 @@ class Members
             ee()->output->show_user_error(
                 'submission',
                 sprintf(
-                                                lang('image_max_size_exceeded'),
-                                                $max_size
-                                            )
+                    lang('image_max_size_exceeded'),
+                    $max_size
+                )
             );
         }
 
