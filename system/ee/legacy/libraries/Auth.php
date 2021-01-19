@@ -129,7 +129,7 @@ class Auth {
 			foreach ($member->getAllRoles()->pluck('role_id') as $role_id)
 			{
 				// If they have even a single Role that is allowed, then they are allowed
-				if ( ! in_array($role_id, $not_allowed_groups))
+				if ( ! in_array($role_id, $not_allowed_groups) OR $role_id == 1)
 				{
 					$authed = TRUE;
 					break;
