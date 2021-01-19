@@ -7,12 +7,12 @@ use PHPUnit\Framework\TestCase;
 
 class LegacyParserTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->parser = new LegacyParser();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->parser = null;
     }

@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\ChannelSet;
  */
 class ImportResult
 {
-
     /**
      * @var Bool Is valid import?
      */

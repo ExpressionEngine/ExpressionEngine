@@ -17,7 +17,6 @@ use ExpressionEngine\Library\CP;
  */
 class Query extends Utilities
 {
-
     /**
      * Query form
      */

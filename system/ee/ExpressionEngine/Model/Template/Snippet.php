@@ -251,7 +251,7 @@ class Snippet extends FileSyncedModel
             return [];
         }
 
-        $fs = new Filesystem;
+        $fs = new Filesystem();
         $snippets = [];
 
         if (! $fs->isDir($path)) {

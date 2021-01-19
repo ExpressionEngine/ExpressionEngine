@@ -18,7 +18,6 @@ use ExpressionEngine\Service\Model\Association\ToOne;
  */
 class HasOne extends HasOneOrMany
 {
-
     /**
      *
      */

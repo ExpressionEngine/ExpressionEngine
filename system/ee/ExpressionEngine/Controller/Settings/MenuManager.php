@@ -20,7 +20,6 @@ use ExpressionEngine\Model\Menu\MenuSet;
  */
 class MenuManager extends Settings
 {
-
     /**
      * General Settings
      */

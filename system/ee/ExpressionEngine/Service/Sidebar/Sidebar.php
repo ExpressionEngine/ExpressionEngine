@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Sidebar extends AbstractSidebar
 {
-
     /**
      * Renders the sidebar
      *

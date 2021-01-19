@@ -13,7 +13,6 @@
  */
 class Communicate_model extends CI_Model
 {
-
     /**
      * Get Email Cache
      *

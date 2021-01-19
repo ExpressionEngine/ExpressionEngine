@@ -36,7 +36,7 @@ class AddonUpgrader
     {
         $this->basepath = $basepath;
 
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
     }
 
     /**

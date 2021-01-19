@@ -20,7 +20,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 class FilterFactory
 {
-
     /**
      * @var InjectionContainer A referrence to a InjectionContainer
      */

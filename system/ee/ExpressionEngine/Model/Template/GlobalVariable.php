@@ -246,7 +246,7 @@ class GlobalVariable extends FileSyncedModel
      */
     private function getNewVariablesFromFiles($path, $site_id, $existing)
     {
-        $fs = new Filesystem;
+        $fs = new Filesystem();
         $variables = [];
 
         if (! $fs->isDir($path)) {

@@ -19,7 +19,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class NavigationSidebar extends AbstractSidebar
 {
-
     /**
      * Populate the navigation
      *

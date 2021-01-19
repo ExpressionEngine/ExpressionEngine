@@ -17,7 +17,6 @@ use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsCon
  */
 class Sets extends AbstractChannelsController
 {
-
     /**
      * General Settings
      */
@@ -222,7 +221,7 @@ class Sets extends AbstractChannelsController
         ee()->lang->loadfile('filemanager');
         $vars = array();
         $vars['sections'] = array();
-        $vars['errors'] = new \ExpressionEngine\Service\Validation\Result;
+        $vars['errors'] = new \ExpressionEngine\Service\Validation\Result();
 
         $hidden = array();
         foreach ($_POST as $model => $ident) {

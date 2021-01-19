@@ -13,7 +13,6 @@
  */
 class EE_Lang
 {
-
     //ISO 639-1
     public $language_codes = [
         'Abkhazian' => 'ab',

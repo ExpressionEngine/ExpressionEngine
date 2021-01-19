@@ -15,7 +15,6 @@ require_once(EE_APPPATH.'/libraries/Extensions.php');
  */
 class Installer_Extensions extends EE_Extensions
 {
-
     /**
      * Installer doesn't allow any extensions to run, to
      * avoid running third-party code in this context

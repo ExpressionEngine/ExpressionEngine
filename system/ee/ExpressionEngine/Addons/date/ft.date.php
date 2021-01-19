@@ -91,7 +91,7 @@ class Date_ft extends EE_Fieldtype
     public function display_field($field_data)
     {
         ee()->lang->loadfile('content');
-        
+
         $special = array('entry_date', 'expiration_date', 'comment_expiration_date');
 
         if (! is_numeric($field_data)) {

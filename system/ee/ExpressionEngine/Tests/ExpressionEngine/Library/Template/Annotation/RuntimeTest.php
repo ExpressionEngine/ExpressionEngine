@@ -17,7 +17,7 @@ class RuntimeTest extends TestCase
 {
     public function testCreatesUniqueComments()
     {
-        $anno = new RuntimeAnnotation;
+        $anno = new RuntimeAnnotation();
 
         $c1 = $anno->create();
         $c2 = $anno->create();
@@ -30,7 +30,7 @@ class RuntimeTest extends TestCase
 
     public function testAlwaysReturnsData()
     {
-        $anno = new RuntimeAnnotation;
+        $anno = new RuntimeAnnotation();
 
         $comment = $anno->create();
 
@@ -45,7 +45,7 @@ class RuntimeTest extends TestCase
 
     public function testReturnsCorrectInstance()
     {
-        $anno = new RuntimeAnnotation;
+        $anno = new RuntimeAnnotation();
 
         $comment = $anno->create();
         $comment2 = $anno->create();
@@ -61,7 +61,7 @@ class RuntimeTest extends TestCase
 
     public function testReturnsCorrectDefaultData()
     {
-        $anno = new RuntimeAnnotation;
+        $anno = new RuntimeAnnotation();
 
         $comment = $anno->create(array('year' => '1602'));
         $data = $anno->read($comment);
@@ -71,7 +71,7 @@ class RuntimeTest extends TestCase
 
     public function testDataMutable()
     {
-        $anno = new RuntimeAnnotation;
+        $anno = new RuntimeAnnotation();
 
         $comment = $anno->create(array('year' => '1602'));
 
@@ -87,8 +87,8 @@ class RuntimeTest extends TestCase
 
     public function testDataNotShared()
     {
-        $anno1 = new RuntimeAnnotation;
-        $anno2 = new RuntimeAnnotation;
+        $anno1 = new RuntimeAnnotation();
+        $anno2 = new RuntimeAnnotation();
 
         $data = array(array('year' => '1602'));
 
@@ -102,8 +102,8 @@ class RuntimeTest extends TestCase
 
     public function testSharedStore()
     {
-        $anno1 = new RuntimeAnnotation;
-        $anno2 = new RuntimeAnnotation;
+        $anno1 = new RuntimeAnnotation();
+        $anno2 = new RuntimeAnnotation();
 
         $anno1->useSharedStore();
         $anno2->useSharedStore();

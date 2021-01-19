@@ -15,7 +15,6 @@ use ExpressionEngine\Model\Template\Template;
 
 class TemplateAdvisor
 {
-
     // ---TAGS--- //
 
     /**

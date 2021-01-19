@@ -1,4 +1,6 @@
-<?php $this->extend('_templates/default-nav', array(), 'outer_box');
+<?php
+
+$this->extend('_templates/default-nav', array(), 'outer_box');
 
 $this->embed('publish/partials/publish_form');
 

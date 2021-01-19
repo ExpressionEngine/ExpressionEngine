@@ -20,7 +20,6 @@ use ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
  */
 class Provider extends InjectionBindingDecorator
 {
-
     /**
      * @var Array The setup file data
      */
@@ -237,7 +236,7 @@ class Provider extends InjectionBindingDecorator
     public function setClassAliases()
     {
         $aliases = $this->get('aliases', array());
-        
+
         if (!empty($aliases)) {
             foreach ($aliases as $origClassName => $aliasClassName) {
                 if (is_numeric($origClassName)) {
@@ -254,7 +253,7 @@ class Provider extends InjectionBindingDecorator
             }
             unset($origClassName, $aliasClassName);
         }
-    
+
         unset($aliases);
     }
 

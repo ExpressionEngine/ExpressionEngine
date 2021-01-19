@@ -671,7 +671,7 @@ class Updater
         $spam = ee('Addon')->get('spam');
         if ($spam && $spam->hasUpdate()) {
             $class = $spam->getInstallerClass();
-            $UPD = new $class;
+            $UPD = new $class();
 
             if ($UPD->update($spam->getInstalledVersion()) !== false) {
                 $module = ee('Model')->get('Module')

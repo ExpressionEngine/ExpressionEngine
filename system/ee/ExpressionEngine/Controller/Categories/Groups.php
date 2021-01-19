@@ -17,7 +17,6 @@ use ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategor
  */
 class Groups extends AbstractCategoriesController
 {
-
     /**
      * Remove category groups handler
      */

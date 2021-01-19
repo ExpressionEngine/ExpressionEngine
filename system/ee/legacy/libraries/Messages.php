@@ -13,7 +13,6 @@
  */
 class EE_Messages
 {
-
     // URL Writing
     public $allegiance			= 'cp';				// Side of the divide: cp or user
     public $messages_cp		= false;			// CP Object
@@ -1587,11 +1586,11 @@ DOH;
         $this->crumb = '';
 
         $which = (! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
-        
+
         if (!in_array($which, array('buddy', 'blocked'))) {
             $which = 'buddy';
         }
-        
+
 
         if ($this->allegiance == 'cp') {
             $redirect_url = ee()->config->item('cp_url', false).'?S='.ee()->session->session_id().
@@ -2146,7 +2145,7 @@ DOH;
         }
 
         if (ee()->input->get_post('daction') == 'reply_all' or ee()->input->get_post('daction') == 'reply' or ee()->input->get_post('replying') !== false) {
-            $hidden['replying'] = (ee()->input->get_post('daction') == 'reply' or ee()->input->get_post('daction') == 'reply_all') ?  $id : ee()->input->get_post('replying');
+            $hidden['replying'] = (ee()->input->get_post('daction') == 'reply' or ee()->input->get_post('daction') == 'reply_all') ? $id : ee()->input->get_post('replying');
         }
 
 
@@ -2303,8 +2302,8 @@ DOH;
                 $this->single_parts['include']['preview_message']	= ($data === false or $this->hide_preview === true) ? '' : $data['preview'];
 
                 $this->single_parts['input']['tracking_checked']	= ($data === false or $data['tracking'] == 'n') ? '' : "checked='checked'";
-                $this->single_parts['input']['sent_copy_checked']	= ($data === false or $data['sent_copy'] == 'n')  ? '' : "checked='checked'";
-                $this->single_parts['input']['hide_cc_checked']		= ($data === false or $data['hide_cc'] == 'n')  ? '' : "checked='checked'";
+                $this->single_parts['input']['sent_copy_checked']	= ($data === false or $data['sent_copy'] == 'n') ? '' : "checked='checked'";
+                $this->single_parts['input']['hide_cc_checked']		= ($data === false or $data['hide_cc'] == 'n') ? '' : "checked='checked'";
 
                 if ($data !== false && count($data['attachments']) > 0) {
                     $this->conditionals['attachments_allowed']		= (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
@@ -4020,8 +4019,8 @@ MRT;
     public function showhide_js()
     {
         $prefix = (! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
-        $path	= (! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
-        $domain = (! ee()->config->item('cookie_domain')) ? ''	 : ee()->config->item('cookie_domain');
+        $path	= (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
+        $domain = (! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
         $domain = ($domain == '') ? '' : 'domain='.$domain;
 
         $str = <<<EOT

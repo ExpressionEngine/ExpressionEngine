@@ -16,7 +16,6 @@ use  ExpressionEngine\Core\Autoloader;
  */
 class EE_Typography
 {
-
     // Block level elements that should not be wrapped inside <p> tags
     public $block_elements = 'address|article|aside|audio|blockquote|canvas|div|dl|fieldset|figure|footer|form|h\d|header|hgroup|hr|noscript|object|ol|output|p|pre|script|section|table|ul|video';
 
@@ -76,8 +75,8 @@ class EE_Typography
     private $quote_marker    = null;
 
     // tag bracket constants for use in Safe HTML / BBcode parsing
-    const HTML_BRACKETS = 1;
-    const BBCODE_BRACKETS = 2;
+    public const HTML_BRACKETS = 1;
+    public const BBCODE_BRACKETS = 2;
 
     /**
      * Constructor
@@ -1426,7 +1425,7 @@ class EE_Typography
             }
         }
 
-        $parser = new MarkdownExtra;
+        $parser = new MarkdownExtra();
 
         // Disable other markup if this is set
         if (isset($options['no_markup'])
@@ -2425,7 +2424,7 @@ while (--j >= 0)
         $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
         $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
         $pass     = ($user || $pass) ? "$pass@" : '';
         $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
         $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';

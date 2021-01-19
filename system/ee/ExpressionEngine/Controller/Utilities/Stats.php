@@ -334,10 +334,10 @@ class Stats extends Utilities
 
                 foreach ($query->result_array() as $row) {
                     $q = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '".$row['forum_id']."'");
-                    $total_topics = ($total_topics == 0) ? $q->row('count')  : $total_topics + $q->row('count') ;
+                    $total_topics = ($total_topics == 0) ? $q->row('count') : $total_topics + $q->row('count') ;
 
                     $q = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '".$row['forum_id']."'");
-                    $total_posts = ($total_posts == 0) ? $q->row('count')  : $total_posts + $q->row('count') ;
+                    $total_posts = ($total_posts == 0) ? $q->row('count') : $total_posts + $q->row('count') ;
                 }
 
                 ee()->db->query("UPDATE exp_stats SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}'");

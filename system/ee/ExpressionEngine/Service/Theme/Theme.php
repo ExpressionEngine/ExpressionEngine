@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Theme;
  */
 class Theme
 {
-
     /**
      * @var string The path to the 'system/ee/templates/_themes/' directory
      */

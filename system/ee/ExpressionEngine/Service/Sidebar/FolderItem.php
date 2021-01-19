@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class FolderItem extends ListItem
 {
-
     /**
      * @var URL|string $edit_url The URL to use as an href attribute
      */

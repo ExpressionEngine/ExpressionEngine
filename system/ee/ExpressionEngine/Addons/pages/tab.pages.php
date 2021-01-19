@@ -13,7 +13,6 @@
  */
 class Pages_tab
 {
-
     /**
      * Creates the fields that will be displayed on the publish page.
      *

@@ -20,7 +20,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class Upload
 {
-
     /**
      * Creates and returns the HTML to add or edit a file.
      *

@@ -119,7 +119,7 @@ class Unpacker
         } else {
             $this->requirements->setClassPath($ee_req_path);
         }
-        
+
         $result = $this->requirements->check();
 
         if ($result !== true) {

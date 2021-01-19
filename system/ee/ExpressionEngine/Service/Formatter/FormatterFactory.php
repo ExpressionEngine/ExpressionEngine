@@ -19,7 +19,6 @@ use ExpressionEngine\Core\Provider;
  */
 class FormatterFactory
 {
-
     /**
      * @var array Any needed app config settings
      */

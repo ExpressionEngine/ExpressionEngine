@@ -26,8 +26,6 @@ use ExpressionEngine\Service\Event\Subscriber;
  */
 class Model extends SerializableEntity implements Subscriber, ValidationAware
 {
-
-
     /**
      * @var String model short name
      */

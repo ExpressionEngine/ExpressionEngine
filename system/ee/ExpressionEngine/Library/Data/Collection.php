@@ -24,7 +24,6 @@ use IteratorAggregate;
  */
 class Collection implements ArrayAccess, Countable, IteratorAggregate
 {
-
     /**
      * @var Elements in the collection
      */

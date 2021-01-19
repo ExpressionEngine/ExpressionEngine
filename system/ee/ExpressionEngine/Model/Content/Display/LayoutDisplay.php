@@ -17,7 +17,6 @@ use InvalidArgumentException;
  */
 class LayoutDisplay
 {
-
     /**
      * @var $tabs An array of LayouTab objects
      */

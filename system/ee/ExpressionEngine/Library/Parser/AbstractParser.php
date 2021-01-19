@@ -17,7 +17,6 @@ namespace ExpressionEngine\Library\Parser;
  */
 abstract class AbstractParser
 {
-
     /**
      * Current token
      */

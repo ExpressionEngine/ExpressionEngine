@@ -13,7 +13,6 @@
  */
 class EE_Cache_memcached extends CI_Driver
 {
-
     /**
      * Holds the memcached object
      *

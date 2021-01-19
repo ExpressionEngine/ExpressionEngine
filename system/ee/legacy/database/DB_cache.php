@@ -13,7 +13,6 @@
  */
 class CI_DB_Cache
 {
-
     // Namespace cache items will be stored in
     private $_cache_namespace = 'db_cache';
 

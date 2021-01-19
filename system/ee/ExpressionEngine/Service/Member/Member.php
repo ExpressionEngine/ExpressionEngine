@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Member;
  */
 class Member
 {
-
     /**
      * Gets array of members who can be authors
      *

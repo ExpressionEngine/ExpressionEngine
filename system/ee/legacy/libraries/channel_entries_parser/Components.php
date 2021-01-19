@@ -26,7 +26,6 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Switch.php';
  */
 class EE_Channel_parser_components
 {
-
     /**
      * The difference between these is in what variable array is passed
      * to them from the template->var_* arrays.
@@ -70,7 +69,7 @@ class EE_Channel_parser_components
      */
     public function register_pair($class)
     {
-        $obj = new $class;
+        $obj = new $class();
 
         if (! $obj instanceof EE_Channel_parser_component) {
             throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
@@ -86,7 +85,7 @@ class EE_Channel_parser_components
      */
     public function register_single($class)
     {
-        $obj = new $class;
+        $obj = new $class();
 
         if (! $obj instanceof EE_Channel_parser_component) {
             throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
@@ -102,7 +101,7 @@ class EE_Channel_parser_components
      */
     public function register_once($class)
     {
-        $obj = new $class;
+        $obj = new $class();
 
         if (! $obj instanceof EE_Channel_parser_component) {
             throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
@@ -148,7 +147,6 @@ class EE_Channel_parser_components
  */
 interface EE_Channel_parser_component
 {
-
     /**
      * Check if your component or something something parsed by it
      * is in the disable= parameter.

@@ -211,7 +211,7 @@ class Spam_mcp
             'content_limit' => ee()->config->item('spam_content_limit') ?: 5000
         );
 
-        $sensitivity = ee()->input->post('spam_sensitivity') ?:$settings['sensitivity'];
+        $sensitivity = ee()->input->post('spam_sensitivity') ?: $settings['sensitivity'];
 
         $vars['sections'] = array(
             array(
@@ -370,7 +370,7 @@ class Spam_mcp
             $fqcn = $addon->getSpamClass();
 
             try {
-                $approver = new $fqcn;
+                $approver = new $fqcn();
 
                 if (! $approver instanceof SpamModerationInterface) {
                     throw new \Exception('Skipped approval action: '.get_class($approver).' must implement <code>SpamModerationInterface</code>');
@@ -423,7 +423,7 @@ class Spam_mcp
             $fqcn = $addon->getSpamClass();
 
             try {
-                $rejecter = new $fqcn;
+                $rejecter = new $fqcn();
 
                 if (! $rejecter instanceof SpamModerationInterface) {
                     throw new \Exception('Skipped reject action: '.get_class($rejecter).' must implement <code>SpamModerationInterface</code>');

@@ -10,14 +10,13 @@
 
 namespace ExpressionEngine\Service\Encrypt;
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 /**
  * Encrypt Service
  */
 class Encrypt
 {
-
     /**
      * @var string $default_key The default encryption key to use when none is
      * specified.

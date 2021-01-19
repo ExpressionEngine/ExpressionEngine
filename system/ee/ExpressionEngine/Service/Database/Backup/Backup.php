@@ -17,7 +17,6 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
  */
 class Backup
 {
-
     /**
      * @var Filesystem object
      */

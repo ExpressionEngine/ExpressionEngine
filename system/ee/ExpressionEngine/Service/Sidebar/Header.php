@@ -18,7 +18,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 class Header
 {
-
     /**
      * @var string $text The text of the header
      */

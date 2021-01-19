@@ -22,7 +22,7 @@ class CustomTest extends TestCase
         '9.1' => 'Floating'
     );
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($_POST['filter_by_custom']);
         unset($_GET['filter_by_custom']);

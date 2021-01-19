@@ -13,7 +13,6 @@
  */
 class Template_model extends CI_Model
 {
-
     // --------------------------------------------------
     // These methods utilized the Template_Entity object.
     // --------------------------------------------------

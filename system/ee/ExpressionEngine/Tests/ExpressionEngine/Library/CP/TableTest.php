@@ -17,7 +17,7 @@ class TableTest extends TestCase
 {
     private $table;
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->table);
     }

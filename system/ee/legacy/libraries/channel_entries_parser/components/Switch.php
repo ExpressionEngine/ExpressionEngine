@@ -13,7 +13,6 @@
  */
 class EE_Channel_switch_parser implements EE_Channel_parser_component
 {
-
     /**
      * Quick check if they're using switch
      *

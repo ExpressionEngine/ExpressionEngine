@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Memory;
  */
 class Memory
 {
-
     /**
      * Set memory for image manipulation functions
      *

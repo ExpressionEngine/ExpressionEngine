@@ -17,7 +17,6 @@ use CP_Controller;
  */
 class WordCensor extends Settings
 {
-
     /**
      * General Settings
      */

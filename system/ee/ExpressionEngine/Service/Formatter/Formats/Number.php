@@ -18,7 +18,6 @@ use NumberFormatter;
  */
 class Number extends Formatter
 {
-
     /**
      * Format the memory to a sane byte format
      *

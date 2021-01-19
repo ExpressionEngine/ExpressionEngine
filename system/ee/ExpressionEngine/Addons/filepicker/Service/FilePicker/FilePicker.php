@@ -18,7 +18,7 @@ use ExpressionEngine\Model\File\File;
  */
 class FilePicker
 {
-    const CONTROLLER = 'addons/settings/filepicker/modal';
+    public const CONTROLLER = 'addons/settings/filepicker/modal';
 
     protected $url;
     protected $active;

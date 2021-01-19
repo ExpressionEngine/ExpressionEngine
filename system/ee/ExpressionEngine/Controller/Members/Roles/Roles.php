@@ -620,7 +620,7 @@ class Roles extends AbstractRolesController
                 ]
             ]
         ];
-        
+
         if ($role->getId() != 1) {
             $section = array_merge($section, [
                 [

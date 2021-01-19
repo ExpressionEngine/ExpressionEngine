@@ -17,7 +17,6 @@ use ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
  */
 class Spam implements SpamProtocol
 {
-
     /**
      * @var Classifier The currently active classifier
      */

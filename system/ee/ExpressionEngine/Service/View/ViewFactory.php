@@ -17,7 +17,6 @@ use ExpressionEngine\Core\Provider;
  */
 class ViewFactory
 {
-
     /**
      * @var ExpressionEngine\Core\Provider
      */

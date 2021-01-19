@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\Mixin;
  */
 interface Mixable
 {
-
     /**
      * Has a given mixin?
      */

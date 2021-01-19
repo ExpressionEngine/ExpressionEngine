@@ -28,7 +28,7 @@ if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === fal
 
 $host = (! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.' ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']);
 
-$force_redirect = ($request_type != 'CP' && bool_config_item('force_redirect') == true) ? true: false;
+$force_redirect = ($request_type != 'CP' && bool_config_item('force_redirect') == true) ? true : false;
 
 ee()->load->library('typography');
 

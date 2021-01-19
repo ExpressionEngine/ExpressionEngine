@@ -13,7 +13,6 @@
  */
 class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if header/footer is enabled.
      *
@@ -36,7 +35,7 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
     public function pre_process($tagdata, EE_Channel_preparser $pre)
     {
         //  Set default date header variables
-        $c = new StdClass;
+        $c = new StdClass();
         $c->heading_date_hourly  = 0;
         $c->heading_flag_hourly  = 0;
         $c->heading_flag_weekly  = 1;

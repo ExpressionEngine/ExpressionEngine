@@ -13,8 +13,6 @@
  */
 class Channel_entries_model extends CI_Model
 {
-
-
     /**
      *
      */

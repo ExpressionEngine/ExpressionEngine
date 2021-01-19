@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\View;
  */
 class ViewHelpers
 {
-
     /**
      * Takes an array of key => value pairs and normalizes it into something
      * more digestable by our React components, like SelectList and Dropdown.

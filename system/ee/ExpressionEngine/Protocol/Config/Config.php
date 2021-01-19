@@ -15,7 +15,6 @@ namespace ExpressionEngine\Protocol\Config;
  */
 interface Config
 {
-
     /**
      * Get a config item
      *

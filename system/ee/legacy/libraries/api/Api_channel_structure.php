@@ -13,7 +13,6 @@
  */
 class Api_channel_structure extends Api
 {
-
     /**
      * @php4 -- Class properties are protected.
      */
@@ -319,7 +318,7 @@ class Api_channel_structure extends Api
         }
 
         // do it do it do it
-        $channel_url	= (! isset($channel_url))  ? ee()->functions->fetch_site_index() : $channel_url;
+        $channel_url	= (! isset($channel_url)) ? ee()->functions->fetch_site_index() : $channel_url;
         $channel_lang	= (! isset($channel_lang)) ? ee()->config->item('xml_lang') : $channel_lang;
 
         // Assign field group if there is only one

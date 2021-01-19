@@ -297,7 +297,7 @@ class EE_Addons
 
                 $class = ucfirst($module).'_upd';
 
-                $UPD = new $class;
+                $UPD = new $class();
                 $UPD->_ee_path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
                 $UPD->install_errors = array();
 

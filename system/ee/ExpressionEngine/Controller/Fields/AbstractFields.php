@@ -17,7 +17,6 @@ use CP_Controller;
  */
 abstract class AbstractFields extends CP_Controller
 {
-
     /**
      * Constructor
      */

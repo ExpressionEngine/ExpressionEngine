@@ -15,7 +15,6 @@ require_once(EE_APPPATH.'models/template_model.php');
  */
 class Installer_template_model extends Template_model
 {
-
     /**
      *   Save to database
      *

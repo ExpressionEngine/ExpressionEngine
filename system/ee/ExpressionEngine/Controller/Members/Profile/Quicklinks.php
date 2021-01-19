@@ -224,8 +224,8 @@ class Quicklinks extends Settings
      */
     private function form($vars, $values = array(), $id)
     {
-        $name = isset($values['name']) ? $values['name']: '';
-        $url = isset($values['url']) ? $values['url']: '';
+        $name = isset($values['name']) ? $values['name'] : '';
+        $url = isset($values['url']) ? $values['url'] : '';
 
         $vars['sections'] = array(
             array(

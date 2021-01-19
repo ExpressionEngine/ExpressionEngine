@@ -50,7 +50,7 @@ class Result
     public function all()
     {
         if (! count($this->db_result)) {
-            return new Collection;
+            return new Collection();
         }
 
 

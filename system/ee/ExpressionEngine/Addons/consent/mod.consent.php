@@ -19,7 +19,6 @@ use ExpressionEngine\Addons\Consent\Service\Variables\Consent as ConsentVars;
  */
 class Consent
 {
-
     /**
      * Constructor
      */

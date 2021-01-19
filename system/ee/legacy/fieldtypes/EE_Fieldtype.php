@@ -13,7 +13,6 @@
  */
 abstract class EE_Fieldtype
 {
-
     // bring in the :modifier methods
     use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 

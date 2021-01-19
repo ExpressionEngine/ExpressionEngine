@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Template\Variables;
  */
 class Alert extends Variables
 {
-
     /**
      * @var array $alert Alert data
      */

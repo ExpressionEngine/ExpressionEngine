@@ -18,7 +18,6 @@ use EE_Session;
  */
 class Formatter
 {
-
     /**
      * @var array Any needed app config settings
      */

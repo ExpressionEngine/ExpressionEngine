@@ -15,7 +15,6 @@ namespace ExpressionEngine\Protocol\Spam;
  */
 interface Spam
 {
-
     /**
      * Returns true if the string is classified as spam
      *

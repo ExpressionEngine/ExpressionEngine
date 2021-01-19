@@ -20,7 +20,7 @@
  */
 class Csrf_cookie implements Csrf_storage_backend
 {
-    const COOKIE_NAME = 'csrf_token';
+    public const COOKIE_NAME = 'csrf_token';
 
     /**
      * Get the expiration value

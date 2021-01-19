@@ -23,7 +23,6 @@
  */
 class EE_Tree
 {
-
     /**
      * Tree Factory
      *
@@ -518,7 +517,6 @@ class EE_TreeNode
  */
 class EE_TreeIterator extends RecursiveArrayIterator
 {
-
     /**
      * Override RecursiveArrayIterator's child detection method.
      * We really don't want to count object properties as children.

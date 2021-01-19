@@ -13,7 +13,6 @@
  */
 class EE_Schema
 {
-
     // All of these variables are set dynamically
     public $now;
     public $year;

@@ -15,7 +15,6 @@ namespace ExpressionEngine\Addons\Spam\Library;
  */
 class Tokenizer
 {
-
     /**
      * __construct
      *

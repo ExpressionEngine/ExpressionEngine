@@ -13,7 +13,6 @@
  */
 class EntryList
 {
-
     // Cache variables
     protected $channels = array();
     protected $entries = array();

@@ -11,7 +11,7 @@ class FileUpdaterTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
         $this->verifier = Mockery::mock('ExpressionEngine\Updater\Service\Updater\Verifier');

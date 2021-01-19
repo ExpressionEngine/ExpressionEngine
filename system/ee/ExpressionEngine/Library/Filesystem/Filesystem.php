@@ -17,7 +17,6 @@ use FilesystemIterator;
  */
 class Filesystem
 {
-
     /**
      * Read a file from disk
      *

@@ -545,10 +545,10 @@ class EE_Functions
             $data['action'] = substr($data['action'], 0, -1);
         }
 
-        $data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" '	: '';
-        $data['id']		= ($data['id'] != '') 							? 'id="'.$data['id'].'" ' 		: '';
-        $data['class']	= ($data['class'] != '')						? 'class="'.$data['class'].'" '	: '';
-        $data['target']	= ($data['target'] != '')						? 'target="'.$data['target'].'" '	: '';
+        $data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" ' : '';
+        $data['id']		= ($data['id'] != '') ? 'id="'.$data['id'].'" ' : '';
+        $data['class']	= ($data['class'] != '') ? 'class="'.$data['class'].'" ' : '';
+        $data['target']	= ($data['target'] != '') ? 'target="'.$data['target'].'" ' : '';
 
         if ($data['enctype'] == 'multi' or strtolower($data['enctype']) == 'multipart/form-data') {
             $data['enctype'] = 'enctype="multipart/form-data" ';

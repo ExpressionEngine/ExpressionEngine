@@ -13,7 +13,6 @@
  */
 class Duration_Ft extends EE_Fieldtype
 {
-
     /**
      * @var array $info Legacy Fieldtype info array
      */

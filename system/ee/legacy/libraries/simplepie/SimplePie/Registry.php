@@ -170,7 +170,7 @@ class SimplePie_Registry
         }
 
         if (!method_exists($class, '__construct')) {
-            $instance = new $class;
+            $instance = new $class();
         } else {
             $reflector = new ReflectionClass($class);
             $instance = $reflector->newInstanceArgs($parameters);

@@ -7,7 +7,6 @@ if (file_exists($updater_boot)) {
 
 class Command
 {
-
     /**
      * Constructor
      *

@@ -17,7 +17,6 @@ use ExpressionEngine\Service\File\Directory;
  */
 class Factory
 {
-
     /**
      * @var Int Site id used for import
      */

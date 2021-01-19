@@ -129,7 +129,7 @@ class MetaDataReader
 
         foreach ($gateway_names as $name) {
             $gateway_class = $prefix.'\\Gateway\\'.$name;
-            $gateways[$name] = new $gateway_class;
+            $gateways[$name] = new $gateway_class();
         }
 
         return $gateways;

@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 abstract class AbstractSidebar
 {
-
     /**
      * @var array $items The items in this sidebar
      */

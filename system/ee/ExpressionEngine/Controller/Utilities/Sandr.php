@@ -15,7 +15,6 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class Sandr extends Utilities
 {
-
     /**
      * Search and Replace utility
      *

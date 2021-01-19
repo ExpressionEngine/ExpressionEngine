@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Cli;
  */
 class CommandRunUpdateHook extends Cli
 {
-
     /**
      * name of command
      * @var string

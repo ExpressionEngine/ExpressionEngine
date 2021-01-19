@@ -18,7 +18,6 @@ use ExpressionEngine\Service\Template\Variables;
  */
 class Comment extends Variables
 {
-
     /**
      * @var object namespace ExpressionEngine\Model\Member\Member
      */

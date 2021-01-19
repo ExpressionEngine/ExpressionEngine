@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Template\Variables;
  */
 class StandardGlobals extends Variables
 {
-
     /**
      * @var object Legacy Template object
      */

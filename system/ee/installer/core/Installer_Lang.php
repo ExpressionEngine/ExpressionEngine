@@ -13,7 +13,6 @@
  */
 class Installer_Lang extends EE_Lang
 {
-
     /**
      * Forces the current language to English
      * @return string The idiom to load

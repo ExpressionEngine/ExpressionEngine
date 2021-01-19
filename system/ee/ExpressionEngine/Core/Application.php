@@ -18,7 +18,6 @@ use FilesystemIterator;
  */
 class Application
 {
-
     /**
      * @var ProviderRegistry
      */

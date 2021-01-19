@@ -13,7 +13,6 @@
  */
 class Pages_model extends CI_Model
 {
-
     /**
      * Fetch Pages Configuration
      *

@@ -17,7 +17,6 @@
  */
 class Super_model extends CI_Model
 {
-
     /**
      * Count All
      *

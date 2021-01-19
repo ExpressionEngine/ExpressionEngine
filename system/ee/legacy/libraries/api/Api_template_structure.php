@@ -13,7 +13,6 @@
  */
 class Api_template_structure extends Api
 {
-
     /**
      * @php4 -- All of the class properties are protected.
      * When php4 support is deprecated, make them accessible via __get()

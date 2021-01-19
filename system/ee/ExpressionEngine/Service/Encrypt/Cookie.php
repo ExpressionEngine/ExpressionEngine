@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Encrypt;
  */
 class Cookie
 {
-
     // Length of sha384 hash
     protected $hash_length = 96;
 

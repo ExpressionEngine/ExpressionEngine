@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class UsernameTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->query = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
@@ -30,7 +30,7 @@ class UsernameTest extends TestCase
         );
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($_POST['filter_by_username']);
         unset($_GET['filter_by_username']);
@@ -189,7 +189,7 @@ class UsernameTest extends TestCase
     public function testSetQueryWithNonNumericInputAndUserPresent()
     {
         $this->markTestSkipped('Skipping becase filter::first is reported as not defined - which is not true');
-        
+
         $_POST['filter_by_username'] = 'admin';
         $filter = $this->makeFilterWithQuery();
 
@@ -205,7 +205,7 @@ class UsernameTest extends TestCase
     public function testSetQueryWithNonNumericInputAndUserNotPresent()
     {
         $this->markTestSkipped('Skipping becase filter::first is reported as not defined - which is not true');
-        
+
         $_POST['filter_by_username'] = 'ferdinand.von.zeppelin';
         $filter = $this->makeFilterWithQuery();
 

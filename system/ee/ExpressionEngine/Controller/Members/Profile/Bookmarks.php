@@ -221,10 +221,10 @@ class Bookmarks extends Settings
         if (empty($values)) {
             $values = [];
         }
-        
-        $name = isset($values['name']) ? $values['name']: '';
-        $channel_id = isset($values['channel']) ? $values['channel']: '';
-        $field = isset($values['field']) ? $values['field']: '';
+
+        $name = isset($values['name']) ? $values['name'] : '';
+        $channel_id = isset($values['channel']) ? $values['channel'] : '';
+        $field = isset($values['field']) ? $values['field'] : '';
         $fields = array();
 
         $channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_title');

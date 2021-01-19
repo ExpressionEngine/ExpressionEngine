@@ -18,7 +18,7 @@
  */
 class Csrf_database implements Csrf_storage_backend
 {
-    const GC_PROBABILITY = 5;
+    public const GC_PROBABILITY = 5;
 
     public function get_expiration()
     {

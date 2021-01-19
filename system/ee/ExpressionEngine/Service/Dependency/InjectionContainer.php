@@ -21,11 +21,10 @@ use Exception;
  */
 class InjectionContainer implements ServiceProvider
 {
-
     /**
      * @var string Native prefix
      */
-    const NATIVE_PREFIX = 'ee:';
+    public const NATIVE_PREFIX = 'ee:';
 
     /**
      * @var array An associative array of registered dependencies

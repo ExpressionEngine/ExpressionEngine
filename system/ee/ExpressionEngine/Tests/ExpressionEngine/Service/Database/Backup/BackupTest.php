@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class BackupTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
         $this->query = Mockery::mock('ExpressionEngine\Service\Database\Backup\Query');
@@ -17,7 +17,7 @@ class BackupTest extends TestCase
         $this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql', 0);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->filesystem = null;
         $this->query = null;

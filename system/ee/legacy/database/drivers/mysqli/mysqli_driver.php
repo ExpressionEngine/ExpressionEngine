@@ -479,7 +479,7 @@ class CI_DB_mysqli_driver extends CI_DB
 
         $limit = (! $limit) ? '' : ' LIMIT '.$limit;
 
-        $orderby = (count($orderby) >= 1)?' ORDER BY '.implode(", ", $orderby):'';
+        $orderby = (count($orderby) >= 1) ? ' ORDER BY '.implode(", ", $orderby) : '';
 
         $sql = "UPDATE ".$table." SET ".implode(', ', $valstr);
 

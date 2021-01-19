@@ -15,7 +15,6 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Query_upd extends Installer
 {
-
     /**
      * Constructor
      */

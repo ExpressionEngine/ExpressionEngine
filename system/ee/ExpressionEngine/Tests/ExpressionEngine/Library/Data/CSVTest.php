@@ -17,7 +17,7 @@ class CSVTest extends TestCase
 {
     protected $csv;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->csv = new CSV();
     }

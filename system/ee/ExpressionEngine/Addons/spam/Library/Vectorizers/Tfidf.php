@@ -10,8 +10,8 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\Spam\Library\Document;
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\Spam\Library\Document;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Tfidf Vectorizer

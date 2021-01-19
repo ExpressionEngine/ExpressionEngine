@@ -28,7 +28,7 @@ class NavigationSection
      */
 
     protected $class_suffix = 'section';
-    
+
     /**
      * @var array $items Items in the list
      */

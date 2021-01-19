@@ -23,7 +23,6 @@ use ExpressionEngine\Model\Content\Display\FieldDisplay;
  */
 abstract class AbstractFiles extends CP_Controller
 {
-
     /**
      * Constructor
      */

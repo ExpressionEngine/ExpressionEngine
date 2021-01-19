@@ -17,7 +17,6 @@ use CP_Controller;
  */
 class General extends Settings
 {
-
     /**
      * General Settings
      */

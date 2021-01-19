@@ -312,7 +312,7 @@ class Addons extends CP_Controller
 
                 ee()->load->add_package_path($installed[$addon]['path']);
 
-                $UPD = new $class;
+                $UPD = new $class();
                 $UPD->_ee_path = APPPATH;
 
                 $name = $module['name'];
@@ -814,7 +814,7 @@ class Addons extends CP_Controller
 
         $readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
-        $parser = new MarkdownExtra;
+        $parser = new MarkdownExtra();
         $parser->url_filter_func = function ($url) {
             return ee()->cp->masked_url($url);
         };
@@ -960,7 +960,7 @@ class Addons extends CP_Controller
 
                 ee()->load->add_package_path($info->getPath());
 
-                $UPD = new $class;
+                $UPD = new $class();
 
                 if (version_compare($info->getVersion(), $module->module_version, '>')
                     && method_exists($UPD, 'update')) {
@@ -1337,7 +1337,7 @@ class Addons extends CP_Controller
         if (empty($method)) {
             $method = 'index';
         }
-        
+
         $addon = ee()->security->sanitize_filename(strtolower($name));
 
         $info = ee('Addon')->get($name);
@@ -1370,7 +1370,7 @@ class Addons extends CP_Controller
 
         // instantiate the module cp class
         $class = $info->getControlPanelClass();
-        $mod = new $class;
+        $mod = new $class();
         $mod->_ee_path = APPPATH;
 
         // add validation callback support to the mcp class (see EE_form_validation for more info)

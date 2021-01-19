@@ -255,13 +255,13 @@ class Stats
         $stats->save();
 
         $authorsToUpdate = $channelsToUpdate = [];
-        
+
         // Sync channel entries
         foreach (array_unique($entriesUpdated->asArray()) as $entry) {
             $authorsToUpdate[] = $entry->Author;
             $channelsToUpdate[] = $entry->Channel;
         }
-        
+
         // Sync author stats
         foreach (array_unique($authorsToUpdate) as $author) {
             if (null !== $author) {
@@ -274,7 +274,7 @@ class Stats
                 $channel->updateEntryStats();
             }
         }
-        
+
         // Save this as last run
         ee()->cache->save(
             'ee-stats-cache-last-run',

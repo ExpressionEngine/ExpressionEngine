@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\LivePreview;
  */
 class LivePreview
 {
-
     /**
      * @var obj $session_delegate A Session object
      */
@@ -120,7 +119,7 @@ class LivePreview
             'pages_template_id' => $_POST['pages__pages_template_id'],
             ];
 
-            $page_tab = new \Pages_tab;
+            $page_tab = new \Pages_tab();
             $site_pages = $page_tab->prepareSitePagesData($entry, $values);
 
             ee()->config->set_item('site_pages', $site_pages);

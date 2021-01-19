@@ -493,7 +493,7 @@ class XML_RPC_Response
             foreach ($xmlrpc_val->me['struct'] as $key => $value) {
                 $arr[$key] = $this->xmlrpc_decoder($value);
             }
-            
+
             return $arr;
         }
     }
@@ -895,7 +895,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                     if (! preg_match('/^[+-]?[eE0-9\t \.]+$/', $this->xh[$parser_name]['ac'])) {
                         $this->xh[$parser_name]['value'] = 'ERROR_NON_NUMERIC_FOUND';
                     } else {
-                        $this->xh[$parser_name]['value'] = (double)$this->xh[$parser_name]['ac'];
+                        $this->xh[$parser_name]['value'] = (float)$this->xh[$parser_name]['ac'];
                     }
                 } else {
                     // we have an I4/INT

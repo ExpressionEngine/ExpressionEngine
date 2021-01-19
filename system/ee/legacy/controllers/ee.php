@@ -14,7 +14,6 @@
  */
 class EE extends EE_Controller
 {
-
     /**
      * Index
      */

@@ -13,7 +13,6 @@
  */
 class EE_Model
 {
-
     /**
      * Constructor
      *

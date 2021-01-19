@@ -61,11 +61,11 @@ $setup = [
     'services' => array(
 
         'Category' => function ($ee) {
-            return new Category\Factory;
+            return new Category\Factory();
         },
 
         'CP/CustomMenu' => function ($ee) {
-            return new CustomMenu\Menu;
+            return new CustomMenu\Menu();
         },
 
         'CP/EntryListing' => function ($ee, $search_value, $search_in = null, $include_author_filter = false, $view_id = null, $extra_filters = []) {
@@ -101,7 +101,7 @@ $setup = [
         },
 
         'CP/JumpMenu' => function ($ee) {
-            return new JumpMenu\JumpMenu;
+            return new JumpMenu\JumpMenu();
         },
 
         'CP/MiniGridInput' => function ($ee, $config = array()) {
@@ -131,7 +131,7 @@ $setup = [
             $site_index = ee()->functions->fetch_site_index(0, 0);
             $uri_string = ee()->uri->uri_string();
             $session_id = ee()->session->session_id();
-            $default_cp_url = SELF;
+            $default_cp_url = self;
 
             $factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url, $ee->make('Encrypt'));
 
@@ -387,7 +387,7 @@ $setup = [
 
 
         'CP/Modal' => function ($ee) {
-            return new Modal\ModalCollection;
+            return new Modal\ModalCollection();
         },
 
         'CP/Sidebar' => function ($ee) {

@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\DataStructure\Tree;
  */
 class TreeIterator extends \RecursiveArrayIterator
 {
-
     /**
      * Override RecursiveArrayIterator's child detection method.
      * We really don't want to count object properties as children.

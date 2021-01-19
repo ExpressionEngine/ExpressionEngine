@@ -202,7 +202,7 @@ class SimplePie_Misc
                 $array1[$key] = $value;
             }
         }
-        
+
         return $array1;
     }
 

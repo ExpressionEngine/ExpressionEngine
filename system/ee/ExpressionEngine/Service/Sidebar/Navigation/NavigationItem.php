@@ -19,7 +19,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 class NavigationItem extends ListItem
 {
-
     /**
      * Sets the URL property of the item
      *

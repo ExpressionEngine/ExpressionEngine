@@ -27,7 +27,7 @@ abstract class StaticType implements Type
         $class = get_called_class();
 
         if (! isset(static::$instances[$class])) {
-            static::$instances[$class] = new static;
+            static::$instances[$class] = new static();
         }
 
         return static::$instances[$class];

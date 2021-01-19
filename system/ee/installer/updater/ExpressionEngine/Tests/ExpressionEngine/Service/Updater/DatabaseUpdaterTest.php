@@ -11,7 +11,7 @@ class DatabaseUpdaterTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
 
@@ -35,7 +35,7 @@ class DatabaseUpdaterTest extends TestCase
         $this->dbupdater = new DatabaseUpdater('3.1.0', $this->filesystem);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->filesystem = null;
         $this->dbupdater = null;

@@ -15,7 +15,6 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class Php extends Utilities
 {
-
     /**
      * PHP Info
      *

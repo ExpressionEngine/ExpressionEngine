@@ -10,7 +10,6 @@ use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
  */
 class Comment_spam implements SpamModerationInterface
 {
-
     /**
      * Approve Trapped Spam
      * Posts the comment and sends relevant notifications

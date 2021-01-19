@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Config;
  */
 class Directory
 {
-
     /**
      * @var Directory path
      */

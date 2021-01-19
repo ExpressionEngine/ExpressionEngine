@@ -2,6 +2,7 @@
 
 // This file contains multiple namespaces as part of testing
 // that the gateway is loaded from .\gateway\<class>
+
 namespace ExpressionEngine\Tests\Service\Model {
 
     use Mockery as m;
@@ -12,13 +13,13 @@ namespace ExpressionEngine\Tests\Service\Model {
 
     class MetaDataReaderTest extends TestCase
     {
-        public function setUp() : void
+        public function setUp(): void
         {
             $this->model_class = __NAMESPACE__.'\\MetaDataModelStub';
             $this->reader = new MetaDataReader('Stub', $this->model_class);
         }
 
-        public function tearDown() : void
+        public function tearDown(): void
         {
             $this->reader = null;
             m::close();

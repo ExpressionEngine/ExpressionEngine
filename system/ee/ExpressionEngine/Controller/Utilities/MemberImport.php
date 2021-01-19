@@ -797,7 +797,7 @@ class MemberImport extends Utilities
 
             $field->m_field_name        = $_POST['m_field_name'][$k];
             $field->m_field_label       = $_POST['m_field_label'][$k];
-            $field->m_field_description = (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k]	: '';
+            $field->m_field_description = (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k] : '';
             $field->m_field_type        = (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
             $field->m_field_list_items  = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
             $field->m_field_ta_rows     = (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';

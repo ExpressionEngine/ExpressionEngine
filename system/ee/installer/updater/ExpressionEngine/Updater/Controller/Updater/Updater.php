@@ -17,7 +17,6 @@ use ExpressionEngine\Updater\Service\Updater\Runner;
  */
 class Updater
 {
-
     /**
      * Request end-point for updater tasks
      */

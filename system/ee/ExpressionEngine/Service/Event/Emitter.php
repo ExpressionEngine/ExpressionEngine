@@ -20,7 +20,6 @@ use Closure;
  */
 class Emitter implements Publisher
 {
-
     /**
      * @var bound event listeners
      */

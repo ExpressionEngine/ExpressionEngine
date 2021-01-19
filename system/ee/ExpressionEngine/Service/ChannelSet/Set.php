@@ -18,7 +18,6 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
  */
 class Set
 {
-
     /**
      * @var Int Id of the site to import to
      */

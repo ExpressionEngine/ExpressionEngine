@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->db_query = Mockery::mock('ExpressionEngine\Service\Database\Query');
         $this->db_query2 = Mockery::mock('ExpressionEngine\Service\Database\Query');
@@ -16,7 +16,7 @@ class QueryTest extends TestCase
         $this->query = new Query($this->db_query);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->db_query = null;
         $this->db_query2 = null;

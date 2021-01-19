@@ -13,7 +13,6 @@
  */
 class Forum_tab
 {
-
     /**
      * Publish Tabs
      *

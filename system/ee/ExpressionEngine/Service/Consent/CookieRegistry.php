@@ -15,26 +15,25 @@ namespace ExpressionEngine\Service\Consent;
  */
 class CookieRegistry
 {
-
     /**
      * @var int Value to indicate Necessary cookies
      */
-    const NECESSARY = 0;
+    public const NECESSARY = 0;
 
     /**
      * @var int Value to indicate Functionality cookies
      */
-    const FUNCTIONALITY = 1;
+    public const FUNCTIONALITY = 1;
 
     /**
      * @var int Value to indicate Performance cookies
      */
-    const PERFORMANCE = 2;
+    public const PERFORMANCE = 2;
 
     /**
      * @var int Value to indicate Targeting cookies
      */
-    const TARGETING = 4;
+    public const TARGETING = 4;
 
     /**
      * @var array Registered cookies

@@ -19,7 +19,6 @@ namespace ExpressionEngine\Service\Model;
  */
 class Registry
 {
-
     /**
      * @var Array Map of aliases to class names[modelalias => classname]
      */

@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Service\Updater;
  */
 trait SteppableTrait
 {
-
     /**
      * Set the steps (method names) to run through
      *

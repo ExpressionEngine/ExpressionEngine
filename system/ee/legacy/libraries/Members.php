@@ -13,8 +13,6 @@
  */
 class Members
 {
-
-
     /**
      *	Upload Member Images
      *

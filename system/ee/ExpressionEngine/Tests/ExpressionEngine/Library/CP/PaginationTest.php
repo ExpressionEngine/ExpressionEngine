@@ -33,7 +33,7 @@ class PaginationTest extends TestCase
 
     public function badConstructorDataProvider()
     {
-        $obj = new \stdClass;
+        $obj = new \stdClass();
 
         return array(
             array("Array: per_page",		array(1), 1, 1),
@@ -76,7 +76,7 @@ class PaginationTest extends TestCase
     public function badCpLinksDataProvider()
     {
         $url = new \ExpressionEngine\Library\CP\URL('foo/bar');
-        $obj = new \stdClass;
+        $obj = new \stdClass();
 
         return array(
             array('Array for $pages',		$url, array(1),	'page'),

@@ -31,7 +31,7 @@ class Update
         $handle = fopen($this->path() . "spam.zip", "w");
         fwrite($handle, $compressed);
         fclose($handle);
-        $zip = new \ZipArchive;
+        $zip = new \ZipArchive();
 
         if ($zip->open($this->path() . "spam.zip") === true) {
             $zip->extractTo($this->path());

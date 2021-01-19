@@ -1241,10 +1241,10 @@ class Channel
         ee()->load->helper('date');
 
         if (ee()->TMPL->fetch_param('year') or ee()->TMPL->fetch_param('month') or ee()->TMPL->fetch_param('day')) {
-            $year	= (! is_numeric(ee()->TMPL->fetch_param('year'))) 	? date('Y') : ee()->TMPL->fetch_param('year');
-            $smonth	= (! is_numeric(ee()->TMPL->fetch_param('month')))	? '01' : ee()->TMPL->fetch_param('month');
-            $emonth	= (! is_numeric(ee()->TMPL->fetch_param('month')))	? '12':  ee()->TMPL->fetch_param('month');
-            $day	= (! is_numeric(ee()->TMPL->fetch_param('day')))		? '' : ee()->TMPL->fetch_param('day');
+            $year	= (! is_numeric(ee()->TMPL->fetch_param('year'))) ? date('Y') : ee()->TMPL->fetch_param('year');
+            $smonth	= (! is_numeric(ee()->TMPL->fetch_param('month'))) ? '01' : ee()->TMPL->fetch_param('month');
+            $emonth	= (! is_numeric(ee()->TMPL->fetch_param('month'))) ? '12' : ee()->TMPL->fetch_param('month');
+            $day	= (! is_numeric(ee()->TMPL->fetch_param('day'))) ? '' : ee()->TMPL->fetch_param('day');
 
             if ($day != '' and ! is_numeric(ee()->TMPL->fetch_param('month'))) {
                 $smonth = date('m');
@@ -1954,7 +1954,7 @@ class Channel
         } elseif ($month != '' and is_numeric(ee()->TMPL->fetch_param('month_limit'))) {
             $this->pagination->per_page = ee()->TMPL->fetch_param('month_limit');
         } else {
-            $this->pagination->per_page  = (! is_numeric(ee()->TMPL->fetch_param('limit')))  ? $this->limit : ee()->TMPL->fetch_param('limit');
+            $this->pagination->per_page  = (! is_numeric(ee()->TMPL->fetch_param('limit'))) ? $this->limit : ee()->TMPL->fetch_param('limit');
         }
 
         if ($join_member_table) {
@@ -4644,7 +4644,7 @@ class Channel
         $cat_array = array();
 
         // We allow the option of adding or subtracting cat_id's
-        $categories = (! ee()->TMPL->fetch_param('category'))  ? '' : ee()->TMPL->fetch_param('category');
+        $categories = (! ee()->TMPL->fetch_param('category')) ? '' : ee()->TMPL->fetch_param('category');
 
         if (strncmp($categories, 'not ', 4) == 0) {
             $categories = substr($categories, 4);

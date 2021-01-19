@@ -494,7 +494,7 @@ class Api_channel_entries extends Api
         }
 
         $this->c_prefs['channel_title']		= ascii_to_entities($query->row('channel_title'));
-        $this->c_prefs['notify_address']	= ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
+        $this->c_prefs['notify_address']	= ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails') : '';
     }
 
     /**
@@ -676,7 +676,7 @@ class Api_channel_entries extends Api
 
         // Validate author id
 
-        $data['author_id'] = (! isset($data['author_id']) or ! $data['author_id']) ? ee()->session->userdata('member_id'): $data['author_id'];
+        $data['author_id'] = (! isset($data['author_id']) or ! $data['author_id']) ? ee()->session->userdata('member_id') : $data['author_id'];
 
         if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries')) {
             $this->_set_error('not_authorized');

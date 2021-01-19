@@ -13,7 +13,6 @@
  */
 class EE_Driver_Library
 {
-
     /**
      * Array of drivers that are available to use with the driver class
      *
@@ -146,7 +145,6 @@ class EE_Driver_Library
  */
 class EE_Driver
 {
-
     /**
      * Instance of the parent class
      *

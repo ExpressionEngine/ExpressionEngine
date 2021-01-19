@@ -13,7 +13,6 @@
  */
 class Status_model extends CI_Model
 {
-
     /**
      * Get Status
      *

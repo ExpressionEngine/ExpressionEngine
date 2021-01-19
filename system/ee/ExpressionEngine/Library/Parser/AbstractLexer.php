@@ -17,7 +17,6 @@ namespace ExpressionEngine\Library\Parser;
  */
 abstract class AbstractLexer
 {
-
     /**
      * The string being worked on
      */

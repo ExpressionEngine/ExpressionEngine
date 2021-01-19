@@ -18,7 +18,6 @@ use ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
  */
 class Watermarks extends AbstractFilesController
 {
-
     /**
      * Constructor
      */
@@ -158,7 +157,7 @@ class Watermarks extends AbstractFilesController
             ee('CP/URL')->make('files/watermarks')->compile() => lang('watermarks'),
             '' => lang('create_watermark')
         );
-        
+
         return $this->form();
     }
 
@@ -172,7 +171,7 @@ class Watermarks extends AbstractFilesController
             ee('CP/URL')->make('files/watermarks')->compile() => lang('watermarks'),
             '' => lang('edit_watermark')
         );
-        
+
         return $this->form($watermark_id);
     }
 

@@ -24,7 +24,6 @@ use ExpressionEngine\Service\Model\Relation\Relation;
  */
 class RelationGraph
 {
-
     /**
      * @var ExpressionEngine\Service\Model\Registry
      */

@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\View;
  */
 class Pagination
 {
-
     /**
      * @var int $per_page The number of items per page
      */

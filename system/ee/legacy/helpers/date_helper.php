@@ -1,4 +1,6 @@
-<?php if (! defined('BASEPATH')) {
+<?php
+
+if (! defined('BASEPATH')) {
     exit('No direct script access allowed.');
 }
 
@@ -382,8 +384,8 @@ if (! function_exists('human_to_unix')) {
         $ex = explode("-", $split['0']);
 
         $year  = (strlen($ex['0']) == 2) ? '20'.$ex['0'] : $ex['0'];
-        $month = (strlen($ex['1']) == 1) ? '0'.$ex['1']  : $ex['1'];
-        $day   = (strlen($ex['2']) == 1) ? '0'.$ex['2']  : $ex['2'];
+        $month = (strlen($ex['1']) == 1) ? '0'.$ex['1'] : $ex['1'];
+        $day   = (strlen($ex['2']) == 1) ? '0'.$ex['2'] : $ex['2'];
 
         $ex = explode(":", $split['1']);
 

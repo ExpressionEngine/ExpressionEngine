@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class ActionBar
 {
-
     /**
      * @var array Each an array with a text and url key that defines a button
      */

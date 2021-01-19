@@ -1,4 +1,5 @@
 <?php
+
 #
 # Markdown  -  A text-to-HTML conversion tool for web writers
 #
@@ -10,6 +11,7 @@
 # Copyright (c) 2004-2006 John Gruber
 # <https://daringfireball.net/projects/markdown/>
 #
+
 namespace Michelf;
 
 #
@@ -18,10 +20,9 @@ namespace Michelf;
 
 class Markdown implements MarkdownInterface
 {
-
     ### Version ###
 
-    const  MARKDOWNLIB_VERSION  =  "1.6.0";
+    public const  MARKDOWNLIB_VERSION  =  "1.6.0";
 
     ### Simple Function Interface ###
 
@@ -40,7 +41,7 @@ class Markdown implements MarkdownInterface
 
         # create the parser it not already set
         if (!$parser) {
-            $parser = new $parser_class;
+            $parser = new $parser_class();
         }
 
         # Transform text using parser.
@@ -52,11 +53,11 @@ class Markdown implements MarkdownInterface
     # Change to ">" for HTML output.
     public $empty_element_suffix = " />";
     public $tab_width = 4;
-    
+
     # Change to `true` to disallow markup or entities.
     public $no_markup = false;
     public $no_entities = false;
-    
+
     # Predefined urls and titles for reference links and images.
     public $predef_urls = array();
     public $predef_titles = array();
@@ -66,7 +67,7 @@ class Markdown implements MarkdownInterface
 
     # Optional header id="" generation callback function.
     public $header_id_func = null;
-    
+
     # Optional function for converting code block content to HTML
     public $code_block_content_func = null;
 
@@ -89,7 +90,7 @@ class Markdown implements MarkdownInterface
     # Needed to insert a maximum bracked depth while converting to PHP.
     protected $nested_brackets_depth = 6;
     protected $nested_brackets_re;
-    
+
     protected $nested_url_parenthesis_depth = 4;
     protected $nested_url_parenthesis_re;
 
@@ -105,17 +106,17 @@ class Markdown implements MarkdownInterface
         #
         $this->_initDetab();
         $this->prepareItalicsAndBold();
-    
+
         $this->nested_brackets_re =
             str_repeat('(?>[^\[\]]+|\[', $this->nested_brackets_depth).
             str_repeat('\])*', $this->nested_brackets_depth);
-    
+
         $this->nested_url_parenthesis_re =
             str_repeat('(?>[^()\s]+|\(', $this->nested_url_parenthesis_depth).
             str_repeat('(?>\)))*', $this->nested_url_parenthesis_depth);
-        
+
         $this->escape_chars_re = '['.preg_quote($this->escape_chars).']';
-        
+
         # Sort document, block, and span gamut in ascendent priority order.
         asort($this->document_gamut);
         asort($this->block_gamut);
@@ -127,11 +128,11 @@ class Markdown implements MarkdownInterface
     protected $urls = array();
     protected $titles = array();
     protected $html_hashes = array();
-    
+
     # Status flag to avoid invalid nesting.
     protected $in_anchor = false;
-    
-    
+
+
     protected function setup()
     {
         #
@@ -142,10 +143,10 @@ class Markdown implements MarkdownInterface
         $this->urls = $this->predef_urls;
         $this->titles = $this->predef_titles;
         $this->html_hashes = array();
-        
+
         $this->in_anchor = false;
     }
-    
+
     protected function teardown()
     {
         #
@@ -165,7 +166,7 @@ class Markdown implements MarkdownInterface
         # and pass it through the document gamut.
         #
         $this->setup();
-    
+
         # Remove UTF-8 BOM and marker character in input, if present.
         $text = preg_replace('{^\xEF\xBB\xBF|\x1A}', '', $text);
 
@@ -192,16 +193,16 @@ class Markdown implements MarkdownInterface
         foreach ($this->document_gamut as $method => $priority) {
             $text = $this->$method($text);
         }
-        
+
         $this->teardown();
 
         return $text . "\n";
     }
-    
+
     protected $document_gamut = array(
         # Strip link definitions, store in hashes.
         "stripLinkDefinitions" => 20,
-        
+
         "runBasicBlockGamut"   => 30,
         );
 
@@ -405,8 +406,8 @@ class Markdown implements MarkdownInterface
         $key  = $this->hashBlock($text);
         return "\n\n$key\n\n";
     }
-    
-    
+
+
     protected function hashPart($text, $boundary = 'X')
     {
         #
@@ -422,7 +423,7 @@ class Markdown implements MarkdownInterface
         # Swap back any tag hash found in $text so we do not have to `unhash`
         # multiple times at the end.
         $text = $this->unhash($text);
-        
+
         # Then hash the block.
         static $i = 0;
         $key = "$boundary\x1A" . ++$i . $boundary;
@@ -447,7 +448,7 @@ class Markdown implements MarkdownInterface
     #
         "doHeaders"         => 10,
         "doHorizontalRules" => 20,
-        
+
         "doLists"           => 40,
         "doCodeBlocks"      => 50,
         "doBlockQuotes"     => 60,
@@ -464,10 +465,10 @@ class Markdown implements MarkdownInterface
         # list items and could have been indented. Indented blocks would have
         # been seen as a code block in a previous pass of hashHTMLBlocks.
         $text = $this->hashHTMLBlocks($text);
-        
+
         return $this->runBasicBlockGamut($text);
     }
-    
+
     protected function runBasicBlockGamut($text)
     {
         #
@@ -478,14 +479,14 @@ class Markdown implements MarkdownInterface
         foreach ($this->block_gamut as $method => $priority) {
             $text = $this->$method($text);
         }
-        
+
         # Finally form paragraph and restore hashed blocks.
         $text = $this->formParagraphs($text);
 
         return $text;
     }
-    
-    
+
+
     protected function doHorizontalRules($text)
     {
         # Do Horizontal Rules:
@@ -519,7 +520,7 @@ class Markdown implements MarkdownInterface
         # because ![foo][f] looks like an anchor.
         "doImages"            =>  10,
         "doAnchors"           =>  20,
-        
+
         # Make links out of things like `<https://example.com/>`
         # Must come after doAnchors, because you can use < and >
         # delimiters in inline links like [this](<url>).
@@ -541,8 +542,8 @@ class Markdown implements MarkdownInterface
 
         return $text;
     }
-    
-    
+
+
     protected function doHardBreaks($text)
     {
         # Do hard breaks:
@@ -567,7 +568,7 @@ class Markdown implements MarkdownInterface
             return $text;
         }
         $this->in_anchor = true;
-        
+
         #
         # First, handle reference-style links: [link text] [id]
         #
@@ -650,7 +651,7 @@ class Markdown implements MarkdownInterface
             # for shortcut links like [this][] or [this].
             $link_id = $link_text;
         }
-        
+
         # lower-case and turn embedded newlines into spaces
         $link_id = strtolower($link_id);
         $link_id = preg_replace('{[ ]?\n}', ' ', $link_id);
@@ -658,14 +659,14 @@ class Markdown implements MarkdownInterface
         if (isset($this->urls[$link_id])) {
             $url = $this->urls[$link_id];
             $url = $this->encodeURLAttribute($url);
-            
+
             $result = "<a href=\"$url\"";
             if (isset($this->titles[$link_id])) {
                 $title = $this->titles[$link_id];
                 $title = $this->encodeAttribute($title);
                 $result .=  " title=\"$title\"";
             }
-        
+
             $link_text = $this->runSpanGamut($link_text);
             $result .= ">$link_text</a>";
             $result = $this->hashPart($result);
@@ -695,7 +696,7 @@ class Markdown implements MarkdownInterface
             $title = $this->encodeAttribute($title);
             $result .=  " title=\"$title\"";
         }
-        
+
         $link_text = $this->runSpanGamut($link_text);
         $result .= ">$link_text</a>";
 
@@ -857,7 +858,7 @@ class Markdown implements MarkdownInterface
         if ($matches[2] == '-' && preg_match('{^-(?: |$)}', $matches[1])) {
             return $matches[0];
         }
-        
+
         // Getting the first character in the appropriate match
         $level = $matches[2][0] == '=' ? 1 : 2;
 
@@ -941,10 +942,10 @@ class Markdown implements MarkdownInterface
 				  )
 				)
 			'; // mx
-            
+
             # We use a different prefix before nested lists than top-level lists.
             # See extended comment in _ProcessListItems().
-        
+
             if ($this->list_level) {
                 $text = preg_replace_callback(
                     '{
@@ -1032,7 +1033,7 @@ class Markdown implements MarkdownInterface
         # without resorting to mind-reading. Perhaps the solution is to
         # change the syntax rules such that sub-lists must start with a
         # starting cardinal number; e.g. "1." or "a.".
-        
+
         $this->list_level++;
 
         # trim trailing blank lines:
@@ -1147,7 +1148,7 @@ class Markdown implements MarkdownInterface
         '___' => '(?<![\s_])___(?!_)',
         );
     protected $em_strong_prepared_relist;
-    
+
     protected function prepareItalicsAndBold()
     {
         #
@@ -1163,14 +1164,14 @@ class Markdown implements MarkdownInterface
                 }
                 $token_relist[] = $em_re;
                 $token_relist[] = $strong_re;
-                
+
                 # Construct master expression from list.
                 $token_re = '{('. implode('|', $token_relist) .')}';
                 $this->em_strong_prepared_relist["$em$strong"] = $token_re;
             }
         }
     }
-    
+
     protected function doItalicsAndBold($text)
     {
         $token_stack = array('');
@@ -1178,14 +1179,14 @@ class Markdown implements MarkdownInterface
         $em = '';
         $strong = '';
         $tree_char_em = false;
-        
+
         while (1) {
             #
             # Get prepared regular expression for seraching emphasis tokens
             # in current context.
             #
             $token_re = $this->em_strong_prepared_relist["$em$strong"];
-            
+
             #
             # Each loop iteration search for the next emphasis token.
             # Each token is then passed to handleSpanToken.
@@ -1194,7 +1195,7 @@ class Markdown implements MarkdownInterface
             $text_stack[0] .= $parts[0];
             $token =& $parts[1];
             $text =& $parts[2];
-            
+
             if (empty($token)) {
                 # Reached end of text span: empty stack without emitting.
                 # any more emphasis.
@@ -1204,7 +1205,7 @@ class Markdown implements MarkdownInterface
                 }
                 break;
             }
-            
+
             $token_len = strlen($token);
             if ($tree_char_em) {
                 # Reached closing marker while inside a three-char emphasis.
@@ -1446,8 +1447,8 @@ class Markdown implements MarkdownInterface
 
         return $url;
     }
-    
-    
+
+
     protected function encodeAmpsAndAngles($text)
     {
         #
@@ -1579,7 +1580,7 @@ class Markdown implements MarkdownInterface
         # escaped characters and handling code spans.
         #
         $output = '';
-        
+
         $span_re = '{
 				(
 					\\\\'.$this->escape_chars_re.'
@@ -1613,12 +1614,12 @@ class Markdown implements MarkdownInterface
             # Each token is then passed to handleSpanToken.
             #
             $parts = preg_split($span_re, $str, 2, PREG_SPLIT_DELIM_CAPTURE);
-            
+
             # Create token from text preceding tag.
             if ($parts[0] != "") {
                 $output .= $parts[0];
             }
-            
+
             # Check if we reach the end.
             if (isset($parts[1])) {
                 $output .= $this->handleSpanToken($parts[1], $parts[2]);
@@ -1627,11 +1628,11 @@ class Markdown implements MarkdownInterface
                 break;
             }
         }
-        
+
         return $output;
     }
-    
-    
+
+
     protected function handleSpanToken($token, &$str)
     {
         #
@@ -1671,7 +1672,7 @@ class Markdown implements MarkdownInterface
     # String length function for detab. `_initDetab` will create a function to
     # hanlde UTF-8 if the default function does not exist.
     protected $utf8_strlen = 'mb_strlen';
-    
+
     protected function detab($text)
     {
         #
@@ -1680,7 +1681,7 @@ class Markdown implements MarkdownInterface
         # For each line we separate the line in blocks delemited by
         # tab characters. Then we reconstruct every line by adding the
         # appropriate number of space between each blocks.
-        
+
         $text = preg_replace_callback(
             '/^.*\t.*$/m',
             array($this, '_detab_callback'),
@@ -1693,7 +1694,7 @@ class Markdown implements MarkdownInterface
     {
         $line = $matches[0];
         $strlen = $this->utf8_strlen; # strlen function for UTF-8.
-        
+
         # Split in blocks.
         $blocks = explode("\t", $line);
         # Add each blocks to the line.

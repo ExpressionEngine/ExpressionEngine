@@ -13,7 +13,6 @@
  */
 class Field_model extends CI_Model
 {
-
     /**
      * Get Field
      *

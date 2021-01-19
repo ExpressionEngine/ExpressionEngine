@@ -17,7 +17,6 @@ use ExpressionEngine\Core\Provider;
  */
 class Factory
 {
-
     /**
      * @var ExpressionEngine\Core\Provider
      */

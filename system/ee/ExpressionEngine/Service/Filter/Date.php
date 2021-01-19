@@ -26,7 +26,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Date extends Filter
 {
-
     /**
      * @var int The unix timestamp value of the filter
      */

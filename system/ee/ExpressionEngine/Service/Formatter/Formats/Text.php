@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Formatter\Formatter;
  */
 class Text extends Formatter
 {
-
     /**
      * @var boolean Whether multibyte string methods are available
      */

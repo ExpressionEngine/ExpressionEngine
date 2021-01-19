@@ -119,7 +119,7 @@ class FilePicker
             $i++;
 
             if ($file instanceof \SplFileObject) {
-                $new_file = new \StdClass;
+                $new_file = new \StdClass();
                 $new_file->title = $file->getFilename();
                 $new_file->file_name = $file->getFilename();
                 $new_file->mime_type = $file->getMimeType();

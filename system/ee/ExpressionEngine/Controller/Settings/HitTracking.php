@@ -17,7 +17,6 @@ use CP_Controller;
  */
 class HitTracking extends Settings
 {
-
     /**
      * General Settings
      */

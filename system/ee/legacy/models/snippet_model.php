@@ -13,7 +13,6 @@
  */
 class Snippet_model extends CI_Model
 {
-
     /**
      * Retrieve Snippets from the Database
      *

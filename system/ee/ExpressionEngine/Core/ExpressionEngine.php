@@ -15,7 +15,6 @@ namespace ExpressionEngine\Core;
  */
 class ExpressionEngine extends Core
 {
-
     /**
      *
      */

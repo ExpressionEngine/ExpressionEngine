@@ -13,7 +13,6 @@
  */
 class EE_Cache_file extends CI_Driver
 {
-
     /**
      * Directory in which to save cache files
      *

@@ -1,4 +1,6 @@
-<?php if (! defined('BASEPATH')) {
+<?php
+
+if (! defined('BASEPATH')) {
     exit('No direct script access allowed.');
 }
 
@@ -299,9 +301,9 @@ if (! function_exists('meta')) {
         $str = '';
         foreach ($name as $meta) {
             $type		= (! isset($meta['type']) or $meta['type'] == 'name') ? 'name' : 'http-equiv';
-            $name		= (! isset($meta['name']))		? ''	: $meta['name'];
-            $content	= (! isset($meta['content']))	? ''	: $meta['content'];
-            $newline	= (! isset($meta['newline']))	? "\n"	: $meta['newline'];
+            $name		= (! isset($meta['name'])) ? '' : $meta['name'];
+            $content	= (! isset($meta['content'])) ? '' : $meta['content'];
+            $newline	= (! isset($meta['newline'])) ? "\n" : $meta['newline'];
 
             $str .= '<meta '.$type.'="'.$name.'" content="'.$content.'" />'.$newline;
         }

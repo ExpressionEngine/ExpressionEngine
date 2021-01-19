@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Profiler\ProfilerSection;
  */
 class Performance extends ProfilerSection
 {
-
     /**
      * @var  int  total execution time
      **/

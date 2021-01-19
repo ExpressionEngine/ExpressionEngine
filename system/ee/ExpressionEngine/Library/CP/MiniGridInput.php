@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\CP;
  */
 class MiniGridInput extends GridInput
 {
-
     /**
      * Loads necessary JS and CSS, override's parent
      */

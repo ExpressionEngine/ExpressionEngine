@@ -1,6 +1,8 @@
-<?php  if (! defined('SYSPATH')) {
-    exit('No direct script access allowed');
-}
+<?php
+
+ if (! defined('SYSPATH')) {
+     exit('No direct script access allowed');
+ }
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)

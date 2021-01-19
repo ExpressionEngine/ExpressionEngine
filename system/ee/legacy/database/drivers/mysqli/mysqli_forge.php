@@ -13,7 +13,6 @@
  */
 class CI_DB_mysqli_forge extends CI_DB_forge
 {
-
     /**
      * Create database
      *

@@ -11,7 +11,7 @@ class DownloaderTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->license = Mockery::mock('ExpressionEngine\Service\License\ExpressionEngineLicense');
         $this->curl = Mockery::mock('ExpressionEngine\Library\Curl\RequestFactory');
@@ -25,7 +25,7 @@ class DownloaderTest extends TestCase
         $this->downloader = new Downloader($this->license, $this->curl, $this->filesystem, $this->logger, $this->config);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->license = null;
         $this->curl = null;

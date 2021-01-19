@@ -13,7 +13,6 @@
  */
 class Forum_Core extends Forum
 {
-
     /**
      * Construct
      */
@@ -1498,8 +1497,8 @@ class Forum_Core extends Forum
         // Build the "last post" link
 
         // Since announcements have slightly differen URLs we'll append them if needed
-        $viewpath = ($row['forum_last_post_type'] == 'a') ? 'viewannounce/': 'viewthread/';
-        $ann_id	  = ($row['forum_last_post_type'] == 'a') ?  '_'.$row['forum_id']  : '';
+        $viewpath = ($row['forum_last_post_type'] == 'a') ? 'viewannounce/' : 'viewthread/';
+        $ann_id	  = ($row['forum_last_post_type'] == 'a') ? '_'.$row['forum_id'] : '';
 
         // Build the link
         if ($row['forum_post_order'] != 'd') {
@@ -3442,14 +3441,14 @@ class Forum_Core extends Forum
                         'body'						=> ee()->functions->encode_ee_tags(
                             $this->_quote_decode(
                                 ee()->typography->parse_type(
-                                                                $row['body'],
-                                                                array(
+                                    $row['body'],
+                                    array(
                                                                     'text_format'	=> $formatting['text_format'],
                                                                     'html_format'	=> $formatting['html_format'],
                                                                     'auto_links'	=> $formatting['auto_links'],
                                                                     'allow_img_url' => $formatting['allow_img_url']
                                                                 )
-                                                            )
+                                )
                             ),
                             true
                         )
@@ -4237,10 +4236,10 @@ class Forum_Core extends Forum
         // Parse the template
         ee()->load->helper('form');
 
-        $body = (! ee()->input->post('body'))	? $data['body']  : form_prep(ee()->input->post('body'));
+        $body = (! ee()->input->post('body')) ? $data['body'] : form_prep(ee()->input->post('body'));
         $body = $this->convert_forum_tags(ee()->functions->encode_ee_tags($body, true));
 
-        $title = (! ee()->input->post('title'))  ? form_prep($data['title']) : stripslashes(form_prep(ee()->input->post('title')));
+        $title = (! ee()->input->post('title')) ? form_prep($data['title']) : stripslashes(form_prep(ee()->input->post('title')));
         $title = $this->convert_forum_tags(ee()->functions->encode_ee_tags($title, true));
 
         $maxchars = $data['forum_max_post_chars'];
@@ -4689,8 +4688,8 @@ class Forum_Core extends Forum
                     'thumb_marker'		=> '_t',
                     'source_image'		=> $upload_data['full_path'],
                     'quality'			=> 75,
-                    'width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width')  : $width,
-                    'height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height')  : $height				);
+                    'width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width') : $width,
+                    'height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height') : $height				);
 
                 ee()->load->library('image_lib', $res_config);
 
@@ -5065,7 +5064,7 @@ class Forum_Core extends Forum
         }
 
         // Is the post too big?
-        $maxchars = ($fdata['forum_max_post_chars'] == 0) ? $this->max_chars :  $fdata['forum_max_post_chars'];
+        $maxchars = ($fdata['forum_max_post_chars'] == 0) ? $this->max_chars : $fdata['forum_max_post_chars'];
 
         if (strlen(ee()->input->post('body')) > $maxchars) {
             $this->submission_error = str_replace("%x", $maxchars, lang('post_too_big'));
@@ -5371,7 +5370,7 @@ class Forum_Core extends Forum
 
         if (count($this->attachments) > 0) {
             $topic_id = (isset($data['topic_id']) and $data['topic_id'] > 0) ? $data['topic_id'] : 0;
-            $post_id  = (isset($data['post_id'])  and $data['post_id']  > 0) ? $data['post_id']  : 0;
+            $post_id  = (isset($data['post_id'])  and $data['post_id']  > 0) ? $data['post_id'] : 0;
             $board_id = $this->preferences['board_id'];
 
             foreach ($this->attachments as $id) {
@@ -5931,7 +5930,7 @@ class Forum_Core extends Forum
 
         // Are they allowed to swap the status?
         $viewpath = ($query->row('announcement')  == 'n') ? 'viewthread/' : 'viewannounce/';
-        $viewpath .= ($query->row('announcement')  == 'n') ?  $_GET['topic_id'] : $_GET['topic_id'].'_'.$query->row('forum_id') ;
+        $viewpath .= ($query->row('announcement')  == 'n') ? $_GET['topic_id'] : $_GET['topic_id'].'_'.$query->row('forum_id') ;
 
         if (! $this->_mod_permission('can_change_status', $query->row('forum_id'))) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
@@ -6037,7 +6036,7 @@ class Forum_Core extends Forum
         }
 
         // Move it!
-        $title = (ee()->input->get_post('title') == '') ? $query->row('title')  : ee()->db->escape_str(ee()->input->get_post('title'));
+        $title = (ee()->input->get_post('title') == '') ? $query->row('title') : ee()->db->escape_str(ee()->input->get_post('title'));
         $title = $this->_convert_special_chars($title);
 
         if (ee()->input->get_post('redirect')) {

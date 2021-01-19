@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class FolderList
 {
-
     /**
      * @var string $name The name of this folder list
      */

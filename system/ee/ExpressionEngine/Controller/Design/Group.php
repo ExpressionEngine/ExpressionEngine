@@ -19,7 +19,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class Group extends AbstractDesignController
 {
-
     /**
      * Constructor
      */

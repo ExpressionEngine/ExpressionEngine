@@ -195,7 +195,7 @@ class Simple_commerce_mcp
     public function createItem()
     {
         ee()->lang->load('content');
-        
+
 
         $base_url = ee('CP/URL')->make('addons/settings/simple_commerce/create-item');
         $entry_listing = ee(
@@ -285,7 +285,7 @@ class Simple_commerce_mcp
             ->render($base_url);
 
         $this->items_nav->isActive();
-        
+
         if (AJAX_REQUEST) {
             ee()->output->send_ajax_response([
                 'html' =>  ee('View')->make('simple_commerce:entry_list')->render($vars),
@@ -724,7 +724,7 @@ class Simple_commerce_mcp
                 ),
                 $purchase->Member->screen_name,
                 ee()->localize->human_time($purchase->purchase_date),
-                $purchase->subscription_end_date ?  ee()->localize->human_time($purchase->subscription_end_date) : '--',
+                $purchase->subscription_end_date ? ee()->localize->human_time($purchase->subscription_end_date) : '--',
                 '$'.$purchase->item_cost,
                 array('toolbar_items' => array(
                     'edit' => array(

@@ -505,7 +505,7 @@ class Addon
         $class = $this->getJumpClass();
         $items = [];
         try {
-            $jumpMenu = new $class;
+            $jumpMenu = new $class();
 
             $items = $jumpMenu->getItems();
 
@@ -637,7 +637,7 @@ class Addon
         // Preflight: if we have any consents that match there's been a problem.
         $requests = $this->getInstalledConsentRequests();
         if (! empty($requests)) {
-            throw new \Exception;
+            throw new \Exception();
         }
 
         $prefix = $this->getConsentPrefix();

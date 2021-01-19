@@ -15,7 +15,6 @@ use ExpressionEngine\Service\Template;
  */
 class EE_Template
 {
-
     // bring in the :modifier methods
     use Template\Variables\ModifiableTrait;
 
@@ -2064,7 +2063,7 @@ class EE_Template
                 ee()->output->_display();
                 exit;
             }
-            
+
             return $default_template;
         }
 

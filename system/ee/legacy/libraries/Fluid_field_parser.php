@@ -1,6 +1,8 @@
-<?php  if (! defined('BASEPATH')) {
-    exit('No direct script access allowed');
-}
+<?php
+
+ if (! defined('BASEPATH')) {
+     exit('No direct script access allowed');
+ }
 
 /**
  * This source file is part of the open source project

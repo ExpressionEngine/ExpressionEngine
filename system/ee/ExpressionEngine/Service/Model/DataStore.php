@@ -26,7 +26,6 @@ use ExpressionEngine\Service\Database\Database;
  */
 class DataStore
 {
-
     /**
      * @var ExpressionEngine\Service\Database\Database
      */

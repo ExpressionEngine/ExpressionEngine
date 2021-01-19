@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class PerpageTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($_POST['perpage']);
         unset($_GET['perpage']);

@@ -1177,10 +1177,10 @@ class Wizard extends CI_Controller
 
         // Instantiate the updater class
         if (class_exists('Updater')) {
-            $UD = new Updater;
+            $UD = new Updater();
         } else {
             $class = '\ExpressionEngine\Updater\Version_' . str_replace(['.', '-'], '_', $next_version) . '\Updater';
-            $UD = new $class;
+            $UD = new $class();
         }
 
         $method = 'do_update';
@@ -1890,7 +1890,7 @@ class Wizard extends CI_Controller
                     require $path . 'upd.' . $module . '.php';
                 }
 
-                $UPD = new $class;
+                $UPD = new $class();
                 $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
@@ -1996,7 +1996,7 @@ class Wizard extends CI_Controller
             try {
                 $upgrader = $info->getUpgraderClass();
 
-                $success = (new $upgrader)->upgrade($version);
+                $success = (new $upgrader())->upgrade($version);
             } catch (\Exception $e) {
                 $success = false;
             }

@@ -11,7 +11,7 @@ class UnpackerTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         if (version_compare(PHP_VERSION, '8', '>=')) {
             $this->markTestSkipped('`Bug in PHP 8 Zip support passing double null as method param which is not supported in PHP8 -- GitHub actions runner SKIPPED');
@@ -29,7 +29,7 @@ class UnpackerTest extends TestCase
         $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->filesystem = null;
         $this->zip_archive = null;

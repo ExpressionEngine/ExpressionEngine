@@ -18,7 +18,6 @@ use Serializable;
  */
 class SerializableEntity extends Entity implements Serializable
 {
-
     /**
      * Serialize
      *

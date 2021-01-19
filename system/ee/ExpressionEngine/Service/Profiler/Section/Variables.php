@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Profiler\ProfilerSection;
  */
 class Variables extends ProfilerSection
 {
-
     /**
      * @var userdata bits that we don't want to display
      */

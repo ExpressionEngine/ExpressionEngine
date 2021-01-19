@@ -18,7 +18,6 @@ use ExpressionEngine\Service\CP\Filter\FilterRunner;
  */
 class Throttle extends Logs
 {
-
     /**
      * View Throttle Log
      *

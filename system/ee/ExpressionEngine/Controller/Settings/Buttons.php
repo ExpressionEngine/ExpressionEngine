@@ -287,10 +287,10 @@ class Buttons extends Settings
      */
     private function form($vars, $values = array())
     {
-        $name = isset($values['tag_name']) ? $values['tag_name']: '';
-        $open = isset($values['tag_open']) ? $values['tag_open']: '';
-        $close = isset($values['tag_close']) ? $values['tag_close']: '';
-        $shortcut = isset($values['accesskey']) ? $values['accesskey']: '';
+        $name = isset($values['tag_name']) ? $values['tag_name'] : '';
+        $open = isset($values['tag_open']) ? $values['tag_open'] : '';
+        $close = isset($values['tag_close']) ? $values['tag_close'] : '';
+        $shortcut = isset($values['accesskey']) ? $values['accesskey'] : '';
 
         $vars['sections'] = array(
             array(

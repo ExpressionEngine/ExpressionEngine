@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
     }
 

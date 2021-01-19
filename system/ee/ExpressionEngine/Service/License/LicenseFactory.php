@@ -17,7 +17,6 @@ use InvalidArgumentException;
  */
 class LicenseFactory
 {
-
     /**
      * @var string $default_public_key A default public key to use for verifying
      *   signatures.

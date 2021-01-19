@@ -21,7 +21,7 @@ abstract class SerializedType implements Type
 
     public static function create()
     {
-        return new static;
+        return new static();
     }
 
     public function load($db_data)

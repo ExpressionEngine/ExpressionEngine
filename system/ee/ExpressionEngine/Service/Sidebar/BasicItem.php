@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class BasicItem extends ListItem
 {
-
     /**
      * @var string $rel An <a> tag's rel attribute
      */

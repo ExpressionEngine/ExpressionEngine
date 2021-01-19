@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Model\Template;
 
-use \EE_Route;
+use EE_Route;
 use ExpressionEngine\Service\Model\Model;
 
 /**

@@ -18,9 +18,9 @@ class InjectionBindingDecoratorTest extends TestCase
 {
     protected $di;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->di = new InjectionContainer;
+        $this->di = new InjectionContainer();
         $this->di->register('Bird', function ($di) {
             return 'Crow';
         });
@@ -37,7 +37,7 @@ class InjectionBindingDecoratorTest extends TestCase
         });
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $this->di = null;
     }

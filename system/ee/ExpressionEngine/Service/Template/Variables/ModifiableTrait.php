@@ -20,7 +20,6 @@ namespace ExpressionEngine\Service\Template\Variables;
  */
 trait ModifiableTrait
 {
-
     /**
      * :attr_safe modifier
      */

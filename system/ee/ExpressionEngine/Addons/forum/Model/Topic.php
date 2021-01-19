@@ -170,7 +170,7 @@ class Topic extends Model
         require_once PATH_ADDONS.'forum/mod.forum.php';
         require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
-        $forum_core = new \Forum_Core;
+        $forum_core = new \Forum_Core();
 
         foreach (self::$_forum_ids as $forum_id) {
             $forum_core->_update_post_stats($forum_id);

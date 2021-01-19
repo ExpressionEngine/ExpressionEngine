@@ -1,4 +1,6 @@
-<?php if (! defined('BASEPATH')) {
+<?php
+
+if (! defined('BASEPATH')) {
     exit('No direct script access allowed.');
 }
 
@@ -125,7 +127,7 @@ if (! function_exists('ee_mb_substr ')) {
                 return mb_substr($str, $start, $length);
             }
         }
-    
+
         $encoding = ee_get_encoding($encoding);
 
         if ('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv')) {

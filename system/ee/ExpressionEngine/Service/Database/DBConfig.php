@@ -10,8 +10,8 @@
 
 namespace ExpressionEngine\Service\Database;
 
-use \ExpressionEngine\Service\Config\ConfigWithDefaults;
-use \ExpressionEngine\Service\Config\File as ConfigFile;
+use ExpressionEngine\Service\Config\ConfigWithDefaults;
+use ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
  * Database Config

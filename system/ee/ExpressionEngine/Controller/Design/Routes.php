@@ -21,7 +21,6 @@ use ExpressionEngine\Library\Data\Collection;
  */
 class Routes extends AbstractDesignController
 {
-
     /**
      * Constructor
      */
@@ -191,7 +190,7 @@ class Routes extends AbstractDesignController
             ee()->functions->redirect($this->base_url);
         }
 
-        $errors = new ValidationResult;
+        $errors = new ValidationResult();
 
         $routes = new Collection(array());
 

@@ -152,7 +152,7 @@ class Validator
      */
     protected function _validate($values, $partial = false)
     {
-        $result = new Result;
+        $result = new Result();
 
         if (is_object($values)) {
             $values = $this->prepForObject($values);
@@ -318,7 +318,7 @@ class Validator
         $class = __NAMESPACE__."\\Rule\\{$rule_class}";
 
         if (class_exists($class)) {
-            return new $class;
+            return new $class();
         }
 
         throw new \Exception("Unknown validation rule `{$rule_name}`.");

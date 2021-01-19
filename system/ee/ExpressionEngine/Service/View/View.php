@@ -17,7 +17,6 @@ use ExpressionEngine\Core\Provider;
  */
 class View
 {
-
     /**
      * @var string The path to the view template file ex. '_shared/form'
      */

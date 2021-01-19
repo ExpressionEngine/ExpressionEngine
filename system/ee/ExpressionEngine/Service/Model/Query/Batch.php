@@ -17,7 +17,6 @@ use Closure;
  */
 class Batch
 {
-
     /**
      * The offset on their query
      */

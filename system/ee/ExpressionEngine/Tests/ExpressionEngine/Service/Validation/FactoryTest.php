@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->factory = new Factory();
     }

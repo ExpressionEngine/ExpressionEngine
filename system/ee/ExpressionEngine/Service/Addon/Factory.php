@@ -18,7 +18,6 @@ use ExpressionEngine\Core\Provider;
  */
 class Factory
 {
-
     /**
      * @var Application object
      */

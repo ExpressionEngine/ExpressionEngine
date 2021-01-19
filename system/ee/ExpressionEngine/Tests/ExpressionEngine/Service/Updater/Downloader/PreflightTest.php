@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class PreflightTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
         $this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
@@ -22,7 +22,7 @@ class PreflightTest extends TestCase
         $this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->theme_paths);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->filesystem = null;
         $this->config = null;

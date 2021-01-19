@@ -18,7 +18,6 @@ use ExpressionEngine\Library\Advisor;
 */
 class DebugTools extends Utilities
 {
-
     /**
      * Deny access from non-superadmins
      */

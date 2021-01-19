@@ -13,7 +13,6 @@
  */
 class Newrelic
 {
-
     /**
      * Set the application name
      *

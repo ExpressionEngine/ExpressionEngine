@@ -10,14 +10,13 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module ASCIIPrintable Vectorizer
  */
 class ASCIIPrintable implements Vectorizer
 {
-
     /**
      * Calculates the ratio of non-ASCII printable characters
      *

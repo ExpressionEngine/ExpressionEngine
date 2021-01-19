@@ -125,7 +125,7 @@ class Email
                     if ($query->num_rows() == 0) {
                         $author_name = '';
                     } else {
-                        $author_name = ($query->row('screen_name')  != '') ? $query->row('screen_name')  : $query->row('username') ;
+                        $author_name = ($query->row('screen_name')  != '') ? $query->row('screen_name') : $query->row('username') ;
                     }
 
                     $author_email = ($query->num_rows() == 0) ? '' : $query->row('email') ;
@@ -312,7 +312,7 @@ class Email
                 require PATH_ADDONS.'channel/mod.channel.php';
             }
 
-            $channel = new Channel;
+            $channel = new Channel();
 
             $channel->fetch_custom_channel_fields();
             $channel->fetch_custom_member_fields();

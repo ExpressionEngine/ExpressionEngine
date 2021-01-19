@@ -17,7 +17,6 @@ use ExpressionEngine\Protocol\Config\Config;
  */
 abstract class ConfigWithDefaults implements Config
 {
-
     /**
      * @var the default values to check when referencing this config
      */

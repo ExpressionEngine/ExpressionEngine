@@ -13,7 +13,6 @@
  */
 class Javascript_loader
 {
-
     /**
      * Constructor
      */

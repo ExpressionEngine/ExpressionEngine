@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Cookie;
  */
 class Cookie
 {
-
     /**
      * Gets cryptographically-signed cookie data by name
      *

@@ -18,7 +18,6 @@ use InvalidArgumentException;
  */
 class License
 {
-
     /**
      * @var array $data The decoded and json_decoded license file data
      */

@@ -15,7 +15,6 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Emoji_upd extends Installer
 {
-
     /**
      * Constructor
      */

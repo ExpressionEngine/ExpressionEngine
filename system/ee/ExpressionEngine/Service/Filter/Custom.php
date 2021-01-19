@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Filter;
  */
 class Custom extends Filter
 {
-
     /**
      * Constructor
      *

@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Context\OptionFactory;
 
 class Cli
 {
-
     /**
      * Primary CLI object
      * @var \ExpressionEngine\Cli\Context
@@ -81,7 +80,7 @@ class Cli
     {
 
         // Initialize the object
-        $factory = new CliFactory;
+        $factory = new CliFactory();
 
         $this->command = $factory->newContext($GLOBALS);
         $this->output = $factory->newStdio();
@@ -122,7 +121,7 @@ class Cli
         }
 
         // Try and initialize command
-        $command = new $commandClass;
+        $command = new $commandClass();
 
         $command->loadOptions();
 
@@ -143,7 +142,7 @@ class Cli
      */
     public function help()
     {
-        $help = new Help(new OptionFactory);
+        $help = new Help(new OptionFactory());
 
         $help->setSummary($this->summary)
                 ->setDescr($this->description)
@@ -372,7 +371,7 @@ class Cli
     private function loadInternalCommands()
     {
         foreach ($this->internalCommands as $key => $value) {
-            $obj = new $value;
+            $obj = new $value();
 
             if (isset($obj->standalone) && $obj->standalone) {
                 $this->standaloneCommands[$key] = $value;

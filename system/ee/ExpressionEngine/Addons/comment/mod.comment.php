@@ -19,7 +19,6 @@ use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
  */
 class Comment
 {
-
     // Maximum number of comments.  This is a safety valve
     // in case the user doesn't specify a maximum
     public $limit = 100;
@@ -318,7 +317,7 @@ class Comment
         }
 
         $random = ($order_by == 'random') ? true : false;
-        $order_by = ($order_by == 'date' or ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
+        $order_by = ($order_by == 'date' or ! in_array($order_by, $allowed_sorts)) ? 'comment_date' : $order_by;
 
         // We cache the query in case we need to do a count for dynamic off pagination
         ee()->db->start_cache();

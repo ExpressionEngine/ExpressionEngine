@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Model;
  */
 class Configuration
 {
-
     /**
      * @var String Default model prefix (usually 'ee')
      */

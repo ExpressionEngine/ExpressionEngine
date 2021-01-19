@@ -18,7 +18,6 @@ use ExpressionEngine\Service\View\StringView;
  */
 class Result
 {
-
     /**
      * @var Default formatted view
      */

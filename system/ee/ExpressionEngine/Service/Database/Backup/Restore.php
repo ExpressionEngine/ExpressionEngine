@@ -18,7 +18,6 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
  */
 class Restore
 {
-
     /**
      * @var Database\Query Database Query object
      */

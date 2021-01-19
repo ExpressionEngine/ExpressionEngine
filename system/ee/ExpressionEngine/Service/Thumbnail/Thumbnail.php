@@ -18,7 +18,6 @@ use InvalidArgumentException;
  */
 class Thumbnail
 {
-
     /**
      * @var str The url to the thumbnail
      */

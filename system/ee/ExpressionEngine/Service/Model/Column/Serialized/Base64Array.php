@@ -18,7 +18,6 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
  */
 class Base64Array extends Base64
 {
-
     /**
      * Same as base64, but with an array as the default data
      */

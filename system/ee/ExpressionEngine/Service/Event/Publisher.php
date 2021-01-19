@@ -17,7 +17,6 @@ namespace ExpressionEngine\Service\Event;
  */
 interface Publisher
 {
-
     /**
      * Subscribe to this publisher
      *

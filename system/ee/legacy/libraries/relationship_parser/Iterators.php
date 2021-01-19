@@ -68,7 +68,6 @@ class ParseNodeIterator extends EE_TreeIterator
  */
 class QueryNodeIterator extends EE_TreeIterator
 {
-
     /**
      * Override RecursiveArrayIterator's child detection method.
      * We usually have data rows that are arrays so we really only

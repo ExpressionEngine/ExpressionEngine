@@ -13,7 +13,6 @@
  */
 class EE_Channel_date_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if dates are enabled.
      *

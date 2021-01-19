@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class FacadeTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         m::close();
     }

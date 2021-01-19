@@ -19,7 +19,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class Msm extends CP_Controller
 {
-
     /**
      * Constructor
      */

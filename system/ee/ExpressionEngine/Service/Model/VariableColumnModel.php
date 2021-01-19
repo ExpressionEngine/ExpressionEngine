@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Model;
  */
 abstract class VariableColumnModel extends Model
 {
-
     /**
      * @var Array Dictionary of values that have been set that were not explicitly
      *            defined in the subclass.

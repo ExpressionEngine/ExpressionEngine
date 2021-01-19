@@ -21,7 +21,6 @@ use Closure;
  */
 class Mixin implements MixinInterface, Publisher
 {
-
     /**
      * @var The parent scope
      */

@@ -10,14 +10,13 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Spaces Vectorizer
  */
 class Spaces implements Vectorizer
 {
-
     /**
      * Calculates the ratio of whitespace to non-whitespace
      *

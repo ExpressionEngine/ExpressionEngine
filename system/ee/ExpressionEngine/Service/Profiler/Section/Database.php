@@ -18,7 +18,6 @@ use ExpressionEngine\Service\View\View;
  */
 class Database extends ProfilerSection
 {
-
     /**
      * @var int  total queries
      **/

@@ -24,7 +24,7 @@ foreach (array('comment_word_censoring', 'comment_moderation_override') as $sett
             form_input('comment_edit_time_limit', $comment_edit_time_limit, 'class="field"')
         )
     );
-    
+
 echo $this->table->generate();
 
 ?>

@@ -30,12 +30,12 @@ class Fluid_field_ft extends EE_Fieldtype
             'version' => $addon->getVersion()
         );
 
-        $this->errors = new \ExpressionEngine\Service\Validation\Result;
+        $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
     public function validate($field_data)
     {
-        $this->errors = new \ExpressionEngine\Service\Validation\Result;
+        $this->errors = new \ExpressionEngine\Service\Validation\Result();
 
         if (empty($field_data)) {
             return true;

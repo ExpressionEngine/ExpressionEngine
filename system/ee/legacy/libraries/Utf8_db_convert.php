@@ -13,7 +13,6 @@
  */
 class Utf8_db_convert
 {
-
     /**
      * Constructor
      */

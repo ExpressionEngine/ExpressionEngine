@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Category;
  */
 class Factory
 {
-
     /**
      * Adds the JS scripts and variables the category UX needs.
      */

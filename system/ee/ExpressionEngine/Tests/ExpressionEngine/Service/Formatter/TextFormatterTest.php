@@ -19,7 +19,7 @@ require_once APPPATH.'helpers/multibyte_helper.php';
 
 class TextFormatterTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');
         $this->sess = m::mock('EE_Session');
@@ -27,7 +27,7 @@ class TextFormatterTest extends TestCase
         $this->lang->shouldReceive('load');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->factory = null;
 

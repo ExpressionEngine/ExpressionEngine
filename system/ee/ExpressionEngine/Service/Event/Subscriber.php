@@ -19,7 +19,6 @@ namespace ExpressionEngine\Service\Event;
  */
 interface Subscriber
 {
-
     /**
      * Get a list of subscribed event names
      *

@@ -1835,7 +1835,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'member_theme member_theme_desc',
                 'command_title' => 'member_theme'
             );
-            
+
             $items[1]['systemSettingsUrls']['anchors']['fieldset-profile_trigger'] = array(
                 'trail' => [
                     'settings',

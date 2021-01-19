@@ -19,7 +19,6 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Email extends AbstractDesignController
 {
-
     /**
      * Constructor
      */

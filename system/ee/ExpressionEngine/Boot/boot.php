@@ -1,6 +1,8 @@
-<?php  if (! defined('SYSPATH')) {
-    exit('No direct script access allowed');
-}
+<?php
+
+ if (! defined('SYSPATH')) {
+     exit('No direct script access allowed');
+ }
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -19,7 +21,7 @@
  * ------------------------------------------------------
  */
     defined('BASEPATH') || define('BASEPATH', SYSPATH.'ee/legacy/');
-    defined('EESELF') || define('EESELF', SELF);
+    defined('EESELF') || define('EESELF', self);
 
     // load user configurable constants
     $constants = require SYSPATH.'ee/ExpressionEngine/Config/constants.php';

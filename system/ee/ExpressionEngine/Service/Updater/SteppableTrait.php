@@ -17,7 +17,6 @@ namespace ExpressionEngine\Service\Updater;
  */
 trait SteppableTrait
 {
-
     /**
      * Stores list of methods to call on the implementing class
      */

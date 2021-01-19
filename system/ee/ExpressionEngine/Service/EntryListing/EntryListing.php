@@ -21,7 +21,6 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class EntryListing
 {
-
     /**
      * @var Filter $author_filter Author Filter object
      */
@@ -479,7 +478,7 @@ class EntryListing
         $status_options = array();
 
         foreach ($statuses as $status) {
-            $status_name = ($status->status == 'closed' or $status->status == 'open') ?  lang($status->status) : $status->status;
+            $status_name = ($status->status == 'closed' or $status->status == 'open') ? lang($status->status) : $status->status;
             $status_options[$status->status] = $status_name;
         }
 

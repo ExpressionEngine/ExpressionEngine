@@ -207,42 +207,42 @@ class Rte_mcp
     {
         if (ee('Request')->isPost()) {
             $settings =  ee('Request')->post('settings');
-    
+
             // -------------------------------------------
             //  Save and redirect to Index
             // -------------------------------------------
-    
+
             $toolset_id =  ee('Request')->post('toolset_id');
             $configName =  ee('Request')->post('toolset_name');
-    
+
             if (!$configName) {
                 $configName = 'Untitled';
             }
-    
+
             // Existing configuration
             if ($toolset_id) {
                 $config = ee('Model')->get('rte:Toolset', $toolset_id)->first();
             }
-    
+
             // New config
             if (!isset($config) || empty($config)) {
                 $config = ee('Model')->make('rte:Toolset');
             }
-    
+
             $config->toolset_name = $configName;
             $config->settings = $settings;
-    
+
             $validate = $config->validate();
-    
+
             if ($validate->isValid()) {
                 $config->save();
-    
+
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle($toolset_id ? lang('toolset_updated') : lang('toolset_created'))
                     ->addToBody(sprintf($toolset_id ? lang('toolset_updated_desc') : lang('toolset_created_desc'), $configName))
                     ->defer();
-    
+
                 ee()->functions->redirect($this->base_url);
             } else {
                 $variables['errors'] = $validate;

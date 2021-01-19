@@ -13,7 +13,6 @@
  */
 interface Csrf_storage_backend
 {
-
     /**
      * Get the token expiration time
      *

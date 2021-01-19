@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Permission;
  */
 class Permission
 {
-
     /**
      * @var array $userdata An array of the session userdata
      */
@@ -115,7 +114,7 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         $which = func_get_args();
 
         if (count($which) !== 1) {
@@ -144,7 +143,7 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         $which = $this->prepareArguments(func_get_args());
 
         if (! count($which)) {
@@ -176,7 +175,7 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         $which = $this->prepareArguments(func_get_args());
 
         if (! count($which)) {

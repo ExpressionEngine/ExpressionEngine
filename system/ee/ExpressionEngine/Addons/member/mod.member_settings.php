@@ -475,7 +475,7 @@ class Member_settings extends Member
             /**  {name}
             /** ----------------------*/
 
-            $name = (! $row['screen_name']) ? $row['username']  : $row['screen_name'] ;
+            $name = (! $row['screen_name']) ? $row['username'] : $row['screen_name'] ;
 
             $name = $this->_convert_special_chars($name);
 
@@ -862,8 +862,8 @@ class Member_settings extends Member
             ee()->load->library('channel_form/channel_form_lib');
             ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
             ee()->channel_form_lib->compile_js();
-            
-            
+
+
             $return = ee()->functions->form_declaration(array(
                 'id' => 'cform',
                 'hidden_fields' => array(
@@ -1152,8 +1152,8 @@ class Member_settings extends Member
 
         $data = array(
                         'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
-                        'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
-                        'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
+                        'display_signatures'	=> (isset($_POST['display_signatures'])) ? 'y' : 'n',
+                        'parse_smileys'			=> (isset($_POST['parse_smileys'])) ? 'y' : 'n'
                       );
 
         ee()->db->update('members', $data, array('member_id' => ee()->session->userdata('member_id')));
@@ -1215,10 +1215,10 @@ class Member_settings extends Member
                 'path:update_email_settings'	=>	$this->_member_path('update_email'),
                 'email'							=>	$query->row('email') ,
                 'state:accept_admin_email'		=>	($query->row('accept_admin_email')  == 'y') ? " checked='checked'" : '',
-                'state:accept_user_email'		=>	($query->row('accept_user_email')  == 'y')  ? " checked='checked'" : '',
-                'state:notify_by_default'		=>	($query->row('notify_by_default')  == 'y')  ? " checked='checked'" : '',
-                'state:notify_of_pm'			=>	($query->row('notify_of_pm')  == 'y')  ? " checked='checked'" : '',
-                'state:smart_notifications'		=>	($query->row('smart_notifications')  == 'y')  ? " checked='checked'" : ''
+                'state:accept_user_email'		=>	($query->row('accept_user_email')  == 'y') ? " checked='checked'" : '',
+                'state:notify_by_default'		=>	($query->row('notify_by_default')  == 'y') ? " checked='checked'" : '',
+                'state:notify_of_pm'			=>	($query->row('notify_of_pm')  == 'y') ? " checked='checked'" : '',
+                'state:smart_notifications'		=>	($query->row('smart_notifications')  == 'y') ? " checked='checked'" : ''
              )
         );
     }
@@ -1263,10 +1263,10 @@ class Member_settings extends Member
         $member->set([
             'email'               =>  ee()->input->post('email'),
             'accept_admin_email'  => (ee()->input->post('accept_admin_email')) ? 'y' : 'n',
-            'accept_user_email'   => (ee()->input->post('accept_user_email'))  ? 'y' : 'n',
-            'notify_by_default'   => (ee()->input->post('notify_by_default'))  ? 'y' : 'n',
-            'notify_of_pm'        => (ee()->input->post('notify_of_pm'))  ? 'y' : 'n',
-            'smart_notifications' => (ee()->input->post('smart_notifications'))  ? 'y' : 'n',
+            'accept_user_email'   => (ee()->input->post('accept_user_email')) ? 'y' : 'n',
+            'notify_by_default'   => (ee()->input->post('notify_by_default')) ? 'y' : 'n',
+            'notify_of_pm'        => (ee()->input->post('notify_of_pm')) ? 'y' : 'n',
+            'smart_notifications' => (ee()->input->post('smart_notifications')) ? 'y' : 'n',
         ]);
 
         $result = $member->validate();

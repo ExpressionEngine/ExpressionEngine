@@ -1644,7 +1644,7 @@ class CI_DB_active_record extends CI_DB_driver
                 $this->ar_aliased_tables[] = $table;
             }
         }
-        
+
         if (in_array($table, ['member_groups', 'channel_member_groups', 'module_member_groups', 'layout_publish_member_groups', 'template_member_groups', 'upload_no_access', 'template_no_access', 'status_no_access'])) {
             $debug_backtrace = debug_backtrace(false);
             foreach ($debug_backtrace as $trace) {
@@ -1660,7 +1660,7 @@ class CI_DB_active_record extends CI_DB_driver
 
                     ee()->load->library('logger');
                     ee()->logger->developer($message, true);
-                        
+
                     throw new \Exception($message);
                 }
             }

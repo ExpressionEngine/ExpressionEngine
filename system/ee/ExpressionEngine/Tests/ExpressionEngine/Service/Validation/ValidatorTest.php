@@ -17,12 +17,12 @@ require_once APPPATH.'helpers/multibyte_helper.php';
 
 class ValidatorTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->validator = new Validator();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->validator = null;
     }

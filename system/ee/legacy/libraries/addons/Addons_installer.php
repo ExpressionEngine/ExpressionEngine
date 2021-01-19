@@ -13,7 +13,6 @@
  */
 class Addons_installer
 {
-
     /**
      * Constructor
      */

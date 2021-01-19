@@ -80,7 +80,7 @@ class AddonUpdater
     {
         $upgrader = $info->getUpgraderClass();
 
-        $result = (new $upgrader)->upgrade($this->from_version);
+        $result = (new $upgrader())->upgrade($this->from_version);
 
         // If we are updating from the CLI, we can ensure that all addons get updated at each step
         // This is a great deal slower, but makes life easier

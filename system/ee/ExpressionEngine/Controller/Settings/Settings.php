@@ -18,7 +18,6 @@ use ExpressionEngine\Library\CP;
  */
 class Settings extends CP_Controller
 {
-
     /**
      * Constructor
      */

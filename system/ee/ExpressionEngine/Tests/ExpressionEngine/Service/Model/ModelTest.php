@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         m::close();
     }
@@ -52,10 +52,10 @@ class ModelTest extends TestCase
 
     public function testIsNew()
     {
-        $m1 = new ModelStub;
+        $m1 = new ModelStub();
         $this->assertTrue($m1->isNew());
 
-        $m2 = new ModelStub;
+        $m2 = new ModelStub();
         $m2->setId(5);
         $this->assertFalse($m2->isNew());
 
@@ -72,7 +72,7 @@ class ModelTest extends TestCase
         $m1 = new ModelStub(array('id' => 5));
         $this->assertTrue($m1->isDirty());
 
-        $m2 = new ModelStub;
+        $m2 = new ModelStub();
         $this->assertFalse($m2->isDirty());
 
         $m2->fill(array('name' => 'John'));

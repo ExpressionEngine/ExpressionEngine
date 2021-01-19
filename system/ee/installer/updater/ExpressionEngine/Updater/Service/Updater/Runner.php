@@ -210,7 +210,7 @@ class Runner
     public function selfDestruct($rollback = null)
     {
         $config = ee('Config')->getFile();
-        
+
         $config->set('app_version', APP_VER, true);
 
         // Legacy logger lib to log to update_log table

@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Gateway;
  */
 class VariableColumnGateway extends Gateway
 {
-
     /**
      *
      */

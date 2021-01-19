@@ -17,7 +17,6 @@ use ExpressionEngine\Library\CP;
  */
 class Sql extends Utilities
 {
-
     /**
      * SQL Manager
      */

@@ -13,7 +13,6 @@
  */
 abstract class OptionFieldtype extends EE_Fieldtype
 {
-
     /**
      * Creates a mini Grid field based on the data in the 'value_label_pairs' key
      *

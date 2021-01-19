@@ -1,4 +1,5 @@
 <?php
+
 #
 # SmartyPants  -  Smart punctuation for web sites
 #
@@ -130,7 +131,6 @@ function smarty_modifier_smartypants($text, $attr = null)
 
 class SmartyPants_Parser
 {
-
     # Options to specify which transformations to make:
     public $do_nothing   = 0;
     public $do_quotes    = 0;

@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Controller\Design;
 
-use \EE_Route;
+use EE_Route;
 use ZipArchive;
 use ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use ExpressionEngine\Library\CP\Table;
@@ -22,7 +22,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class Template extends AbstractDesignController
 {
-
     /**
      * Constructor
      */

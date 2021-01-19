@@ -17,9 +17,9 @@ namespace ExpressionEngine\Service\Database\Backup;
  */
 class Query
 {
-    const BINARY_TYPE = 1;
-    const STRING_TYPE = 2;
-    const NUMBER_TYPE = 3;
+    public const BINARY_TYPE = 1;
+    public const STRING_TYPE = 2;
+    public const NUMBER_TYPE = 3;
 
     /**
      * @var Database\Query Database Query object

@@ -20,7 +20,6 @@ use ExpressionEngine\Cli\Cli;
  */
 abstract class Core
 {
-
     /**
      * @var bool Application done booting?
      */
@@ -122,7 +121,7 @@ abstract class Core
     {
         $this->legacy->includeBaseController();
 
-        $cli = new Cli;
+        $cli = new Cli();
 
         $cli->process();
 
@@ -237,7 +236,7 @@ abstract class Core
         // here we go!
         // Catch anything that might bubble up from inside our app
         try {
-            $controller = new $class;
+            $controller = new $class();
 
             // we can only ascertain method signatures for real methods, not magic __call()s
             if (method_exists($controller, $method)) {

@@ -13,7 +13,6 @@
  */
 class Pages
 {
-
     /**
      * Output Javascript
      *

@@ -13,7 +13,6 @@
  */
 class Comment_model extends CI_Model
 {
-
     /**
      * Recount Stats for Comments
      *

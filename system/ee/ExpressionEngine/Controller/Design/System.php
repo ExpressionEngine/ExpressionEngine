@@ -18,7 +18,6 @@ use ExpressionEngine\Library\CP\Table;
  */
 class System extends AbstractDesignController
 {
-
     /**
      * Constructor
      */

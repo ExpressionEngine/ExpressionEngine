@@ -18,7 +18,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 abstract class Filter
 {
-
     /**
      * @var string The name="" attribute and query string parameter name for
      *             this filter

@@ -15,7 +15,6 @@
  */
 class EE_Utf8
 {
-
     /**
      * Constructor
      *

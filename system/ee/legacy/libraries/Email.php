@@ -13,8 +13,6 @@
  */
 class EE_Email
 {
-
-
     /**
      * Used as the User-Agent and X-Mailer headers' value.
      *

@@ -16,13 +16,13 @@ use PHPUnit\Framework\TestCase;
 
 class TypedColumnsTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $class = __NAMESPACE__.'\TypedColumnsStub';
-        $this->obj = new $class;
+        $this->obj = new $class();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->obj = null;
     }

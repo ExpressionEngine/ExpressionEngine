@@ -666,7 +666,7 @@ class EE_Session
 
         if (($this->userdata['last_visit'] == 0) or
             (($member_query->row('last_activity')  + $this->session_length) < ee()->localize->now)) {
-            $last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity')  : ee()->localize->now;
+            $last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity') : ee()->localize->now;
 
             ee()->db->where('member_id', (int) $this->sdata['member_id']);
             ee()->db->update('members', array(

@@ -18,7 +18,6 @@ use ExpressionEngine\Service\Validation\Rule\Email;
  */
 class UniqueEmail extends ValidationRule
 {
-
     /**
      * Check to see if the email address is unique on the site
      *

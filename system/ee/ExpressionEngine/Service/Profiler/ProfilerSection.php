@@ -22,7 +22,6 @@ use ExpressionEngine\Service\Formatter\FormatterFactory;
  */
 abstract class ProfilerSection
 {
-
     /**
      * @var The profiler section data
      * 	    typical format is: [section label] => [[key => val], ...]

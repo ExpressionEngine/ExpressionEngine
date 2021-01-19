@@ -353,7 +353,7 @@ JSC;
         if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
             return $this->replace_tag_catchall($data, $params, $tagdata, 'resize');
         }
-        
+
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }
@@ -382,7 +382,7 @@ JSC;
         if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
             return $this->replace_tag_catchall($data, $params, $tagdata, 'crop');
         }
-        
+
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }

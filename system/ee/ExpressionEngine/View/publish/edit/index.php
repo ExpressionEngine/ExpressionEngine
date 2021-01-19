@@ -1,4 +1,5 @@
 <?php
+
 $this->extend('_templates/default-nav');
 
 $this->embed('publish/partials/edit_list_table');

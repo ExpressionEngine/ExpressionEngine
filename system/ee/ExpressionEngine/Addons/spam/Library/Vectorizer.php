@@ -15,7 +15,6 @@ namespace ExpressionEngine\Addons\Spam\Library;
  */
 interface Vectorizer
 {
-
     /**
      * Return an array of floats computed from the source string
      *

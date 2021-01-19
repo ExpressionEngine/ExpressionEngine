@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
  */
 class Base64 extends SerializedType
 {
-
     /**
      * Called when the column is fetched from db
      */

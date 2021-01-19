@@ -13,8 +13,6 @@
  */
 class Api_channel_categories extends Api
 {
-
-
     /**
      * Just a note, these really should be protected/private and set by the API itself
      * However, we're abusing them in other places, so they are set to public for now.

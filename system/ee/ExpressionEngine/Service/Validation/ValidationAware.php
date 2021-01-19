@@ -17,7 +17,6 @@ namespace ExpressionEngine\Service\Validation;
  */
 interface ValidationAware
 {
-
     /**
      * Return an array of validation data.
      */

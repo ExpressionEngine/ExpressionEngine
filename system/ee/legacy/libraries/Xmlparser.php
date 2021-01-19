@@ -54,7 +54,7 @@ class EE_XMLparser
                 $current = count($elements);
 
                 if ($item['type'] == 'open' or $item['type'] == 'complete') {
-                    $elements[$current] = new XML_Cache;
+                    $elements[$current] = new XML_Cache();
                     $elements[$current]->tag		= $item['tag'];
                     $elements[$current]->attributes	= (array_key_exists('attributes', $item)) ? $item['attributes'] : '';
                     $elements[$current]->value		= (array_key_exists('value', $item)) ? $item['value'] : '';

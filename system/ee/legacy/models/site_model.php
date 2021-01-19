@@ -13,7 +13,6 @@
  */
 class Site_model extends CI_Model
 {
-
     /**
      * Get an array of all available site ids.
      *

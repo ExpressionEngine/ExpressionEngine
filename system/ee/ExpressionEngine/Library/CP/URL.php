@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\CP;
  */
 class URL implements \Serializable
 {
-
     /**
      * @var string $path The path (i.e. 'logs/cp')
      */

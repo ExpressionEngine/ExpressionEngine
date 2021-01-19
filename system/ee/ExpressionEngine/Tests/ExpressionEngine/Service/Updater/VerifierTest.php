@@ -9,14 +9,14 @@ use PHPUnit\Framework\TestCase;
 
 class VerifierTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 
         $this->verifier = new Verifier($this->filesystem);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->filesystem = null;
         $this->verifier = null;

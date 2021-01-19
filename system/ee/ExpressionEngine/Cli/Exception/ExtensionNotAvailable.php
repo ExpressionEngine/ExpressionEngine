@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli\Exception;
 
 use ExpressionEngine\Cli\Exception as CliException;

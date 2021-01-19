@@ -9,7 +9,6 @@ use ExpressionEngine\Addons\Spam\Service\SpamModerationInterface;
  */
 class Channel_spam implements SpamModerationInterface
 {
-
     /**
      * Approve Trapped Spam
      *

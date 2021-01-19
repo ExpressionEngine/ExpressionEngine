@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Column\StaticType;
  */
 class Integer extends StaticType
 {
-
     /**
      * Called when the user gets the column
      */

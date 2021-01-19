@@ -13,7 +13,6 @@
  */
 class CI_DB_mysqli_connection
 {
-
     /**
      * @var Array of config values
      */

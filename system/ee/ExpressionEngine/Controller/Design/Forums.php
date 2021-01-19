@@ -18,7 +18,6 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Forums extends AbstractDesignController
 {
-
     /**
      * Constructor
      */

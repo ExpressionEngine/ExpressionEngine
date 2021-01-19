@@ -930,7 +930,7 @@ class EE_Loader
         if (! empty($config)) {
             $this->facade->set($classvar, new $name($config));
         } else {
-            $this->facade->set($classvar, new $name);
+            $this->facade->set($classvar, new $name());
         }
     }
 

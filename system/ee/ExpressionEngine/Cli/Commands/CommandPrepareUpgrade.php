@@ -8,7 +8,6 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class CommandPrepareUpgrade extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -123,7 +122,7 @@ class CommandPrepareUpgrade extends Cli
 
         // Move templates
         $this->moveTemplates();
-        
+
         // @TODO: Move addons
         $this->moveAddons();
 
@@ -218,7 +217,7 @@ class CommandPrepareUpgrade extends Cli
             return;
         }
 
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $customConfig = $this->getConfigPath();
 
@@ -306,7 +305,7 @@ class CommandPrepareUpgrade extends Cli
     private function moveOriginalSiteToTmp()
     {
         // Need to copy system/, index.php, admin.php and themes folder
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = $this->prepTmpDirectory();
 
@@ -322,7 +321,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function prepTmpDirectory()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'];
 
@@ -337,7 +336,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function copyNewEEFiles()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $filesystem->copy(
             SYSPATH,
@@ -369,7 +368,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function copyOriginalConfig()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
@@ -409,7 +408,7 @@ class CommandPrepareUpgrade extends Cli
             return;
         }
 
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         // $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 

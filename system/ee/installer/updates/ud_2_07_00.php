@@ -530,7 +530,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
                     );
 
                     switch ($new_key) {
-                        case 'show_existing': $settings[$key] = ((bool) $settings[$key]) ? 'y': 'n';
+                        case 'show_existing': $settings[$key] = ((bool) $settings[$key]) ? 'y' : 'n';
                             break;
                         case 'upload_dir':    $new_key = 'allowed_directories';
                             break;

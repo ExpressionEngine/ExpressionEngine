@@ -13,7 +13,6 @@
  */
 class Ip_to_nation_mcp
 {
-
     /**
       * Constructor
       */

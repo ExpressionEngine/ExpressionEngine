@@ -50,7 +50,7 @@ class Jumps extends CP_Controller
         $info = ee('Addon')->get($name);
 
         $class = $info->getJumpClass();
-        $jumpMenu = new $class;
+        $jumpMenu = new $class();
 
         if (! method_exists($jumpMenu, $method)) {
             $this->invalidMethod();

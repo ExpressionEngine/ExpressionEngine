@@ -10,14 +10,13 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Punctuation Vectorizer
  */
 class Punctuation implements Vectorizer
 {
-
     /**
      * Calculates the ratio of punctuation to non-punctuation
      *

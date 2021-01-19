@@ -220,7 +220,7 @@ class Fields extends Members\Members
             ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
             '' => lang('create_member_field')
         );
-        
+
         $this->form();
     }
 
@@ -231,7 +231,7 @@ class Fields extends Members\Members
             ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
             '' => lang('edit_member_field')
         );
-        
+
         $this->form($id);
     }
 

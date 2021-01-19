@@ -19,7 +19,7 @@ class MimeTypeTest extends TestCase
     protected $safe_mime_types = array();
     protected $exception_class;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->safe_mime_types = array(
             'application/pdf',
@@ -35,7 +35,7 @@ class MimeTypeTest extends TestCase
         $this->exception_class = (PHP_VERSION_ID < 70000) ? 'PHPUnit_Framework_Error' : 'TypeError';
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->mime_type = null;
     }

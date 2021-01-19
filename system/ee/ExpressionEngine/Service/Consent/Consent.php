@@ -21,7 +21,7 @@ use InvalidArgumentException;
  */
 class Consent
 {
-    const COOKIE_NAME = 'visitor_consents';
+    public const COOKIE_NAME = 'visitor_consents';
 
     /**
      * @var array Cookie data, for visitors

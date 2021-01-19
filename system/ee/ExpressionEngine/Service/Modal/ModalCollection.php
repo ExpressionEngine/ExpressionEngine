@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\View;
  */
 class ModalCollection
 {
-
     /**
      * @var array $alerts An associative array of alerts by type
      */

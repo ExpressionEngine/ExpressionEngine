@@ -13,7 +13,6 @@
  */
 class EE_Channel_custom_field_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if custom fields are enabled.
      *

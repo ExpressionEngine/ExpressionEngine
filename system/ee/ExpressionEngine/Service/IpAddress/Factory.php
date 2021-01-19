@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\IpAddress;
  */
 class Factory
 {
-
     /**
      * Anonymize an IPv4 or IPv6 address.
      *

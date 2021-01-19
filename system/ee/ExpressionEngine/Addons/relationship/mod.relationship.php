@@ -13,7 +13,6 @@
  */
 class Relationship
 {
-
     /**
      * AJAX endpoint for filtering a Relationship field on the publish form
      */

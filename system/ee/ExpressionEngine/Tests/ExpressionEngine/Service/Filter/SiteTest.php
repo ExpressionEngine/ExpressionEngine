@@ -24,7 +24,7 @@ class SiteTest extends TestCase
         '2' => "Site 2"
     );
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($_POST['filter_by_site']);
         unset($_GET['filter_by_site']);
@@ -78,7 +78,7 @@ class SiteTest extends TestCase
             array(9.1),
             array(false),
             array(null),
-            array(new stdClass),
+            array(new stdClass()),
             array(function () {
                 return array();
             }),

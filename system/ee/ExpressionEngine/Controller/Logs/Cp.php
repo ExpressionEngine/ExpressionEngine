@@ -15,7 +15,6 @@ namespace ExpressionEngine\Controller\Logs;
  */
 class Cp extends Logs
 {
-
     /**
      * View Control Panel Log Files
      *

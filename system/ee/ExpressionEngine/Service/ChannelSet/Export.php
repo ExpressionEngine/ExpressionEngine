@@ -55,7 +55,7 @@ class Export
 
         $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-        $base = new \StdClass;
+        $base = new \StdClass();
 
         foreach ($channels as $channel) {
             $this->exportChannel($channel);

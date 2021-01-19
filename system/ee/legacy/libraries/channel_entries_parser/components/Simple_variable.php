@@ -13,7 +13,6 @@
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
 {
-
     // bring in the :modifier methods
     use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 

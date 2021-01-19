@@ -13,8 +13,6 @@
  */
 class Member_subscriptions extends Member
 {
-
-
     /**
      * Subscriptions Edit Form
      */

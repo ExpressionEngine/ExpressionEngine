@@ -18,7 +18,6 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
  */
 class Timestamp extends SerializedType
 {
-
     /**
      * Called when the column is fetched from db
      */

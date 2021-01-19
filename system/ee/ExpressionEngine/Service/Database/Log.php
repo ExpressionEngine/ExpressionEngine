@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Database;
  */
 class Log
 {
-
     /**
      * @var String Identifying name in the query log
      */

@@ -13,7 +13,7 @@
  */
 class File_category_model extends CI_Model
 {
-    const TABLE_NAME = 'file_categories';
+    public const TABLE_NAME = 'file_categories';
 
     /**
      * Set the file category

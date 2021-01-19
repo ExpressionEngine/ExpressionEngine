@@ -13,7 +13,6 @@
  */
 class EE_Channel_category_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if categories are enabled and requested in the template.
      *

@@ -16,7 +16,6 @@ namespace ExpressionEngine\Service\Template\Variables;
  */
 class LegacyParser
 {
-
     // bring in the :modifier methods
     use ModifiableTrait;
 

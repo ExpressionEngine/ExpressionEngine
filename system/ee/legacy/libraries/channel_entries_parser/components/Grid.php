@@ -13,7 +13,6 @@
  */
 class EE_Channel_grid_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if Grid is enabled
      *

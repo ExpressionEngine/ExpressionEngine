@@ -214,7 +214,7 @@ class Publish extends AbstractPublishController
             'form_url' => ee('CP/URL')->getCurrentUrl(),
             'form_attributes' => $form_attributes,
             'form_title' => lang('new_entry'),
-            'errors' => new \ExpressionEngine\Service\Validation\Result,
+            'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
             'buttons' => $this->getPublishFormButtons($entry),
             'header' => [

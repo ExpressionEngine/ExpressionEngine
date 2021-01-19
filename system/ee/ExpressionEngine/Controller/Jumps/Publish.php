@@ -109,7 +109,7 @@ class Publish extends Jumps
         if (empty(ee()->functions->fetch_assigned_channels())) {
             return [];
         }
-        
+
         $channels = ee('Model')->get('Channel')
             ->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
 

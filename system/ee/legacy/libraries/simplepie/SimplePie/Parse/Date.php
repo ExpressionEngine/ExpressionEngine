@@ -569,7 +569,7 @@ class SimplePie_Parse_Date
     {
         static $object;
         if (!$object) {
-            $object = new SimplePie_Parse_Date;
+            $object = new SimplePie_Parse_Date();
         }
         return $object;
     }

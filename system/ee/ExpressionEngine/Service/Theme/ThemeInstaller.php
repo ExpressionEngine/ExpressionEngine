@@ -20,7 +20,6 @@ use ExpressionEngine\Library\Filesystem;
  */
 class ThemeInstaller
 {
-
     /**
      * @var string The site URL
      */

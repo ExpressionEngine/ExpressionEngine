@@ -18,7 +18,6 @@ use ExpressionEngine\Controller\Categories\AbstractCategories as AbstractCategor
  */
 class Fields extends AbstractCategoriesController
 {
-
     /**
      * AJAX end point for reordering category fields
      */

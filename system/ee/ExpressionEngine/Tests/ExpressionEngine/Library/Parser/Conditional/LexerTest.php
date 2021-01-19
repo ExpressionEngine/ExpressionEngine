@@ -48,12 +48,12 @@ class LexerTest extends TestCase
         )
     );
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->lexer = new Lexer();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->lexer = null;
     }

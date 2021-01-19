@@ -17,7 +17,6 @@ namespace ExpressionEngine\Service\IpAddress;
  */
 class Anonymizer
 {
-
     /**
      * @var string IPv4 netmask used to anonymize IPv4 address.
      */

@@ -33,7 +33,7 @@ class ZipToSet
      */
     public function extractAs($file_name)
     {
-        $zip = new \ZipArchive;
+        $zip = new \ZipArchive();
 
         if ($zip->open($this->path) !== true) {
             throw new ImportException('Zip file not readable.');

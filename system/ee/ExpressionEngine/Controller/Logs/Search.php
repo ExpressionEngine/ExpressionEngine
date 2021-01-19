@@ -18,7 +18,6 @@ use ExpressionEngine\Service\CP\Filter\FilterRunner;
  */
 class Search extends Logs
 {
-
     /**
      * View Search Log
      *

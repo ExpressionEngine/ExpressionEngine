@@ -82,8 +82,8 @@ class Simple_commerce
         $cached = false;
 
         $paypal_account = (! ee()->config->item('sc_paypal_account')) ? ee()->config->item('webmaster_email') : ee()->config->item('sc_paypal_account');
-        $cancel	 		= (! ee()->TMPL->fetch_param('cancel'))  ? ee()->functions->fetch_site_index() : ee()->TMPL->fetch_param('cancel');
-        $currency		= (! ee()->TMPL->fetch_param('currency'))  ? 'USD' : ee()->TMPL->fetch_param('currency');
+        $cancel	 		= (! ee()->TMPL->fetch_param('cancel')) ? ee()->functions->fetch_site_index() : ee()->TMPL->fetch_param('cancel');
+        $currency		= (! ee()->TMPL->fetch_param('currency')) ? 'USD' : ee()->TMPL->fetch_param('currency');
         $country_code	= (! ee()->TMPL->fetch_param('country_code')) ? 'US' : strtoupper(ee()->TMPL->fetch_param('country_code'));
         $show_disabled  = (ee()->TMPL->fetch_param('show_disabled') == 'yes') ? true : false;
 
@@ -137,7 +137,7 @@ class Simple_commerce
                                         'cancel_return'		=> $cancel,
                                         'item_name'			=> $row['item_name'] ,
                                         'item_number'		=> $row['item_id'] ,
-                                        'amount'			=> ($row['item_use_sale']  == 'y') ? $row['item_sale_price']  : $row['item_regular_price'] ,
+                                        'amount'			=> ($row['item_use_sale']  == 'y') ? $row['item_sale_price'] : $row['item_regular_price'] ,
                                         'lc'				=> $country_code,
                                         'currency_code'		=> $currency,
                                         'custom'			=> ee()->session->userdata['member_id']
@@ -297,7 +297,7 @@ class Simple_commerce
 
     public function round_money($value, $dec=2)
     {
-        $decimal = (ee()->TMPL->fetch_param('decimal') == ',')  ? ',' : '.';
+        $decimal = (ee()->TMPL->fetch_param('decimal') == ',') ? ',' : '.';
 
         $value += 0.0;
         $unit	= floor($value * pow(10, $dec+1)) / 10;
@@ -358,7 +358,7 @@ class Simple_commerce
         }
 
         if ($this->debug === true) {
-            $url = (! function_exists('openssl_open')) ? 'http://www.sandbox.paypal.com/cgi-bin/webscr' :  'https://www.sandbox.paypal.com/cgi-bin/webscr';
+            $url = (! function_exists('openssl_open')) ? 'http://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.sandbox.paypal.com/cgi-bin/webscr';
         } else {
             $url = (! function_exists('openssl_open')) ? 'http://www.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr';
         }

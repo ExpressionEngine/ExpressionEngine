@@ -179,7 +179,7 @@ class RteHelper
     public static function insertConfigJsById($configId = null)
     {
         ee()->lang->loadfile('rte');
-        
+
         // starting point
         $baseConfig = static::defaultConfigSettings();
 

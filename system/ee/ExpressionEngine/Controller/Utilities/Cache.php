@@ -15,7 +15,6 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class Cache extends Utilities
 {
-
     /**
      * Cache Manager
      *

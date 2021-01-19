@@ -1,4 +1,5 @@
 <?php
+
 #
 # Markdown  -  A text-to-HTML conversion tool for web writers
 #
@@ -10,6 +11,7 @@
 # Copyright (c) 2004-2006 John Gruber
 # <https://daringfireball.net/projects/markdown/>
 #
+
 namespace Michelf;
 
 #
@@ -18,8 +20,7 @@ namespace Michelf;
 
 interface MarkdownInterface
 {
-
-  #
+    #
     # Initialize the parser and return the result of its transform method.
     # This will work fine for derived classes too.
     #

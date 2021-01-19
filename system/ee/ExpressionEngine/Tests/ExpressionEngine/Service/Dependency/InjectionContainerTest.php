@@ -18,12 +18,12 @@ class InjectionContainerTest extends TestCase
 {
     protected $di;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->di = new InjectionContainer;
+        $this->di = new InjectionContainer();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $this->di = null;
     }

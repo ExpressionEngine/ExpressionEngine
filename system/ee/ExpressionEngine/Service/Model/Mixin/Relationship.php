@@ -22,7 +22,6 @@ use ExpressionEngine\Service\Model\Association\Association;
  */
 class Relationship implements Mixin
 {
-
     /**
      * @var Parent scope
      */

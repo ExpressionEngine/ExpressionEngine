@@ -1346,7 +1346,7 @@ class SimplePie
 
             list($headers, $sniffed) = $fetched;
         }
-        
+
         // Empty response check
         if (empty($this->raw_data)) {
             $this->error = "A feed could not be found at `$this->feed_url`. Empty body.";

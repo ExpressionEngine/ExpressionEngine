@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class NavigationList
 {
-
     /**
      * @var array $items Items in the list
      */

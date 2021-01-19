@@ -286,7 +286,7 @@ class Search
      */
     protected function _build_meta_array()
     {
-        $site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids: array(ee()->config->item('site_id'));
+        $site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids : array(ee()->config->item('site_id'));
 
         $meta = array(
             'status'				=> ee()->TMPL->fetch_param('status', ''),
@@ -1115,7 +1115,7 @@ class Search
             require PATH_ADDONS.'channel/mod.channel.php';
         }
 
-        $channel = new Channel;
+        $channel = new Channel();
 
         $channel->fetch_custom_channel_fields();
         $channel->fetch_custom_member_fields();

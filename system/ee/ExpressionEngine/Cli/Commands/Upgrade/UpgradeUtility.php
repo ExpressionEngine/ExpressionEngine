@@ -36,7 +36,7 @@ class UpgradeUtility
 
     protected static function remove_installer_directory()
     {
-        $filesystem = new Filesystem;
+        $filesystem = new Filesystem();
 
         $installerPath = SYSPATH . 'ee/installer';
 

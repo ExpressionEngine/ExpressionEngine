@@ -34,7 +34,7 @@ class MemberGroup extends Role
 
         ee()->load->library('logger');
         ee()->logger->developer($message, true);
-        
+
         throw new \Exception($message);
     }
 }

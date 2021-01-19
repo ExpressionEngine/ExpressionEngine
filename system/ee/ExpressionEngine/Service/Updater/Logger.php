@@ -20,7 +20,6 @@ use ExpressionEngine\Service\Logger\File;
  */
 class Logger extends File
 {
-
     /**
      * Formats the log message with pertanent information before
      * sending it to the logger

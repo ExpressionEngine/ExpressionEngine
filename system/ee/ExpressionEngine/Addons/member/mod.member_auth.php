@@ -13,7 +13,6 @@
  */
 class Member_auth extends Member
 {
-
     /**
      * Login Page
      *

@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Template\Variables;
  */
 class Consent extends Variables
 {
-
     /**
      * @var array Consent data from ee('Consent')->getConsentDataFor()
      */

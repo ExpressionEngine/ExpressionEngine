@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class Factory
 {
-
     /**
      * Make a new validator for a set of rules
      */

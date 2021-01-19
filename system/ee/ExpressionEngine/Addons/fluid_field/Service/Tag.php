@@ -17,7 +17,6 @@ use ExpressionEngine\Model\Content\FieldFacade;
  */
 class Tag
 {
-
     /**
      * @var string $tagdata The contents of the tag
      */

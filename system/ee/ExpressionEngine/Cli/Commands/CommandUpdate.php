@@ -11,7 +11,6 @@ use ExpressionEngine\Cli\Commands\Upgrade\UpgradeUtility;
  */
 class CommandUpdate extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -166,7 +165,7 @@ class CommandUpdate extends Cli
 
         // Load what we need in EE
         ee()->load->library('core');
-        
+
         ee()->load->helper('language');
         ee()->load->helper('string');
         // We only need this one for the upgrade.
@@ -370,10 +369,10 @@ class CommandUpdate extends Cli
 
             // Instantiate the updater class
             if (class_exists('Updater')) {
-                $UD = new Updater;
+                $UD = new Updater();
             } else {
                 $class = '\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
-                $UD = new $class;
+                $UD = new $class();
             }
 
             if (($status = $UD->do_update()) === false) {
@@ -426,13 +425,12 @@ class CommandUpdate extends Cli
         if (version_compare($this->currentVersion, '3.0.0', '<')) {
             if (! ee()->config->item('avatar_path')) {
                 $this->info('Your update process will fail without a set avatar path.');
-                $guess = ee()->config->item('base_path') ?
-                        : rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
+                $guess = ee()->config->item('base_path') ?: rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
                 SYSPATH . '../images/avatars';
                 $result = $this->confirm('Use ' . $guess . '?')
                         ? $guess
                         : $this->ask('Enter full avatar path');
-                
+
                 ee()->config->_update_config([
                     'avatar_path' => $result,
                 ]);

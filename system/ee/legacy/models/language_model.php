@@ -13,7 +13,6 @@
  */
 class Language_model extends CI_Model
 {
-
     /**
      * Language Pack Names
      *

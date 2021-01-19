@@ -13,7 +13,6 @@
  */
 class Member_images extends Member
 {
-
     /**
      * Signature Edit Form
      */

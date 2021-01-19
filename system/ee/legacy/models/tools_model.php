@@ -13,7 +13,6 @@
  */
 class Tools_model extends CI_Model
 {
-
     /**
      * Get Search and Replace Options
      *

@@ -17,7 +17,6 @@ use ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
  */
 class BulkEdit extends AbstractBulkEdit
 {
-
     /**
      * @var Array Fields we want available to Bulk Edit
      */

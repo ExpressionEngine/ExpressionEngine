@@ -225,7 +225,7 @@ class Edit extends AbstractPublishController
                 'choices' => $channel_id ? null : $choices
             ] : null
         );
-        
+
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
             $base_url->addQueryStringVariables(
                 array(
@@ -393,7 +393,7 @@ class Edit extends AbstractPublishController
             'form_url' => $base_url,
             'form_attributes' => $form_attributes,
             'form_title' => lang('edit_entry'),
-            'errors' => new \ExpressionEngine\Service\Validation\Result,
+            'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
             'buttons' => $this->getPublishFormButtons($entry),
             'in_modal_context' => $sequence_editing

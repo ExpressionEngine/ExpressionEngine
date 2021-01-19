@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Profiler\ProfilerSection;
  */
 class Template extends ProfilerSection
 {
-
     /**
      * @var  string  template memory
      **/

@@ -23,7 +23,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Username extends Filter
 {
-
     /**
      * @var Builder A Query Builder object for use in fetching usernames
      */

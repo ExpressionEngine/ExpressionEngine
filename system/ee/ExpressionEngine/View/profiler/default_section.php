@@ -10,7 +10,7 @@
 			<dl>
 				<?php foreach ($data as $key => $value): ?>
 					<dt><code><?=$key?></code></dt>
-					<dd><?=($value)?:'&nbsp;'?></dd>
+					<dd><?=($value) ?: '&nbsp;'?></dd>
 				<?php endforeach; ?>
 			</dl>
 		<?php endif; ?>

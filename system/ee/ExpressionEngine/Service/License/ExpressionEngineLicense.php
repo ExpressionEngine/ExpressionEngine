@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\License;
  */
 class ExpressionEngineLicense extends License
 {
-
     /**
      * Overrides the parent isValid check to add an additional check to ensure
      * the license number matches the correct patterns.

@@ -40,9 +40,9 @@ class eeSingletonMock
 
     public function __construct($mock = '')
     {
-        $this->load = new eeSingletonLoadMock;
-        $this->config = new eeSingletonConfigMock;
-        $this->session = new eeSingletoneSessionMock;
+        $this->load = new eeSingletonLoadMock();
+        $this->config = new eeSingletonConfigMock();
+        $this->session = new eeSingletoneSessionMock();
         $this->mock = $mock;
     }
 

@@ -18,7 +18,6 @@ use CP_Controller;
  */
 class Pro extends CP_Controller
 {
-
     /**
      * Constructor
      */

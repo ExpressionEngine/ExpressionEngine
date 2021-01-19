@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Addons\Spam\Library;
 
-use \Iterator;
+use Iterator;
 
 /**
  * Spam Document class. Cleans and generates a frequency table of a document.

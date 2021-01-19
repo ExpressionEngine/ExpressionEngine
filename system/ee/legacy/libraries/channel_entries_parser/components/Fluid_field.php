@@ -1,6 +1,8 @@
-<?php  if (! defined('BASEPATH')) {
-    exit('No direct script access allowed');
-}
+<?php
+
+ if (! defined('BASEPATH')) {
+     exit('No direct script access allowed');
+ }
 
 /**
  * This source file is part of the open source project
@@ -16,7 +18,6 @@
  */
 class EE_Channel_fluid_field_parser implements EE_Channel_parser_component
 {
-
     /**
      * Check if Fluid Field is enabled
      *

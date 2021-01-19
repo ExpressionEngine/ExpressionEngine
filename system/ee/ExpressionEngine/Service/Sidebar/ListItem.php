@@ -18,7 +18,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 abstract class ListItem
 {
-
     /**
      * @var string $text The text of the item
      */

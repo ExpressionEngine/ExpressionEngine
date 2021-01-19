@@ -483,7 +483,7 @@ class Grid_lib
                     // Channel_form_lib for regular File fields
                     if (REQ !== 'CP' && $column['col_type'] === 'file') {
                         $img = ee()->file_field->validate($_FILES[$col_id]['name'], $col_id);
-                        $row[$col_id] = isset($img['value']) ?  $img['value'] : '';
+                        $row[$col_id] = isset($img['value']) ? $img['value'] : '';
                     }
                 }
 

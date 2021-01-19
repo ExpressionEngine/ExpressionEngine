@@ -10,14 +10,13 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Links Vectorizer
  */
 class Links implements Vectorizer
 {
-
     /**
      * Calculates the amount of links in the source
      *

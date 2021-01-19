@@ -1,5 +1,5 @@
 <?php foreach ($profiler_data as $label => $log): ?>
-<div class="tab t-<?=$index?> <?=($index==0)?'tab-open':''?>">
+<div class="tab t-<?=$index?> <?=($index==0) ? 'tab-open' : ''?>">
 	<div class="debug-content">
 		<h2><?=lang('profiler_'.$label)?></h2>
 		<?php if (! is_array($log)): ?>

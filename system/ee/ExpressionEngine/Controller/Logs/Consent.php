@@ -15,7 +15,6 @@ namespace ExpressionEngine\Controller\Logs;
  */
 class Consent extends Logs
 {
-
     /**
      * View Consent Audit Log Files
      *

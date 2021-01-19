@@ -127,7 +127,7 @@ class EE_Throttling
 
     public function banish()
     {
-        $type = ((ee()->config->item('banishment_type') == 'redirect' and ee()->config->item('banishment_url') == '')  or (ee()->config->item('banishment_type') == 'message' and ee()->config->item('banishment_message') == '')) ?  '404' : ee()->config->item('banishment_type');
+        $type = ((ee()->config->item('banishment_type') == 'redirect' and ee()->config->item('banishment_url') == '')  or (ee()->config->item('banishment_type') == 'message' and ee()->config->item('banishment_message') == '')) ? '404' : ee()->config->item('banishment_type');
 
         switch ($type) {
             case 'redirect':	$loc = (strncasecmp(ee()->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://'.ee()->config->item('banishment_url') : ee()->config->item('banishment_url');

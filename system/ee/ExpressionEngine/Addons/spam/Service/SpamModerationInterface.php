@@ -15,7 +15,6 @@ namespace ExpressionEngine\Addons\Spam\Service;
  */
 interface SpamModerationInterface
 {
-
     /**
      * Approve items in the queue (mark as HAM)
      *

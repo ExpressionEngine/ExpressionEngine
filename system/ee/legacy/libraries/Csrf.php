@@ -20,7 +20,7 @@ class Csrf
     private $request_token;
     private $session_token;
 
-    const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
+    public const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
 
     public function __construct()
     {
@@ -31,7 +31,7 @@ class Csrf
         require_once APPPATH.'libraries/csrf/'.ucfirst($backend).'.php';
 
         $class = 'Csrf_'.$backend;
-        $this->backend = new $class;
+        $this->backend = new $class();
 
         assert($this->backend instanceof Csrf_storage_backend);
     }

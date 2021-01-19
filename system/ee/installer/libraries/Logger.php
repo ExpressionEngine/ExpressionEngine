@@ -15,7 +15,6 @@ require_once(EE_APPPATH.'/libraries/Logger.php');
  */
 class Installer_Logger extends EE_Logger
 {
-
     /**
      * Installer interface for EE_Logger::deprecate_template_tag
      *

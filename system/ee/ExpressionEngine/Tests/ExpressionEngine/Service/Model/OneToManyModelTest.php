@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 class OneToManyModelTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->parentClass = __NAMESPACE__.'\OneToManyParent';
         $this->childClass = __NAMESPACE__.'\OneToManyChild';
@@ -27,7 +27,7 @@ class OneToManyModelTest extends TestCase
         $this->belongs_to_relation = m::mock('ExpressionEngine\Service\Model\Relation\BelongsTo');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->has_many_relation = null;
         $this->belongs_to_relation = null;
@@ -37,9 +37,9 @@ class OneToManyModelTest extends TestCase
 
     public function testFillParentWithChildren()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
 
@@ -80,9 +80,9 @@ class OneToManyModelTest extends TestCase
 
     public function testSetParentWithChild()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
 
@@ -127,9 +127,9 @@ class OneToManyModelTest extends TestCase
 
     public function testAddChildrenToBlankParent()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $parent->setId(5);
 
@@ -173,9 +173,9 @@ class OneToManyModelTest extends TestCase
 
     public function testAddChildToFilledParent()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $parent->setId(5);
 
@@ -216,9 +216,9 @@ class OneToManyModelTest extends TestCase
 
     public function testNullCollection()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
 
@@ -266,9 +266,9 @@ class OneToManyModelTest extends TestCase
 
     public function testAddChildrenToUnsavedParentAndPropagateIdOn()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $this->addAssociation(
             $parent,
@@ -317,9 +317,9 @@ class OneToManyModelTest extends TestCase
 
     public function testRemovingModelDissociates()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
 
@@ -369,11 +369,11 @@ class OneToManyModelTest extends TestCase
 
     public function testReplaceExistingCollection()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
-        $child3 = new $this->childClass;
-        $child4 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
+        $child3 = new $this->childClass();
+        $child4 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
         $new_collection = new Collection(array($child3, $child4));
@@ -439,11 +439,11 @@ class OneToManyModelTest extends TestCase
 
     public function testAddingParentToManyChildren()
     {
-        $parent = new $this->parentClass;
-        $child1 = new $this->childClass;
-        $child2 = new $this->childClass;
-        $child3 = new $this->childClass;
-        $child4 = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child1 = new $this->childClass();
+        $child2 = new $this->childClass();
+        $child3 = new $this->childClass();
+        $child4 = new $this->childClass();
 
         $collection = new Collection(array($child1, $child2));
 

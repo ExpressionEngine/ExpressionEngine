@@ -136,7 +136,7 @@ class Preflight
             // theme or system folder
             $search = array_map(function ($theme_path) {
                 $real_path = realpath($theme_path.'../../');
-                return $real_path ? $real_path.'/': $theme_path;
+                return $real_path ? $real_path.'/' : $theme_path;
             }, $theme_paths);
 
             $syspath = realpath(SYSPATH.'../');

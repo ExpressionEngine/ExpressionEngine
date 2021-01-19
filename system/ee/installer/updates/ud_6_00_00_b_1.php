@@ -1128,7 +1128,7 @@ class Updater
         $stats = ee('Addon')->get('stats');
         if ($stats && $stats->hasUpdate()) {
             $class = $stats->getInstallerClass();
-            $UPD = new $class;
+            $UPD = new $class();
 
             if ($UPD->update($stats->getInstalledVersion()) !== false) {
                 $module = ee('Model')->get('Module')

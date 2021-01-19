@@ -188,7 +188,7 @@ class EE_Input
             $data['httponly'] = (! ee()->config->cp_cookie_httponly) ? 'y' : ee()->config->cp_cookie_httponly;
         } else {
             $data['prefix'] = (! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
-            $data['path']	= (! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
+            $data['path']	= (! ee()->config->item('cookie_path')) ? '/' : ee()->config->item('cookie_path');
             $data['domain'] = (! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
             $data['httponly'] = (! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
         }

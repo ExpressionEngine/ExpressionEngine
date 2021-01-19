@@ -10,8 +10,8 @@
 
 namespace ExpressionEngine\Service\Alert;
 
-use \EE_Session;
-use \EE_Lang;
+use EE_Session;
+use EE_Lang;
 use ExpressionEngine\Service\Alert\Alert;
 use ExpressionEngine\Service\View\View;
 
@@ -20,7 +20,6 @@ use ExpressionEngine\Service\View\View;
  */
 class AlertCollection
 {
-
     /**
      * @var array $alerts An associative array of alerts by type
      */

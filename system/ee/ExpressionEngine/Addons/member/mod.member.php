@@ -414,7 +414,7 @@ class Member
             return $this->profile_main();
         }
 
-        $MESS = new EE_Messages;
+        $MESS = new EE_Messages();
         $MESS->base_url = $this->_member_path('messages').'/';
         $MESS->allegiance = 'user';
         $MESS->theme_path = $this->theme_path;
@@ -459,7 +459,7 @@ class Member
             return;
         }
 
-        $MESS = new EE_Messages;
+        $MESS = new EE_Messages();
         $MESS->base_url = $this->_member_path('messages');
         $MESS->allegiance  = 'user';
         $MESS->theme_path = $this->theme_path;
@@ -2593,7 +2593,7 @@ class Member
         if (ee()->TMPL->fetch_param('role_id') == '') {
             return ee()->TMPL->no_results();
         }
-        
+
         $member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
         $member = ee('Model')

@@ -90,7 +90,7 @@ foreach ($constants as $k => $v) {
             );
 
             if (! empty($method) && in_array($method, $controller_methods)) {
-                $controller_object = new $class;
+                $controller_object = new $class();
 
                 echo $controller_object->$method();
             }

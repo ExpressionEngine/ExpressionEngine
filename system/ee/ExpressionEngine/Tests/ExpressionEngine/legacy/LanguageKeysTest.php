@@ -10,7 +10,7 @@ class LanguageKeysTest extends TestCase
 {
     private $language_path = '';
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->language_path = BASEPATH.'language/english/';
         $this->language_files = directory_map(BASEPATH.'language/english/', 1);

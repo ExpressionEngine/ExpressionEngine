@@ -8,7 +8,6 @@ namespace ExpressionEngine\Addons\Forum\Service;
  */
 class Notifications
 {
-
     /**
      * @var object ExpressionEngine\Model\Member
      */

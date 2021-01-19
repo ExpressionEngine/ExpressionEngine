@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Column\StaticType;
  */
 class StringLiteral extends StaticType
 {
-
     /**
      * Called when the user gets the column
      */

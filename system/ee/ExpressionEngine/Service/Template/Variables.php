@@ -15,7 +15,6 @@ namespace ExpressionEngine\Service\Template;
  */
 abstract class Variables
 {
-
     /**
      * @var array of variable names to allow form prepped versions to be set (typically set by user input)
      */

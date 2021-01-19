@@ -17,7 +17,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 class URLFactory
 {
-
     /**
      * @var string $cp_url The URL to the CP
      */

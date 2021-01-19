@@ -17,7 +17,6 @@ use CP_Controller;
  */
 class Urls extends Settings
 {
-
     /**
      * General Settings
      */

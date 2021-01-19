@@ -51,7 +51,7 @@ class Channel_upd
         );
 
         ee()->db->insert('actions', $data);
-    
+
         $data = array(
             'class' => 'Channel',
             'method' => 'live_preview'

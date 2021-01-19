@@ -13,7 +13,6 @@
  */
 class Channel_model extends CI_Model
 {
-
     /**
      * Get Channels
      *

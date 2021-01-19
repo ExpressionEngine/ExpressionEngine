@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->runner = new Runner();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->runner = null;
     }

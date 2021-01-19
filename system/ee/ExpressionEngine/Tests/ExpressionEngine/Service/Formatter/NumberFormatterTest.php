@@ -18,7 +18,7 @@ require_once __DIR__.'/../../../../../ExpressionEngine/Boot/boot.common.php';
 
 class NumberFormatterTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         if (version_compare(PHP_VERSION, '8', '>=')) {
             $this->markTestSkipped('`intl` not yet supported in PHP8 GitHub actions runner');
@@ -30,7 +30,7 @@ class NumberFormatterTest extends TestCase
         $this->lang->shouldReceive('load');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->factory = null;
 

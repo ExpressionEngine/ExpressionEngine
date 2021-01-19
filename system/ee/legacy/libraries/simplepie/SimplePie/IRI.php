@@ -279,7 +279,7 @@ class SimplePie_IRI
                         $target = clone $relative;
                         $target->scheme = $base->scheme;
                     } else {
-                        $target = new SimplePie_IRI;
+                        $target = new SimplePie_IRI();
                         $target->scheme = $base->scheme;
                         $target->iuserinfo = $base->iuserinfo;
                         $target->ihost = $base->ihost;

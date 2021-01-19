@@ -812,7 +812,7 @@ class Moblog
         }
 
         $site_id = $query->row('site_id');
-        $notify_address = ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
+        $notify_address = ($query->row('channel_notify')  == 'y' and $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails') : '';
 
 
         // Collect the meta data
@@ -943,7 +943,7 @@ class Moblog
                 $params = ee('Variables/Parser')->parseTagParameters($matches['1'][$i]);
 
                 $params['format']	= (! isset($params['format'])) ? '' : $params['format'];
-                $params['name'] 	= (! isset($params['name'])) 	? '' : $params['name'];
+                $params['name'] 	= (! isset($params['name'])) ? '' : $params['name'];
 
                 $this->parse_field($params, $matches['2'][$i]);
                 $this->template = str_replace($matches['0'], '', $this->template);
@@ -1082,7 +1082,7 @@ class Moblog
             ee()->db->where('field_id', $field_id);
             $results = ee()->db->get('channel_fields');
 
-            $format = ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
+            $format = ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
         } else {
             if ($params['name'] != '' && $params['format'] == '') {
                 $xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
@@ -1097,8 +1097,8 @@ class Moblog
 
                 $results = ee()->db->get('channel_fields');
 
-                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
-                $format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
+                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
+                $format 	= ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
             } elseif ($params['name'] == '' && $params['format'] == '') {
                 $field_id = $this->moblog_array['moblog_field_id'];
 
@@ -1123,7 +1123,7 @@ class Moblog
 
                 $results = ee()->db->get('channel_fields');
 
-                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
+                $field_id	= ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
                 $format		= $params['format'];
             }
         }

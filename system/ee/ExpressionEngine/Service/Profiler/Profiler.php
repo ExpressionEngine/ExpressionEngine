@@ -20,7 +20,6 @@ use ExpressionEngine\Service\Formatter\FormatterFactory;
  */
 class Profiler
 {
-
     /**
      * @var object $fmt_factory ExpressionEngine\Service\Formatter\FormatterFactory
      **/

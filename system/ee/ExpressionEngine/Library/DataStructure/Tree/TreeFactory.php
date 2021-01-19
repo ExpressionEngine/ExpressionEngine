@@ -15,7 +15,6 @@ namespace ExpressionEngine\Library\DataStructure\Tree;
  */
 class TreeFactory
 {
-
     /**
      * Tree Factory
      *

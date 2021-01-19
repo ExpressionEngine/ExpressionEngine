@@ -668,7 +668,7 @@ class Rte_ft extends EE_Fieldtype
         // offset and limit params
         if (isset($params['offset']) || isset($params['limit'])) {
             $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
-            $limit  = isset($params['limit'])  ? (int) $params['limit']  : (!empty($images) ? count($images) : 0);
+            $limit  = isset($params['limit']) ? (int) $params['limit'] : (!empty($images) ? count($images) : 0);
 
             $images = array_splice($images, $offset, $limit);
         }

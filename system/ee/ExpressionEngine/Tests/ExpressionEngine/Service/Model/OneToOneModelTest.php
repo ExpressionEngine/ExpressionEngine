@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class OneToOneModelTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->parentClass = __NAMESPACE__.'\OneToOneParent';
         $this->childClass = __NAMESPACE__.'\OneToOneChild';
@@ -26,7 +26,7 @@ class OneToOneModelTest extends TestCase
         $this->belongs_to_relation = m::mock('ExpressionEngine\Service\Model\Relation\BelongsTo');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->has_one_relation = null;
         $this->belongs_to_relation = null;
@@ -36,8 +36,8 @@ class OneToOneModelTest extends TestCase
 
     public function testFillParentWithChild()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -69,8 +69,8 @@ class OneToOneModelTest extends TestCase
 
     public function testFillChildWithParent()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -102,8 +102,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetParentWithChild()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -137,8 +137,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetChildWithParent()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -172,9 +172,9 @@ class OneToOneModelTest extends TestCase
 
     public function testSetParentWithChildShouldDisassociateExisting()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-        $new_child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
+        $new_child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -221,9 +221,9 @@ class OneToOneModelTest extends TestCase
 
     public function testSetChildWithParentShouldDisassociateExisting()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-        $new_child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
+        $new_child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -274,9 +274,9 @@ class OneToOneModelTest extends TestCase
 
     public function testMoveChildToDifferentParent()
     {
-        $parent = new $this->parentClass;
-        $new_parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $new_parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
         $new_parent->setId(10);
@@ -320,8 +320,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetParentWithChildToNull()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -355,8 +355,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetParentWithChildAndBackToNull()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -391,8 +391,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetChildWithParentToNull()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -426,8 +426,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetChildWithParentAndBackToNull()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $parent->setId(5);
 
@@ -462,8 +462,8 @@ class OneToOneModelTest extends TestCase
 
     public function testSetChildOnUnsavedParentAndPropagateIdOn()
     {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $parent = new $this->parentClass();
+        $child = new $this->childClass();
 
         $this->addAssociation(
             $parent,

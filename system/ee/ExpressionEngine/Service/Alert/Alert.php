@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Alert;
 use Serializable;
 use BadMethodCallException;
 use InvalidArgumentException;
-use \EE_Lang;
+use EE_Lang;
 use ExpressionEngine\Service\View\View;
 
 /**
@@ -21,7 +21,6 @@ use ExpressionEngine\Service\View\View;
  */
 class Alert
 {
-
     /**
      * @var string $title The title of the alert
      */

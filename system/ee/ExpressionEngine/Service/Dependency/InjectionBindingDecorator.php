@@ -17,7 +17,6 @@ use Closure;
  */
 class InjectionBindingDecorator implements ServiceProvider
 {
-
     /**
      * @var ServiceProvider An object which implments ServiceProvider to be
      *   used as a delegate if this object cannot make the requested dependency

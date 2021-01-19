@@ -19,7 +19,7 @@ abstract class CustomType extends Entity implements Type
 {
     public static function create()
     {
-        return new static;
+        return new static();
     }
 
     abstract public function unserialize($db_data);

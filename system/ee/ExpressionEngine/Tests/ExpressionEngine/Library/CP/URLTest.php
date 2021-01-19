@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 
 class URLTest extends TestCase
 {
-
     /**
      * @dataProvider dataProvider
      */

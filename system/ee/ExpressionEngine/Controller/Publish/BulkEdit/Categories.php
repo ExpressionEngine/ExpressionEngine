@@ -17,7 +17,6 @@ use ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
  */
 class Categories extends AbstractBulkEdit
 {
-
     /**
      * Add Categories form
      *

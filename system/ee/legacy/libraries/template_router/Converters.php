@@ -69,7 +69,7 @@ class EE_Template_router_converters
         $class = $this->converters[$converter];
 
         if (empty($args)) {
-            $obj = new $class;
+            $obj = new $class();
         } else {
             $obj = new ReflectionClass($class);
             $obj = $obj->newInstanceArgs($args);
@@ -94,7 +94,6 @@ class EE_Template_router_converters
  */
 interface EE_Template_router_converter
 {
-
     /**
      * Return a regular expression for validation
      *

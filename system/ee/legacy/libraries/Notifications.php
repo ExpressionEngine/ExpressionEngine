@@ -13,7 +13,6 @@
  */
 class Notifications
 {
-
     /**
      * Constructor
      */

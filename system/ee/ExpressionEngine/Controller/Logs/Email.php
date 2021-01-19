@@ -18,7 +18,6 @@ use ExpressionEngine\Service\CP\Filter\FilterRunner;
  */
 class Email extends Logs
 {
-
     /**
      * View Email Log
      *

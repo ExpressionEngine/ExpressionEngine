@@ -17,7 +17,6 @@ use CP_Controller;
  */
 class DebugOutput extends Settings
 {
-
     /**
      * General Settings
      */

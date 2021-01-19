@@ -23,7 +23,6 @@ use ExpressionEngine\Service\Event\Subscriber;
  */
 abstract class Entity extends MixableImpl implements Publisher
 {
-
     /**
      * @var Event emitter
      */

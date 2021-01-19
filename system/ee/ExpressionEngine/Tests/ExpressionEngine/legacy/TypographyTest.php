@@ -13,7 +13,7 @@ class TypographyTest extends TestCase
 {
     private $typography;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->typography = new TypographyStub();
     }

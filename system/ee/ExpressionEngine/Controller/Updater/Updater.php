@@ -18,7 +18,6 @@ use ExpressionEngine\Service;
  */
 class Updater extends CP_Controller
 {
-
     /**
      * Early permissions checks
      */

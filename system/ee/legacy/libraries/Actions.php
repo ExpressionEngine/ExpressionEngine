@@ -38,7 +38,6 @@
  */
 class EE_Actions
 {
-
     /**
      * Constructor
      *
