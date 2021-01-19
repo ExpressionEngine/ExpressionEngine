@@ -13,9 +13,9 @@ require_once(EE_APPPATH.'/libraries/Functions.php');
 /**
  * Installer Functions
  */
-class Installer_Functions extends EE_Functions {
-	// Nothing to see here.
-
+class Installer_Functions extends EE_Functions
+{
+    // Nothing to see here.
 }
 // END CLASS
 

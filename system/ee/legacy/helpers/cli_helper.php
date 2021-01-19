@@ -12,41 +12,35 @@ defined('CLI_STDOUT_BOLD') || define('CLI_STDOUT_BOLD', 2);
 defined('CLI_STDOUT_SUCCESS') || define('CLI_STDOUT_SUCCESS', 3);
 defined('CLI_STDOUT_FAILURE') || define('CLI_STDOUT_FAILURE', 4);
 
-if( ! function_exists('stdout') ) {
+if (! function_exists('stdout')) {
+    function stdout($message, $status = CLI_STDOUT_NORMAL)
+    {
+        $text_color = '[1;37m';
 
-	function stdout($message, $status = CLI_STDOUT_NORMAL)
-	{
-		$text_color = '[1;37m';
+        switch ($status) {
+            case CLI_STDOUT_BOLD:
+                $arrow_color = '[0;34m';
+                $text_color = '[1;37m';
+                break;
+            case CLI_STDOUT_SUCCESS:
+                $arrow_color = '[0;32m';
+                break;
+            case CLI_STDOUT_FAILURE:
+                $arrow_color = '[0;31m';
+                break;
+            default:
+                $arrow_color = $text_color = '[0m';
+                break;
+        }
 
-		switch ($status) {
-			case CLI_STDOUT_BOLD:
-				$arrow_color = '[0;34m';
-				$text_color = '[1;37m';
-				break;
-			case CLI_STDOUT_SUCCESS:
-				$arrow_color = '[0;32m';
-				break;
-			case CLI_STDOUT_FAILURE:
-				$arrow_color = '[0;31m';
-				break;
-			default:
-				$arrow_color = $text_color = '[0m';
-				break;
-		}
+        if (REQ == 'CLI' && ! empty($message)) {
+            $message = "\033".$arrow_color."==> \033" . $text_color . strip_tags($message) . "\033[0m\n";
 
-		if (REQ == 'CLI' && ! empty($message))
-		{
+            $stdout = fopen('php://stdout', 'w');
 
-			$message = "\033".$arrow_color."==> \033" . $text_color . strip_tags($message) . "\033[0m\n";
+            fwrite($stdout, $message);
 
-			$stdout = fopen('php://stdout', 'w');
-
-			fwrite($stdout, $message);
-
-			fclose($stdout);
-
-		}
-
-	}
-
+            fclose($stdout);
+        }
+    }
 }

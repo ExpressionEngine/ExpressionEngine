@@ -9,31 +9,35 @@
 
 			<!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
 			<div class="filter-search-bar__filter-row">
-				<?php if (isset($filters)) echo $filters; ?>
+				<?php if (isset($filters)) {
+    echo $filters;
+} ?>
 			</div>
 
 			<!-- The search input and non-filter controls are contained within 'filter-search-bar__search-row' -->
 			<div class="filter-search-bar__search-row">
-				<?php if (isset($filters_search)) echo $filters_search; ?>
+				<?php if (isset($filters_search)) {
+    echo $filters_search;
+} ?>
 			</div>
 		</div>
     </div>
 
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
-		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+		<?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
 		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "add_item",
-					'text' => lang('add_item')
-				]
-			]
-		]); ?>
+            'options' => [
+                [
+                    'value' => "",
+                    'text' => '-- ' . lang('with_selected') . ' --'
+                ],
+                [
+                    'value' => "add_item",
+                    'text' => lang('add_item')
+                ]
+            ]
+        ]); ?>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>

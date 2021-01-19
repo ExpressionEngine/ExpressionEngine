@@ -18,27 +18,31 @@
 
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-	<?php if (isset($filters)) echo $filters; ?>
+	<?php if (isset($filters)) {
+    echo $filters;
+} ?>
 
 	<?php $this->embed('_shared/table', $table); ?>
 
-	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
+	<?php if (! empty($pagination)) {
+    $this->embed('_shared/pagination', $pagination);
+} ?>
 
-	<?php if ( ! empty($table['data'])): ?>
+	<?php if (! empty($table['data'])): ?>
 	<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-		'options' => [
-			[
-				'value' => "",
-				'text' => '-- ' . lang('with_selected') . ' --'
-			],
-			[
-				'value' => "remove",
-				'text' => lang('delete'),
-				'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-			]
-		],
-		'modal' => true
-	]); ?>
+        'options' => [
+            [
+                'value' => "",
+                'text' => '-- ' . lang('with_selected') . ' --'
+            ],
+            [
+                'value' => "remove",
+                'text' => lang('delete'),
+                'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+            ]
+        ],
+        'modal' => true
+    ]); ?>
 	<?php endif; ?>
 <?=form_close()?>
 </div>

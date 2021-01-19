@@ -13,45 +13,43 @@ namespace ExpressionEngine\Updater\Version_4_0_4;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            array(
+                'removeOrhpanedLayouts'
+            )
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			array(
-				'removeOrhpanedLayouts'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    private function removeOrhpanedLayouts()
+    {
+        $channel_ids = ee('Model')->get('Channel')
+            ->fields('channel_id')
+            ->all()
+            ->getIds();
 
-	private function removeOrhpanedLayouts()
-	{
-		$channel_ids = ee('Model')->get('Channel')
-			->fields('channel_id')
-			->all()
-			->getIds();
-
-		if ( ! empty($channel_ids))
-		{
-			ee('Model')->get('ChannelLayout')
-				->filter('channel_id', 'NOT IN', $channel_ids)
-				->delete();
-		}
-	}
+        if (! empty($channel_ids)) {
+            ee('Model')->get('ChannelLayout')
+                ->filter('channel_id', 'NOT IN', $channel_ids)
+                ->delete();
+        }
+    }
 }
 // END CLASS
 

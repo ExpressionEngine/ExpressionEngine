@@ -16,83 +16,79 @@ use ExpressionEngine\Service\Alert\Alert;
 /**
  * Display Layout Tab
  */
-class LayoutTab {
+class LayoutTab
+{
+    public $id;
+    public $title;
 
-	public $id;
-	public $title;
+    protected $fields;
+    protected $visible = true;
+    protected $alert;
 
-	protected $fields;
-	protected $visible = TRUE;
-	protected $alert;
+    public function __construct($id, $title, array $fields = array())
+    {
+        $this->id = $id;
+        $this->title = $title;
+        $this->fields = $fields;
+        return $this;
+    }
 
-	public function __construct($id, $title, array $fields = array())
-	{
-		$this->id = $id;
-		$this->title = $title;
-		$this->fields = $fields;
-		return $this;
-	}
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+        return $this;
+    }
 
-	public function setFields($fields)
-	{
-		$this->fields = $fields;
-		return $this;
-	}
+    public function addField($field)
+    {
+        $this->fields[] = $field;
+        return $this;
+    }
 
-	public function addField($field)
-	{
-		$this->fields[] = $field;
-		return $this;
-	}
+    public function getFields()
+    {
+        return $this->fields;
+    }
 
-	public function getFields()
-	{
-		return $this->fields;
-	}
+    public function setAlert(Alert $alert)
+    {
+        $this->alert = $alert;
+    }
 
-	public function setAlert(Alert $alert)
-	{
-		$this->alert = $alert;
-	}
+    public function renderAlert()
+    {
+        return ($this->alert) ? $this->alert->render() : '';
+    }
 
-	public function renderAlert()
-	{
-		return ($this->alert) ? $this->alert->render() : '';
-	}
+    public function hide()
+    {
+        $this->visible = false;
+        return $this;
+    }
 
-	public function hide()
-	{
-		$this->visible = FALSE;
-		return $this;
-	}
+    public function show()
+    {
+        $this->visible = true;
+        return $this;
+    }
 
-	public function show()
-	{
-		$this->visible = TRUE;
-		return $this;
-	}
+    public function isVisible()
+    {
+        return $this->visible;
+    }
 
-	public function isVisible()
-	{
-		return $this->visible;
-	}
+    public function hasErrors(Result $errors)
+    {
+        if ($errors->isValid()) {
+            return false;
+        }
 
-	public function hasErrors(Result $errors)
-	{
-		if ($errors->isValid())
-		{
-			return FALSE;
-		}
+        foreach ($this->fields as $field) {
+            if ($errors->hasErrors($field->getName())) {
+                return true;
+            }
+        }
 
-		foreach ($this->fields as $field)
-		{
-			if ($errors->hasErrors($field->getName()))
-			{
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
-
+        return false;
+    }
 }

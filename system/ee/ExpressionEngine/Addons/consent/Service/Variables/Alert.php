@@ -15,38 +15,38 @@ use ExpressionEngine\Service\Template\Variables;
 /**
  * Consent Alert Variables
  */
-class Alert extends Variables {
+class Alert extends Variables
+{
 
-	/**
-	 * @var array $alert Alert data
-	 */
-	private $alert;
+    /**
+     * @var array $alert Alert data
+     */
+    private $alert;
 
-	/**
-	 * Constructor
-	 *
-	 * @param array $alert The Alert data
-	 */
-	public function __construct($alert)
-	{
-		$this->alert = $alert;
-		parent::__construct();
-	}
+    /**
+     * Constructor
+     *
+     * @param array $alert The Alert data
+     */
+    public function __construct($alert)
+    {
+        $this->alert = $alert;
+        parent::__construct();
+    }
 
-	public function getTemplateVariables()
-	{
-		if ( ! empty($this->variables))
-		{
-			return $this->variables;
-		}
+    public function getTemplateVariables()
+    {
+        if (! empty($this->variables)) {
+            return $this->variables;
+        }
 
-		$this->variables = [
-			'alert_type' => $this->alert['type'],
-			'alert_message' => $this->alert['message']
-		];
+        $this->variables = [
+            'alert_type' => $this->alert['type'],
+            'alert_message' => $this->alert['message']
+        ];
 
-		return $this->variables;
-	}
+        return $this->variables;
+    }
 }
 // END CLASS
 

@@ -12,31 +12,28 @@ namespace ExpressionEngine\Tests\Controllers\Utilities;
 
 use PHPUnit\Framework\TestCase;
 
-class TranslateTest extends TestCase {
+class TranslateTest extends TestCase
+{
+    public static function setUpBeforeClass() : void
+    {
+        require_once(APPPATH.'core/Controller.php');
+    }
 
-	public static function setUpBeforeClass() : void
-	{
-		require_once(APPPATH.'core/Controller.php');
-	}
+    public function testRoutableMethods()
+    {
+        $controller_methods = array();
 
-	public function testRoutableMethods()
-	{
-		$controller_methods = array();
+        foreach (get_class_methods('ExpressionEngine\Controller\Utilities\Translate') as $method) {
+            $method = strtolower($method);
+            if (strncmp($method, '_', 1) != 0) {
+                $controller_methods[] = $method;
+            }
+        }
 
-		foreach (get_class_methods('ExpressionEngine\Controller\Utilities\Translate') as $method)
-		{
-			$method = strtolower($method);
-			if (strncmp($method, '_', 1) != 0)
-			{
-				$controller_methods[] = $method;
-			}
-		}
+        sort($controller_methods);
 
-		sort($controller_methods);
-
-		// This one has more routable functions due to __call(), we need to
-		// test those as well @TODO
-		$this->assertEquals(array('index'), $controller_methods);
-	}
-
+        // This one has more routable functions due to __call(), we need to
+        // test those as well @TODO
+        $this->assertEquals(array('index'), $controller_methods);
+    }
 }

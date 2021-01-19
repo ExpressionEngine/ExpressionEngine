@@ -1,6 +1,6 @@
 <div id="file_browser" class="pageContents" style="padding: 0 10px">
 	<div id="filterMenu">
-		<?php if ( ! empty($filemanager_directories)):?>
+		<?php if (! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
 				<span class="dir_choice_container">
 					<?=lang('upload_directory', 'dir_choice').NBS?>
@@ -34,4 +34,3 @@
 </div>
 
 <?php
-

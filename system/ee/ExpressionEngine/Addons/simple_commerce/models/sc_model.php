@@ -11,8 +11,8 @@
 /**
  * Simple Commerce Model
  */
-class Sc_model extends CI_Model {
-
+class Sc_model extends CI_Model
+{
 }
 // End Class
 

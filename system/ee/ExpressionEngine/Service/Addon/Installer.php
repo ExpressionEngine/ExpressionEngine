@@ -97,9 +97,9 @@ class Installer
             ee('Model')->make('Extension', [
                 'class' => $classname,
                 'method' => isset($method['method']) ? $method['method'] : $method['hook'],
-				'hook' => $method['hook'],
-				'settings' => serialize($this->settings),
-				'priority' => isset($method['priority']) ? (int) $method['priority'] : 10,
+                'hook' => $method['hook'],
+                'settings' => serialize($this->settings),
+                'priority' => isset($method['priority']) ? (int) $method['priority'] : 10,
                 'version' => $this->addon->getVersion(),
                 'enabled' => (isset($method['enabled']) && in_array($method['enabled'], ['n', false])) ? 'n' : 'y'
             ])->save();
@@ -111,13 +111,13 @@ class Installer
      * Extension installer
      */
     public function disable_extension()
-	{
+    {
         ee('Model')
             ->get('Extension')
             ->filter('class', $this->addon->getExtensionClass())
             ->delete();
         return true;
-	}
+    }
 }
 
 // EOF

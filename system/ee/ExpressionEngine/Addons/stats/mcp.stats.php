@@ -12,8 +12,8 @@
  * Stats Module control panel
  */
 
-class Stats_mcp {
-
+class Stats_mcp
+{
 }
 // END CLASS
 

@@ -87,45 +87,42 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * provide us with parent information. Instead we add a query with an inverted
  * tree at those edge-case locations.
  */
-class EE_Relationships_parser {
+class EE_Relationships_parser
+{
+    public function __construct()
+    {
+        ee()->load->model('relationship_model');
+    }
 
-	public function __construct()
-	{
-		ee()->load->model('relationship_model');
-	}
+    /**
+     * Get a relationship parser and query object, populated with the
+     * information we'll need to parse out the relationships in this template.
+     *
+     * @param	The rfields array from the Channel Module at the time of parsing.
+     *
+     * @return Relationship_Parser	The parser object with the parsed out
+     *								hierarchy and all of the entry data.
+     */
+    public function create(array $relationship_fields, array $entry_ids, $tagdata = null, array $grid_relationships = array(), $grid_field_id = null, $fluid_field_data_id = null)
+    {
+        if (! empty($relationship_fields) && ! is_array(current($relationship_fields))) {
+            $relationship_fields = array($relationship_fields);
+        }
 
-	/**
-	 * Get a relationship parser and query object, populated with the
-	 * information we'll need to parse out the relationships in this template.
-	 *
-	 * @param	The rfields array from the Channel Module at the time of parsing.
-	 *
-	 * @return Relationship_Parser	The parser object with the parsed out
-	 *								hierarchy and all of the entry data.
-	 */
-	public function create(array $relationship_fields, array $entry_ids, $tagdata = NULL, array $grid_relationships = array(), $grid_field_id = NULL, $fluid_field_data_id = NULL)
-	{
-		if ( ! empty($relationship_fields) && ! is_array(current($relationship_fields)))
-		{
-			$relationship_fields = array($relationship_fields);
-		}
+        if (! isset($tagdata)) {
+            $tagdata = ee()->TMPL->tagdata;
+        }
 
-		if ( ! isset($tagdata))
-		{
-			$tagdata = ee()->TMPL->tagdata;
-		}
+        $builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id, $fluid_field_data_id);
 
-		$builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id, $fluid_field_data_id);
+        $tree = $builder->build_tree($entry_ids, $tagdata);
 
-		$tree = $builder->build_tree($entry_ids, $tagdata);
+        if ($tree) {
+            return $builder->get_parser($tree);
+        }
 
-		if ($tree)
-		{
-			return $builder->get_parser($tree);
-		}
-
-		return NULL;
-	}
+        return null;
+    }
 }
 
 // EOF

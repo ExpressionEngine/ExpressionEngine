@@ -13,37 +13,36 @@ namespace ExpressionEngine\Updater\Version_3_5_12;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            array(
+                'alterUsernameFields'
+            )
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			array(
-				'alterUsernameFields'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+        return true;
+    }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
-		return TRUE;
-	}
-
-	private function alterUsernameFields()
-	{
-		$fields = array(
-			'username'	=> array('type' => 'text',	'constraint' => '75',	'null' => FALSE)
-		);
-			ee()->smartforge->modify_column('cp_log', $fields);
-			ee()->smartforge->modify_column('password_lockout', $fields);
-	}
+    private function alterUsernameFields()
+    {
+        $fields = array(
+            'username'	=> array('type' => 'text',	'constraint' => '75',	'null' => false)
+        );
+        ee()->smartforge->modify_column('cp_log', $fields);
+        ee()->smartforge->modify_column('password_lockout', $fields);
+    }
 }
 // EOF

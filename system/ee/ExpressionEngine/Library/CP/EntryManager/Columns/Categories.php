@@ -19,30 +19,32 @@ use Mexitek\PHPColors\Color;
  */
 class Categories extends Column
 {
-	public function getEntryManagerColumnModels() {
-		return ['Categories'];
-	}
+    public function getEntryManagerColumnModels()
+    {
+        return ['Categories'];
+    }
 
-	public function getEntryManagerColumnFields() {
-		return ['Categories.cat_name'];
-	}
+    public function getEntryManagerColumnFields()
+    {
+        return ['Categories.cat_name'];
+    }
 
-	public function getTableColumnLabel()
-	{
-		return 'column_categories';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'column_categories';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [
-			'type'	=> Table::COL_INFO
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'type'	=> Table::COL_INFO
+        ];
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		$categories = $entry->Categories->getDictionary('cat_id', 'cat_name');
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $categories = $entry->Categories->getDictionary('cat_id', 'cat_name');
 
-		return implode(", ", $categories);
-	}
+        return implode(", ", $categories);
+    }
 }

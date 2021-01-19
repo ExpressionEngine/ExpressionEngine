@@ -4,7 +4,7 @@
 $show_fmt = (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y');
 $show_file_selector = (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y');
 
-if ($show_fmt OR $show_file_selector): ?>
+if ($show_fmt or $show_file_selector): ?>
 <div class="format-options">
 
 	<?php if ($show_file_selector): ?>
@@ -18,7 +18,7 @@ if ($show_fmt OR $show_file_selector): ?>
 	</ul>
 	<?php endif; ?>
 
-	<?php if ( ! $show_file_selector && $show_fmt): ?>
+	<?php if (! $show_file_selector && $show_fmt): ?>
 		<?=form_dropdown('field_ft_'.$settings['field_id'], $format_options, $settings['field_fmt'])?>
 	<?php endif; ?>
 </div>

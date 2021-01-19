@@ -143,8 +143,6 @@ class DebugTools extends Utilities
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
     }
-
-
 }
 // END CLASS
 

@@ -6,48 +6,42 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class UpgradeUtility
 {
+    public static function run()
+    {
+        // self::install_modules();
+        self::remove_installer_directory();
+    }
 
-	public static function run()
-	{
-		// self::install_modules();
-		self::remove_installer_directory();
-	}
+    protected static function install_modules()
+    {
+        $required_modules = [
+            'channel',
+            'comment',
+            'consent',
+            'member',
+            'stats',
+            'rte',
+            'file',
+            'filepicker',
+            'relationship',
+            'search'
+        ];
 
-	protected static function install_modules()
-	{
+        ee()->load->library('addons');
+        ee()->addons->install_modules($required_modules);
 
-		$required_modules = [
-			'channel',
-			'comment',
-			'consent',
-			'member',
-			'stats',
-			'rte',
-			'file',
-			'filepicker',
-			'relationship',
-			'search'
-		];
+        $consent = ee('Addon')->get('consent');
+        $consent->installConsentRequests();
+    }
 
-		ee()->load->library('addons');
-		ee()->addons->install_modules($required_modules);
+    protected static function remove_installer_directory()
+    {
+        $filesystem = new Filesystem;
 
-		$consent = ee('Addon')->get('consent');
-		$consent->installConsentRequests();
+        $installerPath = SYSPATH . 'ee/installer';
 
-	}
-
-	protected static function remove_installer_directory()
-	{
-
-		$filesystem = new Filesystem;
-
-		$installerPath = SYSPATH . 'ee/installer';
-
-		if($filesystem->isDir($installerPath)) {
-			$filesystem->deleteDir($installerPath);
-		}
-
-	}
-
+        if ($filesystem->isDir($installerPath)) {
+            $filesystem->deleteDir($installerPath);
+        }
+    }
 }

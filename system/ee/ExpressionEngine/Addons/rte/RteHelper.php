@@ -15,7 +15,6 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class RteHelper
 {
-
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
     private static $_fileTags;

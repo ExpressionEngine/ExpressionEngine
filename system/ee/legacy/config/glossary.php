@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -17,7 +19,7 @@
 // The right side is the tag or entity to be inserted
 
 ee()->load->library('logger');
-ee()->logger->developer('The glossary config file has been deprecated and will be removed.', TRUE, 604800);
+ee()->logger->developer('The glossary config file has been deprecated and will be removed.', true, 604800);
 
 $glossary[1][] = array('anchor',			"&lt;a href=''&gt;&lt;/a&gt;");
 $glossary[1][] = array('image_link',		"&lt;img src='' /&gt;");

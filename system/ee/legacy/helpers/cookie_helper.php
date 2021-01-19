@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -28,13 +30,12 @@
  * @param	string	the cookie prefix
  * @return	void
  */
-if ( ! function_exists('set_cookie'))
-{
-	function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
-	{
-		// Set the config file options
-		ee()->input->set_cookie($name, $value, $expire, $domain, $path, $prefix);
-	}
+if (! function_exists('set_cookie')) {
+    function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
+    {
+        // Set the config file options
+        ee()->input->set_cookie($name, $value, $expire, $domain, $path, $prefix);
+    }
 }
 
 /**
@@ -45,19 +46,17 @@ if ( ! function_exists('set_cookie'))
  * @param	bool
  * @return	mixed
  */
-if ( ! function_exists('get_cookie'))
-{
-	function get_cookie($index = '', $xss_clean = FALSE)
-	{
-		$prefix = '';
+if (! function_exists('get_cookie')) {
+    function get_cookie($index = '', $xss_clean = false)
+    {
+        $prefix = '';
 
-		if ( ! isset($_COOKIE[$index]) && config_item('cookie_prefix') != '')
-		{
-			$prefix = config_item('cookie_prefix');
-		}
+        if (! isset($_COOKIE[$index]) && config_item('cookie_prefix') != '') {
+            $prefix = config_item('cookie_prefix');
+        }
 
-		return ee()->input->cookie($prefix.$index, $xss_clean);
-	}
+        return ee()->input->cookie($prefix.$index, $xss_clean);
+    }
 }
 
 /**
@@ -69,12 +68,11 @@ if ( ! function_exists('get_cookie'))
  * @param	string	the cookie prefix
  * @return	void
  */
-if ( ! function_exists('delete_cookie'))
-{
-	function delete_cookie($name = '', $domain = '', $path = '/', $prefix = '')
-	{
-		set_cookie($name, '', '', $domain, $path, $prefix);
-	}
+if (! function_exists('delete_cookie')) {
+    function delete_cookie($name = '', $domain = '', $path = '/', $prefix = '')
+    {
+        set_cookie($name, '', '', $domain, $path, $prefix);
+    }
 }
 
 // EOF

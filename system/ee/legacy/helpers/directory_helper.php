@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -25,40 +27,33 @@
  * @param	int		depth of directories to traverse (0 = fully recursive, 1 = current dir, etc)
  * @return	array
  */
-if ( ! function_exists('directory_map'))
-{
-	function directory_map($source_dir, $directory_depth = 0, $hidden = FALSE)
-	{
-		if ($fp = @opendir($source_dir))
-		{
-			$filedata	= array();
-			$new_depth	= $directory_depth - 1;
-			$source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+if (! function_exists('directory_map')) {
+    function directory_map($source_dir, $directory_depth = 0, $hidden = false)
+    {
+        if ($fp = @opendir($source_dir)) {
+            $filedata	= array();
+            $new_depth	= $directory_depth - 1;
+            $source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				// Remove '.', '..', and hidden files [optional]
-				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
-				{
-					continue;
-				}
+            while (false !== ($file = readdir($fp))) {
+                // Remove '.', '..', and hidden files [optional]
+                if (! trim($file, '.') or ($hidden == false && $file[0] == '.')) {
+                    continue;
+                }
 
-				if (($directory_depth < 1 OR $new_depth > 0) && @is_dir($source_dir.$file))
-				{
-					$filedata[$file] = directory_map($source_dir.$file.DIRECTORY_SEPARATOR, $new_depth, $hidden);
-				}
-				else
-				{
-					$filedata[] = $file;
-				}
-			}
+                if (($directory_depth < 1 or $new_depth > 0) && @is_dir($source_dir.$file)) {
+                    $filedata[$file] = directory_map($source_dir.$file.DIRECTORY_SEPARATOR, $new_depth, $hidden);
+                } else {
+                    $filedata[] = $file;
+                }
+            }
 
-			closedir($fp);
-			return $filedata;
-		}
+            closedir($fp);
+            return $filedata;
+        }
 
-		return FALSE;
-	}
+        return false;
+    }
 }
 
 // EOF

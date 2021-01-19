@@ -15,26 +15,25 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
 /**
  * Model Service Json Encoded Typed Column
  */
-class Json extends SerializedType {
+class Json extends SerializedType
+{
+    protected $data = array();
 
-	protected $data = array();
+    /**
+     * Called when the column is fetched from db
+     */
+    public static function unserialize($db_data)
+    {
+        return strlen($db_data) ? json_decode($db_data, true) : array();
+    }
 
-	/**
-	 * Called when the column is fetched from db
-	 */
-	public static function unserialize($db_data)
-	{
-		return strlen($db_data) ? json_decode($db_data, TRUE) : array();
-	}
-
-	/**
-	 * Called before the column is written to the db
-	 */
-	public static function serialize($data)
-	{
-		return json_encode($data);
-	}
-
+    /**
+     * Called before the column is written to the db
+     */
+    public static function serialize($data)
+    {
+        return json_encode($data);
+    }
 }
 
 // EOF

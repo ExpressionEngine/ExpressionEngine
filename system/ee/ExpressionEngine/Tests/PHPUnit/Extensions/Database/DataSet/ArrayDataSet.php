@@ -6,8 +6,8 @@
 
 namespace ExpressionEngine\Tests\PHPUnit\Extensions\Database\DataSet;
 
-class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet {
-
+class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet
+{
     private $tables;
 
     public function __construct(
@@ -29,7 +29,8 @@ class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet 
         }
     }
 
-    private function getColumns($rows) {
+    private function getColumns($rows)
+    {
         $columns = array();
         foreach ($rows as $row) {
             $columns = array_merge($columns, array_keys($row));
@@ -37,14 +38,16 @@ class ArrayDataSet extends \PHPUnit_Extensions_Database_DataSet_AbstractDataSet 
         return array_values(array_unique($columns));
     }
 
-    protected function createIterator($reverse=false) {
+    protected function createIterator($reverse=false)
+    {
         return new \PHPUnit_Extensions_Database_DataSet_DefaultTableIterator(
             $this->tables,
             $reverse
         );
     }
 
-    public function getTable($table_name) {
+    public function getTable($table_name)
+    {
         if (!array_key_exists($table_name, $this->tables)) {
             throw new InvalidArgumentException(
                 sprintf(

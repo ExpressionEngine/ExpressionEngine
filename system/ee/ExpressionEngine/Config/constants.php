@@ -1,9 +1,8 @@
 <?php
 
 // Remove when PHP 5.3 is no longer supported
-if ( ! defined('OPENSSL_RAW_DATA'))
-{
-	define('OPENSSL_RAW_DATA', 1);
+if (! defined('OPENSSL_RAW_DATA')) {
+    define('OPENSSL_RAW_DATA', 1);
 }
 
 return array(

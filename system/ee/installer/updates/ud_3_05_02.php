@@ -13,19 +13,19 @@ namespace ExpressionEngine\Updater\Version_3_5_2;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
-
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		return TRUE;
-	}
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        return true;
+    }
 }
 
 // EOF

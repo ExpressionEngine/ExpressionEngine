@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -21,12 +23,11 @@
  * @param	bool	whether or not the content is an image file
  * @return	string
  */
-if ( ! function_exists('xss_clean'))
-{
-	function xss_clean($str, $is_image = FALSE)
-	{
-		return ee('Security/XSS')->clean($str, $is_image);
-	}
+if (! function_exists('xss_clean')) {
+    function xss_clean($str, $is_image = false)
+    {
+        return ee('Security/XSS')->clean($str, $is_image);
+    }
 }
 
 /**
@@ -36,12 +37,11 @@ if ( ! function_exists('xss_clean'))
  * @param	string
  * @return	string
  */
-if ( ! function_exists('sanitize_filename'))
-{
-	function sanitize_filename($filename)
-	{
-		return ee()->security->sanitize_filename($filename);
-	}
+if (! function_exists('sanitize_filename')) {
+    function sanitize_filename($filename)
+    {
+        return ee()->security->sanitize_filename($filename);
+    }
 }
 
 /**
@@ -51,15 +51,14 @@ if ( ! function_exists('sanitize_filename'))
  * @param	string
  * @return	string
  */
-if ( ! function_exists('strip_image_tags'))
-{
-	function strip_image_tags($str)
-	{
-		$str = preg_replace("#<img\s+.*?src\s*=\s*[\"'](.+?)[\"'].*?\>#", "\\1", $str);
-		$str = preg_replace("#<img\s+.*?src\s*=\s*(.+?).*?\>#", "\\1", $str);
+if (! function_exists('strip_image_tags')) {
+    function strip_image_tags($str)
+    {
+        $str = preg_replace("#<img\s+.*?src\s*=\s*[\"'](.+?)[\"'].*?\>#", "\\1", $str);
+        $str = preg_replace("#<img\s+.*?src\s*=\s*(.+?).*?\>#", "\\1", $str);
 
-		return $str;
-	}
+        return $str;
+    }
 }
 
 /**
@@ -69,25 +68,24 @@ if ( ! function_exists('strip_image_tags'))
  * @param	string
  * @return	string
  */
-if ( ! function_exists('encode_php_tags'))
-{
-	function encode_php_tags($str)
-	{
-		$str = str_replace(array('<?php', '<?PHP', '<?', '?>', '<%', '%>'),
-		                   array('&lt;?php', '&lt;?PHP', '&lt;?', '?&gt;', '&lt;%', '%&gt;'),
-		                   $str);
+if (! function_exists('encode_php_tags')) {
+    function encode_php_tags($str)
+    {
+        $str = str_replace(
+            array('<?php', '<?PHP', '<?', '?>', '<%', '%>'),
+            array('&lt;?php', '&lt;?PHP', '&lt;?', '?&gt;', '&lt;%', '%&gt;'),
+            $str
+        );
 
-		if (stristr($str, '<script') &&
-			preg_match_all("/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is", $str, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				$str = str_replace($match, htmlspecialchars($match), $str);
-			}
-		}
+        if (stristr($str, '<script') &&
+            preg_match_all("/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is", $str, $matches)) {
+            foreach ($matches[0] as $match) {
+                $str = str_replace($match, htmlspecialchars($match), $str);
+            }
+        }
 
-		return $str;
-	}
+        return $str;
+    }
 }
 
 // EOF

@@ -15,64 +15,64 @@ use ExpressionEngine\Service\Profiler\ProfilerSection;
 /**
  * Template Profiler Section
  */
-class Template extends ProfilerSection {
+class Template extends ProfilerSection
+{
 
-	/**
-	 * @var  string  template memory
-	 **/
-	protected $template_memory;
+    /**
+     * @var  string  template memory
+     **/
+    protected $template_memory;
 
-	/**
-	 * @var float  threshold for warnings, in seconds
-	 **/
-	protected $time_threshold = 0.25;
+    /**
+     * @var float  threshold for warnings, in seconds
+     **/
+    protected $time_threshold = 0.25;
 
-	/**
-	 * @var float  threshold for warnings, in megabytes
-	 **/
-	protected $memory_threshold = 1.0;
+    /**
+     * @var float  threshold for warnings, in megabytes
+     **/
+    protected $memory_threshold = 1.0;
 
-	/**
-	 * Get a brief text summary (used for tabs, labels, etc.)
-	 *
-	 * @return  string  the section summary
-	 **/
-	public function getSummary()
-	{
-		return $this->fmt_factory->make('Number', $this->template_memory)->bytes().
-			' '.
-			lang('profiler_'.$this->section_name);
-	}
+    /**
+     * Get a brief text summary (used for tabs, labels, etc.)
+     *
+     * @return  string  the section summary
+     **/
+    public function getSummary()
+    {
+        return $this->fmt_factory->make('Number', $this->template_memory)->bytes().
+            ' '.
+            lang('profiler_'.$this->section_name);
+    }
 
-	/**
-	 * Gets the view name needed to render the section
-	 *
-	 * @return string  the view/name
-	 **/
-	public function getViewName()
-	{
-		return 'profiler/section/template';
-	}
+    /**
+     * Gets the view name needed to render the section
+     *
+     * @return string  the view/name
+     **/
+    public function getViewName()
+    {
+        return 'profiler/section/template';
+    }
 
-	/**
-	 * Set the section's data
-	 *
-	 * @return void
-	 **/
-	public function setData($log)
-	{
-		$last = end($log);
-		$this->template_memory = $last['memory'];
+    /**
+     * Set the section's data
+     *
+     * @return void
+     **/
+    public function setData($log)
+    {
+        $last = end($log);
+        $this->template_memory = $last['memory'];
 
-		foreach($log as &$entry)
-		{
-			// convert human friendly megabytes into bytes for maths
-			$entry['memory_threshold'] = $this->memory_threshold * 1048576;
-			$entry['time_threshold'] = $this->time_threshold;
-		}
+        foreach ($log as &$entry) {
+            // convert human friendly megabytes into bytes for maths
+            $entry['memory_threshold'] = $this->memory_threshold * 1048576;
+            $entry['time_threshold'] = $this->time_threshold;
+        }
 
-		$this->data = array('template' => $log);
-	}
+        $this->data = array('template' => $log);
+    }
 }
 
 // EOF

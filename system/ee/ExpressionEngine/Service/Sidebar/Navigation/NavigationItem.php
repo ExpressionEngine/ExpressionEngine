@@ -44,7 +44,8 @@ class NavigationItem extends ListItem
      * @param ViewFactory $view A ViewFactory object to use with rendering
      * @return string The rendered HTML of the item
      */
-    public function render(ViewFactory $view) {
+    public function render(ViewFactory $view)
+    {
         $class = $this->getClass();
 
         $attrs = $this->attributes;

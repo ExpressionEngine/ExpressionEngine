@@ -15,38 +15,37 @@ use ExpressionEngine\Library\Data\Entity;
 /**
  * Model Service Serialized Typed Column
  */
-abstract class SerializedType implements Type {
+abstract class SerializedType implements Type
+{
+    protected $data = '';
 
-	protected $data = '';
+    public static function create()
+    {
+        return new static;
+    }
 
-	public static function create()
-	{
-		return new static;
-	}
+    public function load($db_data)
+    {
+        $data = $this->unserialize($db_data);
+        $this->data = $data;
 
-	public function load($db_data)
-	{
-		$data = $this->unserialize($db_data);
-		$this->data = $data;
+        return $data;
+    }
 
-		return $data;
-	}
+    public function store($data)
+    {
+        return $this->serialize($this->data);
+    }
 
-	public function store($data)
-	{
-		return $this->serialize($this->data);
-	}
+    public function set($data)
+    {
+        return $this->data = $data;
+    }
 
-	public function set($data)
-	{
-		return $this->data = $data;
-	}
-
-	public function get()
-	{
-		return $this->data;
-	}
-
+    public function get()
+    {
+        return $this->data;
+    }
 }
 
 // EOF

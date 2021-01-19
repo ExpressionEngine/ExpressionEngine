@@ -42,19 +42,19 @@
 			</div>
 		</div>
 		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "remove",
-					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-				]
-			],
-			'modal' => true
-		]); ?>
+            'options' => [
+                [
+                    'value' => "",
+                    'text' => '-- ' . lang('with_selected') . ' --'
+                ],
+                [
+                    'value' => "remove",
+                    'text' => lang('delete'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+                ]
+            ],
+            'modal' => true
+        ]); ?>
   </div>
 	</form>
 </div>
@@ -64,12 +64,12 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-delete',
-	'form_url'	=> ee('CP/URL')->make('categories/remove'),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove',
-		'cat_group_id'	=> $cat_group->group_id
-	)
+    'name'		=> 'modal-confirm-delete',
+    'form_url'	=> ee('CP/URL')->make('categories/remove'),
+    'hidden'	=> array(
+        'bulk_action'	=> 'remove',
+        'cat_group_id'	=> $cat_group->group_id
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

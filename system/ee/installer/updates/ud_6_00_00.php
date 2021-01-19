@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Version_6_0_0;
  */
 class Updater
 {
-
     public $version_suffix = '';
 
     /**
@@ -60,7 +59,6 @@ class Updater
                 ])->save();
         }
     }
-
 }
 
 // EOF

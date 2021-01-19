@@ -16,7 +16,6 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class Rte_mcp
 {
-
     public function __construct()
     {
         $this->base_url = ee('CP/URL')->make('addons/settings/rte');
@@ -206,9 +205,7 @@ class Rte_mcp
      */
     public function edit_toolset()
     {
-
         if (ee('Request')->isPost()) {
-
             $settings =  ee('Request')->post('settings');
     
             // -------------------------------------------
@@ -275,7 +272,6 @@ class Rte_mcp
             ($toolset_id = $request->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-
             $config->settings = array_merge($defaultConfigSettings, $config->settings);
 
             // Clone a config?
@@ -411,11 +407,9 @@ class Rte_mcp
         $toolset_id = ee('Request')->post('selection');
 
         if (!empty($toolset_id)) {
-
             $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', 'IN', $toolset_id);
 
             if ($config) {
-
                 $removed = $config->all()->pluck('toolset_name');
                 $config->delete();
 

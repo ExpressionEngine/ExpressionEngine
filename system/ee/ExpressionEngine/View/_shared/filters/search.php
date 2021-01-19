@@ -1,4 +1,4 @@
-<?php if ( ! empty($filters) && is_array($filters)): ?>
+<?php if (! empty($filters) && is_array($filters)): ?>
     <?php foreach ($filters as $filter): ?>
         <?php if ($filter['name'] == 'filter_by_keyword') : ?>
             <div class="filter-search-bar__item">
@@ -9,7 +9,9 @@
                 </div>
             </div>
         <?php else: ?>
-            <div class="filter-search-bar__item <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
+            <div class="filter-search-bar__item <?php if (!empty($filter['class'])) {
+    echo $filter['class'];
+} ?>">
                 <?=$filter['html']?>
             </div>
         <?php endif; ?>

@@ -1,59 +1,52 @@
 <?php
-$margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
-$margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
+$margin_top = isset($field['margin_top']) ? $field['margin_top'] : false;
+$margin_left = isset($field['margin_left']) ? $field['margin_left'] : false;
 
 $class = (isset($field['class'])) ? $field['class'] : '';
 $class .= ($margin_top) ? ' add-mrg-top' : '';
 $class .= ($margin_left) ? ' add-mrg-left' : '';
 
 // Check for a field name override
-if (isset($field['name']))
-{
-	$field_name = $field['name'];
+if (isset($field['name'])) {
+    $field_name = $field['name'];
 }
 // Get the value of the field
 $value = set_value($field_name);
-if ($value == '')
-{
-	$value = array_key_exists('value', $field) ? $field['value'] : ee()->config->item($field_name, '', TRUE);
+if ($value == '') {
+    $value = array_key_exists('value', $field) ? $field['value'] : ee()->config->item($field_name, '', true);
 }
 // Escape output
-if (is_string($value))
-{
-	$value = form_prep($value, $field_name);
+if (is_string($value)) {
+    $value = form_prep($value, $field_name);
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
-if (isset($field['disabled']) && $field['disabled'] == TRUE)
-{
-	$attrs = ' disabled="disabled"';
+if (isset($field['disabled']) && $field['disabled'] == true) {
+    $attrs = ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
-if (isset($field['group_toggle']))
-{
-	$attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";;
-	$attrs .= ' onchange="EE.cp.form_group_toggle(this)"';
+if (isset($field['group_toggle'])) {
+    $attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";
+    ;
+    $attrs .= ' onchange="EE.cp.form_group_toggle(this)"';
 }
-if (isset($field['maxlength']))
-{
-	$attrs .= ' maxlength="'.(int) $field['maxlength'].'"';
+if (isset($field['maxlength'])) {
+    $attrs .= ' maxlength="'.(int) $field['maxlength'].'"';
 }
-if (isset($field['placeholder']))
-{
-	$attrs .= ' placeholder="'.$field['placeholder'].'"';
+if (isset($field['placeholder'])) {
+    $attrs .= ' placeholder="'.$field['placeholder'].'"';
 }
-if (isset($field['group']))
-{
-	$attrs .= ' data-group="'.$field['group'].'"';
+if (isset($field['group'])) {
+    $attrs .= ' data-group="'.$field['group'].'"';
 }
 $has_note = isset($field['note']);
 
 $no_results = (in_array($field['type'], array('select')) &&
-	isset($field['no_results']) &&
-	count($field['choices']) == 0);
+    isset($field['no_results']) &&
+    count($field['choices']) == 0);
 
 // Conditionally show 'mr' class
-$mr_class = ( ! isset($mr) OR (isset($mr) && $mr)) ? 'mr' : '';
+$mr_class = (! isset($mr) or (isset($mr) && $mr)) ? 'mr' : '';
 ?>
 <?php if ($no_results): ?>
 	<?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
@@ -63,7 +56,7 @@ $mr_class = ( ! isset($mr) OR (isset($mr) && $mr)) ? 'mr' : '';
 <?php endif ?>
 <?php switch ($field['type']):
 case 'text':
-	if ($class): ?>
+    if ($class): ?>
 		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="'.$field['group'].'"' : ''?>>
 	<?php endif ?>
 
@@ -73,6 +66,7 @@ case 'text':
 		</div>
 	<?php endif ?>
 <?php break;
+    // no break
 case 'short-text': ?>
 	<label class="flex-input <?=$class?>">
 		<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
@@ -93,73 +87,77 @@ case 'radio_block':
 case 'radio':
 case 'inline_radio':
 case 'checkbox':
-if ($field['type'] == 'checkbox' && ! $value) $value = [];
+if ($field['type'] == 'checkbox' && ! $value) {
+    $value = [];
+}
 ?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
-		'field_name' => $field_name,
-		'choices' => $field['choices'],
-		'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : NULL,
-		'value' => $value,
-		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
-		'multi' => ($field['type'] == 'checkbox'),
-		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
-		'selectable' => isset($field['selectable']) ? $field['selectable'] : TRUE,
-		'reorderable' => isset($field['reorderable']) ? $field['reorderable'] : FALSE,
-		'removable' => isset($field['removable']) ? $field['removable'] : FALSE,
-		'editable' => isset($field['editable']) ? $field['editable'] : FALSE,
-		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
-		'limit' => isset($field['limit']) ? $field['limit'] : 100,
-		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
-		'attrs' => $attrs,
-		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
-		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
-		'encode' => isset($field['encode']) ? $field['encode'] : TRUE,
-		'force_react' => isset($field['force_react']) ? $field['force_react'] : FALSE,
-		'class' => $class,
-		'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : NULL
-	]); ?>
+        'field_name' => $field_name,
+        'choices' => $field['choices'],
+        'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : null,
+        'value' => $value,
+        'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
+        'multi' => ($field['type'] == 'checkbox'),
+        'nested' => isset($field['nested']) ? $field['nested'] : false,
+        'selectable' => isset($field['selectable']) ? $field['selectable'] : true,
+        'reorderable' => isset($field['reorderable']) ? $field['reorderable'] : false,
+        'removable' => isset($field['removable']) ? $field['removable'] : false,
+        'editable' => isset($field['editable']) ? $field['editable'] : false,
+        'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
+        'limit' => isset($field['limit']) ? $field['limit'] : 100,
+        'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
+        'attrs' => $attrs,
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
+        'encode' => isset($field['encode']) ? $field['encode'] : true,
+        'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
+        'class' => $class,
+        'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
+    ]); ?>
 <?php break;
 
 case 'select':
-	if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs.' class="'.$class.'"', isset($field['encode']) ? $field['encode'] : TRUE);
+    if (! $no_results) {
+        echo form_dropdown($field_name, $field['choices'], $value, $attrs.' class="'.$class.'"', isset($field['encode']) ? $field['encode'] : true);
+    }
 break;
 case 'dropdown': ?>
 	<?php $this->embed('ee:_shared/form/fields/dropdown', [
-		'field_name' => $field_name,
-		'choices' => $field['choices'],
-		'value' => $value,
-		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
-		'limit' => isset($field['limit']) ? $field['limit'] : 100,
-		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
-		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
-		'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
-		'class' => $class,
-	]); ?>
+        'field_name' => $field_name,
+        'choices' => $field['choices'],
+        'value' => $value,
+        'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
+        'limit' => isset($field['limit']) ? $field['limit'] : 100,
+        'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
+        'class' => $class,
+    ]); ?>
 <?php break;
 
 case 'yes_no':
 case 'toggle': ?>
 	<?php $this->embed('ee:_shared/form/fields/toggle', [
-		'yes_no' => ($field['type'] == 'yes_no'),
-		'value' => $value,
-		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE),
-		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
-		'class' => $class,
-	]); ?>
+        'yes_no' => ($field['type'] == 'yes_no'),
+        'value' => $value,
+        'disabled' => (isset($field['disabled']) && $field['disabled'] == true),
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'class' => $class,
+    ]); ?>
 <?php break;
 
 case 'textarea':
-	if ($class): ?>
+    if ($class): ?>
 		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="'.$field['group'].'"' : ''?>>
 	<?php endif ?>
 
-			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?></textarea>
+			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
 
-	<?php if ($margin_top OR $margin_left): ?>
+	<?php if ($margin_top or $margin_left): ?>
 		</div>
 	<?php endif ?>
 <?php break;
-
+    // no break
 case 'multiselect': ?>
 	<div class="fields-select" class="<?=$class?>">
 		<div class="field-inputs">
@@ -171,12 +169,12 @@ case 'multiselect': ?>
 		</div>
 	</div>
 <?php break;
-
+// no break
 case 'image': ?>
 	<figure class="file-chosen <?=$class?>">
 		<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
 		<ul class="toolbar button-group">
-			<?php if( ! array_key_exists('edit', $field) || $field['edit']): ?>
+			<?php if (! array_key_exists('edit', $field) || $field['edit']): ?>
 			<li class="edit"><a class="edit button button--default button--xsmall" href="" title="edit"></a></li>
 			<?php endif; ?>
 			<li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
@@ -194,7 +192,7 @@ case 'slider': ?>
 			min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
 			max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
 			step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
-			<?= isset($field['list']) ? "list='{$field['list']}'" : NULL ?>
+			<?= isset($field['list']) ? "list='{$field['list']}'" : null ?>
 		>
 		<div class="slider-output">
 			<output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
@@ -207,7 +205,7 @@ case 'action_button': ?>
 <?php break;
 
 case 'html':
-	if ($class): ?>
+    if ($class): ?>
 		<div class="<?=$class?>">
 	<?php endif ?>
 		<?=$field['content']?>
@@ -219,7 +217,9 @@ case 'html':
 	<em><?=$field['note']?></em>
 </div>
 <?php endif ?>
-<?php if ( ! $grid): ?>
+<?php if (! $grid): ?>
 	<?=form_error(rtrim($field_name, '[]'))?>
-	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
+	<?php if (isset($errors)) {
+        echo $errors->renderError($field_name);
+    } ?>
 <?php endif;

@@ -16,13 +16,13 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
  * Model Service Base64 Encoded Typed Column that defaults to an
  * empty array.
  */
-class Base64Array extends Base64 {
+class Base64Array extends Base64
+{
 
-	/**
-	 * Same as base64, but with an array as the default data
-	 */
-	protected $data = array();
-
+    /**
+     * Same as base64, but with an array as the default data
+     */
+    protected $data = array();
 }
 
 // EOF

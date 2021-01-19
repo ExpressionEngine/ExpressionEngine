@@ -15,7 +15,8 @@ use ExpressionEngine\Service\View\ViewFactory;
 /**
  * Sidebar Service
  */
-abstract class AbstractSidebar {
+abstract class AbstractSidebar
+{
 
     /**
      * @var array $items The items in this sidebar
@@ -84,7 +85,6 @@ abstract class AbstractSidebar {
      * @return Header A new BasicItem object.
      */
     abstract public function addItem($text, $url = null);
-
 }
 
 // EOF

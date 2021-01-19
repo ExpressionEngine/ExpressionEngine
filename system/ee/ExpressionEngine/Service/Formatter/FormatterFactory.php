@@ -17,63 +17,63 @@ use ExpressionEngine\Core\Provider;
 /**
  * Formatter Factory
  */
-class FormatterFactory {
+class FormatterFactory
+{
 
-	/**
-	 * @var array Any needed app config settings
-	 */
-	protected $config;
+    /**
+     * @var array Any needed app config settings
+     */
+    protected $config;
 
-	/**
-	 * @var object $lang EE_Lang
-	 **/
-	private $lang;
+    /**
+     * @var object $lang EE_Lang
+     **/
+    private $lang;
 
-	/**
-	 * @var int bitwise mask of options
-	 */
-	protected $options;
+    /**
+     * @var int bitwise mask of options
+     */
+    protected $options;
 
-	/**
-	 * @var object $session EE_Session
-	 */
-	protected $session;
+    /**
+     * @var object $session EE_Session
+     */
+    protected $session;
 
-	/**
-	 * Constructor
-	 *
-	 * @param object ExpressionEngine\Core\Provider
-	 * @param integer bitwise-defined options
-	 * @param object EE_Lang
-	 */
-	public function __construct(EE_Lang $lang, EE_Session $session, $config, $options)
-	{
-		$this->lang = $lang;
-		$this->session = $session;
-		$this->config = $config;
-		$this->options = $options;
-	}
+    /**
+     * Constructor
+     *
+     * @param object ExpressionEngine\Core\Provider
+     * @param integer bitwise-defined options
+     * @param object EE_Lang
+     */
+    public function __construct(EE_Lang $lang, EE_Session $session, $config, $options)
+    {
+        $this->lang = $lang;
+        $this->session = $session;
+        $this->config = $config;
+        $this->options = $options;
+    }
 
-	/**
-	 * Helper function to create a formatter object
-	 *
-	 * @param String $formatter_name Formatter
-	 * @param mixed $content The content to be formatted
-	 * @return Object Formatter
-	 */
-	public function make($formatter_name, $content)
-	{
-		$formatter_class = implode('', array_map('ucfirst', explode('_', $formatter_name)));
+    /**
+     * Helper function to create a formatter object
+     *
+     * @param String $formatter_name Formatter
+     * @param mixed $content The content to be formatted
+     * @return Object Formatter
+     */
+    public function make($formatter_name, $content)
+    {
+        $formatter_class = implode('', array_map('ucfirst', explode('_', $formatter_name)));
 
-		$class = __NAMESPACE__."\\Formats\\{$formatter_class}";
+        $class = __NAMESPACE__."\\Formats\\{$formatter_class}";
 
-		if (class_exists($class))
-		{
-			return new $class($content, $this->lang, $this->session, $this->config, $this->options);
-		}
+        if (class_exists($class)) {
+            return new $class($content, $this->lang, $this->session, $this->config, $this->options);
+        }
 
-		throw new \Exception("Unknown formatter: `{$formatter_name}`.");
-	}
+        throw new \Exception("Unknown formatter: `{$formatter_name}`.");
+    }
 }
 
 // EOF

@@ -1,6 +1,6 @@
 
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method=delete')?>
-<?php foreach($damned as $mod):?>
+<?php foreach ($damned as $mod):?>
 	<?=form_hidden('delete[]', $mod)?>
 <?php endforeach;?>
 

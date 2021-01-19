@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class NavigationCustomSection extends NavigationSection
 {
-
     public function __construct()
     {
         parent::__construct(lang('custom'), 'custom');
@@ -31,10 +30,8 @@ class NavigationCustomSection extends NavigationSection
         $active = ee()->extensions->active_hook('cp_custom_menu');
         $hooks = ee()->extensions->get_active_hook_info('cp_custom_menu') ?: array();
 
-        foreach ($hooks as $priority => $calls)
-        {
-            foreach ($calls as $class => $metadata)
-            {
+        foreach ($hooks as $priority => $calls) {
+            foreach ($calls as $class => $metadata) {
                 $byclass[$class][] = $metadata;
             }
         }
@@ -48,18 +45,15 @@ class NavigationCustomSection extends NavigationSection
             ->order('Children.sort')
             ->all();
 
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             if ($active && $item->type == 'addon' && isset($byclass[$item->data])) {
-                foreach ($byclass[$item->data] as $metadata)
-                {
+                foreach ($byclass[$item->data] as $metadata) {
                     ee()->extensions->call_class($item->data, 'cp_custom_menu', $metadata, $args);
                 }
             } elseif ($item->type == 'submenu') {
                 $sub = $custom->addSubmenu($item->name);
 
-                foreach ($item->Children as $child)
-                {
+                foreach ($item->Children as $child) {
                     $sub->addItem($child->name, $child->data);
                 }
             } elseif ($item->parent_id == 0) {

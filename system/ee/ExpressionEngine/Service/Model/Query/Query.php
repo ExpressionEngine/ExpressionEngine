@@ -15,16 +15,16 @@ use ExpressionEngine\Service\Model\DataStore;
 /**
  * Query
  */
-abstract class Query {
+abstract class Query
+{
+    protected $store = null;
+    protected $builder = null;
 
-	protected $store = NULL;
-	protected $builder = NULL;
+    public function __construct(DataStore $store, Builder $builder)
+    {
+        $this->store = $store;
+        $this->builder = $builder;
+    }
 
-	public function __construct(DataStore $store, Builder $builder)
-	{
-		$this->store = $store;
-		$this->builder = $builder;
-	}
-
-	abstract public function run();
+    abstract public function run();
 }

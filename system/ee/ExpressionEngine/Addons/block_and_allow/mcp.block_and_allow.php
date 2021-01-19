@@ -14,7 +14,6 @@
  */
 class Block_and_allow_mcp
 {
-
     public $LB = "\r\n";
 
     /**
@@ -380,19 +379,19 @@ class Block_and_allow_mcp
                 }
             }
 
-             sort($new_values);
+            sort($new_values);
 
-             $_POST[$val] = implode("|", array_unique($new_values));
+            $_POST[$val] = implode("|", array_unique($new_values));
 
-             ee()->db->where('blockedlist_type', $type);
-             ee()->db->delete('blockedlist');
+            ee()->db->where('blockedlist_type', $type);
+            ee()->db->delete('blockedlist');
 
-             $data = array(
+            $data = array(
                  'blockedlist_type' => $type,
                  'blockedlist_value' => $_POST[$val]
              );
 
-             ee()->db->insert('blockedlist', $data);
+            ee()->db->insert('blockedlist', $data);
         }
     }
 

@@ -13,7 +13,8 @@ namespace ExpressionEngine\Library\Rte;
 /**
  * RTE File Browser interface
  */
-interface RteFilebrowserInterface {
+interface RteFilebrowserInterface
+{
 
     /**
      * Function which will be called when displaying field
@@ -49,5 +50,4 @@ interface RteFilebrowserInterface {
      * @return Array
      */
     public function getUploadDestinations();
-
 }

@@ -11,8 +11,9 @@
 /**
  * Installer Output
  */
-class Installer_Output Extends EE_Output {
-	// Yes, it's empty!
+class Installer_Output extends EE_Output
+{
+    // Yes, it's empty!
 }
 
 // EOF

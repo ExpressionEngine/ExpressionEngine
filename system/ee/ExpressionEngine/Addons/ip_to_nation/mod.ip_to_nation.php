@@ -11,70 +11,62 @@
 /**
  * Ip to Nation Module
  */
-class Ip_to_nation {
+class Ip_to_nation
+{
+    public $return_data = '';
 
-	var $return_data = '';
+    /**
+     * World flags
+     */
+    public function world_flags($ip = '')
+    {
+        if ($ip == '') {
+            $ip = ee()->TMPL->tagdata;
+        }
 
-	/**
-	 * World flags
-	 */
-	function world_flags($ip = '')
-	{
-		if ($ip == '')
-		{
-			$ip = ee()->TMPL->tagdata;
-		}
+        $ip = trim($ip);
 
-		$ip = trim($ip);
+        if (! ee()->input->valid_ip($ip)) {
+            $this->return_data = $ip;
+            return;
+        }
 
-		if ( ! ee()->input->valid_ip($ip))
-		{
-			$this->return_data = $ip;
-			return;
-		}
+        ee()->load->model('ip_to_nation_data', 'ip_data');
 
-		ee()->load->model('ip_to_nation_data', 'ip_data');
+        $c_code = ee()->ip_data->find($ip);
 
-		$c_code = ee()->ip_data->find($ip);
+        if (! $c_code) {
+            $this->return_data = $ip;
+            return;
+        }
 
-		if ( ! $c_code)
-		{
-			$this->return_data = $ip;
-			return;
-		}
+        $country = $this->get_country($c_code);
 
-		$country = $this->get_country($c_code);
+        if (ee()->TMPL->fetch_param('type') == 'text') {
+            $this->return_data = $country;
+        } else {
+            $this->return_data = '<img src="'.ee()->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
+        }
 
-		if (ee()->TMPL->fetch_param('type') == 'text')
-		{
-			$this->return_data = $country;
-		}
-		else
-		{
-			$this->return_data = '<img src="'.ee()->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
-		}
+        return $this->return_data;
+    }
 
-		return $this->return_data;
-	}
+    /**
+     * Countries
+     */
+    public function get_country($which = '')
+    {
+        if (! isset(ee()->session->cache['ip_to_nation']['countries'])) {
+            $conf = ee()->config->loadFile('countries');
+            ee()->session->cache['ip_to_nation']['countries'] = $conf['countries'];
+        }
 
-	/**
-	 * Countries
-	 */
-	function get_country($which = '')
-	{
-		if ( ! isset(ee()->session->cache['ip_to_nation']['countries']))
-		{
-			$conf = ee()->config->loadFile('countries');
-			ee()->session->cache['ip_to_nation']['countries'] = $conf['countries'];
-		}
+        if (! isset(ee()->session->cache['ip_to_nation']['countries'][$which])) {
+            return 'Unknown';
+        }
 
-		if ( ! isset(ee()->session->cache['ip_to_nation']['countries'][$which]))
-		{
-			return 'Unknown';
-		}
-
-		return ee()->session->cache['ip_to_nation']['countries'][$which];
-	}
+        return ee()->session->cache['ip_to_nation']['countries'][$which];
+    }
 }
 // END CLASS
 

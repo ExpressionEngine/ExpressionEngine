@@ -10,8 +10,8 @@ $project_base = realpath(dirname(__FILE__).'/../../../').'/';
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
 define('PATH_CACHE', SYSPATH.'user/cache/');
-define('APPPATH',  BASEPATH);
-define('APP_VER',  '6.0.1');
+define('APPPATH', BASEPATH);
+define('APP_VER', '6.0.1');
 define('PATH_THEMES', realpath(SYSPATH.'/../themes').'/');
 define('DOC_URL', 'http://our.doc.url/');
 
@@ -24,20 +24,21 @@ define('RD', '}');
 
 $constants = require '../Config/constants.php';
 
-foreach ($constants as $name => $val)
-{
-	define($name, $val);
+foreach ($constants as $name => $val) {
+    define($name, $val);
 }
 
 // Minor CI annoyance
-function log_message() {}
+function log_message()
+{
+}
 
 // add the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
 
 function lang($str)
 {
-	return $str;
+    return $str;
 }
 
 require_once 'eeObjectMock.php';

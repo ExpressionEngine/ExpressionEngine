@@ -9,15 +9,15 @@
 		<?php endif;?>
 
 		<?=ee()->view->head_link('css/common.min.css'); ?>
-		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
+		<?php if (ee()->extensions->active_hook('cp_css_end') === true):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 
 		<?php
-		foreach (ee()->cp->get_head() as $item) {
-			echo $item."\n";
-		}
-		?>
+        foreach (ee()->cp->get_head() as $item) {
+            echo $item."\n";
+        }
+        ?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
 		<script type="text/javascript">
@@ -44,8 +44,8 @@ $current_page = ee()->uri->segment(2);
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
 			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) :
-				$this->embed('ee:_shared/sidebar/navigation/navigation');
-			endif; ?>
+                $this->embed('ee:_shared/sidebar/navigation/navigation');
+            endif; ?>
 			<div class="ee-main">
 
         <div class="ee-main-header">
@@ -61,18 +61,18 @@ $current_page = ee()->uri->segment(2);
               <ul class="breadcrumb">
 					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>""><i class="fas fa-home"></i></a></li>
 						<?php
-						$i = 0;
-						foreach ($cp_breadcrumbs as $link => $title):
-							$i++;
-							if ($i < count($cp_breadcrumbs)) :
-						?>
+                        $i = 0;
+                        foreach ($cp_breadcrumbs as $link => $title):
+                            $i++;
+                            if ($i < count($cp_breadcrumbs)) :
+                        ?>
         					<li><a href="<?=$link?>"><?=$title?></a></li>
 						<?php else: ?>
 							<li><span><?=$title?></span></li>
 						<?php
-							endif;
-						endforeach;
-						?>
+                            endif;
+                        endforeach;
+                        ?>
         			</ul>
             </div>
       		<?php endif ?>
@@ -107,7 +107,7 @@ $current_page = ee()->uri->segment(2);
               <div class="dropdown__divider"></div>
 
       				<h3 class="dropdown__header"><?=lang('quick_links')?></h3>
-      				<?php foreach($cp_quicklinks as $link): ?>
+      				<?php foreach ($cp_quicklinks as $link): ?>
       				<a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
       				<?php endforeach ?>
       				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="fas fa-plus fa-sm"></i>  <?=lang('new_link')?></a>

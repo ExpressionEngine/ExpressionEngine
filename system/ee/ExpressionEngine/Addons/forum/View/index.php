@@ -46,26 +46,26 @@
 			</table>
 			<?php else: ?>
 				<?php $total = count($categories);
-					foreach ($categories as $key => $category): ?>
+                    foreach ($categories as $key => $category): ?>
 					<div class="tbl-wrap <?=($key + 1 != $total) ? 'mb' : '' ?>">
 						<?=$this->embed('ee:_shared/table', $category);?>
 					</div>
 				<?php endforeach; ?>
 
 				<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-					'options' => [
-						[
-							'value' => "",
-							'text' => '-- ' . lang('with_selected') . ' --'
-						],
-						[
-							'value' => "remove",
-							'text' => lang('delete'),
-							'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove-forum"'
-						]
-					],
-					'modal' => true
-				]); ?>
+                    'options' => [
+                        [
+                            'value' => "",
+                            'text' => '-- ' . lang('with_selected') . ' --'
+                        ],
+                        [
+                            'value' => "remove",
+                            'text' => lang('delete'),
+                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove-forum"'
+                        ]
+                    ],
+                    'modal' => true
+                ]); ?>
 			<?php endif; ?>
 			</div>
 		<?php endif; ?>
@@ -76,12 +76,12 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-forum',
-	'form_url'	=> ee('CP/URL')->make('addons/settings/forum'),
-	'hidden'	=> array(
-		'return' => ee('CP/URL')->getCurrentUrl()->encode(),
-		'bulk_action'	=> 'remove'
-	)
+    'name'		=> 'modal-confirm-remove-forum',
+    'form_url'	=> ee('CP/URL')->make('addons/settings/forum'),
+    'hidden'	=> array(
+        'return' => ee('CP/URL')->getCurrentUrl()->encode(),
+        'bulk_action'	=> 'remove'
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);

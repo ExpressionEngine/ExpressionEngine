@@ -13,14 +13,15 @@ namespace ExpressionEngine\Service\Model\Query;
 /**
  * Count Query
  */
-class Count extends Select {
+class Count extends Select
+{
 
-	/**
-	 *
-	 */
-	public function run()
-	{
-		$query = $this->buildQuery();
-		return $query->count_all_results();
-	}
+    /**
+     *
+     */
+    public function run()
+    {
+        $query = $this->buildQuery();
+        return $query->count_all_results();
+    }
 }

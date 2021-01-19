@@ -1,1 +1,1 @@
-<?php $this->embed('ee:_shared/form')?>
+<?php $this->embed('ee:_shared/form');

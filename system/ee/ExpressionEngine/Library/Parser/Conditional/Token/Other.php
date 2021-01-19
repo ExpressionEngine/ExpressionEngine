@@ -13,22 +13,22 @@ namespace ExpressionEngine\Library\Parser\Conditional\Token;
 /**
  * Other Token
  */
-class Other extends Token {
+class Other extends Token
+{
+    public function __construct($lexeme)
+    {
+        parent::__construct('MISC', $lexeme);
 
-	public function __construct($lexeme)
-	{
-		parent::__construct('MISC', $lexeme);
+        // always encode misc
+        $this->value = str_replace(
+            array('{', '}',),
+            array('&#123;', '&#125;'),
+            $lexeme
+        );
+    }
 
-		// always encode misc
-		$this->value = str_replace(
-			array('{', '}',),
-			array('&#123;', '&#125;'),
-			$lexeme
-		);
-	}
-
-	public function canEvaluate()
-	{
-		return FALSE;
-	}
+    public function canEvaluate()
+    {
+        return false;
+    }
 }

@@ -8,6 +8,7 @@ a.icon--sync {
 </style>
 
 <?php use ExpressionEngine\Library\CP\Table;
+
 if ($wrap): ?>
 	<div class="tbl-wrap<?php if ($grid_input): ?> pb<?php endif?>">
 <?php endif ?>
@@ -17,7 +18,7 @@ if ($wrap): ?>
 		<tr>
 			<td>
 				<?=lang($no_results['text'])?>
-				<?php if ( ! empty($no_results['action_text'])): ?>
+				<?php if (! empty($no_results['action_text'])): ?>
 					<a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
@@ -28,64 +29,68 @@ if ($wrap): ?>
 		<thead>
 			<tr>
 				<?php
-				// Don't do reordering logic if the table is empty
-				$reorder = $reorder && ! empty($data);
-				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
-				if ($grid_input)
-				{
-					$colspan++;
-				}
+                // Don't do reordering logic if the table is empty
+                $reorder = $reorder && ! empty($data);
+                $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                if ($grid_input) {
+                    $colspan++;
+                }
 
-				if ($reorder_header): ?>
+                if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
-					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
-					$label = $settings['label']; ?>
+                    $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
+                    $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
-							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
+							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<label for="<?php if ($grid_input) { echo $grid_field_name; } elseif (isset($table_attrs['id'])) { echo $table_attrs['id']; } ?>select-all" class="hidden"><?=lang('select_all')?></label>
-									<input id="<?php if ($grid_input) { echo $grid_field_name; } elseif (isset($table_attrs['id'])) { echo $table_attrs['id']; } ?>select-all" type="checkbox" title="<?=lang('select_all')?>">
+									<label for="<?php if ($grid_input) {
+                        echo $grid_field_name;
+                    } elseif (isset($table_attrs['id'])) {
+                        echo $table_attrs['id'];
+                    } ?>select-all" class="hidden"><?=lang('select_all')?></label>
+									<input id="<?php if ($grid_input) {
+                        echo $grid_field_name;
+                    } elseif (isset($table_attrs['id'])) {
+                        echo $table_attrs['id'];
+                    } ?>select-all" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>
 					<?php else: ?>
 						<?php
-						$header_class = '';
-						if ($settings['type'] == Table::COL_ID)
-						{
-							$header_class .= ' id-col';
-						}
-						if ($sortable && $settings['sort'] && $sort_col == $label)
-						{
-							$header_class .= ' highlight';
-						}
-						if (isset($settings['class']))
-						{
-							$header_class .= ' '.$settings['class'];
-						}
-						?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+                        $header_class = '';
+                        if ($settings['type'] == Table::COL_ID) {
+                            $header_class .= ' id-col';
+                        }
+                        if ($sortable && $settings['sort'] && $sort_col == $label) {
+                            $header_class .= ' highlight';
+                        }
+                        if (isset($settings['class'])) {
+                            $header_class .= ' '.$settings['class'];
+                        }
+                        ?>
+						<th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<span class="grid-instruct"><?=lang($settings['desc'])?></span>
 							<?php endif ?>
-							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
+							<?php if ($sortable && $settings['sort'] && $base_url != null): ?>
 								<?php
-								$url = clone $base_url;
-								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
-								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$url->setQueryStringVariable($sort_col_qs_var, $label);
-								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
-								?>
+                                $url = clone $base_url;
+                                $arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
+                                $link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
+                                $url->setQueryStringVariable($sort_col_qs_var, $label);
+                                $url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
+                                ?>
 								<a href="<?=$url?>" class="sort <?=$arrow_dir?>"></a>
 							<?php endif ?>
 						</th>
@@ -98,48 +103,43 @@ if ($wrap): ?>
 		</thead>
 		<tbody>
 			<?php
-			// Output this if Grid input so we can dynamically show it via JS
-			if (empty($data) OR $grid_input): ?>
-				<tr class="no-results<?php if ($grid_input): ?> hidden<?php endif?><?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
+            // Output this if Grid input so we can dynamically show it via JS
+            if (empty($data) or $grid_input): ?>
+				<tr class="no-results<?php if ($grid_input): ?> hidden<?php endif?><?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
-						<?php if ( ! empty($no_results['action_text'])): ?>
+						<?php if (! empty($no_results['action_text'])): ?>
 							<a rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
 			<?php endif ?>
 			<?php $i = 1;
-			foreach ($data as $heading => $rows): ?>
-				<?php if ( ! $subheadings)
-				{
-					$rows = array($rows);
-				}
-				if ($subheadings && ! empty($heading)): ?>
+            foreach ($data as $heading => $rows): ?>
+				<?php if (! $subheadings) {
+                $rows = array($rows);
+            }
+                if ($subheadings && ! empty($heading)): ?>
 					<tr class="sub-heading"><td colspan="<?=$colspan?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
 				<?php
-				foreach ($rows as $row):
-					// The last row preceding an action row should have a class of 'last'
-					if (( ! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit))
-					{
-						if (isset($row['attrs']['class']))
-						{
-							$row['attrs']['class'] .= ' last';
-						}
-						else
-						{
-							$row['attrs']['class'] = ' last';
-						}
-					}
-					$i++;
-					?>
+                foreach ($rows as $row):
+                    // The last row preceding an action row should have a class of 'last'
+                    if ((! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit)) {
+                        if (isset($row['attrs']['class'])) {
+                            $row['attrs']['class'] .= ' last';
+                        } else {
+                            $row['attrs']['class'] = ' last';
+                        }
+                    }
+                    $i++;
+                    ?>
 					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 						<?php if ($reorder): ?>
 							<td class="reorder-col"><span class="ico reorder"></span></td>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
-							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
+							<?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
 								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
@@ -148,7 +148,7 @@ if ($wrap): ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<div class="toolbar-wrap">
-										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+										<?=ee()->load->view('_shared/toolbar', $column, true)?>
 									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
@@ -161,7 +161,7 @@ if ($wrap): ?>
 												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
+										<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
 											disabled="disabled"
 										<?php endif; ?>
 										type="checkbox"
@@ -190,7 +190,7 @@ if ($wrap): ?>
 					</tr>
 				<?php endforeach ?>
 			<?php endforeach ?>
-			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<?php if (! empty($action_buttons) || ! empty($action_content)): ?>
 				<tr class="tbl-action">
 					<td colspan="<?=$colspan?>" class="solo">
 						<?php foreach ($action_buttons as $button): ?>

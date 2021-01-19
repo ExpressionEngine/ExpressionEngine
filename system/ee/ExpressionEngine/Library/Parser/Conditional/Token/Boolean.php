@@ -15,29 +15,27 @@ use ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 /**
  * Boolean Token
  */
-class Boolean extends Token {
+class Boolean extends Token
+{
+    public function __construct($lexeme)
+    {
+        parent::__construct('BOOL', $lexeme);
 
-	public function __construct($lexeme)
-	{
-		parent::__construct('BOOL', $lexeme);
+        if (is_bool($lexeme)) {
+            $this->lexeme = $lexeme = $lexeme ? 'TRUE' : 'FALSE';
+        }
 
-		if (is_bool($lexeme))
-		{
-			$this->lexeme = $lexeme = $lexeme ? 'TRUE' : 'FALSE';
-		}
-
-		switch (strtoupper($lexeme))
-		{
-			case 'TRUE':
-				$this->value = TRUE;
-				break;
-			case 'FALSE':
-				$this->value = FALSE;
-				break;
-			default:
-				throw new LexerException('Invalid boolean value: '.$lexeme);
-		}
-	}
+        switch (strtoupper($lexeme)) {
+            case 'TRUE':
+                $this->value = true;
+                break;
+            case 'FALSE':
+                $this->value = false;
+                break;
+            default:
+                throw new LexerException('Invalid boolean value: '.$lexeme);
+        }
+    }
 }
 
 // EOF

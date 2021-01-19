@@ -12,10 +12,10 @@ namespace ExpressionEngine\Service\Sidebar;
 
 use ExpressionEngine\Service\View\ViewFactory;
 
-class Divider {
-
-	public function render(ViewFactory $view)
-	{
-		return $view->make('_shared/sidebar/divider')->render();
-	}
+class Divider
+{
+    public function render(ViewFactory $view)
+    {
+        return $view->make('_shared/sidebar/divider')->render();
+    }
 }

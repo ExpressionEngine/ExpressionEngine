@@ -13,94 +13,86 @@ namespace ExpressionEngine\Service\Model\Association;
 /**
  * Running diff of relationship changes
  */
-class Diff {
+class Diff
+{
+    private $parent;
+    private $relation;
 
-	private $parent;
-	private $relation;
+    protected $added = array();
+    protected $removed = array();
+    protected $was_set = false;
 
-	protected $added = array();
-	protected $removed = array();
-	protected $was_set = FALSE;
+    public function __construct($parent, $relation)
+    {
+        $this->parent = $parent;
+        $this->relation = $relation;
+    }
 
-	public function __construct($parent, $relation)
-	{
-		$this->parent = $parent;
-		$this->relation = $relation;
-	}
+    public function reset()
+    {
+        $this->added = array();
+        $this->removed = array();
+        $this->was_set = false;
+    }
 
-	public function reset()
-	{
-		$this->added = array();
-		$this->removed = array();
-		$this->was_set = FALSE;
-	}
+    public function wasSet()
+    {
+        $this->was_set = true;
+    }
 
-	public function wasSet()
-	{
-		$this->was_set = TRUE;
-	}
+    public function add($model)
+    {
+        $hash = spl_object_hash($model);
 
-	public function add($model)
-	{
-		$hash = spl_object_hash($model);
+        if (! $this->attemptFastUndoRemove($hash)) {
+            $this->added[$hash] = $model;
+        }
+    }
 
-		if ( ! $this->attemptFastUndoRemove($hash))
-		{
-			$this->added[$hash] = $model;
-		}
-	}
+    public function remove($model)
+    {
+        $hash = spl_object_hash($model);
 
-	public function remove($model)
-	{
-		$hash = spl_object_hash($model);
+        if (! $this->attemptFastUndoAdd($hash)) {
+            $this->removed[$hash] = $model;
+        }
+    }
 
-		if ( ! $this->attemptFastUndoAdd($hash))
-		{
-			$this->removed[$hash] = $model;
-		}
-	}
+    protected function attemptFastUndoRemove($hash)
+    {
+        if (array_key_exists($hash, $this->removed)) {
+            unset($this->removed[$hash]);
+            return true;
+        }
 
-	protected function attemptFastUndoRemove($hash)
-	{
-		if (array_key_exists($hash, $this->removed))
-		{
-			unset($this->removed[$hash]);
-			return TRUE;
-		}
+        return false;
+    }
 
-		return FALSE;
-	}
+    protected function attemptFastUndoAdd($hash)
+    {
+        if (array_key_exists($hash, $this->added)) {
+            unset($this->added[$hash]);
+            return true;
+        }
 
-	protected function attemptFastUndoAdd($hash)
-	{
-		if (array_key_exists($hash, $this->added))
-		{
-			unset($this->added[$hash]);
-			return TRUE;
-		}
+        return false;
+    }
 
-		return FALSE;
-	}
+    public function commit()
+    {
+        // when setting, remove everything not in the new set
+        if ($this->was_set) {
+            $this->relation->set($this->parent, $this->added);
+        } else {
+            if (! empty($this->removed)) {
+                $this->relation->drop($this->parent, $this->removed);
+            }
 
-	public function commit()
-	{
-		// when setting, remove everything not in the new set
-		if ($this->was_set)
-		{
-			$this->relation->set($this->parent, $this->added);
-		}
-		else
-		{
-			if ( ! empty($this->removed))
-			{
-				$this->relation->drop($this->parent, $this->removed);
-			}
+            $this->relation->insert($this->parent, $this->added);
+        }
 
-			$this->relation->insert($this->parent, $this->added);
-		}
-
-		$this->reset();
-	}
+        $this->reset();
+    }
 }
 
 // EOF

@@ -15,41 +15,32 @@ use \ExpressionEngine\Addons\spam\Library\Vectorizer;
 /**
  * Spam Module ASCIIPrintable Vectorizer
  */
-class ASCIIPrintable implements Vectorizer {
+class ASCIIPrintable implements Vectorizer
+{
 
-	/**
-	 * Calculates the ratio of non-ASCII printable characters
-	 *
-	 * @param string $source The source text
-	 * @access public
-	 * @return float The calculated ratio
-	 */
-	public function vectorize($source)
-	{
+    /**
+     * Calculates the ratio of non-ASCII printable characters
+     *
+     * @param string $source The source text
+     * @access public
+     * @return float The calculated ratio
+     */
+    public function vectorize($source)
+    {
+        ee()->load->helper('multibyte');
 
-		ee()->load->helper('multibyte');
+        $non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
 
-		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
+        $length = ee_mb_strlen($source);
 
-		$length = ee_mb_strlen($source);
+        if ($length !== 0) {
+            $ratio = $non_ascii / $length;
+        } else {
+            $ratio = 1;
+        }
 
-		if ($length !== 0)
-		{
-
-			$ratio = $non_ascii / $length;
-
-		}
-		else
-		{
-
-			$ratio = 1;
-
-		}
-
-		return $ratio;
-
-	}
-
+        return $ratio;
+    }
 }
 
 // EOF

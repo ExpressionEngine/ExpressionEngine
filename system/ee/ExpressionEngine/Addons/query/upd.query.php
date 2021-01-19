@@ -16,14 +16,13 @@ use ExpressionEngine\Service\Addon\Installer;
 class Query_upd extends Installer
 {
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
         parent::__construct();
     }
-
 }
 // END CLASS
 

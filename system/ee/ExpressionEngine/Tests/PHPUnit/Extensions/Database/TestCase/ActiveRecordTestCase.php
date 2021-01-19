@@ -12,78 +12,76 @@ namespace ExpressionEngine\Tests\PHPUnit\Extensions\Database\TestCase;
 
 use ExpressionEngine\Tests\PHPUnit\Extensions\Database\DataSet\ArrayDataSet;
 
+abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCase
+{
+    private $pdo;
+    private $active_record;
 
-abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCase {
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
 
-	private $pdo;
-	private $active_record;
+        $this->active_record = $this->getCIDBConnection();
+        $this->pdo = $this->active_record->conn_id;
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
-	{
-		parent::__construct($name, $data, $dataName);
+        $queries = (array) $this->getTableDefinitions();
 
-		$this->active_record = $this->getCIDBConnection();
-		$this->pdo = $this->active_record->conn_id;
+        array_map(array($this->pdo, 'query'), $queries);
+    }
 
-		$queries = (array) $this->getTableDefinitions();
+    /**
+     * Can be implemented to create tables for this test.
+     */
+    public function getTableDefinitions()
+    {
+        return array();
+    }
 
-		array_map(array($this->pdo, 'query'), $queries);
-	}
+    /**
+     * Helper to avoid typing that long ArrayDataSet namespace all the time
+     * and to get parity with DBUnit's create***DataSet functions.
+     */
+    public function createArrayDataSet(array $data)
+    {
+        return new ArrayDataSet($data);
+    }
 
-	/**
-	 * Can be implemented to create tables for this test.
-	 */
-	public function getTableDefinitions()
-	{
-		return array();
-	}
+    /**
+     * Get the CI active record object
+     */
+    public function getActiveRecord()
+    {
+        return $this->active_record;
+    }
 
-	/**
-	 * Helper to avoid typing that long ArrayDataSet namespace all the time
-	 * and to get parity with DBUnit's create***DataSet functions.
-	 */
-	public function createArrayDataSet(array $data)
-	{
-		return new ArrayDataSet($data);
-	}
+    /**
+     * PHPUnit Boilerplate
+     */
+    public function getConnection()
+    {
+        return $this->createDefaultDBConnection($this->pdo, 'sqlite');
+    }
 
-	/**
-	 * Get the CI active record object
-	 */
-	public function getActiveRecord()
-	{
-		return $this->active_record;
-	}
+    /**
+     * Helper function to set up all of the CI db dependencies
+     */
+    public function getCIDBConnection()
+    {
+        require_once BASEPATH.'database/DB_driver.php';
+        require_once BASEPATH.'database/DB_active_rec.php';
 
-	/**
-	 * PHPUnit Boilerplate
-	 */
-	public function getConnection()
-	{
-		return $this->createDefaultDBConnection($this->pdo, 'sqlite');
-	}
+        if (! class_exists('CI_DB')) {
+            class_alias('CI_DB_active_record', 'CI_DB');
+        }
 
-	/**
-	 * Helper function to set up all of the CI db dependencies
-	 */
-	public function getCIDBConnection()
-	{
-		require_once BASEPATH.'database/DB_driver.php';
-		require_once BASEPATH.'database/DB_active_rec.php';
+        require_once BASEPATH.'database/drivers/pdo/pdo_driver.php';
+        require_once BASEPATH.'database/drivers/pdo/subdrivers/pdo_sqlite_driver.php';
 
-		if ( ! class_exists('CI_DB'))
-		{
-			class_alias('CI_DB_active_record', 'CI_DB');
-		}
+        $db = new \CI_DB_pdo_sqlite_driver(array(
+            'dsn' => 'sqlite::memory:'
+        ));
 
-		require_once BASEPATH.'database/drivers/pdo/pdo_driver.php';
-		require_once BASEPATH.'database/drivers/pdo/subdrivers/pdo_sqlite_driver.php';
-
-		$db = new \CI_DB_pdo_sqlite_driver(array(
-			'dsn' => 'sqlite::memory:'
-		));
-
-		$db->initialize();
-		return $db;
-	}
+        $db->initialize();
+        return $db;
+    }
 }

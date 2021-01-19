@@ -15,18 +15,17 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Integer Validation Rule
  */
-class Integer extends ValidationRule {
+class Integer extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match('/^[\-+]?[0-9]+$/', $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match('/^[\-+]?[0-9]+$/', $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'integer';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'integer';
+    }
 }
 
 // EOF

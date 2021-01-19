@@ -20,30 +20,30 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "remove",
-					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-				]
-			],
-			'modal' => true
-		]); ?>
+            'options' => [
+                [
+                    'value' => "",
+                    'text' => '-- ' . lang('with_selected') . ' --'
+                ],
+                [
+                    'value' => "remove",
+                    'text' => lang('delete'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+                ]
+            ],
+            'modal' => true
+        ]); ?>
 	</form>
 </div>
 </div>
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('files/watermarks/remove', ee()->cp->get_url_state()),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	)
+    'name'		=> 'modal-confirm-remove',
+    'form_url'	=> ee('CP/URL')->make('files/watermarks/remove', ee()->cp->get_url_state()),
+    'hidden'	=> array(
+        'bulk_action'	=> 'remove'
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

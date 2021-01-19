@@ -1872,20 +1872,17 @@ class JumpMenu extends AbstractJumpMenu
 
         //add custom menu links (addons to be included later)
         $menuItems = ee('Model')->get('MenuItem')
-			->fields('MenuItem.*', 'Children.*')
+            ->fields('MenuItem.*', 'Children.*')
             ->with(array('Set' => 'RoleSettings'), 'Children')
             ->filter('type', 'IN', ['link', 'submenu'])
-			->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
-			->order('MenuItem.sort')
-			->order('Children.sort')
-			->all();
+            ->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+            ->order('MenuItem.sort')
+            ->order('Children.sort')
+            ->all();
 
-		foreach ($menuItems as $item)
-		{
-			if ($item->type == 'submenu')
-			{
-				foreach ($item->Children as $child)
-				{
+        foreach ($menuItems as $item) {
+            if ($item->type == 'submenu') {
+                foreach ($item->Children as $child) {
                     $items[1]['custom_' . $child->item_id] = array(
                         'icon' => 'fa-link',
                         'command' => 'menu_manager ' . $child->name,
@@ -1893,10 +1890,8 @@ class JumpMenu extends AbstractJumpMenu
                         'dynamic' => false,
                         'target' => $child->data
                     );
-				}
-			}
-			elseif ($item->parent_id == 0)
-			{
+                }
+            } elseif ($item->parent_id == 0) {
                 $items[1]['custom_' . $item->item_id] = array(
                     'icon' => 'fa-link',
                     'command' => 'menu_manager ' . $item->name,
@@ -1904,8 +1899,8 @@ class JumpMenu extends AbstractJumpMenu
                     'dynamic' => false,
                     'target' => $item->data
                 );
-			}
-		}
+            }
+        }
 
         foreach ($items[1] as $name => $item) {
             if (!ee('Permission')->isSuperAdmin() && !empty($item['permission']) && !ee('Permission')->hasAny($item['permission'])) {
@@ -1982,7 +1977,7 @@ class JumpMenu extends AbstractJumpMenu
 
         //member quick links
         if (!empty(ee()->session->getMember()->quick_links)) {
-           foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
+            foreach (explode("\n", ee()->session->getMember()->quick_links) as $i=>$row) {
                 $x = explode('|', $row);
                 $items[1]['quicklink_' . $i] = array(
                     'icon' => 'fa-link',

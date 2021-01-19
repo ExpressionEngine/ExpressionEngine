@@ -13,10 +13,10 @@ namespace ExpressionEngine\Tests\Service\Profiler;
 use ExpressionEngine\Service\Profiler\Profiler;
 use PHPUnit\Framework\TestCase;
 
-class ProfilerTest extends TestCase {
-
-	public function testSomething()
-	{
-		$this->markTestIncomplete('not yet implemented');
-	}
+class ProfilerTest extends TestCase
+{
+    public function testSomething()
+    {
+        $this->markTestIncomplete('not yet implemented');
+    }
 }

@@ -11,15 +11,15 @@
 /**
  * Template Router Regex Converter
  */
-class EE_Template_router_regex_converter implements EE_Template_router_converter {
+class EE_Template_router_regex_converter implements EE_Template_router_converter
+{
+    public function __construct($regex)
+    {
+        $this->regex = $regex;
+    }
 
-	public function __construct($regex) {
-		$this->regex = $regex;
-	}
-
-	public function validator()
-	{
-		return $this->regex;
-	}
-
+    public function validator()
+    {
+        return $this->regex;
+    }
 }

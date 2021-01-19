@@ -6,20 +6,17 @@
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<link href="<?=$theme_url?>/ee/cp/css/common.min.css" rel="stylesheet">
 		<?php
-		if (isset($extra_header))
-		{
-			echo $extra_header;
-		}
+        if (isset($extra_header)) {
+            echo $extra_header;
+        }
 
-		if (isset($refresh) && $refresh === TRUE)
-		{
-			if ($ajax_progress)
-			{
-				$refresh_url .= '&ajax_progress=yes';
-			}
-			echo '<meta http-equiv="refresh" content="1;url='.$refresh_url.'" />';
-		}
-		?>
+        if (isset($refresh) && $refresh === true) {
+            if ($ajax_progress) {
+                $refresh_url .= '&ajax_progress=yes';
+            }
+            echo '<meta http-equiv="refresh" content="1;url='.$refresh_url.'" />';
+        }
+        ?>
 	</head>
 	<body class="installer-page">
 		<section class="flex-wrap">

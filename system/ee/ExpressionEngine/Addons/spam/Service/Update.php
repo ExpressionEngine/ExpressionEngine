@@ -13,113 +13,101 @@ namespace ExpressionEngine\Addons\Spam\Service;
 /**
  * Spam Update
  */
-class Update {
+class Update
+{
+    public function download()
+    {
+        $location = 'https://expressionengine.com/asset/file/spam.zip';
 
-	public function download()
-	{
-		$location = 'https://expressionengine.com/asset/file/spam.zip';
+        try {
+            $compressed = ee('Curl')->get($location)->exec();
+        } catch (\Exception $e) {
+            // let's just bubble this up
+            throw $e;
+        }
 
-		try
-		{
-			$compressed = ee('Curl')->get($location)->exec();
-		}
-		catch (\Exception $e)
-		{
-			// let's just bubble this up
-			throw $e;
-		}
+        // Write the training data to a tmp file and return the file name
 
-		// Write the training data to a tmp file and return the file name
+        $handle = fopen($this->path() . "spam.zip", "w");
+        fwrite($handle, $compressed);
+        fclose($handle);
+        $zip = new \ZipArchive;
 
-		$handle = fopen($this->path() . "spam.zip", "w");
-		fwrite($handle, $compressed);
-		fclose($handle);
-		$zip = new \ZipArchive;
+        if ($zip->open($this->path() . "spam.zip") === true) {
+            $zip->extractTo($this->path());
+            $zip->close();
+            unlink($this->path() . "spam.zip");
+        } else {
+            return false;
+        }
 
-		if ($zip->open($this->path() . "spam.zip") === TRUE)
-		{
-			$zip->extractTo($this->path());
-			$zip->close();
-			unlink($this->path() . "spam.zip");
-		}
-		else
-		{
-			return FALSE;
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    public function prepare()
+    {
+        $path = $this->path() . "training/prepare.sql";
+        $prep = file_get_contents($path);
+        ee()->db->query($prep);
+    }
 
-	public function prepare()
-	{
-		$path = $this->path() . "training/prepare.sql";
-		$prep = file_get_contents($path);
-		ee()->db->query($prep);
+    public function updateParameters($limit = 500)
+    {
+        $path = $this->path() . "training/parameters.sql";
+        $lines = array_filter(file($path));
+        $parameters = implode(',', array_slice($lines, 0, $limit));
+        $remaining = implode("", array_slice($lines, $limit));
 
-	}
+        $sql = "INSERT INTO exp_spam_parameters VALUES $parameters";
 
-	public function updateParameters($limit = 500)
-	{
-		$path = $this->path() . "training/parameters.sql";
-		$lines = array_filter(file($path));
-		$parameters = implode(',', array_slice($lines, 0, $limit));
-		$remaining = implode("", array_slice($lines, $limit));
+        ee()->db->query($sql);
 
-		$sql = "INSERT INTO exp_spam_parameters VALUES $parameters";
+        if (empty($remaining)) {
+            return false;
+        }
 
-		ee()->db->query($sql);
+        file_put_contents($path, $remaining);
 
-		if (empty($remaining))
-		{
-			return FALSE;
-		}
+        return true;
+    }
 
-		file_put_contents($path, $remaining);
+    public function updateVocabulary($limit = 500)
+    {
+        $path = $this->path() . "training/vocabulary.sql";
+        $lines = array_filter(file($path));
+        $vocabulary = implode(',', array_slice($lines, 0, $limit));
+        $remaining = implode("", array_slice($lines, $limit));
 
-		return TRUE;
-	}
+        $sql = "INSERT INTO exp_spam_vocabulary VALUES $vocabulary";
 
-	public function updateVocabulary($limit = 500)
-	{
-		$path = $this->path() . "training/vocabulary.sql";
-		$lines = array_filter(file($path));
-		$vocabulary = implode(',', array_slice($lines, 0, $limit));
-		$remaining = implode("", array_slice($lines, $limit));
+        ee()->db->query($sql);
 
-		$sql = "INSERT INTO exp_spam_vocabulary VALUES $vocabulary";
+        if (empty($remaining)) {
+            return false;
+        }
 
-		ee()->db->query($sql);
+        file_put_contents($path, $remaining);
 
-		if (empty($remaining))
-		{
-			return FALSE;
-		}
+        return true;
+    }
 
-		file_put_contents($path, $remaining);
+    private function path()
+    {
+        $cache_path = ee()->config->item('cache_path');
 
-		return TRUE;
-	}
+        if (empty($cache_path)) {
+            $cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
+        }
 
-	private function path()
-	{
-		$cache_path = ee()->config->item('cache_path');
+        $cache_path .= 'spam/';
 
-		if (empty($cache_path))
-		{
-			$cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
-		}
+        if (! is_dir($cache_path)) {
+            mkdir($cache_path, DIR_WRITE_MODE);
+            @chmod($cache_path, DIR_WRITE_MODE);
+        }
 
-		$cache_path .= 'spam/';
-
-		if ( ! is_dir($cache_path))
-		{
-			mkdir($cache_path, DIR_WRITE_MODE);
-			@chmod($cache_path, DIR_WRITE_MODE);
-		}
-
-		return $cache_path;
-	}
-
+        return $cache_path;
+    }
 }
 
 // EOF

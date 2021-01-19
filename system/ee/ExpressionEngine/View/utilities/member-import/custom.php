@@ -28,24 +28,24 @@
 					</thead>
 					<tbody>
 						<?php
-						$i = 0;
-						foreach ($new_fields as $value): ?>
+                        $i = 0;
+                        foreach ($new_fields as $value): ?>
 							<tr class="last">
 								<td class="first">
-									<?=form_checkbox('create_ids['.$i.']', 'y', FALSE, 'class="toggle"')?>
+									<?=form_checkbox('create_ids['.$i.']', 'y', false, 'class="toggle"')?>
 									<input type="hidden" name="<?='m_field_order['.$i.']'?>" value="<?=$order_start+$i?>">
 								</td>
 								<td>
 									<?=form_input(array(
-										'name' => 'm_field_name['.$i.']',
-										'value' => set_value('m_field_name['.$i.']', $value)
-									))?>
+                                        'name' => 'm_field_name['.$i.']',
+                                        'value' => set_value('m_field_name['.$i.']', $value)
+                                    ))?>
 								</td>
 								<td>
 									<?=form_input(array(
-										'name' => 'm_field_label['.$i.']',
-										'value' => set_value('m_field_name['.$i.']', $value)
-									))?>
+                                        'name' => 'm_field_label['.$i.']',
+                                        'value' => set_value('m_field_name['.$i.']', $value)
+                                    ))?>
 								</td>
 								<?php foreach (array('required', 'public', 'reg_form') as $field): ?>
 									<td>

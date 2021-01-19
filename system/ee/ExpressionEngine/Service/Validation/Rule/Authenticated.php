@@ -15,36 +15,34 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Authentication Rule
  */
-class Authenticated extends ValidationRule {
+class Authenticated extends ValidationRule
+{
+    public function validate($key, $password)
+    {
+        $auth_timeout = in_array('useAuthTimeout', $this->parameters);
 
-	public function validate($key, $password)
-	{
-		$auth_timeout = in_array('useAuthTimeout', $this->parameters);
+        if ($auth_timeout && ee('Session')->isWithinAuthTimeout()) {
+            ee('Session')->resetAuthTimeout();
+            return true;
+        }
 
-		if ($auth_timeout && ee('Session')->isWithinAuthTimeout())
-		{
-			ee('Session')->resetAuthTimeout();
-			return TRUE;
-		}
+        ee()->load->library('auth');
+        $validate = ee()->auth->authenticate_id(
+            ee()->session->userdata('member_id'),
+            $password
+        );
 
-		ee()->load->library('auth');
-		$validate = ee()->auth->authenticate_id(
-			ee()->session->userdata('member_id'),
-			$password
-		);
+        if ($validate !== false && $auth_timeout) {
+            ee('Session')->resetAuthTimeout();
+        }
 
-		if ($validate !== FALSE && $auth_timeout)
-		{
-			ee('Session')->resetAuthTimeout();
-		}
+        return ($validate !== false) ? true : $this->stop();
+    }
 
-		return ($validate !== FALSE) ? TRUE : $this->stop();
-	}
-
-	public function getLanguageKey()
-	{
-		return 'auth_password';
-	}
+    public function getLanguageKey()
+    {
+        return 'auth_password';
+    }
 }
 
 // EOF

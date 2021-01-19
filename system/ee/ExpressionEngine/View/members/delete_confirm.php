@@ -19,15 +19,14 @@
 
 	<?php
 
-	foreach ($fields as $field_name => $field)
-	{
-		$vars = array(
-			'field_name' => $field_name,
-			'field' => $field,
-			'grid' => FALSE
-		);
+    foreach ($fields as $field_name => $field) {
+        $vars = array(
+            'field_name' => $field_name,
+            'field' => $field,
+            'grid' => false
+        );
 
-		$this->embed('ee:_shared/form/field', $vars);
-	}
-	?>
+        $this->embed('ee:_shared/form/field', $vars);
+    }
+    ?>
 <?php endif; ?>

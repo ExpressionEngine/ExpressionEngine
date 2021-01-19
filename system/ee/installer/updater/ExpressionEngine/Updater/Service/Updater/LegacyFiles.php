@@ -19,8 +19,8 @@ use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
  *
  * Copies over necessary legacy files when upgrading between major versions
  */
-class LegacyFiles {
-
+class LegacyFiles
+{
     protected $from_version;
     protected $logger;
 
@@ -59,19 +59,14 @@ class LegacyFiles {
      * @param [type] $destination
      * @return void
      */
-    private function copyFiles($source, $destination) 
+    private function copyFiles($source, $destination)
     {
         $filesystem = new Filesystem();
-        if ( ! $filesystem->exists($destination))
-        {
-            $filesystem->mkDir($destination, FALSE);
-        }
-        elseif ( ! $filesystem->isDir($destination))
-        {
+        if (! $filesystem->exists($destination)) {
+            $filesystem->mkDir($destination, false);
+        } elseif (! $filesystem->isDir($destination)) {
             throw new UpdaterException('Destination path not a directory: '.$destination, 18);
-        }
-        elseif ( ! $filesystem->isWritable($destination))
-        {
+        } elseif (! $filesystem->isWritable($destination)) {
             throw new UpdaterException('Destination path not writable: '.$destination, 21);
         }
 
@@ -94,5 +89,4 @@ class LegacyFiles {
             $filesystem->copy($path, $new_path);
         }
     }
-
 }

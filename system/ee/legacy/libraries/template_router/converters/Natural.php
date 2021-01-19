@@ -11,13 +11,12 @@
 /**
  * Template Router Natural Number Converter
  */
-class EE_Template_router_natural_converter implements EE_Template_router_converter {
-
-	public function validator()
-	{
-		return "([0-9]+)";
-	}
-
+class EE_Template_router_natural_converter implements EE_Template_router_converter
+{
+    public function validator()
+    {
+        return "([0-9]+)";
+    }
 }
 
 // EOF

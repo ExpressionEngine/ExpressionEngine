@@ -1,7 +1,6 @@
 <?php
-if (isset($yes_no) && $yes_no)
-{
-	$value = get_bool_from_string($value) ? 'y' : 'n';
+if (isset($yes_no) && $yes_no) {
+    $value = get_bool_from_string($value) ? 'y' : 'n';
 }
 $class = isset($class) ? $class : '';
 $on_off = (get_bool_from_string($value)) ? 'on' : 'off';

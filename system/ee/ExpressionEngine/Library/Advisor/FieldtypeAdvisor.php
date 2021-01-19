@@ -13,7 +13,6 @@ namespace ExpressionEngine\Library\Advisor;
 
 class FieldtypeAdvisor
 {
-
     public function getMissingFieldtypes()
     {
         $used_fts = $this->guessAllUsedFieldtypes();

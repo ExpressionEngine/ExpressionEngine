@@ -15,11 +15,10 @@
         </div>
 			<?php else: ?>
 				<?php
-				foreach ($categories as $category)
-				{
-					$this->embed('ee:_shared/table', $category);
-				}
-				?>
+                foreach ($categories as $category) {
+                    $this->embed('ee:_shared/table', $category);
+                }
+                ?>
 			<?php endif; ?>
 
 		<?=form_close();?>
@@ -28,11 +27,11 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-moderators',
-	'form_url'	=> $remove_url,
-	'hidden'	=> array(
-		'id' => ''
-	)
+    'name'		=> 'modal-confirm-moderators',
+    'form_url'	=> $remove_url,
+    'hidden'	=> array(
+        'id' => ''
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);

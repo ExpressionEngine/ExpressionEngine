@@ -14,7 +14,6 @@
  */
 class EE_Upload
 {
-
     public $max_size                = 0;
     public $max_width               = 0;
     public $max_height              = 0;
@@ -128,7 +127,7 @@ class EE_Upload
 
         // Was the file able to be uploaded? If not, determine the reason why.
         if (! $this->raw_upload && ! is_uploaded_file($_FILES[$field]['tmp_name'])) {
-            $error = ( ! isset($_FILES[$field]['error'])) ? 4 : $_FILES[$field]['error'];
+            $error = (! isset($_FILES[$field]['error'])) ? 4 : $_FILES[$field]['error'];
 
             switch ($error) {
                 case 1: // UPLOAD_ERR_INI_SIZE
@@ -318,7 +317,7 @@ class EE_Upload
      */
     public function data()
     {
-        return array (
+        return array(
                         'file_name'         => $this->file_name,
                         'file_type'         => $this->file_type,
                         'file_path'         => $this->upload_path,
@@ -460,7 +459,7 @@ class EE_Upload
 
                 $this->image_width      = $D['0'];
                 $this->image_height     = $D['1'];
-                $this->image_type       = ( ! isset($types[$D['2']])) ? 'unknown' : $types[$D['2']];
+                $this->image_type       = (! isset($types[$D['2']])) ? 'unknown' : $types[$D['2']];
                 $this->image_size_str   = $D['3'];  // string containing height and width
             }
         }

@@ -16,7 +16,6 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Member_upd extends Installer
 {
-
     public $actions = [
         [
             'method' => 'registration_form'

@@ -12,29 +12,26 @@ namespace ExpressionEngine\Tests\Controllers\Logs;
 
 use PHPUnit\Framework\TestCase;
 
-class LogsTest extends TestCase {
+class LogsTest extends TestCase
+{
+    public static function setUpBeforeClass() : void
+    {
+        require_once(APPPATH.'core/Controller.php');
+    }
 
-	public static function setUpBeforeClass() : void
-	{
-		require_once(APPPATH.'core/Controller.php');
-	}
+    public function testRoutableMethods()
+    {
+        $controller_methods = array();
 
-	public function testRoutableMethods()
-	{
-		$controller_methods = array();
+        foreach (get_class_methods('ExpressionEngine\Controller\Logs\Logs') as $method) {
+            $method = strtolower($method);
+            if (strncmp($method, '_', 1) != 0) {
+                $controller_methods[] = $method;
+            }
+        }
 
-		foreach (get_class_methods('ExpressionEngine\Controller\Logs\Logs') as $method)
-		{
-			$method = strtolower($method);
-			if (strncmp($method, '_', 1) != 0)
-			{
-				$controller_methods[] = $method;
-			}
-		}
+        sort($controller_methods);
 
-		sort($controller_methods);
-
-		$this->assertEquals(array('index'), $controller_methods);
-	}
-
+        $this->assertEquals(array('index'), $controller_methods);
+    }
 }

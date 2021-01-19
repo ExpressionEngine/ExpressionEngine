@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -18,7 +20,7 @@
  */
 function extend_template($which, $disable = array())
 {
-	ee()->view->extend('_templates/'.$which, $disable);
+    ee()->view->extend('_templates/'.$which, $disable);
 }
 
 /**
@@ -27,7 +29,7 @@ function extend_template($which, $disable = array())
  */
 function extend_view($which, $disable = array())
 {
-	ee()->view->extend($which, $disable);
+    ee()->view->extend($which, $disable);
 }
 
 /**
@@ -35,7 +37,7 @@ function extend_view($which, $disable = array())
  */
 function disabled($which)
 {
-	return ee()->view->disabled($which);
+    return ee()->view->disabled($which);
 }
 
 /**
@@ -43,6 +45,5 @@ function disabled($which)
  */
 function enabled($which)
 {
-	return ! ee()->view->disabled($which);
+    return ! ee()->view->disabled($which);
 }
-

@@ -13,7 +13,6 @@
  */
 class Wizard extends CI_Controller
 {
-
     public $version           = '6.0.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
@@ -164,8 +163,8 @@ class Wizard extends CI_Controller
         $this->userdata['app_version'] = $this->version;
         $this->userdata['default_site_timezone'] = date_default_timezone_get();
 
-         // Load the helpers we intend to use
-         $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
+        // Load the helpers we intend to use
+        $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
 
         // Load the language pack.  English is loaded on the installer home
         // page along with some radio buttons for each installed language pack.
@@ -470,8 +469,7 @@ class Wizard extends CI_Controller
     {
         ee()->functions->clear_caching('all');
 
-        foreach (ee('Model')->get('Channel')->all() as $channel)
-        {
+        foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
@@ -1068,7 +1066,7 @@ class Wizard extends CI_Controller
             $host .= $_SERVER['HTTP_HOST'] . '/';
         }
 
-        $self = ( ! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+        $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
         $self = htmlspecialchars($self, ENT_QUOTES);
 
         $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . EESELF;
@@ -1142,7 +1140,7 @@ class Wizard extends CI_Controller
         // if any of the underlying code uses caching, make sure we do nothing
         ee()->config->set_item('cache_driver', 'dummy');
 
-        if($this->shouldBackupDatabase) {
+        if ($this->shouldBackupDatabase) {
             $this->backupDatabase();
             $this->shouldBackupDatabase = false;
         }
@@ -1402,7 +1400,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        } 
+        }
 
         return $path;
     }
@@ -1974,19 +1972,15 @@ class Wizard extends CI_Controller
 
     private function runAddonUpdaterHook($version)
     {
-
-        if( ! $this->shouldUpgradeAddons ) {
-
+        if (! $this->shouldUpgradeAddons) {
             return;
-
         }
 
         $addons = ee('Addon')->all();
 
         $results = [];
 
-        foreach ($addons as $name => $info)
-        {
+        foreach ($addons as $name => $info) {
             $info = ee('Addon')->get($name);
 
             // If it's built in, we'll skip it
@@ -1995,37 +1989,28 @@ class Wizard extends CI_Controller
             }
 
             // If it doesn't have an upgrader, there's nothing to do
-            if( ! $info->hasUpgrader() ) {
+            if (! $info->hasUpgrader()) {
                 continue;
             }
 
             try {
-
                 $upgrader = $info->getUpgraderClass();
 
                 $success = (new $upgrader)->upgrade($version);
-
             } catch (\Exception $e) {
-
                 $success = false;
-
             }
 
             $results[$name] = $success;
-
         }
 
         return $results;
-
     }
 
     private function backupDatabase()
     {
-
-        if ( ! ee('Filesystem')->isWritable(PATH_CACHE)) {
-
+        if (! ee('Filesystem')->isWritable(PATH_CACHE)) {
             return false;
-
         }
 
         $table_name = null;
@@ -2036,7 +2021,7 @@ class Wizard extends CI_Controller
 
         // Some tables might be resource-intensive, do what we can
         @set_time_limit(0);
-        @ini_set('memory_limit','512M');
+        @ini_set('memory_limit', '512M');
 
         $backup = ee('Database/Backup', $file_path);
 
@@ -2051,7 +2036,6 @@ class Wizard extends CI_Controller
         $returned = true;
 
         do {
-
             try {
                 $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
             } catch (Exception $e) {
@@ -2062,13 +2046,11 @@ class Wizard extends CI_Controller
                 $table_name = $returned['table_name'];
                 $offset     = $returned['offset'];
             }
-
         } while ($returned !== false);
 
         $backup->endFile();
 
         return true;
-
     }
 }
 

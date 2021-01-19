@@ -23,20 +23,20 @@
 
 	<?=$pagination?>
 
-  <?php if ( ! empty($table['data'])): ?>
+  <?php if (! empty($table['data'])): ?>
 
 	<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-		'options' => [
-			[
-				'value' => "",
-				'text' => '-- ' . lang('with_selected') . ' --'
-			],
-			[
-				'value' => "export",
-				'text' => lang('export_download')
-			]
-		]
-	]); ?>
+        'options' => [
+            [
+                'value' => "",
+                'text' => '-- ' . lang('with_selected') . ' --'
+            ],
+            [
+                'value' => "export",
+                'text' => lang('export_download')
+            ]
+        ]
+    ]); ?>
 
 	<?php endif; ?>
 </div>

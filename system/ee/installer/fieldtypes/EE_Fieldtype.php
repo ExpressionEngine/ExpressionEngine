@@ -13,6 +13,7 @@ require_once(EE_APPPATH.'/fieldtypes/EE_Fieldtype.php');
 /**
  * Installer Fieldtype
  */
-abstract class Installer_EE_Fieldtype extends EE_Fieldtype {
-	// Nothing to see here.
+abstract class Installer_EE_Fieldtype extends EE_Fieldtype
+{
+    // Nothing to see here.
 }

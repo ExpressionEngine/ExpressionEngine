@@ -11,16 +11,17 @@
 /**
  * Installer Language
  */
-class Installer_Lang Extends EE_Lang {
+class Installer_Lang extends EE_Lang
+{
 
-	/**
-	 * Forces the current language to English
-	 * @return string The idiom to load
-	 */
-	protected function getIdiom()
-	{
-		return 'english';
-	}
+    /**
+     * Forces the current language to English
+     * @return string The idiom to load
+     */
+    protected function getIdiom()
+    {
+        return 'english';
+    }
 }
 
 // EOF

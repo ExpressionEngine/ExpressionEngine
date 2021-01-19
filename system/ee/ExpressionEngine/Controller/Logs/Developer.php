@@ -221,8 +221,8 @@ class Developer extends Logs
         );
 
         ee()->view->cp_breadcrumbs = array(
-			'' => lang('view_developer_log')
-		);
+            '' => lang('view_developer_log')
+        );
 
         ee()->cp->render('logs/developer', $vars);
     }

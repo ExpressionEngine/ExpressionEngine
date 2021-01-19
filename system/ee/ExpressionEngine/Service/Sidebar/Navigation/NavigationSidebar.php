@@ -54,7 +54,7 @@ class NavigationSidebar extends AbstractSidebar
                     $publishLink = null;
                     if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId())) {
                         // Only add Create link if channel has room for more entries
-                        if (empty($channel->max_entries) OR ($channel->max_entries != 0 && $channel->total_records < $channel->max_entries)) {
+                        if (empty($channel->max_entries) or ($channel->max_entries != 0 && $channel->total_records < $channel->max_entries)) {
                             $publishLink = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
                         }
                     }
@@ -85,8 +85,7 @@ class NavigationSidebar extends AbstractSidebar
             }
         }
 
-        if (ee('Permission')->hasAny('can_access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles'))
-        {
+        if (ee('Permission')->hasAny('can_access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles')) {
             $section = $this->addSection(lang('members'));
             if (ee('Permission')->has('can_access_members')) {
                 $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
@@ -102,7 +101,6 @@ class NavigationSidebar extends AbstractSidebar
         $this->addCustomSection();
 
         if (ee('Permission')->hasAny('can_access_design', 'can_access_addons', 'can_admin_sites', 'can_access_utilities', 'can_admin_channels', 'can_access_logs', 'can_access_sys_prefs')) {
-
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
             if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->has('can_admin_sites')) {
@@ -138,7 +136,6 @@ class NavigationSidebar extends AbstractSidebar
 
 
             if (ee('Permission')->has('can_access_utilities')) {
-
                 $utility_options = array(
                     'can_access_comm' => ee('CP/URL')->make('utilities'),
                     'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
@@ -188,7 +185,6 @@ class NavigationSidebar extends AbstractSidebar
                 $section->addItem(lang('nav_settings'), ee('CP/URL', 'settings'))->withIcon('cog');
             }
         }
-
     }
 
 
@@ -224,7 +220,7 @@ class NavigationSidebar extends AbstractSidebar
      *   URL for the text.
      * @return NavigationItem A new NavigationItem object.
      */
-    public function addItem($text, $url = NULL)
+    public function addItem($text, $url = null)
     {
         $item = new NavigationItem($text, $url);
         $this->items[] = $item;
@@ -268,7 +264,6 @@ class NavigationSidebar extends AbstractSidebar
         $this->items[] = $item;
         return $item;
     }
-
 }
 
 // EOF

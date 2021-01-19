@@ -16,130 +16,121 @@ use ExpressionEngine\Library\CP;
 /**
  * Utilities Controller
  */
-class Utilities extends CP_Controller {
+class Utilities extends CP_Controller
+{
 
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		parent::__construct();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-		ee('CP/Alert')->makeDeprecationNotice()->now();
+        ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee('Permission')->can('access_utilities'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
+        if (! ee('Permission')->can('access_utilities')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
 
-		ee()->lang->loadfile('utilities');
+        ee()->lang->loadfile('utilities');
 
-		$this->generateSidebar();
+        $this->generateSidebar();
 
-		ee()->view->header = array(
-			'title' => lang('system_utilities')
-		);
+        ee()->view->header = array(
+            'title' => lang('system_utilities')
+        );
 
-		// Some garbage collection
-		ExportEmailAddresses::garbageCollect();
-	}
+        // Some garbage collection
+        ExportEmailAddresses::garbageCollect();
+    }
 
-	protected function generateSidebar($active = NULL)
-	{
-		$sidebar = ee('CP/Sidebar')->make();
+    protected function generateSidebar($active = null)
+    {
+        $sidebar = ee('CP/Sidebar')->make();
 
-		if (ee('Permission')->can('access_comm'))
-		{
-			$sidebar->addHeader(lang('communicate'));
+        if (ee('Permission')->can('access_comm')) {
+            $sidebar->addHeader(lang('communicate'));
 
-			$sidebar->addItem(lang('send_email'), ee('CP/URL')->make('utilities/communicate'));
+            $sidebar->addItem(lang('send_email'), ee('CP/URL')->make('utilities/communicate'));
 
-			if (ee('Permission')->can('send_cached_email'))
-			{
-				$sidebar->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
-			}
-		}
+            if (ee('Permission')->can('send_cached_email')) {
+                $sidebar->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
+            }
+        }
 
-		$sidebar->addHeader(lang('general_utilities'));
+        $sidebar->addHeader(lang('general_utilities'));
 
-		if (ee('Permission')->can('access_translate'))
-		{
-			$translation_item = $sidebar->addItem(lang('cp_translations'), ee('CP/URL')->make('utilities/translate'));
+        if (ee('Permission')->can('access_translate')) {
+            $translation_item = $sidebar->addItem(lang('cp_translations'), ee('CP/URL')->make('utilities/translate'));
 
-			foreach (ee()->lang->language_pack_names() as $key => $value)
-			{
-				$url = ee('CP/URL')->make('utilities/translate/' . $key);
+            foreach (ee()->lang->language_pack_names() as $key => $value) {
+                $url = ee('CP/URL')->make('utilities/translate/' . $key);
 
-				if ($url->matchesTheRequestedURI()) {
-					$translation_item->isActive();
-				}
-			}
-		}
+                if ($url->matchesTheRequestedURI()) {
+                    $translation_item->isActive();
+                }
+            }
+        }
 
-		$sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
-			->urlIsExternal();
+        $sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
+            ->urlIsExternal();
 
-		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
-			$sidebar->addItem(lang('manage_extensions'), ee('CP/URL')->make('utilities/extensions'));
-		}
+        if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
+            $sidebar->addItem(lang('manage_extensions'), ee('CP/URL')->make('utilities/extensions'));
+        }
 
-		if (ee('Permission')->isSuperAdmin()) {
-			$debug_tools = $sidebar->addHeader(lang('debug_tools'))
-				->addBasicList();
-			$debug_tools->addItem(lang('debug_tools_overview'), ee('CP/URL')->make('utilities/debug-tools'));
-			$debug_tools->addItem(lang('debug_tools_debug_tags'), ee('CP/URL')->make('utilities/debug-tools/debug-tags'));
-			$debug_tools->addItem(lang('debug_tools_fieldtypes'), ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes'));
-		}
+        if (ee('Permission')->isSuperAdmin()) {
+            $debug_tools = $sidebar->addHeader(lang('debug_tools'))
+                ->addBasicList();
+            $debug_tools->addItem(lang('debug_tools_overview'), ee('CP/URL')->make('utilities/debug-tools'));
+            $debug_tools->addItem(lang('debug_tools_debug_tags'), ee('CP/URL')->make('utilities/debug-tools/debug-tags'));
+            $debug_tools->addItem(lang('debug_tools_fieldtypes'), ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes'));
+        }
 
-		if (ee('Permission')->hasAny('can_access_import', 'can_access_members'))
-		{
-			$member_tools = $sidebar->addHeader(lang('member_tools'))
-				->addBasicList();
-			if (ee('Permission')->can('access_import'))
-			{
-				$member_tools->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
-				$member_tools->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
-			}
-			if (ee('Permission')->can('access_members'))
-			{
-				$member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
-			}
-		}
+        if (ee('Permission')->hasAny('can_access_import', 'can_access_members')) {
+            $member_tools = $sidebar->addHeader(lang('member_tools'))
+                ->addBasicList();
+            if (ee('Permission')->can('access_import')) {
+                $member_tools->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
+                $member_tools->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
+            }
+            if (ee('Permission')->can('access_members')) {
+                $member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
+            }
+        }
 
-		if (ee('Permission')->can('access_sql_manager'))
-		{
-			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
-			$db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
-			$db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
-			$url = ee('CP/URL')->make('utilities/query');
-			$item = $db_list->addItem(lang('query_form'), $url);
-			if ($url->matchesTheRequestedURI()) {
-				$item->isActive();
-			}
-		}
+        if (ee('Permission')->can('access_sql_manager')) {
+            $db_list = $sidebar->addHeader(lang('database'))->addBasicList();
+            $db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
+            $db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
+            $url = ee('CP/URL')->make('utilities/query');
+            $item = $db_list->addItem(lang('query_form'), $url);
+            if ($url->matchesTheRequestedURI()) {
+                $item->isActive();
+            }
+        }
 
-		if (ee('Permission')->can('access_data'))
-		{
-			$data_list = $sidebar->addHeader(lang('data_operations'))
-			->addBasicList();
-			$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
-			$data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
-			$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
-			$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
-		}
-	}
+        if (ee('Permission')->can('access_data')) {
+            $data_list = $sidebar->addHeader(lang('data_operations'))
+            ->addBasicList();
+            $data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
+            $data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
+            $data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
+            $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
+        }
+    }
 
-	/**
-	 * Index
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function index()
-	{
-		// Will redirect based on permissions later
-		ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
-	}
+    /**
+     * Index
+     *
+     * @access	public
+     * @return	void
+     */
+    public function index()
+    {
+        // Will redirect based on permissions later
+        ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
+    }
 }
 // END CLASS
 

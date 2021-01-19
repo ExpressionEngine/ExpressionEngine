@@ -11,16 +11,17 @@
 /**
  * Relationship Module
  */
-class Relationship {
+class Relationship
+{
 
-	/**
-	 * AJAX endpoint for filtering a Relationship field on the publish form
-	 */
-	public function entryList()
-	{
-		ee()->load->library('EntryList');
-		ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
-	}
+    /**
+     * AJAX endpoint for filtering a Relationship field on the publish form
+     */
+    public function entryList()
+    {
+        ee()->load->library('EntryList');
+        ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
+    }
 }
 
 // EOF

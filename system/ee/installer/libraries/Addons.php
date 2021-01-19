@@ -13,8 +13,9 @@ require_once(EE_APPPATH.'libraries/Addons.php');
 /**
  * Installer Addons
  */
-class Installer_Addons extends EE_Addons {
-	// Nothing to see here.
+class Installer_Addons extends EE_Addons
+{
+    // Nothing to see here.
 }
 // END CLASS
 

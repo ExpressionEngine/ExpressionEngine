@@ -22,95 +22,87 @@ use ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * All other public methods on it should be considered internal and
  * subject to change.
  */
-class Facade {
+class Facade
+{
+    protected $datastore;
+    protected $validation;
 
-	protected $datastore;
-	protected $validation;
+    /**
+     * @param $datastore ExpressionEngine\Service\Model\DataStore
+     */
+    public function __construct(DataStore $datastore)
+    {
+        $this->datastore = $datastore;
+    }
 
-	/**
-	 * @param $datastore ExpressionEngine\Service\Model\DataStore
-	 */
-	public function __construct(DataStore $datastore)
-	{
-		$this->datastore = $datastore;
-	}
+    /**
+     * Run a query
+     *
+     * @param String $name Model to run the query on
+     * @param Mixed $default_ids One or more ids to prime the query with [optional]
+     */
+    public function get($name, $default_ids = null)
+    {
+        $builder = $this->datastore->get($name);
 
-	/**
-	 * Run a query
-	 *
-	 * @param String $name Model to run the query on
-	 * @param Mixed $default_ids One or more ids to prime the query with [optional]
-	 */
-	public function get($name, $default_ids = NULL)
-	{
-		$builder = $this->datastore->get($name);
+        if (isset($default_ids)) {
+            $shortname = $this->removeAlias($name);
 
-		if (isset($default_ids))
-		{
-			$shortname = $this->removeAlias($name);
+            if (empty($default_ids)) {
+                $builder->markAsFutile();
+            } elseif (is_array($default_ids)) {
+                $builder->filter($shortname, 'IN', $default_ids);
+            } else {
+                $builder->filter($shortname, $default_ids);
+            }
+        }
 
-			if (empty($default_ids))
-			{
-				$builder->markAsFutile();
-			}
-			elseif (is_array($default_ids))
-			{
-				$builder->filter($shortname, 'IN', $default_ids);
-			}
-			else
-			{
-				$builder->filter($shortname, $default_ids);
-			}
-		}
+        $builder->setFacade($this);
 
-		$builder->setFacade($this);
+        return $builder;
+    }
 
-		return $builder;
-	}
+    /**
+     * Create a model instance
+     *
+     * @param String $name Model to create
+     * @param Array  $data Initial data
+     */
+    public function make($name, array $data = array())
+    {
+        $model = $this->datastore->make($name, $this, $data);
 
-	/**
-	 * Create a model instance
-	 *
-	 * @param String $name Model to create
-	 * @param Array  $data Initial data
-	 */
-	public function make($name, array $data = array())
-	{
-		$model = $this->datastore->make($name, $this, $data);
+        if ($this->validation) {
+            $model->setValidator($this->validation->make());
+        }
+        return $model;
+    }
 
-		if ($this->validation)
-		{
-			$model->setValidator($this->validation->make());
-		}
-		return $model;
-	}
+    /**
+     *
+     */
+    public function setValidationFactory(ValidationFactory $validation)
+    {
+        $this->validation = $validation;
+    }
 
-	/**
-	 *
-	 */
-	public function setValidationFactory(ValidationFactory $validation)
-	{
-		$this->validation = $validation;
-	}
+    /**
+     * Remove any aliasing and return the shortname
+     *
+     * A rather naive function, but reliable unless given a completely
+     * garbage model name.
+     */
+    private function removeAlias($str)
+    {
+        $str = trim($str);
+        $pos = strrpos($str, ' ');
 
-	/**
-	 * Remove any aliasing and return the shortname
-	 *
-	 * A rather naive function, but reliable unless given a completely
-	 * garbage model name.
-	 */
-	private function removeAlias($str)
-	{
-		$str = trim($str);
-		$pos = strrpos($str, ' ');
+        if ($pos !== false) {
+            $str = trim(substr($str, $pos));
+        }
 
-		if ($pos !== FALSE)
-		{
-			$str = trim(substr($str, $pos));
-		}
-
-		return str_replace(':', '_m_', $str);
-	}
+        return str_replace(':', '_m_', $str);
+    }
 }
 
 // EOF

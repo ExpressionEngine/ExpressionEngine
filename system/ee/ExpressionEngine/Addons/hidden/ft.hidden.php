@@ -11,33 +11,33 @@
 /**
  * Hidden Fieldtype Class
  */
-class Hidden_ft extends EE_Fieldtype {
+class Hidden_ft extends EE_Fieldtype
+{
+    public $info = array(
+        'name'		=> 'Hidden Field',
+        'version'	=> '1.0.0'
+    );
 
-	var $info = array(
-		'name'		=> 'Hidden Field',
-		'version'	=> '1.0.0'
-	);
-
-	// Parser Flag (preparse pairs?)
-	var $has_array_data = FALSE;
+    // Parser Flag (preparse pairs?)
+    public $has_array_data = false;
 
 
-	function display_field($data)
-	{
-		ee()->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
-		return form_hidden($this->field_name, $data);
-	}
+    public function display_field($data)
+    {
+        ee()->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
+        return form_hidden($this->field_name, $data);
+    }
 
-	/**
-	 * Update the fieldtype
-	 *
-	 * @param string $version The version being updated to
-	 * @return boolean TRUE if successful, FALSE otherwise
-	 */
-	public function update($version)
-	{
-		return TRUE;
-	}
+    /**
+     * Update the fieldtype
+     *
+     * @param string $version The version being updated to
+     * @return boolean TRUE if successful, FALSE otherwise
+     */
+    public function update($version)
+    {
+        return true;
+    }
 }
 
 // END Hidden_Ft class

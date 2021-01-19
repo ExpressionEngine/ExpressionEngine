@@ -73,29 +73,29 @@
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
-<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
+<?php if (isset($blocks['modals'])) {
+    echo $blocks['modals'];
+} ?>
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?php
 
-		echo ee()->javascript->get_global();
+        echo ee()->javascript->get_global();
 
-		echo ee()->cp->render_footer_js();
+        echo ee()->cp->render_footer_js();
 
-		if (isset($_extra_library_src))
-		{
-			echo $_extra_library_src;
-		}
+        if (isset($_extra_library_src)) {
+            echo $_extra_library_src;
+        }
 
-		echo ee()->javascript->script_foot();
+        echo ee()->javascript->script_foot();
 
-		foreach (ee()->cp->get_foot() as $item)
-		{
-			echo $item."\n";
-		}
+        foreach (ee()->cp->get_foot() as $item) {
+            echo $item."\n";
+        }
 
-		?>
+        ?>
 		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
 			<div class="modal modal--no-padding dialog dialog--warning">
 
@@ -128,7 +128,9 @@
 			</div>
 		</div>
 
-		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) { echo ' on-welcome'; } ?>" style="display:none;">
+		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) {
+            echo ' on-welcome';
+        } ?>" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
 					<input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">

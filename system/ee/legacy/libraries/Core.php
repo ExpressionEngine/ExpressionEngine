@@ -13,7 +13,6 @@
  */
 class EE_Core
 {
-
     public $native_modules     = array();      // List of native modules with EE
     public $native_plugins     = array();      // List of native plugins with EE
 
@@ -297,9 +296,10 @@ class EE_Core
 
         // Now that we have a session we'll enable debugging if the user is a super admin
         if (ee()->config->item('debug') == 1
-            && (ee('Permission')->isSuperAdmin()
+            && (
+                ee('Permission')->isSuperAdmin()
                 || ee()->session->userdata('can_debug') == 'y'
-                )
+            )
             ) {
             $this->_enable_debugging();
         }

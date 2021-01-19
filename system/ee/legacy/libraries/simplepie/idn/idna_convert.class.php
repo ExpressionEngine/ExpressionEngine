@@ -60,38 +60,38 @@ class idna_convert
      * @var array
      * @access private
      */
-    var $NP = array();
+    public $NP = array();
 
     // Internal settings, do not mess with them
-    var $_punycode_prefix = 'xn--';
-    var $_invalid_ucs =     0x80000000;
-    var $_max_ucs =         0x10FFFF;
-    var $_base =            36;
-    var $_tmin =            1;
-    var $_tmax =            26;
-    var $_skew =            38;
-    var $_damp =            700;
-    var $_initial_bias =    72;
-    var $_initial_n =       0x80;
-    var $_sbase =           0xAC00;
-    var $_lbase =           0x1100;
-    var $_vbase =           0x1161;
-    var $_tbase =           0x11A7;
-    var $_lcount =          19;
-    var $_vcount =          21;
-    var $_tcount =          28;
-    var $_ncount =          588;   // _vcount * _tcount
-    var $_scount =          11172; // _lcount * _tcount * _vcount
-    var $_error =           false;
+    public $_punycode_prefix = 'xn--';
+    public $_invalid_ucs =     0x80000000;
+    public $_max_ucs =         0x10FFFF;
+    public $_base =            36;
+    public $_tmin =            1;
+    public $_tmax =            26;
+    public $_skew =            38;
+    public $_damp =            700;
+    public $_initial_bias =    72;
+    public $_initial_n =       0x80;
+    public $_sbase =           0xAC00;
+    public $_lbase =           0x1100;
+    public $_vbase =           0x1161;
+    public $_tbase =           0x11A7;
+    public $_lcount =          19;
+    public $_vcount =          21;
+    public $_tcount =          28;
+    public $_ncount =          588;   // _vcount * _tcount
+    public $_scount =          11172; // _lcount * _tcount * _vcount
+    public $_error =           false;
 
     // See {@link set_paramter()} for details of how to change the following
     // settings from within your script / application
-    var $_api_encoding   =  'utf8'; // Default input charset is UTF-8
-    var $_allow_overlong =  false;  // Overlong UTF-8 encodings are forbidden
-    var $_strict_mode    =  false;  // Behave strict or not
+    public $_api_encoding   =  'utf8'; // Default input charset is UTF-8
+    public $_allow_overlong =  false;  // Overlong UTF-8 encodings are forbidden
+    public $_strict_mode    =  false;  // Behave strict or not
 
     // The constructor
-    function __construct($options = false)
+    public function __construct($options = false)
     {
         $this->slast = $this->_sbase + $this->_lcount * $this->_vcount * $this->_tcount;
         if (function_exists('file_get_contents')) {
@@ -122,7 +122,7 @@ class idna_convert
      * @return   boolean   true on success, false otherwise
      * @access   public
      */
-    function set_parameter($option, $value = false)
+    public function set_parameter($option, $value = false)
     {
         if (!is_array($option)) {
             $option = array($option => $value);
@@ -162,7 +162,7 @@ class idna_convert
      * @return   string   Decoded Domain name (UTF-8 or UCS-4)
      * @access   public
      */
-    function decode($input, $one_time_encoding = false)
+    public function decode($input, $one_time_encoding = false)
     {
         // Optionally set
         if ($one_time_encoding) {
@@ -187,12 +187,14 @@ class idna_convert
                 $this->_error('Only simple domain name parts can be handled in strict mode');
                 return false;
             }
-            list ($email_pref, $input) = explode('@', $input, 2);
+            list($email_pref, $input) = explode('@', $input, 2);
             $arr = explode('.', $input);
             foreach ($arr as $k => $v) {
                 if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
                     $conv = $this->_decode($v);
-                    if ($conv) $arr[$k] = $conv;
+                    if ($conv) {
+                        $arr[$k] = $conv;
+                    }
                 }
             }
             $input = join('.', $arr);
@@ -200,7 +202,9 @@ class idna_convert
             foreach ($arr as $k => $v) {
                 if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
                     $conv = $this->_decode($v);
-                    if ($conv) $arr[$k] = $conv;
+                    if ($conv) {
+                        $arr[$k] = $conv;
+                    }
                 }
             }
             $email_pref = join('.', $arr);
@@ -216,7 +220,9 @@ class idna_convert
                 $arr = explode('.', $parsed['host']);
                 foreach ($arr as $k => $v) {
                     $conv = $this->_decode($v);
-                    if ($conv) $arr[$k] = $conv;
+                    if ($conv) {
+                        $arr[$k] = $conv;
+                    }
                 }
                 $parsed['host'] = join('.', $arr);
                 $return =
@@ -237,7 +243,9 @@ class idna_convert
             }
         } else { // Otherwise we consider it being a pure domain name string
             $return = $this->_decode($input);
-            if (!$return) $return = $input;
+            if (!$return) {
+                $return = $input;
+            }
         }
         // The output is UTF-8 by default, other output formats need conversion here
         // If one time encoding is given, use this, else the objects property
@@ -264,7 +272,7 @@ class idna_convert
      * @return   string   Encoded Domain name (ACE string)
      * @access   public
      */
-    function encode($decoded, $one_time_encoding = false)
+    public function encode($decoded, $one_time_encoding = false)
     {
         // Forcing conversion of input to UCS4 array
         // If one time encoding is given, use this, else the objects property
@@ -274,6 +282,7 @@ class idna_convert
             break;
         case 'ucs4_string':
            $decoded = $this->_ucs4_string_to_ucs4($decoded);
+           // no break
         case 'ucs4_array':
            break;
         default:
@@ -282,7 +291,9 @@ class idna_convert
         }
 
         // No input, no output, what else did you expect?
-        if (empty($decoded)) return '';
+        if (empty($decoded)) {
+            return '';
+        }
 
         // Anchors for iteration
         $last_begin = 0;
@@ -290,13 +301,14 @@ class idna_convert
         $output = '';
         foreach ($decoded as $k => $v) {
             // Make sure to use just the plain dot
-            switch($v) {
+            switch ($v) {
             case 0x3002:
             case 0xFF0E:
             case 0xFF61:
                 $decoded[$k] = 0x2E;
                 // Right, no break here, the above are converted to dots anyway
             // Stumbling across an anchoring character
+            // no break
             case 0x2E:
             case 0x2F:
             case 0x3A:
@@ -304,8 +316,8 @@ class idna_convert
             case 0x40:
                 // Neither email addresses nor URLs allowed in strict mode
                 if ($this->_strict_mode) {
-                   $this->_error('Neither email addresses nor URLs are allowed in strict mode.');
-                   return false;
+                    $this->_error('Neither email addresses nor URLs are allowed in strict mode.');
+                    return false;
                 } else {
                     // Skip first char
                     if ($k) {
@@ -348,7 +360,7 @@ class idna_convert
      * @return   string   The last error, that occured
      * @access   public
      */
-    function get_last_error()
+    public function get_last_error()
     {
         return $this->_error;
     }
@@ -357,7 +369,7 @@ class idna_convert
      * The actual decoding algorithm
      * @access   private
      */
-    function _decode($encoded)
+    public function _decode($encoded)
     {
         // We do need to find the Punycode prefix
         if (!preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $encoded)) {
@@ -395,7 +407,9 @@ class idna_convert
                 $idx += $digit * $w;
                 $t = ($k <= $bias) ? $this->_tmin :
                         (($k >= $bias + $this->_tmax) ? $this->_tmax : ($k - $bias));
-                if ($digit < $t) break;
+                if ($digit < $t) {
+                    break;
+                }
                 $w = (int) ($w * ($this->_base - $t));
             }
             $bias = $this->_adapt($idx - $old_idx, $deco_len + 1, $is_first);
@@ -417,7 +431,7 @@ class idna_convert
      * The actual encoding algorithm
      * @access   private
      */
-    function _encode($decoded)
+    public function _encode($decoded)
     {
         // We cannot encode a domain name containing the Punycode prefix
         $extract = strlen($this->_punycode_prefix);
@@ -443,10 +457,14 @@ class idna_convert
 
         // Do NAMEPREP
         $decoded = $this->_nameprep($decoded);
-        if (!$decoded || !is_array($decoded)) return false; // NAMEPREP failed
+        if (!$decoded || !is_array($decoded)) {
+            return false;
+        } // NAMEPREP failed
 
         $deco_len  = count($decoded);
-        if (!$deco_len) return false; // Empty array
+        if (!$deco_len) {
+            return false;
+        } // Empty array
 
         $codecount = 0; // How many chars have been consumed
 
@@ -461,13 +479,17 @@ class idna_convert
                 $codecount++;
             }
         }
-        if ($codecount == $deco_len) return $encoded; // All codepoints were basic ones
+        if ($codecount == $deco_len) {
+            return $encoded;
+        } // All codepoints were basic ones
 
         // Start with the prefix; copy it to output
         $encoded = $this->_punycode_prefix.$encoded;
 
         // If we have basic code points in output, add an hyphen to the end
-        if ($codecount) $encoded .= '-';
+        if ($codecount) {
+            $encoded .= '-';
+        }
 
         // Now find and encode all non-basic code points
         $is_first  = true;
@@ -494,7 +516,9 @@ class idna_convert
                     for ($q = $delta, $k = $this->_base; 1; $k += $this->_base) {
                         $t = ($k <= $bias) ? $this->_tmin :
                                 (($k >= $bias + $this->_tmax) ? $this->_tmax : $k - $bias);
-                        if ($q < $t) break;
+                        if ($q < $t) {
+                            break;
+                        }
                         $encoded .= $this->_encode_digit(intval($t + (($q - $t) % ($this->_base - $t)))); //v0.4.5 Changed from ceil() to intval()
                         $q = (int) (($q - $t) / ($this->_base - $t));
                     }
@@ -515,7 +539,7 @@ class idna_convert
      * Adapt the bias according to the current code point and position
      * @access   private
      */
-    function _adapt($delta, $npoints, $is_first)
+    public function _adapt($delta, $npoints, $is_first)
     {
         $delta = intval($is_first ? ($delta / $this->_damp) : ($delta / 2));
         $delta += intval($delta / $npoints);
@@ -529,7 +553,7 @@ class idna_convert
      * Encoding a certain digit
      * @access   private
      */
-    function _encode_digit($d)
+    public function _encode_digit($d)
     {
         return chr($d + 22 + 75 * ($d < 26));
     }
@@ -538,7 +562,7 @@ class idna_convert
      * Decode a certain digit
      * @access   private
      */
-    function _decode_digit($cp)
+    public function _decode_digit($cp)
     {
         $cp = ord($cp);
         return ($cp - 48 < 10) ? $cp - 22 : (($cp - 65 < 26) ? $cp - 65 : (($cp - 97 < 26) ? $cp - 97 : $this->_base));
@@ -548,7 +572,7 @@ class idna_convert
      * Internal error handling method
      * @access   private
      */
-    function _error($error = '')
+    public function _error($error = '')
     {
         $this->_error = $error;
     }
@@ -559,7 +583,7 @@ class idna_convert
      * @return   string   Unicode Characters, Nameprep'd
      * @access   private
      */
-    function _nameprep($input)
+    public function _nameprep($input)
     {
         $output = array();
         $error = false;
@@ -570,7 +594,9 @@ class idna_convert
         // While mapping required chars we apply the cannonical ordering
         foreach ($input as $v) {
             // Map to nothing == skip that code point
-            if (in_array($v, $this->NP['map_nothing'])) continue;
+            if (in_array($v, $this->NP['map_nothing'])) {
+                continue;
+            }
 
             // Try to find prohibited input
             if (in_array($v, $this->NP['prohibit']) || in_array($v, $this->NP['general_prohibited'])) {
@@ -589,7 +615,7 @@ class idna_convert
                 foreach ($this->_hangul_decompose($v) as $out) {
                     $output[] = (int) $out;
                 }
-            // There's a decomposition mapping for that code point
+                // There's a decomposition mapping for that code point
             } elseif (isset($this->NP['replacemaps'][$v])) {
                 foreach ($this->_apply_cannonical_ordering($this->NP['replacemaps'][$v]) as $out) {
                     $output[] = (int) $out;
@@ -630,7 +656,9 @@ class idna_convert
                 }
             }
             // The current class is 0
-            if (!$class) $last_starter = $i;
+            if (!$class) {
+                $last_starter = $i;
+            }
             $last_class = $class;
         }
         return $output;
@@ -643,7 +671,7 @@ class idna_convert
      * @return   array    Either Hangul Syllable decomposed or original 32bit value as one value array
      * @access   private
      */
-    function _hangul_decompose($char)
+    public function _hangul_decompose($char)
     {
         $sindex = (int) $char - $this->_sbase;
         if ($sindex < 0 || $sindex >= $this->_scount) {
@@ -653,7 +681,9 @@ class idna_convert
         $result[] = (int) $this->_lbase + $sindex / $this->_ncount;
         $result[] = (int) $this->_vbase + ($sindex % $this->_ncount) / $this->_tcount;
         $T = intval($this->_tbase + $sindex % $this->_tcount);
-        if ($T != $this->_tbase) $result[] = $T;
+        if ($T != $this->_tbase) {
+            $result[] = $T;
+        }
         return $result;
     }
     /**
@@ -663,10 +693,12 @@ class idna_convert
      * @return   array    UCS4 sequence with syllables composed
      * @access   private
      */
-    function _hangul_compose($input)
+    public function _hangul_compose($input)
     {
         $inp_len = count($input);
-        if (!$inp_len) return array();
+        if (!$inp_len) {
+            return array();
+        }
         $result = array();
         $last = (int) $input[0];
         $result[] = $last; // copy first char from input to output
@@ -705,7 +737,7 @@ class idna_convert
      * @return   integer    Combining class if found, else 0
      * @access   private
      */
-    function _get_combining_class($char)
+    public function _get_combining_class($char)
     {
         return isset($this->NP['norm_combcls'][$char]) ? $this->NP['norm_combcls'][$char] : 0;
     }
@@ -716,7 +748,7 @@ class idna_convert
      * @return   array      Ordered USC4 sequence
      * @access   private
      */
-    function _apply_cannonical_ordering($input)
+    public function _apply_cannonical_ordering($input)
     {
         $swap = true;
         $size = count($input);
@@ -728,7 +760,9 @@ class idna_convert
                 if ($next != 0 && $last > $next) {
                     // Move item leftward until it fits
                     for ($j = $i + 1; $j > 0; --$j) {
-                        if ($this->_get_combining_class(intval($input[$j-1])) <= $next) break;
+                        if ($this->_get_combining_class(intval($input[$j-1])) <= $next) {
+                            break;
+                        }
                         $t = intval($input[$j]);
                         $input[$j] = intval($input[$j-1]);
                         $input[$j-1] = $t;
@@ -749,12 +783,16 @@ class idna_convert
      * @return   array      Ordered USC4 sequence
      * @access   private
      */
-    function _combine($input)
+    public function _combine($input)
     {
         $inp_len = count($input);
         foreach ($this->NP['replacemaps'] as $np_src => $np_target) {
-            if ($np_target[0] != $input[0]) continue;
-            if (count($np_target) != $inp_len) continue;
+            if ($np_target[0] != $input[0]) {
+                continue;
+            }
+            if (count($np_target) != $inp_len) {
+                continue;
+            }
             $hit = false;
             foreach ($input as $k2 => $v2) {
                 if ($v2 == $np_target[$k2]) {
@@ -764,7 +802,9 @@ class idna_convert
                     break;
                 }
             }
-            if ($hit) return $np_src;
+            if ($hit) {
+                return $np_src;
+            }
         }
         return false;
     }
@@ -786,7 +826,7 @@ class idna_convert
      * The five and six byte sequences are part of Annex D of ISO/IEC 10646-1:2000
      * @access   private
      */
-    function _utf8_to_ucs4($input)
+    public function _utf8_to_ucs4($input)
     {
         $output = array();
         $out_len = 0;
@@ -863,7 +903,7 @@ class idna_convert
      * See _utf8_to_ucs4() for details
      * @access   private
      */
-    function _ucs4_to_utf8($input)
+    public function _ucs4_to_utf8($input)
     {
         $output = '';
         $k = 0;
@@ -900,7 +940,7 @@ class idna_convert
       *
       * @access   private
       */
-    function _ucs4_to_ucs4_string($input)
+    public function _ucs4_to_ucs4_string($input)
     {
         $output = '';
         // Take array values and split output to 4 bytes per value
@@ -916,7 +956,7 @@ class idna_convert
       *
       * @access   private
       */
-    function _ucs4_string_to_ucs4($input)
+    public function _ucs4_string_to_ucs4($input)
     {
         $output = array();
         $inp_len = strlen($input);
@@ -926,14 +966,16 @@ class idna_convert
             return false;
         }
         // Empty input - return empty output
-        if (!$inp_len) return $output;
+        if (!$inp_len) {
+            return $output;
+        }
         for ($i = 0, $out_len = -1; $i < $inp_len; ++$i) {
             // Increment output position every 4 input bytes
             if (!($i % 4)) {
                 $out_len++;
                 $output[$out_len] = 0;
             }
-            $output[$out_len] += ord($input[$i]) << (8 * (3 - ($i % 4) ) );
+            $output[$out_len] += ord($input[$i]) << (8 * (3 - ($i % 4)));
         }
         return $output;
     }
@@ -961,10 +1003,8 @@ class Net_IDNA_php4 extends idna_convert
      * @return   boolean   true on success, false otherwise
      * @access   public
      */
-    function setParams($option, $param = false)
+    public function setParams($option, $param = false)
     {
         return $this->IC->set_parameters($option, $param);
     }
 }
-
-?>

@@ -465,7 +465,7 @@ class EE_URI
      */
     public function segment($n, $no_result = false)
     {
-        return ( ! isset($this->segments[$n])) ? $no_result : $this->segments[$n];
+        return (! isset($this->segments[$n])) ? $no_result : $this->segments[$n];
     }
 
     /**
@@ -482,7 +482,7 @@ class EE_URI
      */
     public function rsegment($n, $no_result = false)
     {
-        return ( ! isset($this->rsegments[$n])) ? $no_result : $this->rsegments[$n];
+        return (! isset($this->rsegments[$n])) ? $no_result : $this->rsegments[$n];
     }
 
     /**

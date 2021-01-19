@@ -8,29 +8,26 @@
 	<?=ee()->view->head_link('css/file_browser.css'); ?>
 	<?=ee()->view->head_link('css/override.css'); ?>
 
-	<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
+	<?php if (ee()->extensions->active_hook('cp_css_end') === true):?>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
 	<?php endif;?>
 	<!--[if lte IE 7]><?=ee()->view->head_link('css/iefix.css')?><![endif]-->
 
 	<?php
-	if (isset($cp_global_js))
-	{
-		echo $cp_global_js;
-	} ?>
+    if (isset($cp_global_js)) {
+        echo $cp_global_js;
+    } ?>
 
 	<?=ee()->view->script_tag('jquery/jquery.js')?>
 
 	<?php
-	if (isset($script_head))
-	{
-		echo $script_head;
-	}
+    if (isset($script_head)) {
+        echo $script_head;
+    }
 
-	foreach (ee()->cp->its_all_in_your_head as $item)
-	{
-		echo $item."\n";
-	}
-	?>
+    foreach (ee()->cp->its_all_in_your_head as $item) {
+        echo $item."\n";
+    }
+    ?>
 </head>
 <body data-ee-version="<?=APP_VER?>" id="mainContent" class="pageContents">

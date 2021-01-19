@@ -51,7 +51,7 @@ class NavigationSection
      *   URL for the text.
      * @return NavigationItem A new NavigationItem object.
      */
-    public function addItem($text, $url = NULL)
+    public function addItem($text, $url = null)
     {
         $item = new NavigationItem($text, $url);
         $this->items[] = $item;

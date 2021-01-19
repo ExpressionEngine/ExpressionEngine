@@ -13,8 +13,9 @@ require_once(EE_APPPATH.'/libraries/Layout.php');
 /**
  * Installer Layout
  */
-class Installer_Layout extends EE_Layout {
-	// Nothing to see here.
+class Installer_Layout extends EE_Layout
+{
+    // Nothing to see here.
 }
 // END CLASS
 

@@ -11,11 +11,10 @@
 /**
  * Template Router alphabetic Converter
  */
-class EE_Template_router_alpha_converter implements EE_Template_router_converter {
-
-	public function validator()
-	{
-		return "([A-Za-z]+)";
-	}
-
+class EE_Template_router_alpha_converter implements EE_Template_router_converter
+{
+    public function validator()
+    {
+        return "([A-Za-z]+)";
+    }
 }

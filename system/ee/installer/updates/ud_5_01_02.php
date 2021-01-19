@@ -13,37 +13,36 @@ namespace ExpressionEngine\Updater\Version_5_1_2;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            [
+                'removeFilemanagerEndpoint',
+            ]
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			[
-				'removeFilemanagerEndpoint',
-			]
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
-
-	private function removeFilemanagerEndpoint()
-	{
-		ee()->db->where('class', 'Channel')
-			->where('method', 'filemanager_endpoint')
-			->delete('actions');
-	}
+    private function removeFilemanagerEndpoint()
+    {
+        ee()->db->where('class', 'Channel')
+            ->where('method', 'filemanager_endpoint')
+            ->delete('actions');
+    }
 }
 
 // EOF

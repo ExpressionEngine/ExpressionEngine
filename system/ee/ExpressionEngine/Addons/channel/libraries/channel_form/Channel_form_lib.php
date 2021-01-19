@@ -86,7 +86,7 @@ class Channel_form_lib
     public function __construct()
     {
         //set a global object
-    //  ee()->set('safecracker', $this); // deprecated
+        //  ee()->set('safecracker', $this); // deprecated
         ee()->set('channel_form', $this);
         ee()->lang->loadfile('channel_form');
     }
@@ -453,10 +453,10 @@ class Channel_form_lib
                     foreach ($options as $option) {
                         if ($field_type_match == "rel") {
                             if (! empty($option['selected']) or ! empty($option['checked'])) {
-                                $selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
+                                $selected_option = (! empty($match[2])) ? $option['option_name'] : $option['option_value'];
                             }
                         } elseif ($option['option_value'] == $this->entry($match[1])) {
-                            $selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
+                            $selected_option = (! empty($match[2])) ? $option['option_name'] : $option['option_value'];
                         }
                     }
 
@@ -464,7 +464,7 @@ class Channel_form_lib
                 } elseif (preg_match('/^instructions:(.*)$/', $key, $match)) {
                     $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
                 } elseif (preg_match('/^error:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = ( ! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
+                    $this->parse_variables[$match[0]] = (! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
                 } else {
                     $name = $key;
 
@@ -590,7 +590,7 @@ class Channel_form_lib
                 $this->parse_variables['selected_option:' . $field->field_name] = '';
                 $this->parse_variables['label:' . $field->field_name] = $field->field_label;
                 $this->parse_variables['instructions:' . $field->field_name] = $field->field_instructions;
-                $this->parse_variables['error:' . $field->field_name] = ( ! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
+                $this->parse_variables['error:' . $field->field_name] = (! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
 
                 //let's not needlessly call this, otherwise we could get duplicate fields rendering
                 if (strpos(ee()->TMPL->tagdata, LD . 'field:' . $field->field_name . RD) !== false) {
@@ -806,7 +806,7 @@ class Channel_form_lib
 
         $addt_js = array(
             'publish' => array(
-                'title_focus'       => (( ! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
+                'title_focus'       => ((! $this->edit && ee()->config->item('publish_page_title_focus') !== 'n') ? true : false),
                 'smileys'           => ($this->_installed_mods['smileys']) ? true : false,
                 'url_title_prefix'  => $this->channel('url_title_prefix'),
                 'default_entry_title' => $this->channel('default_entry_title')
@@ -1084,7 +1084,7 @@ GRID_FALLBACK;
                 'radio'         => 0,
                 'display_field' => '',
                 'options'       => $this->get_field_options($field_name),
-                'error'         => ( ! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
+                'error'         => (! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
             );
 
             $custom_field_equivalent = $this->custom_fields[$field_name];
@@ -1137,7 +1137,7 @@ GRID_FALLBACK;
 
         foreach ($this->title_fields as $field) {
             if (isset(ee()->TMPL->var_single['error:' . $field])) {
-                $conditional_errors['error:' . $field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
+                $conditional_errors['error:' . $field] = (! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
             }
         }
 
@@ -1391,7 +1391,7 @@ GRID_FALLBACK;
                     //for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
                     //to prevent xss_clean
                     //i had some people complain about not being able to submit <object>'s
-                    $xss_clean = ( ! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
+                    $xss_clean = (! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
 
                     $_POST['field_id_' . $field->field_id] = ee()->input->post($key, $xss_clean);
 
@@ -1688,7 +1688,7 @@ GRID_FALLBACK;
         $return = ($this->_meta['return'])
             ? (
                 (strpos($this->_meta['return'], 'http://') === 0 || strpos($this->_meta['return'], 'https://') === 0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
-                )
+            )
             : ee()->functions->fetch_site_index();
 
         if (strpos($return, 'ENTRY_ID') !== false) {
@@ -2827,36 +2827,36 @@ GRID_FALLBACK;
         $this->fetch_settings();
 
         $this->option_fields = $this->native_option_fields;
-/*
-        ee()->config->load('config');
+        /*
+                ee()->config->load('config');
 
-        if (is_array(ee()->config->item('safecracker_option_fields')))
-        {
-            $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
+                if (is_array(ee()->config->item('safecracker_option_fields')))
+                {
+                    $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
 
-            $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
-        }
+                    $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
+                }
 
-        if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
-        {
-            $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
-        }
+                if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
+                {
+                    $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
+                }
 
-        if (is_array(ee()->config->item('safecracker_file_fields')))
-        {
-            $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
-        }
+                if (is_array(ee()->config->item('safecracker_file_fields')))
+                {
+                    $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
+                }
 
-        if (is_array(ee()->config->item('safecracker_require_save_call')))
-        {
-            $this->require_save_call = ee()->config->item('safecracker_require_save_call');
-        }
+                if (is_array(ee()->config->item('safecracker_require_save_call')))
+                {
+                    $this->require_save_call = ee()->config->item('safecracker_require_save_call');
+                }
 
-        if (is_array(ee()->config->item('safecracker_field_extra_js')))
-        {
-            $this->extra_js = ee()->config->item('safecracker_field_extra_js');
-        }
-    */
+                if (is_array(ee()->config->item('safecracker_field_extra_js')))
+                {
+                    $this->extra_js = ee()->config->item('safecracker_field_extra_js');
+                }
+            */
     }
 
     /**
@@ -3155,7 +3155,7 @@ SCRIPT;
             return;
         }
 
-        $id = ( ! $reset) ? $this->member->PrimaryRole->getId() : 0;
+        $id = (! $reset) ? $this->member->PrimaryRole->getId() : 0;
 
         ee()->session->userdata['group_id'] = $id;
     }

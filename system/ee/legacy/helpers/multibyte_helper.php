@@ -1,4 +1,6 @@
-<?php if( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -18,46 +20,29 @@
  * @param  string $encoding
  * @return string
  */
-if( ! function_exists( 'ee_get_encoding' ) )
-{
+if (! function_exists('ee_get_encoding')) {
+    function ee_get_encoding($encoding)
+    {
+        if ($encoding === null) {
+            return ee()->config->item('charset') ?: 'UTF-8';
+        }
 
-	function ee_get_encoding($encoding)
-	{
+        if ($encoding === 'UTF-8') {
+            return 'UTF-8';
+        }
 
-		if($encoding === null)
-		{
+        $encoding = strtoupper($encoding);
 
-			return ee()->config->item('charset') ?: 'UTF-8';
+        if ($encoding ===  '8BIT' || $encoding === 'BINARY') {
+            return 'CP850';
+        }
 
-		}
+        if ($encoding ===  'UTF8') {
+            return 'UTF-8';
+        }
 
-		if($encoding === 'UTF-8')
-		{
-
-			return 'UTF-8';
-
-		}
-
-		$encoding = strtoupper($encoding);
-
-		if($encoding ===  '8BIT' || $encoding === 'BINARY' )
-		{
-
-			return 'CP850';
-
-		}
-
-		if($encoding ===  'UTF8')
-		{
-
-			return 'UTF-8';
-
-		}
-
-		return $encoding;
-
-	}
-
+        return $encoding;
+    }
 }
 
 /**
@@ -66,32 +51,25 @@ if( ! function_exists( 'ee_get_encoding' ) )
  * @param  string $encoding
  * @return integer
  */
-if( ! function_exists('ee_mb_strlen'))
-{
+if (! function_exists('ee_mb_strlen')) {
+    function ee_mb_strlen($str, $encoding = null)
+    {
+        if (function_exists('mb_strlen')) {
+            if (!empty($encoding)) {
+                return mb_strlen($str, $encoding);
+            } else {
+                return mb_strlen($str);
+            }
+        }
 
-	function ee_mb_strlen( $str, $encoding = null )
-	{
-		if (function_exists('mb_strlen')) {
-			if (!empty($encoding)) {
-				return mb_strlen($str, $encoding);
-			} else {
-				return mb_strlen($str);
-			}
-		}
+        $encoding = ee_get_encoding($encoding);
 
-		$encoding = ee_get_encoding($encoding);
+        if ($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv')) {
+            return strlen($str);
+        }
 
-		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
-		{
-
-			return strlen($str);
-
-		}
-
-		return @iconv_strlen($str, $encoding);
-
-	}
-
+        return @iconv_strlen($str, $encoding);
+    }
 }
 
 /**
@@ -102,41 +80,31 @@ if( ! function_exists('ee_mb_strlen'))
  * @param  string  $encoding
  * @return mixed - FALSE if not found, integer if found
  */
-if( ! function_exists('ee_mb_strpos'))
-{
+if (! function_exists('ee_mb_strpos')) {
+    function ee_mb_strpos($haystack, $needle, $offset = 0, $encoding = null)
+    {
+        if (function_exists('mb_strpos')) {
+            if (!empty($encoding)) {
+                return mb_strpos($haystack, $needle, $offset, $encoding);
+            } else {
+                return mb_strpos($haystack, $needle, $offset);
+            }
+        }
 
-	function ee_mb_strpos($haystack, $needle, $offset = 0, $encoding = null)
-	{
-		if (function_exists('mb_strpos')) {
-			if (!empty($encoding)) {
-				return mb_strpos($haystack, $needle, $offset, $encoding);
-			} else {
-				return mb_strpos($haystack, $needle, $offset);
-			}
-		}
+        $encoding = ee_get_encoding($encoding);
 
-		$encoding = ee_get_encoding($encoding);
+        if ($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv')) {
+            return strpos($haystack, $needle, $offset);
+        }
 
-		if($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv'))
-		{
+        $needle = (string) $needle;
 
-			return strpos($haystack, $needle, $offset);
+        if ('' === $needle) {
+            return false;
+        }
 
-		}
-
-		$needle = (string) $needle;
-
-		if('' === $needle)
-		{
-
-			return false;
-
-		}
-
-		return iconv_strpos($haystack, $needle, $offset, $encoding);
-
-	}
-
+        return iconv_strpos($haystack, $needle, $offset, $encoding);
+    }
 }
 
 /**
@@ -147,66 +115,41 @@ if( ! function_exists('ee_mb_strpos'))
  * @param  mixed $encoding
  * @return string
  */
-if( ! function_exists( 'ee_mb_substr ') )
-{
+if (! function_exists('ee_mb_substr ')) {
+    function ee_mb_substr($str, $start, $length = null, $encoding = null)
+    {
+        if (function_exists('mb_substr')) {
+            if (!empty($encoding)) {
+                return mb_substr($str, $start, $length, $encoding);
+            } else {
+                return mb_substr($str, $start, $length);
+            }
+        }
+    
+        $encoding = ee_get_encoding($encoding);
 
-	function ee_mb_substr($str, $start, $length = null, $encoding = null)
-	{
-		if (function_exists('mb_substr')) {
-			if (!empty($encoding)) {
-				return mb_substr($str, $start, $length, $encoding);
-			} else {
-				return mb_substr($str, $start, $length);
-			}
-		}
-	
-		$encoding = ee_get_encoding($encoding);
+        if ('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv')) {
+            return (string) substr($str, $start, null === $length ? 2147483647 : $length);
+        }
 
-		if('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv'))
-		{
+        if ($start < 0) {
+            $start = iconv_strlen($str, $encoding) + $start;
 
-			return (string) substr($str, $start, null === $length ? 2147483647 : $length);
+            if ($start < 0) {
+                $start = 0;
+            }
+        }
 
+        if (null === $length) {
+            $length = 2147483647;
+        } elseif ($length < 0) {
+            $length = iconv_strlen($str, $encoding) + $length - $start;
 
-		}
+            if ($length < 0) {
+                return '';
+            }
+        }
 
-		if($start < 0)
-		{
-
-			$start = iconv_strlen($str, $encoding) + $start;
-
-			if($start < 0)
-			{
-
-				$start = 0;
-
-			}
-
-		}
-
-		if(null === $length)
-		{
-
-			$length = 2147483647;
-
-		}
-		elseif($length < 0)
-		{
-
-			$length = iconv_strlen($str, $encoding) + $length - $start;
-
-			if($length < 0)
-			{
-
-				return '';
-
-			}
-
-		}
-
-		return (string) iconv_substr($str, $start, $length, $encoding);
-
-	}
-
+        return (string) iconv_substr($str, $start, $length, $encoding);
+    }
 }
-

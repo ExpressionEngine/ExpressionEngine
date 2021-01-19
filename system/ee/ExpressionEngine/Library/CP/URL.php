@@ -166,7 +166,7 @@ class URL implements \Serializable
             $qs['S'] = $this->session_id;
         }
 
-        $qs = ( ! empty($qs)) ? http_build_query($qs, AMP) : '';
+        $qs = (! empty($qs)) ? http_build_query($qs, AMP) : '';
 
         // Remove AMP from the beginning of the query string if it exists
         $qs = preg_replace('#^' . AMP . '#', '', $qs);

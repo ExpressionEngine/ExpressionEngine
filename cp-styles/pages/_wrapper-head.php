@@ -25,7 +25,7 @@ include(dirname(__FILE__) . '/_header.php');
         <div class="ee-sidebar__items">
             <div class="ee-sidebar__items-top">
 				<a href="./homepage.php"  class="ee-sidebar__item <?=($current_page == 'homepage' ? 'active' : '')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-				<a href="./entries.php" class="ee-sidebar__item <?=( $current_page == 'entries' ? 'active' : '')?>"><i class="fas fa-newspaper"></i> Entries</a>
+				<a href="./entries.php" class="ee-sidebar__item <?=($current_page == 'entries' ? 'active' : '')?>"><i class="fas fa-newspaper"></i> Entries</a>
 				<a href="./entry.php" class="ee-sidebar__item <?=(($current_page == 'entry') ? 'active' : '')?>"><i class="fas fa-newspaper"></i> Single Entry</a>
 				<a href="./files.php"  class="ee-sidebar__item <?=($current_page == 'files' ? 'active' : '')?>"><i class="fas fa-folder"></i> Files</a>
 				<a href="./members.php"  class="ee-sidebar__item <?=($current_page == 'members' ? 'active' : '')?>"><i class="fas fa-users"></i> Members</a>

@@ -163,7 +163,7 @@ class Cli
     public function fail($messages = null)
     {
         if ($messages) {
-            if( ! is_array($messages) ) {
+            if (! is_array($messages)) {
                 $messages = [$messages];
             }
 

@@ -11,8 +11,8 @@
 /**
  * Spam Module front-end (nada)
  */
-class Spam {
-
+class Spam
+{
 }
 
 // EOF

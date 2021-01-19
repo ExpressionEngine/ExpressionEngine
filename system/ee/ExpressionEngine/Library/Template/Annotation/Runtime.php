@@ -30,99 +30,96 @@ namespace ExpressionEngine\Library\Template\Annotation;
  * So when you see a comment in a template, you can then check if it's an
  * annotation and retrieve the related data again.
  */
-class Runtime {
+class Runtime
+{
+    protected $store;
+    protected static $shared_store;
 
-	protected $store;
-	protected static $shared_store;
+    private $use_shared = false;
 
-	private $use_shared = FALSE;
+    public function __construct()
+    {
+        $this->store = array();
+    }
 
-	public function __construct()
-	{
-		$this->store = array();
-	}
+    /**
+     * Create an annotation comment
+     *
+     * @param Array $data Initial annotation data
+     */
+    public function create(array $data = array())
+    {
+        $key = $this->save($data);
+        return '{!-- ra:'.$key.' --}';
+    }
 
-	/**
-	 * Create an annotation comment
-	 *
-	 * @param Array $data Initial annotation data
-	 */
-	public function create(array $data = array())
-	{
-		$key = $this->save($data);
-		return '{!-- ra:'.$key.' --}';
-	}
+    /**
+     * Retrieve annotation data for a comment
+     *
+     * @return Object annotation object
+     */
+    public function read($comment_text)
+    {
+        if (preg_match('/^\{!-- ra:(\w+) --\}$/', $comment_text, $matches)) {
+            return $this->get($matches[1]);
+        }
 
-	/**
-	 * Retrieve annotation data for a comment
-	 *
-	 * @return Object annotation object
-	 */
-	public function read($comment_text)
-	{
-		if (preg_match('/^\{!-- ra:(\w+) --\}$/', $comment_text, $matches))
-		{
-			return $this->get($matches[1]);
-		}
+        return null;
+    }
 
-		return NULL;
-	}
+    /**
+     * Use singleton annotation store
+     */
+    public function useSharedStore()
+    {
+        if (! isset(static::$shared_store)) {
+            static::$shared_store = array();
+        }
 
-	/**
-	 * Use singleton annotation store
-	 */
-	public function useSharedStore()
-	{
-		if ( ! isset(static::$shared_store))
-		{
-			static::$shared_store = array();
-		}
+        $this->store =& static::$shared_store;
+    }
 
-		$this->store =& static::$shared_store;
-	}
+    /**
+     * Clear shared memory store.
+     *
+     * Mostly here to allow clearing for tests. Typically you don't
+     * know who else might be using the shared store, so you don't
+     * want to clear it.
+     */
+    public function clearSharedStore()
+    {
+        static::$shared_store = null;
+    }
 
-	/**
-	 * Clear shared memory store.
-	 *
-	 * Mostly here to allow clearing for tests. Typically you don't
-	 * know who else might be using the shared store, so you don't
-	 * want to clear it.
-	 */
-	public function clearSharedStore()
-	{
-		static::$shared_store = NULL;
-	}
+    /**
+     * Save some new annotation data and retrieve an annotation key.
+     *
+     * @param Array $data Initial data
+     * @return Annotation key
+     */
+    protected function save($data)
+    {
+        // We store an object so we can easily return a reference
+        // for editing annotation data without creating a new one.
+        $obj = (object) $data;
+        $key = spl_object_hash($obj);
 
-	/**
-	 * Save some new annotation data and retrieve an annotation key.
-	 *
-	 * @param Array $data Initial data
-	 * @return Annotation key
-	 */
-	protected function save($data)
-	{
-		// We store an object so we can easily return a reference
-		// for editing annotation data without creating a new one.
-		$obj = (object) $data;
-		$key = spl_object_hash($obj);
+        $this->store[$key] = $obj;
+        return $key;
+    }
 
-		$this->store[$key] = $obj;
-		return $key;
-	}
+    /**
+     * Retrieve an annotation object from a key
+     *
+     * @param String $key Annotation key
+     * @return Object<StdClass> Data object
+     */
+    protected function get($key)
+    {
+        if (! isset($this->store[$key])) {
+            return null;
+        }
 
-	/**
-	 * Retrieve an annotation object from a key
-	 *
-	 * @param String $key Annotation key
-	 * @return Object<StdClass> Data object
-	 */
-	protected function get($key)
-	{
-		if ( ! isset($this->store[$key]))
-		{
-			return NULL;
-		}
-
-		return $this->store[$key];
-	}
+        return $this->store[$key];
+    }
 }

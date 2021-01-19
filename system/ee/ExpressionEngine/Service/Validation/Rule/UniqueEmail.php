@@ -16,53 +16,50 @@ use ExpressionEngine\Service\Validation\Rule\Email;
 /**
  * EmailUnique Validation Rule
  */
-class UniqueEmail extends ValidationRule {
+class UniqueEmail extends ValidationRule
+{
 
-	/**
-	 * Check to see if the email address is unique on the site
-	 *
-	 * @return boolean TRUE if it's unique, FALSE if it already exists
-	 */
-	public function validate($key, $value)
-	{
-		// Check for config, otherwise default
-		$prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
+    /**
+     * Check to see if the email address is unique on the site
+     *
+     * @return boolean TRUE if it's unique, FALSE if it already exists
+     */
+    public function validate($key, $value)
+    {
+        // Check for config, otherwise default
+        $prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
 
-		//do we have a valid email address?
-		$emailValid = new Email();
-		$validEmail = $emailValid->validate($key, $value);
+        //do we have a valid email address?
+        $emailValid = new Email();
+        $validEmail = $emailValid->validate($key, $value);
 
-		if (!$validEmail) {
-			// no valid email address kill it here
-			return FALSE;
-		}
+        if (!$validEmail) {
+            // no valid email address kill it here
+            return false;
+        }
 
-		if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== FALSE)
-		{
-			$address = explode('@', $value);
-			$sql = 'SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
+        if (get_bool_from_string($prevent) && strpos($value, '@gmail.com') !== false) {
+            $address = explode('@', $value);
+            $sql = 'SELECT REPLACE(REPLACE(LOWER(email), "@gmail.com", ""), ".", "") AS gmail
 				FROM exp_members
 				WHERE email LIKE "%gmail.com"
 				HAVING gmail = "'.ee()->db->escape_str(str_replace('.', '', $address[0])).'";';
-			$query = ee()->db->query($sql);
+            $query = ee()->db->query($sql);
 
-			$count = $query->num_rows();
-		}
-		else
-		{
-			$count = ee('Model')->get('Member')
-				->filter('email', $value)
-				->count();
-		}
+            $count = $query->num_rows();
+        } else {
+            $count = ee('Model')->get('Member')
+                ->filter('email', $value)
+                ->count();
+        }
 
-		return ($count <= 0);
-	}
+        return ($count <= 0);
+    }
 
-	public function getLanguageKey()
-	{
-		return 'unique_email';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'unique_email';
+    }
 }
 
 // EOF

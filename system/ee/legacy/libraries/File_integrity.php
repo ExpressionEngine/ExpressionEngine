@@ -13,7 +13,6 @@
  */
 class File_integrity
 {
-
     public $emailed = array();
     public $checksums = array();
 

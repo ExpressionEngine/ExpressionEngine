@@ -13,17 +13,17 @@
 		<?php $this->embed('ee:_shared/table', $table); ?>
 
 		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "sync",
-					'text' => lang('sync')
-				]
-			]
-		]); ?>
+            'options' => [
+                [
+                    'value' => "",
+                    'text' => '-- ' . lang('with_selected') . ' --'
+                ],
+                [
+                    'value' => "sync",
+                    'text' => lang('sync')
+                ]
+            ]
+        ]); ?>
 
 	<?=form_close()?>
 </div>

@@ -10,17 +10,17 @@
   </div>
 <div class="panel-body">
 		<?=ee('CP/Alert')
-			->makeInline()
-			->asImportant()
-			->addToBody(lang('sql_warning'))
-			->render()?>
+            ->makeInline()
+            ->asImportant()
+            ->addToBody(lang('sql_warning'))
+            ->render()?>
 		<?php if (isset($invalid_query)): ?>
 			<?=ee('CP/Alert')
-				->makeInline()
-				->asIssue()
-				->withTitle(lang('query_form_error'))
-				->addToBody(htmlentities($invalid_query, ENT_QUOTES, 'UTF-8'))
-				->render()?>
+                ->makeInline()
+                ->asIssue()
+                ->withTitle(lang('query_form_error'))
+                ->addToBody(htmlentities($invalid_query, ENT_QUOTES, 'UTF-8'))
+                ->render()?>
 		<?php endif ?>
 
 		<?=ee('CP/Alert')->getAllInlines()?>

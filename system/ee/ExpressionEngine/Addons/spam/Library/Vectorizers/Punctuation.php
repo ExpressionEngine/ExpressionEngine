@@ -15,41 +15,32 @@ use \ExpressionEngine\Addons\spam\Library\Vectorizer;
 /**
  * Spam Module Punctuation Vectorizer
  */
-class Punctuation implements Vectorizer {
+class Punctuation implements Vectorizer
+{
 
-	/**
-	 * Calculates the ratio of punctuation to non-punctuation
-	 *
-	 * @param string $source The source text
-	 * @access public
-	 * @return float The calculated ratio
-	 */
-	public function vectorize($source)
-	{
+    /**
+     * Calculates the ratio of punctuation to non-punctuation
+     *
+     * @param string $source The source text
+     * @access public
+     * @return float The calculated ratio
+     */
+    public function vectorize($source)
+    {
+        ee()->load->helper('multibyte');
 
-		ee()->load->helper('multibyte');
+        $punctuation = preg_match_all('/[!-~]/u', $source, $matches);
 
-		$punctuation = preg_match_all('/[!-~]/u', $source, $matches);
+        $characters  = ee_mb_strlen($source);
 
-		$characters  = ee_mb_strlen($source);
+        if ($characters !== 0) {
+            $ratio = $punctuation / $characters;
+        } else {
+            $ratio = 1;
+        }
 
-		if ($characters !== 0)
-		{
-
-			$ratio = $punctuation / $characters;
-
-		}
-		else
-		{
-
-			$ratio = 1;
-
-		}
-
-		return $ratio;
-
-	}
-
+        return $ratio;
+    }
 }
 
 // EOF

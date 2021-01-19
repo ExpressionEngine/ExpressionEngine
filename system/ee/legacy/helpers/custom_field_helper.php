@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -24,21 +26,19 @@
  */
 function encode_multi_field($data = array())
 {
-	if ( ! is_array($data))
-	{
-		$data = array($data);
-	}
+    if (! is_array($data)) {
+        $data = array($data);
+    }
 
-	// Escape pipes
-	foreach($data as $key => $val)
-	{
-		$data[$key] = is_array($val)
-		    ? encode_multi_field($val)
-		    : str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
-	}
+    // Escape pipes
+    foreach ($data as $key => $val) {
+        $data[$key] = is_array($val)
+            ? encode_multi_field($val)
+            : str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
+    }
 
-	// Implode on seperator
-	return implode('|', $data);
+    // Implode on seperator
+    return implode('|', $data);
 }
 
 /**
@@ -52,21 +52,19 @@ function encode_multi_field($data = array())
  */
 function decode_multi_field($data = '')
 {
-	if ($data == '')
-	{
-		return array();
-	}
+    if ($data == '') {
+        return array();
+    }
 
-	if (is_array($data))
-	{
-		return $data;
-	}
+    if (is_array($data)) {
+        return $data;
+    }
 
-	// Explode at non-escaped pipes ([\\\\] == one backslash, thanks to php + regex escaping)
-	$data = preg_split("#(?<![\\\\])[|]#", $data);
+    // Explode at non-escaped pipes ([\\\\] == one backslash, thanks to php + regex escaping)
+    $data = preg_split("#(?<![\\\\])[|]#", $data);
 
-	// Reduce slashes
-	return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);
+    // Reduce slashes
+    return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);
 }
 
 // EOF

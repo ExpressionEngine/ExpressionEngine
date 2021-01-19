@@ -18,164 +18,164 @@ namespace ExpressionEngine\Service\Template\Variables;
  * 		array ($params) - an array of optional options!
  * 		string ($tagdata) - optional tagdata, used by pair variables
  */
-trait ModifiableTrait {
+trait ModifiableTrait
+{
 
-	/**
-	 * :attr_safe modifier
-	 */
-	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
-	}
+    /**
+     * :attr_safe modifier
+     */
+    public function replace_attr_safe($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
+    }
 
-	/**
-	 * :censor modifier
-	 */
-	public function replace_censor($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->censor();
-	}
+    /**
+     * :censor modifier
+     */
+    public function replace_censor($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->censor();
+    }
 
-	/**
-	 * :currency modifier
-	 */
-	public function replace_currency($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Number', $data)->currency($params);
-	}
+    /**
+     * :currency modifier
+     */
+    public function replace_currency($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Number', $data)->currency($params);
+    }
 
-	/**
-	 * :decrypt modifier
-	 */
-	public function replace_decrypt($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->decrypt($params);
-	}
+    /**
+     * :decrypt modifier
+     */
+    public function replace_decrypt($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->decrypt($params);
+    }
 
-	/**
-	 * :encrypt modifier
-	 */
-	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->encrypt($params);
-	}
+    /**
+     * :encrypt modifier
+     */
+    public function replace_encrypt($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->encrypt($params);
+    }
 
-	/**
-	 * :form_prep modifier
-	 */
-	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
-	}
+    /**
+     * :form_prep modifier
+     */
+    public function replace_form_prep($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
+    }
 
-	/**
-	 * :json modifier
-	 */
-	public function replace_json($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->json($params);
-	}
+    /**
+     * :json modifier
+     */
+    public function replace_json($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->json($params);
+    }
 
-	/**
-	 * :length modifier
-	 */
-	public function replace_length($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->length();
-	}
+    /**
+     * :length modifier
+     */
+    public function replace_length($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->length();
+    }
 
-	/**
-	 * :limit modifier
-	 */
-	public function replace_limit($data, $params = array(), $tagdata = FALSE)
-	{
-		if ( ! isset($params['preserve_words']))
-		{
-			$params['preserve_words'] = TRUE;
-		}
+    /**
+     * :limit modifier
+     */
+    public function replace_limit($data, $params = array(), $tagdata = false)
+    {
+        if (! isset($params['preserve_words'])) {
+            $params['preserve_words'] = true;
+        }
 
-		return (string) ee('Format')->make('Text', $data)->limitChars($params);
-	}
+        return (string) ee('Format')->make('Text', $data)->limitChars($params);
+    }
 
-	/**
-	 * :number_format modifier
-	 */
-	public function replace_number_format($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Number', $data)->number_format($params);
-	}
+    /**
+     * :number_format modifier
+     */
+    public function replace_number_format($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Number', $data)->number_format($params);
+    }
 
-	/**
-	 * :ordinal modifier
-	 */
-	public function replace_ordinal($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Number', $data)->ordinal($params);
-	}
+    /**
+     * :ordinal modifier
+     */
+    public function replace_ordinal($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Number', $data)->ordinal($params);
+    }
 
-	/**
-	 * :raw_content modifier
-	 */
-	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->encodeEETags($params);
-	}
+    /**
+     * :raw_content modifier
+     */
+    public function replace_raw_content($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->encodeEETags($params);
+    }
 
-	/**
-	 * :replace modifier
-	 */
-	public function replace_replace($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->replace($params);
-	}
+    /**
+     * :replace modifier
+     */
+    public function replace_replace($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->replace($params);
+    }
 
-	/**
-	 * :rot13 modifier (for Seth)
-	 */
-	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
-	{
-		return str_rot13($data);
-	}
+    /**
+     * :rot13 modifier (for Seth)
+     */
+    public function replace_rot13($data, $params = array(), $tagdata = false)
+    {
+        return str_rot13($data);
+    }
 
-	/**
-	 * :spellout modifier
-	 */
-	public function replace_spellout($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Number', $data)->spellout($params);
-	}
+    /**
+     * :spellout modifier
+     */
+    public function replace_spellout($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Number', $data)->spellout($params);
+    }
 
-	/**
-	 * :url modifier
-	 */
-	public function replace_url($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->url();
-	}
+    /**
+     * :url modifier
+     */
+    public function replace_url($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->url();
+    }
 
-	/**
-	 * :url_decode modifier
-	 */
-	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
-	}
+    /**
+     * :url_decode modifier
+     */
+    public function replace_url_decode($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->urlDecode($params);
+    }
 
-	/**
-	 * :url_encode modifier
-	 */
-	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
-	}
+    /**
+     * :url_encode modifier
+     */
+    public function replace_url_encode($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->urlEncode($params);
+    }
 
-	/**
-	 * :url_slug modifier
-	 */
-	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
-	}
+    /**
+     * :url_slug modifier
+     */
+    public function replace_url_slug($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->urlSlug($params);
+    }
 }
 // END TRAIT
 
