@@ -17,7 +17,7 @@ use ExpressionEngine\Service\Model\Relation\BelongsTo;
  */
 class Delete extends Query
 {
-    public const DELETE_BATCH_SIZE = 100;
+    const DELETE_BATCH_SIZE = 100;
 
     public function run()
     {

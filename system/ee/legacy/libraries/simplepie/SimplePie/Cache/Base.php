@@ -57,14 +57,14 @@ interface SimplePie_Cache_Base
      *
      * @var string
      */
-    public const TYPE_FEED = 'spc';
+    const TYPE_FEED = 'spc';
 
     /**
      * Image cache type
      *
      * @var string
      */
-    public const TYPE_IMAGE = 'spi';
+    const TYPE_IMAGE = 'spi';
 
     /**
      * Create a new cache object

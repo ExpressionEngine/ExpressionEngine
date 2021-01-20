@@ -13,10 +13,10 @@
  */
 class Relationship_model extends CI_Model
 {
-    public const CHILD = 1;
-    public const PARENT = 2;
-    public const SIBLING = 3;
-    public const GRID = 4;
+    const CHILD = 1;
+    const PARENT = 2;
+    const SIBLING = 3;
+    const GRID = 4;
 
     protected $_table = 'relationships';
 

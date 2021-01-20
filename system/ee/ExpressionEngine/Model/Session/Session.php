@@ -45,7 +45,7 @@ class Session extends Model
     /**
      * Manage sudo-like timeout for "trust but verify" actions
      */
-    public const AUTH_TIMEOUT = '+15 minutes';
+    const AUTH_TIMEOUT = '+15 minutes';
     public function resetAuthTimeout()
     {
         $this->setProperty('auth_timeout', ee()->localize->string_to_timestamp(self::AUTH_TIMEOUT));

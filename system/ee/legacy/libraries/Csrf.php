@@ -20,7 +20,7 @@ class Csrf
     private $request_token;
     private $session_token;
 
-    public const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
+    const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
 
     public function __construct()
     {

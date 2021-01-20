@@ -75,8 +75,8 @@ class EE_Typography
     private $quote_marker = null;
 
     // tag bracket constants for use in Safe HTML / BBcode parsing
-    public const HTML_BRACKETS = 1;
-    public const BBCODE_BRACKETS = 2;
+    const HTML_BRACKETS = 1;
+    const BBCODE_BRACKETS = 2;
 
     /**
      * Constructor

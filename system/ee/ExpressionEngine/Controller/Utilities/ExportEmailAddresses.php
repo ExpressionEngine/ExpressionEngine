@@ -15,8 +15,8 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class ExportEmailAddresses extends Utilities
 {
-    public const CACHE_TTL = 300; // 5 mins
-    public const PREFIX = 'exprt';
+    const CACHE_TTL = 300; // 5 mins
+    const PREFIX = 'exprt';
 
     protected $batch_size = 10;
     protected $validated_batch_size = 5;

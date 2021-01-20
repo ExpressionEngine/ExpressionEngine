@@ -35,7 +35,7 @@ class Color
      * Set this to FALSE to adjust automatic shade to be between given color
      * and black (for darken) or white (for lighten)
      */
-    public const DEFAULT_ADJUST = 10;
+    const DEFAULT_ADJUST = 10;
 
     /**
      * Instantiates the class with a HEX value

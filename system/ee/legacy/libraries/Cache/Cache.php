@@ -19,11 +19,11 @@ class Cache extends EE_Driver_Library
      * current site, or it should be globally accessible by the EE
      * installation across MSM sites
      */
-    public const GLOBAL_SCOPE = 1;	// Scoped to the current site
-    public const LOCAL_SCOPE = 2;	// Scoped to global EE install
+    const GLOBAL_SCOPE = 1;	// Scoped to the current site
+    const LOCAL_SCOPE = 2;	// Scoped to global EE install
 
     // separator character used to separate nested namespace names
-    public const NAMESPACE_SEPARATOR = '/';
+    const NAMESPACE_SEPARATOR = '/';
 
     /**
      * Valid cache drivers

@@ -18,22 +18,22 @@ class CookieRegistry
     /**
      * @var int Value to indicate Necessary cookies
      */
-    public const NECESSARY = 0;
+    const NECESSARY = 0;
 
     /**
      * @var int Value to indicate Functionality cookies
      */
-    public const FUNCTIONALITY = 1;
+    const FUNCTIONALITY = 1;
 
     /**
      * @var int Value to indicate Performance cookies
      */
-    public const PERFORMANCE = 2;
+    const PERFORMANCE = 2;
 
     /**
      * @var int Value to indicate Targeting cookies
      */
-    public const TARGETING = 4;
+    const TARGETING = 4;
 
     /**
      * @var array Registered cookies
