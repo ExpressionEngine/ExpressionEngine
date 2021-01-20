@@ -24,5 +24,6 @@ return PhpCsFixer\Config::create()
         'no_whitespace_before_comma_in_array' => true,
         'normalize_index_brace' => true,
         'trim_array_spaces' => true,
+        'visibility_required' => ['property', 'method'],
     ])
     ->setFinder($finder);
