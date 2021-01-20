@@ -10,48 +10,38 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Entropy Vectorizer
  */
-class Entropy implements Vectorizer {
+class Entropy implements Vectorizer
+{
+    /**
+     * Estimates the entropy of a string by calculating the compression ratio.
+     *
+     * @param string $source The source text
+     * @access public
+     * @return float estimated entropy
+     */
+    public function vectorize($source)
+    {
+        ee()->load->helper('multibyte');
 
-	/**
-	 * Estimates the entropy of a string by calculating the compression ratio.
-	 *
-	 * @param string $source The source text
-	 * @access public
-	 * @return float estimated entropy
-	 */
-	public function vectorize($source)
-	{
+        $length = mb_strlen($source);
 
-		ee()->load->helper('multibyte');
+        if ($length > 0) {
+            $compressed = gzcompress($source);
 
-		$length = mb_strlen($source);
+            $compressed_length = ee_mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
 
-		if ($length > 0)
-		{
+            $ratio = $compressed_length / $length;
+        } else {
+            $ratio = 0;
+        }
 
-			$compressed = gzcompress($source);
-
-			$compressed_length = ee_mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
-
-			$ratio = $compressed_length / $length;
-
-		}
-		else
-		{
-
-			$ratio = 0;
-
-		}
-
-		return $ratio;
-
-	}
-
+        return $ratio;
+    }
 }
 
 // EOF

@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli\Context;
 
 use ExpressionEngine\Cli\Exception;
@@ -142,6 +143,7 @@ class GetoptParser
             // after a plain double-dash, all values are args (not options)
             if ($arg == '--') {
                 $done = true;
+
                 continue;
             }
 
@@ -254,6 +256,7 @@ class GetoptParser
             $name = substr($input, 0, $pos);
             $value = substr($input, $pos + 1);
         }
+
         return array($name, $value);
     }
 
@@ -278,8 +281,10 @@ class GetoptParser
                     "The option '$name' requires a parameter."
                 );
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -302,8 +307,10 @@ class GetoptParser
             $this->errors[] = new Exception\OptionParamRejected(
                 "The option '$name' does not accept a parameter."
             );
+
             return true;
         }
+
         return false;
     }
 
@@ -343,8 +350,10 @@ class GetoptParser
     {
         if ($option->param == 'rejected') {
             $this->setValue($option, true);
+
             return true;
         }
+
         return false;
     }
 
@@ -363,8 +372,10 @@ class GetoptParser
         $is_value = ! empty($value) && substr($value, 0, 1) != '-';
         if ($is_value) {
             $this->setValue($option, array_shift($this->input));
+
             return true;
         }
+
         return false;
     }
 
@@ -385,8 +396,10 @@ class GetoptParser
             $this->errors[] = new Exception\OptionParamRequired(
                 "The option '$name' requires a parameter."
             );
+
             return true;
         }
+
         return false;
     }
 

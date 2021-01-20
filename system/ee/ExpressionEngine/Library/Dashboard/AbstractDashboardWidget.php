@@ -15,59 +15,58 @@ use ExpressionEngine\Addons\Pro\Model\Dashboard\DashboardWidget;
 /**
  * Abstract Dashboard Widget class
  */
-abstract class AbstractDashboardWidget implements DashboardWidgetInterface {
+abstract class AbstractDashboardWidget implements DashboardWidgetInterface
+{
+    public $title;
+    public $right_head = '';
+    public $width = 'half';
+    public $class = '';
+    public $content = '';
 
-	public $title;
-	public $right_head = '';
-	public $width = 'half';
-	public $class = '';
-	public $content = '';
+    public $vars;
 
-	public $vars;
+    public function __construct(DashboardWidget $widgetObject, Bool $edit_mode, Bool $enabled)
+    {
+        ee()->lang->loadfile('homepage');
+        $this->vars = [
+            'title' => $this->getTitle(),
+            'width' => $this->getWidth(),
+            'class' => $this->getClass(),
+            'right_head' => $this->getRightHead(),
+            'edit_mode' => $edit_mode,
+            'enabled' => $enabled,
+            'widget_id' => $widgetObject->widget_id,
+            'widget' => $this->getContent()
+        ];
+    }
 
-	public function __construct(DashboardWidget $widgetObject, Bool $edit_mode, Bool $enabled)
-	{
-		ee()->lang->loadfile('homepage');
-		$this->vars = [
-			'title'			=> $this->getTitle(),
-			'width'			=> $this->getWidth(),
-			'class'			=> $this->getClass(),
-			'right_head'=> $this->getRightHead(),
-			'edit_mode'	=> $edit_mode,
-			'enabled'		=> $enabled,
-			'widget_id'	=> $widgetObject->widget_id,
-			'widget'		=> $this->getContent()
-		];
-	}
+    public function getTitle()// : string
+    {
+        return $this->title;
+    }
 
-	public function getTitle()// : string
-	{
-		return $this->title;
-	}
+    public function getWidth()// : string
+    {
+        return $this->width;
+    }
 
-	public function getWidth()// : string
-	{
-		return $this->width;
-	}
+    public function getClass()// : string
+    {
+        return $this->class;
+    }
 
-	public function getClass()// : string
-	{
-		return $this->class;
-	}
+    public function getContent()// : string
+    {
+        return $this->content;
+    }
 
-	public function getContent()// : string
-	{
-		return $this->content;
-	}
+    public function getRightHead()// : string
+    {
+        return $this->right_head;
+    }
 
-	public function getRightHead()// : string
-	{
-		return $this->right_head;
-	}
-
-	public function getHtml()// : string
-	{
-		return ee('View')->make('pro:dashboard/widget')->render($this->vars);
-	}
-
+    public function getHtml()// : string
+    {
+        return ee('View')->make('pro:dashboard/widget')->render($this->vars);
+    }
 }

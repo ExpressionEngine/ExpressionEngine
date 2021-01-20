@@ -15,20 +15,18 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Required Validation Rule
  */
-class Required extends ValidationRule {
+class Required extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        if (! is_array($value)) {
+            $value = trim($value);
+        }
 
-	public function validate($key, $value)
-	{
-		if ( ! is_array($value))
-		{
-			$value = trim($value);
-		}
+        if ($value === '' or is_null($value)) {
+            return $this->stop();
+        }
 
-		if ($value === '' OR is_null($value))
-		{
-			return $this->stop();
-		}
-
-		return TRUE;
-	}
+        return true;
+    }
 }

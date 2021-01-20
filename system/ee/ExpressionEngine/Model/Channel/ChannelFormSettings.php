@@ -15,25 +15,25 @@ use ExpressionEngine\Service\Model\Model;
 /**
  * Channel Form Settings Model
  */
-class ChannelFormSettings extends Model {
+class ChannelFormSettings extends Model
+{
+    protected static $_primary_key = 'channel_form_settings_id';
+    protected static $_table_name = 'channel_form_settings';
 
-	protected static $_primary_key = 'channel_form_settings_id';
-	protected static $_table_name = 'channel_form_settings';
+    protected static $_hook_id = 'channel_form_settings';
 
-	protected static $_hook_id = 'channel_form_settings';
+    protected static $_relationships = array(
+        'Channel' => array(
+            'type' => 'belongsTo'
+        )
+    );
 
-	protected static $_relationships = array(
-		'Channel' => array(
-			'type' => 'belongsTo'
-		)
-	);
-
-	protected $channel_form_settings_id;
-	protected $site_id;
-	protected $channel_id;
-	protected $default_status;
-	protected $allow_guest_posts;
-	protected $default_author;
+    protected $channel_form_settings_id;
+    protected $site_id;
+    protected $channel_id;
+    protected $default_status;
+    protected $allow_guest_posts;
+    protected $default_author;
 }
 
 // EOF

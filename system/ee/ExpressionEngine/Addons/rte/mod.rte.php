@@ -16,7 +16,6 @@ use ExpressionEngine\Addons\Rte\RteHelper;
  */
 class Rte
 {
-
     public function pages_autocomplete()
     {
         $search = ee()->input->get('search');

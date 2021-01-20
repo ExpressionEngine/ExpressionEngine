@@ -1,24 +1,20 @@
 <?php foreach ($choices as $key => $label):
-	$children = NULL;
+    $children = null;
 
-	// If the value is an array, then we have children. Add them to the
-	// queue with depth markers and set the real value to render the parent.
-	if (is_array($label))
-	{
-		$children = $label['children'];
-		$label = $label['name'];
-	}
+    // If the value is an array, then we have children. Add them to the
+    // queue with depth markers and set the real value to render the parent.
+    if (is_array($label)) {
+        $children = $label['children'];
+        $label = $label['name'];
+    }
 
-	if (is_array($value))
-	{
-		$selected = in_array($key, $value);
-	}
-	else
-	{
-		$selected = ((string) $value == (string) $key);
-	}
+    if (is_array($value)) {
+        $selected = in_array($key, $value);
+    } else {
+        $selected = ((string) $value == (string) $key);
+    }
 
-	$disabled = in_array($key, $disabled_choices);
+    $disabled = in_array($key, $disabled_choices);
 ?>
 <li>
 	<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
@@ -27,11 +23,11 @@
 	<?php if (isset($children)): ?>
 		<ul>
 				<?php $this->embed('ee:_shared/form/nested_checkbox', array(
-					'field_name' => $field_name,
-					'attrs' => $attrs,
-					'choices' => $children,
-					'disabled_choices' => $disabled_choices,
-					'value' => $value,
+				    'field_name' => $field_name,
+				    'attrs' => $attrs,
+				    'choices' => $children,
+				    'disabled_choices' => $disabled_choices,
+				    'value' => $value,
 				)); ?>
 		</ul>
 	<?php endif; ?>

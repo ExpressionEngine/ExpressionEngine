@@ -15,46 +15,46 @@ use ExpressionEngine\Service\Model\Model;
 /**
  * Session Model
  */
-class Session extends Model {
+class Session extends Model
+{
+    protected static $_primary_key = 'session_id';
+    protected static $_table_name = 'sessions';
 
-	protected static $_primary_key = 'session_id';
-	protected static $_table_name = 'sessions';
+    protected static $_typed_columns = array(
+        'can_debug' => 'boolString'
+    );
 
-	protected static $_typed_columns = array(
-		'can_debug' => 'boolString'
-	);
+    protected static $_relationships = array(
+        'Member' => array(
+            'type' => 'BelongsTo'
+        )
+    );
 
-	protected static $_relationships = array(
-		'Member' => array(
-			'type' => 'BelongsTo'
-		)
-	);
+    protected $session_id;
+    protected $member_id;
+    protected $admin_sess;
+    protected $ip_address;
+    protected $user_agent;
+    protected $login_state;
+    protected $fingerprint;
+    protected $sess_start;
+    protected $auth_timeout;
+    protected $last_activity;
+    protected $can_debug;
 
-	protected $session_id;
-	protected $member_id;
-	protected $admin_sess;
-	protected $ip_address;
-	protected $user_agent;
-	protected $login_state;
-	protected $fingerprint;
-	protected $sess_start;
-	protected $auth_timeout;
-	protected $last_activity;
-	protected $can_debug;
-
-	/**
-	 * Manage sudo-like timeout for "trust but verify" actions
-	 */
-	const AUTH_TIMEOUT = '+15 minutes';
-	public function resetAuthTimeout()
-	{
-		$this->setProperty('auth_timeout', ee()->localize->string_to_timestamp(self::AUTH_TIMEOUT));
-		$this->save();
-	}
-	public function isWithinAuthTimeout()
-	{
-		return $this->auth_timeout > ee()->localize->now;
-	}
+    /**
+     * Manage sudo-like timeout for "trust but verify" actions
+     */
+    public const AUTH_TIMEOUT = '+15 minutes';
+    public function resetAuthTimeout()
+    {
+        $this->setProperty('auth_timeout', ee()->localize->string_to_timestamp(self::AUTH_TIMEOUT));
+        $this->save();
+    }
+    public function isWithinAuthTimeout()
+    {
+        return $this->auth_timeout > ee()->localize->now;
+    }
 }
 
 // EOF

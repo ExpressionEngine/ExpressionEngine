@@ -10,48 +10,36 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Spaces Vectorizer
  */
-class Spaces implements Vectorizer {
+class Spaces implements Vectorizer
+{
+    /**
+     * Calculates the ratio of whitespace to non-whitespace
+     *
+     * @param string $source The source text
+     * @access public
+     * @return float The calculated ratio
+     */
+    public function vectorize($source)
+    {
+        ee()->load->helper('multibyte');
 
-	/**
-	 * Calculates the ratio of whitespace to non-whitespace
-	 *
-	 * @param string $source The source text
-	 * @access public
-	 * @return float The calculated ratio
-	 */
-	public function vectorize($source)
-	{
+        $whitespace = preg_match_all('/\s/u', $source, $matches);
 
-		ee()->load->helper('multibyte');
+        $characters = ee_mb_strlen($source);
 
-		$whitespace = preg_match_all('/\s/u', $source, $matches);
+        if ($characters !== 0) {
+            $ratio = $whitespace / $characters;
+        } else {
+            $ratio = 1;
+        }
 
-		$characters  = ee_mb_strlen($source);
-
-		if ($characters !== 0)
-		{
-
-			$ratio = $whitespace / $characters;
-
-		}
-
-		else
-
-		{
-
-			$ratio = 1;
-
-		}
-
-		return $ratio;
-
-	}
-
+        return $ratio;
+    }
 }
 
 // EOF

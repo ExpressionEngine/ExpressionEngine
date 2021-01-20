@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -17,7 +21,7 @@
 // The right side is the tag or entity to be inserted
 
 ee()->load->library('logger');
-ee()->logger->developer('The glossary config file has been deprecated and will be removed.', TRUE, 604800);
+ee()->logger->developer('The glossary config file has been deprecated and will be removed.', true, 604800);
 
 $glossary[1][] = array('anchor',			"&lt;a href=''&gt;&lt;/a&gt;");
 $glossary[1][] = array('image_link',		"&lt;img src='' /&gt;");
@@ -30,7 +34,6 @@ $glossary[1][] = array('heading_3',			'&lt;h3&gt;&lt;/h3&gt;');
 $glossary[1][] = array('heading_4',			'&lt;h4&gt;&lt;/h4&gt;');
 $glossary[1][] = array('heading_5',			'&lt;h5&gt;&lt;/h5&gt;');
 
-
 $glossary[2][] = array('paragraph',			'&lt;p&gt;&lt;/p&gt;');
 $glossary[2][] = array('pre',				'&lt;pre&gt;&lt;/pre&gt;');
 $glossary[2][] = array('div',				'&lt;div&gt;&lt;/div&gt;');
@@ -42,7 +45,6 @@ $glossary[2][] = array('font',	"&lt;style='font-family: Verdana; font-size:11px;
 $glossary[2][] = array('unordered_list',	"&lt;ul&gt;\n&lt;li&gt;&lt;/li&gt;\n&lt;/ul&gt;");
 $glossary[2][] = array('ordered_list',		"&lt;ol&gt;\n&lt;li&gt;&lt;/li&gt;\n&lt;/ol&gt;");
 
-
 $glossary[3][] = array('&lt;  &amp;lt;',			'&lt;');
 $glossary[3][] = array('&gt;  &amp;gt;',			'&gt;');
 $glossary[3][] = array('&amp;  &amp;amp;',			'&amp;');
@@ -52,7 +54,6 @@ $glossary[3][] = array('&lsaquo;  &amp;lsaquo;',	'&lsaquo;');
 $glossary[3][] = array('&rsaquo;  &amp;rsaquo;',	'&rsaquo;');
 $glossary[3][] = array('&copy;  &amp;copy;',		'&copy;');
 $glossary[3][] = array('&trade;  &amp;trade;',		'&trade;');
-
 
 $glossary[4][] = array('&ndash;  &amp;ndash;',		'&ndash;');
 $glossary[4][] = array('&mdash;  &amp;mdash;',		'&mdash;');

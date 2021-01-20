@@ -73,8 +73,8 @@ class Updater
         foreach ($category_fields as $id => $field) {
             ee()->db->update(
                 'category_field_data',
-                array('field_ft_'.$id => $field->field_default_fmt),
-                array('field_ft_'.$id => null)
+                array('field_ft_' . $id => $field->field_default_fmt),
+                array('field_ft_' . $id => null)
             );
         }
     }
@@ -91,11 +91,11 @@ class Updater
             'member_groups',
             array(
                 'is_locked' => array(
-                    'name'			=> 'is_locked',
-                    'type'			=> 'char',
-                    'constraint'	=> 1,
-                    'default'		=> 'n',
-                    'null'			=> false
+                    'name' => 'is_locked',
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
                 )
             )
         );
@@ -113,11 +113,11 @@ class Updater
             'statuses',
             array(
                 'highlight' => array(
-                    'name'			=> 'highlight',
-                    'type'			=> 'varchar',
-                    'constraint'	=> 30,
-                    'default'		=> '000000',
-                    'null'			=> false
+                    'name' => 'highlight',
+                    'type' => 'varchar',
+                    'constraint' => 30,
+                    'default' => '000000',
+                    'null' => false
                 )
             )
         );

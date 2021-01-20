@@ -12,72 +12,72 @@ namespace ExpressionEngine\Controller\Jumps;
 
 use CP_Controller;
 
-class Themes extends Jumps {
+class Themes extends Jumps
+{
+    private $themes = array('light' => 'fa-sun', 'dark' => 'fa-moon');
 
-	private $themes = array('light' => 'fa-sun', 'dark' => 'fa-moon');
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
+    /**
+     * Publish Jump Data
+     */
+    public function index()
+    {
+        // Should never be here without another segment.
+        show_error(lang('unauthorized_access'), 403);
+    }
 
-	/**
-	 * Publish Jump Data
-	 */
-	public function index()
-	{
-		// Should never be here without another segment.
-		show_error(lang('unauthorized_access'), 403);
-	}
+    public function switch()
+    {
+        $searchString = ee()->input->post('searchString');
 
-	public function switch()
-	{
-		$searchString = ee()->input->post('searchString');
+        $response = array();
 
-		$response = array();
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                foreach ($this->themes as $theme => $icon) {
+                    if (preg_match('/' . $keyword . '/', $theme)) {
+                        $response['switchTheme' . $theme] = array(
+                            'icon' => $icon,
+                            'command' => lang($theme),
+                            'command_title' => $theme,
+                            'dynamic' => true,
+                            'addon' => false,
+                            'target' => 'theme/' . $theme
+                        );
+                    }
+                }
+            }
 
-			foreach ($keywords as $keyword) {
-				foreach ($this->themes as $theme => $icon) {
-					if (preg_match('/' . $keyword . '/', $theme)) {
-						$response['switchTheme' . $theme] = array(
-							'icon' => $icon,
-							'command' => lang($theme),
-							'command_title' => $theme,
-							'dynamic' => true,
-							'addon' => false,
-							'target' => 'theme/' . $theme
-						);
-					}
-				}
-			}
+            if ($searchString === 'pink') {
+                $response['switchThemePink'] = array(
+                    'icon' => 'fa-heart',
+                    'command' => 'pink',
+                    'command_title' => 'pink',
+                    'dynamic' => true,
+                    'addon' => false,
+                    'target' => 'theme/pink'
+                );
+            }
+        } else {
+            foreach ($this->themes as $theme => $icon) {
+                $response['switchTheme' . $theme] = array(
+                    'icon' => $icon,
+                    'command' => lang($theme),
+                    'command_title' => $theme,
+                    'dynamic' => true,
+                    'addon' => false,
+                    'target' => 'theme/' . $theme
+                );
+            }
+        }
 
-			if ($searchString === 'pink') {
-				$response['switchThemePink'] = array(
-					'icon' => 'fa-heart',
-					'command' => 'pink',
-					'command_title' => 'pink',
-					'dynamic' => true,
-					'addon' => false,
-					'target' => 'theme/pink'
-				);
-			}
-		} else {
-			foreach ($this->themes as $theme => $icon) {
-				$response['switchTheme' . $theme] = array(
-					'icon' => $icon,
-					'command' => lang($theme),
-					'command_title' => $theme,
-					'dynamic' => true,
-					'addon' => false,
-					'target' => 'theme/' . $theme
-				);
-			}
-		}
-
-		$this->sendResponse($response);
-	}
+        $this->sendResponse($response);
+    }
 }

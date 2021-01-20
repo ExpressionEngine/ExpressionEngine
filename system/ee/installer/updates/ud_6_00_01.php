@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Version_6_0_1;
  */
 class Updater
 {
-
     public $version_suffix = '';
 
     /**

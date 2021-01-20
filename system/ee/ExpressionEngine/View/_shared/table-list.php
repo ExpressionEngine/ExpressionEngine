@@ -1,6 +1,8 @@
 <div class="js-list-group-wrap">
 	<div class="list-group-controls">
-		<?php if (isset($filters)) echo $filters; ?>
+		<?php if (isset($filters)) {
+    echo $filters;
+} ?>
 		<?php if ((!isset($disable_action) || empty($disable_action)) && !empty($data)): ?>
 			<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
 		<?php endif ?>
@@ -18,7 +20,7 @@
 						<?php endif ?>
 					</div>
 					<div class="list-item__secondary">
-						#<?=$row['id']?> <?php if ( ! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
+						#<?=$row['id']?> <?php if (! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
 					</div>
 				</a>
 
@@ -36,7 +38,7 @@
 									data-<?=$key?>="<?=form_prep($value)?>"
 								<?php endforeach; ?>
 							<?php endif; ?>
-							<?php if (isset($row['selection']['disabled']) && $row['selection']['disabled'] !== FALSE):?>
+							<?php if (isset($row['selection']['disabled']) && $row['selection']['disabled'] !== false):?>
 								disabled="disabled"
 							<?php endif; ?>
 							type="checkbox"

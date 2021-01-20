@@ -16,14 +16,13 @@ use ExpressionEngine\Service\View\ViewFactory;
 /**
  * Entry Keyword Filter
  */
-class EntryKeyword extends Keyword {
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->view = '_shared/filters/entrykeyword';
-	}
-
+class EntryKeyword extends Keyword
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->view = '_shared/filters/entrykeyword';
+    }
 }
 
 // EOF

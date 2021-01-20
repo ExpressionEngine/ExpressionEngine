@@ -15,454 +15,426 @@ use ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionExcep
 /**
  * Core Boolean Expression
  */
-class BooleanExpression {
+class BooleanExpression
+{
+    public const NON_ASSOC = 0;
+    public const LEFT_ASSOC = 1;
+    public const RIGHT_ASSOC = 2;
 
-	const NON_ASSOC = 0;
-	const LEFT_ASSOC = 1;
-	const RIGHT_ASSOC = 2;
+    private $tokens;
+    private $unary_operators;
+    private $binary_operators;
 
-	private $tokens;
-	private $unary_operators;
-	private $binary_operators;
+    private $can_eval = true;
 
-	private $can_eval = TRUE;
+    public function __construct()
+    {
+        $this->unary_operators = $this->getUnaryOperators();
+        $this->binary_operators = $this->getBinaryOperators();
+    }
 
-	public function __construct()
-	{
-		$this->unary_operators = $this->getUnaryOperators();
-		$this->binary_operators = $this->getBinaryOperators();
-	}
+    /**
+     * Add a token for evaluation
+     */
+    public function add($token)
+    {
+        if (! $token->canEvaluate()) {
+            $this->can_eval = false;
+        }
 
-	/**
-	 * Add a token for evaluation
-	 */
-	public function add($token)
-	{
-		if ( ! $token->canEvaluate())
-		{
-			$this->can_eval = FALSE;
-		}
+        $this->tokens[] = $token;
+    }
 
-		$this->tokens[] = $token;
-	}
+    /**
+     * Evaluate the tokens
+     */
+    public function evaluate()
+    {
+        $rpn = $this->convertToRPN($this->tokens);
 
-	/**
-	 * Evaluate the tokens
-	 */
-	public function evaluate()
-	{
-		$rpn = $this->convertToRPN($this->tokens);
-		return $this->bool($this->evaluateRPN($rpn));
-	}
+        return $this->bool($this->evaluateRPN($rpn));
+    }
 
-	/**
-	 * Evaluate-able?
-	 */
-	public function canEvaluate()
-	{
-		return $this->can_eval;
-	}
+    /**
+     * Evaluate-able?
+     */
+    public function canEvaluate()
+    {
+        return $this->can_eval;
+    }
 
-	/**
-	 * Can't use it? Turn it back into a string conditional
-	 */
-	public function stringify()
-	{
-		return implode('', $this->tokens);
-	}
+    /**
+     * Can't use it? Turn it back into a string conditional
+     */
+    public function stringify()
+    {
+        return implode('', $this->tokens);
+    }
 
-	/**
-	 * Take the rpn form and make use of it
-	 */
-	protected function evaluateRPN($rpn_queue)
-	{
-		$evaluate_stack = array();
+    /**
+     * Take the rpn form and make use of it
+     */
+    protected function evaluateRPN($rpn_queue)
+    {
+        $evaluate_stack = array();
 
-		while ($token = array_shift($rpn_queue))
-		{
-			if ( ! $this->isOperator($token))
-			{
-				$evaluate_stack[] = $token->value();
-			}
-			elseif ($token->isUnary())
-			{
-				if (count($evaluate_stack) < 1)
-				{
-					throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "'.$token.'".');
-				}
+        while ($token = array_shift($rpn_queue)) {
+            if (! $this->isOperator($token)) {
+                $evaluate_stack[] = $token->value();
+            } elseif ($token->isUnary()) {
+                if (count($evaluate_stack) < 1) {
+                    throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "' . $token . '".');
+                }
 
-				$right = array_pop($evaluate_stack);
+                $right = array_pop($evaluate_stack);
 
-				array_push(
-					$evaluate_stack,
-					$this->evaluateUnary($token, $right)
-				);
-			}
-			else
-			{
-				if (count($evaluate_stack) < 2)
-				{
-					throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "'.$token.'".');
-				}
+                array_push(
+                    $evaluate_stack,
+                    $this->evaluateUnary($token, $right)
+                );
+            } else {
+                if (count($evaluate_stack) < 2) {
+                    throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "' . $token . '".');
+                }
 
-				$right = array_pop($evaluate_stack);
-				$left = array_pop($evaluate_stack);
+                $right = array_pop($evaluate_stack);
+                $left = array_pop($evaluate_stack);
 
-				array_push(
-					$evaluate_stack,
-					$this->evaluateBinary($token, $left, $right)
-				);
-			}
-		}
+                array_push(
+                    $evaluate_stack,
+                    $this->evaluateBinary($token, $left, $right)
+                );
+            }
+        }
 
-		return array_pop($evaluate_stack);
-	}
+        return array_pop($evaluate_stack);
+    }
 
-	/**
-	 * Shunting yard algorithm to convert to RPN
-	 *
-	 * Will drop parentheses (RPN does not require them) and
-	 * also marks all unary operators so we can treat them
-	 * correctly in the evaluation phase.
-	 *
-	 * @param Array $tokens List of tokens in the expression
-	 * @return array of tokens in RPN format.
-	 */
-	protected function convertToRPN($tokens)
-	{
-		$output = array();
-		$operator_stack = array();
+    /**
+     * Shunting yard algorithm to convert to RPN
+     *
+     * Will drop parentheses (RPN does not require them) and
+     * also marks all unary operators so we can treat them
+     * correctly in the evaluation phase.
+     *
+     * @param Array $tokens List of tokens in the expression
+     * @return array of tokens in RPN format.
+     */
+    protected function convertToRPN($tokens)
+    {
+        $output = array();
+        $operator_stack = array();
 
-		$prev_token = NULL;
+        $prev_token = null;
 
-		foreach ($tokens as $i => $token)
-		{
-			if ($this->isOperator($token))
-			{
-				// unary operators need to be marked as such for the next step
-				if ($this->inPrefixPosition($prev_token) &&
-					$this->isValidUnaryOperator($token->value()))
-				{
-					$token->markAsUnary();
-				}
+        foreach ($tokens as $i => $token) {
+            if ($this->isOperator($token)) {
+                // unary operators need to be marked as such for the next step
+                if ($this->inPrefixPosition($prev_token) &&
+                    $this->isValidUnaryOperator($token->value())) {
+                    $token->markAsUnary();
+                }
 
-				while (count($operator_stack) && $this->isOperator(end($operator_stack)))
-				{
-					$top_token = end($operator_stack);
+                while (count($operator_stack) && $this->isOperator(end($operator_stack))) {
+                    $top_token = end($operator_stack);
 
-					$precedence = $this->precedence($token, $top_token);
-					$right_assoc = $this->isAssociative($token, self::RIGHT_ASSOC);
+                    $precedence = $this->precedence($token, $top_token);
+                    $right_assoc = $this->isAssociative($token, self::RIGHT_ASSOC);
 
-					if (
-						(( ! $right_assoc && $precedence == 0) ||
-						($precedence < 0))
-						&&
-						// unary operators can only pop other unary operators
-						( ! $token->isUnary() || $top_token->isUnary())
-					)
-					{
-						$output[] = array_pop($operator_stack);
-						continue;
-					}
+                    if (
+                        ((! $right_assoc && $precedence == 0) ||
+                        ($precedence < 0))
+                        &&
+                        // unary operators can only pop other unary operators
+                        (! $token->isUnary() || $top_token->isUnary())
+                    ) {
+                        $output[] = array_pop($operator_stack);
 
-					break;
-				}
+                        continue;
+                    }
 
-				array_push($operator_stack, $token);
-			}
-			elseif ($token->type == 'LP')
-			{
-				array_push($operator_stack, $token);
-			}
-			elseif ($token->type == 'RP')
-			{
-				while (count($operator_stack) && end($operator_stack)->type != 'LP')
-				{
-					$output[] = array_pop($operator_stack);
-				}
+                    break;
+                }
 
-				array_pop($operator_stack);
-			}
-			else
-			{
-				$output[] = $token;
-			}
+                array_push($operator_stack, $token);
+            } elseif ($token->type == 'LP') {
+                array_push($operator_stack, $token);
+            } elseif ($token->type == 'RP') {
+                while (count($operator_stack) && end($operator_stack)->type != 'LP') {
+                    $output[] = array_pop($operator_stack);
+                }
 
-			$prev_token = $token;
-		}
+                array_pop($operator_stack);
+            } else {
+                $output[] = $token;
+            }
 
-		while ($leftover = array_pop($operator_stack))
-		{
-			$output[] = $leftover;
-		}
+            $prev_token = $token;
+        }
 
-		return $output;
-	}
+        while ($leftover = array_pop($operator_stack)) {
+            $output[] = $leftover;
+        }
 
-	/**
-	 * Unary operators?
-	 *
-	 * Decides based on the symbol if the token *can* be used as a
-	 * unary operator. Does not mean it must be used as such.
-	 */
-	private function isValidUnaryOperator($value)
-	{
-		return array_key_exists($value, $this->unary_operators);
-	}
+        return $output;
+    }
 
-	/**
-	 * Determine if the current operator could be a prefix.
-	 *
-	 * This is the case if there is no previous token, the previous
-	 * token is another operator, or the previous token is a left
-	 * parenthesis.
-	 */
-	private function inPrefixPosition($previous)
-	{
-		return (
-			$previous == NULL OR
-			$previous->type == 'LP' OR
-			$this->isOperator($previous)
-		);
-	}
+    /**
+     * Unary operators?
+     *
+     * Decides based on the symbol if the token *can* be used as a
+     * unary operator. Does not mean it must be used as such.
+     */
+    private function isValidUnaryOperator($value)
+    {
+        return array_key_exists($value, $this->unary_operators);
+    }
 
-	/**
-	 * Precendence check
-	 */
-	private function precedence($first, $second)
-	{
-		$first_operator = $this->getOperator($first);
-		$second_operator = $this->getOperator($second);
-		return ($first_operator[0] - $second_operator[0]);
-	}
+    /**
+     * Determine if the current operator could be a prefix.
+     *
+     * This is the case if there is no previous token, the previous
+     * token is another operator, or the previous token is a left
+     * parenthesis.
+     */
+    private function inPrefixPosition($previous)
+    {
+        return (
+            $previous == null or
+            $previous->type == 'LP' or
+            $this->isOperator($previous)
+        );
+    }
 
-	/**
-	 * Associativeness check
-	 */
-	private function isAssociative($token, $dir)
-	{
-		$operator = $this->getOperator($token);
-		return ($operator[1] == $dir);
-	}
+    /**
+     * Precendence check
+     */
+    private function precedence($first, $second)
+    {
+        $first_operator = $this->getOperator($first);
+        $second_operator = $this->getOperator($second);
 
-	/**
-	 * Operator check
-	 */
-	private function isOperator($token)
-	{
-		return ($token->type == 'OPERATOR');
-	}
+        return ($first_operator[0] - $second_operator[0]);
+    }
 
-	/**
-	 * Get an operator based on a token
-	 *
-	 * Decides based on the token flag if the token is unary.
-	 */
-	private function getOperator($token)
-	{
-		if ($token->isUnary())
-		{
-			return $this->unary_operators[$token->value()];
-		}
+    /**
+     * Associativeness check
+     */
+    private function isAssociative($token, $dir)
+    {
+        $operator = $this->getOperator($token);
 
-		if ( ! isset($this->binary_operators[$token->value()]))
-		{
-			throw new BooleanExpressionException('Invalid Binary Operator: '. $token);
-		}
+        return ($operator[1] == $dir);
+    }
 
-		return $this->binary_operators[$token->value()];
-	}
+    /**
+     * Operator check
+     */
+    private function isOperator($token)
+    {
+        return ($token->type == 'OPERATOR');
+    }
 
-	/**
-	 * Cast to EE boolean
-	 */
-	private function bool($value)
-	{
-		// We do *not* follow the string 0 php casting rule.
-		// {if field} should be true if the user entered
-		// something. Doesn't matter what it is.
-		if ($value === '0')
-		{
-			return TRUE;
-		}
+    /**
+     * Get an operator based on a token
+     *
+     * Decides based on the token flag if the token is unary.
+     */
+    private function getOperator($token)
+    {
+        if ($token->isUnary()) {
+            return $this->unary_operators[$token->value()];
+        }
 
-		return (bool) $value;
-	}
+        if (! isset($this->binary_operators[$token->value()])) {
+            throw new BooleanExpressionException('Invalid Binary Operator: ' . $token);
+        }
 
-	/**
-	 * Compare equality with the '0' is not FALSE consideration.
-	 */
-	private function equals($left, $right)
-	{
-		// only empty strings are false
-		// '0' == FALSE		-> no
-		// '0' == TRUE		-> yes
-		if ($left === '0' && is_bool($right))
-		{
-			return $right;
-		}
+        return $this->binary_operators[$token->value()];
+    }
 
-		if ($right === '0' && is_bool($left))
-		{
-			return $left;
-		}
+    /**
+     * Cast to EE boolean
+     */
+    private function bool($value)
+    {
+        // We do *not* follow the string 0 php casting rule.
+        // {if field} should be true if the user entered
+        // something. Doesn't matter what it is.
+        if ($value === '0') {
+            return true;
+        }
 
-		// 5 == "5anything" is definitely not true, but only fix it
-		// if the string has contents so that we're not breaking 0 == ''
-		if (is_numeric($left) && is_string($right) && $right != '')
-		{
-			$left = (string) $left;
-		}
-		elseif (is_numeric($right) && is_string($left) && $left != '')
-		{
-			$right = (string) $right;
-		}
+        return (bool) $value;
+    }
 
-		return $left == $right;
-	}
+    /**
+     * Compare equality with the '0' is not FALSE consideration.
+     */
+    private function equals($left, $right)
+    {
+        // only empty strings are false
+        // '0' == FALSE		-> no
+        // '0' == TRUE		-> yes
+        if ($left === '0' && is_bool($right)) {
+            return $right;
+        }
 
-	/**
-	 * Evaluate a binary operator
-	 */
-	private function evaluateBinary($op_token, $left, $right)
-	{
-		switch (strtoupper($op_token->value()))
-		{
-			// numbers
-			case '^':
-			case '**':
-				return pow($left, $right);
-			case '*':
-				return $left * $right;
-			case '/':
-				return $left / $right;
-			case '%':
-				return $left % $right;
-			case '+':
-				return $left + $right;
-			case '-':
-				return $left - $right;
+        if ($right === '0' && is_bool($left)) {
+            return $left;
+        }
 
-			// comparisons
-			case '<>':
-			case '!=':
-				return ! $this->equals($left, $right);
-			case '==':
-				return $this->equals($left, $right);
-			case '<':
-				return $left < $right;
-			case '<=':
-				return $left <= $right;
-			case '>':
-				return $left > $right;
-			case '>=':
-				return $left >= $right;
+        // 5 == "5anything" is definitely not true, but only fix it
+        // if the string has contents so that we're not breaking 0 == ''
+        if (is_numeric($left) && is_string($right) && $right != '') {
+            $left = (string) $left;
+        } elseif (is_numeric($right) && is_string($left) && $left != '') {
+            $right = (string) $right;
+        }
 
-			// boolean logic
-			case '&&':
-				return $this->bool($left) && $this->bool($right);
-			case '||':
-				return $this->bool($left) || $this->bool($right);
-			case 'AND':
-				return $this->bool($left) AND $this->bool($right);
-			case 'XOR':
-				return $this->bool($left) XOR $this->bool($right);
-			case 'OR':
-				return $this->bool($left) OR $this->bool($right);
+        return $left == $right;
+    }
 
-			// strings
-			case '.':
-				return $left . $right;
-			case '^=':
-				return strpos($left, (string) $right) === 0;
-			case '*=':
-				return strpos($left, (string) $right) !== FALSE;
-			case '$=':
-				$right = (string) $right;
-				return substr($left, -strlen($right)) == $right;
-			case '~':
-				if (($value = @preg_match($right, $left)) === FALSE)
-				{
-					throw new BooleanExpressionException('Invalid Regular Expression: '.$right);
-				}
+    /**
+     * Evaluate a binary operator
+     */
+    private function evaluateBinary($op_token, $left, $right)
+    {
+        switch (strtoupper($op_token->value())) {
+            // numbers
+            case '^':
+            case '**':
+                return pow($left, $right);
+            case '*':
+                return $left * $right;
+            case '/':
+                return $left / $right;
+            case '%':
+                return $left % $right;
+            case '+':
+                return $left + $right;
+            case '-':
+                return $left - $right;
 
-				return ($value > 0);
-		}
+            // comparisons
+            case '<>':
+            case '!=':
+                return ! $this->equals($left, $right);
+            case '==':
+                return $this->equals($left, $right);
+            case '<':
+                return $left < $right;
+            case '<=':
+                return $left <= $right;
+            case '>':
+                return $left > $right;
+            case '>=':
+                return $left >= $right;
 
-		throw new BooleanExpressionException('Invalid Binary Operator: '.$token);
-	}
+            // boolean logic
+            case '&&':
+                return $this->bool($left) && $this->bool($right);
+            case '||':
+                return $this->bool($left) || $this->bool($right);
+            case 'AND':
+                return $this->bool($left) and $this->bool($right);
+            case 'XOR':
+                return $this->bool($left) xor $this->bool($right);
+            case 'OR':
+                return $this->bool($left) or $this->bool($right);
 
-	/**
-	 * Evaluate a unary operator
-	 */
-	private function evaluateUnary($token, $right)
-	{
-		switch ($token->value())
-		{
-			case '!':
-				return ! $this->bool($right);
-			case '+':
-				return +$right;
-			case '-':
-				return -$right;
-		}
+            // strings
+            case '.':
+                return $left . $right;
+            case '^=':
+                return strpos($left, (string) $right) === 0;
+            case '*=':
+                return strpos($left, (string) $right) !== false;
+            case '$=':
+                $right = (string) $right;
 
-		throw new BooleanExpressionException('Invalid Unary Operator: '.$token);
-	}
+                return substr($left, -strlen($right)) == $right;
+            case '~':
+                if (($value = @preg_match($right, $left)) === false) {
+                    throw new BooleanExpressionException('Invalid Regular Expression: ' . $right);
+                }
 
-	/**
-	 * List of binary operators
-	 */
-	private function getBinaryOperators()
-	{
-		// http://php.net/manual/en/language.operators.precedence.php
+                return ($value > 0);
+        }
 
-		// operator => array(precedence, associativity, [cast])
-		return array(
-			'^'  => array(60, self::RIGHT_ASSOC),
-			'**' => array(60, self::RIGHT_ASSOC),
+        throw new BooleanExpressionException('Invalid Binary Operator: ' . $token);
+    }
 
-			'*' => array(40, self::LEFT_ASSOC),
-			'/' => array(40, self::LEFT_ASSOC),
-			'%' => array(40, self::LEFT_ASSOC),
+    /**
+     * Evaluate a unary operator
+     */
+    private function evaluateUnary($token, $right)
+    {
+        switch ($token->value()) {
+            case '!':
+                return ! $this->bool($right);
+            case '+':
+                return +$right;
+            case '-':
+                return -$right;
+        }
 
-			'+' => array(30, self::LEFT_ASSOC),
-			'-' => array(30, self::LEFT_ASSOC),
-			'.' => array(30, self::LEFT_ASSOC),
+        throw new BooleanExpressionException('Invalid Unary Operator: ' . $token);
+    }
 
-			'<'  => array(20, self::NON_ASSOC),
-			'<=' => array(20, self::NON_ASSOC),
-			'>'  => array(20, self::NON_ASSOC),
-			'>=' => array(20, self::NON_ASSOC),
+    /**
+     * List of binary operators
+     */
+    private function getBinaryOperators()
+    {
+        // http://php.net/manual/en/language.operators.precedence.php
 
-			'^=' => array(20, self::NON_ASSOC),
-			'*=' => array(20, self::NON_ASSOC),
-			'$=' => array(20, self::NON_ASSOC),
-			'~'  => array(20, self::NON_ASSOC),
+        // operator => array(precedence, associativity, [cast])
+        return array(
+            '^' => array(60, self::RIGHT_ASSOC),
+            '**' => array(60, self::RIGHT_ASSOC),
 
-			'<>' => array(10, self::NON_ASSOC),
-			'==' => array(10, self::NON_ASSOC),
-			'!=' => array(10, self::NON_ASSOC),
+            '*' => array(40, self::LEFT_ASSOC),
+            '/' => array(40, self::LEFT_ASSOC),
+            '%' => array(40, self::LEFT_ASSOC),
 
-			'&&'  => array(6, self::NON_ASSOC),
-			'||'  => array(5, self::NON_ASSOC),
-			'AND' => array(4, self::NON_ASSOC),
-			'XOR' => array(3, self::NON_ASSOC),
-			'OR'  => array(2, self::NON_ASSOC),
-		);
-	}
+            '+' => array(30, self::LEFT_ASSOC),
+            '-' => array(30, self::LEFT_ASSOC),
+            '.' => array(30, self::LEFT_ASSOC),
 
-	/**
-	 * List of unary operators
-	 */
-	private function getUnaryOperators()
-	{
-		return array(
-			'-' => array(50, self::RIGHT_ASSOC),
-			'+' => array(50, self::RIGHT_ASSOC),
-			'!' => array(50, self::RIGHT_ASSOC),
-		);
-	}
+            '<' => array(20, self::NON_ASSOC),
+            '<=' => array(20, self::NON_ASSOC),
+            '>' => array(20, self::NON_ASSOC),
+            '>=' => array(20, self::NON_ASSOC),
+
+            '^=' => array(20, self::NON_ASSOC),
+            '*=' => array(20, self::NON_ASSOC),
+            '$=' => array(20, self::NON_ASSOC),
+            '~' => array(20, self::NON_ASSOC),
+
+            '<>' => array(10, self::NON_ASSOC),
+            '==' => array(10, self::NON_ASSOC),
+            '!=' => array(10, self::NON_ASSOC),
+
+            '&&' => array(6, self::NON_ASSOC),
+            '||' => array(5, self::NON_ASSOC),
+            'AND' => array(4, self::NON_ASSOC),
+            'XOR' => array(3, self::NON_ASSOC),
+            'OR' => array(2, self::NON_ASSOC),
+        );
+    }
+
+    /**
+     * List of unary operators
+     */
+    private function getUnaryOperators()
+    {
+        return array(
+            '-' => array(50, self::RIGHT_ASSOC),
+            '+' => array(50, self::RIGHT_ASSOC),
+            '!' => array(50, self::RIGHT_ASSOC),
+        );
+    }
 }
 
 // EOF

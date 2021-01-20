@@ -11,129 +11,126 @@
 /**
  * Member Management Subscriptions
  */
-class Member_subscriptions extends Member {
+class Member_subscriptions extends Member
+{
+    /**
+     * Subscriptions Edit Form
+     */
+    public function edit_subscriptions()
+    {
+        ee()->load->library('members');
 
+        $swap = array(
+            'form_declaration' => ee()->functions->form_declaration(
+                array('action' => $this->_member_path('update_subscriptions'))
+            )
+        );
 
-	/**
-	 * Subscriptions Edit Form
-	 */
-	public function edit_subscriptions()
-	{
-		ee()->load->library('members');
+        // Set some base values
+        $result_data = array();
+        $pageurl = $this->_member_path('edit_subscriptions');
+        $perpage = 50;
+        $page_links = '';
+        $total_count = 0;
 
-		$swap = array(
-			'form_declaration'	=> ee()->functions->form_declaration(
-				array('action' => $this->_member_path('update_subscriptions'))
-			)
-		);
+        $temp = $this->_var_swap(
+            $this->_load_element('subscription_pagination'),
+            array(
+                'lang:unsubscribe' => lang('unsubscribe'),
+                'class' => ($perpage % 2) ? 'tableCellOne' : 'tableCellTwo'
+            )
+        );
 
-		// Set some base values
-		$result_data	= array();
-		$pageurl		= $this->_member_path('edit_subscriptions');
-		$perpage		= 50;
-		$page_links		= '';
-		$total_count	= 0;
+        // Setup base pagiation
+        ee()->load->library('pagination');
+        $pagination = ee()->pagination->create();
+        $pagination->position = 'inline';
+        $pagination->prefix = 'R';
+        $temp = $pagination->prepare($temp);
 
-		$temp = $this->_var_swap(
-			$this->_load_element('subscription_pagination'),
-			array(
-				'lang:unsubscribe' => lang('unsubscribe'),
-				'class' => ($perpage % 2) ? 'tableCellOne' : 'tableCellTwo'
-			)
-		);
+        $subscription_data = ee()->members->get_member_subscriptions(ee()->session->userdata('member_id'));
+        $total_rows = $subscription_data['total_results'];
+        $result_data = $subscription_data['result_array'];
+        $pagination->build($total_rows, $perpage);
 
-		// Setup base pagiation
-		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create();
-		$pagination->position = 'inline';
-		$pagination->prefix = 'R';
-		$temp = $pagination->prepare($temp);
+        // Get only what we need
+        $result_data = array_slice($subscription_data['result_array'], $pagination->offset, $perpage);
+        $total_rows = count($result_data);
 
-		$subscription_data = ee()->members->get_member_subscriptions(ee()->session->userdata('member_id'));
-		$total_rows = $subscription_data['total_results'];
-		$result_data = $subscription_data['result_array'];
-		$pagination->build($total_rows, $perpage);
+        if ($total_rows == 0) {
+            $swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions' => lang('no_subscriptions')));
 
-		// Get only what we need
-		$result_data = array_slice($subscription_data['result_array'], $pagination->offset, $perpage);
-		$total_rows = count($result_data);
+            return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
+        }
 
-		if ($total_rows == 0)
-		{
-			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> lang('no_subscriptions')));
+        // Set update path
+        $swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
 
-			return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
-		}
+        // Build the result table...
+        $out = $this->_var_swap(
+            $this->_load_element('subscription_result_heading'),
+            array(
+                'lang:title' => lang('title'),
+                'lang:type' => lang('type'),
+                'lang:unsubscribe' => lang('unsubscribe')
+            )
+        );
 
-		// Set update path
-		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
+        $i = 0;
+        foreach ($result_data as $val) {
+            $rowtemp = $this->_load_element('subscription_result_rows');
 
-		// Build the result table...
-		$out = $this->_var_swap(
-			$this->_load_element('subscription_result_heading'),
-			array(
-				'lang:title'		=> lang('title'),
-				'lang:type'			=> lang('type'),
-				'lang:unsubscribe'	=> lang('unsubscribe')
-			)
-		);
+            $rowtemp = str_replace('{class}', ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo', $rowtemp);
 
-		$i = 0;
-		foreach ($result_data as $val)
-		{
-			$rowtemp = $this->_load_element('subscription_result_rows');
+            $rowtemp = str_replace('{path}', $val['path'], $rowtemp);
+            $rowtemp = str_replace('{title}', $val['title'], $rowtemp);
+            $rowtemp = str_replace('{id}', $val['id'], $rowtemp);
+            $rowtemp = str_replace('{type}', $val['type'], $rowtemp);
 
-			$rowtemp = str_replace('{class}', ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo', $rowtemp);
+            $out .= $rowtemp;
+        }
 
-			$rowtemp = str_replace('{path}', $val['path'], $rowtemp);
-			$rowtemp = str_replace('{title}', $val['title'], $rowtemp);
-			$rowtemp = str_replace('{id}', $val['id'], $rowtemp);
-			$rowtemp = str_replace('{type}', $val['type'], $rowtemp);
+        $swap['subscription_results'] = $out . $pagination->render($temp);
 
-			$out .= $rowtemp;
-		}
+        return $this->_var_swap(
+            $this->_load_element('subscriptions_form'),
+            $swap
+        );
+    }
 
-		$swap['subscription_results'] = $out.$pagination->render($temp);
+    /**
+     * Update Subscriptions
+     */
+    public function update_subscriptions()
+    {
+        if (! ee()->input->post('toggle')) {
+            ee()->functions->redirect($this->_member_path('edit_subscriptions'));
+            exit;
+        }
 
-		return $this->_var_swap(
-			$this->_load_element('subscriptions_form'), $swap
-		);
-	}
+        ee()->load->library('subscription');
 
-	/**
-	 * Update Subscriptions
-	 */
-	function update_subscriptions()
-	{
-		if ( ! ee()->input->post('toggle'))
-		{
-			ee()->functions->redirect($this->_member_path('edit_subscriptions'));
-			exit;
-		}
+        foreach ($_POST['toggle'] as $key => $val) {
+            switch (substr($val, 0, 1)) {
+                case "b": ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), true);
+                              ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
 
-		ee()->load->library('subscription');
+                    break;
+                case "f": ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '" . substr($val, 1) . "' AND member_id = '" . ee()->session->userdata['member_id'] . "'");
 
-		foreach ($_POST['toggle'] as $key => $val)
-		{
-			switch (substr($val, 0, 1))
-			{
-				case "b"	: ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-							  ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
-					break;
-				case "f"	: ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '".ee()->session->userdata['member_id']."'");
-					break;
-			}
-		}
+                    break;
+            }
+        }
 
-		// Success message
-		return $this->_var_swap(
-			$this->_load_element('success'),
-			array(
-				'lang:heading'		=>	lang('subscriptions'),
-				'lang:message'		=>	lang('subscriptions_removed')
-			 )
-		);
-	}
+        // Success message
+        return $this->_var_swap(
+            $this->_load_element('success'),
+            array(
+                'lang:heading' => lang('subscriptions'),
+                'lang:message' => lang('subscriptions_removed')
+            )
+        );
+    }
 }
 // END CLASS
 

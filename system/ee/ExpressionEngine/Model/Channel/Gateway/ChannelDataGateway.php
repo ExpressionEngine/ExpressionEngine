@@ -15,16 +15,15 @@ use ExpressionEngine\Model\Content\VariableColumnGateway;
 /**
  * Channel Data Gateway
  */
-class ChannelDataGateway extends VariableColumnGateway {
+class ChannelDataGateway extends VariableColumnGateway
+{
+    protected static $_table_name = 'channel_data';
+    protected static $_primary_key = 'entry_id';
 
-	protected static $_table_name = 'channel_data';
-	protected static $_primary_key = 'entry_id';
-
-	// Properties
-	public $entry_id;
-	public $channel_id;
-	public $site_id;
-
+    // Properties
+    public $entry_id;
+    public $channel_id;
+    public $site_id;
 }
 
 // EOF

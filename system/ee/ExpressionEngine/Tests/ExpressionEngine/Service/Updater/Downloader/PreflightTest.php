@@ -7,153 +7,145 @@ use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
-class PreflightTest extends TestCase {
+class PreflightTest extends TestCase
+{
+    public function setUp(): void
+    {
+        $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+        $this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
+        $this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
+        $this->theme_paths = ['/some/theme/path', '/some/theme/path2'];
 
-	public function setUp() : void
-	{
-		$this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
-		$this->config = Mockery::mock('ExpressionEngine\Service\Config\File');
-		$this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
-		$this->theme_paths = ['/some/theme/path', '/some/theme/path2'];
+        $this->logger->shouldReceive('log'); // Logger's gonna log
+        $this->filesystem->shouldReceive('mkDir'); // For update path creation
 
-		$this->logger->shouldReceive('log'); // Logger's gonna log
-		$this->filesystem->shouldReceive('mkDir'); // For update path creation
+        $this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->theme_paths);
+    }
 
-		$this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->theme_paths);
-	}
+    public function tearDown(): void
+    {
+        $this->filesystem = null;
+        $this->config = null;
+        $this->logger = null;
+        $this->preflight = null;
 
-	public function tearDown() : void
-	{
-		$this->filesystem = NULL;
-		$this->config = NULL;
-		$this->logger = NULL;
-		$this->preflight = NULL;
+        Mockery::close();
+    }
 
+    public function testCheckDiskSpace()
+    {
+        $this->filesystem->shouldReceive('mkDir');
 
-		Mockery::close();
-	}
+        $this->filesystem->shouldReceive('getFreeDiskSpace')
+            ->with(PATH_CACHE . 'ee_update/')
+            ->andReturn(1048576000)
+            ->once();
 
-	public function testCheckDiskSpace()
-	{
-		$this->filesystem->shouldReceive('mkDir');
+        $this->preflight->checkDiskSpace();
 
-		$this->filesystem->shouldReceive('getFreeDiskSpace')
-			->with(PATH_CACHE.'ee_update/')
-			->andReturn(1048576000)
-			->once();
+        $this->filesystem->shouldReceive('getFreeDiskSpace')
+            ->with(PATH_CACHE . 'ee_update/')
+            ->andReturn(1234)
+            ->once();
 
-		$this->preflight->checkDiskSpace();
+        try {
+            $this->preflight->checkDiskSpace();
+            $this->fail();
+        } catch (UpdaterException $e) {
+            $this->assertEquals(11, $e->getCode());
+            $this->assertStringContainsString('1234', $e->getMessage());
+        }
+    }
 
-		$this->filesystem->shouldReceive('getFreeDiskSpace')
-			->with(PATH_CACHE.'ee_update/')
-			->andReturn(1234)
-			->once();
+    public function testCheckPermissions()
+    {
+        $this->config->shouldReceive('get')
+            ->with('theme_folder_path')
+            ->andReturn(null);
 
-		try
-		{
-			$this->preflight->checkDiskSpace();
-			$this->fail();
-		}
-		catch (UpdaterException $e)
-		{
-			$this->assertEquals(11, $e->getCode());
-			$this->assertStringContainsString('1234', $e->getMessage());
-		}
-	}
+        $this->filesystem->shouldReceive('getDirectoryContents')
+            ->with(SYSPATH . 'ee/')
+            ->andReturn([
+                SYSPATH . 'ee/ExpressionEngine/',
+                SYSPATH . 'ee/legacy/'
+            ]);
 
-	public function testCheckPermissions()
-	{
-		$this->config->shouldReceive('get')
-			->with('theme_folder_path')
-			->andReturn(NULL);
+        $theme_paths = [];
+        foreach ($this->theme_paths as $theme_path) {
+            $theme_paths[] = $theme_path;
+            $theme_path .= '/ee/';
 
-		$this->filesystem->shouldReceive('getDirectoryContents')
-			->with(SYSPATH.'ee/')
-			->andReturn([
-				SYSPATH.'ee/ExpressionEngine/',
-				SYSPATH.'ee/legacy/'
-			]);
+            $this->filesystem->shouldReceive('isWritable')
+                ->with($theme_path)
+                ->andReturn(true);
 
-		$theme_paths = [];
-		foreach ($this->theme_paths as $theme_path)
-		{
-			$theme_paths[] = $theme_path;
-			$theme_path .= '/ee/';
+            $this->filesystem->shouldReceive('getDirectoryContents')
+                ->with($theme_path)
+                ->andReturn([
+                    $theme_path . '/asset/',
+                    $theme_path . '/cp/'
+                ]);
 
-			$this->filesystem->shouldReceive('isWritable')
-				->with($theme_path)
-				->andReturn(TRUE);
+            $this->filesystem->shouldReceive('isWritable')
+                ->with($theme_path . '/asset/')
+                ->andReturn(true);
 
-			$this->filesystem->shouldReceive('getDirectoryContents')
-				->with($theme_path)
-				->andReturn([
-					$theme_path.'/asset/',
-					$theme_path.'/cp/'
-				]);
+            $this->filesystem->shouldReceive('isWritable')
+                ->with($theme_path . '/cp/')
+                ->andReturn(true);
+        }
 
-			$this->filesystem->shouldReceive('isWritable')
-				->with($theme_path.'/asset/')
-				->andReturn(TRUE);
+        $this->filesystem->shouldReceive('getDirectoryContents')
+            ->with(SYSPATH . 'ee/')
+            ->andReturn($theme_paths);
 
-			$this->filesystem->shouldReceive('isWritable')
-				->with($theme_path.'/cp/')
-				->andReturn(TRUE);
-		}
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(SYSPATH . 'ee/ExpressionEngine/')
+            ->andReturn(true);
 
-		$this->filesystem->shouldReceive('getDirectoryContents')
-			->with(SYSPATH.'ee/')
-			->andReturn($theme_paths);
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(SYSPATH . 'ee/legacy/')
+            ->andReturn(true);
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/ExpressionEngine/')
-			->andReturn(TRUE);
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(PATH_CACHE . '')
+            ->andReturn(true);
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee/legacy/')
-			->andReturn(TRUE);
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(PATH_CACHE . 'ee_update/')
+            ->andReturn(true);
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(PATH_CACHE.'')
-			->andReturn(TRUE);
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(SYSPATH . 'ee')
+            ->andReturn(true);
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(PATH_CACHE.'ee_update/')
-			->andReturn(TRUE);
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(SYSPATH . 'user/config/config.php')
+            ->andReturn(true)
+            ->once();
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'ee')
-			->andReturn(TRUE);
+        $this->preflight->checkPermissions();
 
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'user/config/config.php')
-			->andReturn(TRUE)
-			->once();
+        $this->filesystem->shouldReceive('isWritable')
+            ->with(SYSPATH . 'user/config/config.php')
+            ->andReturn(false)
+            ->once();
 
-		$this->preflight->checkPermissions();
-
-		$this->filesystem->shouldReceive('isWritable')
-			->with(SYSPATH.'user/config/config.php')
-			->andReturn(FALSE)
-			->once();
-
-		try
-		{
-			$this->preflight->checkPermissions();
-			$this->fail();
-		}
-		catch (UpdaterException $e)
-		{
-			$this->assertEquals(1, $e->getCode());
-		}
-	}
+        try {
+            $this->preflight->checkPermissions();
+            $this->fail();
+        } catch (UpdaterException $e) {
+            $this->assertEquals(1, $e->getCode());
+        }
+    }
 }
 
 class MockSite
 {
-	public $site_system_preferences;
+    public $site_system_preferences;
 }
 
 class MockSystemPrefs
 {
-	public $theme_folder_path;
+    public $theme_folder_path;
 }

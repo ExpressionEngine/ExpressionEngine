@@ -15,41 +15,40 @@ use ExpressionEngine\Library\Data\Entity;
 /**
  * Model Service Custom Typed Column
  */
-abstract class CustomType extends Entity implements Type {
+abstract class CustomType extends Entity implements Type
+{
+    public static function create()
+    {
+        return new static();
+    }
 
-	public static function create()
-	{
-		return new static;
-	}
+    abstract public function unserialize($db_data);
 
-	abstract public function unserialize($db_data);
+    abstract public function serialize($data);
 
-	abstract public function serialize($data);
+    public function load($db_data)
+    {
+        $data = $this->unserialize($db_data);
 
-	public function load($db_data)
-	{
-		$data = $this->unserialize($db_data);
+        $this->fill($data);
 
-		$this->fill($data);
+        return $db_data;
+    }
 
-		return $db_data;
-	}
+    public function store($data)
+    {
+        return $this->serialize($this->getValues());
+    }
 
-	public function store($data)
-	{
-		return $this->serialize($this->getValues());
-	}
+    public function set(array $data = array())
+    {
+        return $data;
+    }
 
-	public function set(array $data = array())
-	{
-		return $data;
-	}
-
-	public function get()
-	{
-		return $this;
-	}
-
+    public function get()
+    {
+        return $this;
+    }
 }
 
 // EOF

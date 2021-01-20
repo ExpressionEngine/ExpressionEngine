@@ -1,7 +1,7 @@
 <?php
-	$class = strtolower($error_category);
-	$class = ($class == 'warning') ? 'warn' : $class;
-	$class = ($class == 'deprecated') ? 'deprecate' : $class;
+    $class = strtolower($error_category);
+    $class = ($class == 'warning') ? 'warn' : $class;
+    $class = ($class == 'deprecated') ? 'deprecate' : $class;
 ?>
 
 <div class="err-wrap <?php echo $class ?>">

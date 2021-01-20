@@ -10,7 +10,9 @@
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
     			<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
-    			<?php if (isset($filters)) echo $filters; ?>
+    			<?php if (isset($filters)) {
+    echo $filters;
+} ?>
         </div>
       </div>
 		</div>
@@ -18,40 +20,42 @@
 
 		<?php $this->embed('_shared/table', $table); ?>
 
-		<?php if ( ! empty($pagination)) echo $pagination; ?>
+		<?php if (! empty($pagination)) {
+    echo $pagination;
+} ?>
 
-		<?php if ( ! empty($table['data']) && ($can_edit || $can_delete)): ?>
+		<?php if (! empty($table['data']) && ($can_edit || $can_delete)): ?>
 		<?php
-			$options = [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				]
-			];
-			if ($can_edit) {
-				$options[] = [
-					'value' => "approve",
-					'text' => lang('approve')
-				];
-				if ($resend_available) {
-					$options[] = [
-						'value' => "resend",
-						'text' => lang('resend')
-					];
-				}
-			}
-			if ($can_delete) {
-				$options[] = [
-					'value' => "decline",
-					'text' => lang('decline'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-				];
-			}
-			$this->embed('ee:_shared/form/bulk-action-bar', [
-				'options' => $options,
-				'modal' => true
-			]);
-		?>
+            $options = [
+                [
+                    'value' => "",
+                    'text' => '-- ' . lang('with_selected') . ' --'
+                ]
+            ];
+            if ($can_edit) {
+                $options[] = [
+                    'value' => "approve",
+                    'text' => lang('approve')
+                ];
+                if ($resend_available) {
+                    $options[] = [
+                        'value' => "resend",
+                        'text' => lang('resend')
+                    ];
+                }
+            }
+            if ($can_delete) {
+                $options[] = [
+                    'value' => "decline",
+                    'text' => lang('decline'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+                ];
+            }
+            $this->embed('ee:_shared/form/bulk-action-bar', [
+                'options' => $options,
+                'modal' => true
+            ]);
+        ?>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>
@@ -69,18 +73,20 @@
 							<h2><?=lang('confirm_decline')?></h2>
 						</div>
 						<?=ee('CP/Alert')
-							->makeInline()
-							->asIssue()
-							->addToBody(lang('confirm_decline_desc'))
-							->render()?>
+						    ->makeInline()
+						    ->asIssue()
+						    ->addToBody(lang('confirm_decline_desc'))
+						    ->render()?>
 						<div class="txt-wrap">
 							<ul class="checklist">
 								<?php if (isset($checklist)):
-									$end = end($checklist); ?>
+                                    $end = end($checklist); ?>
 									<?php foreach ($checklist as $item): ?>
-									<li<?php if ($item == $end) echo ' class="last"'; ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
+									<li<?php if ($item == $end) {
+                                        echo ' class="last"';
+                                    } ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
 									<?php endforeach;
-								endif ?>
+                                endif ?>
 							</ul>
 							<div class="ajax"></div>
 						</div>

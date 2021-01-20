@@ -16,68 +16,64 @@ use ExpressionEngine\Library\Filesystem\FilesystemException;
 /**
  * A directory behaves just like the filesystem rooted at a certain path
  */
-class Directory extends Filesystem {
+class Directory extends Filesystem
+{
+    protected $url;
+    protected $root;
 
-	protected $url;
-	protected $root;
+    public function __construct($path)
+    {
+        $this->root = realpath($path);
+    }
 
-	public function __construct($path)
-	{
-		$this->root = realpath($path);
-	}
+    /**
+     * @override
+     */
+    protected function normalize($path)
+    {
+        $path = $this->root . '/' . $path;
 
-	/**
-	 * @override
-	 */
-	protected function normalize($path)
-	{
-		$path = $this->root.'/'.$path;
+        if ($path == '..' || strpos($path, '../') !== false) {
+            throw new FilesystemException('Attempting to access file outside of directory.');
+        }
 
-		if ($path == '..' || strpos($path, '../') !== FALSE)
-		{
-			throw new FilesystemException('Attempting to access file outside of directory.');
-		}
+        return $path;
+    }
 
-		return $path;
-	}
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
 
-	public function setUrl($url)
-	{
-		$this->url = $url;
-	}
+    public function getUrl($filename = null)
+    {
+        if (! isset($this->url)) {
+            throw new \Exception('No directory URL given.');
+        }
 
-	public function getUrl($filename = NULL)
-	{
-		if ( ! isset($this->url))
-		{
-			throw new \Exception('No directory URL given.');
-		}
+        if (! isset($filename)) {
+            return $this->url;
+        }
 
-		if ( ! isset($filename))
-		{
-			return $this->url;
-		}
+        if (! $this->exists($filename)) {
+            throw new \Exception('File does not exist.');
+        }
 
-		if ( ! $this->exists($filename))
-		{
-			throw new \Exception('File does not exist.');
-		}
+        return rtrim($this->url, '/') . '/' . $filename;
+    }
 
-		return rtrim($this->url, '/').'/'.$filename;
-	}
+    public function getPath($path)
+    {
+        return $this->normalize($path);
+    }
 
-	public function getPath($path)
-	{
-		return $this->normalize($path);
-	}
+    public function all()
+    {
+        $it = new Iterator($this->root);
+        $it->setUrl($this->url);
 
-	public function all()
-	{
-		$it = new Iterator($this->root);
-		$it->setUrl($this->url);
-
-		return new FilterIterator($it);
-	}
+        return new FilterIterator($it);
+    }
 }
 
 // EOF

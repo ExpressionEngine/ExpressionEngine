@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli;
 
 use ExpressionEngine\Cli\Stdio\Handle;
@@ -75,10 +76,10 @@ class Stdio
         Handle $stderr,
         Formatter $formatter
     ) {
-        $this->stdin  = $stdin;
+        $this->stdin = $stdin;
         $this->stdout = $stdout;
         $this->stderr = $stderr;
-        $this->formatter  = $formatter;
+        $this->formatter = $formatter;
     }
 
     /**

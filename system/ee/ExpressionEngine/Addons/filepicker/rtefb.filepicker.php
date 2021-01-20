@@ -15,20 +15,19 @@ use ExpressionEngine\Library\Rte\AbstractRteFilebrowser;
 
 class Filepicker_rtefb extends AbstractRteFilebrowser
 {
-
     public function addJs($uploadDir)
     {
         // load the file browser
         // pass in the uploadDir to limit the directory to the one choosen
-        $modal_vars = array('name'=> 'modal-file', 'contents' => '');
-		$modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
-		ee('CP/Modal')->addModal('modal-file', $modal);
+        $modal_vars = array('name' => 'modal-file', 'contents' => '');
+        $modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
+        ee('CP/Modal')->addModal('modal-file', $modal);
 
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/files/picker'
-			),
-		));
+        ee()->cp->add_js_script(array(
+            'file' => array(
+                'cp/files/picker'
+            ),
+        ));
         ee()->javascript->set_global([
             'Rte.fpUrl' => ee('CP/FilePicker')->make($uploadDir)->getUrl()->compile(),
         ]);
@@ -49,6 +48,7 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
         foreach ($uploadDestinations as $destination) {
             $uploadDirs[$destination->getId()] = (ee('Config')->getFile()->getBoolean('multiple_sites_enabled') ? $destination->Site->site_label . ': ' : '') . $destination->name;
         }
+
         return $uploadDirs;
     }
 }

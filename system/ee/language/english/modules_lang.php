@@ -2,53 +2,53 @@
 
 $lang = array(
 
-'all_modules_up_to_date' => 'All modules are up to date.',
+    'all_modules_up_to_date' => 'All modules are up to date.',
 
-'data_will_be_lost' => 'All data associated with this module will be permanently deleted!',
+    'data_will_be_lost' => 'All data associated with this module will be permanently deleted!',
 
-'deinstall' => 'Remove',
+    'deinstall' => 'Remove',
 
-'delete_module' => 'Uninstall Module',
+    'delete_module' => 'Uninstall Module',
 
-'delete_module_confirm' => 'Are you sure you want to remove the following module:',
+    'delete_module_confirm' => 'Are you sure you want to remove the following module:',
 
-'install' => 'Install',
+    'install' => 'Install',
 
-'installed' => 'Installed',
+    'installed' => 'Installed',
 
-'module_access' => 'Edit Module',
+    'module_access' => 'Edit Module',
 
-'module_action' => 'Action',
+    'module_action' => 'Action',
 
-'module_backend' => 'User CP',
+    'module_backend' => 'User CP',
 
-'module_can_not_be_found' => 'Unable to locate the files needed to install this module',
+    'module_can_not_be_found' => 'Unable to locate the files needed to install this module',
 
-'module_description' => 'Description',
+    'module_description' => 'Description',
 
-'module_has_been_installed' => 'Module installed:',
+    'module_has_been_installed' => 'Module installed:',
 
-'module_has_been_removed' => 'Module removed:',
+    'module_has_been_removed' => 'Module removed:',
 
-'module_name' => 'Module Name',
+    'module_name' => 'Module Name',
 
-'module_no_access' => 'You are not allowed to access any modules',
+    'module_no_access' => 'You are not allowed to access any modules',
 
-'module_status' => 'Status',
+    'module_status' => 'Status',
 
-'module_version' => 'Version',
+    'module_version' => 'Version',
 
-'not_installed' => 'Not Installed',
+    'not_installed' => 'Not Installed',
 
-'requested_module_not_installed' => 'The requested module is not installed:',
+    'requested_module_not_installed' => 'The requested module is not installed:',
 
-'requested_page_not_found' => 'The requested module page could not be found.',
+    'requested_page_not_found' => 'The requested module page could not be found.',
 
-'update_modules' => 'Run Module Updates',
+    'update_modules' => 'Run Module Updates',
 
-'updated' => 'Updated',
+    'updated' => 'Updated',
 
-'updated_to_version' => 'updated to version',
+    'updated_to_version' => 'updated to version',
 
 );
 

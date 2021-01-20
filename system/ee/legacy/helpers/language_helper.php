@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -23,12 +27,11 @@
  * @param	string	the id of the form element
  * @return	string
  */
-if ( ! function_exists('lang'))
-{
-	function lang($line, $id = '')
-	{
-		return ee()->lang->line($line, $id);
-	}
+if (! function_exists('lang')) {
+    function lang($line, $id = '')
+    {
+        return ee()->lang->line($line, $id);
+    }
 }
 
 // EOF

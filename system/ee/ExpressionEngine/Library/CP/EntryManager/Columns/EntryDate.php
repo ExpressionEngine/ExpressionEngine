@@ -17,13 +17,13 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class EntryDate extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'column_entry_date';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'column_entry_date';
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return ee()->localize->human_time($entry->entry_date);
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return ee()->localize->human_time($entry->entry_date);
+    }
 }

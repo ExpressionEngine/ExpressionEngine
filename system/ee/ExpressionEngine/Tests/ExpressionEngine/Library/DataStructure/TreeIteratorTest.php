@@ -12,12 +12,12 @@ namespace ExpressionEngine\Tests\Library\DataStructure\Tree;
 
 use PHPUnit\Framework\TestCase;
 
-class TreeIteratorTest extends TestCase {
-
-	public function testTreeIterator()
-	{
-		$this->markTestIncomplete('not yet implemented');
-	}
+class TreeIteratorTest extends TestCase
+{
+    public function testTreeIterator()
+    {
+        $this->markTestIncomplete('not yet implemented');
+    }
 }
 
 // EOF

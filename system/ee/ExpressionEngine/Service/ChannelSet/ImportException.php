@@ -13,4 +13,6 @@ namespace ExpressionEngine\Service\ChannelSet;
 /**
  * Channel Set Service Import Exception
  */
-class ImportException extends \Exception {}
+class ImportException extends \Exception
+{
+}

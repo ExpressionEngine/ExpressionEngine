@@ -17,27 +17,27 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class Comments extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'comments';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'comments';
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments'))
-		{
-			return [
-				'encode' => false,
-				'content' =>'(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)'
-			];
-		}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments')) {
+            return [
+                'encode' => false,
+                'content' => '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)'
+            ];
+        }
 
-		return '(' . (int) $entry->comment_total . ')';
-	}
+        return '(' . (int) $entry->comment_total . ')';
+    }
 
-	public function getTableColumnConfig() {
-		return [
-			'encode'	=> false
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
+    }
 }

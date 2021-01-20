@@ -13,30 +13,30 @@ namespace ExpressionEngine\Library\Parser\Conditional\Token;
 /**
  * String Literal Token
  */
-class StringLiteral extends Token {
+class StringLiteral extends Token
+{
+    public function __construct($lexeme)
+    {
+        parent::__construct('STRING', $lexeme);
 
-	public function __construct($lexeme)
-	{
-		parent::__construct('STRING', $lexeme);
+        // if there's a comment in the literal string, it needs to go
+        $lexeme = preg_replace('/^\{!--.*?--\}$/', '', $lexeme);
+        $this->value = preg_replace('/\s+/', ' ', $lexeme);
+    }
 
-		// if there's a comment in the literal string, it needs to go
-		$lexeme = preg_replace('/^\{!--.*?--\}$/', '', $lexeme);
-		$this->value = preg_replace('/\s+/', ' ', $lexeme);
-	}
+    public function canEvaluate()
+    {
+        // Remove regex quantifiers like {2} or {2,4} so they're not considered
+        // unparsed variables
+        $value = preg_replace('/\{\d+,?\d*\}/', '', $this->value);
 
-	public function canEvaluate()
-	{
-		// Remove regex quantifiers like {2} or {2,4} so they're not considered
-		// unparsed variables
-		$value = preg_replace('/\{\d+,?\d*\}/', '', $this->value);
+        return (stristr($value, LD) === false);
+    }
 
-		return (stristr($value, LD) === FALSE);
-	}
-
-	public function __toString()
-	{
-		return var_export($this->value, TRUE);
-	}
+    public function __toString()
+    {
+        return var_export($this->value, true);
+    }
 }
 
 // EOF

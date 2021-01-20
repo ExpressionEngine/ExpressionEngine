@@ -17,13 +17,12 @@ namespace ExpressionEngine\Service\Event;
  * emitter, where an event fired is automatically forwarded to on<EventName>
  * on your object.
  */
-interface Subscriber {
-
-	/**
-	 * Get a list of subscribed event names
-	 *
-	 * @return array of event names (e.g. ['beforeSave', 'afterSave'])
-	 */
-	public function getSubscribedEvents();
-
+interface Subscriber
+{
+    /**
+     * Get a list of subscribed event names
+     *
+     * @return array of event names (e.g. ['beforeSave', 'afterSave'])
+     */
+    public function getSubscribedEvents();
 }

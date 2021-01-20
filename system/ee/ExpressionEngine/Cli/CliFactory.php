@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli;
 
 use ExpressionEngine\Cli\Context\Argv;
@@ -37,19 +38,19 @@ class CliFactory
      */
     public function newContext(array $globals)
     {
-        $env    = isset($globals['_ENV'])
+        $env = isset($globals['_ENV'])
                 ? new Env($globals['_ENV'])
-                : new Env;
+                : new Env();
 
         $server = isset($globals['_SERVER'])
                 ? new Server($globals['_SERVER'])
-                : new Server;
+                : new Server();
 
-        $argv   = isset($globals['argv'])
+        $argv = isset($globals['argv'])
                 ? new Argv($globals['argv'])
-                : new Argv;
+                : new Argv();
 
-        $getopt_factory = new GetoptFactory(new GetoptParser(new OptionFactory));
+        $getopt_factory = new GetoptFactory(new GetoptParser(new OptionFactory()));
 
         return new Context(
             $env,
@@ -73,7 +74,7 @@ class CliFactory
      *
      */
     public function newStdio(
-        $stdin  = 'php://stdin',
+        $stdin = 'php://stdin',
         $stdout = 'php://stdout',
         $stderr = 'php://stderr'
     ) {
@@ -81,7 +82,7 @@ class CliFactory
             new Handle($stdin, 'r'),
             new Handle($stdout, 'w+'),
             new Handle($stderr, 'w+'),
-            new Formatter
+            new Formatter()
         );
     }
 }

@@ -12,29 +12,26 @@ namespace ExpressionEngine\Tests\Controllers\Publish;
 
 use PHPUnit\Framework\TestCase;
 
-class CommentsTest extends TestCase {
+class CommentsTest extends TestCase
+{
+    public static function setUpBeforeClass(): void
+    {
+        require_once(APPPATH . 'core/Controller.php');
+    }
 
-	public static function setUpBeforeClass() : void
-	{
-		require_once(APPPATH.'core/Controller.php');
-	}
+    public function testRoutableMethods()
+    {
+        $controller_methods = array();
 
-	public function testRoutableMethods()
-	{
-		$controller_methods = array();
+        foreach (get_class_methods('ExpressionEngine\Controller\Publish\Comments') as $method) {
+            $method = strtolower($method);
+            if (strncmp($method, '_', 1) != 0) {
+                $controller_methods[] = $method;
+            }
+        }
 
-		foreach (get_class_methods('ExpressionEngine\Controller\Publish\Comments') as $method)
-		{
-			$method = strtolower($method);
-			if (strncmp($method, '_', 1) != 0)
-			{
-				$controller_methods[] = $method;
-			}
-		}
+        sort($controller_methods);
 
-		sort($controller_methods);
-
-		$this->assertEquals(array('edit', 'entry', 'index'), $controller_methods);
-	}
-
+        $this->assertEquals(array('edit', 'entry', 'index'), $controller_methods);
+    }
 }

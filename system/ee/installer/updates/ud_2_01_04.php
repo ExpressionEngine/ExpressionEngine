@@ -13,23 +13,22 @@ namespace ExpressionEngine\Updater\Version_2_1_4;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    public function do_update()
+    {
+        ee()->smartforge->drop_key('channel_data', 'weblog_id');
 
-	function do_update()
-	{
+        ee()->smartforge->add_key('channel_data', 'channel_id');
 
-		ee()->smartforge->drop_key('channel_data', 'weblog_id');
+        ee()->smartforge->drop_key('channel_titles', 'weblog_id');
 
-		ee()->smartforge->add_key('channel_data', 'channel_id');
+        ee()->smartforge->add_key('channel_titles', 'channel_id');
 
-		ee()->smartforge->drop_key('channel_titles', 'weblog_id');
-
-		ee()->smartforge->add_key('channel_titles', 'channel_id');
-
-		return TRUE;
-	}
+        return true;
+    }
 }
 /* END CLASS */
 

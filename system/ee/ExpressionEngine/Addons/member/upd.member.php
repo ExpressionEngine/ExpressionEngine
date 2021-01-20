@@ -16,7 +16,6 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Member_upd extends Installer
 {
-
     public $actions = [
         [
             'method' => 'registration_form'
@@ -73,6 +72,7 @@ class Member_upd extends Installer
             ee()->db->where('method', 'member_search');
             ee()->db->update('actions', ['method' => 'do_member_search']);
         }
+
         return true;
     }
 }

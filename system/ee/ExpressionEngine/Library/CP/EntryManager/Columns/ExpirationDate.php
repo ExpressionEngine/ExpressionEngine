@@ -17,20 +17,20 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class ExpirationDate extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'expiration_date';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'expiration_date';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [
-			'encode' => FALSE
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return $entry->expiration_date ? ee()->localize->human_time($entry->expiration_date) : '';
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $entry->expiration_date ? ee()->localize->human_time($entry->expiration_date) : '';
+    }
 }

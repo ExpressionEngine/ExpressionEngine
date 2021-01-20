@@ -26,86 +26,89 @@
 //
 function ee($mock = '')
 {
-	return new eeSingletonMock($mock);
+    return new eeSingletonMock($mock);
 }
 
-class eeSingletonMock {
-	public $load;
-	public $config;
-	public $session;
+class eeSingletonMock
+{
+    public $load;
+    public $config;
+    public $session;
 
-	protected $mock;
-	protected static $mocks = [];
+    protected $mock;
+    protected static $mocks = [];
 
-	public function __construct($mock = '')
-	{
-		$this->load = new eeSingletonLoadMock;
-		$this->config = new eeSingletonConfigMock;
-		$this->session = new eeSingletoneSessionMock;
-		$this->mock = $mock;
-	}
+    public function __construct($mock = '')
+    {
+        $this->load = new eeSingletonLoadMock();
+        $this->config = new eeSingletonConfigMock();
+        $this->session = new eeSingletoneSessionMock();
+        $this->mock = $mock;
+    }
 
-	public function setMock($name, $return)
-	{
-		self::$mocks[$name] = $return;
-	}
+    public function setMock($name, $return)
+    {
+        self::$mocks[$name] = $return;
+    }
 
-	public function resetMocks()
-	{
-		self::$mocks = [];
-		$this->mock = '';
-	}
+    public function resetMocks()
+    {
+        self::$mocks = [];
+        $this->mock = '';
+    }
 
-	public function __call($name, $args)
-	{
-		if (array_key_exists($this->mock, self::$mocks) && method_exists(self::$mocks[$this->mock], $name))
-		{
-			return call_user_func_array([self::$mocks[$this->mock], $name], $args);
-		}
-	}
+    public function __call($name, $args)
+    {
+        if (array_key_exists($this->mock, self::$mocks) && method_exists(self::$mocks[$this->mock], $name)) {
+            return call_user_func_array([self::$mocks[$this->mock], $name], $args);
+        }
+    }
 }
 
-class eeSingletonLoadMock {
-	public function helper()
-	{
-		return;
-	}
+class eeSingletonLoadMock
+{
+    public function helper()
+    {
+        return;
+    }
 }
 
-class eeSingletonConfigMock {
-	protected static $config = [];
+class eeSingletonConfigMock
+{
+    protected static $config = [];
 
-	public function item($item, $index = '', $raw_value = FALSE)
-	{
-		return (isset(self::$config[$item])) ? self::$config[$item] : FALSE;
-	}
+    public function item($item, $index = '', $raw_value = false)
+    {
+        return (isset(self::$config[$item])) ? self::$config[$item] : false;
+    }
 
-	public function setItem($item, $value)
-	{
-		self::$config[$item] = $value;
-	}
+    public function setItem($item, $value)
+    {
+        self::$config[$item] = $value;
+    }
 
-	public function resetConfig()
-	{
-		self::$config = [];
-	}
+    public function resetConfig()
+    {
+        self::$config = [];
+    }
 }
 
-class eeSingletoneSessionMock {
-	public static $userdata = [];
+class eeSingletoneSessionMock
+{
+    public static $userdata = [];
 
-	public function userdata($item, $default = FALSE)
-	{
-		return ( ! isset(self::$userdata[$item])) ? $default : self::$userdata[$item];
-	}
+    public function userdata($item, $default = false)
+    {
+        return (! isset(self::$userdata[$item])) ? $default : self::$userdata[$item];
+    }
 
-	public function setUserdata($item, $value)
-	{
-		self::$userdata[$item] = $value;
-	}
+    public function setUserdata($item, $value)
+    {
+        self::$userdata[$item] = $value;
+    }
 
-	public function resetUserdata()
-	{
-		self::$userdata = [];
-	}
+    public function resetUserdata()
+    {
+        self::$userdata = [];
+    }
 }
