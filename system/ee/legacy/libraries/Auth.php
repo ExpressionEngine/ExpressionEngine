@@ -59,7 +59,7 @@ class Auth
         32 => 'md5'
     );
 
-    public const BCRYPT_HASH_LENGTH = 60;
+    const BCRYPT_HASH_LENGTH = 60;
 
     /**
      * Constructor

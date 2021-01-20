@@ -16,7 +16,7 @@ use ExpressionEngine\Service\Model\Collection;
  */
 class Reindex extends Utilities
 {
-    public const CACHE_KEY = '/search/reindex';
+    const CACHE_KEY = '/search/reindex';
 
     protected $field_ids = [];
     protected $entry_ids = [];

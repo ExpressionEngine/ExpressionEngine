@@ -22,7 +22,7 @@ class Markdown implements MarkdownInterface
 {
     ### Version ###
 
-    public const  MARKDOWNLIB_VERSION = "1.6.0";
+    const  MARKDOWNLIB_VERSION = "1.6.0";
 
     ### Simple Function Interface ###
 
@@ -291,7 +291,7 @@ class Markdown implements MarkdownInterface
 			  |
 				\'[^\']*\'	# text inside single quotes (tolerate ">")
 			  )*
-			)?	
+			)?
 			';
         $content =
             str_repeat('
@@ -309,7 +309,7 @@ class Markdown implements MarkdownInterface
                 '
 					  </\2\s*>	# closing nested tag
 					)
-				  |				
+				  |
 					<(?!/\2\s*>	# other tags with a different name
 				  )
 				)*',
@@ -337,9 +337,9 @@ class Markdown implements MarkdownInterface
 			)
 			(						# save in $1
 
-			  # Match from `\n<tag>` to `</tag>\n`, handling nested tags 
+			  # Match from `\n<tag>` to `</tag>\n`, handling nested tags
 			  # in between.
-					
+
 						[ ]{0,' . $less_than_tab . '}
 						<(' . $block_tags_b_re . ')# start tag = $2
 						' . $attr . '>			# attributes followed by > and \n
@@ -357,28 +357,28 @@ class Markdown implements MarkdownInterface
 						</\3>				# the matching end tag
 						[ ]*				# trailing spaces/tabs
 						(?=\n+|\Z)	# followed by a newline or end of document
-					
-			| # Special case just for <hr />. It was easier to make a special 
+
+			| # Special case just for <hr />. It was easier to make a special
 			  # case than to make the other regex more complicated.
-			
+
 						[ ]{0,' . $less_than_tab . '}
 						<(hr)				# start tag = $2
 						' . $attr . '			# attributes
 						/?>					# the matching end tag
 						[ ]*
 						(?=\n{2,}|\Z)		# followed by a blank line or end of document
-			
+
 			| # Special case for standalone HTML comments:
-			
+
 					[ ]{0,' . $less_than_tab . '}
 					(?s:
 						<!-- .*? -->
 					)
 					[ ]*
 					(?=\n{2,}|\Z)		# followed by a blank line or end of document
-			
+
 			| # PHP and ASP-style processor instructions (<? and <%)
-			
+
 					[ ]{0,' . $less_than_tab . '}
 					(?s:
 						<([?%])			# $2
@@ -387,7 +387,7 @@ class Markdown implements MarkdownInterface
 					)
 					[ ]*
 					(?=\n{2,}|\Z)		# followed by a blank line or end of document
-					
+
 			)
 			)}Sxmi',
             array($this, '_hashHTMLBlocks_callback'),

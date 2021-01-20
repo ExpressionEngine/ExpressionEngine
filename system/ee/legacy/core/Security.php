@@ -25,8 +25,8 @@ interface Strict_XID
 class EE_Security
 {
     // Flags for have_valid_xid()
-    public const CSRF_STRICT = 1;	// require single-use token for ajax requests
-    public const CSRF_EXEMPT = 2;	// opt-out of xid checks
+    const CSRF_STRICT = 1;	// require single-use token for ajax requests
+    const CSRF_EXEMPT = 2;	// opt-out of xid checks
 
     /**
      * XSS Clean

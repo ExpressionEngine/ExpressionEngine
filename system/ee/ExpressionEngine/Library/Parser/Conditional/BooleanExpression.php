@@ -17,9 +17,9 @@ use ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionExcep
  */
 class BooleanExpression
 {
-    public const NON_ASSOC = 0;
-    public const LEFT_ASSOC = 1;
-    public const RIGHT_ASSOC = 2;
+    const NON_ASSOC = 0;
+    const LEFT_ASSOC = 1;
+    const RIGHT_ASSOC = 2;
 
     private $tokens;
     private $unary_operators;

@@ -15,13 +15,13 @@ namespace ExpressionEngine\Library\CP;
  */
 class Table
 {
-    public const COL_TEXT = 1;
-    public const COL_CHECKBOX = 2;
-    public const COL_STATUS = 3;
-    public const COL_TOOLBAR = 4;
-    public const COL_ID = 5;
-    public const COL_SMALL = 6;
-    public const COL_INFO = 7;
+    const COL_TEXT = 1;
+    const COL_CHECKBOX = 2;
+    const COL_STATUS = 3;
+    const COL_TOOLBAR = 4;
+    const COL_ID = 5;
+    const COL_SMALL = 6;
+    const COL_INFO = 7;
 
     public $config = array();
     protected $columns = array();

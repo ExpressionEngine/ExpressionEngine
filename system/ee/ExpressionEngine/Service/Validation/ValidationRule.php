@@ -27,8 +27,8 @@ namespace ExpressionEngine\Service\Validation;
  */
 abstract class ValidationRule
 {
-    public const STOP = 'STOP';
-    public const SKIP = 'SKIP';
+    const STOP = 'STOP';
+    const SKIP = 'SKIP';
 
     /**
      * @var array Rule parameters

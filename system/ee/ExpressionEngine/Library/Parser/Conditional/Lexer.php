@@ -65,7 +65,7 @@ class Lexer extends AbstractLexer
      */
     private $tag_depth = 0;
 
-    public const COMMENT_PATTERN = "
+    const COMMENT_PATTERN = "
 		\{!--		# open tag
 		(.*?)		# anything inbetween
 		--\}		# closing tag
@@ -74,7 +74,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for boolean values
      */
-    public const BOOL_PATTERN = "
+    const BOOL_PATTERN = "
 		\b					# must be its own word
 		(true|false)		# The pattern is case insensitive
 		(?!(-+)?\w)			# simulate \b with -
@@ -83,7 +83,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for variables
      */
-    public const VARIABLE_PATTERN = "
+    const VARIABLE_PATTERN = "
 		\w*(								# word characters on both ends are ok
 			[a-zA-Z]([\w:-]+\w)?			# we need at least one alpha in there
 			|								# to avoid things like 5-5, and it can't
@@ -94,7 +94,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for numbers
      */
-    public const NUMBER_PATTERN = "
+    const NUMBER_PATTERN = "
 		(
 			[0-9]*\.[0-9]+					# You must have a number either
 			|								# before or after the dot. The other
