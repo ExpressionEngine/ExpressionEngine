@@ -161,7 +161,7 @@ class FileUpdater
             $path,
             SYSPATH . 'ee/updater/hash-manifest',
             $ref_path,
-            ['system/ee/installer/updater']
+            ['system/ee/installer/updater', 'system/eecli.php']
         );
     }
 
