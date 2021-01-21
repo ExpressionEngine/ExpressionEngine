@@ -22,6 +22,7 @@ use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
 class LegacyFiles
 {
     protected $from_version;
+    protected $backup_path;
     protected $logger;
 
     /**
@@ -31,9 +32,10 @@ class LegacyFiles
      * @param	Logger		$logger	Logger instance
      * @return  void
      */
-    public function __construct($from_version, Logger $logger)
+    public function __construct($from_version, $backup_path, Logger $logger)
     {
         $this->from_version = $from_version;
+        $this->backup_path = $backup_path;
         $this->logger = $logger;
     }
 
@@ -44,7 +46,9 @@ class LegacyFiles
     public function addFiles()
     {
         $version = explode('.', $this->from_version, 2);
-        if ($version[0] < 6) {
+        $filesystem = new Filesystem();
+
+        if ($filesystem->exists($this->backup_path . 'system_ee/EllisLab')) {
             $this->copyFiles(
                 SYSPATH . 'ee/installer/files/ee5/',
                 SYSPATH . 'ee/'

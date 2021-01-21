@@ -373,6 +373,7 @@ class Runner
     {
         return new Service\Updater\LegacyFiles(
             ee()->config->item('app_version'),
+            $this->getBackupsPath(),
             $this->logger
         );
     }
