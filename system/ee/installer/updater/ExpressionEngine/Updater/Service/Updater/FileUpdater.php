@@ -79,11 +79,13 @@ class FileUpdater
             [SYSPATH . 'ee/updater']
         );
 
-        // backup eecli.php
-        $this->move(
-            SYSPATH . 'eecli.php',
-            $this->getBackupsPath()
-        );
+        // backup eecli.php if it exists
+        if ($this->filesystem->exists(SYSPATH . 'eecli.php')) {
+            $this->move(
+                SYSPATH . 'eecli.php',
+                $this->getBackupsPath()
+            );
+        }
 
         // We'll only backup one theme folder, they _should_ all be the same
         // across sites
