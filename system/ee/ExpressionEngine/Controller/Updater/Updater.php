@@ -58,7 +58,7 @@ class Updater extends CP_Controller
             $preflight_error = str_replace("\n", '<br>', $e->getMessage());
         }
 
-        ee()->load->helper(['text', 'language']);
+        ee()->load->helper('text');
 
         $next_step = $runner->getNextStep();
         $vars = [
