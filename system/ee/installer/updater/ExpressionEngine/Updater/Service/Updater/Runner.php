@@ -371,8 +371,11 @@ class Runner
      */
     protected function makeLegacyFilesService()
     {
+        $file_updater = $this->makeUpdaterService();
+
         return new Service\Updater\LegacyFiles(
             ee()->config->item('app_version'),
+            $file_updater->getBackupsPath(),
             $this->logger
         );
     }
