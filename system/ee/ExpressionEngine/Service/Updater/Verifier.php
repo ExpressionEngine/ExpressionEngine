@@ -83,7 +83,8 @@ class Verifier
         if (! empty($missing_files)) {
             throw new UpdaterException(
                 sprintf(
-                    lang('could_not_find_files'),
+                    'The following files could not be found:
+%s',
                     implode("\n", $missing_files)
                 ),
                 9
@@ -93,7 +94,9 @@ class Verifier
         if (! empty($corrupt_files)) {
             throw new UpdaterException(
                 sprintf(
-                    lang('could_not_verify_file_integrity'),
+                    'The integrity of the following files could not be verified:
+
+%s',
                     implode("\n", $corrupt_files)
                 ),
                 10
