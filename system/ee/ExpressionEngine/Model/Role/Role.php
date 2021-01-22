@@ -20,6 +20,8 @@ class Role extends Model
     protected static $_primary_key = 'role_id';
     protected static $_table_name = 'roles';
 
+    protected static $_hook_id = 'role';
+
     protected static $_typed_columns = [
         'role_id' => 'int',
         'is_locked' => 'boolString',
