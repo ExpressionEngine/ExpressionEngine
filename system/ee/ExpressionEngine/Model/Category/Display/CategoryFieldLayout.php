@@ -15,14 +15,14 @@ use ExpressionEngine\Model\Content\Display\DefaultLayout;
 /**
  * Category Field Layout
  */
-class CategoryFieldLayout extends DefaultLayout {
+class CategoryFieldLayout extends DefaultLayout
+{
+    public function transform(array $fields)
+    {
+        usort($fields, function ($a, $b) {
+            return $a->get('field_order') > $b->get('field_order');
+        });
 
-	public function transform(array $fields)
-	{
-		usort($fields, function($a, $b) {
-			return $a->get('field_order') > $b->get('field_order');
-		});
-
-		return parent::transform($fields);
-	}
+        return parent::transform($fields);
+    }
 }

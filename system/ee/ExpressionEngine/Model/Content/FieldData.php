@@ -17,19 +17,20 @@ use ExpressionEngine\Model\Content\FieldModel;
 /**
  * ExpressionEngine FieldData Model
  */
-class FieldData extends VariableColumnModel {
+class FieldData extends VariableColumnModel
+{
+    protected static $_primary_key = 'id';
+    protected static $_table_name = 'channel_data_field_';
 
-	protected static $_primary_key = 'id';
-	protected static $_table_name = 'channel_data_field_';
+    protected $id;
+    protected $entry_id;
 
-	protected $id;
-	protected $entry_id;
+    public function forField(FieldModel $field)
+    {
+        $this->_table_name = $field->getDataTable();
 
-	public function forField(FieldModel $field)
-	{
-		$this->_table_name = $field->getDataTable();
-		return $this;
-	}
+        return $this;
+    }
 }
 
 // EOF

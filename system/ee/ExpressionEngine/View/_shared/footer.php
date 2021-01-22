@@ -45,7 +45,7 @@
 					<?=lang('out_of_date_upgrade_major')?>
 
 					<div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
-						<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name'=>'one_click_major_update_confirm'])?>
+						<?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
 							<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 							<fieldset>
 								<label><?=lang('one_click_major_update_instructions')?></label>
@@ -57,7 +57,7 @@
 								<p><?=lang('one_click_major_update_confirm_error')?></p>
 							</div>
 							<div class="">
-								<?=form_submit('submit-upgrade', lang('btn_authenticate'), 'class="button button--primary" data-submit-text="'.lang('btn_authenticate').'" data-work-text="'.lang('authenticating').'"')?>
+								<?=form_submit('submit-upgrade', lang('btn_authenticate'), 'class="button button--primary" data-submit-text="' . lang('btn_authenticate') . '" data-work-text="' . lang('authenticating') . '"')?>
 							</div>
 						<?=form_close()?>
 					</div>
@@ -73,35 +73,35 @@
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
-<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
+<?php if (isset($blocks['modals'])) {
+    echo $blocks['modals'];
+} ?>
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?php
 
-		echo ee()->javascript->get_global();
+        echo ee()->javascript->get_global();
 
-		echo ee()->cp->render_footer_js();
+        echo ee()->cp->render_footer_js();
 
-		if (isset($_extra_library_src))
-		{
-			echo $_extra_library_src;
-		}
+        if (isset($_extra_library_src)) {
+            echo $_extra_library_src;
+        }
 
-		echo ee()->javascript->script_foot();
+        echo ee()->javascript->script_foot();
 
-		foreach (ee()->cp->get_foot() as $item)
-		{
-			echo $item."\n";
-		}
+        foreach (ee()->cp->get_foot() as $item) {
+            echo $item . "\n";
+        }
 
-		?>
+        ?>
 		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
 			<div class="modal modal--no-padding dialog dialog--warning">
 
 			<div class="dialog__header">
 				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
-				<h2 class="dialog__title">Log into <?=ee()->config->item('site_name')?></h2>
+				<h2 class="dialog__title"><?=sprintf(lang('log_into'), ee()->config->item('site_name'))?></h2>
 			</div>
 
 			<div class="dialog__body">
@@ -121,14 +121,16 @@
 				</fieldset>
 
 				<div class="dialog__buttons">
-						<?=form_submit('submit', lang('login'), 'class="button button--primary" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
+						<?=form_submit('submit', lang('login'), 'class="button button--primary" data-submit-text="' . lang('login') . '" data-work-text="' . lang('authenticating') . '"')?>
 				</div>
 			</div>
 			<?=form_close()?>
 			</div>
 		</div>
 
-		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) { echo ' on-welcome'; } ?>" style="display:none;">
+		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) {
+            echo ' on-welcome';
+        } ?>" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
 					<input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">

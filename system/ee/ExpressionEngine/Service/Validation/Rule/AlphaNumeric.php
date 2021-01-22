@@ -15,17 +15,17 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Alphabetical and Numeric Validation Rule
  */
-class AlphaNumeric extends ValidationRule {
+class AlphaNumeric extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match("/^([a-z0-9])+$/i", $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match("/^([a-z0-9])+$/i", $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'alpha_numeric';
-	}
+    public function getLanguageKey()
+    {
+        return 'alpha_numeric';
+    }
 }
 
 // EOF

@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -15,9 +19,8 @@
  * This file contains an array of words that the search functions in EE will
  * ignore in order to a) reduce load, and b) generate better results.
  */
-
 ee()->load->library('logger');
-ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("stopwords") to load this config file', TRUE, 604800);
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("stopwords") to load this config file', true, 604800);
 
 $ignore = ee()->config->loadFile('stopwords');
 

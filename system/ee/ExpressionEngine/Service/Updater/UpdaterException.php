@@ -15,6 +15,8 @@ use Exception;
 /**
  * Exception specifically for Updater exceptions
  */
-class UpdaterException extends Exception {}
+class UpdaterException extends Exception
+{
+}
 
 // EOF

@@ -13,7 +13,7 @@
 
 				<?=$child_view?>
 
-				<?php if ( ! isset($branded) OR $branded !== FALSE):?>
+				<?php if (! isset($branded) or $branded !== false):?>
 					<section class="bar">
 						<p style="float: left;"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
 						<p style="float: right;">&copy;<?=date('Y')?> <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>

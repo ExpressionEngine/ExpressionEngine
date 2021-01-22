@@ -11,8 +11,8 @@
 /**
  * RSS Module control panel (nada)
  */
-class Rss_mcp {
-
+class Rss_mcp
+{
 }
 // END CLASS
 

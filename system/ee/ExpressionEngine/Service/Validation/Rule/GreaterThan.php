@@ -15,26 +15,25 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Greater Than Validation Rule
  */
-class GreaterThan extends ValidationRule {
+class GreaterThan extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        list($compare) = $this->assertParameters('compare_to');
 
-	public function validate($key, $value)
-	{
-		list($compare) = $this->assertParameters('compare_to');
+        $compare = $this->numericOrConstantParameter($compare);
 
-		$compare = $this->numericOrConstantParameter($compare);
+        if ($compare === false) {
+            return false;
+        }
 
-		if ($compare === FALSE)
-		{
-			return FALSE;
-		}
+        return ($value > $compare);
+    }
 
-		return ($value > $compare);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'greater_than';
-	}
+    public function getLanguageKey()
+    {
+        return 'greater_than';
+    }
 }
 
 // EOF

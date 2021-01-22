@@ -2,12 +2,12 @@
 	<?=$grid_markup?>
 
 	<?php
-	$component = [
-		'allowedDirectory' => $allowed_directory,
-		'contentType' => $content_type,
-		'maxRows' => $grid_max_rows,
-	];
-	?>
+    $component = [
+        'allowedDirectory' => $allowed_directory,
+        'contentType' => $content_type,
+        'maxRows' => $grid_max_rows,
+    ];
+    ?>
 
 	<div data-file-grid-react="<?=base64_encode(json_encode($component))?>">
 		<div class="fields-select">

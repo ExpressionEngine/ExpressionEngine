@@ -1,5 +1,5 @@
 <?php
-	$this->extend('_templates/default-nav', array(), 'outer_box');
+    $this->extend('_templates/default-nav', array(), 'outer_box');
 ?>
 <?php if ($license->isValid()): ?>
 <div class="box mb">

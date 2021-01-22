@@ -28,7 +28,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 if (!defined('PHP_VERSION_ID')) {
     // This constant was introduced in PHP 5.2.7
     $RandomCompatversion = array_map('intval', explode('.', PHP_VERSION));
@@ -173,6 +172,7 @@ if (!is_callable('random_bytes')) {
         function random_bytes($length)
         {
             unset($length); // Suppress "variable not used" warnings.
+
             throw new Exception(
                 'There is no suitable CSPRNG installed on your system'
             );

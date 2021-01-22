@@ -4,6 +4,6 @@
 	<label><?=lang('send_as')?></label>
 	<?=form_dropdown('mailtype', $mailtype_options, $mailtype, 'id="mailtype"')?>
 	<label class="checkbox-label" style="font-weight: 500; display: inline-block; margin-left: 5px;"><div class="checkbox-label__text" style="padding-left: 20px;"><?=lang('word_wrap')?></div>
-	<input type="checkbox" class="checkbox" name="wordwrap" value="y" <?=set_checkbox('wordwrap', 'y', TRUE)?>>
+	<input type="checkbox" class="checkbox" name="wordwrap" value="y" <?=set_checkbox('wordwrap', 'y', true)?>>
   </label>
 </div>

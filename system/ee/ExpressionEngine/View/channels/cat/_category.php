@@ -3,7 +3,7 @@
 		<?php if ($can_edit_categories): ?>
 		<div class="list-item__handle"><i class="fas fa-bars"></i></div>
 		<?php endif; ?>
-		<a class="list-item__content" <?php if ($can_edit_categories): ?>href="<?=ee('CP/URL')->make('categories/edit/'.$category->data->group_id.'/'.$category->data->cat_id)?>"<?php endif; ?>>
+		<a class="list-item__content" <?php if ($can_edit_categories): ?>href="<?=ee('CP/URL')->make('categories/edit/' . $category->data->group_id . '/' . $category->data->cat_id)?>"<?php endif; ?>>
 			<div class="list-item__title">
 				<?=ee('Format')->make('Text', $category->data->cat_name)->convertToEntities()?>
 			</div>

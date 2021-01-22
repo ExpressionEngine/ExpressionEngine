@@ -18,7 +18,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class EntryManagerViews extends Filter
 {
-
     public function __construct($view_id = null, $channel = null)
     {
         $this->name = 'views';

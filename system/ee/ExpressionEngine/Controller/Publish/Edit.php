@@ -20,657 +20,612 @@ use ExpressionEngine\Library\CP\EntryManager;
 /**
  * Publish/Edit Controller
  */
-class Edit extends AbstractPublishController {
-
-	protected $permissions;
-
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->permissions = [
-			'all'    => [],
-			'others' => [],
-			'self'   => [],
-		];
-
-		foreach ($this->assigned_channel_ids as $channel_id)
-		{
-			$this->permissions['others'][] = 'can_edit_other_entries_channel_id_' . $channel_id;
-			$this->permissions['self'][]   = 'can_edit_self_entries_channel_id_' . $channel_id;
-		}
-
-		$this->permissions['all'] = array_merge($this->permissions['others'], $this->permissions['self']);
-
-		if ( ! ee('Permission')->hasAny($this->permissions['all']))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-	}
-
-	/**
-	 * Displays all available entries
-	 *
-	 * @return void
-	 */
-	public function index()
-	{
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			$this->remove(ee()->input->post('selection'));
-		}
-
-		$vars = array();
-		$vars['channels_exist'] = true;
-
-		$base_url = ee('CP/URL')->make('publish/edit');
-
-		// Create the entry listing object which handles getting the entries
-		$extra_filters = [];
-		if (ee('Permission')->hasAny($this->permissions['others'])) {
-			$extra_filters[] = 'Author';
-		}
-		$extra_filters[] = 'Columns';
-
-		$entry_listing = ee('CP/EntryListing',
-			ee()->input->get_post('filter_by_keyword'),
-			ee()->input->get_post('search_in') ?: 'titles_and_content',
-			false,
-			null, //ee()->input->get_post('view') ?: '',//view is not used atm
-			$extra_filters
-		);
-
-		$entries = $entry_listing->getEntries();
-		$filters = $entry_listing->getFilters();
-		$filter_values = $filters->values();
-		$channel_id = $entry_listing->channel_filter->value();
-
-		//which columns should we show
-		$selected_columns = $filter_values['columns'];
-		$selected_columns[] = 'checkbox';
-		// array_unshift($selected_columns, 'checkbox');
-
-		$columns = [];
-		foreach ($selected_columns as $column) {
-			$columns[$column] = EntryManager\ColumnFactory::getColumn($column);
-		}
-		$columns = array_filter($columns);
-
-		if ( ! ee('Permission')->hasAny($this->permissions['others']))
-		{
-			$entries->filter('author_id', ee()->session->userdata('member_id'));
-		}
-
-		$count = $entry_listing->getEntryCount();
-
-		// if no entries check to see if we have any channels
-		if(empty($count))
-		{
-			// cast to bool
-			$vars['channels_exist']  = (bool)ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
-		}
-
-		$vars['filters'] = $filters->renderEntryFilters($base_url);
-		$vars['filters_search'] = $filters->renderSearch($base_url);
-		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
-
-		$base_url->addQueryStringVariables(
-			array_filter($filter_values,
-				function ($key) {
-					return ($key != 'columns');
-				},
-				ARRAY_FILTER_USE_KEY
-			)
-		);
-
-		// Create the table that displays the entries
-		$table = ee('CP/Table', array(
-			'sort_dir' => 'desc',
-			'sort_col' => 'column_entry_date',
-		));
-
-		$column_renderer = new EntryManager\ColumnRenderer($columns);
-		$table_columns = $column_renderer->getTableColumnsConfig();
-		$table->setColumns($table_columns);
-
-		if($vars['channels_exist'])
-		{
-			$table->setNoResultsText(lang('no_entries_exist'));
-		}
-		else
-		{
-			$table->setNoResultsText(
-			sprintf(lang('no_found'), lang('channels'))
-			.' <a href="'.ee('CP/URL', 'channels/create').'">'.lang('add_new').'</a>');
-		}
-
-
-		$show_new_button = $vars['channels_exist'];
-		if ($channel_id)
-		{
-			$channel = $entry_listing->getChannelModelFromFilter();
-
-			// Have we reached the max entries limit for this channel?
-			if ($channel->maxEntriesLimitReached())
-			{
-				// Don't show New button
-				$show_new_button = FALSE;
-
-				$desc_key = ($channel->max_entries == 1)
-					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
-				ee('CP/Alert')->makeInline()
-					->asWarning()
-					->withTitle(lang('entry_limit_reached'))
-					->addToBody(sprintf(lang($desc_key), $channel->max_entries))
-					->now();
-			}
-		}
-
-		$page = ((int) ee()->input->get('page')) ?: 1;
-		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
-
-		$sort_col = 'entry_id';
-		foreach($table_columns as $table_column) {
-			if ($table_column['label']==$table->sort_col) {
-				$sort_col = $table_column['name'];
-				break;
-			}
-		}
-		$sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-		$entries->order($sort_field, $table->sort_dir)
-			->limit($filter_values['perpage'])
-			->offset($offset);
-
-		$data = array();
-
-		$entry_id = ee()->session->flashdata('entry_id');
-
-		$statuses = ee('Model')->get('Status')->all()->indexBy('status');
-
-		foreach ($entries->all() as $entry)
-		{
-			// wW had a delete cascade issue that could leave entries orphaned and
-			// resulted in errors, so we'll sneakily use this controller to clean up
-			// for now.
-			if (is_null($entry->Channel))
-			{
-				$entry->delete();
-				continue;
-			}
-
-			$attrs = array();
-
-			if ($entry_id && $entry->entry_id == $entry_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			if ($entry->Autosaves->count())
-			{
-				$attrs = array('class' => 'auto-saved');
-			}
-
-			$data[] = array(
-				'attrs'		=> $attrs,
-				'columns'	=> $column_renderer->getRenderedTableRowForEntry($entry)
-			);
-		}
-
-		$table->setData($data);
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		$menu = ee()->menu->generate_menu();
-		$choices = [];
-		foreach ($menu['channels']['create'] as $text => $link) {
-			$choices[$link->compile()] = $text;
-		}
-
-		ee()->view->header = array(
-			'title' => lang('entry_manager'),
-			'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
-				'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
-				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
-				'filter_placeholder' => lang('filter_channels'),
-				'choices' => $channel_id ? NULL : $choices
-			] : NULL
-		);
-		
-		if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
-			$base_url->addQueryStringVariables(
-				array(
-					'sort_dir' => $table->sort_dir,
-					'sort_col' => $table->sort_col
-				)
-			);
-		}
-
-		$vars['pagination'] = ee('CP/Pagination', $count)
-			->perPage($filter_values['perpage'])
-			->currentPage($page)
-			->render($base_url);
-
-		ee()->javascript->set_global([
-			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
-
-			'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
-			'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
-			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
-			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
-			'bulkEdit.lang' => [
-				'selectedEntries'       => lang('selected_entries'),
-				'filterSelectedEntries' => lang('filter_selected_entries'),
-				'noEntriesFound'        => sprintf(lang('no_found'), lang('entries')),
-				'showing'               => lang('showing'),
-				'of'                    => lang('of'),
-				'clearAll'              => lang('clear_all'),
-				'removeFromSelection'   => lang('remove_from_selection'),
-			],
-			'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
-		]);
-
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'common',
-				'cp/confirm_remove',
-				'cp/publish/entry-list',
-				'components/bulk_edit_entries',
-				'cp/publish/bulk-edit'
-			),
-		));
-
-		ee()->view->cp_page_title = lang('edit_channel_entries');
-		if ( ! empty($filter_values['filter_by_keyword']))
-		{
-			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
-		}
-		else
-		{
-			$vars['cp_heading'] = sprintf(
-				lang('all_channel_entries'),
-				(isset($channel->channel_title)) ? $channel->channel_title : ''
-			);
-		}
-
-		if ($channel_id)
-		{
-			$vars['can_edit']   = ee('Permission')->hasAny(
-				'can_edit_self_entries_channel_id_' . $channel_id,
-				'can_edit_other_entries_channel_id_' . $channel_id
-			);
-
-			$vars['can_delete'] = ee('Permission')->hasAny(
-				'can_delete_all_entries_channel_id_' . $channel_id,
-				'can_delete_self_entries_channel_id_' . $channel_id
-			);
-		}
-		else
-		{
-			$edit_perms = [];
-			$del_perms  = [];
-
-			foreach ($entries->all()->pluck('channel_id') as $entry_channel_id)
-			{
-				$edit_perms[] = 'can_edit_self_entries_channel_id_' . $entry_channel_id;
-				$edit_perms[] = 'can_edit_other_entries_channel_id_' . $entry_channel_id;
-
-				$del_perms[] = 'can_delete_all_entries_channel_id_' . $entry_channel_id;
-				$del_perms[] = 'can_delete_self_entries_channel_id_' . $entry_channel_id;
-			}
-
-			$vars['can_edit']   = (empty($edit_perms)) ? FALSE : ee('Permission')->hasAny($edit_perms);
-			$vars['can_delete'] = (empty($del_perms)) ? FALSE : ee('Permission')->hasAny($del_perms);
-		}
-
-		ee()->cp->add_js_script([
-			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
-			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
-			'ui' => 'sortable'
-		]);
-
-		ee()->view->cp_breadcrumbs = array(
-			'' => lang('entries')
-		);
-
-		if (AJAX_REQUEST)
-		{
-			return array(
-				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
-				'url' => $vars['form_url']->compile(),
-				'viewManager_saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
-			);
-		}
-
-		ee()->cp->render('publish/edit/index', $vars);
-	}
-
-	public function entry($id = NULL, $autosave_id = NULL)
-	{
-		if ( ! $id)
-		{
-			show_404();
-		}
-
-		$base_url = ee('CP/URL')->getCurrentUrl();
-
-		// Sequence editing?
-		$sequence_editing = FALSE;
-		if ($entry_ids = ee('Request')->get('entry_ids'))
-		{
-			$sequence_editing = TRUE;
-
-			$index = array_search($id, $entry_ids) + 1;
-			$next_entry_id = isset($entry_ids[$index]) ? $entry_ids[$index] : NULL;
-			$base_url->setQueryStringVariable('next_entry_id', $next_entry_id);
-		}
-
-		// If an entry or channel on a different site is requested, try
-		// to switch sites and reload the publish form
-		$site_id = (int) ee()->input->get_post('site_id');
-		if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST))
-		{
-			ee()->cp->switch_site($site_id, $base_url);
-		}
-
-		$entry = ee('Model')->get('ChannelEntry', $id)
-			->with('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		if ( ! $entry)
-		{
-			show_error(lang('no_entries_matching_that_criteria'));
-		}
-
-		if ( ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-			&& $entry->author_id != ee()->session->userdata('member_id'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! in_array($entry->channel_id, $this->assigned_channel_ids))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		// -------------------------------------------
-		// 'publish_form_entry_data' hook.
-		//  - Modify entry's data
-		//  - Added: 1.4.1
-			if (ee()->extensions->active_hook('publish_form_entry_data') === TRUE)
-			{
-				$result = ee()->extensions->call('publish_form_entry_data', $entry->getValues());
-				$entry->set($result);
-			}
-		// -------------------------------------------
-
-		$entry_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry_title);
-
-		$form_attributes = array(
-			'class' => 'ajax-validate',
-		);
-
-		$vars = array(
-			'header' => [
-				'title' => lang('edit_entry'),
-			],
-			'form_url' => $base_url,
-			'form_attributes' => $form_attributes,
-			'form_title' => lang('edit_entry'),
-			'errors' => new \ExpressionEngine\Service\Validation\Result,
-			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
-			'buttons' => $this->getPublishFormButtons($entry),
-			'in_modal_context' => $sequence_editing
-		);
-
-		if (ee()->input->get('hide_closer')==='y' && ee()->input->get('return')!='')
-		{
-			$vars['form_hidden'] = ['return'	=> urldecode(ee()->input->get('return'))];
-			$vars['hide_sidebar'] = true;
-		}
-
-		if ($sequence_editing)
-		{
-			$vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
-			$vars['buttons'] = [[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_next',
-				'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
-				'working' => 'btn_saving'
-			]];
-		}
-
-		if ($entry->isLivePreviewable()) {
-
-			$lp_domain_mismatch = false;
-			$configured_site_url = explode('//', ee()->config->item('site_url'));
-			$configured_domain = explode('/', $configured_site_url[1]);
-
-			if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
-				$lp_domain_mismatch = true;
-				$lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
-			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
-				$lp_domain_mismatch = true;
-				$lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
-			}
-
-			if ($lp_domain_mismatch) {
-				$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-					->asIssue()
-					->canClose()
-					->withTitle(lang('preview_cannot_display'))
-					->addToBody($lp_message);
-				ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-			} else {
-				$action_id = ee()->db->select('action_id')
-					->where('class', 'Channel')
-					->where('method', 'live_preview')
-					->get('actions');
-				$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
-				if (ee()->input->get('return')!='')
-				{
-					$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
-				}
-				$modal_vars = [
-					'preview_url' => $preview_url,
-					'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
-				];
-				$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
-				ee('CP/Modal')->addModal('live-preview', $modal);
-			}
-
-		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
-
-			$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-				->asIssue()
-				->canClose()
-				->withTitle(lang('preview_url_not_set'))
-				->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/'.$entry->channel_id)->compile().'#tab=t-4&id=fieldset-preview_url'));
-			ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-		}
-
-		$version_id = ee()->input->get('version');
-
-		if ($entry->Channel->enable_versioning)
-		{
-			$vars['revisions'] = $this->getRevisionsTable($entry, $version_id);
-		}
-
-		if ($version_id)
-		{
-			$version = $entry->Versions->filter('version_id', $version_id)->first();
-			$version_data = $version->version_data;
-			$entry->set($version_data);
-		}
-
-		if ($autosave_id)
-		{
-			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
-
-			if ($autosaved)
-			{
-				$entry->set($autosaved->entry_data);
-			}
-		}
-
-		$channel_layout = ee('Model')->get('ChannelLayout')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_id', $entry->channel_id)
-			->with('PrimaryRoles')
-			->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
-			->first();
-
-		$vars['layout'] = $entry->getDisplay($channel_layout);
-
-		$result = $this->validateEntry($entry, $vars['layout']);
-
-		if ($result instanceOf ValidationResult)
-		{
-			$vars['errors'] = $result;
-
-			if ($result->isValid())
-			{
-				return $this->saveEntryAndRedirect($entry);
-			}
-		}
-
-		$vars['entry'] = $entry;
-
-		$this->setGlobalJs($entry, TRUE);
-
-		ee()->cp->add_js_script(array(
-			'plugin' => array(
-				'ee_url_title',
-				'ee_filebrowser',
-				'ee_fileuploader',
-			),
-			'file' => array('cp/publish/publish')
-		));
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
-			'' => lang('edit_entry')
-		);
-
-		if (ee('Request')->get('modal_form') == 'y')
-		{
-			$vars['layout']->setIsInModalContext(TRUE);
-			ee()->output->enable_profiler(FALSE);
-			return ee()->view->render('publish/modal-entry', $vars);
-		}
-
-		ee()->cp->render('publish/entry', $vars);
-	}
-
-	private function remove($entry_ids)
-	{
-		$perms = [];
-
-		foreach ($this->assigned_channel_ids as $channel_id)
-		{
-			$perms[] = 'can_delete_all_entries_channel_id_' . $channel_id;
-			$perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
-		}
-
-		if ( ! ee('Permission')->hasAny($perms))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! is_array($entry_ids))
-		{
-			$entry_ids = array($entry_ids);
-		}
-
-		$entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
-
-		ee('CP/Alert')->makeInline('entries-form')
-			->asSuccess()
-			->withTitle(lang('success'))
-			->addToBody(lang('entries_deleted_desc'))
-			->addToBody($entry_names)
-			->defer();
-
-		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
-	}
-
-	private function removeEntries($entry_ids, $self_only = true)
-	{
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if (!$this->is_admin) {
-			if (empty($this->assigned_channel_ids)) {
-				show_error(lang('no_channels'));
-			}
-
-			if ($self_only == true) {
-				$entries->filter('author_id', ee()->session->userdata('member_id'));
-			}
-
-			$channel_ids = [];
-			$permission = ($self_only == true) ? 'delete_self_entries' : 'delete_all_entries';
-
-			foreach ($this->assigned_channel_ids as $channel_id)
-			{
-				if (ee('Permission')->can($permission . '_channel_id_' . $channel_id))
-				{
-					$channel_ids[] = $channel_id;
-				}
-			}
-
-			// No permission to delete self entries
-			if (empty($channel_ids))
-			{
-				return [];
-			}
-
-			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
-		}
-
-		$all_entries = $entries->all();
-		if (!empty($all_entries)) {
-			$entry_names = $all_entries->pluck('title');
-			$entry_ids = $all_entries->pluck('entry_id');
-
-			// Remove pages URIs
-			$site_id = ee()->config->item('site_id');
-			$site_pages = ee()->config->item('site_pages');
-
-			if ($site_pages !== FALSE && count($site_pages[$site_id]) > 0) {
-				foreach ($all_entries as $entry){
-					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
-					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
-
-					ee()->config->set_item('site_pages', $site_pages);
-
-					$entry->Site->site_pages = $site_pages;
-					$entry->Site->save();
-				}
-			}
-		}
-
-		$entries->delete();
-
-		return $entry_names;
-	}
-
-
-	private function removeAllEntries($entry_ids)
-	{
-		return $this->removeEntries($entry_ids);
-	}
-
-	private function removeSelfEntries($entry_ids)
-	{
-		return $this->removeEntries($entry_ids, true);
-	}
+class Edit extends AbstractPublishController
+{
+    protected $permissions;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->permissions = [
+            'all' => [],
+            'others' => [],
+            'self' => [],
+        ];
+
+        foreach ($this->assigned_channel_ids as $channel_id) {
+            $this->permissions['others'][] = 'can_edit_other_entries_channel_id_' . $channel_id;
+            $this->permissions['self'][] = 'can_edit_self_entries_channel_id_' . $channel_id;
+        }
+
+        $this->permissions['all'] = array_merge($this->permissions['others'], $this->permissions['self']);
+
+        if (empty($this->permissions['all']) or ! ee('Permission')->hasAny($this->permissions['all'])) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+    }
+
+    /**
+     * Displays all available entries
+     *
+     * @return void
+     */
+    public function index()
+    {
+        if (ee()->input->post('bulk_action') == 'remove') {
+            $this->remove(ee()->input->post('selection'));
+        }
+
+        $vars = array();
+        $vars['channels_exist'] = true;
+
+        $base_url = ee('CP/URL')->make('publish/edit');
+
+        // Create the entry listing object which handles getting the entries
+        $extra_filters = [];
+        if (ee('Permission')->hasAny($this->permissions['others'])) {
+            $extra_filters[] = 'Author';
+        }
+        $extra_filters[] = 'Columns';
+
+        $entry_listing = ee(
+            'CP/EntryListing',
+            ee()->input->get_post('filter_by_keyword'),
+            ee()->input->get_post('search_in') ?: 'titles_and_content',
+            false,
+            null, //ee()->input->get_post('view') ?: '',//view is not used atm
+            $extra_filters
+        );
+
+        $entries = $entry_listing->getEntries();
+        $filters = $entry_listing->getFilters();
+        $filter_values = $filters->values();
+        $channel_id = $entry_listing->channel_filter->value();
+
+        //which columns should we show
+        $selected_columns = $filter_values['columns'];
+        $selected_columns[] = 'checkbox';
+        // array_unshift($selected_columns, 'checkbox');
+
+        $columns = [];
+        foreach ($selected_columns as $column) {
+            $columns[$column] = EntryManager\ColumnFactory::getColumn($column);
+        }
+        $columns = array_filter($columns);
+
+        if (! ee('Permission')->hasAny($this->permissions['others'])) {
+            $entries->filter('author_id', ee()->session->userdata('member_id'));
+        }
+
+        $count = $entry_listing->getEntryCount();
+
+        // if no entries check to see if we have any channels
+        if (empty($count)) {
+            // cast to bool
+            $vars['channels_exist'] = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
+        }
+
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+
+        $base_url->addQueryStringVariables(
+            array_filter(
+                $filter_values,
+                function ($key) {
+                    return ($key != 'columns');
+                },
+                ARRAY_FILTER_USE_KEY
+            )
+        );
+
+        // Create the table that displays the entries
+        $table = ee('CP/Table', array(
+            'sort_dir' => 'desc',
+            'sort_col' => 'column_entry_date',
+        ));
+
+        $column_renderer = new EntryManager\ColumnRenderer($columns);
+        $table_columns = $column_renderer->getTableColumnsConfig();
+        $table->setColumns($table_columns);
+
+        if ($vars['channels_exist']) {
+            $table->setNoResultsText(lang('no_entries_exist'));
+        } else {
+            $table->setNoResultsText(
+                sprintf(lang('no_found'), lang('channels'))
+            . ' <a href="' . ee('CP/URL', 'channels/create') . '">' . lang('add_new') . '</a>'
+            );
+        }
+
+        $show_new_button = $vars['channels_exist'];
+        if ($channel_id) {
+            $channel = $entry_listing->getChannelModelFromFilter();
+
+            // Have we reached the max entries limit for this channel?
+            if ($channel->maxEntriesLimitReached()) {
+                // Don't show New button
+                $show_new_button = false;
+
+                $desc_key = ($channel->max_entries == 1)
+                    ? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
+                ee('CP/Alert')->makeInline()
+                    ->asWarning()
+                    ->withTitle(lang('entry_limit_reached'))
+                    ->addToBody(sprintf(lang($desc_key), $channel->max_entries))
+                    ->now();
+            }
+        }
+
+        $page = ((int) ee()->input->get('page')) ?: 1;
+        $offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
+
+        $sort_col = 'entry_id';
+        foreach ($table_columns as $table_column) {
+            if ($table_column['label'] == $table->sort_col) {
+                $sort_col = $table_column['name'];
+
+                break;
+            }
+        }
+        $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+        $entries->order($sort_field, $table->sort_dir)
+            ->limit($filter_values['perpage'])
+            ->offset($offset);
+
+        $data = array();
+
+        $entry_id = ee()->session->flashdata('entry_id');
+
+        $statuses = ee('Model')->get('Status')->all()->indexBy('status');
+
+        foreach ($entries->all() as $entry) {
+            // wW had a delete cascade issue that could leave entries orphaned and
+            // resulted in errors, so we'll sneakily use this controller to clean up
+            // for now.
+            if (is_null($entry->Channel)) {
+                $entry->delete();
+
+                continue;
+            }
+
+            $attrs = array();
+
+            if ($entry_id && $entry->entry_id == $entry_id) {
+                $attrs = array('class' => 'selected');
+            }
+
+            if ($entry->Autosaves->count()) {
+                $attrs = array('class' => 'auto-saved');
+            }
+
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => $column_renderer->getRenderedTableRowForEntry($entry)
+            );
+        }
+
+        $table->setData($data);
+
+        $vars['table'] = $table->viewData($base_url);
+        $vars['form_url'] = $vars['table']['base_url'];
+
+        $menu = ee()->menu->generate_menu();
+        $choices = [];
+        foreach ($menu['channels']['create'] as $text => $link) {
+            $choices[$link->compile()] = $text;
+        }
+
+        ee()->view->header = array(
+            'title' => lang('entry_manager'),
+            'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
+                'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
+                'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
+                'filter_placeholder' => lang('filter_channels'),
+                'choices' => $channel_id ? null : $choices
+            ] : null
+        );
+
+        if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
+            $base_url->addQueryStringVariables(
+                array(
+                    'sort_dir' => $table->sort_dir,
+                    'sort_col' => $table->sort_col
+                )
+            );
+        }
+
+        $vars['pagination'] = ee('CP/Pagination', $count)
+            ->perPage($filter_values['perpage'])
+            ->currentPage($page)
+            ->render($base_url);
+
+        ee()->javascript->set_global([
+            'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
+
+            'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
+            'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
+            'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
+            'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
+            'bulkEdit.lang' => [
+                'selectedEntries' => lang('selected_entries'),
+                'filterSelectedEntries' => lang('filter_selected_entries'),
+                'noEntriesFound' => sprintf(lang('no_found'), lang('entries')),
+                'showing' => lang('showing'),
+                'of' => lang('of'),
+                'clearAll' => lang('clear_all'),
+                'removeFromSelection' => lang('remove_from_selection'),
+            ],
+            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
+        ]);
+
+        ee()->cp->add_js_script(array(
+            'file' => array(
+                'common',
+                'cp/confirm_remove',
+                'cp/publish/entry-list',
+                'components/bulk_edit_entries',
+                'cp/publish/bulk-edit'
+            ),
+        ));
+
+        ee()->view->cp_page_title = lang('edit_channel_entries');
+        if (! empty($filter_values['filter_by_keyword'])) {
+            $vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
+        } else {
+            $vars['cp_heading'] = sprintf(
+                lang('all_channel_entries'),
+                (isset($channel->channel_title)) ? $channel->channel_title : ''
+            );
+        }
+
+        if ($channel_id) {
+            $vars['can_edit'] = ee('Permission')->hasAny(
+                'can_edit_self_entries_channel_id_' . $channel_id,
+                'can_edit_other_entries_channel_id_' . $channel_id
+            );
+
+            $vars['can_delete'] = ee('Permission')->hasAny(
+                'can_delete_all_entries_channel_id_' . $channel_id,
+                'can_delete_self_entries_channel_id_' . $channel_id
+            );
+        } else {
+            $edit_perms = [];
+            $del_perms = [];
+
+            foreach ($entries->all()->pluck('channel_id') as $entry_channel_id) {
+                $edit_perms[] = 'can_edit_self_entries_channel_id_' . $entry_channel_id;
+                $edit_perms[] = 'can_edit_other_entries_channel_id_' . $entry_channel_id;
+
+                $del_perms[] = 'can_delete_all_entries_channel_id_' . $entry_channel_id;
+                $del_perms[] = 'can_delete_self_entries_channel_id_' . $entry_channel_id;
+            }
+
+            $vars['can_edit'] = (empty($edit_perms)) ? false : ee('Permission')->hasAny($edit_perms);
+            $vars['can_delete'] = (empty($del_perms)) ? false : ee('Permission')->hasAny($del_perms);
+        }
+
+        ee()->cp->add_js_script([
+            'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+            'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
+            'ui' => 'sortable'
+        ]);
+
+        ee()->view->cp_breadcrumbs = array(
+            '' => lang('entries')
+        );
+
+        if (AJAX_REQUEST) {
+            return array(
+                'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
+            );
+        }
+
+        ee()->cp->render('publish/edit/index', $vars);
+    }
+
+    public function entry($id = null, $autosave_id = null)
+    {
+        if (! $id) {
+            show_404();
+        }
+
+        $base_url = ee('CP/URL')->getCurrentUrl();
+
+        // Sequence editing?
+        $sequence_editing = false;
+        if ($entry_ids = ee('Request')->get('entry_ids')) {
+            $sequence_editing = true;
+
+            $index = array_search($id, $entry_ids) + 1;
+            $next_entry_id = isset($entry_ids[$index]) ? $entry_ids[$index] : null;
+            $base_url->setQueryStringVariable('next_entry_id', $next_entry_id);
+        }
+
+        // If an entry or channel on a different site is requested, try
+        // to switch sites and reload the publish form
+        $site_id = (int) ee()->input->get_post('site_id');
+        if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST)) {
+            ee()->cp->switch_site($site_id, $base_url);
+        }
+
+        $entry = ee('Model')->get('ChannelEntry', $id)
+            ->with('Channel')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first();
+
+        if (! $entry) {
+            show_error(lang('no_entries_matching_that_criteria'));
+        }
+
+        if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
+            && $entry->author_id != ee()->session->userdata('member_id')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (! in_array($entry->channel_id, $this->assigned_channel_ids)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        // -------------------------------------------
+        // 'publish_form_entry_data' hook.
+        //  - Modify entry's data
+        //  - Added: 1.4.1
+        if (ee()->extensions->active_hook('publish_form_entry_data') === true) {
+            $result = ee()->extensions->call('publish_form_entry_data', $entry->getValues());
+            $entry->set($result);
+        }
+        // -------------------------------------------
+
+        $entry_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+        ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry_title);
+
+        $form_attributes = array(
+            'class' => 'ajax-validate',
+        );
+
+        $vars = array(
+            'header' => [
+                'title' => lang('edit_entry'),
+            ],
+            'form_url' => $base_url,
+            'form_attributes' => $form_attributes,
+            'form_title' => lang('edit_entry'),
+            'errors' => new \ExpressionEngine\Service\Validation\Result(),
+            'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
+            'buttons' => $this->getPublishFormButtons($entry),
+            'in_modal_context' => $sequence_editing
+        );
+
+        if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('return') != '') {
+            $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
+            $vars['hide_sidebar'] = true;
+        }
+
+        if ($sequence_editing) {
+            $vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
+            $vars['buttons'] = [[
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_next',
+                'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
+                'working' => 'btn_saving'
+            ]];
+        }
+
+        if ($entry->isLivePreviewable()) {
+            $lp_domain_mismatch = false;
+            $configured_site_url = explode('//', ee()->config->item('site_url'));
+            $configured_domain = explode('/', $configured_site_url[1]);
+
+            if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
+                $lp_domain_mismatch = true;
+                $lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
+            } elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
+                $lp_domain_mismatch = true;
+                $lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
+            }
+
+            if ($lp_domain_mismatch) {
+                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                    ->asIssue()
+                    ->canClose()
+                    ->withTitle(lang('preview_cannot_display'))
+                    ->addToBody($lp_message);
+                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+            } else {
+                $action_id = ee()->db->select('action_id')
+                    ->where('class', 'Channel')
+                    ->where('method', 'live_preview')
+                    ->get('actions');
+                $preview_url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id . AMP . 'entry_id=' . $entry->entry_id;
+                if (ee()->input->get('return') != '') {
+                    $preview_url .= AMP . 'return=' . urlencode(ee()->input->get('return'));
+                }
+                $modal_vars = [
+                    'preview_url' => $preview_url,
+                    'hide_closer' => ee()->input->get('hide_closer') === 'y' ? true : false
+                ];
+                $modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
+                ee('CP/Modal')->addModal('live-preview', $modal);
+            }
+        } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
+            $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                ->asIssue()
+                ->canClose()
+                ->withTitle(lang('preview_url_not_set'))
+                ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
+            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+        }
+
+        $version_id = ee()->input->get('version');
+
+        if ($entry->Channel->enable_versioning) {
+            $vars['revisions'] = $this->getRevisionsTable($entry, $version_id);
+        }
+
+        if ($version_id) {
+            $version = $entry->Versions->filter('version_id', $version_id)->first();
+            $version_data = $version->version_data;
+            $entry->set($version_data);
+        }
+
+        if ($autosave_id) {
+            $autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->first();
+
+            if ($autosaved) {
+                $entry->set($autosaved->entry_data);
+            }
+        }
+
+        $channel_layout = ee('Model')->get('ChannelLayout')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('channel_id', $entry->channel_id)
+            ->with('PrimaryRoles')
+            ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
+            ->first();
+
+        $vars['layout'] = $entry->getDisplay($channel_layout);
+
+        $result = $this->validateEntry($entry, $vars['layout']);
+
+        if ($result instanceof ValidationResult) {
+            $vars['errors'] = $result;
+
+            if ($result->isValid()) {
+                return $this->saveEntryAndRedirect($entry);
+            }
+        }
+
+        $vars['entry'] = $entry;
+
+        $this->setGlobalJs($entry, true);
+
+        ee()->cp->add_js_script(array(
+            'plugin' => array(
+                'ee_url_title',
+                'ee_filebrowser',
+                'ee_fileuploader',
+            ),
+            'file' => array('cp/publish/publish')
+        ));
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+            '' => lang('edit_entry')
+        );
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $vars['layout']->setIsInModalContext(true);
+            ee()->output->enable_profiler(false);
+
+            return ee()->view->render('publish/modal-entry', $vars);
+        }
+
+        ee()->cp->render('publish/entry', $vars);
+    }
+
+    private function remove($entry_ids)
+    {
+        $perms = [];
+
+        foreach ($this->assigned_channel_ids as $channel_id) {
+            $perms[] = 'can_delete_all_entries_channel_id_' . $channel_id;
+            $perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
+        }
+
+        if (! ee('Permission')->hasAny($perms)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (! is_array($entry_ids)) {
+            $entry_ids = array($entry_ids);
+        }
+
+        $entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
+
+        ee('CP/Alert')->makeInline('entries-form')
+            ->asSuccess()
+            ->withTitle(lang('success'))
+            ->addToBody(lang('entries_deleted_desc'))
+            ->addToBody($entry_names)
+            ->defer();
+
+        ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
+    }
+
+    private function removeEntries($entry_ids, $self_only = true)
+    {
+        $entries = ee('Model')->get('ChannelEntry', $entry_ids)
+            ->filter('site_id', ee()->config->item('site_id'));
+
+        if (!$this->is_admin) {
+            if (empty($this->assigned_channel_ids)) {
+                show_error(lang('no_channels'));
+            }
+
+            if ($self_only == true) {
+                $entries->filter('author_id', ee()->session->userdata('member_id'));
+            }
+
+            $channel_ids = [];
+            $permission = ($self_only == true) ? 'delete_self_entries' : 'delete_all_entries';
+
+            foreach ($this->assigned_channel_ids as $channel_id) {
+                if (ee('Permission')->can($permission . '_channel_id_' . $channel_id)) {
+                    $channel_ids[] = $channel_id;
+                }
+            }
+
+            // No permission to delete self entries
+            if (empty($channel_ids)) {
+                return [];
+            }
+
+            $entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+        }
+
+        $all_entries = $entries->all();
+        if (!empty($all_entries)) {
+            $entry_names = $all_entries->pluck('title');
+            $entry_ids = $all_entries->pluck('entry_id');
+
+            // Remove pages URIs
+            $site_id = ee()->config->item('site_id');
+            $site_pages = ee()->config->item('site_pages');
+
+            if ($site_pages !== false && count($site_pages[$site_id]) > 0) {
+                foreach ($all_entries as $entry) {
+                    unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+                    unset($site_pages[$site_id]['templates'][$entry->entry_id]);
+
+                    ee()->config->set_item('site_pages', $site_pages);
+
+                    $entry->Site->site_pages = $site_pages;
+                    $entry->Site->save();
+                }
+            }
+        }
+
+        $entries->delete();
+
+        return $entry_names;
+    }
+
+    private function removeAllEntries($entry_ids)
+    {
+        return $this->removeEntries($entry_ids);
+    }
+
+    private function removeSelfEntries($entry_ids)
+    {
+        return $this->removeEntries($entry_ids, true);
+    }
 }
 
 // EOF

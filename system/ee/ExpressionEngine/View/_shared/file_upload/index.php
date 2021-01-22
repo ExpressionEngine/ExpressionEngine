@@ -1,6 +1,6 @@
 <?php $this->embed('_shared/file_upload/iframe_header'); ?>
 
-<?=form_open_multipart('C=content_files_modal'.AMP.'M=upload_file', array('id'=>'upload_form'), $hidden_vars)?>
+<?=form_open_multipart('C=content_files_modal' . AMP . 'M=upload_file', array('id' => 'upload_form'), $hidden_vars)?>
 	<?php if (isset($error)): ?>
 		<div class="notice">
 			<?=$error?>
@@ -20,7 +20,7 @@
 	</p>
 	<p>
 		<?=form_label(lang('upload_file'), 'file_upload', array('class' => 'visualEscapism'))?>
-		<?=form_upload(array('id'=>'file_upload','name'=>'userfile','size'=>15,'class'=>'field'))?>
+		<?=form_upload(array('id' => 'file_upload','name' => 'userfile','size' => 15,'class' => 'field'))?>
 	</p>
 <?=form_close()?>
 

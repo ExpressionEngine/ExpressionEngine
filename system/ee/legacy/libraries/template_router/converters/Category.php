@@ -11,11 +11,10 @@
 /**
  * Template Router category Converter
  */
-class EE_Template_router_category_converter implements EE_Template_router_converter {
-
-	public function validator()
-	{
-		return "(C[0-9]+)";
-	}
-
+class EE_Template_router_category_converter implements EE_Template_router_converter
+{
+    public function validator()
+    {
+        return "(C[0-9]+)";
+    }
 }

@@ -11,8 +11,9 @@
 /**
  * File Picker Module
  */
-class Filepicker {
-	public $return_data;
+class Filepicker
+{
+    public $return_data;
 }
 
 // EOF

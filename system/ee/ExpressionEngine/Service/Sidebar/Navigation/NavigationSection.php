@@ -20,15 +20,13 @@ class NavigationSection
     /**
      * @var string $header Section header text
      */
-
     protected $header = '';
 
     /**
      * @var string $class Section container class suffix
      */
-
     protected $class_suffix = 'section';
-    
+
     /**
      * @var array $items Items in the list
      */
@@ -51,10 +49,11 @@ class NavigationSection
      *   URL for the text.
      * @return NavigationItem A new NavigationItem object.
      */
-    public function addItem($text, $url = NULL)
+    public function addItem($text, $url = null)
     {
         $item = new NavigationItem($text, $url);
         $this->items[] = $item;
+
         return $item;
     }
 
@@ -68,6 +67,7 @@ class NavigationSection
     {
         $item = new NavigationList($name);
         $this->items[] = $item;
+
         return $item;
     }
 
@@ -88,11 +88,11 @@ class NavigationSection
         }
 
         return $view->make('_shared/sidebar/navigation/section')
-                 ->render(array(
-                     'items' => $items,
-                     'header' => $this->header,
-                     'class_suffix' => $this->class_suffix
-                    ));
+            ->render(array(
+                'items' => $items,
+                'header' => $this->header,
+                'class_suffix' => $this->class_suffix
+            ));
     }
 }
 

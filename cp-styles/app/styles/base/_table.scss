@@ -1,0 +1,383 @@
+
+// LEGACY 6.0
+.grid-instruct {
+	display: block;
+	color: color(text-secondary);
+	font-size: 0.8em;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: none;
+	margin-top: -3px;
+	white-space: normal;
+}
+
+// LEGACY 6.0
+.reorder-col {
+	width: 1%;
+}
+.id-col {
+	width: 1%;
+}
+
+span.ico.reorder {
+	cursor: move;
+}
+
+.table-title {
+	font-weight: 500;
+	// color: color(text-primary);
+}
+
+.meta-info, .faded {
+	display: inline-block;
+	color: color(text-secondary) !important;
+	font-weight: 400;
+}
+
+.tbl-wrap, // LEGACY 6.0
+.table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+
+	// border-radius: $border-radius-large;
+	// border: 1px solid color(border);
+	// background: color(table-bg);
+	// box-shadow: 0 5px 10px rgba(rgb(32, 6, 92), 0.05);
+
+	table {
+		border: none;
+		background: transparent;
+		box-shadow: none;
+		margin-bottom: 0;
+	}
+}
+
+body[data-theme="dark"] {
+	.tbl-wrap,
+	.table-responsive {
+		// box-shadow: 0 5px 10px rgba(#000, 0.4);
+	}
+}
+
+
+table {
+	margin-bottom: 10px;
+	width: 100%;
+	border-collapse: collapse;
+	// border-radius: $corners-big;
+	font-size: 14px;
+	// border: 1px solid color(border);
+	// background: color(bg-0);
+	// box-shadow: 0 20px 60px rgba(rgb(32, 6, 92), 0.1), 0 40px 20px -30px rgba(rgb(32, 6, 92), 0.1);
+
+	// border-radius: $corners-big;
+	border: 1px solid color(table-border);
+	background: color(table-bg);
+	// box-shadow: 0 5px 10px rgba(rgb(32, 6, 92), 0.05);
+}
+
+// Add space between the head and body
+// thead + tbody::before {
+// 	line-height: 4px;
+// 	content: "\200C";
+// 	display: block;
+// }
+
+th,
+td {
+	padding: $sq-inset-s;
+	border-collapse: collapse;
+
+  &:first-child {
+    padding-left: 25px;
+
+    .column-sort {
+      padding-left: 0;
+    }
+  }
+
+  &:last-child {
+    padding-right: 25px;
+
+    .column-sort {
+      padding-right: 0;
+    }
+  }
+
+  input[type="checkbox"] {
+    margin-bottom: -2px;
+  }
+
+  .button--small,
+  .button-group-small .button {
+    // margin-bottom: -6px;
+  }
+}
+
+
+th {
+	white-space: nowrap;
+	// background: color(bg-5);
+	text-align: left;
+	// text-transform: uppercase;
+	border-bottom: 1px solid color(table-border);
+	color: color(text-secondary);
+	font-weight: 500;
+	// font-size: 0.85em;
+	// position: relative;
+	// z-index: 1;
+
+	// LEGACY 6.0
+	&.check-ctrl {
+		width: 20px;
+		line-height: 1;
+		text-align: right;
+	}
+
+	&:first-child {
+		// border-radius: $corners-big 0 0 $corners-big;
+	}
+
+	&:last-child {
+		// border-radius: 0 $corners-big $corners-big 0;
+	}
+}
+
+
+td {
+	transition: all 100ms ease;
+	color: color(text-normal);
+	line-height: $line-height-normal;
+	border-bottom: 1px solid color(table-border);
+	font-weight: 400;
+
+	a {
+		// color: inherit;
+	}
+
+	.meta-info {
+		color: color(text-secondary);
+		font-size: 0.9em;
+		margin-top: -2px;
+		display: block;
+	}
+
+	i {
+		color: color(text-tertiary);
+	}
+}
+
+
+// LEGACY 6.0
+tr {
+	&:last-child td {
+		border-bottom: 0;
+	}
+
+	&.missing {
+		td:not(.reorder-col), &:hover td:not(.reorder-col){
+			background-color: color(warning-light);
+
+				.toolbar{
+					opacity: 0.7;
+					cursor: not-allowed;
+					pointer-events: none;
+				}
+
+				&:first-child{
+					&:before{
+						@extend %fa-icon;
+						@extend .fas;
+
+						color: color(warning);
+						content: fa-content($fa-var-ban);
+						float: left;
+						font-size: 14px;
+						line-height: 1;
+						margin: 2px 10px 10px 0;
+					}
+				}
+		}
+	}
+
+	&.auto-saved{
+		td:not(.reorder-col),
+		&:hover td:not(.reorder-col){
+			background-color: color(warning-light);
+			// border-color: $orange-medium;
+
+				.auto-save{
+					color: color(warning);
+				}
+		}
+	}
+
+	&.sub-heading{
+		td, &:hover td{
+			background-color: color(bg-0);
+			border-bottom: 1px solid color(table-border);
+			border-top: 1px solid color(table-border);
+			color: color(text-secondary);
+			font-size: 85%;
+			font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+		}
+	}
+
+	// &:hover,
+	&.selected {
+		td {
+			position: relative;
+			z-index: 2;
+
+			$c: color(accent-light);
+			background: $c;
+			color: color(link);
+			// border-color: $c;
+			// box-shadow: 0 -1px 0 0px $c;
+		}
+
+		// Prevent the status tag from clashing with the selected background color
+    /*
+    .status-tag {
+			border: 2px solid color(bg-0);
+		}
+    */
+	}
+}
+
+.column-sort-header {
+	padding: 0;
+
+	&, a {
+		color: color(text-secondary);
+	}
+}
+
+.column-sort-header--active {
+	// background-color: color(bg-5);
+
+	a {
+		color: color(text-primary) !important;
+		// font-weight: bold;
+	}
+
+	.column-sort::after {
+		color: color(text-primary);
+	}
+}
+
+.column-sort {
+	display: block;
+	padding: $sq-inset-s;
+
+	&::after {
+		@extend %fa-icon;
+		@extend .fas;
+
+		// content: fa-content($fa-var-chevron-down);
+
+		color: color(text-secondary);
+		display: inline-block;
+		font-size: 12px;
+		font-weight: normal;
+		line-height: 0;
+		margin-left: 5px;
+		position: relative;
+		top: 0px;
+	}
+}
+
+.column-sort-header--active {
+
+.column-sort--desc {
+	&::after {
+		// content: fa-content($fa-var-chevron-up);
+		content: fa-content($fa-var-angle-down);
+	}
+}
+
+.column-sort--asc {
+	&::after {
+		// content: fa-content($fa-var-chevron-up);
+		content: fa-content($fa-var-angle-up);
+	}
+}
+
+}
+
+
+
+.collapsed-label {
+	display: none;
+}
+
+@include m-custom-down(400px) {
+
+	.table-responsive--collapsible {
+		& {
+			overflow-x: unset;
+
+			border-radius: 0;
+			border: none;
+			box-shadow: none;
+		}
+
+
+		&, tbody, th, td, tr {
+			display: block;
+			border: none;
+			padding: 0;
+		}
+
+		tr {
+			padding: 10px 0;
+			margin-bottom: 10px;
+
+			// border-radius: $corners-big;
+			border: 1px solid color(table-border);
+			background: color(bg-0);
+			// box-shadow: 0 5px 10px rgba(rgb(32, 6, 92), 0.05);
+		}
+
+		td {
+			margin: 5px 0;
+			padding: 0 20px;
+			color: color(text-normal);
+			font-weight: 500;
+		}
+
+		thead {
+			display: none;
+		}
+
+		input[type="checkbox"] {
+			display: none;
+		}
+
+		.collapsed-label {
+			display: inline-block;
+			margin-right: 5px;
+			content: attr(data-title) ":";
+			font-weight: bold;
+			text-transform: uppercase;
+			color: color(text-secondary);
+			font-weight: 600;
+			font-size: 0.85em;
+
+			&::after {
+				content: ":";
+			}
+		}
+	}
+}
+
+// Cursor behavior for selecting files in File Field modal table list
+.modal-file .file-list tbody tr:hover {
+  cursor: pointer;
+  background-color: color(bg-0);
+}

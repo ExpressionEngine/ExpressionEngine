@@ -2,581 +2,576 @@
 
 $lang = array(
 
-'system_utilities' => 'System Utilities',
+    'system_utilities' => 'System Utilities',
 
+    /* Menu */
 
-/* Menu */
+    'backup_database' => 'Backup Database',
 
-'backup_database' => 'Backup Database',
+    'cache_manager' => 'Cache Manager',
 
-'cache_manager' => 'Cache Manager',
+    'communicate' => 'Communicate',
 
-'communicate' => 'Communicate',
+    'general_utilities' => 'General Utilities',
 
-'general_utilities' => 'General Utilities',
+    'cp_translation' => '<abbr title="Control Panel">CP</abbr> Translation',
 
-'cp_translation' => '<abbr title="Control Panel">CP</abbr> Translation',
+    'cp_translations' => 'CP Translations',
 
-'cp_translations' => 'CP Translations',
+    'data_operations' => 'Data Operations',
 
-'data_operations' => 'Data Operations',
+    'manage_extensions' => 'Manage Extensions',
 
-'manage_extensions' => 'Manage Extensions',
+    'debug_tools' => 'Debug Tools',
 
-'debug_tools' => 'Debug Tools',
+    'default' => 'Default',
 
-'default' => 'Default',
+    'file_converter' => 'File Converter',
 
-'file_converter' => 'File Converter',
+    'member_tools' => 'Member Tools',
 
-'member_tools' => 'Member Tools',
+    'member_import' => 'Member Import',
 
-'member_import' => 'Member Import',
+    'php_info' => '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 
-'php_info' => '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
+    'query_form' => 'Query Form',
 
-'query_form' => 'Query Form',
+    'search_and_replace' => 'Search and Replace',
 
-'search_and_replace' => 'Search and Replace',
+    'sent' => 'Sent',
 
-'sent' => 'Sent',
+    'sql_manager' => 'SQL Manager',
 
-'sql_manager' => 'SQL Manager',
+    'sql_manager_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Manager',
 
-'sql_manager_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Manager',
+    'statistics' => 'Statistics',
 
-'statistics' => 'Statistics',
+    /* Communicate */
+    'add_member_roles' => 'Add member role(s)',
 
+    'add_member_roles_desc' => 'Send Email to <b>all</b> members in chosen role(s).',
 
-/* Communicate */
-'add_member_roles' => 'Add member role(s)',
+    'attachment' => 'Attachment',
 
-'add_member_roles_desc' => 'Send Email to <b>all</b> members in chosen role(s).',
+    'attachment_desc' => 'Attachments are <b>not</b> saved, after sending.',
 
-'attachment' => 'Attachment',
+    'bcc_recipients' => '<abbr title="Blind Carbon Copied">BCC</abbr> recipient(s)',
 
-'attachment_desc' => 'Attachments are <b>not</b> saved, after sending.',
+    'bcc_recipients_desc' => '<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
 
-'bcc_recipients' => '<abbr title="Blind Carbon Copied">BCC</abbr> recipient(s)',
+    'btn_send_email' => 'Send Email',
 
-'bcc_recipients_desc' => '<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
+    'send_email' => 'Send Email',
 
-'btn_send_email' => 'Send Email',
+    'btn_send_email_working' => 'Sending...',
 
-'send_email' => 'Send Email',
+    'cc_recipients' => '<abbr title="Carbon Copied">CC</abbr> recipient(s)',
 
-'btn_send_email_working' => 'Sending...',
+    'cc_recipients_desc' => '<abbr title="Carbon Copied">CC</abbr> Email(s). Separate multiple recipients with a comma.',
 
-'cc_recipients' => '<abbr title="Carbon Copied">CC</abbr> recipient(s)',
+    'communicate_error' => 'Attention: Email not sent',
 
-'cc_recipients_desc' => '<abbr title="Carbon Copied">CC</abbr> Email(s). Separate multiple recipients with a comma.',
+    'communicate_error_desc' => 'We were unable to send this Email, please review and fix errors below.',
 
-'communicate_error' => 'Attention: Email not sent',
+    'create_new_email' => 'Create new Email',
 
-'communicate_error_desc' => 'We were unable to send this Email, please review and fix errors below.',
+    'email_body' => 'Email Body',
 
-'create_new_email' => 'Create new Email',
+    'email_subject' => 'Email Subject',
 
-'email_body' => 'Email Body',
+    'emails_removed' => 'Emails removed',
 
-'email_subject' => 'Email Subject',
+    'no_cached_emails' => 'No <b>Sent emails</b> found.',
 
-'emails_removed' => 'Emails removed',
+    'none' => 'Plain Text',
 
-'no_cached_emails' => 'No <b>Sent emails</b> found.',
+    'primary_recipients' => 'Primary recipient(s)',
 
-'none' => 'Plain Text',
+    'primary_recipients_desc' => 'To Email(s). Separate multiple recipients with a comma.',
 
-'primary_recipients' => 'Primary recipient(s)',
+    'recipient_options' => 'Recipient Options',
 
-'primary_recipients_desc' => 'To Email(s). Separate multiple recipients with a comma.',
+    'resend' => 'Send Email again',
 
-'recipient_options' => 'Recipient Options',
+    'send_as' => 'send as',
 
-'resend' => 'Send Email again',
+    'view_email' => 'View Email',
 
-'send_as' => 'send as',
+    'word_wrap' => 'word wrap',
 
-'view_email' => 'View Email',
+    'your_email' => 'Your email',
 
-'word_wrap' => 'word wrap',
+    'view_email_cache' => 'Sent Emails',
 
-'your_email' => 'Your email',
+    /* CP Translation */
+    'cannot_access' => 'Language files cannot be accessed. Please <a href="' . DOC_URL . '/control-panel/utilities.html#language-files" rel="external">consult documentation</a> on placing the files into right folder.',
 
-'view_email_cache' => 'Sent Emails',
+    'cannot_create_zip' => 'Cannot create a .zip file',
 
+    'export_download' => 'Export (Download)',
 
-/* CP Translation */
-'cannot_access' => 'Language files cannot be accessed. Please <a href="'.DOC_URL.'/control-panel/utilities.html#language-files" rel="external">consult documentation</a> on placing the files into right folder.',
+    'file_name' => 'File Name',
 
-'cannot_create_zip' => 'Cannot create a .zip file',
+    'file_saved' => 'The translation file has been saved to <b>%s</b>',
 
-'export_download' => 'Export (Download)',
+    'invalid_path' => 'The path you submitted is not valid:',
 
-'file_name' => 'File Name',
+    'language_files' => 'Language Files',
 
-'file_saved' => 'The translation file has been saved to <b>%s</b>',
+    'no_files_selected' => 'No files were selected for export',
 
-'invalid_path' => 'The path you submitted is not valid:',
+    'search_files_button' => 'Search Files',
 
-'language_files' => 'Language Files',
+    'trans_file_not_writable' => 'Translation file is not writeable.',
 
-'no_files_selected' => 'No files were selected for export',
+    'translate_btn' => 'Save Translations',
 
-'search_files_button' => 'Search Files',
+    'translate_error' => 'Attention: translation not saved',
 
-'trans_file_not_writable'=> 'Translation file is not writeable.',
+    'translate_error_desc' => 'We were unable to save the translation, please review and fix errors below.',
 
-'translate_btn' => 'Save Translations',
+    'translations_saved' => 'Translations Saved',
 
-'translate_error' => 'Attention: translation not saved',
+    /* PHP Info */
+    'php_info_title' => '<abbr title="Preprocessor Hypertext Processor">PHP</abbr> %s Info',
 
-'translate_error_desc' => 'We were unable to save the translation, please review and fix errors below.',
+    /* Cache Manager */
+    'all_caches' => 'All Caches',
 
-'translations_saved' => 'Translations Saved',
+    'btn_clear_caches' => 'Clear Caches',
 
+    'btn_clear_caches_working' => 'Clearing...',
 
-/* PHP Info */
-'php_info_title' => '<abbr title="Preprocessor Hypertext Processor">PHP</abbr> %s Info',
+    'caches_cleared' => 'Caches cleared',
 
+    'caches_cleared_error' => 'You must select at least one cache type to clear.',
 
-/* Cache Manager */
-'all_caches' => 'All Caches',
+    'caches_to_clear' => 'Caches to clear',
 
-'btn_clear_caches' => 'Clear Caches',
+    'caches_to_clear_desc' => 'All caches selected will be cleared.',
 
-'btn_clear_caches_working' => 'Clearing...',
+    'database' => 'Database',
 
-'caches_cleared' => 'Caches cleared',
+    'tags' => 'Tags',
 
-'caches_cleared_error' => 'You must select at least one cache type to clear.',
+    'templates' => 'Templates',
 
-'caches_to_clear' => 'Caches to clear',
+    /* Search and Replace */
+    'btn_sandr' => 'Search and Replace',
 
-'caches_to_clear_desc' => 'All caches selected will be cleared.',
+    'btn_sandr_working' => 'Replacing...',
 
-'database' => 'Database',
+    'channel_entry_title' => 'Channel Entry Titles',
 
-'tags' => 'Tags',
+    'channel_fields' => 'Channel Fields',
 
-'templates' => 'Templates',
+    'choose_below' => '(Choose from the following)',
 
+    'current_password' => 'Current password',
 
-/* Search and Replace */
-'btn_sandr' => 'Search and Replace',
+    'no_tables_match' => 'No tables match the search criteria',
 
-'btn_sandr_working' => 'Replacing...',
+    'replace_in_templates' => 'In ALL Templates',
 
-'channel_entry_title' => 'Channel Entry Titles',
+    'rows_replaced' => 'Number of database records in which a replacement occurred: %s',
 
-'channel_fields' => 'Channel Fields',
+    'sandr' => 'Data Search and Replace',
 
-'choose_below' => '(Choose from the following)',
+    'sandr_error' => 'Attention: Search and replace not run',
 
-'current_password' => 'Current password',
+    'sandr_error_desc' => 'We were unable to run your search and replace, please review and fix errors below.',
 
-'no_tables_match' => 'No tables match the search criteria',
+    'sandr_in' => 'Search and replace in',
 
-'replace_in_templates' => 'In ALL Templates',
+    'sandr_in_desc' => 'Select the field you want to run this search and replace on.',
 
-'rows_replaced' => 'Number of database records in which a replacement occurred: %s',
+    'sandr_password_desc' => 'You <b>must</b> enter your password to search and replace.',
 
-'sandr' => 'Data Search and Replace',
+    'sandr_replace_text' => 'Replace with this text',
 
-'sandr_error' => 'Attention: Search and replace not run',
+    'sandr_search_text' => 'Search for this text',
 
-'sandr_error_desc' => 'We were unable to run your search and replace, please review and fix errors below.',
+    'sandr_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
 
-'sandr_in' => 'Search and replace in',
+    'site_preferences' => 'Site Preferences',
 
-'sandr_in_desc' => 'Select the field you want to run this search and replace on.',
+    'template_groups' => 'Template Groups',
 
-'sandr_password_desc' => 'You <b>must</b> enter your password to search and replace.',
+    /* Import Converter */
+    'assign_fields' => 'Assign Fields',
 
-'sandr_replace_text' => 'Replace with this text',
+    'btn_assign_fields' => 'Assign Fields',
 
-'sandr_search_text' => 'Search for this text',
+    'btn_copy_to_clipboard' => 'Copy to Clipboard',
 
-'sandr_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+    'btn_create_file' => 'Create [file]',
 
-'site_preferences' => 'Site Preferences',
+    'btn_create_file_working' => 'Creating...',
 
-'template_groups' => 'Template Groups',
+    'btn_download_file' => 'Download File',
 
+    'comma_delimit' => 'Comma',
 
-/* Import Converter */
-'assign_fields' => 'Assign Fields',
+    'confirm_assignments' => 'Confirm Assignments',
 
-'btn_assign_fields' => 'Assign Fields',
+    'delimiting_char' => 'Delimiting character',
 
-'btn_copy_to_clipboard' => 'Copy to Clipboard',
+    'delimiting_char_desc' => 'Character used to delimit the above file.',
 
-'btn_create_file' => 'Create [file]',
+    'duplicate_field_assignment' => 'Duplicate field assignment: %x',
 
-'btn_create_file_working' => 'Creating...',
+    'duplicate_member_id' => 'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
 
-'btn_download_file' => 'Download File',
+    'duplicate_username' => 'Duplicate username: ',
 
-'comma_delimit' => 'Comma',
+    'enclosing_char' => 'Enclosing character',
 
-'confirm_assignments' => 'Confirm Assignments',
+    'enclosing_char_desc' => 'Character that encloses your data.',
 
-'delimiting_char' => 'Delimiting character',
+    'encrypted_passwords' => 'Passwords are encrypted.',
 
-'delimiting_char_desc' => 'Character used to delimit the above file.',
+    'file_not_converted' => 'Attention: File not converted',
 
-'duplicate_field_assignment' => 'Duplicate field assignment: %x',
+    'file_not_converted_desc' => 'We were unable to convert this file, please review and fix errors below.',
 
-'duplicate_member_id' => 'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
+    'import_cache_file_not_writable' => 'Cache folder not writable',
 
-'duplicate_username' => 'Duplicate username: ',
+    'import_cache_file_instructions' => 'To upload the file, the cache folder must be writable.',
 
-'enclosing_char' => 'Enclosing character',
+    'import_convert_btn' => 'Convert File',
 
-'enclosing_char_desc' => 'Character that encloses your data.',
+    'import_convert_btn_saving' => 'Converting...',
 
-'encrypted_passwords' => 'Passwords are encrypted.',
+    'import_converter' => 'Member Import File Converter',
 
-'file_not_converted' => 'Attention: File not converted',
+    'import_password_warning' => '<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
 
-'file_not_converted_desc' => 'We were unable to convert this file, please review and fix errors below.',
+    'member_file' => 'Member file',
 
-'import_cache_file_not_writable' => 'Cache folder not writable',
+    'member_file_desc' => 'Delimited file from 3rd party containing member data to be converted into ExpressionEngine\'s Member XML format.',
 
-'import_cache_file_instructions' => 'To upload the file, the cache folder must be writable.',
+    'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
 
-'import_convert_btn' => 'Convert File',
+    'missing_email_field' => 'You must assign a field to "email"',
 
-'import_convert_btn_saving' => 'Converting...',
+    'missing_screen_name_field' => 'You must assign a field to "screen_name"',
 
-'import_converter' => 'Member Import File Converter',
+    'missing_username_field' => 'You must assign a field to "username"',
 
+    'not_enough_fields' => 'Not enough fields',
 
-'import_password_warning' => '<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
+    'not_enough_fields_desc' => 'You must have at least 3 fields: username, screen_name, and email address',
 
-'member_file' => 'Member file',
+    'other_delimit' => 'Other <i>Type character below</i>',
 
-'member_file_desc' => 'Delimited file from 3rd party containing member data to be converted into ExpressionEngine\'s Member XML format.',
+    'pipe_delimit' => 'Pipe',
 
-'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
+    'plain_text_passwords' => 'Plain text passwords?',
 
-'missing_email_field' => 'You must assign a field to "email"',
+    'plain_text_passwords_desc' => 'When enabled, passwords will be imported in plain text.',
 
-'missing_screen_name_field' => 'You must assign a field to "screen_name"',
+    'plaintext_passwords' => 'Passwords are plain text.',
 
-'missing_username_field' => 'You must assign a field to "username"',
+    'select' => 'Select field',
 
-'not_enough_fields' => 'Not enough fields',
+    'tab_delimit' => 'Tab',
 
-'not_enough_fields_desc' => 'You must have at least 3 fields: username, screen_name, and email address',
+    'xml_code' => 'XML Code',
 
-'other_delimit' => 'Other <i>Type character below</i>',
+    /* Member Import */
+    'btn_add_fields' => 'Add Fields',
 
-'pipe_delimit' => 'Pipe',
+    'btn_add_fields_working' => 'Adding...',
 
-'plain_text_passwords' => 'Plain text passwords?',
+    'btn_confirm_import_working' => 'Importing...',
 
-'plain_text_passwords_desc' => 'When enabled, passwords will be imported in plain text.',
+    'confirm_import' => 'Confirm Import',
 
-'plaintext_passwords' => 'Passwords are plain text.',
+    'confirm_import_warning' => '<p class="txt-caution"><span class="icon--caution" title="exercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p><p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
 
-'select' => 'Select field',
+    'custom_fields' => 'Custom Fields',
 
-'tab_delimit' => 'Tab',
+    'field_label' => 'Field Label',
 
-'xml_code' => 'XML Code',
+    'field_name' => 'Field Name',
 
+    'field_public' => 'Public?',
 
-/* Member Import */
-'btn_add_fields' => 'Add Fields',
+    'field_registration' => 'Registration?',
 
-'btn_add_fields_working' => 'Adding...',
+    'field_required' => 'Required?',
 
-'btn_confirm_import_working' => 'Importing...',
+    'file_read_error' => 'Unable to read file',
 
-'confirm_import' => 'Confirm Import',
+    'file_read_error_desc' => 'The XML file was not able to be read, check that the file exists and has proper read permissions.',
 
-'confirm_import_warning' => '<p class="txt-caution"><span class="icon--caution" title="exercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p><p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
+    'import_success' => 'Import was successful',
 
-'custom_fields' => 'Custom Fields',
+    'map_custom_fields' => 'Map Custom Fields',
 
-'field_label' => 'Field Label',
+    'map_custom_fields_desc' => 'Your <abbr title="Extensible Markup Language">XML</abbr> file has fields that don\'t map directly to our importer, please review and assign custom fields as needed.',
 
-'field_name' => 'Field Name',
+    'mbr_create_custom_fields' => 'Create custom fields?',
 
-'field_public' => 'Public?',
+    'mbr_create_custom_fields_desc' => 'When enabled, import will automatically create custom member fields for any data that does not match a default member field.',
 
-'field_registration' => 'Registration?',
+    'mbr_datetime_fmt' => 'Date &amp; time format',
 
-'field_required' => 'Required?',
+    'mbr_import_btn' => 'Import Members',
 
-'file_read_error' => 'Unable to read file',
+    'mbr_import_btn_saving' => 'Importing...',
 
-'file_read_error_desc' => 'The XML file was not able to be read, check that the file exists and has proper read permissions.',
+    'mbr_import_default_options' => 'Default Options',
 
-'import_success' => 'Import was successful',
+    'mbr_language' => 'Language',
 
-'map_custom_fields' => 'Map Custom Fields',
+    'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-'map_custom_fields_desc' => 'Your <abbr title="Extensible Markup Language">XML</abbr> file has fields that don\'t map directly to our importer, please review and assign custom fields as needed.',
+    'member_group' => 'Member group',
 
-'mbr_create_custom_fields' => 'Create custom fields?',
+    'role' => 'Role',
 
-'mbr_create_custom_fields_desc' => 'When enabled, import will automatically create custom member fields for any data that does not match a default member field.',
+    'member_import_error' => 'Attention: Import not completed',
 
-'mbr_datetime_fmt' => 'Date &amp; time format',
+    'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
 
-'mbr_import_btn' => 'Import Members',
+    'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
 
-'mbr_import_btn_saving' => 'Importing...',
+    'member_xml_file' => 'Member XML file',
 
-'mbr_import_default_options' => 'Default Options',
+    'member_xml_file_desc' => 'XML file containing member data',
 
-'mbr_language' => 'Language',
+    'new_fields_success' => 'The following custom member fields were successfully added:',
 
-'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
+    'option' => 'Option',
 
-'member_group' => 'Member group',
+    'value' => 'Value',
 
-'role' => 'Role',
+    'xml_parse_error' => 'Unable to parse XML',
 
-'member_import_error' => 'Attention: Import not completed',
+    'xml_parse_error_desc' => 'Check the XML file for any incorrect syntax.',
 
-'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
+    /* Database Backup Utility */
+    'backing_up' => 'Backing up...',
 
-'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
+    'backup_database' => 'Backup Database',
 
-'member_xml_file' => 'Member XML file',
+    'backup_error' => 'Cannot Make Backup',
 
-'member_xml_file_desc' => 'XML file containing member data',
+    'backup_out_of_memory' => 'Your server ran out of memory while trying to export your database. Try setting the <a href="%s" rel="external noreferrer"><code>db_backup_row_limit</code></a> config to a lower number.',
 
-'new_fields_success' => 'The following custom member fields were successfully added:',
+    'backup_success' => 'Backup Succeeded',
 
-'option' => 'Option',
+    'backup_success_desc' => 'Your backup has been stored in your system folder at: <b>%s</b>',
 
-'value' => 'Value',
+    'backup_tables' => 'Backup tables',
 
-'xml_parse_error' => 'Unable to parse XML',
+    'cache_path_not_writable' => 'Your cache path is not writable. This folder must be writable to write your backup.',
 
-'xml_parse_error_desc' => 'Check the XML file for any incorrect syntax.',
+    'not_enough_free_disk_space' => 'There is not enough free disk space to write your backup. %s needed.',
 
+    'table_count' => '<b>%s</b> tables',
 
-/* Database Backup Utility */
-'backing_up' => 'Backing up...',
+    /* SQL Query Form */
+    'affected_rows' => 'Affected Rows',
 
-'backup_database' => 'Backup Database',
+    'common_queries' => 'Common queries',
 
-'backup_error' => 'Cannot Make Backup',
+    'common_queries_desc' => 'Some common queries you can run, to learn more about your database content.',
 
-'backup_out_of_memory' => 'Your server ran out of memory while trying to export your database. Try setting the <a href="%s" rel="external noreferrer"><code>db_backup_row_limit</code></a> config to a lower number.',
+    'query_btn' => 'Run Query',
 
-'backup_success' => 'Backup Succeeded',
+    'query_btn_saving' => 'Running...',
 
-'backup_success_desc' => 'Your backup has been stored in your system folder at: <b>%s</b>',
+    'query_form_error' => 'Attention: Query not run',
 
-'backup_tables' => 'Backup tables',
+    'query_form_error_desc' => 'We were unable to run your query, please review and fix errors below.',
 
-'cache_path_not_writable' => 'Your cache path is not writable. This folder must be writable to write your backup.',
+    'query_results' => 'Query Results',
 
-'not_enough_free_disk_space' => 'There is not enough free disk space to write your backup. %s needed.',
+    'search_table' => 'search table',
 
-'table_count' => '<b>%s</b> tables',
+    'sql_not_allowed' => 'Query type not allowed',
 
+    'sql_not_allowed_desc' => 'You cannot run FLUSH, REPLACE, GRANT, REVOKE, LOCK or UNLOCK queries.',
 
-/* SQL Query Form */
-'affected_rows' => 'Affected Rows',
+    'sql_password_desc' => 'You <b>must</b> enter your password to run queries.',
 
-'common_queries' => 'Common queries',
+    'sql_query_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query',
 
-'common_queries_desc' => 'Some common queries you can run, to learn more about your database content.',
+    'sql_query_form' => 'SQL Query Form',
 
-'query_btn' => 'Run Query',
+    'sql_query_form_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query Form',
 
-'query_btn_saving' => 'Running...',
+    'query' => 'Query',
 
-'query_form_error' => 'Attention: Query not run',
+    'sql_query_to_run' => 'Query to run',
 
-'query_form_error_desc' => 'We were unable to run your query, please review and fix errors below.',
+    'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
 
-'query_results' => 'Query Results',
+    'total_results' => 'Total Results',
 
-'search_table' => 'search table',
+    'type_phrase' => 'type phrase...',
 
-'sql_not_allowed' => 'Query type not allowed',
+    /* Statistics */
+    'channel_titles' => 'Channel Entries',
 
-'sql_not_allowed_desc' => 'You cannot run FLUSH, REPLACE, GRANT, REVOKE, LOCK or UNLOCK queries.',
+    'forum_topics' => 'Forum Topics',
 
-'sql_password_desc' => 'You <b>must</b> enter your password to run queries.',
+    'forums' => 'Forums',
 
-'sql_query_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query',
+    'manage_stats' => 'Manage Statistics',
 
-'sql_query_form' => 'SQL Query Form',
+    'members' => 'Members',
 
-'sql_query_form_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query Form',
+    'record_count' => 'Record Count',
 
-'query' => 'Query',
+    'sites' => 'Sites',
 
-'sql_query_to_run' => 'Query to run',
+    'source' => 'Source',
 
-'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+    'sync' => 'Sync',
 
-'total_results' => 'Total Results',
+    'sync_completed' => 'Synchronization Completed',
 
-'type_phrase' => 'type phrase...',
+    /* SQL Manager */
+    'database_tables' => 'Database Tables',
 
+    'manage' => 'Manage',
 
-/* Statistics */
-'channel_titles' => 'Channel Entries',
+    'message' => 'Message',
 
-'forum_topics' => 'Forum Topics',
+    'mysql' => 'My<abbr title="Structured Query Language">SQL</abbr>',
 
-'forums' => 'Forums',
+    'no_action_selected' => 'You must select an action to perform on the selected tables.',
 
-'manage_stats' => 'Manage Statistics',
+    'no_tables_selected' => 'You must select the tables in which to perform this action.',
 
-'members' => 'Members',
+    'optimize' => 'Optimize',
 
-'record_count' => 'Record Count',
+    'optimize_tables_results' => 'Optimized Table Results',
 
-'sites' => 'Sites',
+    'records' => 'Records',
 
-'source' => 'Source',
+    'repair' => 'Repair',
 
-'sync' => 'Sync',
+    'repair_tables_results' => 'Repair Table Results',
 
-'sync_completed' => 'Synchronization Completed',
+    'search_tables' => 'search tables',
 
+    'size' => 'Size',
 
-/* SQL Manager */
-'database_tables' => 'Database Tables',
+    'status' => 'Status',
 
-'manage' => 'Manage',
+    'table' => 'Table',
 
-'message' => 'Message',
+    'table_name' => 'Table Name',
 
-'mysql' => 'My<abbr title="Structured Query Language">SQL</abbr>',
+    'total_records' => 'Total Records',
 
-'no_action_selected' => 'You must select an action to perform on the selected tables.',
+    'uptime' => 'Uptime',
 
-'no_tables_selected' => 'You must select the tables in which to perform this action.',
+    /* Search Reindex */
 
-'optimize' => 'Optimize',
+    'search_reindex_fail' => 'Reindexing Failed',
 
-'optimize_tables_results' => 'Optimized Table Results',
+    'search_reindex' => 'Search Reindex',
 
-'records' => 'Records',
+    'search_reindex_desc' => '%s Channel entries will be reindexed',
 
-'repair' => 'Repair',
+    'reindex_success' => 'Reindexing Complete',
 
-'repair_tables_results' => 'Repair Table Results',
+    'reindex_success_desc' => '',
 
-'search_tables' => 'search tables',
+    'btn_reindex' => 'Reindex',
 
-'size' => 'Size',
+    'btn_reindex_working' => 'Reindexing',
 
-'status' => 'Status',
+    'all_sites' => 'Reindex All Sites?',
 
-'table' => 'Table',
+    'all_sites_desc' => 'Reindex the Channel entries across all sites, or just this one?',
 
-'table_name' => 'Table Name',
+    'search_reindexed_started' => 'Search reindexing started.',
 
-'total_records' => 'Total Records',
+    'search_reindexed_completed' => 'Search reindexing complete. %s entries were reindexed.',
 
-'uptime' => 'Uptime',
+    /* Export Email Addresses */
 
-/* Search Reindex */
+    'mass_notification_export' => 'Mass Notification Export',
 
-'search_reindex_fail' => 'Reindexing Failed',
+    'export_email_addresses_title' => 'Export a <abbr title="Comma Separated Values">CSV</abbr> File',
 
-'search_reindex' => 'Search Reindex',
+    'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
 
-'search_reindex_desc' => '%s Channel entries will be reindexed',
+    'export_warning_desc' => 'This action should only be done by authorized users. The resulting <abbr title="Comma Separated Values">CSV</abbr> file should be handled in harmony with your privacy policy.',
 
-'reindex_success' => 'Reindexing Complete',
+    'download_valid_email_addresses' => 'Download Valid Emails',
 
-'reindex_success_desc' => '',
+    'download_invalid_email_addresses' => 'Download Invalid Emails',
 
-'btn_reindex' => 'Reindex',
+    'exported_valid_email_addresses' => 'Valid member email addresses were exported',
 
-'btn_reindex_working' => 'Reindexing',
+    'exported_invalid_email_addresses' => 'Invalid member email addresses were exported',
 
-'all_sites' => 'Reindex All Sites?',
+    'validate_addresses' => 'Validate email addresses?',
 
-'all_sites_desc' => 'Reindex the Channel entries across all sites, or just this one?',
+    'validate_addresses_desc' => 'Check the email for correct format and check that the domain exists.',
 
-'search_reindexed_started' => 'Search reindexing started.',
+    'export_email_addresses_fail' => 'Export Failed',
 
-'search_reindexed_completed' => 'Search reindexing complete. %s entries were reindexed.',
+    /* Debug Tools */
 
-/* Export Email Addresses */
+    'debug_tools_overview' => 'Overview',
 
-'mass_notification_export' => 'Mass Notification Export',
+    'debug_tools_instruction' => '<a href="%s">Click here</a> to navigate to Developer &rarr; Utilities &rarr; Debug Tools in Control Panel for details and fix.',
 
-'export_email_addresses_title' => 'Export a <abbr title="Comma Separated Values">CSV</abbr> File',
+    'debug_tools_debug_tags' => 'Debug Template Tags',
 
-'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
+    'debug_tools_installed' => 'Installed',
 
-'export_warning_desc' => 'This action should only be done by authorized users. The resulting <abbr title="Comma Separated Values">CSV</abbr> file should be handled in harmony with your privacy policy.',
+    'debug_tools_tag' => 'Tag',
 
-'download_valid_email_addresses' => 'Download Valid Emails',
+    'debug_tools_addon' => 'Add-on',
 
-'download_invalid_email_addresses' => 'Download Invalid Emails',
+    'debug_tools_count' => 'Count',
 
-'exported_valid_email_addresses' => 'Valid member email addresses were exported',
+    'debug_tools_broken_tags_found' => 'We found %s broken or problematic template tags.',
 
-'exported_invalid_email_addresses' => 'Invalid member email addresses were exported',
+    'debug_tools_corrupt_categories' => 'Corrupt categories',
 
-'validate_addresses' => 'Validate email addresses?',
+    'debug_tools_corrupt_categories_found' => 'We found %s corrupt categories.',
 
-'validate_addresses_desc' => 'Check the email for correct format and check that the domain exists.',
+    'tag_inclusions' => 'Tag inclusions',
 
-'export_email_addresses_fail' => 'Export Failed',
+    'debug_tools_fix_corrupt_categories' => 'Fix corrupt categories',
 
-/* Debug Tools */
+    'debug_tools_categories_fixed' => 'Corrupt categories have been fixed',
 
-'debug_tools_overview' => 'Overview',
+    'debug_tools_duplicate_layout_tabs' => 'Duplicate Channel Layout Tabs',
 
-'debug_tools_instruction' => '<a href="%s">Click here</a> to navigate to Developer &rarr; Utilities &rarr; Debug Tools in Control Panel for details and fix.',
+    'debug_tools_duplicate_layout_tabs_found' => 'We found %s duplicate Channel Layout tabs.',
 
-'debug_tools_debug_tags' => 'Debug Template Tags',
+    'debug_tools_remove_duplicate_layout_tabs' => 'Remove duplicate layout tabs',
 
-'debug_tools_broken_tags_found' => 'We found %s broken or problematic template tags.',
+    'debug_tools_fieldtypes' => 'Debug Fieldtypes',
 
-'debug_tools_corrupt_categories' => 'Corrupt categories',
+    'debug_tools_show_missing_fieldtypes' => 'Show missing fieldtypes',
 
-'debug_tools_corrupt_categories_found' => 'We found %s corrupt categories.',
+    'debug_tools_found_missing_fieldtypes' => 'We found %s missing fieldtypes.',
 
-'tag_inclusions' => 'Tag inclusions',
+    'debug_tools_missing_fieldtypes' => 'Missing Fieldtypes',
 
-'debug_tools_fix_corrupt_categories' => 'Fix corrupt categories',
+    'debug_tools_missing_fieldtypes_desc' => 'The following fieldtypes are found in the database, but are not actually installed properly. This will cause issues with editing channels, fields, and entries. To resolve this, either install the missing addons or remove the fields from their tables.',
 
-'debug_tools_categories_fixed' => 'Corrupt categories have been fixed',
+    'debug_tools_no_missing_fieldtypes_desc' => 'There are no missing fieldtypes in the database. Awesome!',
 
-'debug_tools_duplicate_layout_tabs' => 'Duplicate Channel Layout Tabs',
+    'debug_tools_installed_unused_fieldtypes' => 'Installed But Unused Fieldtypes',
 
-'debug_tools_duplicate_layout_tabs_found' => 'We found %s duplicate Channel Layout tabs.',
+    'debug_tools_installed_unused_fieldtypes_desc' => 'These fieldtypes are installed, but are not currently in use.',
 
-'debug_tools_remove_duplicate_layout_tabs' => 'Remove duplicate layout tabs',
+    'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
 
-'debug_tools_fieldtypes' => 'Debug Fieldtypes',
-
-'debug_tools_show_missing_fieldtypes' => 'Show missing fieldtypes',
-
-'debug_tools_found_missing_fieldtypes' => 'We found %s missing fieldtypes.',
-
-'debug_tools_missing_fieldtypes' => 'Missing Fieldtypes',
-
-'debug_tools_missing_fieldtypes_desc' => 'The following fieldtypes are found in the database, but are not actually installed properly. This will cause issues with editing channels, fields, and entries. To resolve this, either install the missing addons or remove the fields from their tables.',
-
-'debug_tools_no_missing_fieldtypes_desc' => 'There are no missing fieldtypes in the database. Awesome!',
-
-'debug_tools_installed_unused_fieldtypes' => 'Installed But Unused Fieldtypes',
-
-'debug_tools_installed_unused_fieldtypes_desc' => 'These fieldtypes are installed, but are not currently in use.',
-
-'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
-
-'debug_tools_members' => 'Debug Members',
+    'debug_tools_members' => 'Debug Members',
 
 );
 

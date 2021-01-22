@@ -161,7 +161,6 @@ class Color
         return $r . $g . $b;
     }
 
-
     /**
      * Given a HEX string returns a RGB array equivalent.
      * @param string $color
@@ -184,7 +183,6 @@ class Color
 
         return $RGB;
     }
-
 
     /**
      * Given an RGB associative array returns the equivalent HEX string
@@ -463,7 +461,6 @@ class Color
         // Return our gradient array
         return array("light" => $lightColor, "dark" => $darkColor);
     }
-
 
     /**
      * Returns whether or not given color is considered "light"
@@ -748,6 +745,7 @@ class Color
             'Undefined property via __get(): ' . $name . ' in ' . $trace[0]['file'] . ' on line ' . $trace[0]['line'],
             E_USER_NOTICE
         );
+
         return null;
     }
 
@@ -764,30 +762,35 @@ class Color
                 $this->_rgb["R"] = $value;
                 $this->_hex = self::rgbToHex($this->_rgb);
                 $this->_hsl = self::hexToHsl($this->_hex);
+
                 break;
             case 'green':
             case 'g':
                 $this->_rgb["G"] = $value;
                 $this->_hex = self::rgbToHex($this->_rgb);
                 $this->_hsl = self::hexToHsl($this->_hex);
+
                 break;
             case 'blue':
             case 'b':
                 $this->_rgb["B"] = $value;
                 $this->_hex = self::rgbToHex($this->_rgb);
                 $this->_hsl = self::hexToHsl($this->_hex);
+
                 break;
             case 'hue':
             case 'h':
                 $this->_hsl["H"] = $value;
                 $this->_hex = self::hslToHex($this->_hsl);
                 $this->_rgb = self::hexToRgb($this->_hex);
+
                 break;
             case 'saturation':
             case 's':
                 $this->_hsl["S"] = $value;
                 $this->_hex = self::hslToHex($this->_hsl);
                 $this->_rgb = self::hexToRgb($this->_hex);
+
                 break;
             case 'lightness':
             case 'light':
@@ -795,6 +798,7 @@ class Color
                 $this->_hsl["L"] = $value;
                 $this->_hex = self::hslToHex($this->_hsl);
                 $this->_rgb = self::hexToRgb($this->_hex);
+
                 break;
         }
     }

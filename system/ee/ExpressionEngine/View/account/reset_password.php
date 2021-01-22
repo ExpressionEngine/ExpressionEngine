@@ -22,7 +22,7 @@
 		</fieldset>
 		<fieldset class="last text-center">
 			<?=form_hidden('resetcode', $resetcode)?>
-			<?=form_submit('submit', 'Change Password', 'class="button button--primary button--large button--wide" data-work-text="updating..."')?>
+			<?=form_submit('submit', lang('change_password'), 'class="button button--primary button--large button--wide" data-work-text="' . lang('updating') . '"')?>
 		</fieldset>
 	<?=form_close()?>
 </div>

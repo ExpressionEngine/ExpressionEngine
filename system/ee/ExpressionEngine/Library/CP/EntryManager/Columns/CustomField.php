@@ -19,67 +19,68 @@ use ExpressionEngine\Model\Content\FieldFacade;
  */
 class CustomField extends Column
 {
-	private $field;
+    private $field;
 
-	public function __construct($identifier, ChannelField $channel_field)
-	{
-		parent::__construct($identifier);
+    public function __construct($identifier, ChannelField $channel_field)
+    {
+        parent::__construct($identifier);
 
-		$this->field = $channel_field;
-	}
+        $this->field = $channel_field;
+    }
 
-	public function getTableColumnLabel()
-	{
-		return $this->field->field_label;
-	}
+    public function getTableColumnLabel()
+    {
+        return $this->field->field_label;
+    }
 
-	public function getTableColumnConfig()
-	{
-		return $this->getField()->getTableColumnConfig();
-	}
+    public function getTableColumnConfig()
+    {
+        return $this->getField()->getTableColumnConfig();
+    }
 
-	public function getEntryManagerColumnModels()
-	{
-		return $this->getField()->getEntryManagerColumnModels();
-	}
+    public function getEntryManagerColumnModels()
+    {
+        return $this->getField()->getEntryManagerColumnModels();
+    }
 
-	public function getEntryManagerColumnFields()
-	{
-		return $this->getField()->getEntryManagerColumnFields();
-	}
+    public function getEntryManagerColumnFields()
+    {
+        return $this->getField()->getEntryManagerColumnFields();
+    }
 
-	public function getEntryManagerColumnSortField()
-	{
-		$custom_sorter = $this->getField()->getEntryManagerColumnSortField();
-		return !empty($custom_sorter) ? $custom_sorter : $this->identifier;
-	}
+    public function getEntryManagerColumnSortField()
+    {
+        $custom_sorter = $this->getField()->getEntryManagerColumnSortField();
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		$field_name = $entry->getCustomFieldPrefix() . $this->field->getId();
+        return !empty($custom_sorter) ? $custom_sorter : $this->identifier;
+    }
 
-		$field = $this->getField();
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $field_name = $entry->getCustomFieldPrefix() . $this->field->getId();
 
-		if ($field) {
-			$field->setContentId($entry->getId());
-			$field->setData($entry->$field_name);
+        $field = $this->getField();
 
-			return $field->renderTableCell($field->getData(), $field->getId(), $entry);
-		}
-		return '';
-	}
+        if ($field) {
+            $field->setContentId($entry->getId());
+            $field->setData($entry->$field_name);
 
-	/**
-	 * Gets a generic FieldFacade object, not based on an entry
-	 *
-	 * @return FieldFacade
-	 */
-	private function getField()
-	{
-		$field = new FieldFacade($this->field->getId(), $this->field->getValues());
-		$field->initField();
+            return $field->renderTableCell($field->getData(), $field->getId(), $entry);
+        }
 
-		return $field;
-	}
+        return '';
+    }
 
+    /**
+     * Gets a generic FieldFacade object, not based on an entry
+     *
+     * @return FieldFacade
+     */
+    private function getField()
+    {
+        $field = new FieldFacade($this->field->getId(), $this->field->getValues());
+        $field->initField();
+
+        return $field;
+    }
 }

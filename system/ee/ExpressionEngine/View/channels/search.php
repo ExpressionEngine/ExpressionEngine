@@ -6,10 +6,10 @@
 			<h1><?=$result['heading']?></h1>
 			<?php $this->embed('_shared/table', $result['table']); ?>
 			<?=ee('CP/Pagination', $result['total_rows'])
-				->perPage($result['table']['limit'])
-				->currentPage($result['table']['page'])
-				->queryStringVariable($result['name'] . '_page')
-				->render($result['table']['base_url'])?>
+			    ->perPage($result['table']['limit'])
+			    ->currentPage($result['table']['page'])
+			    ->queryStringVariable($result['name'] . '_page')
+			    ->render($result['table']['base_url'])?>
 		</div>
 	</div>
 <?php endforeach ?>

@@ -9,37 +9,39 @@
         <div class="form-btns form-btns-top">
           <div class="title-bar title-bar--large">
       			<h3 class="title-bar__title"><?=$cp_heading?></h3>
-      			<?php if (isset($filters)) echo $filters; ?>
+      			<?php if (isset($filters)) {
+    echo $filters;
+} ?>
           </div>
         </div>
   		</div>
       <div class="panel-body">
   		<?php $this->embed('_shared/thumb', $files->asArray()); ?>
   		<?=$pagination?>
-  		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+  		<?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
   			<?php
-  				$options = [
-  					[
-  						'value' => "",
-  						'text' => '-- ' . lang('with_selected') . ' --'
-  					]
-  				];
-  				if (ee('Permission')->can('delete_files')) {
-  					$options[] = [
-  						'value' => "remove",
-  						'text' => lang('delete'),
-  						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
-  					];
-  				}
-  				$options[] = [
-  					'value' => "download",
-  					'text' => lang('download')
-  				];
-  				$this->embed('ee:_shared/form/bulk-action-bar', [
-  					'options' => $options,
-  					'modal' => true
-  				]);
-  			?>
+                $options = [
+                    [
+                        'value' => "",
+                        'text' => '-- ' . lang('with_selected') . ' --'
+                    ]
+                ];
+                if (ee('Permission')->can('delete_files')) {
+                    $options[] = [
+                        'value' => "remove",
+                        'text' => lang('delete'),
+                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
+                    ];
+                }
+                $options[] = [
+                    'value' => "download",
+                    'text' => lang('download')
+                ];
+                $this->embed('ee:_shared/form/bulk-action-bar', [
+                    'options' => $options,
+                    'modal' => true
+                ]);
+            ?>
   		<?php endif; ?>
     </div>
   	<?=form_close()?>

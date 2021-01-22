@@ -18,20 +18,20 @@ use ExpressionEngine\Library\CP\Table;
  */
 class EntryId extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'column_entry_id';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'column_entry_id';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [
-			'type' => Table::COL_ID
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'type' => Table::COL_ID
+        ];
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return $entry->entry_id;
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $entry->entry_id;
+    }
 }

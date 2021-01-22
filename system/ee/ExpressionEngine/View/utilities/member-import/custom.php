@@ -28,29 +28,29 @@
 					</thead>
 					<tbody>
 						<?php
-						$i = 0;
-						foreach ($new_fields as $value): ?>
+                        $i = 0;
+                        foreach ($new_fields as $value): ?>
 							<tr class="last">
 								<td class="first">
-									<?=form_checkbox('create_ids['.$i.']', 'y', FALSE, 'class="toggle"')?>
-									<input type="hidden" name="<?='m_field_order['.$i.']'?>" value="<?=$order_start+$i?>">
+									<?=form_checkbox('create_ids[' . $i . ']', 'y', false, 'class="toggle"')?>
+									<input type="hidden" name="<?='m_field_order[' . $i . ']'?>" value="<?=$order_start + $i?>">
 								</td>
 								<td>
 									<?=form_input(array(
-										'name' => 'm_field_name['.$i.']',
-										'value' => set_value('m_field_name['.$i.']', $value)
+									    'name' => 'm_field_name[' . $i . ']',
+									    'value' => set_value('m_field_name[' . $i . ']', $value)
 									))?>
 								</td>
 								<td>
 									<?=form_input(array(
-										'name' => 'm_field_label['.$i.']',
-										'value' => set_value('m_field_name['.$i.']', $value)
+									    'name' => 'm_field_label[' . $i . ']',
+									    'value' => set_value('m_field_name[' . $i . ']', $value)
 									))?>
 								</td>
 								<?php foreach (array('required', 'public', 'reg_form') as $field): ?>
 									<td>
 										<label class="choice yes">
-											<?=form_checkbox($field.'['.$i.']', 'y', set_checkbox($field.'['.$i.']', 'y'))?> <?=lang('yes')?>
+											<?=form_checkbox($field . '[' . $i . ']', 'y', set_checkbox($field . '[' . $i . ']', 'y'))?> <?=lang('yes')?>
 										</label>
 									</td>
 								<?php endforeach ?>

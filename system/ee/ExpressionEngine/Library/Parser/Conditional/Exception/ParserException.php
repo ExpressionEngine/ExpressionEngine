@@ -13,4 +13,6 @@ namespace ExpressionEngine\Library\Parser\Conditional\Exception;
 /**
  * Parser Exception
  */
-class ParserException extends ConditionalException {}
+class ParserException extends ConditionalException
+{
+}

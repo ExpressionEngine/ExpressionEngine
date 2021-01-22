@@ -372,7 +372,7 @@ EE.cp.JumpMenu = {
         // more so we can display a "there are more results" message.
 
         if (displayedCommands >= 11) {
-          jumpContainer.document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">More than 10 results found, please refine your search</div>';
+          jumpContainer.document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">' + EE.lang.many_jump_results + '</div>';
           break;
         }
 

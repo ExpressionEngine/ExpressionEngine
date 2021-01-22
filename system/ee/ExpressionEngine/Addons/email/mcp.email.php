@@ -11,9 +11,8 @@
 /**
  * Email Module control panel (nada)
  */
-class Email_mcp {
-
-
+class Email_mcp
+{
 }
 // END CLASS
 

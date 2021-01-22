@@ -11,9 +11,8 @@
 /**
  * Emoji Module control panel (nada)
  */
-class Emoji_mcp {
-
-
+class Emoji_mcp
+{
 }
 // END CLASS
 

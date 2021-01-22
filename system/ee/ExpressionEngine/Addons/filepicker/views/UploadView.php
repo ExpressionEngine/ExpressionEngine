@@ -9,18 +9,17 @@
 
 		<?=ee()->view->head_link('css/common.min.css'); ?>
 
-		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
+		<?php if (ee()->extensions->active_hook('cp_css_end') === true):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 		<!-- <link href="touch-icon-iphone.png" rel="apple-touch-icon-precomposed" sizes="114x114">
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
 
 		<?php
-		foreach (ee()->cp->get_head() as $item)
-		{
-			echo $item."\n";
-		}
-		?>
+        foreach (ee()->cp->get_head() as $item) {
+            echo $item . "\n";
+        }
+        ?>
 	</head>
 	<body class="iframe">
 		<div class="box" style="margin: 20px;"><?=$content?></div>

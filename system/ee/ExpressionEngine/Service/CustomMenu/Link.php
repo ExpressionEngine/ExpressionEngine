@@ -13,42 +13,39 @@ namespace ExpressionEngine\Service\CustomMenu;
 /**
  * Custom Menu Link
  */
-class Link {
+class Link
+{
+    public $title;
+    public $url;
 
-	public $title;
-	public $url;
+    /**
+     * Create a new menu item
+     *
+     * @param String $title Text of the menu item
+     * @param Mixed $url URL string or CP/URL object
+     */
+    public function __construct($title, $url)
+    {
+        $this->title = htmlspecialchars($title);
 
-	/**
-	 * Create a new menu item
-	 *
-	 * @param String $title Text of the menu item
-	 * @param Mixed $url URL string or CP/URL object
-	 */
-	public function __construct($title, $url)
-	{
-		$this->title = htmlspecialchars($title);
+        $base = ee('CP/URL')->make('')->compile();
 
-		$base = ee('CP/URL')->make('')->compile();
+        if (is_a($url, 'ExpressionEngine\Library\CP\URL')) {
+            $url = $url->compile();
+        } elseif (strpos($url, '://') === false && strpos($url, $base) !== 0) {
+            $url = ee('CP/URL')->make($url)->compile();
+        }
 
-		if (is_a($url, 'ExpressionEngine\Library\CP\URL'))
-		{
-			$url = $url->compile();
-		}
-		elseif (strpos($url, '://') === FALSE && strpos($url, $base) !== 0)
-		{
-			$url = ee('CP/URL')->make($url)->compile();
-		}
+        $this->url = $url;
+    }
 
-		$this->url = $url;
-	}
-
-	/**
-	 * Is this a submenu?
-	 *
-	 * @return bool False
-	 */
-	public function isSubmenu()
-	{
-		return FALSE;
-	}
+    /**
+     * Is this a submenu?
+     *
+     * @return bool False
+     */
+    public function isSubmenu()
+    {
+        return false;
+    }
 }

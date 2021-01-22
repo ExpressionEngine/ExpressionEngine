@@ -16,272 +16,260 @@ use ExpressionEngine\Model\Content\StructureModel;
 /**
  * Category Group Model
  */
-class CategoryGroup extends StructureModel {
+class CategoryGroup extends StructureModel
+{
+    protected static $_primary_key = 'group_id';
+    protected static $_gateway_names = array('CategoryGroupGateway');
 
-	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('CategoryGroupGateway');
+    protected static $_hook_id = 'category_group';
 
-	protected static $_hook_id = 'category_group';
+    protected static $_relationships = array(
+        'CategoryFields' => array(
+            'type' => 'hasMany',
+            'model' => 'CategoryField'
+        ),
+        'Categories' => array(
+            'type' => 'hasMany',
+            'model' => 'Category'
+        )
+    );
 
-	protected static $_relationships = array(
-		'CategoryFields' => array(
-			'type' => 'hasMany',
-			'model' => 'CategoryField'
-		),
-		'Categories' => array(
-			'type' => 'hasMany',
-			'model' => 'Category'
-		)
-	);
+    protected static $_validation_rules = array(
+        'group_name' => 'required|unique[site_id]',
+        'sort_order' => 'enum[a,c]',
+        'field_html_formatting' => 'enum[all,safe,none]',
+        'exclude_group' => 'enum[0,1,2]'
+    );
 
-	protected static $_validation_rules = array(
-		'group_name'            => 'required|unique[site_id]',
-		'sort_order'            => 'enum[a,c]',
-		'field_html_formatting' => 'enum[all,safe,none]',
-		'exclude_group'         => 'enum[0,1,2]'
-	);
+    protected static $_events = [
+        'afterDelete'
+    ];
 
-	protected static $_events = [
-		'afterDelete'
-	];
+    // Properties
+    protected $group_id;
+    protected $site_id;
+    protected $group_name;
+    protected $sort_order;
+    protected $exclude_group;
+    protected $field_html_formatting;
+    protected $can_edit_categories;
+    protected $can_delete_categories;
 
-	// Properties
-	protected $group_id;
-	protected $site_id;
-	protected $group_name;
-	protected $sort_order;
-	protected $exclude_group;
-	protected $field_html_formatting;
-	protected $can_edit_categories;
-	protected $can_delete_categories;
+    public function onAfterDelete()
+    {
+        // Disassociate this group from channels
+        foreach ($this->Channels as $channel) {
+            $groups = explode('|', $channel->cat_group);
 
-	public function onAfterDelete()
-	{
-		// Disassociate this group from channels
-		foreach ($this->Channels as $channel)
-		{
-			$groups = explode('|', $channel->cat_group);
+            if (($key = array_search($this->getId(), $groups)) !== false) {
+                unset($groups[$key]);
+                $channel->cat_group = implode('|', $groups);
+                $channel->save();
+            }
+        }
+    }
 
-			if (($key = array_search($this->getId(), $groups)) !== FALSE)
-			{
-				unset($groups[$key]);
-				$channel->cat_group = implode('|', $groups);
-				$channel->save();
-			}
-		}
-	}
+    public function __get($name)
+    {
+        // Fake the Channel relationship since it's stored weird; old
+        // relationship name was just "Channel"
+        if ($name == 'Channel' || $name == 'Channels') {
+            return ee('Model')->get('Channel')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->all()
+                ->filter(function ($channel) {
+                    return in_array($this->getId(), explode('|', $channel->cat_group));
+                });
+        }
 
-	public function __get($name)
-	{
-		// Fake the Channel relationship since it's stored weird; old
-		// relationship name was just "Channel"
-		if ($name == 'Channel' || $name == 'Channels')
-		{
-			return ee('Model')->get('Channel')
-				->filter('site_id', ee()->config->item('site_id'))
-				->all()
-				->filter(function($channel) {
-					return in_array($this->getId(), explode('|', $channel->cat_group));
-				});
-		}
+        return parent::__get($name);
+    }
 
-		return parent::__get($name);
-	}
+    public function getAllCustomFields()
+    {
+        return $this->getCategoryFields();
+    }
 
-	public function getAllCustomFields()
-	{
-		return $this->getCategoryFields();
-	}
+    /**
+     * Convenience method to fix inflection
+     */
+    public function createCategoryField($data)
+    {
+        return $this->createCategoryFields($data);
+    }
 
-	/**
-	 * Convenience method to fix inflection
-	 */
-	public function createCategoryField($data)
-	{
-		return $this->createCategoryFields($data);
-	}
+    public function getContentType()
+    {
+        return 'category';
+    }
 
+    /**
+     * Returns the category tree for this category group
+     *
+     * @param 	EE_Tree	$tree		An EE_Tree library object
+     * @return 	Object<ImmutableTree> Traversable tree object
+     */
+    public function getCategoryTree(\EE_Tree $tree)
+    {
+        $sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
 
-	public function getContentType()
-	{
-		return 'category';
-	}
+        return $tree->from_list(
+            $this->getCategories()->sortBy($sort_column),
+            array('id' => 'cat_id')
+        );
+    }
 
-	/**
-	 * Returns the category tree for this category group
-	 *
-	 * @param 	EE_Tree	$tree		An EE_Tree library object
-	 * @return 	Object<ImmutableTree> Traversable tree object
-	 */
-	public function getCategoryTree(\EE_Tree $tree)
-	{
-		$sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
+    /**
+     * Generates the metadata needed to hand off to the old channel field API
+     * in order to instantiate a field.
+     *
+     * @return array An associative array.
+     */
+    public function getFieldMetadata()
+    {
+        $can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
+        $editable = false;
 
-		return $tree->from_list(
-			$this->getCategories()->sortBy($sort_column),
-			array('id' => 'cat_id')
-		);
-	}
+        if (ee('Permission')->isSuperAdmin()
+            || (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))) {
+            $editable = true;
+        }
 
-	/**
-	 * Generates the metadata needed to hand off to the old channel field API
-	 * in order to instantiate a field.
-	 *
-	 * @return array An associative array.
-	 */
-	public function getFieldMetadata()
-	{
-		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
-		$editable = FALSE;
+        $can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
+        $deletable = false;
 
-		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit)))
-		{
-			$editable = TRUE;
-		}
+        if (ee('Permission')->isSuperAdmin()
+            || (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete))) {
+            $deletable = true;
+        }
 
-		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
-		$deletable = FALSE;
+        $no_results = [
+            'text' => sprintf(lang('no_found'), lang('categories'))
+        ];
 
-		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete)))
-		{
-			$deletable = TRUE;
-		}
+        if (! INSTALLER && ee('Permission')->can('create_categories')) {
+            $no_results['link_text'] = 'add_new';
+            $no_results['link_href'] = ee('CP/URL')->make('categories/create/' . $this->getId());
+        }
 
-		$no_results = [
-			'text' => sprintf(lang('no_found'), lang('categories'))
-		];
+        $metadata = array(
+            'field_id' => 'categories',
+            'group_id' => $this->getId(),
+            'field_label' => $this->group_name,
+            'field_required' => 'n',
+            'field_show_fmt' => 'n',
+            'field_instructions' => lang('categories_desc'),
+            'field_text_direction' => 'ltr',
+            'field_type' => 'checkboxes',
+            'field_list_items' => '',
+            'field_maxl' => 100,
+            'editable' => $editable,
+            'editing' => false,
+            'deletable' => $deletable,
+            'populateCallback' => array($this, 'populateCategories'),
+            'manage_toggle_label' => lang('manage_categories'),
+            'add_btn_label' => REQ == 'CP' && ee('Permission')->can('create_categories')
+                ? lang('add_category')
+                : null,
+            'content_item_label' => lang('category'),
+            'reorder_ajax_url' => ! INSTALLER
+                ? ee('CP/URL')->make('categories/reorder/' . $this->getId())->compile()
+                : '',
+            'auto_select_parents' => ee()->config->item('auto_assign_cat_parents') == 'y',
+            'no_results' => $no_results
+        );
 
-		if ( ! INSTALLER && ee('Permission')->can('create_categories'))
-		{
-			$no_results['link_text'] = 'add_new';
-			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());
-		}
+        return $metadata;
+    }
 
-		$metadata = array(
-			'field_id'				=> 'categories',
-			'group_id'				=> $this->getId(),
-			'field_label'			=> $this->group_name,
-			'field_required'		=> 'n',
-			'field_show_fmt'		=> 'n',
-			'field_instructions'	=> lang('categories_desc'),
-			'field_text_direction'	=> 'ltr',
-			'field_type'			=> 'checkboxes',
-			'field_list_items'      => '',
-			'field_maxl'			=> 100,
-			'editable'				=> $editable,
-			'editing'				=> FALSE,
-			'deletable'				=> $deletable,
-			'populateCallback'		=> array($this, 'populateCategories'),
-			'manage_toggle_label'	=> lang('manage_categories'),
-			'add_btn_label'	        => REQ == 'CP' && ee('Permission')->can('create_categories')
-				? lang('add_category')
-				: NULL,
-			'content_item_label'	=> lang('category'),
-			'reorder_ajax_url'		=> ! INSTALLER
-				? ee('CP/URL')->make('categories/reorder/'.$this->getId())->compile()
-				: '',
-			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y',
-			'no_results'			=> $no_results
-		);
+    /**
+     * Sets a field's data based on which categories are selected
+     */
+    public function populateCategories($field)
+    {
+        $categories = $this->getModelFacade()->get('Category')
+            ->with(
+                ['Children as C0' =>
+                    ['Children as C1' =>
+                        ['Children as C2' => 'Children as C3']
+                    ]
+                ]
+            )
+            ->with('CategoryGroup')
+            ->filter('CategoryGroup.group_id', $field->getItem('group_id'))
+            ->filter('Category.parent_id', 0)
+            ->all();
 
-		return $metadata;
-	}
+        // Sorting alphabetically or custom?
+        $sort_column = 'cat_order';
+        if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a') {
+            $sort_column = 'cat_name';
+        }
 
-	/**
-	 * Sets a field's data based on which categories are selected
-	 */
-	public function populateCategories($field)
-	{
-		$categories = $this->getModelFacade()->get('Category')
-			->with(
-				['Children as C0' =>
-					['Children as C1' =>
-						['Children as C2' => 'Children as C3']
-					]
-				]
-			)
-			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
-			->filter('Category.parent_id', 0)
-			->all();
+        $category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
+        $field->setItem('field_list_items', $category_list);
 
-		// Sorting alphabetically or custom?
-		$sort_column = 'cat_order';
-		if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a')
-		{
-			$sort_column = 'cat_name';
-		}
+        $object = $field->getItem('categorized_object');
 
-		$category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
-		$field->setItem('field_list_items', $category_list);
+        // isset() and empty() don't work here on $object->Channel because it hasn't been dynamically fetched yet,
+        // is_object() apparently works differently and lets it dynamically load it before evaluating
+        $has_default = ($object->getName() == 'ee:ChannelEntry' && is_object($object->Channel)) ? true : false;
 
-		$object = $field->getItem('categorized_object');
+        // New Channel Entries might have a default category selected, but File
+        // entities should not have categories pre-selected for new entries
+        if (! $object->isNew() or ($object->getName() == 'ee:ChannelEntry' && $has_default)) {
+            $set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
+            $field->setData(implode('|', $set_categories));
+        }
+    }
 
-		// isset() and empty() don't work here on $object->Channel because it hasn't been dynamically fetched yet,
-		// is_object() apparently works differently and lets it dynamically load it before evaluating
-		$has_default = ($object->getName() == 'ee:ChannelEntry' && is_object($object->Channel)) ? TRUE : FALSE;
+    /**
+     * Builds a tree of categories in the current category group for use in a
+     * SelectField form
+     *
+     * @param array Category tree
+     */
+    public function buildCategoryOptionsTree()
+    {
+        $sort_column = 'cat_order';
+        if ($this->sort_order == 'a') {
+            $sort_column = 'cat_name';
+        }
 
-		// New Channel Entries might have a default category selected, but File
-		// entities should not have categories pre-selected for new entries
-		if ( ! $object->isNew() OR ($object->getName() == 'ee:ChannelEntry' && $has_default))
-		{
-			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
-			$field->setData(implode('|', $set_categories));
-		}
-	}
+        return $this->buildCategoryList(
+            $this->Categories->filter('parent_id', 0),
+            $sort_column
+        );
+    }
 
-	/**
-	 * Builds a tree of categories in the current category group for use in a
-	 * SelectField form
-	 *
-	 * @param array Category tree
-	 */
-	public function buildCategoryOptionsTree()
-	{
-		$sort_column = 'cat_order';
-		if ($this->sort_order == 'a')
-		{
-			$sort_column = 'cat_name';
-		}
+    /**
+     * Turn the categories collection into a nested array of ids => names
+     *
+     * @param	Collection	$categories		Top level categories to construct tree out of
+     * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
+     *	categories by the given column
+     */
+    protected function buildCategoryList($categories, $sort_column)
+    {
+        $list = array();
 
-		return $this->buildCategoryList(
-			$this->Categories->filter('parent_id', 0),
-			$sort_column
-		);
-	}
+        foreach ($categories as $category) {
+            $children = $category->Children->sortBy($sort_column);
 
-	/**
-	 * Turn the categories collection into a nested array of ids => names
-	 *
-	 * @param	Collection	$categories		Top level categories to construct tree out of
-	 * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
-	 *	categories by the given column
-	 */
-	protected function buildCategoryList($categories, $sort_column)
-	{
-		$list = array();
+            if (count($children)) {
+                $list[$category->cat_id] = array(
+                    'name' => $category->cat_name,
+                    'children' => $this->buildCategoryList($children, $sort_column)
+                );
 
-		foreach ($categories as $category)
-		{
-			$children = $category->Children->sortBy($sort_column);
+                continue;
+            }
 
-			if (count($children))
-			{
-				$list[$category->cat_id] = array(
-					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children, $sort_column)
-				);
+            $list[$category->cat_id] = $category->cat_name;
+        }
 
-				continue;
-			}
-
-			$list[$category->cat_id] = $category->cat_name;
-		}
-
-		return $list;
-	}
+        return $list;
+    }
 }
 
 // EOF

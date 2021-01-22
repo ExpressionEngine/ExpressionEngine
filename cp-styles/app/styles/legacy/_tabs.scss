@@ -1,0 +1,160 @@
+.tab-wrap{
+	position: relative;
+
+		.tabs{
+			border-bottom: 4px solid $gray-medium-light;
+			list-style-type: none;
+			margin: 0 0 10px;
+
+			@include clear-float;
+
+				a{
+					border-left: 4px solid $white;
+					color: $gray-medium;
+					cursor: pointer;
+					display: block;
+					padding: 10px;
+					text-decoration: none;
+
+						&.act{
+							background-color: $white;
+							border-left: 4px solid $blue;
+							color: $blue;
+							position: relative;
+
+							@include m-tablet-up {
+									border-left: 0;
+									border-bottom: 4px solid $blue;
+									padding-bottom: 14px;
+								};
+						}
+
+						&.invalid{
+							border-color: $red;
+							color: $red;
+							padding-right: 0;
+							position: relative;
+						}
+
+						&.highlight{
+							background-color: $white;
+							border-color: $yellow;
+						}
+
+						@include m-tablet-up {
+							border-left: 0;
+							border-bottom: 4px solid $gray-medium-light;
+							display: inline;
+							padding-bottom: 14px;
+						};
+				}
+
+				li{
+					@include m-tablet-up {
+						display: inline;
+						float: left;
+					};
+				}
+
+				&.layout{
+					a{
+						@include m-tablet-up {
+							padding-right: 20px;
+
+							&[rel='t-0'],
+							&.add-tab{
+								padding-right: 0;
+							}
+
+							&.highlight,
+							&.invalid{
+								padding-right: 0;
+							}
+						};
+					}
+
+					li{
+						position: relative;
+					}
+
+					.tab-remove,
+					.tab-on,
+					.tab-off{
+						cursor: pointer;
+
+							&:before{
+								@extend %fa-icon;
+								@extend .fas;
+
+								font-size: 11px;
+								position: absolute;
+								z-index: 1;
+							}
+					}
+
+					.tab-remove:before{
+						color: $red;
+						content: fa-content($fa-var-minus-square);
+						right: 10px;
+						top: 13px;
+
+						@include m-tablet-up {
+								right: 0;
+								top: 3px;
+							};
+					}
+
+					.tab-off:before{
+						color: $red;
+						content: fa-content($fa-var-eye-slash);
+						right: 10px;
+						top: 12px;
+
+						@include m-tablet-up {
+								right: 0;
+								top: 3px;
+							};
+					}
+
+					.tab-on:before{
+						color: $green;
+						content:fa-content($fa-var-eye);
+						right: 10px;
+						top: 12px;
+
+						@include m-tablet-up {
+								right: 0;
+								top: 3px;
+							};
+					}
+				}
+
+				@include m-tablet-up {
+					padding: 15px 10px 11px;
+
+						@include clear-float;
+				};
+		}
+
+		@include clear-float;
+
+		// @include m-tablet-up {
+		// 	@-moz-document url-prefix(){
+		// 		.tabs{
+		// 			a.invalid:before{
+		// 				top: 10px;
+		// 			}
+
+		// 			&.layout{
+		// 				.tab-on,
+		// 				.tab-off,
+		// 				.tab-remove{
+		// 					&:before{
+		// 						top: 0;
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// };
+}

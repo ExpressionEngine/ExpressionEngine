@@ -25,7 +25,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 if (!is_callable('RandomCompat_strlen')) {
 
     /**
@@ -46,6 +45,7 @@ if (!is_callable('RandomCompat_strlen')) {
                 'RandomCompat_strlen() expects a string'
             );
         }
+
         return (int) strlen($binary_string);
     }
 }

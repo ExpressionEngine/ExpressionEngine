@@ -1,0 +1,72 @@
+
+.typography--padded {
+
+}
+
+.typography {
+
+.font-family-monospace {
+  font-family: $font-family-monospace;
+}
+
+  p, > h1, > h2, > h3, > h4, > h5, > h6, > img, > ul, ol, pre, > div, table, blockquote {
+    margin-bottom: $s-m;
+		line-height: $line-height-normal;
+	}
+
+	> h1, > h2, > h3, > h4, > h5, > h6 {
+    font-weight: 500;
+		margin-top: 1.5em;
+	}
+
+	> h1 {
+		font-size: 1.85em;
+	}
+
+  > h2 {
+  	font-size: 1.65em;
+  }
+
+  > h3 {
+    font-size: 1.35em;
+  }
+
+  > h4 {
+    font-size: 1.25em;
+  }
+
+  > h5, > h6 {
+    font-size: 1.25em;
+  }
+
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+    font-weight: normal;
+    color: color(text-secondary);
+  }
+
+  h1 small, h2 small, h3 small {
+    font-size: 65%;
+  }
+
+  h4 small, h5 small, h6 small {
+    font-size: 75%;
+  }
+
+  h1.with-underline,
+  h2.with-underline,
+  h3.with-underline,
+  h4.with-underline,
+  h5.with-underline,
+  h6.with-underline {
+    border-bottom: 1px solid color(border);
+  }
+
+  .lead {
+    font-size: 135%;
+    color: color(text-secondary);
+  }
+
+  small {
+    font-size: 85%;
+  }
+}

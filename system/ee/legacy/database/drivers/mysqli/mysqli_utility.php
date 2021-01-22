@@ -11,59 +11,59 @@
 /**
  * MySQLi Utility
  */
-class CI_DB_mysqli_utility extends CI_DB_utility {
+class CI_DB_mysqli_utility extends CI_DB_utility
+{
+    /**
+     * List databases
+     *
+     * @access	private
+     * @return	bool
+     */
+    public function _list_databases()
+    {
+        return "SHOW DATABASES";
+    }
 
-	/**
-	 * List databases
-	 *
-	 * @access	private
-	 * @return	bool
-	 */
-	function _list_databases()
-	{
-		return "SHOW DATABASES";
-	}
+    /**
+     * Optimize table query
+     *
+     * Generates a platform-specific query so that a table can be optimized
+     *
+     * @access	private
+     * @param	string	the table name
+     * @return	object
+     */
+    public function _optimize_table($table)
+    {
+        return "OPTIMIZE TABLE " . $this->db->escape_identifiers($table);
+    }
 
-	/**
-	 * Optimize table query
-	 *
-	 * Generates a platform-specific query so that a table can be optimized
-	 *
-	 * @access	private
-	 * @param	string	the table name
-	 * @return	object
-	 */
-	function _optimize_table($table)
-	{
-		return "OPTIMIZE TABLE ".$this->db->escape_identifiers($table);
-	}
+    /**
+     * Repair table query
+     *
+     * Generates a platform-specific query so that a table can be repaired
+     *
+     * @access	private
+     * @param	string	the table name
+     * @return	object
+     */
+    public function _repair_table($table)
+    {
+        return "REPAIR TABLE " . $this->db->escape_identifiers($table);
+    }
 
-	/**
-	 * Repair table query
-	 *
-	 * Generates a platform-specific query so that a table can be repaired
-	 *
-	 * @access	private
-	 * @param	string	the table name
-	 * @return	object
-	 */
-	function _repair_table($table)
-	{
-		return "REPAIR TABLE ".$this->db->escape_identifiers($table);
-	}
-
-	/**
-	 * MySQLi Export
-	 *
-	 * @access	private
-	 * @param	array	Preferences
-	 * @return	mixed
-	 */
-	function _backup($params = array())
-	{
-		// Currently unsupported
-		return $this->db->display_error('db_unsuported_feature');
-	}
+    /**
+     * MySQLi Export
+     *
+     * @access	private
+     * @param	array	Preferences
+     * @return	mixed
+     */
+    public function _backup($params = array())
+    {
+        // Currently unsupported
+        return $this->db->display_error('db_unsuported_feature');
+    }
 }
 
 // EOF

@@ -1,5 +1,5 @@
 <?php
 
-class TestFileOne {
-
+class TestFileOne
+{
 }

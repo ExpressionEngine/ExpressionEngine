@@ -1,0 +1,62 @@
+
+
+// Width of the main sidebar
+$ee-sidebar-width: 200px;
+$ee-sidebar-width-collapsed: 59px;
+
+// Width of the secondary sidebar
+$secondary-sidebar-width: 310px;
+
+// Padding of the main container
+$main-content-padding-y: $s-l - 5px;
+$main-content-padding-x: $s-l;
+
+// Common Padding
+$padding-base-vertical: 8px;
+$padding-base-horizontal: 15px;
+$padding-base-horizontal-extra: 20px;
+
+$padding-large-vertical: 10px;
+$padding-large-horizontal: 20px;
+$padding-large-horizontal-extra: 25px;
+
+$padding-small-vertical:   5px;
+$padding-small-horizontal: 10px;
+$padding-small-horizontal-extra: 15px;
+
+$padding-xs-vertical: 2px;
+$padding-xs-horizontal: 7px;
+$padding-xs-horizontal-extra: 10px;
+
+// Corner radiuses (deprecated - use Border radiuses below)
+$corners-small: 3px;
+$corners: 5px;
+$corners-big: 8px;
+$corners-jumbo: 20px;
+
+// Border radiuses
+$border-radius-xsmall:  3px;
+$border-radius-small:  4px;
+$border-radius-base:  5px;
+$border-radius-large:  6px;
+$border-radius-xlarge:  8px;
+$border-radius-full:  1000px;
+
+// Font sizes
+$font-size-small: 0.8rem;
+$font-size-normal: 1rem;
+$font-size-large: 1.2rem;
+
+// Line height used for typography
+$line-height-large: 1.7;
+$line-height-normal: 1.6;
+$line-height-small: 1.5;
+
+// Fonts
+$font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif;
+
+// font-family: 'Inconsolata';
+$font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, "Courier New", monospace;
+
+// Transition speed
+$t-speed: 200ms;

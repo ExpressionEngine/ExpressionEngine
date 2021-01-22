@@ -13,4 +13,6 @@ namespace ExpressionEngine\Library\Filesystem;
 /**
  * File System Exception
  */
-class FilesystemException extends \Exception { }
+class FilesystemException extends \Exception
+{
+}

@@ -49,7 +49,6 @@ if (!is_callable('random_int')) {
          * lose precision, so the <= and => operators might accidentally let a float
          * through.
          */
-
         try {
             $min = RandomCompat_intval($min);
         } catch (TypeError $ex) {
@@ -116,7 +115,6 @@ if (!is_callable('random_int')) {
              */
             $bytes = PHP_INT_SIZE;
             $mask = ~0;
-
         } else {
 
             /**
@@ -185,6 +183,6 @@ if (!is_callable('random_int')) {
              */
         } while (!is_int($val) || $val > $max || $val < $min);
 
-        return (int)$val;
+        return (int) $val;
     }
 }

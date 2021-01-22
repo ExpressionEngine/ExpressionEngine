@@ -1,30 +1,27 @@
 <?php
 $attributes = array(
-	'name'	=> $name,
-	'value'	=> $value,
-	'rows'	=> $settings['field_ta_rows'],
-	'dir'	=> $settings['field_text_direction'],
-	'class' => $class,
+    'name' => $name,
+    'value' => $value,
+    'rows' => $settings['field_ta_rows'],
+    'dir' => $settings['field_text_direction'],
+    'class' => $class,
 );
 
-if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')
-{
-	$format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name);
+if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y') {
+    $format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name);
 }
 
-if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
-{
-	$attributes['data-markitup'] = 'yes';
+if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y') {
+    $attributes['data-markitup'] = 'yes';
 }
 
-if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
-{
-	$attributes['disabled'] = 'disabled';
+if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y') {
+    $attributes['disabled'] = 'disabled';
 }
 
 ?>
 <?=form_textarea($attributes);?>
-<?php if ($toolbar || ( ! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
+<?php if ($toolbar || (! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
 	<div class="format-options">
 		<?php if ($toolbar): ?>
 			<div class="d-flex align-items-center">

@@ -249,6 +249,9 @@ $(document).ready(function () {
         ColorPicker.renderFields();
     });
 });
+Grid.bind('colorpicker', 'displaySettings', function (el) {
+    ColorPicker.renderFields(el[0]);
+});
 Grid.bind('colorpicker', 'display', function (cell) {
     ColorPicker.renderFields(cell[0]);
 });

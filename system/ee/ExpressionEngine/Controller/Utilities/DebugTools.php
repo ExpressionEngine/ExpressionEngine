@@ -18,7 +18,6 @@ use ExpressionEngine\Library\Advisor;
 */
 class DebugTools extends Utilities
 {
-
     /**
      * Deny access from non-superadmins
      */
@@ -71,7 +70,7 @@ class DebugTools extends Utilities
         $data = [];
         foreach ($vars['tags'] as $tag_name => $tag) {
             $modal_name = str_replace(':', '', trim($tag_name, "{}"));
-            $contents =  ee('View')->make('utilities/debug-tools/modals/template_list')->render($tag);
+            $contents = ee('View')->make('utilities/debug-tools/modals/template_list')->render($tag);
 
             // This generates the modal, and adds it to the DOM
             $modal_vars = array(
@@ -94,16 +93,16 @@ class DebugTools extends Utilities
         $table = ee('CP/Table', array(
             'autosort' => true,
             'autosearch' => true,
-            'sort_col' => 'Installed',
+            'sort_col' => 'debug_tools_installed',
             'sort_dir' => 'desc',
         ));
 
         $table->setColumns(
             array(
-            'Installed',
-            'Tag' => ['encode' => false],
-            'Addon',
-            'Count')
+                'debug_tools_installed',
+                'debug_tools_tag' => ['encode' => false],
+                'debug_tools_addon',
+                'debug_tools_count')
         );
 
         $table->setData($data);
@@ -143,8 +142,6 @@ class DebugTools extends Utilities
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
     }
-
-
 }
 // END CLASS
 

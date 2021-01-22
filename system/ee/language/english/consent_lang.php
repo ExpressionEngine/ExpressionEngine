@@ -2,61 +2,65 @@
 
 $lang = [
 
-'consent_app_created' => '(App Created)',
+    'consent_module_name' => 'Consent',
 
-'consent_granted_by_log_msg' => 'consent granted by %s via %s',
+    'consent_app_created' => '(App Created)',
 
-'consent_granted_log_msg' => 'consent granted via %s',
+    'consent_granted_by_log_msg' => 'consent granted by %s via %s',
 
-'consent_list_versions' => 'Versions',
+    'consent_granted_log_msg' => 'consent granted via %s',
 
-'consent_name' => 'Consent Name',
+    'consent_list_versions' => 'Versions',
 
-'consent_prefs_saved' => 'Your consent preferences have been saved for: %s',
+    'consent_name' => 'Consent Name',
 
-'consent_request' => 'Consent Request',
+    'consent_prefs_saved' => 'Your consent preferences have been saved for: %s',
 
-'consent_request_created' => 'Consent Request Created',
+    'consent_request' => 'Consent Request',
 
-'consent_request_created_desc' => 'The consent request <b>%s</b> has been created.',
+    'consent_request_created' => 'Consent Request Created',
 
-'consent_request_not_created' => 'Cannot Create Consent Request',
+    'consent_request_created_desc' => 'The consent request <b>%s</b> has been created.',
 
-'consent_request_not_created_desc' => 'We were unable to create this consent request, please review and fix errors below.',
+    'consent_request_not_created' => 'Cannot Create Consent Request',
 
-'consent_request_not_updated' => 'Cannot Update Consent Request',
+    'consent_request_not_created_desc' => 'We were unable to create this consent request, please review and fix errors below.',
 
-'consent_request_not_updated_desc' => 'We were unable to update this consent request, please review and fix errors below.',
+    'consent_request_not_updated' => 'Cannot Update Consent Request',
 
-'consent_request_updated' => 'Consent Request Updated',
+    'consent_request_not_updated_desc' => 'We were unable to update this consent request, please review and fix errors below.',
 
-'consent_request_updated_desc' => 'The consent request <b>%s</b> has been updated.',
+    'consent_request_updated' => 'Consent Request Updated',
 
-'consent_requests_deleted' => 'Consent requests deleted',
+    'consent_request_updated_desc' => 'The consent request <b>%s</b> has been updated.',
 
-'consent_requests_deleted_desc' => '%d consent requests were deleted.',
+    'consent_requests_deleted' => 'Consent requests deleted',
 
-'consent_title' => 'Consent Title',
+    'consent_requests_deleted_desc' => '%d consent requests were deleted.',
 
-'consent_withdrawn_by_log_msg' => 'consent withdrawn by %s',
+    'consent_title' => 'Consent Title',
 
-'consent_withdrawn_log_msg' => 'consent withdrawn',
+    'consent_withdrawn_by_log_msg' => 'consent withdrawn by %s',
 
-'consents' => 'Consents',
+    'consent_withdrawn_log_msg' => 'consent withdrawn',
 
-'create_consent_request' => 'Create Consent Request',
+    'consents' => 'Consents',
 
-'edit_consent_request' => 'Edit Consent Request',
+    'create_consent_request' => 'Create Consent Request',
 
-'new_consent_version_destructive' => 'This is a destructive and irreversible action.',
+    'edit_consent_request' => 'Edit Consent Request',
 
-'new_consent_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
+    'new_consent_version_destructive' => 'This is a destructive and irreversible action.',
 
-'opt_in' => 'Opt In',
+    'new_consent_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
 
-'opt_out' => 'Opt Out',
+    'all_consents' => 'All %d consents',
 
-'request' => 'Request',
+    'opt_in' => 'Opt In',
+
+    'opt_out' => 'Opt Out',
+
+    'request' => 'Request',
 
 ];
 

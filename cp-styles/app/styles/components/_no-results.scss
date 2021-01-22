@@ -1,0 +1,46 @@
+.no-results,
+.field-no-results // LEGACY 6.0
+{
+	margin: 10px 0;
+	padding: $sq-inset-m;
+
+	background-color: color(bg-0);
+	border-radius: $border-radius-base;
+	text-align: center;
+	line-height: $line-height-normal;
+
+	p {
+		margin: 0 0 $s-s;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	a {
+		@extend .button;
+		@extend .button--secondary;
+    @extend .button--small;
+
+    margin-left: 5px;
+    position: relative;
+		top: -1px;
+	}
+}
+
+tr.no-results {
+	border: none;
+}
+
+table .no-results,
+table .field-no-results {
+  background: none;
+}
+
+// LEGACY 6.0
+.field-empty {
+	display: block;
+	background: color(bg-0);
+	text-align: center;
+	padding: $sq-inset-s;
+}

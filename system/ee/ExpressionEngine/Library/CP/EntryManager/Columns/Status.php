@@ -19,43 +19,41 @@ use Mexitek\PHPColors\Color;
  */
 class Status extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'column_status';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'column_status';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [
-			'type'	=> Table::COL_STATUS
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'type' => Table::COL_STATUS
+        ];
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		$statuses = $this->getStatuses();
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $statuses = $this->getStatuses();
 
-		if (isset($statuses[$entry->status]))
-		{
-			$status = $statuses[$entry->status];
+        if (isset($statuses[$entry->status])) {
+            $status = $statuses[$entry->status];
 
-			return $status->renderTag();
-		}
+            return $status->renderTag();
+        }
 
-		return (in_array($entry->status, ['open', 'closed']))
-				? lang($entry->status)
-				: $entry->status;
-	}
+        return (in_array($entry->status, ['open', 'closed']))
+                ? lang($entry->status)
+                : $entry->status;
+    }
 
-	private function getStatuses()
-	{
-		static $statuses;
+    private function getStatuses()
+    {
+        static $statuses;
 
-		if ( ! $statuses)
-		{
-			$statuses = ee('Model')->get('Status')->all()->indexBy('status');
-		}
+        if (! $statuses) {
+            $statuses = ee('Model')->get('Status')->all()->indexBy('status');
+        }
 
-		return $statuses;
-	}
+        return $statuses;
+    }
 }

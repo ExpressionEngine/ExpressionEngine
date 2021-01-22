@@ -17,120 +17,118 @@ use CP_Controller;
  */
 class Channels extends Jumps
 {
+    public function __construct()
+    {
+        parent::__construct();
+        if (!ee('Permission')->can('admin_channels')) {
+            $this->sendResponse([]);
+        }
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
-		if (!ee('Permission')->can('admin_channels'))
-		{
-			$this->sendResponse([]);
-		}
-	}
+    /**
+     * Publish Jump Data
+     */
+    public function index()
+    {
+        // Should never be here without another segment.
+        show_error(lang('unauthorized_access'), 403);
+    }
 
-	/**
-	 * Publish Jump Data
-	 */
-	public function index()
-	{
-		// Should never be here without another segment.
-		show_error(lang('unauthorized_access'), 403);
-	}
+    public function edit()
+    {
+        $channels = $this->loadChannels(ee()->input->post('searchString'));
 
-	public function edit()
-	{
-		$channels = $this->loadChannels(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($channels as $channel) {
+            $id = $channel->getId();
+            $title = $channel->channel_title;
 
-		foreach ($channels as $channel) {
-			$id = $channel->getId();
-			$title = $channel->channel_title;
+            $response['editChannel' . $channel->getId()] = array(
+                'icon' => 'fa-pencil-alt',
+                'command' => $channel->channel_title,
+                'command_title' => $channel->channel_title,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile()
+            );
+        }
 
-			$response['editChannel' . $channel->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $channel->channel_title,
-				'command_title' => $channel->channel_title,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function layouts()
+    {
+        $channels = $this->loadChannels(ee()->input->post('searchString'));
 
-	public function layouts()
-	{
-		$channels = $this->loadChannels(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($channels as $channel) {
+            $id = $channel->getId();
+            $title = $channel->channel_title;
 
-		foreach ($channels as $channel) {
-			$id = $channel->getId();
-			$title = $channel->channel_title;
+            $response['viewLayouts' . $channel->getId()] = array(
+                'icon' => 'fa-object-group',
+                'command' => $channel->channel_title,
+                'command_title' => $channel->channel_title,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile()
+            );
+        }
 
-			$response['viewLayouts' . $channel->getId()] = array(
-				'icon' => 'fa-object-group',
-				'command' => $channel->channel_title,
-				'command_title' => $channel->channel_title,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function field()
+    {
+        $fields = $this->loadChannelFields(ee()->input->post('searchString'));
 
-	public function field()
-	{
-		$fields = $this->loadChannelFields(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($fields as $field) {
+            $response['editChannelField' . $field->field_id] = array(
+                'icon' => 'fa-pencil-alt',
+                'command' => $field->field_label . ' ' . $field->field_name,
+                'command_title' => $field->field_label,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('fields/edit/' . $field->getId())->compile()
+            );
+        }
 
-		foreach ($fields as $field) {
-			$response['editChannelField' . $field->field_id] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $field->field_label . ' ' . $field->field_name,
-				'command_title' => $field->field_label,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('fields/edit/' . $field->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    private function loadChannels($searchString = false)
+    {
+        $channels = ee('Model')->get('Channel');
 
-	private function loadChannels($searchString = false)
-	{
-		$channels = ee('Model')->get('Channel');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $channels->filter('channel_title', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$channels->filter('channel_title', 'LIKE', '%' . $keyword . '%');
-			}
-		}
+        return $channels->order('channel_title', 'ASC')->limit(11)->all();
+    }
 
-		return $channels->order('channel_title', 'ASC')->limit(11)->all();
-	}
+    private function loadChannelFields($searchString = false)
+    {
+        $fields = ee('Model')->get('ChannelField');
 
-	private function loadChannelFields($searchString = false)
-	{
-		$fields = ee('Model')->get('ChannelField');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $fields->filter('field_label', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$fields->filter('field_label', 'LIKE', '%' . $keyword . '%');
-			}
-		}
-
-		return $fields->order('field_label', 'ASC')->limit(11)->all();
-	}
+        return $fields->order('field_label', 'ASC')->limit(11)->all();
+    }
 }

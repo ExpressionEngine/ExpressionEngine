@@ -14,9 +14,8 @@
  * Because member management is so tightly, most of the member functions
  * are contained in the core code, rather than this module file.
  */
-class Member_mcp {
-
-
+class Member_mcp
+{
 }
 // END CLASS
 

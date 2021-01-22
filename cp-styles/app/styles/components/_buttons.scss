@@ -1,0 +1,299 @@
+/*
+.button-group {
+	display: flex;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+	margin-top: -10px;
+
+	.btn, // LEGACY 6.0
+	.button, .button-segment {
+		margin-left: $s-s;
+		margin-top: 10px;
+
+		&:first-child {
+			margin-left: 0;
+		}
+	}
+}
+*/
+
+/*
+.button-segment {
+	display: inline-block;
+	overflow: hidden;
+	border-radius: $corners;
+
+	.button {
+		float: left;
+		border-radius: 0;
+		margin: 0 0 0 1px;
+
+		&:first-child {
+			margin: 0;
+			border-top-left-radius: $corners;
+			border-bottom-left-radius: $corners;
+		}
+
+		&:last-child {
+			border-top-right-radius: $corners;
+			border-bottom-right-radius: $corners;
+		}
+	}
+}
+*/
+
+
+// Base Button Styles
+
+.btn, // LEGACY 6.0
+.button {
+	-webkit-appearance: none;
+	display: inline-block;
+  font-weight: 500;
+	text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  background-image: none;
+	cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  -webkit-transition: background-color 0.15s ease-in-out;
+  -moz-transition: background-color 0.15s ease-in-out;
+  -o-transition: background-color 0.15s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  @include button-size($padding-base-vertical, $padding-base-horizontal-extra, $font-size-normal, $line-height-normal, $border-radius-base);
+
+  &,
+  &:active,
+  &.active {
+    &:focus,
+    &.focus {
+    // @include tab-focus;
+    }
+  }
+
+  &:hover,
+  &:focus,
+  &.focus {
+    color: color(button-default-color);
+    text-decoration: none;
+  }
+
+  &:active,
+  &.active {
+    outline: 0;
+    background-image: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.12);
+  }
+
+  &.disable, // legacy
+  &.button--disabled,
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: not-allowed;
+    opacity: .55;
+    box-shadow: none;
+  }
+
+	@include focus-visible {
+		@include focus-outline;
+	}
+
+  /*
+  .fas, .fa, .fal {
+    opacity: 0.4;
+  }
+  */
+}
+
+a.button {
+  &.disabled,
+  fieldset[disabled] & {
+    pointer-events: none;
+  }
+}
+
+// Button Variations
+
+.button--default {
+  @include button-variant(color(button-default-color), color(button-default-bg), color(button-default-border), color(button-default-hover-bg), color(button-default-hover-border));
+  font-weight: normal;
+
+  .fas, .fa, .fal {
+    // opacity: 0.75;
+    color: color(text-secondary);
+  }
+}
+.button--primary {
+  @include button-variant(color(button-primary-color), color(button-primary-bg), color(button-primary-border), color(button-primary-hover-bg), color(button-primary-hover-border));
+}
+.button--secondary {
+  @include button-variant(color(button-secondary-color), color(button-secondary-bg), color(button-secondary-border), color(button-secondary-hover-bg), color(button-secondary-hover-border));
+  font-weight: normal;
+}
+.button--success {
+  @include button-variant(color(button-success-color), color(button-success-bg), color(button-success-border), color(button-success-hover-bg), color(button-success-hover-border));
+}
+.button--danger {
+  @include button-variant(color(button-danger-color), color(button-danger-bg), color(button-danger-border), color(button-danger-hover-bg), color(button-danger-hover-border));
+}
+// deprecated - replaced by button--default
+.button--secondary-alt {
+  @include button-variant(color(button-secondary-alt-color), color(button-secondary-alt-bg), color(button-secondary-alt-border), color(button-secondary-alt-hover-bg), color(button-secondary-alt-hover-border));
+  font-weight: normal;
+}
+// deprecated - replaced by button--success
+.button--action {
+  @include button-variant(color(button-action-color), color(button-action-bg), color(button-action-border), color(button-action-hover-bg), color(button-action-hover-border));
+}
+
+// Link buttons
+// Make a button look and behave like a link
+.button--link {
+  color: color(link);
+  font-weight: normal;
+  border-radius: 0;
+
+  &,
+  &:active,
+  &.active,
+  &[disabled],
+  fieldset[disabled] & {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    border-color: transparent;
+  }
+  &:hover,
+  &:focus {
+    color: color(link-hover);
+    text-decoration: none;
+    background-color: transparent;
+  }
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus {
+      color: color(link);
+      text-decoration: none;
+    }
+  }
+}
+
+// Button Sizes
+
+.button--large {
+  // line-height: ensure even-numbered height of button next to large input
+  @include button-size($padding-large-vertical, $padding-large-horizontal-extra, $font-size-large, $line-height-large, $border-radius-large);
+}
+.button--small {
+  // line-height: ensure proper height of button next to small input
+  @include button-size($padding-small-vertical, $padding-small-horizontal-extra, $font-size-small, $line-height-small, $border-radius-small);
+
+  &.has-sub::after {
+    top: 0px;
+  }
+}
+.button--xsmall {
+  @include button-size($padding-xs-vertical, $padding-xs-horizontal-extra, $font-size-small, $line-height-small, $border-radius-small);
+}
+
+// Button Block
+
+.button--wide, // Legacy
+.button--block {
+  display: block;
+  width: 100%;
+}
+
+// Vertically space out multiple block buttons
+.button--block + .button--block {
+  margin-top: 5px;
+}
+
+// Specificity overrides
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  &.btn-block {
+    width: 100%;
+  }
+}
+
+// Misc Button Modifiers
+
+.button--rounded {
+  border-radius: $border-radius-full;
+}
+
+@keyframes work-pulse {
+     0% {
+          box-shadow: 0 0 0 0px color(bg-25), 0 0 0 0px color(bg-25);
+     }
+     80% {
+          box-shadow: 0 0 0 10px rgba(#000, 0), 0 0 0 5px rgba(#000, 0);
+     }
+}
+
+.btn.work, // LEGACY 6.0
+.button--working {
+	cursor: wait;
+	opacity: 0.6;
+	animation: work-pulse 1s infinite;
+}
+
+// When links are forced to be rendered using <button> in dropdown menus
+.button__within-dropdown {
+  @extend .dropdown__link;
+  padding: 0 $s-m !important;
+  border: none;
+  background-color: transparent;
+  margin: 0 !important;
+  font-weight: inherit;
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+}
+
+/*
+.button {
+
+  .fa, .fal, .far, .fas {
+    opacity: 0.4;
+  }
+
+  &.icon-only {
+
+    .fa, .fal, .far, .fas {
+      opacity: 1;
+    }
+  }
+}
+*/
+
+// Start legacy code:
+
+.button--clear {
+	background: transparent;
+	color: color(text-normal);
+}
+
+.button--auto {
+	height: auto;
+	padding: 0.5em;
+	line-height: 15px !important;
+	// margin-bottom: 0.5em;
+  // margin-right: 0.5em;
+}
+
+.publish__add-category-button {
+  margin-top: 1em;
+}
