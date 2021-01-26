@@ -62,6 +62,14 @@ $(document).ready(function () {
 	}
 
 	// Submitting the search form
+	$('body').on('click', 'button[name="bulk_action_submit"]', function(event) {
+
+		event.preventDefault();
+		$('body').off('submit', form_selector);
+		$(form_selector).submit();
+	});
+
+	// Submitting the search form
 	$('body').on('submit', form_selector, function(event) {
 
 		event.preventDefault();
@@ -75,10 +83,6 @@ $(document).ready(function () {
 
 	// Typing into the search form
 	$('body').on('keyup', 'input[name="filter_by_keyword"]', _.debounce(function() {
-		if (location.protocol === 'https:' &&
-			navigator.userAgent.indexOf('Safari') > -1) {
-			return;
-		}
 
 		var val = $(this).val();
 		//only submit when search is empty or min. 3 chars
