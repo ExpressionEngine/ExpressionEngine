@@ -408,6 +408,12 @@ class Roles extends AbstractRolesController
         $role->name = ee('Request')->post('name');
         $role->short_name = ee('Request')->post('short_name');
         $role->description = ee('Request')->post('description');
+
+        //We don't allow much editing for SuperAdmin role, so just enfore it's locked and return here
+        if ($role->getId() == 1) {
+            $role->is_locked = 'y';
+            return $role;
+        }
         $role->is_locked = ee('Request')->post('is_locked');
         $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
         $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
