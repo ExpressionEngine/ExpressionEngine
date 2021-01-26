@@ -207,6 +207,12 @@ class File_field
 
         if ($file) {
             $fp_edit->setSelected($file->file_id);
+            $title = $file->title;
+        } else {
+            $title = $data;
+            if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+                $title = str_replace($matches[0], '', $data);
+            }
         }
 
         ee()->cp->add_js_script(array(
@@ -222,7 +228,7 @@ class File_field
             'field_name' => $field_name,
             'value' => $data,
             'file' => $file,
-            'title' => ($file) ? $file->title : '',
+            'title' => $title,
             'is_image' => ($file && $file->isImage()),
             'thumbnail' => ee('Thumbnail')->get($file)->url,
             'fp_url' => $fp->getUrl(),
