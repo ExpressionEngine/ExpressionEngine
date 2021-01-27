@@ -62,7 +62,7 @@ $(document).ready(function () {
 	}
 
 	// Submitting the search form
-	$('body').on('click', 'button[name="bulk_action_submit"]', function(event) {
+	$('body').on('click', 'button[name="bulk_action_submit"]:not([data-conditional-modal])', function(event) {
 
 		event.preventDefault();
 		$('body').off('submit', form_selector);
