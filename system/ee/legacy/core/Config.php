@@ -808,10 +808,6 @@ class EE_Config
                     $config->value = $new_values[$key];
                     $config->save();
 
-                    if ($key == 'is_system_on') {
-                        $isSystemOn = $new_values[$key];
-                    }
-
                     unset($new_values[$key]);
                 }
                 // Add any new configs to the DB
@@ -825,9 +821,6 @@ class EE_Config
                                 'key' => $key,
                                 'value' => $value
                             ])->save();
-                            if ($key == 'is_system_on') {
-                                $isSystemOn = $new_values[$key];
-                            }
                             unset($new_values[$key]);
                         }
                     }
@@ -842,11 +835,6 @@ class EE_Config
             foreach ($ci_config as $key => $val) {
                 $new_values[$key] = $val;
             }
-        }
-
-        // Shim writing is system on to config file
-        if (isset($isSystemOn)) {
-            $new_values['is_system_on'] = $isSystemOn;
         }
 
         // Update config file with remaining values

@@ -192,7 +192,7 @@ context('Updater', () => {
       })
     })
 
-    it('turns system off if system was off before updating', () => {
+    it.only('turns system off if system was off before updating', () => {
       cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
           file: config,
