@@ -35,7 +35,6 @@ class Runner
             'backupDatabase',
             'updateDatabase',
             'updateAddons',
-            'turnSystemOn',
         ]);
 
         $this->logger = $this->makeLoggerService();
@@ -210,7 +209,7 @@ class Runner
     public function selfDestruct($rollback = null)
     {
         $config = ee('Config')->getFile();
-
+        $config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), true);
         $config->set('app_version', APP_VER, true);
 
         // Legacy logger lib to log to update_log table
@@ -256,14 +255,6 @@ class Runner
     public function updateAddons()
     {
         $this->makeAddonUpdaterService()->updateAddons();
-    }
-
-    public function turnSystemOn()
-    {
-        ee()->config->set_item(
-            'is_system_on',
-            ee()->config->item('is_system_on_before_updater')
-        );
     }
 
     /**
