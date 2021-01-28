@@ -363,6 +363,40 @@ class Members extends CP_Controller
         }
     }
 
+    /**
+     * Sends an email to a member based on a provided template.
+     *
+     * @param ExpressionEngine\Model\Template\SpecialtyTemplate $template The email template
+     * @param ExpressionEngine\Model\Member\Member $member The member to be emailed
+     * @return bool true of the email sent, false if it did not
+     */
+    private function pendingMemberNotification($template, $member, array $extra_swap = array())
+    {
+        ee()->load->library('email');
+        ee()->load->helper('text');
+
+        $swap = array(
+            'name' => $member->getMemberName(),
+            'site_name' => stripslashes(ee()->config->item('site_name')),
+            'site_url' => ee()->config->item('site_url'),
+            'username' => $member->username,
+            ) + $extra_swap;
+
+        $email_title = ee()->functions->var_swap($template->data_title, $swap);
+        $email_message = ee()->functions->var_swap($template->template_data, $swap);
+
+        ee()->email->wordwrap = true;
+        ee()->email->mailtype = ee()->config->item('mail_format');
+        ee()->email->from(
+            ee()->config->item('webmaster_email'),
+            ee()->config->item('webmaster_name')
+        );
+        ee()->email->to($member->email);
+        ee()->email->subject($email_title);
+        ee()->email->message(entities_to_ascii($email_message));
+        return ee()->email->send();
+    }
+
     public function banned()
     {
         if (! ee('Permission')->can('ban_users')) {
@@ -894,11 +928,11 @@ class Members extends CP_Controller
             $avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
 
             $username_display = "
-			<div class=\"d-flex align-items-center\">
-			<img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
-			<div>$username_display</div>
-			</div>
-			";
+            <div class=\"d-flex align-items-center\">
+            <img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
+            <div>$username_display</div>
+            </div>
+            ";
 
             $last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
 
@@ -906,9 +940,9 @@ class Members extends CP_Controller
                 $member->member_id,
                 $username_display,
                 '<span class="meta-info">
-					<b>' . lang('joined') . '</b>: ' . ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member->join_date) . '<br>
-					<b>' . lang('last_visit') . '</b>: ' . $last_visit . '
-				</span>',
+                    <b>' . lang('joined') . '</b>: ' . ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member->join_date) . '<br>
+                    <b>' . lang('last_visit') . '</b>: ' . $last_visit . '
+                </span>',
                 $group
             );
 
