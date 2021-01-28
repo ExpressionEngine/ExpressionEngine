@@ -80,20 +80,20 @@ class Installer {
 			for (const property in options.database) {
 				config_contents = config_contents.replace(
 					/'${property}' => .*?,/,
-					"'${property}' => '${config_contents[property]}',"
+					"'${property}' => '${options.database[property]}',"
 				)
 			}
 		}
-
-		for (const property in options) {
+		//console.log(config_contents);
+		for (const property in options) {			
 			if (property != 'database' && property != 'app_version') {
+				var rege = new RegExp("\\$config\\['" + property + "'\]\\s+=\\s+.*?;" , "g");
 				config_contents = config_contents.replace(
-					/\$config\['${property}'\]\s+=\s+.*?;/,
-					"$config['${property}'] = '${config_contents[property]}';"
+					rege,
+					"$config['"+property+"'] = '"+options[property]+"';"
 				)
 			}
 		}
-
 		fs.writeFileSync(path.resolve(config), config_contents);
 
 		return true;
