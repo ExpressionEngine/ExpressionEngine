@@ -185,6 +185,10 @@ class Role extends Model
 
     public function can($permission)
     {
+        if ($this->role_id == 1) {
+            return true;
+        }
+        
         $permissions = $this->getPermissions();
 
         return array_key_exists('can_' . $permission, $permissions);
@@ -192,6 +196,10 @@ class Role extends Model
 
     public function has($permission)
     {
+        if ($this->role_id == 1) {
+            return true;
+        }
+        
         $permissions = $this->getPermissions();
 
         return array_key_exists($permission, $permissions);

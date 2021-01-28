@@ -64,10 +64,10 @@ class Permission
         $groups = $query->all();
 
         if ($groups) {
-            return $groups->pluck('role_id');
+            return array_unique(array_merge([1], $groups->pluck('role_id')));
         }
 
-        return [];
+        return [1];
     }
 
     public function rolesThatCan($permission, $site_id = null)
@@ -214,6 +214,10 @@ class Permission
      */
     protected function check($which)
     {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        
         //legacy permission support
         if (in_array($which, ['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries', 'can_delete_self_entries', 'can_delete_all_entries', 'can_assign_post_authors'])) {
             $member = ee()->session->getMember();
