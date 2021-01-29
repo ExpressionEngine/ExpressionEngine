@@ -3,11 +3,11 @@ name: Run PHP Tests
 on:
   push:
     branches:
-      - stability
+      - 5.dev
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - stability
+      - 5.dev
 
 jobs:
     php-tests:
