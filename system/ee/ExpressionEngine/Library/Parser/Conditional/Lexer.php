@@ -495,26 +495,32 @@ class Lexer extends AbstractLexer
                 }
             }
 
+            //clean up the conditional from edit link
+            //do regex search based on the marker in url
+            if ($type == 'STRING') {
+                $lexeme = preg_replace("/<a href=\"(.*?)\" class=\"eeFrontEdit\"><\/a>/is", '', $lexeme, 1);
+            }
+
             switch ($type) {
-                case 'BOOL':	 $obj = new Boolean($lexeme);
+                case 'BOOL': $obj = new Boolean($lexeme);
 
                     break;
-                case 'COMMENT':	 $obj = new Comment($lexeme);
+                case 'COMMENT': $obj = new Comment($lexeme);
 
                     break;
-                case 'NUMBER':	 $obj = new Number($lexeme);
+                case 'NUMBER': $obj = new Number($lexeme);
 
                     break;
                 case 'OPERATOR': $obj = new Operator($lexeme);
 
                     break;
-                case 'OTHER':	 $obj = new Other($lexeme);
+                case 'OTHER': $obj = new Other($lexeme);
 
                     break;
-                case 'STRING':	 $obj = new StringLiteral($lexeme);
+                case 'STRING': $obj = new StringLiteral($lexeme);
 
                     break;
-                case 'TAG':		 $obj = new Tag($lexeme);
+                case 'TAG': $obj = new Tag($lexeme);
 
                     break;
                 case 'VARIABLE': $obj = new Variable($lexeme);

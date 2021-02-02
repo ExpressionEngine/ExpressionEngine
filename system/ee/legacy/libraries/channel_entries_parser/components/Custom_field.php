@@ -113,6 +113,14 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     }
 
                     ee()->load->remove_package_path($_ft_path);
+
+                    //frontend edit link
+                    if (IS_PRO) {
+                        if (!isset($obj->disable_frontedit) || $obj->disable_frontedit != true) {
+                            $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
+                            $tagdata = str_replace(LD . $tag . RD, $frontEdit->entryFieldEditLink($orig_data['channel_id'], $orig_data['entry_id'], $field['field_name']) . LD . $tag . RD, $tagdata);
+                        }
+                    }
                 } else {
                     // Couldn't find a fieldtype
                     $entry = ee()->typography->parse_type(
