@@ -789,6 +789,7 @@ class EE_Schema
 			cat_order int(4) unsigned NOT NULL,
 			PRIMARY KEY `cat_id` (`cat_id`),
 			KEY `group_id` (`group_id`),
+			KEY `parent_id` (`parent_id`),
 			KEY `cat_name` (`cat_name`),
 			KEY `site_id` (`site_id`)
 		)";
