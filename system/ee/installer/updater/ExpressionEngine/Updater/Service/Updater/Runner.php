@@ -208,13 +208,8 @@ class Runner
      */
     public function selfDestruct($rollback = null)
     {
-        $is_system_on_before_updater = 'y';
-        $checkConfigQuery = ee('db')->select('value')->from('config')->where('key', 'is_system_on')->order_by('site_id', 'asc')->get();
-        if ($checkConfigQuery->num_rows() > 0) {
-            $is_system_on_before_updater = $checkConfigQuery->row('value');
-        }
         $config = ee('Config')->getFile();
-        $config->set('is_system_on', $config->get('is_system_on_before_updater', $is_system_on_before_updater), true);
+        $config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), true);
         $config->set('app_version', APP_VER, true);
 
         // Legacy logger lib to log to update_log table
