@@ -354,8 +354,8 @@ class EE_Config {
 		// Need this so we know the base url a page belongs to
 		if (isset($config['site_pages'][$row['site_id']]))
 		{
-			$url = $config['site_url'].'/';
-			$url .= $config['site_index'].'/';
+			$url = isset($config['site_url']) ? $config['site_url'].'/' : '';
+			$url .= isset($config['site_index']) ? $config['site_index'].'/' : '';
 
 			$config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}

@@ -97,6 +97,12 @@ If you made these changes, please accept the modifications on the control panel 
 
 'checksum_email_subject' => 'A core file was modified on your site.',
 
+'warning_system_status_title' => 'Please check system online status',
+
+'warning_system_status_message' => 'Your current system status is set to <b>%s</b>. If you need to change that, please visit <a href="%s">System Settings</a> or press the button below.',
+
+'warning_system_status_button' => 'Set System %s',
+
 'csrf_token_expired' => 'This form has expired. Please refresh and try again.',
 
 'current_password_incorrect' => 'Your current password was not submitted correctly.',
