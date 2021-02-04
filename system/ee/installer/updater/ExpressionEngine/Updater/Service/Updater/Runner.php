@@ -209,8 +209,18 @@ class Runner
     public function selfDestruct($rollback = null)
     {
         $config = ee('Config')->getFile();
-        $config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), true);
-        $config->set('app_version', APP_VER, true);
+        $prevSystemOnlineStateUnknown = is_null($config->get('is_system_on_before_updater'));
+        $removeFromConfig = [];
+        if (!$prevSystemOnlineStateUnknown) {
+            $removeFromConfig = [
+                'is_system_on_before_updater' => $config->get('is_system_on_before_updater')
+            ];
+        }
+        $setToConfig = [
+            'is_system_on' => $config->get('is_system_on_before_updater', 'n'),
+            'app_version' => APP_VER
+        ];
+        ee()->config->_update_config($setToConfig, $removeFromConfig);
 
         // Legacy logger lib to log to update_log table
         if (ee()->load->is_loaded('logger') === false) {
@@ -236,9 +246,20 @@ class Runner
 
         if (empty($rollback)) {
             ee()->session->set_flashdata('update:completed', true);
+            ee()->session->set_flashdata('update:show_status_switch', $prevSystemOnlineStateUnknown);
         } else {
+            ee('CP/Alert')->makeBanner('warning_system_status')
+                ->asAttention()
+                ->canClose()
+                ->withTitle(lang('update_version_warning'))
+                ->addToBody(sprintf(
+                    lang('update_version_warning_desc'),
+                    (ee()->config->item('is_system_on') == 'y') ? lang('online') : lang('offline')
+                ))
+                ->defer();
+
             ee('CP/Alert')->makeBanner('update-rolledback')
-                ->asWarning()
+                ->asInfo()
                 ->withTitle(sprintf(lang('update_rolledback'), APP_VER))
                 ->addToBody(sprintf(
                     lang('update_rolledback_desc'),

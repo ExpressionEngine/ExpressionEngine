@@ -231,14 +231,6 @@ $(document).ready(function () {
 	EE.cp.validateLicense();
 });
 
-// Scroll to version popover on successful update
-if (EE.cp.updateCompleted) {
-	$('.app-about-info').show()
-	$('.app-about-info__update').hide()
-	$('html, body').animate({
-		scrollTop: $('.app-about-info').offset().top
-	}, 500)
-}
 
 /**
  * Posts the current EE license to the EE main site for validation purposes.
