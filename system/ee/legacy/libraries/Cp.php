@@ -172,15 +172,14 @@ class Cp
         ));
 
         if (ee()->session->flashdata('update:completed')) {
-            ee()->javascript->set_global('cp.updateCompleted', true);
 
             $updateCompletedScript = <<<JSC
-                /*$(document).ready(function() {
+                $(document).ready(function() {
                     document.getElementsByClassName('js-about')[0].click();
                     $('html, body').animate({
                         scrollTop: $('.app-about').offset().top
                     }, 500);
-                });*/
+                });
             JSC;
             ee()->javascript->output($updateCompletedScript);
         }

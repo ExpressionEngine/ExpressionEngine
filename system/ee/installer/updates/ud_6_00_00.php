@@ -45,7 +45,7 @@ class Updater
     protected function addPostInstallMessageTemplate()
     {
         $sites = ee('Model')->get('Site')->all();
-        require_once SYSPATH . 'ee/language/' . ee()->config->item('deft_lang') ?: 'english' . '/email_data.php';
+        require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
 
         foreach ($sites as $site) {
             ee('Model')->make('SpecialtyTemplate')
