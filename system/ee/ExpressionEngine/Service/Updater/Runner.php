@@ -139,7 +139,7 @@ class Runner
     private function turnSystemOff()
     {
         $config = ee('Config')->getFile();
-        $config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'));
+        $config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'), true);
         $config->set('is_system_on', 'n', true);
     }
 }

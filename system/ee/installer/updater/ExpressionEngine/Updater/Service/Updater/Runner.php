@@ -209,8 +209,18 @@ class Runner
     public function selfDestruct($rollback = null)
     {
         $config = ee('Config')->getFile();
-        $config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), true);
-        $config->set('app_version', APP_VER, true);
+        $prevSystemOnlineStateUnknown = is_null($config->get('is_system_on_before_updater'));
+        $removeFromConfig = [];
+        if (!$prevSystemOnlineStateUnknown) {
+            $removeFromConfig = [
+                'is_system_on_before_updater' => $config->get('is_system_on_before_updater')
+            ];
+        }
+        $setToConfig = [
+            'is_system_on' => $config->get('is_system_on_before_updater', 'n'),
+            'app_version' => APP_VER
+        ];
+        ee()->config->_update_config($setToConfig, $removeFromConfig);
 
         // Legacy logger lib to log to update_log table
         if (ee()->load->is_loaded('logger') === false) {
@@ -234,11 +244,35 @@ class Runner
         ee()->lang->loadfile('updater');
         ee()->load->library('session');
 
+        // show banner with system online info if we don't know the prev online state
+        // of if they update from latest 5.x - there's chance they did not notice the banner there
+        $showSystemOnlineBanner = $prevSystemOnlineStateUnknown || version_compare(ee()->config->item('app_version'), '5.4', '>=');
+
         if (empty($rollback)) {
             ee()->session->set_flashdata('update:completed', true);
+            ee()->session->set_flashdata('update:show_status_switch', $showSystemOnlineBanner);
         } else {
+            if ($showSystemOnlineBanner) {
+                $update_version_warning = lang('update_version_warning');
+                $update_version_warning_desc = lang('update_version_warning_desc');
+                //in EE 5.4, these strings are not available
+                if ($update_version_warning == 'update_version_warning') {
+                    $update_version_warning = 'Please check system online status';
+                    $update_version_warning_desc = 'Your current system status is set to <b>%s</b>. If you need to change that, please visit System Settings.';
+                }
+                ee('CP/Alert')->makeBanner('warning_system_status')
+                    ->asAttention()
+                    ->canClose()
+                    ->withTitle($update_version_warning)
+                    ->addToBody(sprintf(
+                        $update_version_warning_desc,
+                        (ee()->config->item('is_system_on') == 'y') ? lang('online') : lang('offline')
+                    ))
+                    ->defer();
+            }
+
             ee('CP/Alert')->makeBanner('update-rolledback')
-                ->asWarning()
+                ->asTip()
                 ->withTitle(sprintf(lang('update_rolledback'), APP_VER))
                 ->addToBody(sprintf(
                     lang('update_rolledback_desc'),

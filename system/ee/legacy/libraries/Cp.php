@@ -172,7 +172,42 @@ class Cp
         ));
 
         if (ee()->session->flashdata('update:completed')) {
-            ee()->javascript->set_global('cp.updateCompleted', true);
+
+            $updateCompletedScript = <<<JSC
+                $(document).ready(function() {
+                    document.getElementsByClassName('js-about')[0].click();
+                    $('html, body').animate({
+                        scrollTop: $('.app-about').offset().top
+                    }, 500);
+                });
+            JSC;
+            ee()->javascript->output($updateCompletedScript);
+        }
+
+        if (ee()->session->flashdata('update:show_status_switch')) {
+            $systemStatusAlert = ee('CP/Alert')->makeBanner('warning_system_status')
+                ->asAttention()
+                ->canClose()
+                ->withTitle(lang('warning_system_status_title'))
+                ->addToBody(sprintf(
+                    lang('warning_system_status_message'),
+                    (ee()->config->item('is_system_on') == 'y') ? lang('online') : lang('offline'),
+                    ee('CP/URL')->make('settings/general')
+                ));
+                
+            $button = form_open(
+                ee('CP/URL')->make('settings/config'),
+                '',
+                array(
+                    'is_system_on' => (ee()->config->item('is_system_on') == 'y') ? 'n' : 'y'
+                )
+            );
+
+            $button .= '<input class="button button--primary" type="submit" value="' . sprintf(lang('warning_system_status_button'), (ee()->config->item('is_system_on') == 'y') ? lang('offline') : lang('online')) . '">';
+            $button .= form_close();
+
+            $systemStatusAlert->addToBody($button, '', false);
+            $systemStatusAlert->now();
         }
 
         // Combo-load the javascript files we need for every request
@@ -365,7 +400,7 @@ class Cp
             );
         }
 
-        if (ee('Filesystem')->exists(SYSPATH . 'ee/EllisLab')) {
+        if (defined('ELLISLAB_STILL_HERE') && ELLISLAB_STILL_HERE == true) {
             $notices[] = sprintf(
                 lang('el_folder_present'),
                 SYSDIR . '/ee/EllisLab',
