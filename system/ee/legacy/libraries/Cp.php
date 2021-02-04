@@ -401,16 +401,12 @@ class Cp
             );
         }
 
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
-        foreach ($backtrace as $trace) {
-            if (!empty($trace['file']) && strpos($trace['file'], 'ee/EllisLab/ExpressionEngine/Boot/boot.php') !== false) {
-                $notices[] = sprintf(
-                    lang('el_folder_present'),
-                    SYSDIR . '/ee/EllisLab',
-                    DOC_URL . 'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
-                );
-                break;
-            }
+        if (defined('ELLISLAB_STILL_HERE') && ELLISLAB_STILL_HERE == true) {
+            $notices[] = sprintf(
+                lang('el_folder_present'),
+                SYSDIR . '/ee/EllisLab',
+                DOC_URL . 'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
+            );
         }
 
         if (! empty($notices)) {
