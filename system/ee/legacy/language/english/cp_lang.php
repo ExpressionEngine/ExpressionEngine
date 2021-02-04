@@ -41,6 +41,10 @@ $lang = array(
 
 'build' => 'Build:',
 
+'offline' => 'Offline',
+
+'online' => 'Online',
+
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
 'categories' => 'Categories',

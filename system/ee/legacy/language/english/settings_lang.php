@@ -77,10 +77,6 @@ $lang = array(
 
 'manual' => 'Manual',
 
-'offline' => 'Offline',
-
-'online' => 'Online',
-
 'show_ee_news' => 'Show ExpressionEngine news?',
 
 'show_ee_news_desc' => 'When enabled, the latest news about ExpressionEngine will appear on the control panel\'s homepage.',
