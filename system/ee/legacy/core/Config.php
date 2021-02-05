@@ -798,30 +798,33 @@ class EE_Config
                         ->all();
                 }
 
+                $anything_to_add = $new_values;
                 foreach ($configs as $config) {
                     $key = $config->key;
 
                     if ($find != '') {
-                        $new_values[$key] = str_replace($find, $replace, $new_values[$key]);
+                        $value = str_replace($find, $replace, $new_values[$key]);
+                    } else {
+                        $value = $new_values[$key];
                     }
 
-                    $config->value = $new_values[$key];
+                    $config->value = $value;
                     $config->save();
 
-                    unset($new_values[$key]);
+                    unset($anything_to_add[$key]);
                 }
                 // Add any new configs to the DB
-                if (! empty($new_values)) {
+                if (! empty($anything_to_add)) {
                     $all = $this->divineAll();
                     $install = $this->divination('install');
-                    foreach ($new_values as $key => $value) {
+                    foreach ($anything_to_add as $key => $value) {
                         if (in_array($key, $all)) {
                             ee('Model')->make('Config', [
                                 'site_id' => (in_array($key, $install)) ? 0 : $site_id,
                                 'key' => $key,
                                 'value' => $value
                             ])->save();
-                            unset($new_values[$key]);
+                            unset($anything_to_add[$key]);
                         }
                     }
                 }
@@ -1003,7 +1006,7 @@ class EE_Config
      * the config file
      * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
      */
-    private function _remaining_config_values($site_prefs)
+    private function _remaining_config_values($site_prefs, $update_only = false)
     {
         if (count($site_prefs) > 0) {
             foreach ($site_prefs as $key => $val) {
@@ -1016,9 +1019,9 @@ class EE_Config
 
             // If the "pconnect" item is found we know we're dealing with the DB file
             if (isset($site_prefs['pconnect'])) {
-                $this->_update_dbconfig($site_prefs);
+                $this->_update_dbconfig($site_prefs, $update_only);
             } else {
-                $this->_update_config($site_prefs);
+                $this->_update_config($site_prefs, [], $update_only);
             }
         }
     }
@@ -1039,7 +1042,7 @@ class EE_Config
      * @param	array
      * @return	bool
      */
-    public function _update_config($new_values = array(), $remove_values = array())
+    public function _update_config($new_values = array(), $remove_values = array(), $update_only = false)
     {
         if (! is_array($new_values) && count($remove_values) == 0) {
             return false;
@@ -1091,7 +1094,7 @@ class EE_Config
                 }
 
                 // Are we adding a brand new item to the config file?
-                if (! isset($config[$key])) {
+                if (! isset($config[$key]) && $update_only !== true) {
                     $to_be_added[$key] = $val;
                 } else {
                     $base_regex = '#(\$config\[(\042|\047)' . $key . '\\2\]\s*=\s*)';
@@ -1195,7 +1198,7 @@ class EE_Config
      * @param array $dbconfig Items to add to the database configuration
      * @return boolean TRUE if successful
      */
-    public function _update_dbconfig($dbconfig = array())
+    public function _update_dbconfig($dbconfig = array(), $update_only = false)
     {
         $database_config = ee('Database')->getConfig();
 
