@@ -25,7 +25,7 @@ class Config extends Settings
         }
 
         $fields = [];
-        foreach (ee()->config->divineAll() as $key) {
+        foreach (ee()->config->divination('system') as $key) {
             if (ee()->input->post($key) != '') {
                 $fields[$key] = ee()->input->post($key);
             }
