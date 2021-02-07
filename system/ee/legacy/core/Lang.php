@@ -470,6 +470,34 @@ class EE_Lang
 
         return 'en';
     }
+    
+    
+        /**
+     * Get language direction
+     *
+     * @param null $language_dir
+     * @return string Direction for given language code.
+     */
+    public function direction($language_dir = null)
+    {
+        if (empty($language_name)) {
+            $language_name = ee()->session->get_language();
+        }
+
+        $language_code = $this->code($language_name);
+
+        $directions = ['rtl', 'ltr'];
+
+        // List of languages that use right to left script.
+        $rtl_languages = ['ar', 'am', 'az', 'dv', 'he', 'ku', 'fa', 'ur'];
+
+        if (in_array($language_code, $rtl_languages)) {
+            return 'rtl';
+        }
+
+        return 'ltr';
+    }
+
 }
 // END CLASS
 
