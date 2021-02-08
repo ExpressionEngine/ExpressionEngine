@@ -774,6 +774,8 @@ class EE_Config
         // Let's get this shindig started
         $msm_values = $new_values;
 
+        $update_only = false;
+
         foreach ($site_ids as $site_id) {
             // If we don't do this, then only the first site will have the new changes.
             // On the last loop, $new_values will still contain any leftovers that need
@@ -789,6 +791,7 @@ class EE_Config
             $this->_update_pages($site_id, $new_values, $query);
 
             if (ee()->db->table_exists('config')) {
+                $update_only = true;
                 if (empty($new_values)) {
                     $configs = [];
                 } else {
@@ -841,7 +844,7 @@ class EE_Config
         }
 
         // Update config file with remaining values
-        $this->_remaining_config_values($new_values);
+        $this->_remaining_config_values($new_values,$update_only);
 
         return $this->_config_path_errors;
     }
