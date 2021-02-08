@@ -173,14 +173,14 @@ class Cp
 
         if (ee()->session->flashdata('update:completed')) {
 
-            $updateCompletedScript = <<<JSC
+            $updateCompletedScript = "
                 $(document).ready(function() {
                     document.getElementsByClassName('js-about')[0].click();
                     $('html, body').animate({
                         scrollTop: $('.app-about').offset().top
                     }, 500);
                 });
-            JSC;
+            ";
             ee()->javascript->output($updateCompletedScript);
         }
 
