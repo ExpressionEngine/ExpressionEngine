@@ -62,7 +62,7 @@ class SelectField extends React.Component {
         <div>
           {selectItem}
           {this.props.addLabel &&
-              <a className="button button--primary submit" rel="add_new" href="#">{this.props.addLabel}</a>
+              <a className="button button--default button--small submit publish__add-category-button" rel="add_new" href="#">{this.props.addLabel}</a>
           }
           <ToggleTools label={this.props.manageLabel}>
             <Toggle on={this.props.editing} handleToggle={(toggle) => this.setEditingMode(toggle)} />

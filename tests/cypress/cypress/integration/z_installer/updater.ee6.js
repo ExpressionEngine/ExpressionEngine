@@ -192,7 +192,7 @@ context('Updater', () => {
       })
     })
 
-    it('turns system on if system was off before updating', () => {
+    it('turns system off if system was off before updating', () => {
       cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
           file: config,
@@ -204,7 +204,7 @@ context('Updater', () => {
           test_update()
           test_templates()
           cy.eeConfig({item: 'is_system_on'}) .then((config) => {
-            expect(config.trim()).to.be.equal('y')
+            expect(config.trim()).to.be.equal('n')
           })
         })
       })

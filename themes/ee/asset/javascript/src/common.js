@@ -485,8 +485,8 @@ $(document).ready(function(){
 
 		$('.js-about').on('click', function(e) {
 			// Trigger an event so that the about popup can check for updates when shown
-			$('.app-about').trigger('display');
 			e.preventDefault();
+			$('.app-about').trigger('display');
 		});
 
 		$('.app-about').on('display', function() {

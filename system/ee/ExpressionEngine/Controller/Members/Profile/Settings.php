@@ -204,18 +204,18 @@ class Settings extends Profile
 
     protected function uploadAvatar()
     {
-        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
-
-        // Remove the member's existing avatar
-        if (file_exists($existing) && is_file($existing)) {
-            unlink($existing);
-        }
-
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
             $this->member->avatar_filename = ee()->input->post('avatar_filename');
 
             return true;
+        }
+        
+        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
+
+        // Remove the member's existing avatar
+        if (file_exists($existing) && is_file($existing)) {
+            unlink($existing);
         }
 
         ee()->load->library('filemanager');

@@ -190,12 +190,14 @@ class Settings extends CP_Controller
     {
         $fields = array();
         foreach ($settings as $setting) {
-            foreach ($setting['fields'] as $field_name => $field) {
-                if (isset($field['save_in_config']) && $field['save_in_config'] === false) {
-                    continue;
-                }
+            if (!empty($setting)) {
+                foreach ($setting['fields'] as $field_name => $field) {
+                    if (isset($field['save_in_config']) && $field['save_in_config'] === false) {
+                        continue;
+                    }
 
-                $fields[$field_name] = ee()->input->post($field_name);
+                    $fields[$field_name] = ee()->input->post($field_name);
+                }
             }
         }
 

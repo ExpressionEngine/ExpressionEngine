@@ -20,6 +20,8 @@ class Role extends Model
     protected static $_primary_key = 'role_id';
     protected static $_table_name = 'roles';
 
+    protected static $_hook_id = 'role';
+
     protected static $_typed_columns = [
         'role_id' => 'int',
         'is_locked' => 'boolString',
@@ -183,6 +185,10 @@ class Role extends Model
 
     public function can($permission)
     {
+        if ($this->role_id == 1) {
+            return true;
+        }
+        
         $permissions = $this->getPermissions();
 
         return array_key_exists('can_' . $permission, $permissions);
@@ -190,6 +196,10 @@ class Role extends Model
 
     public function has($permission)
     {
+        if ($this->role_id == 1) {
+            return true;
+        }
+        
         $permissions = $this->getPermissions();
 
         return array_key_exists($permission, $permissions);

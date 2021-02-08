@@ -30,6 +30,7 @@ jobs:
           repository: ExpressionEngine/ExpressionEngine-User-Guide
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: ExpressionEngine-User-Guide
+          ref: 6.x
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
