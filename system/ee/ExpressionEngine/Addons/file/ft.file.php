@@ -957,6 +957,9 @@ JSC;
 
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (empty($data)) {
+            return '';
+        }
         $field_data = $this->pre_process($data);
         $out = '<a href="' . $this->replace_tag($field_data) . '" target="_blank">' . $field_data['title'] . '</a>';
 

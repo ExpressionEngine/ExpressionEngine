@@ -214,7 +214,7 @@ class El_pings
     {
         $target = parse_url($url);
 
-        $fp = @fsockopen('ssl://'.$target['host'], 443, $errno, $errstr, 3);
+        $fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
 
         if (! $fp) {
             return false;
