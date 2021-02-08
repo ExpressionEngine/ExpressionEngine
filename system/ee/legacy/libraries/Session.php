@@ -458,7 +458,7 @@ class EE_Session
             return false;
         }
 
-        $interval = ee()->config->item('password_lockout_interval') * 60;
+        $interval = (int) ee()->config->item('password_lockout_interval') * 60;
 
         $expire = time() - $interval;
 
