@@ -818,17 +818,14 @@ class EE_Config
                 }
                 // Add any new configs to the DB
                 if (! empty($anything_to_add)) {
-                    $all = $this->divineAll();
                     $install = $this->divination('install');
                     foreach ($anything_to_add as $key => $value) {
-                        if (in_array($key, $all)) {
-                            ee('Model')->make('Config', [
-                                'site_id' => (in_array($key, $install)) ? 0 : $site_id,
-                                'key' => $key,
-                                'value' => $value
-                            ])->save();
-                            unset($anything_to_add[$key]);
-                        }
+                        ee('Model')->make('Config', [
+                            'site_id' => (in_array($key, $install)) ? 0 : $site_id,
+                            'key' => $key,
+                            'value' => $value
+                        ])->save();
+                        unset($anything_to_add[$key]);
                     }
                 }
             } else {
@@ -844,7 +841,7 @@ class EE_Config
         }
 
         // Update config file with remaining values
-        $this->_remaining_config_values($new_values,$update_only);
+        $this->_remaining_config_values($new_values, $update_only);
 
         return $this->_config_path_errors;
     }
