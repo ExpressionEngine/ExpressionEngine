@@ -236,7 +236,7 @@ context('Security & Privacy Settings', () => {
     cy.auth();
     page.load()
 
-    page.get('wrap').contains('Preferences updated')
+    //page.get('wrap').contains('Preferences updated')
     page.get('cp_session_type').filter('[value=s]').should('be.checked')
     page.get('website_session_type').filter('[value=s]').should('be.checked')
     page.get('cookie_domain').invoke('val').then((val) => { expect(val).to.be.equal('.yourdomain.com')})

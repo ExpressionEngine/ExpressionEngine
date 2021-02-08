@@ -803,12 +803,10 @@ class EE_Config
                     $key = $config->key;
 
                     if ($find != '') {
-                        $value = str_replace($find, $replace, $new_values[$key]);
-                    } else {
-                        $value = $new_values[$key];
+                        $new_values[$key] = str_replace($find, $replace, $new_values[$key]);
                     }
 
-                    $config->value = $value;
+                    $config->value = $new_values[$key];
                     $config->save();
 
                     unset($anything_to_add[$key]);
@@ -829,6 +827,7 @@ class EE_Config
                 $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
             }
         }
+        
 
         // Add the CI pref items to the new values array if needed
         if (count($ci_config) > 0) {
@@ -1197,7 +1196,7 @@ class EE_Config
      * @param array $dbconfig Items to add to the database configuration
      * @return boolean TRUE if successful
      */
-    public function _update_dbconfig($dbconfig = array(), $update_only = false)
+    public function _update_dbconfig($dbconfig = array())
     {
         $database_config = ee('Database')->getConfig();
 
