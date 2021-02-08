@@ -774,8 +774,6 @@ class EE_Config
         // Let's get this shindig started
         $msm_values = $new_values;
 
-        $update_only = false;
-
         foreach ($site_ids as $site_id) {
             // If we don't do this, then only the first site will have the new changes.
             // On the last loop, $new_values will still contain any leftovers that need
@@ -791,7 +789,6 @@ class EE_Config
             $this->_update_pages($site_id, $new_values, $query);
 
             if (ee()->db->table_exists('config')) {
-                $update_only = true;
                 if (empty($new_values)) {
                     $configs = [];
                 } else {
@@ -841,7 +838,7 @@ class EE_Config
         }
 
         // Update config file with remaining values
-        $this->_remaining_config_values($new_values, $update_only);
+        $this->_remaining_config_values($new_values);
 
         return $this->_config_path_errors;
     }
@@ -1006,7 +1003,7 @@ class EE_Config
      * the config file
      * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
      */
-    private function _remaining_config_values($site_prefs, $update_only = false)
+    private function _remaining_config_values($site_prefs)
     {
         if (count($site_prefs) > 0) {
             foreach ($site_prefs as $key => $val) {
@@ -1019,9 +1016,9 @@ class EE_Config
 
             // If the "pconnect" item is found we know we're dealing with the DB file
             if (isset($site_prefs['pconnect'])) {
-                $this->_update_dbconfig($site_prefs, $update_only);
+                $this->_update_dbconfig($site_prefs);
             } else {
-                $this->_update_config($site_prefs, [], $update_only);
+                $this->_update_config($site_prefs);
             }
         }
     }
@@ -1042,7 +1039,7 @@ class EE_Config
      * @param	array
      * @return	bool
      */
-    public function _update_config($new_values = array(), $remove_values = array(), $update_only = false)
+    public function _update_config($new_values = array(), $remove_values = array())
     {
         if (! is_array($new_values) && count($remove_values) == 0) {
             return false;
@@ -1077,6 +1074,7 @@ class EE_Config
 
         // Cycle through the newconfig array and swap out the data
         $to_be_added = array();
+        $divineAll = $this->divineAll();
         if (is_array($new_values)) {
             foreach ($new_values as $key => $val) {
                 if (is_array($val)) {
@@ -1094,7 +1092,8 @@ class EE_Config
                 }
 
                 // Are we adding a brand new item to the config file?
-                if (! isset($config[$key]) && $update_only !== true) {
+                // we only add custom items that are not in divination array
+                if (! isset($config[$key]) && !in_array($key, $divineAll)) {
                     $to_be_added[$key] = $val;
                 } else {
                     $base_regex = '#(\$config\[(\042|\047)' . $key . '\\2\]\s*=\s*)';
