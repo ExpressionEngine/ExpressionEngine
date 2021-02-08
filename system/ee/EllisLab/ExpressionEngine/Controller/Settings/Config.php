@@ -25,7 +25,8 @@ class Config extends Settings
         }
 
         $fields = [];
-        foreach (ee()->config->divination('system') as $key) {
+        $allowed = ['is_system_on'];
+        foreach ($allowed as $key) {
             if (ee()->input->post($key) != '') {
                 $fields[$key] = ee()->input->post($key);
             }
@@ -42,7 +43,7 @@ class Config extends Settings
             ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
         }
 
-        ee()->functions->redirect(ee('CP/URL')->make('settings'));
+        ee()->functions->redirect(ee('CP/URL')->make('settings/general'));
     }
 }
 // END CLASS
