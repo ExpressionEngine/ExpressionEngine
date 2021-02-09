@@ -15,23 +15,21 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Non-zero Natural Number Validation Rule
  */
-class IsNaturalNoZero extends ValidationRule {
+class IsNaturalNoZero extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        if (! preg_match('/^[0-9]+$/', $value)) {
+            return false;
+        }
 
-	public function validate($key, $value)
-	{
-		if ( ! preg_match('/^[0-9]+$/', $value))
-		{
-			return FALSE;
-		}
+        return ($value > 0);
+    }
 
-		return ($value > 0);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'is_natural_no_zero';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'is_natural_no_zero';
+    }
 }
 
 // EOF

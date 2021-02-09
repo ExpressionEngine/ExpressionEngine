@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -20,14 +24,13 @@
  * @param	string
  * @return	string
  */
-if ( ! function_exists('nl2br_except_pre'))
-{
-	function nl2br_except_pre($str)
-	{
-		ee()->load->library('typography');
+if (! function_exists('nl2br_except_pre')) {
+    function nl2br_except_pre($str)
+    {
+        ee()->load->library('typography');
 
-		return ee()->typography->nl2br_except_pre($str);
-	}
+        return ee()->typography->nl2br_except_pre($str);
+    }
 }
 
 /**
@@ -40,15 +43,14 @@ if ( ! function_exists('nl2br_except_pre'))
  * @param	bool	whether to reduce multiple instances of double newlines to two
  * @return	string
  */
-if ( ! function_exists('auto_typography'))
-{
-	function auto_typography($str, $strip_js_event_handlers = TRUE, $reduce_linebreaks = FALSE)
-	{
-		ee()->load->library('typography');
-		return ee()->typography->auto_typography($str, $strip_js_event_handlers, $reduce_linebreaks);
-	}
-}
+if (! function_exists('auto_typography')) {
+    function auto_typography($str, $strip_js_event_handlers = true, $reduce_linebreaks = false)
+    {
+        ee()->load->library('typography');
 
+        return ee()->typography->auto_typography($str, $strip_js_event_handlers, $reduce_linebreaks);
+    }
+}
 
 /**
  * HTML Entities Decode
@@ -59,12 +61,11 @@ if ( ! function_exists('auto_typography'))
  * @param	string
  * @return	string
  */
-if ( ! function_exists('entity_decode'))
-{
-	function entity_decode($str, $charset='UTF-8')
-	{
-		return ee('Security/XSS')->entity_decode($str, $charset);
-	}
+if (! function_exists('entity_decode')) {
+    function entity_decode($str, $charset = 'UTF-8')
+    {
+        return ee('Security/XSS')->entity_decode($str, $charset);
+    }
 }
 
 // EOF

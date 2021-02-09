@@ -1,4 +1,6 @@
-<?php use ExpressionEngine\Library\CP\Table; ?>
+<?php use ExpressionEngine\Library\CP\Table;
+
+?>
 
 <?php /* Table */ if (!$grid_input): ?>
 
@@ -11,7 +13,7 @@
 		<tr>
 			<td>
 				<?=lang($no_results['text'])?>
-				<?php if ( ! empty($no_results['action_text'])): ?>
+				<?php if (! empty($no_results['action_text'])): ?>
 					<a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
@@ -20,30 +22,30 @@
 <?php else: ?>
 	<table cellspacing="0" <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 		<?php
-		if (isset($table_attrs['id'])) {
-			$table_id = $table_attrs['id'];
-		} else {
-			$table_id = uniqid('tbl_');
-		}
-		?>
+        if (isset($table_attrs['id'])) {
+            $table_id = $table_attrs['id'];
+        } else {
+            $table_id = uniqid('tbl_');
+        }
+        ?>
 		<thead>
 			<tr class="app-listing__row app-listing__row--head">
 				<?php
-				// Don't do reordering logic if the table is empty
-				$reorder = $reorder && ! empty($data);
-				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                // Don't do reordering logic if the table is empty
+                $reorder = $reorder && ! empty($data);
+                $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
 
-				if ($reorder_header): ?>
+                if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder fas fa-bars"></span></th>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
-					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
-					$label = $settings['label']; ?>
+                    $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
+                    $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="app-listing__header text--center">
-							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
+							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
@@ -54,35 +56,31 @@
 						</th>
 					<?php else: ?>
 						<?php
-						$header_class = '';
-						$header_sorts = ($sortable && $settings['sort'] && $base_url != NULL);
+                        $header_class = '';
+                        $header_sorts = ($sortable && $settings['sort'] && $base_url != null);
 
-						if ($settings['type'] == Table::COL_ID)
-						{
-							$header_class .= ' id-col';
-						}
-						if ($header_sorts)
-						{
-							$header_class .= ' column-sort-header';
-						}
-						if ($sortable && $settings['sort'] && $sort_col == $label)
-						{
-							$header_class .= ' column-sort-header--active';
-						}
-						if (isset($settings['class']))
-						{
-							$header_class .= ' '.$settings['class'];
-						}
-						?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+                        if ($settings['type'] == Table::COL_ID) {
+                            $header_class .= ' id-col';
+                        }
+                        if ($header_sorts) {
+                            $header_class .= ' column-sort-header';
+                        }
+                        if ($sortable && $settings['sort'] && $sort_col == $label) {
+                            $header_class .= ' column-sort-header--active';
+                        }
+                        if (isset($settings['class'])) {
+                            $header_class .= ' ' . $settings['class'];
+                        }
+                        ?>
+						<th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 							<?php if ($header_sorts): ?>
 								<?php
-								$url = clone $base_url;
-								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
-								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$url->setQueryStringVariable($sort_col_qs_var, $label);
-								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
-								?>
+                                $url = clone $base_url;
+                                $arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
+                                $link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
+                                $url->setQueryStringVariable($sort_col_qs_var, $label);
+                                $url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
+                                ?>
 								<a href="<?=$url?>" class="column-sort column-sort--<?=$arrow_dir?>">
 							<?php endif ?>
 
@@ -103,61 +101,53 @@
 		</thead>
 		<tbody>
 			<?php
-			// Output this if Grid input so we can dynamically show it via JS
-			if (empty($data)): ?>
-				<tr class="no-results<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
+            // Output this if Grid input so we can dynamically show it via JS
+            if (empty($data)): ?>
+				<tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
-						<?php if ( ! empty($no_results['action_text'])): ?>
+						<?php if (! empty($no_results['action_text'])): ?>
 							<a rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
 			<?php endif ?>
 			<?php $i = 1;
-			foreach ($data as $heading => $rows): ?>
-				<?php if ( ! $subheadings)
-				{
-					$rows = array($rows);
-				}
-				if ($subheadings && ! empty($heading)): ?>
+            foreach ($data as $heading => $rows): ?>
+				<?php if (! $subheadings) {
+                $rows = array($rows);
+            }
+                if ($subheadings && ! empty($heading)): ?>
 					<tr class="sub-heading"><td colspan="<?=$colspan?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
 				<?php
-				foreach ($rows as $row_id => $row):
-					if (isset($row['attrs']['class']))
-					{
-						$row['attrs']['class'] .= ' app-listing__row';
-					}
-					else
-					{
-						$row['attrs']['class'] = 'app-listing__row';
-					}
+                foreach ($rows as $row_id => $row):
+                    if (isset($row['attrs']['class'])) {
+                        $row['attrs']['class'] .= ' app-listing__row';
+                    } else {
+                        $row['attrs']['class'] = 'app-listing__row';
+                    }
 
-					// The last row preceding an action row should have a class of 'last'
-					if (( ! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit))
-					{
-						if (isset($row['attrs']['class']))
-						{
-							$row['attrs']['class'] .= ' last';
-						}
-						else
-						{
-							$row['attrs']['class'] = ' last';
-						}
-					}
-					$i++;
-					?>
+                    // The last row preceding an action row should have a class of 'last'
+                    if ((! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit)) {
+                        if (isset($row['attrs']['class'])) {
+                            $row['attrs']['class'] .= ' last';
+                        } else {
+                            $row['attrs']['class'] = ' last';
+                        }
+                    }
+                    $i++;
+                    ?>
 					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 						<?php if ($reorder): ?>
 							<td class="reorder-col"><span class="ico reorder fas fa-bars"></span></td>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $key => $column):
-							$column_name = $columns[$key]['label'];
-							$column_name = ($lang_cols) ? lang($column_name) : $column_name;
-							?>
+                            $column_name = $columns[$key]['label'];
+                            $column_name = ($lang_cols) ? lang($column_name) : $column_name;
+                            ?>
 
-							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
+							<?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
 								<td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
@@ -166,7 +156,7 @@
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td class="app-listing__cell">
 									<div class="toolbar-wrap">
-										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+										<?=ee()->load->view('_shared/toolbar', $column, true)?>
 									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
@@ -182,7 +172,7 @@
 												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
+										<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
 											disabled="disabled"
 										<?php endif; ?>
 										type="checkbox"
@@ -205,7 +195,7 @@
 					</tr>
 				<?php endforeach ?>
 			<?php endforeach ?>
-			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<?php if (! empty($action_buttons) || ! empty($action_content)): ?>
 				<tr class="tbl-action">
 					<td colspan="<?=$colspan?>" class="solo">
 						<?php foreach ($action_buttons as $button): ?>
@@ -235,23 +225,23 @@ else: ?>
 	<?php if (empty($columns) && empty($data)): ?>
 		<p class="no-results">
 			<?=lang($no_results['text'])?>
-			<?php if ( ! empty($no_results['action_text'])): ?>
+			<?php if (! empty($no_results['action_text'])): ?>
 				<a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 			<?php endif ?>
 		</p>
 	<?php else: ?>
 		<thead>
 				<?php
-				// Don't do reordering logic if the table is empty
-				$reorder = $reorder && ! empty($data);
-				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                // Don't do reordering logic if the table is empty
+                $reorder = $reorder && ! empty($data);
+                $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
 
-				foreach ($columns as $settings):
-					$attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
-					$label = $settings['label']; ?>
+                foreach ($columns as $settings):
+                    $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
+                    $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
-							<?php if ( ! empty($data) OR $checkbox_header): // Hide checkbox if no data ?>
+							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
@@ -262,31 +252,31 @@ else: ?>
 						</th>
 					<?php else: ?>
 						<?php
-						$header_class = '';
-						$header_sorts = ($sortable && $settings['sort'] && $base_url != NULL);
+                        $header_class = '';
+                        $header_sorts = ($sortable && $settings['sort'] && $base_url != null);
 
-						if ($settings['type'] == Table::COL_ID) {
-							$header_class .= ' id-col';
-						}
-						if ($header_sorts) {
-							$header_class .= ' column-sort-header';
-						}
-						if ($sortable && $settings['sort'] && $sort_col == $label) {
-							$header_class .= ' column-sort-header--active';
-						}
-						if (isset($settings['class'])) {
-							$header_class .= ' '.$settings['class'];
-						}
-						?>
+                        if ($settings['type'] == Table::COL_ID) {
+                            $header_class .= ' id-col';
+                        }
+                        if ($header_sorts) {
+                            $header_class .= ' column-sort-header';
+                        }
+                        if ($sortable && $settings['sort'] && $sort_col == $label) {
+                            $header_class .= ' column-sort-header--active';
+                        }
+                        if (isset($settings['class'])) {
+                            $header_class .= ' ' . $settings['class'];
+                        }
+                        ?>
 						<th class="<?=$header_class?>" <?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 							<?php if ($header_sorts): ?>
 								<?php
-								$url = clone $base_url;
-								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
-								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$url->setQueryStringVariable($sort_col_qs_var, $label);
-								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
-								?>
+                                $url = clone $base_url;
+                                $arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
+                                $link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
+                                $url->setQueryStringVariable($sort_col_qs_var, $label);
+                                $url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
+                                ?>
 								<a href="<?=$url?>" class="column-sort column-sort--<?=$arrow_dir?>">
 							<?php endif ?>
 
@@ -311,58 +301,58 @@ else: ?>
 	<?php endif ?>
 
 		<tbody>
-			<tr class="no-results<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns)+intval($header_sorts))?>">
+			<tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + intval($header_sorts))?>">
 			<?php
-			// Output this if Grid input so we can dynamically show it via JS
-			?>
+            // Output this if Grid input so we can dynamically show it via JS
+            ?>
 				<p>
 					<?=lang($no_results['text'])?>
-					<?php if ( ! empty($no_results['action_text'])): ?>
+					<?php if (! empty($no_results['action_text'])): ?>
 						<a rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 					<?php endif ?>
 				</p>
 			</td></tr>
 			<?php $i = 1;
-			foreach ($data as $heading => $rows): ?>
-				<?php if ( ! $subheadings) {
-					$rows = array($rows);
-				}
+            foreach ($data as $heading => $rows): ?>
+				<?php if (! $subheadings) {
+                $rows = array($rows);
+            }
 
-				foreach ($rows as $row):
-					$i++;
+                foreach ($rows as $row):
+                    $i++;
 
-					$row_class = "";
+                    $row_class = "";
 
-					if (isset($row['attrs']['class'])) {
-						$row_class = $row['attrs']['class'];
-						unset($row['attrs']['class']);
-					}
-				?>
+                    if (isset($row['attrs']['class'])) {
+                        $row_class = $row['attrs']['class'];
+                        unset($row['attrs']['class']);
+                    }
+                ?>
 					<tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 
 						<?php foreach ($row['columns'] as $key => $column):
-							$column_name = $columns[$key]['label'];
-							$column_name = ($lang_cols) ? lang($column_name) : $column_name;
-							$column_desc = '';
+                            $column_name = $columns[$key]['label'];
+                            $column_name = ($lang_cols) ? lang($column_name) : $column_name;
+                            $column_desc = '';
 
-							if (isset($columns[$key]['desc']) && !empty($columns[$key]['desc'])) {
-								$column_desc = lang($columns[$key]['desc']);
-							}
+                            if (isset($columns[$key]['desc']) && !empty($columns[$key]['desc'])) {
+                                $column_desc = lang($columns[$key]['desc']);
+                            }
 
-							$column_label = "<div class=\"grid-field__column-label\">
+                            $column_label = "<div class=\"grid-field__column-label\">
 								<div class=\"field-instruct\">
 									<label>$column_name</label>";
-							if (!empty($column_desc)) {
-								$column_label .= "
+                            if (!empty($column_desc)) {
+                                $column_label .= "
 									<em>$column_desc</em>
 									";
-							}
-							$column_label .= "	</div>
+                            }
+                            $column_label .= "	</div>
 							</div>";
 
-							?>
+                            ?>
 
-							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
+							<?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
 								<td><?=$column_label?><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
@@ -371,7 +361,7 @@ else: ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<div class="toolbar-wrap">
-										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+										<?=ee()->load->view('_shared/toolbar', $column, true)?>
 									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
@@ -384,7 +374,7 @@ else: ?>
 												data-<?=$key?>="<?=form_prep($value)?>"
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<?php if (isset($column['disabled']) && $column['disabled'] !== FALSE):?>
+										<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
 											disabled="disabled"
 										<?php endif; ?>
 										type="checkbox"
@@ -394,15 +384,15 @@ else: ?>
 								<td><?=$column_label?><?=$column['content']?></td>
 							<?php elseif (isset($column['html'])): ?>
 								<?php
-									$column_class = '';
-									if (isset($column['attrs']['class'])) {
-										$column_class = $column['attrs']['class'];
-										unset($column['attrs']['class']);
-									}
-									if (isset($column['error']) && ! empty($column['error'])) {
-										$column_class .= ' invalid';
-									}
-								?>
+                                    $column_class = '';
+                                    if (isset($column['attrs']['class'])) {
+                                        $column_class = $column['attrs']['class'];
+                                        unset($column['attrs']['class']);
+                                    }
+                                    if (isset($column['error']) && ! empty($column['error'])) {
+                                        $column_class .= ' invalid';
+                                    }
+                                ?>
 								<td class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<?=$column_label?>
 									<?=$column['html']?>
@@ -436,7 +426,7 @@ else: ?>
 
 	<div class="grid-field__footer">
 		<div class="button-group">
-			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<?php if (! empty($action_buttons) || ! empty($action_content)): ?>
 			<div class="tbl-action">
 				<?php foreach ($action_buttons as $button): ?>
 					<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>

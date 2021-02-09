@@ -13,67 +13,60 @@ namespace ExpressionEngine\Updater\Version_4_2_2;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            array(
+                'checkFileDirectoryPaths'
+            )
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			array(
-				'checkFileDirectoryPaths'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    private function checkFileDirectoryPaths()
+    {
+        $warning = false;
+        $directories = array();
+        // Get all of the file upload directories and see if any are using themes/ee
+        $upload_destinations = ee('Model')->get('UploadDestination')->all();
 
+        foreach ($upload_destinations as $upload) {
+            if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== false) {
+                $warning = true;
+                $directories[$upload->server_path] = $upload->name;
+            }
+        }
 
-	private function checkFileDirectoryPaths()
-	{
-		$warning = FALSE;
-		$directories = array();
-		// Get all of the file upload directories and see if any are using themes/ee
-		$upload_destinations = ee('Model')->get('UploadDestination')->all();
+        //ee()->update_notices->clear(); die;
 
-		foreach ($upload_destinations as $upload)
-		{
-			if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== FALSE)
-			{
-				$warning = TRUE;
-				$directories[$upload->server_path] = $upload->name;
-			}
-		}
+        if ($warning) {
+            $msg = 'The themes/ee/ folder may be overwritten during upgrade. The following directories should be moved:<br><br>';
 
-		//ee()->update_notices->clear(); die;
+            foreach ($directories as $path => $name) {
+                $msg .= $name . ': ' . $path . '<br>';
+            }
 
-		if ($warning)
-		{
-			$msg = 'The themes/ee/ folder may be overwritten during upgrade. The following directories should be moved:<br><br>';
+            $msg .= 'See the <a href="' . DOC_URL . 'installation/version_notes_4.2.2.html">version notes</a> for details.';
 
-			foreach ($directories as $path => $name)
-			{
-				$msg .= $name.': '.$path.'<br>';
-			}
-
-			$msg .= 'See the <a href="'.DOC_URL.'installation/version_notes_4.2.2.html">version notes</a> for details.';
-
-			ee()->update_notices->setVersion('4.2.2');
-			ee()->update_notices->header('File upload directory found in themes/ee/');
-			ee()->update_notices->item($msg);
-		}
-
-	}
+            ee()->update_notices->setVersion('4.2.2');
+            ee()->update_notices->header('File upload directory found in themes/ee/');
+            ee()->update_notices->item($msg);
+        }
+    }
 }
 
 // EOF

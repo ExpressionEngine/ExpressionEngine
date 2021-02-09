@@ -6,7 +6,9 @@
   <div class="panel-heading">
   	<div class="title-bar">
   		<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
-  		<?php if (isset($filters)) echo $filters; ?>
+  		<?php if (isset($filters)) {
+    echo $filters;
+} ?>
   	</div>
   </div>
   <div class="panel-body">
@@ -15,7 +17,7 @@
 				<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>
 			<?php else: ?>
 				<div class="list-group">
-				<?php foreach($logs as $log): ?>
+				<?php foreach ($logs as $log): ?>
 
 				<div class="list-item">
 					<div class="list-item__content">
@@ -48,39 +50,38 @@
 </div>
 <?php
 // Individual confirm delete modals
-foreach($logs as $log)
-{
-	$modal_vars = array(
-		'name'      => 'modal-confirm-' . $log->id,
-		'form_url'	=> $form_url,
-		'hidden'	=> array(
-			'delete'	=> $log->id
-		),
-		'checklist'	=> array(
-			array(
-				'kind' => lang('view_cp_log'),
-				'desc' => $log->username. ' ' . $log->action
-			)
-		)
-	);
+foreach ($logs as $log) {
+    $modal_vars = array(
+        'name' => 'modal-confirm-' . $log->id,
+        'form_url' => $form_url,
+        'hidden' => array(
+            'delete' => $log->id
+        ),
+        'checklist' => array(
+            array(
+                'kind' => lang('view_cp_log'),
+                'desc' => $log->username . ' ' . $log->action
+            )
+        )
+    );
 
-	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
-	ee('CP/Modal')->addModal($log->id, $modal);
+    $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+    ee('CP/Modal')->addModal($log->id, $modal);
 }
 
 // Confirm delete all modal
 $modal_vars = array(
-	'name'      => 'modal-confirm-all',
-	'form_url'	=> $form_url,
-	'hidden'	=> array(
-		'delete'	=> 'all'
-	),
-	'checklist'	=> array(
-		array(
-			'kind' => lang('view_cp_log'),
-			'desc' => lang('all')
-		)
-	)
+    'name' => 'modal-confirm-all',
+    'form_url' => $form_url,
+    'hidden' => array(
+        'delete' => 'all'
+    ),
+    'checklist' => array(
+        array(
+            'kind' => lang('view_cp_log'),
+            'desc' => lang('all')
+        )
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

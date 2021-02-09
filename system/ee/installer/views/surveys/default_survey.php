@@ -9,9 +9,9 @@
 
 	<div>
 	<p><?=lang('participate_in_survey', 'participate_in_survey')?></p>
-	<?=form_radio('participate_in_survey', 'y', TRUE, 'id="participate_in_survey_y" onclick="document.getElementById(\'survey_body\').style.display=\'block\'"')?>
+	<?=form_radio('participate_in_survey', 'y', true, 'id="participate_in_survey_y" onclick="document.getElementById(\'survey_body\').style.display=\'block\'"')?>
 		<label for="participate_in_survey_y"><?=lang('yes')?></label> &nbsp;&nbsp;&nbsp;&nbsp;
-	<?=form_radio('participate_in_survey', 'n', FALSE, 'id="participate_in_survey_n" onclick="document.getElementById(\'survey_body\').style.display=\'none\'"')?> <label for="participate_in_survey_n"><?=lang('no')?></label>
+	<?=form_radio('participate_in_survey', 'n', false, 'id="participate_in_survey_n" onclick="document.getElementById(\'survey_body\').style.display=\'none\'"')?> <label for="participate_in_survey_n"><?=lang('no')?></label>
 	</div>
 
 	<div id="survey_body">
@@ -19,9 +19,9 @@
 
 		<div class="pad">
 			<p><?=lang('send_anonymous_server_data', 'send_anonymous_server_data')?></p>
-			<?=form_radio('send_anonymous_server_data', 'y', TRUE, 'id="send_anonymous_server_data_y"')?>
+			<?=form_radio('send_anonymous_server_data', 'y', true, 'id="send_anonymous_server_data_y"')?>
 				<label for="send_anonymous_server_data_y"><?=lang('yes')?></label> &nbsp;&nbsp;&nbsp;&nbsp;
-			<?=form_radio('send_anonymous_server_data', 'n', FALSE, 'id="send_anonymous_server_data_n"')?> <label for="send_anonymous_server_data_n"><?=lang('no')?></label>
+			<?=form_radio('send_anonymous_server_data', 'n', false, 'id="send_anonymous_server_data_n"')?> <label for="send_anonymous_server_data_n"><?=lang('no')?></label>
 			<span style="font-size:smaller"><?=lang('what_server_data_is_sent')?>
 				<a href="#" onclick="toggle_server_data();return false;"><?=lang('show_hide_to_see_server_data')?></a>
 			</span>

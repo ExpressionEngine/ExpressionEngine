@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Version_6_0_0;
  */
 class Updater
 {
-
     public $version_suffix = '';
 
     /**
@@ -46,7 +45,7 @@ class Updater
     protected function addPostInstallMessageTemplate()
     {
         $sites = ee('Model')->get('Site')->all();
-        require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+        require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
 
         foreach ($sites as $site) {
             ee('Model')->make('SpecialtyTemplate')
@@ -60,7 +59,6 @@ class Updater
                 ])->save();
         }
     }
-
 }
 
 // EOF

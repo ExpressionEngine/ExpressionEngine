@@ -15,12 +15,12 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Regular Expression Validation Rule
  */
-class Regex extends ValidationRule {
+class Regex extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        list($regex) = $this->assertParameters('expression');
 
-	public function validate($key, $value)
-	{
-		list($regex) = $this->assertParameters('expression');
-
-		return (bool) preg_match($regex, $value);
-	}
+        return (bool) preg_match($regex, $value);
+    }
 }

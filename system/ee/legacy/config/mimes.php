@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -17,11 +21,9 @@
  * possible.  If you need to upload types that are not in the list you can
  * add them.
  */
-
 ee()->load->library('logger');
-ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("mimes") to load this config file', TRUE, 604800);
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("mimes") to load this config file', true, 604800);
 
 $whitelist = ee()->config->loadFile('mimes');
-
 
 // EOF

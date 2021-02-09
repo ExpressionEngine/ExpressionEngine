@@ -10,6 +10,6 @@
 
 namespace ExpressionEngine\AutoloaderTest;
 
-class TestFileTwo {
-
+class TestFileTwo
+{
 }

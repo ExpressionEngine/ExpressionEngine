@@ -13,49 +13,48 @@ namespace ExpressionEngine\Updater\Version_5_0_0;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            [
+                'optInToAnalytics',
+                'optInToNews'
+            ]
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			[
-				'optInToAnalytics',
-				'optInToNews'
-			]
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Analytics-collecting is now opt-in for new installs, but continue
+     * collecting on existing installs
+     */
+    private function optInToAnalytics()
+    {
+        ee()->config->_update_config(['share_analytics' => 'y']);
+    }
 
-	/**
-	 * Analytics-collecting is now opt-in for new installs, but continue
-	 * collecting on existing installs
-	 */
-	private function optInToAnalytics()
-	{
-		ee()->config->_update_config(['share_analytics' => 'y']);
-	}
-
-	/**
-	 * Showing EE news on the CP homepage is now opt-in for new installs, but
-	 * continue showing on existing installs
-	 */
-	private function optInToNews()
-	{
-		ee()->config->_update_config(['show_ee_news' => 'y']);
-	}
+    /**
+     * Showing EE news on the CP homepage is now opt-in for new installs, but
+     * continue showing on existing installs
+     */
+    private function optInToNews()
+    {
+        ee()->config->_update_config(['show_ee_news' => 'y']);
+    }
 }
 
 // EOF

@@ -11,78 +11,77 @@
 /**
  * Consent Module update class
  */
-class Consent_upd {
+class Consent_upd
+{
+    public function __construct()
+    {
+        ee()->load->dbforge();
+        $addon = ee('Addon')->get('consent');
+        $this->version = $addon ? $addon->getVersion() : '1.0.0';
+    }
 
-	function __construct()
-	{
-		ee()->load->dbforge();
-		$addon = ee('Addon')->get('consent');
-		$this->version = $addon ? $addon->getVersion() : '1.0.0';
-	}
+    /**
+     * Module Installer
+     *
+     * @return	bool
+     */
+    public function install()
+    {
+        ee('Model')->make('Module', [
+            'module_name' => 'Consent',
+            'module_version' => $this->version,
+            'has_cp_backend' => 'n',
+        ])->save();
 
-	/**
-	 * Module Installer
-	 *
-	 * @return	bool
-	 */
-	function install()
-	{
-		ee('Model')->make('Module', [
-			'module_name' => 'Consent',
-			'module_version' => $this->version,
-			'has_cp_backend' => 'n',
-		])->save();
+        $actions = [
+            'grantConsent',
+            'submitConsent',
+            'withdrawConsent',
+        ];
 
-		$actions = [
-			'grantConsent',
-			'submitConsent',
-			'withdrawConsent',
-		];
+        foreach ($actions as $action) {
+            ee('Model')->make('Action', [
+                'class' => 'Consent',
+                'method' => $action,
+            ])->save();
+        }
 
-		foreach ($actions as $action)
-		{
-			ee('Model')->make('Action', [
-				'class' => 'Consent',
-				'method' => $action,
-			])->save();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Module Uninstaller
+     *
+     * @return	bool
+     */
+    public function uninstall()
+    {
+        $module = ee('Model')->get('Module')
+            ->filter('module_name', 'Consent')
+            ->first();
 
-	/**
-	 * Module Uninstaller
-	 *
-	 * @return	bool
-	 */
-	function uninstall()
-	{
-		$module = ee('Model')->get('Module')
-			->filter('module_name', 'Consent')
-			->first();
+        ee('Model')->get('Action')
+            ->filter('class', 'Consent')
+            ->delete();
 
-		ee('Model')->get('Action')
-			->filter('class', 'Consent')
-			->delete();
+        ee('db')->where('module_id', $module->module_id)
+            ->delete('module_member_roles');
 
-		ee('db')->where('module_id', $module->module_id)
-			->delete('module_member_roles');
+        $module->delete();
 
-		$module->delete();
+        return true;
+    }
 
-		return TRUE;
-	}
-
-	/**
-	 * Module Updater
-	 *
-	 * @param string $current Currently installed version number
-	 * @return	bool
-	 */
-	public function update($current='')
-	{
-		return TRUE;
-	}
+    /**
+     * Module Updater
+     *
+     * @param string $current Currently installed version number
+     * @return	bool
+     */
+    public function update($current = '')
+    {
+        return true;
+    }
 }
 // END CLASS
 

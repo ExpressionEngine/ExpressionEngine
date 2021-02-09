@@ -13,42 +13,36 @@ namespace ExpressionEngine\Service\File;
 /**
  * File Service Filter Iterator
  */
-class FilterIterator extends \FilterIterator {
+class FilterIterator extends \FilterIterator
+{
+    public function accept()
+    {
+        $inner = $this->getInnerIterator();
 
-	public function accept()
-	{
-		$inner = $this->getInnerIterator();
+        if (is_null($inner)) {
+            return false;
+        }
 
-		if (is_null($inner))
-		{
-			return FALSE;
-		}
+        if ($inner->isDir()) {
+            return false;
+        }
 
-		if ($inner->isDir())
-		{
-			return FALSE;
-		}
+        $file = $inner->getFilename();
 
-		$file = $inner->getFilename();
+        if ($file == '') {
+            return false;
+        }
 
-		if ($file == '')
-		{
-			return FALSE;
-		}
+        if ($file[0] == '.') {
+            return false;
+        }
 
-		if ($file[0] == '.')
-		{
-			return FALSE;
-		}
+        if ($file == 'index.html') {
+            return false;
+        }
 
-		if ($file == 'index.html')
-		{
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
+        return true;
+    }
 }
 
 // EOF

@@ -11,9 +11,9 @@
 								</fieldset>
 								<ul class="channels-pages-create">
 									<?php
-									$menus = ee()->menu->generate_menu();
-									foreach ($menus['channels']['create'] as $channel_name => $link):
-									?>
+                                    $menus = ee()->menu->generate_menu();
+                                    foreach ($menus['channels']['create'] as $channel_name => $link):
+                                    ?>
 										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 									<?php endforeach ?>
 								</ul>
@@ -48,29 +48,29 @@
 				</div>
 			</div>
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-				'options' => [
-					[
-						'value' => "",
-						'text' => '-- ' . lang('with_selected') . ' --'
-					],
-					[
-						'value' => "remove",
-						'text' => lang('delete'),
-						'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-					]
-				],
-				'modal' => true
+			    'options' => [
+			        [
+			            'value' => "",
+			            'text' => '-- ' . lang('with_selected') . ' --'
+			        ],
+			        [
+			            'value' => "remove",
+			            'text' => lang('delete'),
+			            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+			        ]
+			    ],
+			    'modal' => true
 			]); ?>
 		</form>
 	</div>
 
 <?php
 $modal_vars = array(
-	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('addons/settings/pages'),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	)
+    'name' => 'modal-confirm-remove',
+    'form_url' => ee('CP/URL')->make('addons/settings/pages'),
+    'hidden' => array(
+        'bulk_action' => 'remove'
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);

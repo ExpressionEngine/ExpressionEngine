@@ -18,32 +18,29 @@ use ExpressionEngine\Service\Validation\ValidationRule;
  * 'nickname' => 'whenPresent|min_length[5]'
  * 'email' => 'whenPresent[newsletter]|email'
  */
-class WhenPresent extends ValidationRule {
+class WhenPresent extends ValidationRule
+{
+    protected $all_values = array();
 
-	protected $all_values = array();
+    public function validate($key, $value)
+    {
+        if (empty($this->parameters)) {
+            return isset($value) ? true : $this->skip();
+        }
 
-	public function validate($key, $value)
-	{
-		if (empty($this->parameters))
-		{
-			return isset($value) ? TRUE : $this->skip();
-		}
+        foreach ($this->parameters as $field_name) {
+            if (! array_key_exists($field_name, $this->all_values)) {
+                return $this->skip();
+            }
+        }
 
-		foreach ($this->parameters as $field_name)
-		{
-			if ( ! array_key_exists($field_name, $this->all_values))
-			{
-				return $this->skip();
-			}
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
-
-	public function setAllValues(array $values)
-	{
-		$this->all_values = $values;
-	}
+    public function setAllValues(array $values)
+    {
+        $this->all_values = $values;
+    }
 }
 
 // EOF

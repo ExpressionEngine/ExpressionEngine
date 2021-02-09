@@ -14,10 +14,10 @@
 				<div class="field-instruct">
 				<?=lang('choose_new_un', 'new_username')?>
 				</div>
-				<?=form_input(array('dir' => 'ltr', 'name' => "new_username", 'value'=> $username, 'id' => "new_username", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<?=form_input(array('dir' => 'ltr', 'name' => "new_username", 'value' => $username, 'id' => "new_username", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</fieldset>
 		<?php endif;?>
-		<?php if ($new_username_required AND ! $new_password_required): ?>
+		<?php if ($new_username_required and ! $new_password_required): ?>
 			<fieldset>
 				<div class="field-instruct">
 				<?=lang('existing_password', 'password')?>

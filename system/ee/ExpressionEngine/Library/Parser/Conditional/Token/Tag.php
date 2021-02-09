@@ -13,15 +13,15 @@ namespace ExpressionEngine\Library\Parser\Conditional\Token;
 /**
  * Tag Token
  */
-class Tag extends Token {
+class Tag extends Token
+{
+    public function __construct($lexeme)
+    {
+        parent::__construct('TAG', $lexeme);
+    }
 
-	public function __construct($lexeme)
-	{
-		parent::__construct('TAG', $lexeme);
-	}
-
-	public function canEvaluate()
-	{
-		return FALSE;
-	}
+    public function canEvaluate()
+    {
+        return false;
+    }
 }

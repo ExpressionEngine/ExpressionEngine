@@ -13,207 +13,190 @@ namespace ExpressionEngine\Library;
 /**
  * CAPTCHA
  */
-class Captcha {
+class Captcha
+{
+    /**
+     * Returns a boolean indicating if a CAPTCHA should be displayed or not
+     * according to the site's CAPTCHA settings
+     *
+     * @return	boolean
+     */
+    public function shouldRequireCaptcha()
+    {
+        return bool_config_item('require_captcha') &&
+            (
+                !
+                // The only case we don't need to show captcha is if the
+                // member is logged in but captcha_require_members is off
+                (! bool_config_item('captcha_require_members') &&
+                    ee()->session->userdata('member_id') != 0)
+            );
+    }
 
-	/**
-	 * Returns a boolean indicating if a CAPTCHA should be displayed or not
-	 * according to the site's CAPTCHA settings
-	 *
-	 * @return	boolean
-	 */
-	public function shouldRequireCaptcha()
-	{
-		return bool_config_item('require_captcha') &&
-			( !
-				// The only case we don't need to show captcha is if the
-				// member is logged in but captcha_require_members is off
-				( ! bool_config_item('captcha_require_members') &&
-					ee()->session->userdata('member_id') != 0)
-			);
-	}
+    /**
+     * Generate CAPTCHA
+     *
+     * @param	string	$old_word	Word to make CAPTCHA image out of
+     * @param	boolean	$force_word	Boolean to skip CAPTCHA creation
+     * @return	string	HTML of image tag referencing CAPTCHA
+     */
+    public function create($old_word = '', $force_word = false)
+    {
+        if (ee()->config->item('captcha_require_members') == 'n' &&
+            ee()->session->userdata['member_id'] != 0 &&
+            $force_word == false) {
+            return '';
+        }
 
-	/**
-	 * Generate CAPTCHA
-	 *
-	 * @param	string	$old_word	Word to make CAPTCHA image out of
-	 * @param	boolean	$force_word	Boolean to skip CAPTCHA creation
-	 * @return	string	HTML of image tag referencing CAPTCHA
-	 */
-	public function create($old_word = '', $force_word = FALSE)
-	{
-		if (ee()->config->item('captcha_require_members') == 'n' &&
-			ee()->session->userdata['member_id'] != 0 &&
-			$force_word == FALSE)
-		{
-			return '';
-		}
+        // -------------------------------------------
+        // 'create_captcha_start' hook.
+        //  - Allows rewrite of how CAPTCHAs are created
+        //
+        if (ee()->extensions->active_hook('create_captcha_start') === true) {
+            $edata = ee()->extensions->call('create_captcha_start', $old_word);
+            if (ee()->extensions->end_script === true) {
+                return $edata;
+            }
+        }
+        // -------------------------------------------
 
-		// -------------------------------------------
-		// 'create_captcha_start' hook.
-		//  - Allows rewrite of how CAPTCHAs are created
-		//
-			if (ee()->extensions->active_hook('create_captcha_start') === TRUE)
-			{
-				$edata = ee()->extensions->call('create_captcha_start', $old_word);
-				if (ee()->extensions->end_script === TRUE) return $edata;
-			}
-		// -------------------------------------------
+        $img_path = ee()->config->slash_item('captcha_path', 1);
+        $img_url = ee()->config->slash_item('captcha_url');
+        $use_font = (ee()->config->item('captcha_font') == 'y') ? true : false;
 
-		$img_path	= ee()->config->slash_item('captcha_path', 1);
-		$img_url	= ee()->config->slash_item('captcha_url');
-		$use_font	= (ee()->config->item('captcha_font') == 'y') ? TRUE : FALSE;
+        $font_face = "texb.ttf";
+        $font_size = 16;
 
-		$font_face	= "texb.ttf";
-		$font_size	= 16;
+        $expiration = 60 * 60 * 2;  // 2 hours
 
-		$expiration = 60*60*2;  // 2 hours
+        $img_width = 140;	// Image width
+        $img_height = 30;	// Image height
 
-		$img_width	= 140;	// Image width
-		$img_height	= 30;	// Image height
+        if ($img_path == '' or
+            $img_url == '' or
+            ! @is_dir($img_path) or
+            ! is_really_writable($img_path) or
+            ! extension_loaded('gd')) {
+            return false;
+        }
 
+        if (substr($img_url, -1) != '/') {
+            $img_url .= '/';
+        }
 
-		if ($img_path == '' OR
-			$img_url == '' OR
-			! @is_dir($img_path) OR
-			! is_really_writable($img_path) OR
-			! extension_loaded('gd'))
-		{
-			return FALSE;
-		}
+        // Remove old images - add a bit of randomness so we aren't doing this every page access
+        $now = microtime(true);
 
-		if (substr($img_url, -1) != '/')
-		{
-			$img_url .= '/';
-		}
+        if ((mt_rand() % 100) < 5) {
+            ee('Model')->get('Captcha')
+                ->filter('date', '<', time() - $expiration)->delete();
 
-		// Remove old images - add a bit of randomness so we aren't doing this every page access
-		$now = microtime(TRUE);
+            $current_dir = @opendir($img_path);
 
-		if ((mt_rand() % 100) < 5)
-		{
-			ee('Model')->get('Captcha')
-				->filter('date', '<', time() - $expiration)->delete();
+            while ($filename = @readdir($current_dir)) {
+                if ($filename != "." and $filename != ".." and $filename != "index.html") {
+                    $name = str_replace(".jpg", "", $filename);
 
-			$current_dir = @opendir($img_path);
+                    if (($name + $expiration) < microtime(true)) {
+                        @unlink($img_path . $filename);
+                    }
+                }
+            }
 
-			while($filename = @readdir($current_dir))
-			{
-				if ($filename != "." and $filename != ".." and $filename != "index.html")
-				{
-					$name = str_replace(".jpg", "", $filename);
+            @closedir($current_dir);
+        }
 
-					if (($name + $expiration) < microtime(TRUE))
-					{
-						@unlink($img_path.$filename);
-					}
-				}
-			}
+        // Fetch and insert word
+        if ($old_word == '') {
+            $words = ee()->config->loadFile('captcha');
+            $word = $words[array_rand($words)];
 
-			@closedir($current_dir);
-		}
+            if (ee()->config->item('captcha_rand') == 'y') {
+                $word .= random_string('nozero', 2);
+            }
 
-		// Fetch and insert word
-		if ($old_word == '')
-		{
-			$words = ee()->config->loadFile('captcha');
-			$word = $words[array_rand($words)];
+            $captcha = ee('Model')->make('Captcha');
+            $captcha->date = ee()->localize->now;
+            $captcha->ip_address = ee()->input->ip_address();
+            $captcha->word = $word;
+            $captcha->save();
+        } else {
+            $word = $old_word;
+        }
 
-			if (ee()->config->item('captcha_rand') == 'y')
-			{
-				$word .= random_string('nozero', 2);
-			}
+        $this->cached_captcha = $word;
 
-			$captcha = ee('Model')->make('Captcha');
-			$captcha->date = ee()->localize->now;
-			$captcha->ip_address = ee()->input->ip_address();
-			$captcha->word = $word;
-			$captcha->save();
-		}
-		else
-		{
-			$word = $old_word;
-		}
+        // Determine angle and position
+        $length = strlen($word);
+        $angle = ($length >= 6) ? rand(-($length - 6), ($length - 6)) : 0;
+        $x_axis = rand(6, (360 / $length) - 16);
+        $y_axis = ($angle >= 0) ? rand($img_height, $img_width) : rand(6, $img_height);
 
-		$this->cached_captcha = $word;
+        // Create image
+        $im = ImageCreate($img_width, $img_height);
 
-		// Determine angle and position
-		$length	= strlen($word);
-		$angle	= ($length >= 6) ? rand(-($length-6), ($length-6)) : 0;
-		$x_axis	= rand(6, (360/$length)-16);
-		$y_axis = ($angle >= 0 ) ? rand($img_height, $img_width) : rand(6, $img_height);
+        // Assign colors
+        $bg_color = ImageColorAllocate($im, 255, 255, 255);
+        $border_color = ImageColorAllocate($im, 153, 102, 102);
+        $text_color = ImageColorAllocate($im, 204, 153, 153);
+        $grid_color = imagecolorallocate($im, 255, 182, 182);
+        $shadow_color = imagecolorallocate($im, 255, 240, 240);
 
-		// Create image
-		$im = ImageCreate($img_width, $img_height);
+        // Create the rectangle
+        ImageFilledRectangle($im, 0, 0, $img_width, $img_height, $bg_color);
 
-		// Assign colors
-		$bg_color		= ImageColorAllocate($im, 255, 255, 255);
-		$border_color	= ImageColorAllocate($im, 153, 102, 102);
-		$text_color		= ImageColorAllocate($im, 204, 153, 153);
-		$grid_color		= imagecolorallocate($im, 255, 182, 182);
-		$shadow_color	= imagecolorallocate($im, 255, 240, 240);
+        // Create the spiral pattern
+        $theta = 1;
+        $thetac = 6;
+        $radius = 12;
+        $circles = 20;
+        $points = 36;
 
-		// Create the rectangle
-		ImageFilledRectangle($im, 0, 0, $img_width, $img_height, $bg_color);
+        for ($i = 0; $i < ($circles * $points) - 1; $i++) {
+            $theta = $theta + $thetac;
+            $rad = $radius * ($i / $points);
+            $x = ($rad * cos($theta)) + $x_axis;
+            $y = ($rad * sin($theta)) + $y_axis;
+            $theta = $theta + $thetac;
+            $rad1 = $radius * (($i + 1) / $points);
+            $x1 = ($rad1 * cos($theta)) + $x_axis;
+            $y1 = ($rad1 * sin($theta)) + $y_axis;
+            imageline($im, $x, $y, $x1, $y1, $grid_color);
+            $theta = $theta - $thetac;
+        }
 
-		// Create the spiral pattern
-		$theta		= 1;
-		$thetac		= 6;
-		$radius		= 12;
-		$circles	= 20;
-		$points		= 36;
+        //imageline($im, $img_width, $img_height, 0, 0, $grid_color);
 
-		for ($i = 0; $i < ($circles * $points) - 1; $i++)
-		{
-			$theta = $theta + $thetac;
-			$rad = $radius * ($i / $points );
-			$x = ($rad * cos($theta)) + $x_axis;
-			$y = ($rad * sin($theta)) + $y_axis;
-			$theta = $theta + $thetac;
-			$rad1 = $radius * (($i + 1) / $points);
-			$x1 = ($rad1 * cos($theta)) + $x_axis;
-			$y1 = ($rad1 * sin($theta )) + $y_axis;
-			imageline($im, $x, $y, $x1, $y1, $grid_color);
-			$theta = $theta - $thetac;
-		}
+        // Write the text
+        $font_path = APPPATH . 'fonts/' . $font_face;
 
-		//imageline($im, $img_width, $img_height, 0, 0, $grid_color);
+        if ($use_font == true) {
+            if (! file_exists($font_path)) {
+                $use_font = false;
+            }
+        }
 
-		// Write the text
-		$font_path = APPPATH.'fonts/'.$font_face;
+        if ($use_font == false or ! function_exists('imagettftext')) {
+            $font_size = 5;
+            ImageString($im, $font_size, $x_axis, $img_height / 3.8, $word, $text_color);
+        } else {
+            imagettftext($im, $font_size, $angle, $x_axis, $img_height / 1.5, $text_color, $font_path, $word);
+        }
 
-		if ($use_font == TRUE)
-		{
-			if ( ! file_exists($font_path))
-			{
-				$use_font = FALSE;
-			}
-		}
+        // Create the border
+        imagerectangle($im, 0, 0, $img_width - 1, $img_height - 1, $border_color);
 
-		if ($use_font == FALSE OR ! function_exists('imagettftext'))
-		{
-			$font_size = 5;
-			ImageString($im, $font_size, $x_axis, $img_height/3.8, $word, $text_color);
-		}
-		else
-		{
-			imagettftext($im, $font_size, $angle, $x_axis, $img_height/1.5, $text_color, $font_path, $word);
-		}
+        // Generate the image
+        $img_name = $now . '.jpg';
 
-		// Create the border
-		imagerectangle($im, 0, 0, $img_width-1, $img_height-1, $border_color);
+        ImageJPEG($im, $img_path . $img_name);
 
-		// Generate the image
-		$img_name = $now.'.jpg';
+        $img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
 
-		ImageJPEG($im, $img_path.$img_name);
+        ImageDestroy($im);
 
-		$img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
-
-		ImageDestroy($im);
-
-		return $img;
-	}
-
+        return $img;
+    }
 }
 
 // EOF

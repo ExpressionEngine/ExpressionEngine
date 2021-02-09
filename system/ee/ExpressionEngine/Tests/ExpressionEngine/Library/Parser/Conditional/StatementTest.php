@@ -9,16 +9,17 @@
  */
 
 namespace ExpressionEngine\Tests\Library\Parser\Conditional;
+
 use PHPUnit\Framework\TestCase;
 
-class StatementTest extends TestCase {
+class StatementTest extends TestCase
+{
+    public function setUp(): void
+    {
+    }
 
-	public function setUp() : void
-	{
-	}
-
-	public function testEmpty()
-	{
-		$this->assertTrue(TRUE);
-	}
+    public function testEmpty()
+    {
+        $this->assertTrue(true);
+    }
 }

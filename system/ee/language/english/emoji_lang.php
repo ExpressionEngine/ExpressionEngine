@@ -2,7 +2,7 @@
 
 $lang = array(
 
-'emoji_module_name' => 'Emoji',
+    'emoji_module_name' => 'Emoji',
 
 );
 

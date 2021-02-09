@@ -6,7 +6,9 @@
 
 
 	<?=form_open($form_url)?>
-		<?php if (isset($filters)) echo $filters; ?>
+		<?php if (isset($filters)) {
+    echo $filters;
+} ?>
 	</form>
 </div>
 <div class="panel-body">
@@ -16,7 +18,7 @@
 			<p class="no-results"><?=lang('no_consent_logs_found')?></p>
 		<?php else: ?>
 			<div class="list-group">
-			<?php foreach($logs as $log): ?>
+			<?php foreach ($logs as $log): ?>
 
 			<div class="list-item">
 				<div class="list-item__content">
@@ -25,7 +27,7 @@
 						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->Member->username?></a>
 					</div>
 					<div class="list-item__body">
-						<pre><code class="hljs"><a href="<?=ee('CP/URL')->make('settings/consents/versions/'.$log->ConsentRequest->consent_request_id)?>"><?=$log->ConsentRequest->title?></a>: <?=$log->action?>
+						<pre><code class="hljs"><a href="<?=ee('CP/URL')->make('settings/consents/versions/' . $log->ConsentRequest->consent_request_id)?>"><?=$log->ConsentRequest->title?></a>: <?=$log->action?>
 						</pre></code>
 					</div>
 				</div>

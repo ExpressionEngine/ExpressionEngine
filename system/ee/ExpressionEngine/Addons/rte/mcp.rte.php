@@ -16,12 +16,10 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class Rte_mcp
 {
-
     public function __construct()
     {
         $this->base_url = ee('CP/URL')->make('addons/settings/rte');
     }
-
 
     /**
      * Homepage
@@ -108,19 +106,18 @@ class Rte_mcp
             $toolset = array(
                 'tool_set' => $toolset_name,
                 array('toolbar_items' => array(
-                        'edit' => array(
-                            'href' => $url,
-                            'title' => lang('edit'),
-                        ),
-                        'copy' => array(
-                            'href' => ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $t->toolset_id, 'clone' => 'y')),
-                            'title' => lang('clone'),
-                        )
+                    'edit' => array(
+                        'href' => $url,
+                        'title' => lang('edit'),
+                    ),
+                    'copy' => array(
+                        'href' => ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $t->toolset_id, 'clone' => 'y')),
+                        'title' => lang('clone'),
                     )
+                )
                 ),
                 $checkbox
             );
-
 
             $attrs = array();
 
@@ -160,9 +157,9 @@ class Rte_mcp
                         'fields' => array(
                             'rte_file_browser' => array(
                                 'required' => true,
-                                'type'     => 'select',
+                                'type' => 'select',
                                 'value' => $prefs['rte_file_browser'],
-                                'choices'  => $file_browser_choices
+                                'choices' => $file_browser_choices
                             )
                         )
                     )
@@ -200,52 +197,49 @@ class Rte_mcp
         return ee('View')->make('rte:index')->render($vars);
     }
 
-
     /**
      * Edit Config
      */
     public function edit_toolset()
     {
-
         if (ee('Request')->isPost()) {
+            $settings = ee('Request')->post('settings');
 
-            $settings =  ee('Request')->post('settings');
-    
             // -------------------------------------------
             //  Save and redirect to Index
             // -------------------------------------------
-    
-            $toolset_id =  ee('Request')->post('toolset_id');
-            $configName =  ee('Request')->post('toolset_name');
-    
+
+            $toolset_id = ee('Request')->post('toolset_id');
+            $configName = ee('Request')->post('toolset_name');
+
             if (!$configName) {
                 $configName = 'Untitled';
             }
-    
+
             // Existing configuration
             if ($toolset_id) {
                 $config = ee('Model')->get('rte:Toolset', $toolset_id)->first();
             }
-    
+
             // New config
             if (!isset($config) || empty($config)) {
                 $config = ee('Model')->make('rte:Toolset');
             }
-    
+
             $config->toolset_name = $configName;
             $config->settings = $settings;
-    
+
             $validate = $config->validate();
-    
+
             if ($validate->isValid()) {
                 $config->save();
-    
+
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle($toolset_id ? lang('toolset_updated') : lang('toolset_created'))
                     ->addToBody(sprintf($toolset_id ? lang('toolset_updated_desc') : lang('toolset_created_desc'), $configName))
                     ->defer();
-    
+
                 ee()->functions->redirect($this->base_url);
             } else {
                 $variables['errors'] = $validate;
@@ -275,7 +269,6 @@ class Rte_mcp
             ($toolset_id = $request->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-
             $config->settings = array_merge($defaultConfigSettings, $config->settings);
 
             // Clone a config?
@@ -314,6 +307,7 @@ class Rte_mcp
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
                     $uploadDirs = $uploadDirs + $fileBrowser->getUploadDestinations();
+
                     break;
                 }
             }
@@ -345,16 +339,16 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title'  => lang('toolset_name'),
+                    'title' => lang('toolset_name'),
                     'fields' => array(
                         'toolset_name' => array(
-                            'type'     => 'text',
-                            'value'    => $config->toolset_name
+                            'type' => 'text',
+                            'value' => $config->toolset_name
                         )
                     )
                 ),
                 array(
-                    'title'  => lang('rte_upload_dir'),
+                    'title' => lang('rte_upload_dir'),
                     'fields' => array(
                         'settings[upload_dir]' => array(
                             'type' => 'select',
@@ -364,9 +358,9 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title'   => lang('rte_toolbar'),
-                    'wide'    => true,
-                    'fields'  => array(
+                    'title' => lang('rte_toolbar'),
+                    'wide' => true,
+                    'fields' => array(
                         'settings[toolbar]' => array(
                             'type' => 'html',
                             'content' => $toolbarInputHtml
@@ -377,7 +371,7 @@ class Rte_mcp
                     'title' => lang('rte_height'),
                     'fields' => array(
                         'settings[height]' => array(
-                            'type'  => 'short-text',
+                            'type' => 'short-text',
                             'value' => $config->settings['height'],
                             'label' => ''
                         )
@@ -411,11 +405,9 @@ class Rte_mcp
         $toolset_id = ee('Request')->post('selection');
 
         if (!empty($toolset_id)) {
-
             $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', 'IN', $toolset_id);
 
             if ($config) {
-
                 $removed = $config->all()->pluck('toolset_name');
                 $config->delete();
 

@@ -44,10 +44,10 @@
 							<h1><?=lang('confirm_show_all')?></h1>
 						</div>
 						<?=ee('CP/Alert')
-							->makeInline()
-							->asImportant()
-							->addToBody(sprintf(lang('confirm_show_all_desc'), $threshold))
-							->render()?>
+						    ->makeInline()
+						    ->asImportant()
+						    ->addToBody(sprintf(lang('confirm_show_all_desc'), $threshold))
+						    ->render()?>
 						<div class="form-btns">
 							<a class="btn submit" href="<?=$show_all_url?>"><?=lang('confirm_show_all_btn')?></a>
 						</div>

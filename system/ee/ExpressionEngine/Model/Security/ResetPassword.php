@@ -15,21 +15,21 @@ use ExpressionEngine\Service\Model\Model;
 /**
  * Reset Password Model
  */
-class ResetPassword extends Model {
+class ResetPassword extends Model
+{
+    protected static $_primary_key = 'reset_id';
+    protected static $_table_name = 'reset_password';
 
-	protected static $_primary_key = 'reset_id';
-	protected static $_table_name = 'reset_password';
+    protected static $_relationships = array(
+        'Member' => array(
+            'type' => 'belongsTo'
+        )
+    );
 
-	protected static $_relationships = array(
-		'Member'	=> array(
-			'type' => 'belongsTo'
-		)
-	);
-
-	protected $reset_id;
-	protected $member_id;
-	protected $resetcode;
-	protected $date;
+    protected $reset_id;
+    protected $member_id;
+    protected $resetcode;
+    protected $date;
 }
 
 // EOF

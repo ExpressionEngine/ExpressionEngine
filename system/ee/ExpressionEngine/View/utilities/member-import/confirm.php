@@ -6,17 +6,17 @@
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if ($added_fields && count($added_fields) > 0):?>
 			<?=ee('CP/Alert')
-				->makeInline()
-				->asSuccess()
-				->withTitle(lang('new_fields_success'))
-				->addToBody($added_fields)
-				->render()?>
+	    ->makeInline()
+	    ->asSuccess()
+	    ->withTitle(lang('new_fields_success'))
+	    ->addToBody($added_fields)
+	    ->render()?>
 		<?php endif;?>
 		<?=ee('CP/Alert')
-			->makeInline()
-			->asImportant()
-			->addToBody(lang('confirm_import_warning'))
-			->render()?>
+	    ->makeInline()
+	    ->asImportant()
+	    ->addToBody(lang('confirm_import_warning'))
+	    ->render()?>
 		<table cellspacing="0">
 			<thead>
 				<tr>

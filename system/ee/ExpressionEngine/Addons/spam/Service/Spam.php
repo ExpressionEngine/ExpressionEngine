@@ -15,99 +15,98 @@ use ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
 /**
  * Spam Protocol
  */
-class Spam implements SpamProtocol {
+class Spam implements SpamProtocol
+{
+    /**
+     * @var Classifier The currently active classifier
+     */
+    protected $classifier;
 
-	/**
-	 * @var Classifier The currently active classifier
-	 */
-	protected $classifier;
+    /**
+     * @var Bool If this module isn't installed, we won't do anything
+     */
+    protected $installed = false;
 
-	/**
-	 * @var Bool If this module isn't installed, we won't do anything
-	 */
-	protected $installed = FALSE;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
         // Check if the spam module is installed
-		ee()->load->library('addons');
-		$installed = ee()->addons->get_installed();
+        ee()->load->library('addons');
+        $installed = ee()->addons->get_installed();
 
-		if ( ! empty($installed['spam']))
-		{
-			$this->installed = TRUE;
-			$this->classifier = $this->loadDefaultClassifier();
-		}
-	}
+        if (! empty($installed['spam'])) {
+            $this->installed = true;
+            $this->classifier = $this->loadDefaultClassifier();
+        }
+    }
 
-	/**
-	 * Returns true if the string is classified as spam
-	 *
-	 * @see ExpressionEngine\Protocol\Spam\Spam
-	 */
-	public function isSpam($source)
-	{
-		if ($this->installed === FALSE)
-		{
-			// If the spam module isn't installed everything is ham!
-			return FALSE;
-		}
+    /**
+     * Returns true if the string is classified as spam
+     *
+     * @see ExpressionEngine\Protocol\Spam\Spam
+     */
+    public function isSpam($source)
+    {
+        if ($this->installed === false) {
+            // If the spam module isn't installed everything is ham!
+            return false;
+        }
 
-		$source = ee('spam:Source', $source);
-		return $this->classifier->classify($source, 'spam');
-	}
+        $source = ee('spam:Source', $source);
 
-	/**
-	 * Moderate Spam
-	 *
-	 * @see ExpressionEngine\Protocol\Spam\Spam
-	 */
-	public function moderate($content_type, $entity, $document, $optional_data)
-	{
-		$data = array(
-			'content_type'  => $content_type,
-			'author_id'     => ee()->session->userdata('member_id'),
-			'trap_date'     => ee()->localize->now,
-			'ip_address'    => $_SERVER['REMOTE_ADDR'],
-			'entity'        => $entity,
-			'document'      => $document,
-			'optional_data' => $optional_data,
-		);
+        return $this->classifier->classify($source, 'spam');
+    }
 
-		$trap = ee('Model')->make('spam:SpamTrap', $data);
-		$trap->save();
-	}
+    /**
+     * Moderate Spam
+     *
+     * @see ExpressionEngine\Protocol\Spam\Spam
+     */
+    public function moderate($content_type, $entity, $document, $optional_data)
+    {
+        $data = array(
+            'content_type' => $content_type,
+            'author_id' => ee()->session->userdata('member_id'),
+            'trap_date' => ee()->localize->now,
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'entity' => $entity,
+            'document' => $document,
+            'optional_data' => $optional_data,
+        );
 
-	/**
-	 * load_default_classifier
-	 *
-	 * @return Classifier
-	 */
-	protected function loadDefaultClassifier()
-	{
-		$training = ee('spam:Training', 'default');
-		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
-		$tokenizer = ee('spam:Tokenizer');
+        $trap = ee('Model')->make('spam:SpamTrap', $data);
+        $trap->save();
+    }
 
-		// Prep the the TFIDF vectorizer with the vocabulary we have stored
-		$tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->getVocabulary();
-		$tfidf->document_count = $training->getDocumentCount();
-		$tfidf->generateLookups();
+    /**
+     * load_default_classifier
+     *
+     * @return Classifier
+     */
+    protected function loadDefaultClassifier()
+    {
+        $training = ee('spam:Training', 'default');
+        $stop_words = explode("\n", ee()->lang->load('spam/stopwords', null, true, false));
+        $tokenizer = ee('spam:Tokenizer');
 
-		$vectorizers = array();
-		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
-		$vectorizers[] = ee('spam:Vectorizers/Entropy');
-		$vectorizers[] = ee('spam:Vectorizers/Links');
-		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
-		$vectorizers[] = ee('spam:Vectorizers/Spaces');
-		$vectorizers[] = $tfidf;
+        // Prep the the TFIDF vectorizer with the vocabulary we have stored
+        $tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
+        $tfidf->vocabulary = $training->getVocabulary();
+        $tfidf->document_count = $training->getDocumentCount();
+        $tfidf->generateLookups();
 
-		return $training->loadClassifier($vectorizers);
-	}
+        $vectorizers = array();
+        $vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
+        $vectorizers[] = ee('spam:Vectorizers/Entropy');
+        $vectorizers[] = ee('spam:Vectorizers/Links');
+        $vectorizers[] = ee('spam:Vectorizers/Punctuation');
+        $vectorizers[] = ee('spam:Vectorizers/Spaces');
+        $vectorizers[] = $tfidf;
+
+        return $training->loadClassifier($vectorizers);
+    }
 }
 
 // EOF

@@ -11,7 +11,7 @@
   			<p><?=lang('install_note')?></p>
   		</div>
   	</div>
-  	<?php if ( ! empty($errors)): ?>
+  	<?php if (! empty($errors)): ?>
   		<div class="app-notice app-notice--inline app-notice---error">
   			<div class="app-notice__tag">
   				<span class="app-notice__icon"></span>
@@ -24,7 +24,7 @@
   		</div>
   	<?php endif ?>
   	<form action="<?=$action?>" method="<?=$method?>" class="form-standard">
-  		<?php if( ! is_null($utf8mb4_supported)): ?>
+  		<?php if (! is_null($utf8mb4_supported)): ?>
   		<input type="hidden" name="utf8mb4_supported" value="n">
   		<?php endif; ?>
   		<fieldset class="fieldset-required <?=form_error_class('db_hostname')?>">

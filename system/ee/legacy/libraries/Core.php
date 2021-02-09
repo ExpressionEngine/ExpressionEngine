@@ -13,9 +13,8 @@
  */
 class EE_Core
 {
-
-    public $native_modules     = array();      // List of native modules with EE
-    public $native_plugins     = array();      // List of native plugins with EE
+    public $native_modules = array();      // List of native modules with EE
+    public $native_plugins = array();      // List of native plugins with EE
 
     private $bootstrapped = false;
     private $ee_loaded = false;
@@ -70,8 +69,8 @@ class EE_Core
         // application constants
         define('APP_NAME', 'ExpressionEngine');
         define('APP_BUILD', '20201207');
-        define('APP_VER', '6.0.0');
-        define('APP_VER_ID', 'rc.1');
+        define('APP_VER', '6.0.2');
+        define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -111,8 +110,6 @@ class EE_Core
             define('IS_PRO', false);
         }
 
-
-
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
 
@@ -149,8 +146,8 @@ class EE_Core
 
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $cookie_prefix = ee()->config->item('cookie_prefix');
-            $cookie_path  = ee()->config->item('cookie_path');
-            $cookie_domain =  ee()->config->item('cookie_domain');
+            $cookie_path = ee()->config->item('cookie_path');
+            $cookie_domain = ee()->config->item('cookie_domain');
             $cookie_httponly = ee()->config->item('cookie_httponly');
 
             if ($cookie_prefix) {
@@ -162,8 +159,8 @@ class EE_Core
             }
 
             ee()->config->cp_cookie_prefix = $cookie_prefix;
-            ee()->config->cp_cookie_path  = $cookie_path;
-            ee()->config->cp_cookie_domain =  $cookie_domain;
+            ee()->config->cp_cookie_path = $cookie_path;
+            ee()->config->cp_cookie_domain = $cookie_domain;
             ee()->config->cp_cookie_httponly = $cookie_httponly;
         }
 
@@ -222,7 +219,6 @@ class EE_Core
         define('PATH_THEME_TEMPLATES', SYSPATH . 'ee/templates/_themes/');
         define('PATH_THIRD_THEME_TEMPLATES', SYSPATH . 'user/templates/_themes/');
 
-
         unset($theme_path);
 
         // Load the very, very base classes
@@ -252,7 +248,7 @@ class EE_Core
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-             'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'simple_commerce', 'spam', 'stats'
         );
 
         // Is this a stylesheet request?  If so, we're done.
@@ -297,9 +293,10 @@ class EE_Core
 
         // Now that we have a session we'll enable debugging if the user is a super admin
         if (ee()->config->item('debug') == 1
-            && (ee('Permission')->isSuperAdmin()
+            && (
+                ee('Permission')->isSuperAdmin()
                 || ee()->session->userdata('can_debug') == 'y'
-                )
+            )
             ) {
             $this->_enable_debugging();
         }
@@ -408,13 +405,11 @@ class EE_Core
             $get = array();
         }
 
-
         // Load our view library
         ee()->load->library('view');
 
         // Fetch control panel language file
         ee()->lang->loadfile('cp');
-        ee()->lang->loadfile('jump_menu');
 
         // Prevent Pseudo Output variables from being parsed
         ee()->output->parse_exec_vars = false;
@@ -422,7 +417,6 @@ class EE_Core
         /** ------------------------------------
         /**  Instantiate Admin Log Class
         /** ------------------------------------*/
-
         ee()->load->library('logger');
         ee()->load->library('cp');
 
@@ -464,11 +458,12 @@ class EE_Core
             $request = $get;
             array_shift($request);
             $request = implode('/', $request);
+
             return 'CP: ' . $request;
         });
 
         //show them post-update checks, again
-        if (ee()->input->get('after') == 'update') {
+        if (ee()->input->get('after') == 'update' || ee()->session->flashdata('update:completed')) {
             $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
             $messages = $advisor->postUpdateChecks();
             if (!empty($messages)) {
@@ -558,6 +553,7 @@ class EE_Core
             require PATH_MOD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
+
             return;
         }
 
@@ -573,12 +569,14 @@ class EE_Core
             // Clean up the URLs to remove unnecessary detail
             $this->set_newrelic_transaction(function () {
                 $request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+
                 return preg_replace('/search\/.*$/', 'search', $request);
             });
 
             $member = new Member();
             $member->_set_properties(array('trigger' => $profile_trigger));
             ee()->output->set_output($member->manager());
+
             return;
         }
 
@@ -597,9 +595,9 @@ class EE_Core
 
         // Look for a page in the pages module
         if ($template_group == '' && $template == '') {
-            $pages      = ee()->config->item('site_pages');
-            $site_id    = ee()->config->item('site_id');
-            $entry_id   = false;
+            $pages = ee()->config->item('site_pages');
+            $site_id = ee()->config->item('site_id');
+            $entry_id = false;
 
             // If we have pages, we'll look for an entry id
             if ($pages && isset($pages[$site_id]['uris'])) {
@@ -676,7 +674,7 @@ class EE_Core
 
         if (isset($last_clear) && ee()->localize->now > $last_clear) {
             $data = array(
-                'last_cache_clear'  => ee()->localize->now + (60 * 60 * 24 * 7)
+                'last_cache_clear' => ee()->localize->now + (60 * 60 * 24 * 7)
             );
 
             ee()->db->where('site_id', ee()->config->item('site_id'));

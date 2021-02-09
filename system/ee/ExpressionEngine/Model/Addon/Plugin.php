@@ -15,20 +15,20 @@ use ExpressionEngine\Service\Model\Model;
 /**
  * Plugin Model
  */
-class Plugin extends Model {
-	protected static $_primary_key = 'plugin_id';
-	protected static $_table_name = 'plugins';
+class Plugin extends Model
+{
+    protected static $_primary_key = 'plugin_id';
+    protected static $_table_name = 'plugins';
 
-	protected static $_typed_columns = array(
-		'is_typography_related' => 'boolString'
-	);
+    protected static $_typed_columns = array(
+        'is_typography_related' => 'boolString'
+    );
 
-	protected $plugin_id;
-	protected $plugin_name;
-	protected $plugin_package;
-	protected $plugin_version;
-	protected $is_typography_related;
-
+    protected $plugin_id;
+    protected $plugin_name;
+    protected $plugin_package;
+    protected $plugin_version;
+    protected $is_typography_related;
 }
 
 // EOF

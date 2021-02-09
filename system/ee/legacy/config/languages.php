@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -12,11 +16,9 @@
 /**
  * ExpressionEngine Language Codes
  */
-
 ee()->load->library('logger');
-ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("languages") to load this config file', TRUE, 604800);
+ee()->logger->deprecated('3.4.0', 'ee()->config->loadFile("languages") to load this config file', true, 604800);
 
 $languages = ee()->config->loadFile('languages');
-
 
 // EOF

@@ -21,7 +21,6 @@ $_SERVER['SERVER_NAME'] = null;
 $_SERVER['REMOTE_ADDR'] = null;
 $_SERVER['HTTP_HOST'] = null;
 
-
 /*
  * ---------------------------------------------------------------
  *  Disable all routing, send everything to the frontend
@@ -43,7 +42,7 @@ if (realpath($system_path) !== false) {
     $system_path = realpath($system_path);
 }
 
-$system_path = rtrim($system_path, '/').'/';
+$system_path = rtrim($system_path, '/') . '/';
 
 /*
  * --------------------------------------------------------------------
@@ -54,7 +53,7 @@ $system_path = rtrim($system_path, '/').'/';
 defined('SELF') || define('SELF', basename(__FILE__));
 
 // Path to this file
-defined('FCPATH') || define('FCPATH', __DIR__.'/');
+defined('FCPATH') || define('FCPATH', __DIR__ . '/');
 
 // Path to the "system" folder
 defined('SYSPATH') || define('SYSPATH', $system_path);

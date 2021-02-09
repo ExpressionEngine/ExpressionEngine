@@ -12,126 +12,124 @@ namespace ExpressionEngine\Controller\Jumps;
 
 use CP_Controller;
 
-class Sites extends Jumps {
+class Sites extends Jumps
+{
+    private $sites = array();
 
-	private $sites = array();
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
+    /**
+     * Publish Jump Data
+     */
+    public function index()
+    {
+        // Should never be here without another segment.
+        show_error(lang('unauthorized_access'), 403);
+    }
 
-	/**
-	 * Publish Jump Data
-	 */
-	public function index()
-	{
-		// Should never be here without another segment.
-		show_error(lang('unauthorized_access'), 403);
-	}
+    public function switch()
+    {
+        $site_list = ee()->session->userdata('assigned_sites');
+        if (count($site_list) > 1) {
+            foreach ($site_list as $id => $name) {
+                if ($id != ee()->config->item('site_id')) {
+                    $this->sites[] = [
+                        'icon' => 'fa-globe',
+                        'id' => $id,
+                        'name' => $name
+                    ];
+                }
+            }
+        }
 
-	public function switch()
-	{
-		$site_list = ee()->session->userdata('assigned_sites');
-		if (count($site_list) > 1) {
-			foreach($site_list as $id => $name) {
-				if ($id != ee()->config->item('site_id')) {
-					$this->sites[] = [
-						'icon' => 'fa-globe',
-						'id' => $id,
-						'name' => $name
-					];
-				}
-			}
-		}
+        $searchString = ee()->input->post('searchString');
 
-		$searchString = ee()->input->post('searchString');
+        $response = array();
 
-		$response = array();
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                foreach ($this->sites as $site) {
+                    if (preg_match('/' . $keyword . '/', $site)) {
+                        $response['switchSite' . $site['id']] = array(
+                            'icon' => $site['icon'],
+                            'command' => $site['name'],
+                            'command_title' => $site['name'],
+                            'dynamic' => false,
+                            'addon' => false,
+                            'target' => 'msm/switch_to/' . $site['id']
+                        );
+                    }
+                }
+            }
+        } else {
+            foreach ($this->sites as $site) {
+                $response['switchSite' . $site['id']] = array(
+                    'icon' => $site['icon'],
+                    'command' => $site['name'],
+                    'command_title' => $site['name'],
+                    'dynamic' => false,
+                    'addon' => false,
+                    'target' => 'msm/switch_to/' . $site['id']
+                );
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				foreach ($this->sites as $site) {
-					if (preg_match('/' . $keyword . '/', $site)) {
-						$response['switchSite' . $site['id']] = array(
-							'icon' => $site['icon'],
-							'command' => $site['name'],
-							'command_title' => $site['name'],
-							'dynamic' => false,
-							'addon' => false,
-							'target' => 'msm/switch_to/' . $site['id']
-						);
-					}
-				}
-			}
+        $this->sendResponse($response);
+    }
 
-		} else {
-			foreach ($this->sites as $site) {
-				$response['switchSite' . $site['id']] = array(
-					'icon' => $site['icon'],
-					'command' => $site['name'],
-					'command_title' => $site['name'],
-					'dynamic' => false,
-					'addon' => false,
-					'target' => 'msm/switch_to/' . $site['id']
-				);
-			}
-		}
+    public function edit()
+    {
+        $site_list = ee('Model')->get('Site')->all();
 
-		$this->sendResponse($response);
-	}
+        foreach ($site_list as $site) {
+            $this->sites[] = [
+                'icon' => 'fa-globe',
+                'id' => $site->site_id,
+                'name' => $site->site_label
+            ];
+        }
 
-	public function edit() {
-		$site_list = ee('Model')->get('Site')->all();
+        $searchString = ee()->input->post('searchString');
 
-		foreach($site_list as $site) {
-			$this->sites[] = [
-				'icon' => 'fa-globe',
-				'id' => $site->site_id,
-				'name' => $site->site_label
-			];
-		}
+        $response = array();
 
-		$searchString = ee()->input->post('searchString');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		$response = array();
+            foreach ($keywords as $keyword) {
+                foreach ($this->sites as $site) {
+                    if (preg_match('/' . $keyword . '/', $site)) {
+                        $response['editSite' . $site['id']] = array(
+                            'icon' => $site['icon'],
+                            'command' => $site['name'],
+                            'command_title' => $site['name'],
+                            'dynamic' => false,
+                            'addon' => false,
+                            'target' => 'msm/edit/' . $site['id']
+                        );
+                    }
+                }
+            }
+        } else {
+            foreach ($this->sites as $site) {
+                $response['editSite' . $site['id']] = array(
+                    'icon' => $site['icon'],
+                    'command' => $site['name'],
+                    'command_title' => $site['name'],
+                    'dynamic' => false,
+                    'addon' => false,
+                    'target' => 'msm/edit/' . $site['id']
+                );
+            }
+        }
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
-
-			foreach ($keywords as $keyword) {
-				foreach ($this->sites as $site) {
-					if (preg_match('/' . $keyword . '/', $site)) {
-						$response['editSite' . $site['id']] = array(
-							'icon' => $site['icon'],
-							'command' => $site['name'],
-							'command_title' => $site['name'],
-							'dynamic' => false,
-							'addon' => false,
-							'target' => 'msm/edit/' . $site['id']
-						);
-					}
-				}
-			}
-
-		} else {
-			foreach ($this->sites as $site) {
-				$response['editSite' . $site['id']] = array(
-					'icon' => $site['icon'],
-					'command' => $site['name'],
-					'command_title' => $site['name'],
-					'dynamic' => false,
-					'addon' => false,
-					'target' => 'msm/edit/' . $site['id']
-				);
-			}
-		}
-
-		$this->sendResponse($response);
-	}
-
+        $this->sendResponse($response);
+    }
 }

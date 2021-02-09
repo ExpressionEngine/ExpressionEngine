@@ -11,8 +11,9 @@
 /**
  * Installer Exceptions
  */
-class Installer_Exceptions Extends EE_Exceptions {
-	// Yes, it's empty!
+class Installer_Exceptions extends EE_Exceptions
+{
+    // Yes, it's empty!
 }
 
 // EOF

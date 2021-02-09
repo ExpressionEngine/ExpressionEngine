@@ -26,18 +26,17 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 		<ul class="simple-list">
 			<?php
-			if(!empty($number_of_channels)):
-				$assigned_channels = ee()->functions->fetch_assigned_channels();
-				if (!empty($assigned_channels)):
-					$entries = ee('Model')->get('ChannelEntry')
-					->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
-					->filter('channel_id', 'IN', $assigned_channels)
-					->order('entry_date', 'DESC')
-					->limit(7)
-					->all();
+            if (!empty($number_of_channels)):
+                $assigned_channels = ee()->functions->fetch_assigned_channels();
+                if (!empty($assigned_channels)):
+                    $entries = ee('Model')->get('ChannelEntry')
+                        ->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
+                        ->filter('channel_id', 'IN', $assigned_channels)
+                        ->order('entry_date', 'DESC')
+                        ->limit(7)
+                        ->all();
 
-
-					foreach($entries as $entry): ?>
+                    foreach ($entries as $entry): ?>
 					<li>
 						<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
               <?= $entry->title; ?>
@@ -45,8 +44,8 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 						</a>
 					</li>
 					<?php endforeach;
-				endif;
-			endif; ?>
+                endif;
+            endif; ?>
 		</ul>
 	</div>
 <?php endif; ?>
@@ -59,10 +58,10 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 			<div>
 				<div class="button-group">
 					<?php
-					$pending_count = ee('Model')->get('Member')->filter('role_id', 4)->count();
+                    $pending_count = ee('Model')->get('Member')->filter('role_id', 4)->count();
 
-					if ($pending_count > 0):
-					?>
+                    if ($pending_count > 0):
+                    ?>
 					<a href="<?=ee('CP/URL')->make('members/pending')?>" class="button button--default button--small"><?=$pending_count?> <?=lang('pending')?></a>
 					<?php endif; ?>
 
@@ -73,15 +72,15 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 		<ul class="simple-list">
 			<?php
-				$recent_members = ee('Model')->get('Member')
-				->order('last_visit', 'DESC')
-				->limit(7)
-				->all();
+                $recent_members = ee('Model')->get('Member')
+                    ->order('last_visit', 'DESC')
+                    ->limit(7)
+                    ->all();
 
-				foreach($recent_members as $member):
-					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
-					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
-				?>
+                foreach ($recent_members as $member):
+                    $last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
+                    $avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
+                ?>
 				<li>
 					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
 						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
@@ -110,14 +109,14 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 
 		<ul class="simple-list">
 			<?php
-			$comments = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('comment_date', 'DESC')
-			->limit(3)
-			->all();
+            $comments = ee('Model')->get('Comment')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->order('comment_date', 'DESC')
+                ->limit(3)
+                ->all();
 
-			foreach($comments as $comment):
-			?>
+            foreach ($comments as $comment):
+            ?>
 			<li>
 				<div class="d-flex">
 					<div>

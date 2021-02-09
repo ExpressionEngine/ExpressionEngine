@@ -1,24 +1,18 @@
 	<div class="file-card-wrapper">
 		<?php foreach ($files as $file): ?>
-				<a href data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="m-link file-card <?php if (!$file->exists()): echo 'file-card--missing'; endif; ?>">
+			<?php $missing = !$file->exists(); ?>
+				<a href data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="m-link file-card <?php if ($missing): echo 'file-card--missing'; endif; ?>">
 					<div class="file-card__preview">
-					<?php if (!$file->exists()): ?>
+					<?php if ($missing): ?>
 						<div class="file-card__preview-icon">
 							<i class="fas fa-lg fa-exclamation-triangle"></i>
 							<div class="file-card__preview-icon-text"><?=lang('file_not_found')?></div>
 						</div>
 					<?php else: ?>
 						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
-							<?php if (ee('Thumbnail')->get($file)->missing): ?>
-								<div class="file-card__preview-icon">
-									<i class="fas fa-lg fa-exclamation-triangle"></i>
-									<div class="file-card__preview-icon-text"><?=lang('thumbnail_missing')?></div>
-								</div>
-							<?php else: ?>
-								<div class="file-card__preview-image">
-								<img src="<?=ee('Thumbnail')->get($file)->url?>" />
-								</div>
-							<?php endif; ?>
+							<div class="file-card__preview-image">
+								<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->title?>" />
+							</div>
 						<?php else: ?>
 							<div class="file-card__preview-icon">
 								<?php if ($file->mime_type == 'text/plain'): ?>
@@ -35,7 +29,11 @@
 
 					<div class="file-card__info">
 						<div class="file-card__info-name"><?=$file->title?></div>
-						<div class="file-card__info-subtitle"><?php if ($file->isEditableImage()) { ee()->load->library('image_lib'); $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE); echo "{$image_info['width']} x {$image_info['height']} - "; }; ?><?=ee('Format')->make('Number', $file->file_size)->bytes();?></div>
+						<div class="file-card__info-subtitle"><?php if (!$missing && $file->isEditableImage()) {
+    ee()->load->library('image_lib');
+    $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
+    echo "{$image_info['width']} x {$image_info['height']} - ";
+}; ?><?=ee('Format')->make('Number', $file->file_size)->bytes();?></div>
 					</div>
 				</a>
 		<?php endforeach; ?>

@@ -11,13 +11,12 @@
 /**
  * Template Router Base64 Converter
  */
-class EE_Template_router_base64_converter implements EE_Template_router_converter {
-
-	public function validator()
-	{
-		return "([a-zA-Z0-9\/\+=]+)";
-	}
-
+class EE_Template_router_base64_converter implements EE_Template_router_converter
+{
+    public function validator()
+    {
+        return "([a-zA-Z0-9\/\+=]+)";
+    }
 }
 
 // EOF

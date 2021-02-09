@@ -15,16 +15,15 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * XSS Validation Rule
  */
-class Xss extends ValidationRule {
+class Xss extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return ($value == ee('Security/XSS')->clean($value)) ? true : $this->stop();
+    }
 
-	public function validate($key, $value)
-	{
-		return ($value == ee('Security/XSS')->clean($value)) ? TRUE : $this->stop();
-	}
-
-	public function getLanguageKey()
-	{
-		return sprintf(lang('invalid_xss_check'), ee('CP/URL')->make('homepage'));
-	}
-
+    public function getLanguageKey()
+    {
+        return sprintf(lang('invalid_xss_check'), ee('CP/URL')->make('homepage'));
+    }
 }

@@ -13,6 +13,8 @@ namespace ExpressionEngine\Library\Parser\Conditional\Exception;
 /**
  * Lexer Exception
  */
-class LexerException extends ConditionalException {}
+class LexerException extends ConditionalException
+{
+}
 
 // EOF

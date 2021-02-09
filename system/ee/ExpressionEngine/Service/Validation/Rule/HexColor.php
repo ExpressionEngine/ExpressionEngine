@@ -15,16 +15,15 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Hex Color Validation Rule
  */
-class HexColor extends ValidationRule {
+class HexColor extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'hex_color';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'hex_color';
+    }
 }

@@ -27,17 +27,17 @@
 
 <?php
 $modal_vars = array(
-	'name'      => 'modal-confirm-delete',
-	'form_url'	=> ee('CP/URL')->make('logs/email'),
-	'hidden'	=> array(
-		'delete'	=> $email->cache_id
-	),
-	'checklist'	=> array(
-		array(
-			'kind' => lang('view_email_logs'),
-			'desc' => lang('sent_to') . ' ' . $email->recipient_name . ', ' . lang('subject') . ': ' . $email->subject
-		)
-	)
+    'name' => 'modal-confirm-delete',
+    'form_url' => ee('CP/URL')->make('logs/email'),
+    'hidden' => array(
+        'delete' => $email->cache_id
+    ),
+    'checklist' => array(
+        array(
+            'kind' => lang('view_email_logs'),
+            'desc' => lang('sent_to') . ' ' . $email->recipient_name . ', ' . lang('subject') . ': ' . $email->subject
+        )
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

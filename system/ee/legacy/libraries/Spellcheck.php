@@ -11,71 +11,67 @@
 /**
  * Core Spell Checking
  */
-class EE_Spellcheck {
+class EE_Spellcheck
+{
+    public $enabled = false;
 
-	var $enabled = FALSE;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        ee()->lang->loadfile('spellcheck');
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		ee()->lang->loadfile('spellcheck');
+        if (function_exists('pspell_new') or function_exists('curl_init') or extension_loaded('openssl')) {
+            ee()->load->library('javascript', array('autoload' => false));
 
-		if (function_exists('pspell_new') OR function_exists('curl_init') OR extension_loaded('openssl'))
-		{
-			ee()->load->library('javascript', array('autoload' => FALSE));
+            $this->enabled = true;
 
-			$this->enabled = TRUE;
+            // Is this a CP or front end request?
+            if (REQ == 'CP') {
+                ee()->cp->add_to_foot(ee()->javascript->inline($this->javascript()));
+            }
 
-			// Is this a CP or front end request?
-			if (REQ == 'CP') {
-				ee()->cp->add_to_foot(ee()->javascript->inline($this->javascript()));
-			}
+            ee()->javascript->output('eeSpell.init();');
+            ee()->load->helper('spellcheck');
+        }
 
-			ee()->javascript->output('eeSpell.init();');
-			ee()->load->helper('spellcheck');
-		}
+        ee()->load->vars(array('spell_enabled' => $this->enabled));
+    }
 
-		ee()->load->vars(array('spell_enabled' => $this->enabled));
-	}
+    /**
+     * Spellcheck Javascript
+     *
+     * put this before the EESpell Object is called
+     *
+     * @param 	string
+     * @param 	boolean
+     * @return 	string
+     */
+    public function Javascript($check_url = '', $wrap = false)
+    {
+        if ($this->enabled === false) {
+            return '';
+        }
 
-	/**
-	 * Spellcheck Javascript
-	 *
-	 * put this before the EESpell Object is called
-	 *
-	 * @param 	string
-	 * @param 	boolean
-	 * @return 	string
-	 */
-	function Javascript($check_url = '', $wrap = FALSE)
-	{
-		if ($this->enabled === FALSE)
-		{
-			return '';
-		}
+        $spell_save_edit = lang('spell_save_edit');
+        $spell_edit_word = lang('spell_edit_word');
+        $unsupported_browser = lang('unsupported_browser');
+        $no_spelling_errors = lang('no_spelling_errors');
+        $spellcheck_in_progress = lang('spellcheck_in_progress');
+        $XID_SECURE_HASH = (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
+        $is_frontend = 'true';
 
-		$spell_save_edit		= lang('spell_save_edit');
-		$spell_edit_word		= lang('spell_edit_word');
-		$unsupported_browser	= lang('unsupported_browser');
-		$no_spelling_errors		= lang('no_spelling_errors');
-		$spellcheck_in_progress	= lang('spellcheck_in_progress');
-		$XID_SECURE_HASH		= (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
-		$is_frontend			= 'true';
+        if (REQ == 'CP') {
+            $is_frontend = 'false';
+            $check_url = ($check_url == "") ? str_replace('&amp;', '&', BASE) . '&C=content_publish&M=spellcheck_actions&action=check' : str_replace('&amp;', '&', $check_url);
+        }
 
-		if (REQ == 'CP')
-		{
-			$is_frontend = 'false';
-			$check_url = ($check_url == "") ? str_replace('&amp;', '&', BASE).'&C=content_publish&M=spellcheck_actions&action=check' : str_replace('&amp;', '&', $check_url);
-		}
+        $check_url = str_replace('&amp;', '&', $check_url);
 
-		$check_url = str_replace('&amp;', '&', $check_url);
+        $r = ($wrap === true) ? '<script type="text/javascript">' . NL . '//<![CDATA[' . NL : '';
 
-
-		$r  = ($wrap === TRUE) ? '<script type="text/javascript">'.NL.'//<![CDATA['.NL : '';
-
-		$r .= <<<EOT
+        $r .= <<<EOT
 
 		/** --------------------------------------------------
 		/**  Spelling Check
@@ -1099,51 +1095,53 @@ class EE_Spellcheck {
 			}
 EOT;
 
-		$r .= ($wrap === TRUE) ? NL.'//]]>'.NL.'</script>' : '';
+        $r .= ($wrap === true) ? NL . '//]]>' . NL . '</script>' : '';
 
-		if (REQ != 'CP')
-		{
-			$r = str_replace('{XID_SECURE_HASH}', 'ignore', $r);
-		}
+        if (REQ != 'CP') {
+            $r = str_replace('{XID_SECURE_HASH}', 'ignore', $r);
+        }
 
-		return $r;
+        return $r;
+    }
 
-	}
+    /**
+     * iFrame
+     */
+    public function iframe()
+    {
+        ee()->session->tracker = array_shift(ee()->session->tracker);
 
-	/**
-	 * iFrame
-	 */
-	public function iframe()
-	{
-		ee()->session->tracker = array_shift(ee()->session->tracker);
+        ee()->session->set_tracker_cookie();
 
-		ee()->session->set_tracker_cookie();
+        if (! defined('AMP')) {
+            define('AMP', '&amp;');
+        }
+        if (! defined('BR')) {
+            define('BR', '<br />');
+        }
+        if (! defined('NL')) {
+            define('NL', "\n");
+        }
+        if (! defined('NBS')) {
+            define('NBS', "&nbsp;");
+        }
 
-  		if ( ! defined('AMP')) define('AMP', '&amp;');
-		if ( ! defined('BR'))  define('BR',  '<br />');
-		if ( ! defined('NL'))  define('NL',  "\n");
-		if ( ! defined('NBS')) define('NBS', "&nbsp;");
+        $header =
 
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n\n" .
+        "\"http://www.w3.org/TR/html4/loose.dtd\">\n\n" .
+        "<head>\n" .
+        "<title>" . APP_NAME . " | " . lang('spell_check') . "</title>\n\n" .
+        "<meta http-equiv='content-type' content='text/html; charset=" . ee()->config->item('output_charset') . "'>\n" .
+        "<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n" .
+        "<meta http-equiv='expires' content='-1'>\n" .
+        "<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n" .
+        "<meta http-equiv='pragma' content='no-cache'>\n";
 
-		$header =
-
-		"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n\n".
-		"\"http://www.w3.org/TR/html4/loose.dtd\">\n\n".
-		"<head>\n".
-		"<title>".APP_NAME." | ".lang('spell_check')."</title>\n\n".
-		"<meta http-equiv='content-type' content='text/html; charset=".ee()->config->item('output_charset')."'>\n".
-		"<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n".
-		"<meta http-equiv='expires' content='-1'>\n".
-		"<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n".
-		"<meta http-equiv='pragma' content='no-cache'>\n";
-
-		if (REQ == 'CP')
-		{
-			$header .= ee()->view->head_link('css/spellcheck_frame.css');
-		}
-		else
-		{
-			$header .= <<<EOH
+        if (REQ == 'CP') {
+            $header .= ee()->view->head_link('css/spellcheck_frame.css');
+        } else {
+            $header .= <<<EOH
 				<style type="text/css">
 				<!--
 				body
@@ -1173,239 +1171,210 @@ EOT;
 				-->
 				</style>
 EOH;
-		}
+        }
 
+        $header .= "</head>\n\n" .
+        "<body></body>\n</html>";
 
-		$header .= "</head>\n\n".
-		"<body></body>\n</html>";
+        @header('Content-Type: text/html');
+        exit($header);
+    }
 
-		@header('Content-Type: text/html');
-		exit($header);
-	}
+    /** -----------------------------------------
+    /**  Spell Check for Textareas
+    /** -----------------------------------------*/
+    public function check($lang = 'en')
+    {
+        /* -------------------------------------------
+        /*	Hidden Configuration Variable
+        /*
+        /*	- spellcheck_language_code => What is the two letter ISO 639 language
+        /*	  code for the spellcheck (ex: en, es, de)
+        /* -------------------------------------------*/
 
+        if (ee()->config->item('spellcheck_language_code') !== false && strlen(ee()->config->item('spellcheck_language_code')) == 2) {
+            $lang = ee()->config->item('spellcheck_language_code');
+        }
 
+        // ----------------------------------
+        //  These 100 words make up 1/2 of all written material
+        //  and by not checking them we should be able to greatly
+        //  speed up the spellchecker
+        // ----------------------------------
 
-	/** -----------------------------------------
-	/**  Spell Check for Textareas
-	/** -----------------------------------------*/
-	function check($lang='en')
-	{
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*
-		/*	- spellcheck_language_code => What is the two letter ISO 639 language
-		/*	  code for the spellcheck (ex: en, es, de)
-		/* -------------------------------------------*/
+        $common = array('the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that',
+            'it', 'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his',
+            'they', 'I', 'at', 'be', 'this', 'have', 'from', 'or', 'one',
+            'had', 'by', 'word', 'but', 'not', 'what', 'all', 'were', 'we',
+            'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each',
+            'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up',
+            'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so',
+            'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time',
+            'has', 'look', 'two', 'more', 'write', 'go', 'see', 'number',
+            'no', 'way', 'could', 'people', 'my', 'than', 'first', 'water',
+            'been', 'call', 'who', 'oil', 'its', 'now', 'find', 'long',
+            'down', 'day', 'did', 'get', 'come', 'made', 'may', 'part');
 
-		if (ee()->config->item('spellcheck_language_code') !== FALSE && strlen(ee()->config->item('spellcheck_language_code')) == 2)
-		{
-			$lang = ee()->config->item('spellcheck_language_code');
-		}
+        // The contents of the field are encoded by javascript before
+        // they are sent to us so we have to decode them before processing.
+        // We are also removing any HTML code and HTML code entities so that we
+        // do not process them as misspelled words.
 
-		// ----------------------------------
-		//  These 100 words make up 1/2 of all written material
-		//  and by not checking them we should be able to greatly
-		//  speed up the spellchecker
-		// ----------------------------------
+        $content = preg_replace("|<.*?" . ">|", '', rawurldecode(ee('Security/XSS')->clean(ee()->input->get_post('q'))));
+        $content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
 
-		$common = array('the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that',
-						'it', 'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his',
-						'they', 'I', 'at', 'be', 'this', 'have', 'from', 'or', 'one',
-						'had', 'by', 'word', 'but', 'not', 'what', 'all', 'were', 'we',
-						'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each',
-						'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up',
-						'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so',
-						'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time',
-						'has', 'look', 'two', 'more', 'write', 'go', 'see', 'number',
-						'no', 'way', 'could', 'people', 'my', 'than', 'first', 'water',
-						'been', 'call', 'who', 'oil', 'its', 'now', 'find', 'long',
-						'down', 'day', 'did', 'get', 'come', 'made', 'may', 'part');
+        $str = '<?xml version="1.0" encoding="UTF-8"?' . ">\n<items>\n";
+        $items = array();
+        $prechecked = array();
 
-		// The contents of the field are encoded by javascript before
-		// they are sent to us so we have to decode them before processing.
-		// We are also removing any HTML code and HTML code entities so that we
-		// do not process them as misspelled words.
+        if (! function_exists('pspell_new')) {
+            $content = str_replace('&', ' ', stripslashes($content));
 
-		$content = preg_replace("|<.*?".">|", '', rawurldecode(ee('Security/XSS')->clean(ee()->input->get_post('q'))));
-		$content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
+            // Google has silently changed the service internally, setting ignoredups="1" now causes results to
+            // always return as spelled correctly.  -- changed 8/20/08 d.j.
+            $payload = '<spellrequest textalreadyclipped="0" ignoredups="0" ignoredigits="1" ignoreallcaps="0"><text>'
+                        . $content
+                        . '</text></spellrequest>';
 
-		$str = '<?xml version="1.0" encoding="UTF-8"?'.">\n<items>\n";
-		$items = array();
-		$prechecked  = array();
+            $url = 'https://www.google.com/tbproxy/spell?lang=' . $lang . '&hl=' . $lang;
 
-		if ( ! function_exists('pspell_new'))
-		{
-			$content = str_replace('&', ' ', stripslashes($content));
+            if (function_exists('curl_init')) {
+                $data = EE_Spellcheck::curl_process($url, $payload);
+            } else {
+                $data = EE_Spellcheck::fsockopen_process($url, $payload);
+            }
 
-			// Google has silently changed the service internally, setting ignoredups="1" now causes results to
-			// always return as spelled correctly.  -- changed 8/20/08 d.j.
-			$payload = 	'<spellrequest textalreadyclipped="0" ignoredups="0" ignoredigits="1" ignoreallcaps="0"><text>'
-						.	$content
-						.'</text></spellrequest>';
+            if ($data == '') {
+                ee()->output->set_status_header(404);
+                @header("Date: " . gmdate("D, d M Y H:i:s") . " GMT");
+                exit('Unable to connect to spellcheck');
+            }
 
-			$url = 'https://www.google.com/tbproxy/spell?lang='.$lang.'&hl='.$lang;
+            // suckz => <c o="10" l="5" s="0">sucks	sicks	suck	sacks	socks</c>
 
-			if (function_exists('curl_init'))
-			{
-				$data = EE_Spellcheck::curl_process($url, $payload);
-			}
-			else
-			{
-				$data = EE_Spellcheck::fsockopen_process($url, $payload);
-			}
+            if ($data != '' && preg_match_all("|<c\s+(.*?)>(.*?)</c>|is", $data, $matches)) {
+                for ($i = 0, $s = count($matches['0']); $i < $s; ++$i) {
+                    $x = explode('"', $matches['1'][$i]);
+                    $word = substr($content, $x['1'], $x['3']);
 
-			if ($data == '')
-			{
-				ee()->output->set_status_header(404);
-				@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
-				exit('Unable to connect to spellcheck');
-			}
+                    if (! in_array($word, $prechecked)) {
+                        $sug = preg_split("|\s+|s", $matches['2'][$i]);
+                        natcasesort($sug);
 
-			// suckz => <c o="10" l="5" s="0">sucks	sicks	suck	sacks	socks</c>
+                        $items[] = $word . ':' . implode(',', $sug) . '';
+                        $prechecked[] = $word;
+                    }
+                }
+            }
+        } else {
+            // Split it up by non-words
+            preg_match_all("|[\w\']{2,20}|", stripslashes($content), $parts);
 
-			if ($data != '' && preg_match_all("|<c\s+(.*?)>(.*?)</c>|is", $data, $matches))
-			{
-				for($i = 0, $s = count($matches['0']); $i < $s; ++$i)
-				{
-					$x = explode('"', $matches['1'][$i]);
-					$word = substr($content, $x['1'], $x['3']);
+            $pspell = pspell_new($lang);
 
-					if ( ! in_array($word, $prechecked))
-					{
-						$sug = preg_split("|\s+|s", $matches['2'][$i]);
-						natcasesort($sug);
+            for ($i = 0, $s = count($parts['0']); $i < $s; $i++) {
+                if (! is_numeric($parts['0'][$i]) &&
+                    ! in_array(strtolower($parts['0'][$i]), $common) &&
+                    ! in_array($parts['0'][$i], $prechecked) &&
+                    ! pspell_check($pspell, $parts['0'][$i])) {
+                    $sug = array();
 
-						$items[] = $word.':'.implode(',',$sug).'';
-						$prechecked[] = $word;
-					}
-				}
-			}
-		}
-		else
-		{
-			// Split it up by non-words
-			preg_match_all("|[\w\']{2,20}|", stripslashes($content), $parts);
+                    if ($suggestions = pspell_suggest($pspell, $parts['0'][$i])) {
+                        foreach ($suggestions as $suggest) {
+                            $sug[] = $suggest;
 
-			$pspell = pspell_new($lang);
+                            if (count($sug) > 8) {
+                                break;
+                            }
+                        }
+                    }
 
-			for($i=0, $s = count($parts['0']); $i < $s; $i++)
-			{
-				if ( ! is_numeric($parts['0'][$i]) &&
-					! in_array(strtolower($parts['0'][$i]), $common) &&
-					! in_array($parts['0'][$i], $prechecked) &&
-					! pspell_check($pspell, $parts['0'][$i]))
-				{
-					$sug = array();
+                    natcasesort($sug);
 
-					if ($suggestions = pspell_suggest($pspell, $parts['0'][$i]))
-					{
-						foreach ($suggestions as $suggest)
-						{
-							$sug[] = $suggest;
+                    $items[] = $parts['0'][$i] . ':' . implode(',', $sug) . '';
+                    $prechecked[] = $parts['0'][$i];
+                }
+            }
+        }
 
-							if (count($sug) > 8) break;
-						}
-					}
+        $str .= (count($items) == 0) ? '' : "<item>" . implode("</item>\n<item>", $items) . "</item>";
 
-					natcasesort($sug);
+        $str .= "\n</items>";
 
-					$items[] = $parts['0'][$i].':'.implode(',',$sug).'';
-					$prechecked[] = $parts['0'][$i];
-				}
-			}
-		}
+        @header("Content-Type: text/xml");
+        exit($str);
+    }
 
-		$str .= (count($items) == 0) ? '' : "<item>".implode("</item>\n<item>",$items)."</item>";
+    /** ----------------------------------------
+    /**  Sing a Song, Have a Dance
+    /** ----------------------------------------*/
+    public function curl_process($url, $payload)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
-		$str .= "\n</items>";
+        // Start ob to prevent curl_exec from displaying stuff.
+        ob_start();
+        curl_exec($ch);
 
-		@header("Content-Type: text/xml");
-		exit($str);
-	}
+        //Get contents of output buffer
+        $info = ob_get_contents();
+        curl_close($ch);
 
+        //End ob and erase contents.
+        ob_end_clean();
 
+        return $info;
+    }
 
+    /** ----------------------------------------
+    /**  Drinking with Friends is Fun!
+    /** ----------------------------------------*/
+    public function fsockopen_process($url, $payload)
+    {
+        $parts = parse_url($url);
+        $host = $parts['host'];
+        $path = (! isset($parts['path'])) ? '/' : $parts['path'];
+        $port = ($parts['scheme'] == "https") ? '443' : '80';
+        $ssl = ($parts['scheme'] == "https") ? 'ssl://' : '';
 
-	/** ----------------------------------------
-	/**  Sing a Song, Have a Dance
-	/** ----------------------------------------*/
+        if (isset($parts['query']) && $parts['query'] != '') {
+            $path .= '?' . $parts['query'];
+        }
 
-	function curl_process($url, $payload)
-	{
-		$ch=curl_init();
-		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-		curl_setopt($ch,CURLOPT_URL,$url);
-		curl_setopt($ch,CURLOPT_POST,1);
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$payload);
+        $info = '';
 
-		// Start ob to prevent curl_exec from displaying stuff.
-		ob_start();
-		curl_exec($ch);
+        $fp = @fsockopen($ssl . $host, $port, $error_num, $error_str, 8);
 
-		//Get contents of output buffer
-		$info=ob_get_contents();
-		curl_close($ch);
+        if (is_resource($fp)) {
+            fputs($fp, "POST {$path} HTTP/1.0\r\n");
+            fputs($fp, "Host: {$host}\r\n");
+            fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
+            fputs($fp, "Content-Length: " . strlen($payload) . "\r\n");
+            fputs($fp, "Connection: close\r\n\r\n");
+            fputs($fp, $payload . "\r\n\r\n");
 
-		//End ob and erase contents.
-		ob_end_clean();
+            /* ------------------------------
+            /*  This error suppression has to do with a PHP bug involving
+            /*  SSL connections: http://bugs.php.net/bug.php?id=23220
+            /* ------------------------------*/
 
-		return $info;
-	}
+            $old_level = error_reporting(0);
 
+            while ($datum = fread($fp, 4096)) {
+                $info .= $datum;
+            }
 
+            error_reporting($old_level);
 
-	/** ----------------------------------------
-	/**  Drinking with Friends is Fun!
-	/** ----------------------------------------*/
+            @fclose($fp);
+        }
 
-	function fsockopen_process($url, $payload)
-	{
-		$parts	= parse_url($url);
-		$host	= $parts['host'];
-		$path	= ( ! isset($parts['path'])) ? '/' : $parts['path'];
-		$port	= ($parts['scheme'] == "https") ? '443' : '80';
-		$ssl	= ($parts['scheme'] == "https") ? 'ssl://' : '';
-
-		if (isset($parts['query']) && $parts['query'] != '')
-		{
-			$path .= '?'.$parts['query'];
-		}
-
-		$info = '';
-
-		$fp = @fsockopen($ssl.$host, $port, $error_num, $error_str, 8);
-
-		if (is_resource($fp))
-		{
-			fputs($fp, "POST {$path} HTTP/1.0\r\n");
-			fputs($fp, "Host: {$host}\r\n");
-			fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
-			fputs($fp, "Content-Length: ".strlen($payload)."\r\n");
-			fputs($fp, "Connection: close\r\n\r\n");
-			fputs($fp, $payload . "\r\n\r\n");
-
-			/* ------------------------------
-			/*  This error suppression has to do with a PHP bug involving
-			/*  SSL connections: http://bugs.php.net/bug.php?id=23220
-			/* ------------------------------*/
-
-			$old_level = error_reporting(0);
-
-			while($datum = fread($fp, 4096))
-			{
-				$info .= $datum;
-			}
-
-			error_reporting($old_level);
-
-			@fclose($fp);
-		}
-
-		return $info;
-	}
-
-
-
+        return $info;
+    }
 }
 // END CLASS
 

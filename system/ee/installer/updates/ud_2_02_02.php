@@ -13,26 +13,25 @@ namespace ExpressionEngine\Updater\Version_2_2_2;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-
-	}
-
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-		return TRUE;
+    }
+
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        return true;
     }
 }
 /* END CLASS */

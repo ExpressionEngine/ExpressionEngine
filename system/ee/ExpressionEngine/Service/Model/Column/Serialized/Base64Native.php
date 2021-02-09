@@ -15,26 +15,25 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
 /**
  * Model Service Base64 Encoded and Serialized Typed Column
  */
-class Base64Native extends SerializedType {
+class Base64Native extends SerializedType
+{
+    protected $data = array();
 
-	protected $data = array();
+    /**
+     * Called when the column is fetched from db
+     */
+    public static function unserialize($db_data)
+    {
+        return strlen($db_data) ? unserialize(base64_decode($db_data)) : array();
+    }
 
-	/**
-	 * Called when the column is fetched from db
-	 */
-	public static function unserialize($db_data)
-	{
-		return strlen($db_data) ? unserialize(base64_decode($db_data)) : array();
-	}
-
-	/**
-	 * Called before the column is written to the db
-	 */
-	public static function serialize($data)
-	{
-		return base64_encode(serialize($data));
-	}
-
+    /**
+     * Called before the column is written to the db
+     */
+    public static function serialize($data)
+    {
+        return base64_encode(serialize($data));
+    }
 }
 
 // EOF

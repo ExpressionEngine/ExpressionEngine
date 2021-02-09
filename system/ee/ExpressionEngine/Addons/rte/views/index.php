@@ -13,30 +13,30 @@
 			<?php $this->embed('ee:_shared/table', $table); ?>
 
 			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "remove",
-					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-				]
-			],
-			'modal' => true
-		]); ?>
+			    'options' => [
+			        [
+			            'value' => "",
+			            'text' => '-- ' . lang('with_selected') . ' --'
+			        ],
+			        [
+			            'value' => "remove",
+			            'text' => lang('delete'),
+			            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+			        ]
+			    ],
+			    'modal' => true
+			]); ?>
 		<?=form_close();?>
 	</div>
 </div>
 
 <?php
 $modal_vars = array(
-	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('addons/settings/rte/delete_toolset'),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	)
+    'name' => 'modal-confirm-remove',
+    'form_url' => ee('CP/URL')->make('addons/settings/rte/delete_toolset'),
+    'hidden' => array(
+        'bulk_action' => 'remove'
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);

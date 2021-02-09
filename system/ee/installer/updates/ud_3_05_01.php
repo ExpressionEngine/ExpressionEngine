@@ -13,53 +13,52 @@ namespace ExpressionEngine\Updater\Version_3_5_1;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            array(
+                'addFieldSettingsColumns'
+            )
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			array(
-				'addFieldSettingsColumns'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    private function addFieldSettingsColumns()
+    {
+        ee()->smartforge->add_column(
+            'category_fields',
+            array(
+                'field_settings' => array(
+                    'type' => 'text',
+                    'null' => true
+                )
+            )
+        );
 
-	private function addFieldSettingsColumns()
-	{
-		ee()->smartforge->add_column(
-			'category_fields',
-			array(
-				'field_settings' => array(
-					'type' => 'text',
-					'null' => TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->add_column(
-			'member_fields',
-			array(
-				'm_field_settings' => array(
-					'type' => 'text',
-					'null' => TRUE
-				)
-			)
-		);
-	}
+        ee()->smartforge->add_column(
+            'member_fields',
+            array(
+                'm_field_settings' => array(
+                    'type' => 'text',
+                    'null' => true
+                )
+            )
+        );
+    }
 }
 
 // EOF

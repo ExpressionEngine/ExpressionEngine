@@ -2,7 +2,7 @@
 
 $lang = array(
 
-'relationship_module_name' => 'Relationships',
+    'relationship_module_name' => 'Relationships',
 
 );
 

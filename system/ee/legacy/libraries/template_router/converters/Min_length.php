@@ -11,15 +11,15 @@
 /**
  * Template Router Integer Converter
  */
-class EE_Template_router_min_length_converter implements EE_Template_router_converter {
+class EE_Template_router_min_length_converter implements EE_Template_router_converter
+{
+    public function __construct($length)
+    {
+        $this->length = $length;
+    }
 
-	public function __construct($length) {
-		$this->length = $length;
-	}
-
-	public function validator()
-	{
-		return "(.{{$this->length},})";
-	}
-
+    public function validator()
+    {
+        return "(.{{$this->length},})";
+    }
 }
