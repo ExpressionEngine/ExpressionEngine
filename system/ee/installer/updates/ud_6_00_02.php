@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'ensureSuperAdminLocked',
+            'addCategoryParentKey',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -44,6 +45,11 @@ class Updater
                 'is_locked' => 'y'
             ]
         );
+    }
+
+    private function addCategoryParentKey()
+    {
+        ee()->smartforge->add_key('categories', 'parent_id');
     }
 
 }

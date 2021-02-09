@@ -463,7 +463,7 @@ class EE_Core
         });
 
         //show them post-update checks, again
-        if (ee()->input->get('after') == 'update') {
+        if (ee()->input->get('after') == 'update' || ee()->session->flashdata('update:completed')) {
             $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
             $messages = $advisor->postUpdateChecks();
             if (!empty($messages)) {

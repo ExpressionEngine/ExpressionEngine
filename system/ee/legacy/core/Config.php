@@ -798,6 +798,7 @@ class EE_Config
                         ->all();
                 }
 
+                $anything_to_add = $new_values;
                 foreach ($configs as $config) {
                     $key = $config->key;
 
@@ -808,27 +809,25 @@ class EE_Config
                     $config->value = $new_values[$key];
                     $config->save();
 
-                    unset($new_values[$key]);
+                    unset($anything_to_add[$key]);
                 }
                 // Add any new configs to the DB
-                if (! empty($new_values)) {
-                    $all = $this->divineAll();
+                if (! empty($anything_to_add)) {
                     $install = $this->divination('install');
-                    foreach ($new_values as $key => $value) {
-                        if (in_array($key, $all)) {
-                            ee('Model')->make('Config', [
-                                'site_id' => (in_array($key, $install)) ? 0 : $site_id,
-                                'key' => $key,
-                                'value' => $value
-                            ])->save();
-                            unset($new_values[$key]);
-                        }
+                    foreach ($anything_to_add as $key => $value) {
+                        ee('Model')->make('Config', [
+                            'site_id' => (in_array($key, $install)) ? 0 : $site_id,
+                            'key' => $key,
+                            'value' => $value
+                        ])->save();
+                        unset($anything_to_add[$key]);
                     }
                 }
             } else {
                 $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
             }
         }
+        
 
         // Add the CI pref items to the new values array if needed
         if (count($ci_config) > 0) {
@@ -1074,6 +1073,7 @@ class EE_Config
 
         // Cycle through the newconfig array and swap out the data
         $to_be_added = array();
+        $divineAll = $this->divineAll();
         if (is_array($new_values)) {
             foreach ($new_values as $key => $val) {
                 if (is_array($val)) {
@@ -1091,7 +1091,8 @@ class EE_Config
                 }
 
                 // Are we adding a brand new item to the config file?
-                if (! isset($config[$key])) {
+                // we only add custom items that are not in divination array
+                if (! isset($config[$key]) && !in_array($key, $divineAll)) {
                     $to_be_added[$key] = $val;
                 } else {
                     $base_regex = '#(\$config\[(\042|\047)' . $key . '\\2\]\s*=\s*)';
