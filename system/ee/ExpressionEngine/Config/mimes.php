@@ -109,6 +109,7 @@ return array(
     'image/tiff', // .tif, .tiff
     'image/x-png', // .png
     'image/webp', // .webp
+    'image/x-icon', // .ico
     'message/rfc822', // .eml
     'text/comma-separated-values', // .csv
     'text/css', // .css
