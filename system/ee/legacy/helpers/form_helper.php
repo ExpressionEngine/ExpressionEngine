@@ -218,6 +218,9 @@ function form_preference($name, $details)
 function cp_form_submit($value, $work_text, $name = null, $invalid = false)
 {
     $class = 'button button--primary';
+    if (in_array($value, ['btn_confirm_and_delete'])) {
+        $class .= ' button--danger';
+    }
     $disable = '';
     $btn_text = lang($value);
     $validation_errors = validation_errors();
