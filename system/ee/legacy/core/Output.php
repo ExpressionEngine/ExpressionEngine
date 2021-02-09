@@ -330,7 +330,7 @@ class EE_Output
         // --------------------------------------------------------------------
         //if fronteditor is enabled, include relevant scripts and styles
         if (IS_PRO && REQ == 'PAGE') {
-            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage', 'static'])) {
+            if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage', 'static'])) {
                 if (isset(ee()->session->cache['channel']['entry_ids'])) {
                     $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
                     $need_load_frontedit = $frontEdit->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids']);
