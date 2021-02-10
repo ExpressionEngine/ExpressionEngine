@@ -454,10 +454,10 @@ class Roles extends AbstractRolesController
         $channel_ids = [];
         if (!empty(ee('Request')->post('channel_access'))) {
             foreach (ee('Request')->post('channel_access') as $value) {
-                if (strpos($value, 'channel_id_') === 0) {
-                    $channel_ids[] = str_replace('channel_id_', '', $value);
-                } else {
+                if (strpos($value, 'channel_id_') !== 0) {
                     $allowed_perms[] = $value;
+                    $value_exploded = explode('channel_id_', $value);
+                    $channel_ids[] = end($value_exploded);
                 }
             }
         }
