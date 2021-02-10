@@ -478,7 +478,7 @@ class EE_Lang
      * @param null $language_dir
      * @return string Direction for given language code.
      */
-    public function direction($language_dir = null)
+    public function direction($language_name = null)
     {
         if (empty($language_name)) {
             $language_name = ee()->session->get_language();
