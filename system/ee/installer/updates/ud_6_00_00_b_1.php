@@ -17,6 +17,8 @@ class Updater
 {
     public $version_suffix = '';
 
+    public $affected_tables = ['sites', 'members', 'member_groups', 'status_no_access', 'template_no_access', 'upload_no_access', 'rte_toolsets', 'rte_tools', 'upload_prefs', 'modules', 'actions', 'channel_member_groups', 'module_member_groups', 'template_member_groups', 'layout_publish_member_groups'];
+
     /**
      * Do Update
      *

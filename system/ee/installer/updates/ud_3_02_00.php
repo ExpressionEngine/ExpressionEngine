@@ -18,6 +18,8 @@ class Updater
     public $version_suffix = '';
     public $errors = array();
 
+    public $affected_tables = ['cp_search_index'];
+
     /**
      * Do Update
      *

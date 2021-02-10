@@ -20,6 +20,8 @@ class Updater
     public $version_suffix = '';
     public $errors = array();
 
+    public $affected_tables = ['template_routes', 'upload_no_access'];
+
     /**
      * Do Update
      *

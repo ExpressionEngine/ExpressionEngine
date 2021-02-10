@@ -17,6 +17,8 @@ class Updater
 {
     public $version_suffix = '';
 
+    public $affected_tables = ['email_cache', 'upload_no_access', 'accessories', 'member_groups', 'templates', 'layout_publish', 'channels', 'channel_form_settings', 'files', 'field_formatting', 'referrers', 'sites', 'mailing_list', 'mailing_lists', 'mailing_list_queue', 'email_cache_ml', 'members', 'specialty_templates', 'modules', 'actions'];
+
     /**
      * Do Update
      *

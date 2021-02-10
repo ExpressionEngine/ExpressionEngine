@@ -17,6 +17,8 @@ class Updater
 {
     public $version_suffix = '';
 
+    public $affected_tables = ['layout_publish'];
+
     /**
      * Do Update
      *

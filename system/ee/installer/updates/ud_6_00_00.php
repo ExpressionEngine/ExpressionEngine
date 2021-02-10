@@ -18,6 +18,8 @@ class Updater
 {
     public $version_suffix = '';
 
+    public $affected_tables = ['channels'];
+
     /**
      * Do Update
      *

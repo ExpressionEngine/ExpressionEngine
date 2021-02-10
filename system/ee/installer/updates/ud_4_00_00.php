@@ -17,6 +17,8 @@ class Updater
 {
     public $version_suffix = '';
 
+    public $affected_tables = ['channel_fields', 'channels', 'member_homepage', 'members', 'channels', 'statuses', 'status_groups'];
+
     /**
      * Do Update
      *
