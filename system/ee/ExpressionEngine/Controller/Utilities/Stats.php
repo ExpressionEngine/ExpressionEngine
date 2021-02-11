@@ -249,14 +249,9 @@ class Stats extends Utilities
             }
 
             // now update the channels table
-            $channel_entries_count = ee()->db->query('SELECT count(entry_id) AS count, channel_id
-					FROM exp_channel_titles
-					GROUP BY channel_id');
-
-            if ($channel_entries_count->num_rows() > 0) {
-                foreach ($channel_entries_count->result() as $row) {
-                    ee()->db->update('channels', array('total_entries' => $row->count), array('channel_id' => $row->channel_id));
-                }
+            $channels = ee('Model')->get('Channel')->all();
+            foreach ($channels as $i => $channel) {
+                $channel->updateEntryStats();
             }
 
             unset($data);
