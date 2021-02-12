@@ -2062,7 +2062,8 @@ class EE_Template
 
                 $this->template_type = "404";
                 $this->layout_vars = array(); // Reset Layout vars
-                $this->parse($tmpl_query->row('template_data'));
+                $tmpl = $tmpl_query->row('template_data');
+                $this->parse($tmpl);
                 $out = $this->parse_globals($this->final_template);
                 ee()->output->out_type = "404";
                 ee()->output->set_output($out);
