@@ -2423,6 +2423,7 @@ class EE_Template
             $this->log_item("HTTP Authentication in Progress");
 
             $disallowed_roles = ee('Model')->get('Role')
+                ->fields('role_id', 'name')
                 ->all()
                 ->getDictionary('role_id', 'name');
 
@@ -2445,18 +2446,24 @@ class EE_Template
 
         // Is the current user allowed to view this template?
         if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin()) {
-            if (!ee()->session->getMember()) {
-                $templates = [];
-                $role = ee('Model')->get('Role', 3)->first();
-
-                foreach ($role->AssignedTemplates as $template) {
-                    $templates[$template->getId()] = $template->template_id;
+            
+            ee()->db->select('role_id');
+            ee()->db->where('template_id', $query->row('template_id'));
+            $results = ee()->db->get('templates_roles');
+            $templates_roles = [];
+            if ($results->num_rows() > 0) {
+                foreach ($results->result_array() as $row) {
+                    $templates_roles[] = $row['role_id'];
                 }
+            } 
+            
+            if (!ee()->session->getMember()) {
+                $currentMemberRoles = [3];
             } else {
-                $templates = ee()->session->getMember()->getAssignedTemplates()->pluck('template_id');
+                $currentMemberRoles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
             }
 
-            if (! in_array($query->row('template_id'), $templates)) {
+            if (!array_intersect($templates_roles, $currentMemberRoles)) {
                 $this->log_item("No Template Access Privileges");
 
                 if ($this->depth > 0) {
@@ -2475,7 +2482,16 @@ class EE_Template
                         ->get();
 
                     // If the redirect template is not allowed, give them a 404
-                    if (! in_array($query->row('template_id'), $templates)) {
+                    ee()->db->select('role_id');
+                    ee()->db->where('template_id', $query->row('template_id'));
+                    $results = ee()->db->get('templates_roles');
+                    $templates_roles = [];
+                    if ($results->num_rows() > 0) {
+                        foreach ($results->result_array() as $row) {
+                            $templates_roles[] = $row['role_id'];
+                        }
+                    } 
+                    if (!array_intersect($templates_roles, $currentMemberRoles)) {
                         $this->log_item("Access redirect denied, Show 404");
 
                         // The redirect page with no access is the 404 template- throw a manual 404
