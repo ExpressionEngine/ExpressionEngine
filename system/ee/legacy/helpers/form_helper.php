@@ -213,12 +213,13 @@ function form_preference($name, $details)
  * @param	string	$work_text	Text to display when form is submitting
  * @param   string  $name       The value of a name="" attribute
  * @param   string  $invalid    Force an invalid/disabled state on the button
+ * @param   string  $destructive Add danger class to button
  * @return	string	Button HTML
  */
-function cp_form_submit($value, $work_text, $name = null, $invalid = false)
+function cp_form_submit($value, $work_text, $name = null, $invalid = false, $destructive = false)
 {
     $class = 'button button--primary';
-    if (in_array($value, ['btn_confirm_and_delete'])) {
+    if ($destructive) {
         $class .= ' button--danger';
     }
     $disable = '';

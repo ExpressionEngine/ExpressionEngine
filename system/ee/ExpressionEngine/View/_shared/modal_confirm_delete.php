@@ -42,7 +42,7 @@
                     if (isset($button['working'])) {
                         $btn_working_text = $button['working'];
                     }?>
-					<?=cp_form_submit($btn_text, $btn_working_text)?>
+					<?=cp_form_submit($btn_text, $btn_working_text, null, false, true)?>
 			</div>
 		</div>
 		</form>
