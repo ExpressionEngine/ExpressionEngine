@@ -17,6 +17,7 @@ Bullet list below, e.g.
    - Fixed several missing language variables in the control panel.
    - Fixed template HTTP Authentication not recognizing Super Admin.
    - Added CLI command file
+   - Fix addon icon for png and svg
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
