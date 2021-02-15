@@ -1048,7 +1048,12 @@ class Member extends ContentModel
 
         return false;
     }
-
+    
+    /**
+     * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
+     *
+     * @return Collection 
+     */
     public function getAllRoles()
     {
         $cache_key = "Member/{$this->member_id}/Roles";
@@ -1075,6 +1080,11 @@ class Member extends ContentModel
         return $roles;
     }
 
+    /**
+     * Get all modules that the member is allowed to access
+     *
+     * @return Collection
+     */
     public function getAssignedModules()
     {
         if ($this->isSuperAdmin()) {
@@ -1091,6 +1101,11 @@ class Member extends ContentModel
         return new Collection($modules);
     }
 
+    /**
+     * Get all channels that the member is allowed to use
+     *
+     * @return Collection
+     */
     public function getAssignedChannels()
     {
         if ($this->isSuperAdmin()) {
@@ -1107,6 +1122,11 @@ class Member extends ContentModel
         return new Collection($channels);
     }
 
+    /**
+     * Get all upload destination that the member is allowed to use
+     *
+     * @return Collection
+     */
     public function getAssignedUploadDestinations()
     {
         if ($this->isSuperAdmin()) {
@@ -1123,6 +1143,11 @@ class Member extends ContentModel
         return new Collection($uploads);
     }
 
+    /**
+     * Get all entry statuses that the member is allowed to use
+     *
+     * @return Collection
+     */
     public function getAssignedStatuses()
     {
         if ($this->isSuperAdmin()) {
@@ -1139,6 +1164,11 @@ class Member extends ContentModel
         return new Collection($statuses);
     }
 
+    /**
+     * Get all template groups that the member is allowed to manipulate
+     *
+     * @return Collection
+     */
     public function getAssignedTemplateGroups()
     {
         if ($this->isSuperAdmin()) {
@@ -1155,6 +1185,11 @@ class Member extends ContentModel
         return new Collection($template_groups);
     }
 
+    /**
+     * Get all templates that the member is allowed to access
+     *
+     * @return Collection
+     */
     public function getAssignedTemplates()
     {
         if ($this->isSuperAdmin()) {
@@ -1171,6 +1206,11 @@ class Member extends ContentModel
         return new Collection($templates);
     }
 
+    /**
+     * Get permissions assigned to member
+     *
+     * @return Array [permission => permission_id]
+     */
     public function getPermissions()
     {
         $cache_key = "Member/{$this->member_id}/Permissions";
@@ -1201,6 +1241,11 @@ class Member extends ContentModel
         return array_key_exists('can_' . $permission, $permissions);
     }
 
+    /**
+     * Checks whether member has certain permission
+     *
+     * @return Bool `true` if permission has been granted
+     */
     public function has($permission)
     {
         if ($this->isSuperAdmin()) {
@@ -1212,16 +1257,31 @@ class Member extends ContentModel
         return array_key_exists($permission, $permissions);
     }
 
+    /**
+     * Checks whether member is SuperAdmin
+     *
+     * @return Bool `true` if member is SuperAdmin
+     */
     public function isSuperAdmin()
     {
         return in_array(1, $this->getAllRoles()->pluck('role_id'));
     }
 
+    /**
+     * Checks whether member has been banned
+     *
+     * @return Bool `true` if member is banned
+     */
     public function isBanned()
     {
         return $this->role_id == 2 || in_array(2, $this->getAllRoles()->pluck('role_id'));
     }
 
+    /**
+     * Checks whether member is pending
+     *
+     * @return Bool `true` if member is pending
+     */
     public function isPending()
     {
         return $this->role_id == 4 || in_array(4, $this->getAllRoles()->pluck('role_id'));
