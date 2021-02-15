@@ -108,7 +108,7 @@
 
 			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
 		});
-		$('.modal-file').on('click', '.tbl-action .action, .tbl-action a.button', function(e) {
+		$('.modal-file').on('click', '.tbl-action .action, .tbl-action a.button, .panel-footer a.button', function(e) {
 			e.preventDefault()
 			openInIframe($(this).attr('href'))
 		});

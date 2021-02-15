@@ -225,11 +225,6 @@ class Filepicker_mcp
         } else {
             $table = $this->picker->buildTableFromFileCollection($files, $perpage, ee()->input->get_post('selected'));
 
-            // Display Upload button if we can
-            if (isset($vars['upload']) && is_numeric($vars['dir'])) {
-                $table->addActionButton($vars['upload'], lang('upload_new_file'));
-            }
-
             // show a slightly different message if we have no upload directories
             if ($nodirs) {
                 if (ee('Permission')->can('create_upload_directories')) {
