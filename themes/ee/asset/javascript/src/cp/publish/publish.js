@@ -67,7 +67,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('[data-publish] .form-btns-top h1');
+						var publishHeading = $('.main-nav__title h1');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
