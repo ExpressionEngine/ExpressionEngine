@@ -52,6 +52,11 @@ class Role extends Model
             ),
             'weak' => true
         ),
+        'PrimaryMembers' => array(
+            'model' => 'Member',
+            'type' => 'hasMany',
+            'weak' => true
+        ),
         'Members' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'Member',
@@ -137,7 +142,8 @@ class Role extends Model
 
     public function getAllMembers()
     {
-        $members = $this->Members->indexBy('member_id');
+        $members = array_replace($this->Members->indexBy('member_id'), $this->PrimaryMembers->indexBy('member_id'));
+
 
         foreach ($this->RoleGroups as $role_group) {
             foreach ($role_group->Members as $member) {
