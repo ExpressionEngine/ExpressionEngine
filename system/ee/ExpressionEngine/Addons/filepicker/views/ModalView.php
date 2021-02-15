@@ -43,24 +43,23 @@
 		<?php endforeach ?>
 			</tr>
       </table>
-      <?php if (! empty($pagination)) {
-    echo $pagination;
-} ?>
-  			<?php if (! empty($upload) && is_numeric($dir)): ?>
-          <div class="panel-footer">
-            <div class="form-btns">
-    					<a class="button button--primary" href="<?=$upload?>"><?=lang('upload_new_file')?></a>
-    				</div>
-          </div>
-  			<?php endif ?>
-    </div>
     <?php else: ?>
       <?php $this->embed('ee:_shared/table', $table); ?>
-      <?php if (! empty($pagination)) {
-    echo $pagination;
-} ?>
     <?php endif; ?>
 
+	<?php 
+	if (! empty($pagination)) {
+    	echo $pagination;
+	} 
+	?>
+	<?php if (! empty($upload) && is_numeric($dir)): ?>
+		<div class="panel-footer">
+			<div class="form-btns">
+				<a class="button button--primary" href="<?=$upload?>"><?=lang('upload_new_file')?></a>
+			</div>
+		</div>
+  	<?php endif ?>
+    </div>
 
 
 	</div>

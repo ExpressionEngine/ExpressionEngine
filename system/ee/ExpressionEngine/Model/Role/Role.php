@@ -140,6 +140,11 @@ class Role extends Model
     protected $description;
     protected $is_locked;
 
+    /**
+     * Get all members that are assigned to this role (as primary or extra one)
+     *
+     * @return Collection
+     */
     public function getAllMembers()
     {
         $members = array_replace($this->Members->indexBy('member_id'), $this->PrimaryMembers->indexBy('member_id'));
@@ -170,6 +175,11 @@ class Role extends Model
         return false;
     }
 
+    /**
+     * Get permissions assigned to member role
+     *
+     * @return Array ['permission' => 'permission_id']
+     */
     public function getPermissions()
     {
         $cache_key = "Role/{$this->role_id}/Permissions";
@@ -200,6 +210,12 @@ class Role extends Model
         return array_key_exists('can_' . $permission, $permissions);
     }
 
+    /**
+     * Checks whether member role has certain permission
+     *
+     * @param [String] $permission
+     * @return boolean
+     */
     public function has($permission)
     {
         if ($this->role_id == 1) {

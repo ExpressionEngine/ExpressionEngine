@@ -126,7 +126,7 @@ class Publish extends Jumps
 
         if ($can_create) {
             foreach ($channels as $i => $channel) {
-                if ($channel->max_entries != 0 && $channel->max_entries <= $channel->total_entries) {
+                if ($channel->maxEntriesLimitReached()) {
                     unset($channels[$i]);
                 }
             }
