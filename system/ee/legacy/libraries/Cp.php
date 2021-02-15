@@ -380,7 +380,7 @@ class Cp
             $notices[] = sprintf(lang('version_mismatch'), ee()->config->item('app_version'), APP_VER);
         }
 
-        if (! is_dir(PATH_THEMES)) {
+        if (!is_dir(PATH_THEMES) || !is_dir(PATH_THEMES_GLOBAL_ASSET)) {
             $notices[] = sprintf(lang('theme_folder_wrong'), ee('CP/URL', '/cp/settings/urls'));
         }
 

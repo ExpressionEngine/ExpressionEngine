@@ -18,6 +18,7 @@ Bullet list below, e.g.
    - Fixed template HTTP Authentication not recognizing Super Admin.
    - Added CLI command file
    - Fix addon icon for png and svg
+   - Fix bug in the Template Profiler when it attempts to parse an empty array
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
