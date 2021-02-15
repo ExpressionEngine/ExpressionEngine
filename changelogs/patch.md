@@ -17,6 +17,7 @@ Bullet list below, e.g.
    - Fixed several missing language variables in the control panel.
    - Fixed template HTTP Authentication not recognizing Super Admin.
    - Added CLI command file
+   - Fixed a bug with user lang translations in the CP.
    - Fix addon icon for png and svg
    - Fix bug in the Template Profiler when it attempts to parse an empty array
 
