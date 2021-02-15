@@ -42,13 +42,7 @@
                     if (isset($button['working'])) {
                         $btn_working_text = $button['working'];
                     }?>
-					<?=cp_form_submit($btn_text, $btn_working_text)?>
-					<script>
-					var scripts = document.getElementsByTagName('script');
-					var currentScript = scripts[scripts.length - 1];
-
-					currentScript.previousElementSibling.classList.add('button--danger');
-					</script>
+					<?=cp_form_submit($btn_text, $btn_working_text, null, false, true)?>
 			</div>
 		</div>
 		</form>
