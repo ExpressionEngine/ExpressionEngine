@@ -48,6 +48,21 @@ $(document).ready(function () {
 		});
 	}
 
+	//prevent navigating away
+	$('body').on('click', 'a', function(e) {
+		if (
+			sessionStorage.getItem("preventNavigateAway") == 'true' &&
+			$(this).attr('href') != null && 
+			$(this).attr('href') != '' && 
+			$(this).attr('href').indexOf('#') != 0  && 
+			$(this).attr('href').indexOf('javascript:') != 0 &&
+			$(this).attr('target') != '_blank' && 
+			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
+		) {
+			return confirm(EE.lang.confirm_exit);
+		}
+	});
+
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
@@ -75,6 +90,7 @@ $(document).ready(function () {
 						}
 						else if (result.success) {
 							publishHeading.append(result.success);
+							sessionStorage.removeItem("preventNavigateAway");
 						}
 						else {
 							console.log('Autosave Failed');
