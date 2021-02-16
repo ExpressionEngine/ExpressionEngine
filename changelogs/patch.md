@@ -20,6 +20,8 @@ Bullet list below, e.g.
    - Fixed a bug with user lang translations in the CP.
    - Fix addon icon for png and svg
    - Fix bug in the Template Profiler when it attempts to parse an empty array
+   - Fixed issue with super admins seeing unauthorized message when accessing empty entry manager
+   - Changed how permission check for members with CP access is handled
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
