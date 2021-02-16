@@ -12,6 +12,7 @@ $(document).ready(function () {
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
+	var isNavigatingAway = false;
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -59,9 +60,18 @@ $(document).ready(function () {
 			$(this).attr('target') != '_blank' && 
 			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
 		) {
-			return confirm(EE.lang.confirm_exit);
+			isNavigatingAway = confirm(EE.lang.confirm_exit);
+			return isNavigatingAway;
 		}
 	});
+
+	window.addEventListener('beforeunload', function(e) {
+		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+			e.returnValue = EE.lang.confirm_exit;
+			return EE.lang.confirm_exit;
+		}
+	});
+	
 
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
