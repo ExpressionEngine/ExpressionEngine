@@ -2,8 +2,11 @@
 	<?php
         $submits = [];
         foreach ($buttons as $i => $button) {
+            if (isset($button['shortcut']) && !empty($button['shortcut'])) {
+                $buttons[$i]['attrs'] .= ' data-shortcut="' . (string) $button['shortcut'] . '"';
+            } 
             if (strpos($button['value'], 'save') === 0) {
-                $submits[] = $button;
+                $submits[] = $buttons[$i];
                 unset($buttons[$i]);
             }
         }

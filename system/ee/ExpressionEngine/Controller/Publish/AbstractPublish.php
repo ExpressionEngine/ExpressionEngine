@@ -469,6 +469,7 @@ abstract class AbstractPublish extends CP_Controller
                 'value' => 'save',
                 'text' => 'save',
                 'working' => 'btn_saving',
+                'shortcut' => 's',
                 // Disable these while JS is still loading key components, re-enabled in publish.js
                 'attrs' => 'disabled="disabled"'
             ]

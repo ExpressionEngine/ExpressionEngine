@@ -382,6 +382,20 @@ $(document).ready(function(){
 		}
 	}
 
+	// Ctrls+S to save
+	// -------------------------------------------------------------------
+	window.addEventListener('keydown', function (key) {
+		if (key.ctrlKey || key.metaKey){
+			$('.button[data-shortcut]:visible').each(function(e) {
+				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
+					key.preventDefault();
+					$(this).trigger('click');
+					return false;
+				}
+			});
+		}
+	});
+
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 
