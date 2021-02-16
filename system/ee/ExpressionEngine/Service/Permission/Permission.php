@@ -175,7 +175,7 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         // Check to see that something was passed, even if it's an empty array (mostly a gut-check for add-on devs).
         if (empty(func_get_args())) {
             throw new \BadMethodCallException('Invalid parameter count, 1 or more arguments required.');
@@ -224,7 +224,7 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         //legacy permission support
         if (in_array($which, ['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries', 'can_delete_self_entries', 'can_delete_all_entries', 'can_assign_post_authors'])) {
             $member = ee()->session->getMember();
