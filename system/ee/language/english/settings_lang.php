@@ -149,6 +149,8 @@ $lang = array(
 
     'themes_path_desc' => 'Full path location of your <code>themes</code> directory.',
 
+    'invalid_theme_folder_path' => 'This field must contain a valid path to ExpressionEngine <code>themes</code> directory, which is normally <code>{base_path}/themes</code>.',
+
     'themes_url' => 'Themes directory URL',
 
     'themes_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>themes</code> directory.',

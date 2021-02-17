@@ -53,6 +53,13 @@ $lang = array(
     'turnSystemOn_step' =>
     'Turning system on',
 
+    'theme_folder_path_invalid' =>
+    'The following theme folder path is not valid:
+
+%s
+
+Please set it to correct value as described in <a href="%s" target="_blank">the documentation</a>.',
+
     'files_not_writable' =>
     'The following paths are not writable:
 
