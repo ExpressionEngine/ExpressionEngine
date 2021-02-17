@@ -15,6 +15,13 @@ namespace ExpressionEngine\Service\Member;
  */
 class Member
 {
+    /* Member role constants */
+    const SUPERADMIN = 1;
+    const BANNED = 2;
+    const GUESTS = 3;
+    const PENDING = 4;
+    const MEMBERS = 5;
+    
     /**
      * Gets array of members who can be authors
      *
