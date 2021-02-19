@@ -5071,7 +5071,7 @@ class Channel
 
         @header('Access-Control-Allow-Origin: ' . $allowedOrigin);
         @header('Access-Control-Allow-Methods: POST, OPTIONS');
-        @header('Access-Control-Max-Age: -1');
+        @header('Access-Control-Max-Age: 3600');
         if(array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER)) {
             @header('Access-Control-Allow-Headers: ' . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
         } else {

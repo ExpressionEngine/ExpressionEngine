@@ -120,10 +120,6 @@ $(document).ready(function () {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
-				} else {
-					iframe.contentDocument.open();
-					iframe.contentDocument.write('Unable to fetch Live Preview. Please check browser console for the details.');
-					iframe.contentDocument.close();
 				}
 				// Hide the refreshing indicator
 				$('.live-preview__preview-loader').removeClass('loaded');
