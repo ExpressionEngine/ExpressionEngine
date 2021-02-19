@@ -146,7 +146,7 @@ class Urls extends Settings
             array(
                 'field' => 'theme_folder_path',
                 'label' => 'lang:themes_path',
-                'rules' => 'required|strip_tags|valid_xss_check|file_exists'
+                'rules' => 'required|strip_tags|valid_xss_check|file_exists|callback__validateThemeFolderPath'
             ),
             array(
                 'field' => 'profile_trigger',
@@ -182,6 +182,20 @@ class Urls extends Settings
             '' => lang('url_path_settings')
         );
         ee()->cp->render('settings/form', $vars);
+    }
+
+    /**
+     * Custom validator to make sure Theme Folder Path does exist
+     * and seemingly has correct folder structure
+     **/
+    public function _validateThemeFolderPath($path)
+    {
+        if (!ee()->form_validation->file_exists(rtrim(rtrim($path, '/'), DIRECTORY_SEPARATOR) . '/ee/cp')) {
+            ee()->form_validation->set_message('_validateThemeFolderPath', lang('invalid_theme_folder_path'));
+
+            return false;
+        }
+        return true;
     }
 }
 // END CLASS

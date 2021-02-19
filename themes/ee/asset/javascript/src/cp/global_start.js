@@ -417,7 +417,7 @@ EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 	EE.CSRF_TOKEN = newToken;
 
 	if ( ! skipBroadcast) {
-		$(window).trigger('broadcast.setCsrfToken', newToken);
+		$(window.parent).trigger('broadcast.setCsrfToken', newToken);
 	}
 };
 
@@ -460,7 +460,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 	EE.BASE = newBase;
 
 	if ( ! skipBroadcast) {
-		$(window).trigger('broadcast.setBasePath', newBase);
+		$(window.parent).trigger('broadcast.setBasePath', newBase);
 	}
 };
 

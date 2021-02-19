@@ -41,7 +41,7 @@ class Edit extends AbstractPublishController
 
         $this->permissions['all'] = array_merge($this->permissions['others'], $this->permissions['self']);
 
-        if (empty($this->permissions['all']) or ! ee('Permission')->hasAny($this->permissions['all'])) {
+        if (! ee('Permission')->hasAny($this->permissions['all'])) {
             show_error(lang('unauthorized_access'), 403);
         }
     }
