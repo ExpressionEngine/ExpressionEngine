@@ -5023,10 +5023,73 @@ class Channel
     {
         $entry_id = ee()->input->get_post('entry_id');
         $channel_id = ee()->input->get_post('channel_id');
-        $return = urldecode(ee()->input->get('return'));
+        $return = ee()->input->get('return') ? base64_decode(rawurldecode(ee()->input->get('return'))) : null;
+        $allowedOrigin = null;
+
+        $allowedOrigin = base64_decode(rawurldecode(ee('Request')->get('from')));
+        if (empty($allowedOrigin)) {
+            if (!empty($return)) {
+                $allowedOrigin = substr($return, 0, strpos($return, '/', 8));
+            }
+            if (empty($allowedOrigin)) {
+                $configured_cp_url = explode('//', ee()->config->item('cp_url'));
+                $configured_cp_domain = explode('/', $configured_cp_url[1]);
+                $allowedOrigin = strtolower($configured_cp_domain[0]);
+                if (strpos('http', $allowedOrigin) === false) {
+                    $allowedOrigin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . $allowedOrigin;
+                }
+            }
+        }
+
+        $allAllowedOrigins = [];
+        $configuredUrls = ee('Model')->get('Config')
+                ->filter('key', 'IN', ['base_url', 'site_url', 'cp_url'])
+                ->all()
+                ->pluck('parsed_value');
+        $extraDomains = ee('Config')->getFile()->get('allowed_preview_domains');
+        if (!empty($extraDomains)) {
+            if (!is_array($extraDomains)) {
+                $extraDomains = explode(',', $extraDomains);
+            }
+            $configuredUrls = array_merge($configuredUrls, $extraDomains);
+        }
+
+        foreach ($configuredUrls as $configuredUrl) {
+            $configuredUrl = trim($configuredUrl);
+            foreach (['https://', 'http://', '//'] as $protocol) {
+                if (strpos($configuredUrl, $protocol) === 0) {
+                    $len = strlen($protocol);
+                    $domain = substr($configuredUrl, $len, (strpos($configuredUrl, '/', $len) - $len));
+                } else {
+                    $domain = $configuredUrl;
+                }
+                $allAllowedOrigins[] = 'https://' . $domain;
+                $allAllowedOrigins[] = 'http://' . $domain;
+            }
+        }
+        $allAllowedOrigins = array_unique($allAllowedOrigins);
+
+        @header('Access-Control-Allow-Origin: ' . $allowedOrigin);
+        @header('Access-Control-Allow-Methods: POST, OPTIONS');
+        @header('Access-Control-Max-Age: -1');
+        if(array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER)) {
+            @header('Access-Control-Allow-Headers: ' . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+        } else {
+            @header('Access-Control-Allow-Headers: *');
+        }
+
+        if (ee('Request')->method() == 'OPTIONS') {
+            exit();
+        }
+
+        if (!in_array($allowedOrigin, $allAllowedOrigins)) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
+        }
 
         return ee('LivePreview')->preview($channel_id, $entry_id, $return);
     }
+
 }
 // END CLASS
 

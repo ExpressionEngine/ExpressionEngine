@@ -104,22 +104,29 @@ $(document).ready(function () {
 		    preview_url    = $(iframe).data('url');
 
 		// Show that the preview is refreshing
-		$('.live-preview__preview-loader').addClass('open')
+		$('.live-preview__preview-loader').addClass('loaded');
 
 		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
 			url: preview_url,
+			crossDomain: true,
+			beforeSend: function(request) {
+				request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
+			},
 			data: publishForm.serialize(),
 			complete: function(xhr) {
 				if (xhr.responseText !== undefined) {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
-
-					// Hide the refreshing indicator
-					$('.live-preview__preview-loader').removeClass('open')
+				} else {
+					iframe.contentDocument.open();
+					iframe.contentDocument.write('Unable to fetch Live Preview. Please check browser console for the details.');
+					iframe.contentDocument.close();
 				}
+				// Hide the refreshing indicator
+				$('.live-preview__preview-loader').removeClass('loaded');
 				ajaxRequest = null;
 			},
 		});
