@@ -151,6 +151,12 @@ a.button {
   @include button-variant(color(button-action-color), color(button-action-bg), color(button-action-border), color(button-action-hover-bg), color(button-action-hover-border));
 }
 
+.button--with-shortcut {
+  &::first-letter {
+    text-decoration: underline;
+  }
+}
+
 // Link buttons
 // Make a button look and behave like a link
 .button--link {

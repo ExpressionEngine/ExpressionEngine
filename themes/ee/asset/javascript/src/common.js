@@ -387,6 +387,7 @@ $(document).ready(function(){
 	window.addEventListener('keydown', function (key) {
 		if (key.ctrlKey || key.metaKey){
 			$('.button[data-shortcut]:visible').each(function(e) {
+				$(this).addClass('button--with-shortcut');
 				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
 					key.preventDefault();
 					$(this).trigger('click');
@@ -395,6 +396,13 @@ $(document).ready(function(){
 			});
 		}
 	});
+
+	window.addEventListener('keyup', function (key) {
+		if (key.ctrlKey || key.metaKey || key.key == 'Control' || key.key == 'Meta'){
+			$('.button[data-shortcut]').removeClass('button--with-shortcut');
+		}
+	});
+
 
 	// Filter bar toggle
 	// -------------------------------------------------------------------
