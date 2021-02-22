@@ -389,6 +389,7 @@ $(document).ready(function(){
 			$('.button[data-shortcut]:visible').each(function(e) {
 				$(this).addClass('button--with-shortcut');
 				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
+					$(this).removeClass('button--with-shortcut');
 					key.preventDefault();
 					$(this).trigger('click');
 					return false;
