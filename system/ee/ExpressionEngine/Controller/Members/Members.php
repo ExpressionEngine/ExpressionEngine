@@ -1303,7 +1303,7 @@ class Members extends CP_Controller
         $role_ids = $role_ids->indexBy('role_id');
 
         $members = ee('Model')->get('Member', $member_ids)
-            ->fields('member_id', 'screen_name', 'email')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->all();
 
         foreach ($members as $member) {

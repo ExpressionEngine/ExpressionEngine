@@ -19,6 +19,10 @@ class Homepage extends CP_Controller
 {
     public function index()
     {
+        $mbr = ee('Model')->get('Member', 1)->with('PrimaryRole', 'Roles', 'RoleGroups')->fields('member_id')->all()->first();
+        var_dump($mbr->PrimaryRole->toArray());
+        exit();
+        
         $this->redirectIfNoSegments();
 
         ee('CP/Alert')->makeDeprecationNotice()->now();

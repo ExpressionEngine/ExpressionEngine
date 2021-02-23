@@ -169,7 +169,7 @@ class Relationships_ft_cp
 
         // Then all authors who are in those groups or who have author access
         $members = ee('Model')->get('Member')
-            ->fields('member_id', 'screen_name', 'username')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->filter('in_authorlist', 'y')
             ->order('screen_name', 'asc')
             ->order('username', 'asc')
