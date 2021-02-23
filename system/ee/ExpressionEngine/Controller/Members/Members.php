@@ -93,7 +93,7 @@ class Members extends CP_Controller
             ee()->functions->redirect($this->base_url);
         }
 
-        $members = ee('Model')->get('Member')->with('PrimaryRole');
+        $members = ee('Model')->get('Member')->with('PrimaryRole', 'Roles');
 
         $filters = $this->makeAndApplyFilters($members, true);
         $vars['filters'] = $filters->render($this->base_url);
@@ -1309,7 +1309,7 @@ class Members extends CP_Controller
         foreach ($members as $member) {
             $notify_address = [];
 
-            foreach ($member->getAllRoles() as $role) {
+            foreach ($member->getAllRoles(false) as $role) {
                 if (isset($role_ids[$role->getId()])) {
                     $notify_address[] = $role_ids[$role->getId()];
                 }
