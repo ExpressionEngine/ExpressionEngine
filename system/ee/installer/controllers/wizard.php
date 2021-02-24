@@ -13,30 +13,29 @@
  */
 class Wizard extends CI_Controller
 {
-
-    public $version           = '6.0.0'; // The version being installed
+    public $version = '6.0.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
-    public $schema            = null; // This will contain the schema object with our queries
-    public $languages         = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
-    public $mylang            = 'english';// Set dynamically by the user when they run the installer
-    public $is_installed      = false; // Does an EE installation already exist?  This is set dynamically.
-    public $next_update       = false; // The next update file that needs to be loaded, when an update is performed.
+    public $schema = null; // This will contain the schema object with our queries
+    public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
+    public $mylang = 'english';// Set dynamically by the user when they run the installer
+    public $is_installed = false; // Does an EE installation already exist?  This is set dynamically.
+    public $next_update = false; // The next update file that needs to be loaded, when an update is performed.
     public $remaining_updates = 0; // Number of updates remaining, in the event the user is updating from several back
-    public $refresh           = false; // Whether to refresh the page for the next update.  Set dynamically
-    public $refresh_url       = ''; // The URL where the refresh should go to.  Set dynamically
-    public $base_path         = '';
-    public $theme_path        = '';
-    public $root_theme_path   = '';
+    public $refresh = false; // Whether to refresh the page for the next update.  Set dynamically
+    public $refresh_url = ''; // The URL where the refresh should go to.  Set dynamically
+    public $base_path = '';
+    public $theme_path = '';
+    public $root_theme_path = '';
 
     // Default page content - these are in English since we don't know the user's language choice when we first load the installer
-    public $content           = '';
-    public $title             = 'ExpressionEngine Installation and Update Wizard';
-    public $header            = '';
-    public $subtitle          = '';
+    public $content = '';
+    public $title = 'ExpressionEngine Installation and Update Wizard';
+    public $header = '';
+    public $subtitle = '';
 
     private $current_step = 1;
-    private $steps        = 3;
-    private $addon_step   = false;
+    private $steps = 3;
+    private $addon_step = false;
 
     public $now;
     public $year;
@@ -76,57 +75,57 @@ class Wizard extends CI_Controller
 
     // These are the values we need to set during a first time installation
     public $userdata = array(
-        'app_version'           => '',
-        'ext'                   => '.php',
-        'ip'                    => '',
-        'database'              => 'mysql',
-        'db_hostname'           => 'localhost',
-        'db_username'           => '',
-        'db_password'           => '',
-        'db_name'               => '',
-        'db_prefix'             => 'exp',
-        'db_char_set'           => 'utf8',
-        'db_collat'             => 'utf8_unicode_ci',
-        'site_label'            => '',
-        'site_name'             => 'default_site',
-        'site_url'              => '',
-        'site_index'            => 'index.php',
-        'cp_url'                => '',
-        'username'              => '',
-        'password'              => '',
-        'password_confirm'      => '',
-        'screen_name'           => '',
-        'email_address'         => '',
-        'webmaster_email'       => '',
-        'deft_lang'             => 'english',
-        'theme'                 => 'default',
+        'app_version' => '',
+        'ext' => '.php',
+        'ip' => '',
+        'database' => 'mysql',
+        'db_hostname' => 'localhost',
+        'db_username' => '',
+        'db_password' => '',
+        'db_name' => '',
+        'db_prefix' => 'exp',
+        'db_char_set' => 'utf8',
+        'db_collat' => 'utf8_unicode_ci',
+        'site_label' => '',
+        'site_name' => 'default_site',
+        'site_url' => '',
+        'site_index' => 'index.php',
+        'cp_url' => '',
+        'username' => '',
+        'password' => '',
+        'password_confirm' => '',
+        'screen_name' => '',
+        'email_address' => '',
+        'webmaster_email' => '',
+        'deft_lang' => 'english',
+        'theme' => 'default',
         'default_site_timezone' => '',
-        'redirect_method'       => 'redirect',
-        'upload_folder'         => 'uploads/',
-        'cp_images'             => 'cp_images/',
-        'avatar_path'           => '../images/avatars/',
-        'avatar_url'            => 'images/avatars/',
-        'photo_path'            => '../images/member_photos/',
-        'photo_url'             => 'images/member_photos/',
-        'signature_img_path'    => '../images/signature_attachments/',
-        'signature_img_url'     => 'images/signature_attachments/',
-        'pm_path'               => '../images/pm_attachments',
-        'captcha_path'          => '../images/captchas/',
-        'theme_folder_path'     => '../themes/',
-        'modules'               => array(),
+        'redirect_method' => 'redirect',
+        'upload_folder' => 'uploads/',
+        'cp_images' => 'cp_images/',
+        'avatar_path' => '../images/avatars/',
+        'avatar_url' => 'images/avatars/',
+        'photo_path' => '../images/member_photos/',
+        'photo_url' => 'images/member_photos/',
+        'signature_img_path' => '../images/signature_attachments/',
+        'signature_img_url' => 'images/signature_attachments/',
+        'pm_path' => '../images/pm_attachments',
+        'captcha_path' => '../images/captchas/',
+        'theme_folder_path' => '../themes/',
+        'modules' => array(),
         'install_default_theme' => 'n',
-        'utf8mb4_supported'     => null,
-        'share_analytics'       => 'n'
+        'utf8mb4_supported' => null,
+        'share_analytics' => 'n'
     );
 
     // These are the default values for the config array.  Since the
     // EE and legacy CI config files are one in the same now we use this data when we
     // write the initial config file using $this->write_config_data()
     public $ci_config = array(
-        'subclass_prefix'    => 'EE_',
-        'log_threshold'      => 0,
-        'log_date_format'    => 'Y-m-d H:i:s',
-        'encryption_key'     => null,
+        'subclass_prefix' => 'EE_',
+        'log_threshold' => 0,
+        'log_date_format' => 'Y-m-d H:i:s',
+        'encryption_key' => null,
 
         // Enabled for cleaner view files and compatibility
         'rewrite_short_tags' => true
@@ -164,8 +163,8 @@ class Wizard extends CI_Controller
         $this->userdata['app_version'] = $this->version;
         $this->userdata['default_site_timezone'] = date_default_timezone_get();
 
-         // Load the helpers we intend to use
-         $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
+        // Load the helpers we intend to use
+        $this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
 
         // Load the language pack.  English is loaded on the installer home
         // page along with some radio buttons for each installed language pack.
@@ -218,10 +217,10 @@ class Wizard extends CI_Controller
 
         // Set the time
         $time = time();
-        $this->now   = gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
-        $this->year  = gmdate('Y', $this->now);
+        $this->now = gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
+        $this->year = gmdate('Y', $this->now);
         $this->month = gmdate('m', $this->now);
-        $this->day   = gmdate('d', $this->now);
+        $this->day = gmdate('d', $this->now);
 
         ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
         ee('App')->setupAddons(PATH_THIRD);
@@ -251,6 +250,7 @@ class Wizard extends CI_Controller
             if ($this->is_installed) {
                 //remove the update notices from previous installations
                 $this->update_notices->clear();
+
                 return $this->update_form();
             } else {
                 return $this->install_form();
@@ -279,6 +279,7 @@ class Wizard extends CI_Controller
         // Is the config file readable?
         if (! include($this->config->config_path)) {
             $this->set_output('error', array('error' => lang('unreadable_config')));
+
             return false;
         }
 
@@ -294,12 +295,14 @@ class Wizard extends CI_Controller
         // Is the config file writable?
         if (! is_really_writable($this->config->config_path)) {
             $this->set_output('error', array('error' => lang('unwritable_config')));
+
             return false;
         }
 
         // Is the cache folder writable?
         if (! is_really_writable(PATH_CACHE)) {
             $this->set_output('error', array('error' => lang('unwritable_cache_folder')));
+
             return false;
         }
 
@@ -312,12 +315,14 @@ class Wizard extends CI_Controller
             // this later
             if (! file_exists(SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
                 $this->set_output('error', array('error' => lang('unreadable_email')));
+
                 return false;
             }
 
             // Are the DB schemas available?
             if (! is_dir(APPPATH . 'schema/')) {
                 $this->set_output('error', array('error' => lang('unreadable_schema')));
+
                 return false;
             }
 
@@ -327,6 +332,7 @@ class Wizard extends CI_Controller
             // At this point we are reasonably sure that this is a first time
             // installation. We will set the flag and bail out since we're done
             $this->is_installed = false;
+
             return true;
         }
 
@@ -335,12 +341,14 @@ class Wizard extends CI_Controller
             $db = $this->getDbConfig();
         } catch (Exception $e) {
             $this->set_output('error', array('error' => lang('database_no_data')));
+
             return false;
         }
 
         // Can we connect?
         if ($this->db_connect($db) !== true) {
             $this->set_output('error', array('error' => lang('database_no_config')));
+
             return false;
         }
 
@@ -356,6 +364,7 @@ class Wizard extends CI_Controller
 
             $this->is_installed = isset($config);
             $this->set_output('error', array('error' => implode('<br>', $failed)));
+
             return false;
         }
 
@@ -369,13 +378,13 @@ class Wizard extends CI_Controller
             $config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
         }
 
-
         // OK, now let's determine if the update files are available and whether
         // the currently installed version is older then the most recent update
 
         // If this returns false it means the "updates" folder was not readable
         if (! $this->fetch_updates($config['app_version'])) {
             $this->set_output('error', array('error' => lang('unreadable_update')));
+
             return false;
         }
 
@@ -439,6 +448,7 @@ class Wizard extends CI_Controller
 
             $this->is_installed = true;
             $this->show_success($type, $vars);
+
             return false;
         }
 
@@ -447,6 +457,7 @@ class Wizard extends CI_Controller
 
         if (! include(APPPATH . 'updates/' . $ud_file)) {
             $this->set_output('error', array('error' => lang('unreadable_files')));
+
             return false;
         }
 
@@ -470,8 +481,7 @@ class Wizard extends CI_Controller
     {
         ee()->functions->clear_caching('all');
 
-        foreach (ee('Model')->get('Channel')->all() as $channel)
-        {
+        foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
@@ -560,6 +570,7 @@ class Wizard extends CI_Controller
             || ! ee()->input->post('db_username')
         ) {
             $callable();
+
             return false;
         }
 
@@ -575,6 +586,7 @@ class Wizard extends CI_Controller
 
         if ($this->db_connect_attempt === $error_number) {
             $callable();
+
             return false;
         }
 
@@ -640,6 +652,7 @@ class Wizard extends CI_Controller
                 'valid_db_prefix',
                 lang('database_prefix_invalid_characters')
             );
+
             return false;
         }
 
@@ -649,6 +662,7 @@ class Wizard extends CI_Controller
                 'valid_db_prefix',
                 lang('database_prefix_contains_exp_')
             );
+
             return false;
         }
 
@@ -662,6 +676,7 @@ class Wizard extends CI_Controller
                 'license_agreement',
                 lang('license_agreement_not_accepted')
             );
+
             return false;
         }
 
@@ -751,7 +766,7 @@ class Wizard extends CI_Controller
         // Connect to the database.  We pass a multi-dimensional array since
         // that's what is normally found in the database config file
         $db = array(
-            'port'     => $this->userdata['db_port'],
+            'port' => $this->userdata['db_port'],
             'hostname' => $this->userdata['db_hostname'],
             'username' => $this->userdata['db_username'],
             'password' => $this->userdata['db_password'],
@@ -816,6 +831,7 @@ class Wizard extends CI_Controller
         if (count($errors) > 0) {
             $this->userdata['errors'] = $errors;
             $this->set_output('install_form', $this->userdata);
+
             return false;
         }
 
@@ -830,14 +846,14 @@ class Wizard extends CI_Controller
         $this->schema->version = $this->version;
 
         // Assign the userdata array to the schema class
-        $this->schema->userdata   =& $this->userdata;
-        $this->schema->theme_path =& $this->theme_path;
+        $this->schema->userdata = & $this->userdata;
+        $this->schema->theme_path = & $this->theme_path;
 
         // Time
-        $this->schema->now   = $this->now;
-        $this->schema->year  = $this->year;
+        $this->schema->now = $this->now;
+        $this->schema->year = $this->year;
         $this->schema->month = $this->month;
-        $this->schema->day   = $this->day;
+        $this->schema->day = $this->day;
 
         // --------------------------------------------------------------------
 
@@ -867,8 +883,8 @@ class Wizard extends CI_Controller
         // Encrypt the password and unique ID
         ee()->load->library('auth');
         $hashed_password = ee()->auth->hash_password($this->userdata['password']);
-        $this->userdata['password']  = $hashed_password['password'];
-        $this->userdata['salt']      = $hashed_password['salt'];
+        $this->userdata['password'] = $hashed_password['password'];
+        $this->userdata['salt'] = $hashed_password['salt'];
         $this->userdata['unique_id'] = ee('Encrypt')->generateKey();
 
         // --------------------------------------------------------------------
@@ -884,6 +900,7 @@ class Wizard extends CI_Controller
         // Install Database Tables!
         if (! $this->schema->install_tables_and_data()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -892,6 +909,7 @@ class Wizard extends CI_Controller
         // visible for module and accessory installers
         if ($this->write_config_data() == false) {
             $this->set_output('error', array('error' => lang('unwritable_config')));
+
             return false;
         }
 
@@ -903,6 +921,7 @@ class Wizard extends CI_Controller
         // Install Modules!
         if (! $this->install_modules()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -913,6 +932,7 @@ class Wizard extends CI_Controller
         if ($this->userdata['install_default_theme'] == 'y'
             && ! $this->install_site_theme()) {
             $this->set_output('error', array('error' => lang('improper_grants')));
+
             return false;
         }
 
@@ -940,6 +960,7 @@ class Wizard extends CI_Controller
                 'template_path_writeable',
                 lang('unwritable_templates')
             );
+
             return false;
         }
 
@@ -953,6 +974,7 @@ class Wizard extends CI_Controller
                 'themes_user_writable',
                 lang('unwritable_themes_user')
             );
+
             return false;
         }
 
@@ -1068,7 +1090,7 @@ class Wizard extends CI_Controller
             $host .= $_SERVER['HTTP_HOST'] . '/';
         }
 
-        $self = ( ! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+        $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
         $self = htmlspecialchars($self, ENT_QUOTES);
 
         $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . EESELF;
@@ -1142,7 +1164,7 @@ class Wizard extends CI_Controller
         // if any of the underlying code uses caching, make sure we do nothing
         ee()->config->set_item('cache_driver', 'dummy');
 
-        if($this->shouldBackupDatabase) {
+        if ($this->shouldBackupDatabase) {
             $this->backupDatabase();
             $this->shouldBackupDatabase = false;
         }
@@ -1161,6 +1183,7 @@ class Wizard extends CI_Controller
             $this->refresh_url = $this->set_qstr('do_update&agree=yes');
             $this->title = sprintf(lang('updating_title'), $this->version);
             $this->subtitle = sprintf(lang('running_updates'), $next_version);
+
             return $this->set_output(
                 'update_msg',
                 array(
@@ -1179,10 +1202,10 @@ class Wizard extends CI_Controller
 
         // Instantiate the updater class
         if (class_exists('Updater')) {
-            $UD = new Updater;
+            $UD = new Updater();
         } else {
             $class = '\ExpressionEngine\Updater\Version_' . str_replace(['.', '-'], '_', $next_version) . '\Updater';
-            $UD = new $class;
+            $UD = new $class();
         }
 
         $method = 'do_update';
@@ -1196,6 +1219,7 @@ class Wizard extends CI_Controller
 
             if (! method_exists($UD, $method)) {
                 $this->set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
+
                 return false;
             }
         }
@@ -1257,6 +1281,7 @@ class Wizard extends CI_Controller
             }
 
             $this->set_output('error', array('error' => $error_msg));
+
             return false;
         }
 
@@ -1293,7 +1318,7 @@ class Wizard extends CI_Controller
             'update_msg',
             array(
                 'remaining_updates' => $this->remaining_updates,
-                'next_version'      => $this->progress->prefix . lang('version_update_text')
+                'next_version' => $this->progress->prefix . lang('version_update_text')
             )
         );
     }
@@ -1402,7 +1427,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        } 
+        }
 
         return $path;
     }
@@ -1435,26 +1460,26 @@ class Wizard extends CI_Controller
 
         $version = explode('.', $this->version, 2);
         $data = array(
-            'title'             => $this->title,
-            'header'            => $this->header,
-            'subtitle'          => $this->subtitle,
-            'refresh'           => $this->refresh,
-            'refresh_url'       => $this->refresh_url,
-            'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
-            'javascript_path'   => $javascript_basepath . $javascript_dir,
+            'title' => $this->title,
+            'header' => $this->header,
+            'subtitle' => $this->subtitle,
+            'refresh' => $this->refresh,
+            'refresh_url' => $this->refresh_url,
+            'ajax_progress' => (ee()->input->get('ajax_progress') == 'yes'),
+            'javascript_path' => $javascript_basepath . $javascript_dir,
 
-            'version'           => $this->version,
-            'version_major'     => $version[0],
-            'version_minor'     => $version[1],
+            'version' => $this->version,
+            'version_major' => $version[0],
+            'version_minor' => $version[1],
             'installed_version' => $this->installed_version,
 
-            'next_version'      => substr($this->next_update, 0, 1) . '.' . substr($this->next_update, 1, 1) . '.' . substr($this->next_update, 2, 1),
-            'languages'         => $this->languages,
-            'theme_url'         => $this->set_path('themes'),
+            'next_version' => substr($this->next_update, 0, 1) . '.' . substr($this->next_update, 1, 1) . '.' . substr($this->next_update, 2, 1),
+            'languages' => $this->languages,
+            'theme_url' => $this->set_path('themes'),
 
-            'action'            => '',
-            'method'            => 'post',
-            'retry_link'        => $this->is_installed ? $this->set_qstr('do_update') : $this->set_qstr('do_install')
+            'action' => '',
+            'method' => 'post',
+            'retry_link' => $this->is_installed ? $this->set_qstr('do_update') : $this->set_qstr('do_install')
         );
 
         if ($this->is_installed) {
@@ -1505,6 +1530,7 @@ class Wizard extends CI_Controller
     private function set_qstr($method = '')
     {
         $query_string = 'C=wizard&M=' . $method . '&language=' . $this->mylang;
+
         return $this->config->item('index_page') . '?' . $query_string;
     }
 
@@ -1533,7 +1559,6 @@ class Wizard extends CI_Controller
 
         return true;
     }
-
 
     /**
      * Install the Modules
@@ -1565,168 +1590,168 @@ class Wizard extends CI_Controller
         }
 
         $config = array(
-            'db_port'                   => $this->userdata['db_port'],
-            'db_hostname'               => $this->userdata['db_hostname'],
-            'db_username'               => $this->userdata['db_username'],
-            'db_password'               => $this->userdata['db_password'],
-            'db_database'               => $this->userdata['db_name'],
-            'db_dbprefix'               => $this->getDbPrefix(),
-            'db_char_set'               => $this->userdata['db_char_set'],
-            'db_collat'                 => $this->userdata['db_collat'],
-            'app_version'               => $this->userdata['app_version'],
-            'debug'                     => '1',
-            'site_index'                => $this->userdata['site_index'],
-            'site_label'                => $this->userdata['site_label'],
-            'base_path'                 => $this->base_path,
-            'base_url'                  => $this->userdata['site_url'],
-            'cp_url'                    => str_replace($this->userdata['site_url'], '{base_url}', $this->userdata['cp_url']),
-            'site_url'                  => '{base_url}',
-            'theme_folder_url'          => '{base_url}themes/',
-            'webmaster_email'           => $this->userdata['email_address'],
-            'webmaster_name'            => '',
-            'channel_nomenclature'      => 'channel',
-            'max_caches'                => '150',
-            'cache_driver'              => 'file',
-            'captcha_url'               => $captcha_url,
-            'captcha_path'              => $this->userdata['captcha_path'],
-            'captcha_font'              => 'y',
-            'captcha_rand'              => 'y',
-            'captcha_require_members'   => 'n',
-            'require_captcha'           => 'n',
-            'enable_sql_caching'        => 'n',
-            'force_query_string'        => 'n',
-            'show_profiler'             => 'n',
-            'include_seconds'           => 'n',
-            'cookie_domain'             => '',
-            'cookie_path'               => '/',
-            'cookie_prefix'             => '',
-            'website_session_type'      => 'c',
-            'cp_session_type'           => 'c',
-            'cookie_httponly'           => 'y',
-            'allow_username_change'     => 'y',
-            'allow_multi_logins'        => 'y',
-            'password_lockout'          => 'y',
+            'db_port' => $this->userdata['db_port'],
+            'db_hostname' => $this->userdata['db_hostname'],
+            'db_username' => $this->userdata['db_username'],
+            'db_password' => $this->userdata['db_password'],
+            'db_database' => $this->userdata['db_name'],
+            'db_dbprefix' => $this->getDbPrefix(),
+            'db_char_set' => $this->userdata['db_char_set'],
+            'db_collat' => $this->userdata['db_collat'],
+            'app_version' => $this->userdata['app_version'],
+            'debug' => '1',
+            'site_index' => $this->userdata['site_index'],
+            'site_label' => $this->userdata['site_label'],
+            'base_path' => $this->base_path,
+            'base_url' => $this->userdata['site_url'],
+            'cp_url' => str_replace($this->userdata['site_url'], '{base_url}', $this->userdata['cp_url']),
+            'site_url' => '{base_url}',
+            'theme_folder_url' => '{base_url}themes/',
+            'webmaster_email' => $this->userdata['email_address'],
+            'webmaster_name' => '',
+            'channel_nomenclature' => 'channel',
+            'max_caches' => '150',
+            'cache_driver' => 'file',
+            'captcha_url' => $captcha_url,
+            'captcha_path' => $this->userdata['captcha_path'],
+            'captcha_font' => 'y',
+            'captcha_rand' => 'y',
+            'captcha_require_members' => 'n',
+            'require_captcha' => 'n',
+            'enable_sql_caching' => 'n',
+            'force_query_string' => 'n',
+            'show_profiler' => 'n',
+            'include_seconds' => 'n',
+            'cookie_domain' => '',
+            'cookie_path' => '/',
+            'cookie_prefix' => '',
+            'website_session_type' => 'c',
+            'cp_session_type' => 'c',
+            'cookie_httponly' => 'y',
+            'allow_username_change' => 'y',
+            'allow_multi_logins' => 'y',
+            'password_lockout' => 'y',
             'password_lockout_interval' => '1',
-            'require_ip_for_login'      => 'y',
-            'require_ip_for_posting'    => 'y',
-            'require_secure_passwords'  => 'n',
-            'allow_dictionary_pw'       => 'y',
-            'name_of_dictionary_file'   => '',
-            'xss_clean_uploads'         => 'y',
-            'redirect_method'           => $this->userdata['redirect_method'],
-            'deft_lang'                 => $this->userdata['deft_lang'],
-            'xml_lang'                  => 'en',
-            'send_headers'              => 'y',
-            'gzip_output'               => 'n',
-            'is_system_on'              => 'y',
-            'allow_extensions'          => 'y',
-            'date_format'               => '%n/%j/%Y',
-            'time_format'               => '12',
-            'include_seconds'           => 'n',
-            'server_offset'             => '',
-            'default_site_timezone'     => date_default_timezone_get(),
-            'mail_protocol'             => 'mail',
-            'email_newline'             => '\n', // single-quoted for portability
-            'smtp_server'               => '',
-            'smtp_username'             => '',
-            'smtp_password'             => '',
-            'email_smtp_crypto'         => 'ssl',
-            'email_debug'               => 'n',
-            'email_charset'             => 'utf-8',
-            'email_batchmode'           => 'n',
-            'email_batch_size'          => '',
-            'mail_format'               => 'plain',
-            'word_wrap'                 => 'y',
-            'email_console_timelock'    => '5',
-            'log_email_console_msgs'    => 'y',
-            'log_search_terms'          => 'y',
-            'un_min_len'                => '4',
-            'pw_min_len'                => '5',
+            'require_ip_for_login' => 'y',
+            'require_ip_for_posting' => 'y',
+            'require_secure_passwords' => 'n',
+            'allow_dictionary_pw' => 'y',
+            'name_of_dictionary_file' => '',
+            'xss_clean_uploads' => 'y',
+            'redirect_method' => $this->userdata['redirect_method'],
+            'deft_lang' => $this->userdata['deft_lang'],
+            'xml_lang' => 'en',
+            'send_headers' => 'y',
+            'gzip_output' => 'n',
+            'is_system_on' => 'y',
+            'allow_extensions' => 'y',
+            'date_format' => '%n/%j/%Y',
+            'time_format' => '12',
+            'include_seconds' => 'n',
+            'server_offset' => '',
+            'default_site_timezone' => date_default_timezone_get(),
+            'mail_protocol' => 'mail',
+            'email_newline' => '\n', // single-quoted for portability
+            'smtp_server' => '',
+            'smtp_username' => '',
+            'smtp_password' => '',
+            'email_smtp_crypto' => 'ssl',
+            'email_debug' => 'n',
+            'email_charset' => 'utf-8',
+            'email_batchmode' => 'n',
+            'email_batch_size' => '',
+            'mail_format' => 'plain',
+            'word_wrap' => 'y',
+            'email_console_timelock' => '5',
+            'log_email_console_msgs' => 'y',
+            'log_search_terms' => 'y',
+            'un_min_len' => '4',
+            'pw_min_len' => '5',
             'allow_member_registration' => 'n',
             'allow_member_localization' => 'y',
-            'req_mbr_activation'        => 'email',
-            'new_member_notification'   => 'n',
-            'mbr_notification_emails'   => '',
-            'require_terms_of_service'  => 'y',
-            'default_primary_role'      => '5',
-            'profile_trigger'           => 'member' . $this->now,
-            'member_theme'              => 'default',
-            'avatar_url'                => '{base_url}' . $this->userdata['avatar_url'],
-            'avatar_path'               => $this->userdata['avatar_path'],
-            'avatar_max_width'          => '100',
-            'avatar_max_height'         => '100',
-            'avatar_max_kb'             => '50',
-            'enable_photos'             => 'n',
-            'photo_url'                 => '{base_url}' . $this->userdata['photo_url'],
-            'photo_path'                => $this->userdata['photo_path'],
-            'photo_max_width'           => '100',
-            'photo_max_height'          => '100',
-            'photo_max_kb'              => '50',
-            'allow_signatures'          => 'y',
-            'sig_maxlength'             => '500',
-            'sig_allow_img_hotlink'     => 'n',
-            'sig_allow_img_upload'      => 'n',
-            'sig_img_url'               => '{base_url}' . $this->userdata['signature_img_url'],
-            'sig_img_path'              => $this->userdata['signature_img_path'],
-            'sig_img_max_width'         => '480',
-            'sig_img_max_height'        => '80',
-            'sig_img_max_kb'            => '30',
-            'prv_msg_enabled'           => 'y',
+            'req_mbr_activation' => 'email',
+            'new_member_notification' => 'n',
+            'mbr_notification_emails' => '',
+            'require_terms_of_service' => 'y',
+            'default_primary_role' => '5',
+            'profile_trigger' => 'member' . $this->now,
+            'member_theme' => 'default',
+            'avatar_url' => '{base_url}' . $this->userdata['avatar_url'],
+            'avatar_path' => $this->userdata['avatar_path'],
+            'avatar_max_width' => '100',
+            'avatar_max_height' => '100',
+            'avatar_max_kb' => '50',
+            'enable_photos' => 'n',
+            'photo_url' => '{base_url}' . $this->userdata['photo_url'],
+            'photo_path' => $this->userdata['photo_path'],
+            'photo_max_width' => '100',
+            'photo_max_height' => '100',
+            'photo_max_kb' => '50',
+            'allow_signatures' => 'y',
+            'sig_maxlength' => '500',
+            'sig_allow_img_hotlink' => 'n',
+            'sig_allow_img_upload' => 'n',
+            'sig_img_url' => '{base_url}' . $this->userdata['signature_img_url'],
+            'sig_img_path' => $this->userdata['signature_img_path'],
+            'sig_img_max_width' => '480',
+            'sig_img_max_height' => '80',
+            'sig_img_max_kb' => '30',
+            'prv_msg_enabled' => 'y',
             'prv_msg_allow_attachments' => 'y',
-            'prv_msg_upload_path'       => $this->userdata['pm_path'],
-            'prv_msg_max_attachments'   => '3',
-            'prv_msg_attach_maxsize'    => '250',
-            'prv_msg_attach_total'      => '100',
-            'prv_msg_html_format'       => 'safe',
-            'prv_msg_auto_links'        => 'y',
-            'prv_msg_max_chars'         => '6000',
-            'enable_template_routes'    => 'y',
-            'strict_urls'               => 'y',
-            'site_404'                  => '',
-            'save_tmpl_revisions'       => 'n',
-            'max_tmpl_revisions'        => '5',
-            'save_tmpl_files'           => 'y',
-            'deny_duplicate_data'       => 'y',
-            'redirect_submitted_links'  => 'n',
-            'enable_censoring'          => 'n',
-            'censored_words'            => '',
-            'censor_replacement'        => '',
-            'banned_ips'                => '',
-            'banned_emails'             => '',
-            'banned_usernames'          => '',
-            'banned_screen_names'       => '',
-            'ban_action'                => 'restrict',
-            'ban_message'               => 'This site is currently unavailable',
-            'ban_destination'           => 'http://www.yahoo.com/',
-            'enable_emoticons'          => 'y',
-            'emoticon_url'              => '{base_url}' . 'images/smileys/',
-            'recount_batch_total'       => '1000',
-            'image_resize_protocol'     => 'gd2',
-            'image_library_path'        => '',
-            'thumbnail_prefix'          => 'thumb',
-            'word_separator'            => 'dash',
-            'use_category_name'         => 'n',
-            'reserved_category_word'    => 'category',
-            'auto_convert_high_ascii'   => 'n',
-            'new_posts_clear_caches'    => 'y',
-            'auto_assign_cat_parents'   => 'y',
-            'new_version_check'         => 'y',
-            'enable_throttling'         => 'n',
-            'banish_masked_ips'         => 'y',
-            'max_page_loads'            => '10',
-            'time_interval'             => '8',
-            'lockout_time'              => '30',
-            'banishment_type'           => 'message',
-            'banishment_url'            => '',
-            'banishment_message'        => 'You have exceeded the allowed page load frequency.',
-            'enable_search_log'         => 'y',
-            'max_logged_searches'       => '500',
-            'memberlist_order_by'       => "member_id",
-            'memberlist_sort_order'     => "desc",
-            'memberlist_row_limit'      => "20",
-            'is_site_on'                => 'y',
-            'show_ee_news'              => 'y',
-            'theme_folder_path'         => $this->userdata['theme_folder_path'],
+            'prv_msg_upload_path' => $this->userdata['pm_path'],
+            'prv_msg_max_attachments' => '3',
+            'prv_msg_attach_maxsize' => '250',
+            'prv_msg_attach_total' => '100',
+            'prv_msg_html_format' => 'safe',
+            'prv_msg_auto_links' => 'y',
+            'prv_msg_max_chars' => '6000',
+            'enable_template_routes' => 'y',
+            'strict_urls' => 'y',
+            'site_404' => '',
+            'save_tmpl_revisions' => 'n',
+            'max_tmpl_revisions' => '5',
+            'save_tmpl_files' => 'y',
+            'deny_duplicate_data' => 'y',
+            'redirect_submitted_links' => 'n',
+            'enable_censoring' => 'n',
+            'censored_words' => '',
+            'censor_replacement' => '',
+            'banned_ips' => '',
+            'banned_emails' => '',
+            'banned_usernames' => '',
+            'banned_screen_names' => '',
+            'ban_action' => 'restrict',
+            'ban_message' => 'This site is currently unavailable',
+            'ban_destination' => 'http://www.yahoo.com/',
+            'enable_emoticons' => 'y',
+            'emoticon_url' => '{base_url}' . 'images/smileys/',
+            'recount_batch_total' => '1000',
+            'image_resize_protocol' => 'gd2',
+            'image_library_path' => '',
+            'thumbnail_prefix' => 'thumb',
+            'word_separator' => 'dash',
+            'use_category_name' => 'n',
+            'reserved_category_word' => 'category',
+            'auto_convert_high_ascii' => 'n',
+            'new_posts_clear_caches' => 'y',
+            'auto_assign_cat_parents' => 'y',
+            'new_version_check' => 'y',
+            'enable_throttling' => 'n',
+            'banish_masked_ips' => 'y',
+            'max_page_loads' => '10',
+            'time_interval' => '8',
+            'lockout_time' => '30',
+            'banishment_type' => 'message',
+            'banishment_url' => '',
+            'banishment_message' => 'You have exceeded the allowed page load frequency.',
+            'enable_search_log' => 'y',
+            'max_logged_searches' => '500',
+            'memberlist_order_by' => "member_id",
+            'memberlist_sort_order' => "desc",
+            'memberlist_row_limit' => "20",
+            'is_site_on' => 'y',
+            'show_ee_news' => 'y',
+            'theme_folder_path' => $this->userdata['theme_folder_path'],
         );
 
         $inserts = [];
@@ -1892,7 +1917,7 @@ class Wizard extends CI_Controller
                     require $path . 'upd.' . $module . '.php';
                 }
 
-                $UPD = new $class;
+                $UPD = new $class();
                 $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
@@ -1974,19 +1999,15 @@ class Wizard extends CI_Controller
 
     private function runAddonUpdaterHook($version)
     {
-
-        if( ! $this->shouldUpgradeAddons ) {
-
+        if (! $this->shouldUpgradeAddons) {
             return;
-
         }
 
         $addons = ee('Addon')->all();
 
         $results = [];
 
-        foreach ($addons as $name => $info)
-        {
+        foreach ($addons as $name => $info) {
             $info = ee('Addon')->get($name);
 
             // If it's built in, we'll skip it
@@ -1995,48 +2016,39 @@ class Wizard extends CI_Controller
             }
 
             // If it doesn't have an upgrader, there's nothing to do
-            if( ! $info->hasUpgrader() ) {
+            if (! $info->hasUpgrader()) {
                 continue;
             }
 
             try {
-
                 $upgrader = $info->getUpgraderClass();
 
-                $success = (new $upgrader)->upgrade($version);
-
+                $success = (new $upgrader())->upgrade($version);
             } catch (\Exception $e) {
-
                 $success = false;
-
             }
 
             $results[$name] = $success;
-
         }
 
         return $results;
-
     }
 
     private function backupDatabase()
     {
-
-        if ( ! ee('Filesystem')->isWritable(PATH_CACHE)) {
-
+        if (! ee('Filesystem')->isWritable(PATH_CACHE)) {
             return false;
-
         }
 
         $table_name = null;
         $offset = 0;
 
         $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
-        $file_path = PATH_CACHE.ee()->db->database.'_'.$date.'.sql';
+        $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
 
         // Some tables might be resource-intensive, do what we can
         @set_time_limit(0);
-        @ini_set('memory_limit','512M');
+        @ini_set('memory_limit', '512M');
 
         $backup = ee('Database/Backup', $file_path);
 
@@ -2051,7 +2063,6 @@ class Wizard extends CI_Controller
         $returned = true;
 
         do {
-
             try {
                 $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
             } catch (Exception $e) {
@@ -2060,15 +2071,13 @@ class Wizard extends CI_Controller
 
             if ($returned !== false) {
                 $table_name = $returned['table_name'];
-                $offset     = $returned['offset'];
+                $offset = $returned['offset'];
             }
-
         } while ($returned !== false);
 
         $backup->endFile();
 
         return true;
-
     }
 }
 

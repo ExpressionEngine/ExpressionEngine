@@ -1,7 +1,10 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class Generator {
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-	// Make magic, my friend
-
+class Generator
+{
+    // Make magic, my friend
 }

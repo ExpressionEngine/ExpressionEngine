@@ -6,22 +6,22 @@
 
           <div class="ee-sidebar__items-bottom">
             <?php
-							$version_class = '';
-							$update_available = isset(ee()->view->new_version);
-							$vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
+                            $version_class = '';
+                            $update_available = isset(ee()->view->new_version);
+                            $vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
 
-							if ($update_available) {	
-								if ($vital_update) {
-									$version_class .= ' ee-sidebar__version--update-vital';
-								} else {
-									$version_class .= ' ee-sidebar__version--update';
-								}
-							}
+                            if ($update_available) {
+                                if ($vital_update) {
+                                    $version_class .= ' ee-sidebar__version--update-vital';
+                                } else {
+                                    $version_class .= ' ee-sidebar__version--update';
+                                }
+                            }
 
-							if ( ! empty($version_identifier)) {
-								$version_class .= ' ee-sidebar__version--dev';
-							}
-						?>
+                            if (! empty($version_identifier)) {
+                                $version_class .= ' ee-sidebar__version--dev';
+                            }
+                        ?>
 
 						<a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>" title="ExpressionEngine">
 							<svg class="ee-logomark" width="50px" height="35px" viewBox="0 0 50 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

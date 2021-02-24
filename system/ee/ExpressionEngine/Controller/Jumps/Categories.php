@@ -17,103 +17,101 @@ use CP_Controller;
  */
 class Categories extends Jumps
 {
+    public function __construct()
+    {
+        parent::__construct();
+        if (!ee('Permission')->hasAny(['create_categories', 'edit_categories'])) {
+            $this->sendResponse([]);
+        }
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
-		if (!ee('Permission')->hasAny(['create_categories', 'edit_categories']))
-		{
-			$this->sendResponse([]);
-		}
-	}
+    /**
+     * Publish Jump Data
+     */
+    public function index()
+    {
+        // Should never be here without another segment.
+        show_error(lang('unauthorized_access'), 403);
+    }
 
-	/**
-	 * Publish Jump Data
-	 */
-	public function index()
-	{
-		// Should never be here without another segment.
-		show_error(lang('unauthorized_access'), 403);
-	}
+    public function create()
+    {
+        $categoryGroups = $this->loadCategoryGroups(ee()->input->post('searchString'));
 
-	public function create()
-	{
-		$categoryGroups = $this->loadCategoryGroups(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($categoryGroups as $categoryGroup) {
+            $id = $categoryGroup->getId();
+            $title = $categoryGroup->group_name;
 
-		foreach ($categoryGroups as $categoryGroup) {
-			$id = $categoryGroup->getId();
-			$title = $categoryGroup->group_name;
+            $response['createCategoryIn' . $categoryGroup->getId()] = array(
+                'icon' => 'fa-plus',
+                'command' => $categoryGroup->group_name,
+                'command_title' => $categoryGroup->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('categories/create/' . $categoryGroup->getId())->compile()
+            );
+        }
 
-			$response['createCategoryIn' . $categoryGroup->getId()] = array(
-				'icon' => 'fa-plus',
-				'command' => $categoryGroup->group_name,
-				'command_title' => $categoryGroup->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('categories/create/' . $categoryGroup->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    public function edit()
+    {
+        $categories = $this->loadCategories(ee()->input->post('searchString'));
 
-	public function edit()
-	{
-		$categories = $this->loadCategories(ee()->input->post('searchString'));
+        $response = array();
 
-		$response = array();
+        foreach ($categories as $category) {
+            $id = $category->getId();
+            $title = $category->cat_name;
 
-		foreach ($categories as $category) {
-			$id = $category->getId();
-			$title = $category->cat_name;
+            $response['editCategory' . $category->getId()] = array(
+                'icon' => 'fa-pencil-alt',
+                'command' => $category->cat_name,
+                'command_title' => $category->cat_name,
+                'command_context' => $category->getCategoryGroup()->group_name,
+                'dynamic' => false,
+                'addon' => false,
+                'target' => ee('CP/URL')->make('categories/edit/' . $category->getCategoryGroup()->getId() . '/' . $category->getId())->compile()
+            );
+        }
 
-			$response['editCategory' . $category->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $category->cat_name,
-				'command_title' => $category->cat_name,
-				'command_context' => $category->getCategoryGroup()->group_name,
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('categories/edit/' . $category->getCategoryGroup()->getId() . '/' . $category->getId())->compile()
-			);
-		}
+        $this->sendResponse($response);
+    }
 
-		$this->sendResponse($response);
-	}
+    private function loadCategoryGroups($searchString = false)
+    {
+        $categoryGroups = ee('Model')->get('CategoryGroup');
 
-	private function loadCategoryGroups($searchString = false)
-	{
-		$categoryGroups = ee('Model')->get('CategoryGroup');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $categoryGroups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$categoryGroups->filter('group_name', 'LIKE', '%' . $keyword . '%');
-			}
-		}
+        return $categoryGroups->limit(11)->all();
+    }
 
-		return $categoryGroups->limit(11)->all();
-	}
+    private function loadCategories($searchString = false)
+    {
+        $categories = ee('Model')->get('Category')
+            ->with('CategoryGroup')
+            ->fields('cat_id', 'cat_name', 'CategoryGroup.group_name');
 
-	private function loadCategories($searchString = false)
-	{
-		$categories = ee('Model')->get('Category')
-				->with('CategoryGroup')
-				->fields('cat_id', 'cat_name', 'CategoryGroup.group_name');
+        if (!empty($searchString)) {
+            // Break the search string into individual keywords so we can partially match them.
+            $keywords = explode(' ', $searchString);
 
-		if (!empty($searchString)) {
-			// Break the search string into individual keywords so we can partially match them.
-			$keywords = explode(' ', $searchString);
+            foreach ($keywords as $keyword) {
+                $categories->filter('cat_name', 'LIKE', '%' . $keyword . '%');
+            }
+        }
 
-			foreach ($keywords as $keyword) {
-				$categories->filter('cat_name', 'LIKE', '%' . $keyword . '%');
-			}
-		}
-
-		return $categories->order('cat_name', 'ASC')->limit(11)->all();
-	}
+        return $categories->order('cat_name', 'ASC')->limit(11)->all();
+    }
 }

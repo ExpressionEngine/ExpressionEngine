@@ -31,7 +31,7 @@
 		</fieldset>
 		<?php endif;?>
 		<fieldset class="last">
-			<?=form_submit('submit', $btn_label, 'class="'.$btn_class.'" data-work-text="authenticating..." tabindex="4" '.$btn_disabled)?>
+			<?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="authenticating..." tabindex="4" ' . $btn_disabled)?>
 		</fieldset>
 	<?=form_close()?>
 </div>

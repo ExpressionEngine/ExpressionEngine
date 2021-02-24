@@ -13,7 +13,7 @@
   		</div>
   	</div>
   	<form action="<?=$action?>" method="post">
-  		<?php if($show_advanced): ?>
+  		<?php if ($show_advanced): ?>
   			<fieldset class="form-ctrls">
   				<label class="checkbox-label">
             <input type="checkbox" name="database_backup" value="1"> <div class="checkbox-label__text"><?=lang('update_should_get_database_backup')?></div>

@@ -15,26 +15,25 @@ use ExpressionEngine\Service\Model\Column\SerializedType;
 /**
  * Model Service Pipe-Delimited Typed Column
  */
-class PipeDelimited extends SerializedType {
+class PipeDelimited extends SerializedType
+{
+    protected $data = array();
 
-	protected $data = array();
+    /**
+     * Called when the column is fetched from db
+     */
+    public static function unserialize($db_data)
+    {
+        return array_filter(explode('|', $db_data));
+    }
 
-	/**
-	 * Called when the column is fetched from db
-	 */
-	public static function unserialize($db_data)
-	{
-		return array_filter(explode('|', $db_data));
-	}
-
-	/**
-	 * Called before the column is written to the db
-	 */
-	public static function serialize($data)
-	{
-		return implode('|', $data);
-	}
-
+    /**
+     * Called before the column is written to the db
+     */
+    public static function serialize($data)
+    {
+        return implode('|', $data);
+    }
 }
 
 // EOF

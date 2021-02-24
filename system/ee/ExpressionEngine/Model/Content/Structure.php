@@ -13,8 +13,8 @@ namespace ExpressionEngine\Model\Content;
 /**
  * Content Structure interface
  */
-interface Structure {
-
+interface Structure
+{
 }
 
 // EOF

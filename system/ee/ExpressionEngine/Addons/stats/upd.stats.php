@@ -15,49 +15,43 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Stats_upd extends Installer
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	function __construct()
-	{
-		parent::__construct();
-	}
+    /**
+     * Module Updater
+     *
+     * @access	public
+     * @return	bool
+     */
+    public function update($current = '')
+    {
+        if (version_compare($current, $this->version, '==')) {
+            return false;
+        }
 
-	/**
-	 * Module Updater
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function update($current='')
-	{
-		if (version_compare($current, $this->version, '=='))
-		{
-			return FALSE;
-		}
+        if (version_compare($current, '2.0', '<')) {
+            ee()->load->dbforge();
+            ee()->dbforge->drop_column('stats', 'weblog_id');
+        }
 
-		if (version_compare($current, '2.0', '<'))
-		{
-			ee()->load->dbforge();
-			ee()->dbforge->drop_column('stats', 'weblog_id');
-		}
+        // Add stat sync action
+        if (version_compare($current, '2.1', '<')) {
 
-		// Add stat sync action
-		if (version_compare($current, '2.1', '<'))
-		{
+            // Create syncing action
+            $data = [
+                'class' => 'Stats',
+                'method' => 'sync_stats',
+                'csrf_exempt' => 1,
+            ];
 
-			// Create syncing action
-			$data = [
-				'class'			=> 'Stats',
-				'method'		=> 'sync_stats',
-				'csrf_exempt'	=> 1,
-			];
+            ee()->db->insert('actions', $data);
+        }
 
-			ee()->db->insert('actions', $data);
-
-		}
-
-		return TRUE;
-	}
-
+        return true;
+    }
 }
 // END CLASS
 

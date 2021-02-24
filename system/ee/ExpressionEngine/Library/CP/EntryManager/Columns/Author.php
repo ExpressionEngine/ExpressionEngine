@@ -17,25 +17,28 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class Author extends Column
 {
-	public function getEntryManagerColumnModels() {
-		return ['Author'];
-	}
+    public function getEntryManagerColumnModels()
+    {
+        return ['Author'];
+    }
 
-	public function getEntryManagerColumnFields() {
-		return ['author_id', 'Author.screen_name', 'Author.username'];
-	}
+    public function getEntryManagerColumnFields()
+    {
+        return ['author_id', 'Author.screen_name', 'Author.username'];
+    }
 
-	public function getEntryManagerColumnSortField() {
-		return 'author_id';
-	}
+    public function getEntryManagerColumnSortField()
+    {
+        return 'author_id';
+    }
 
-	public function getTableColumnLabel()
-	{
-		return 'author';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'author';
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		return ee('Format')->make('Text', $entry->getAuthorName())->convertToEntities();
-	}
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return ee('Format')->make('Text', $entry->getAuthorName())->convertToEntities();
+    }
 }

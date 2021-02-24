@@ -15,16 +15,15 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Natural Number Validation Rule
  */
-class IsNatural extends ValidationRule {
+class IsNatural extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match('/^[0-9]+$/', $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match('/^[0-9]+$/', $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'is_natural';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'is_natural';
+    }
 }

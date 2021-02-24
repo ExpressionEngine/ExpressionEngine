@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Cli;
  */
 class CommandRunUpdateHook extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -57,7 +56,6 @@ class CommandRunUpdateHook extends Cli
      * @var [type]
      */
     private $upgradeConfigFile;
-
 
     /**
      * Run the command

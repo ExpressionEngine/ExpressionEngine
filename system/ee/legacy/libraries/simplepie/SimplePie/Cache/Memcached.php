@@ -81,13 +81,14 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * @param string $name     Unique ID for the cache
      * @param string $type     Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
      */
-    public function __construct($location, $name, $type) {
+    public function __construct($location, $name, $type)
+    {
         $this->options = array(
-            'host'   => '127.0.0.1',
-            'port'   => 11211,
+            'host' => '127.0.0.1',
+            'port' => 11211,
             'extras' => array(
                 'timeout' => 3600, // one hour
-                'prefix'  => 'simplepie_',
+                'prefix' => 'simplepie_',
             ),
         );
         $this->options = SimplePie_Misc::array_merge_recursive($this->options, SimplePie_Cache::parse_URL($location));
@@ -95,7 +96,7 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
         $this->name = $this->options['extras']['prefix'] . md5("$name:$type");
 
         $this->cache = new Memcached();
-        $this->cache->addServer($this->options['host'], (int)$this->options['port']);
+        $this->cache->addServer($this->options['host'], (int) $this->options['port']);
     }
 
     /**
@@ -103,7 +104,8 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * @param array|SimplePie $data Data to store in the cache. If passed a SimplePie object, only cache the $data property
      * @return bool Successfulness
      */
-    public function save($data) {
+    public function save($data)
+    {
         if ($data instanceof SimplePie) {
             $data = $data->data;
         }
@@ -115,12 +117,14 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * Retrieve the data saved to the cache
      * @return array Data for SimplePie::$data
      */
-    public function load() {
+    public function load()
+    {
         $data = $this->cache->get($this->name);
 
         if ($data !== false) {
             return unserialize($data);
         }
+
         return false;
     }
 
@@ -128,8 +132,10 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * Retrieve the last modified time for the cache
      * @return int Timestamp
      */
-    public function mtime() {
+    public function mtime()
+    {
         $data = $this->cache->get($this->name . '_mtime');
+
         return (int) $data;
     }
 
@@ -137,8 +143,10 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * Set the last modified time to the current time
      * @return bool Success status
      */
-    public function touch() {
+    public function touch()
+    {
         $data = $this->cache->get($this->name);
+
         return $this->setData($data);
     }
 
@@ -146,7 +154,8 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * Remove the cache
      * @return bool Success status
      */
-    public function unlink() {
+    public function unlink()
+    {
         return $this->cache->delete($this->name, 0);
     }
 
@@ -154,11 +163,12 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
      * Set the last modified time and data to Memcached
      * @return bool Success status
      */
-    private function setData($data) {
-
+    private function setData($data)
+    {
         if ($data !== false) {
-            $this->cache->set($this->name . '_mtime', time(), (int)$this->options['extras']['timeout']);
-            return $this->cache->set($this->name, $data, (int)$this->options['extras']['timeout']);
+            $this->cache->set($this->name . '_mtime', time(), (int) $this->options['extras']['timeout']);
+
+            return $this->cache->set($this->name, $data, (int) $this->options['extras']['timeout']);
         }
 
         return false;

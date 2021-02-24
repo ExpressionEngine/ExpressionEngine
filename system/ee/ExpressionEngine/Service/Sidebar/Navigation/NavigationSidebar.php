@@ -19,7 +19,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class NavigationSidebar extends AbstractSidebar
 {
-
     /**
      * Populate the navigation
      *
@@ -63,8 +62,7 @@ class NavigationSidebar extends AbstractSidebar
             }
         }
 
-        if (ee('Permission')->hasAny('access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles'))
-        {
+        if (ee('Permission')->hasAny('access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles')) {
             $section = $this->addSection(lang('members'));
             if (ee('Permission')->can('access_members')) {
                 $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
@@ -80,7 +78,6 @@ class NavigationSidebar extends AbstractSidebar
         $this->addCustomSection();
 
         if (ee('Permission')->hasAny('can_access_design', 'can_access_addons', 'can_admin_sites', 'can_access_utilities', 'can_admin_channels', 'can_access_logs', 'can_access_sys_prefs')) {
-
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
             if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites')) {
@@ -114,20 +111,19 @@ class NavigationSidebar extends AbstractSidebar
 
             $tools = [];
 
-
             if (ee('Permission')->can('access_utilities')) {
-
                 $utility_options = array(
                     'can_access_comm' => ee('CP/URL')->make('utilities'),
                     'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
                     'can_access_import' => ee('CP/URL')->make('utilities/member-import'),
                     'can_access_sql_manager' => ee('CP/URL')->make('utilities/sql'),
                     'can_access_data' => ee('CP/URL')->make('utilities/cache')
-                    );
+                );
 
                 foreach ($utility_options as $allow => $link) {
                     if (ee('Permission')->hasAll($allow)) {
                         $tools['utilities'] = $link;
+
                         break;
                     }
                 }
@@ -166,9 +162,7 @@ class NavigationSidebar extends AbstractSidebar
                 $section->addItem(lang('nav_settings'), ee('CP/URL', 'settings'))->withIcon('cog');
             }
         }
-
     }
-
 
     /**
      * Renders the sidebar
@@ -202,10 +196,11 @@ class NavigationSidebar extends AbstractSidebar
      *   URL for the text.
      * @return NavigationItem A new NavigationItem object.
      */
-    public function addItem($text, $url = NULL)
+    public function addItem($text, $url = null)
     {
         $item = new NavigationItem($text, $url);
         $this->items[] = $item;
+
         return $item;
     }
 
@@ -219,6 +214,7 @@ class NavigationSidebar extends AbstractSidebar
     {
         $item = new NavigationList($name);
         $this->items[] = $item;
+
         return $item;
     }
 
@@ -232,6 +228,7 @@ class NavigationSidebar extends AbstractSidebar
     {
         $item = new NavigationSection($name, $class);
         $this->items[] = $item;
+
         return $item;
     }
 
@@ -244,9 +241,9 @@ class NavigationSidebar extends AbstractSidebar
     {
         $item = new NavigationCustomSection();
         $this->items[] = $item;
+
         return $item;
     }
-
 }
 
 // EOF

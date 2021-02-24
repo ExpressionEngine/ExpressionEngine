@@ -11,367 +11,324 @@
 /**
  * Channel Categories API
  */
-class Api_channel_categories extends Api {
+class Api_channel_categories extends Api
+{
+    /**
+     * Just a note, these really should be protected/private and set by the API itself
+     * However, we're abusing them in other places, so they are set to public for now.
+     * Third-party devs, don't rely on these being public, m'kay?
+     */
+    public $assign_cat_parent = true;
+    public $categories = array();
+    public $cat_parents = array();
+    public $cat_array = array();
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-	/**
-	 * Just a note, these really should be protected/private and set by the API itself
-	 * However, we're abusing them in other places, so they are set to public for now.
-	 * Third-party devs, don't rely on these being public, m'kay?
-	 */
-	public $assign_cat_parent	= TRUE;
-	public $categories			= array();
-	public $cat_parents			= array();
-	public $cat_array			= array();
+        ee()->load->model('channel_model');
+        $this->assign_cat_parent = (ee()->config->item('auto_assign_cat_parents') == 'n') ? false : true;
+    }
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		parent::__construct();
+    /**
+     * Category tree
+     *
+     * This function (and the next) create a higherarchy tree
+     * of categories.  There are two versions of the tree. The
+     * "text" version is a list of links allowing the categories
+     * to be edited.  The "form" version is displayed in a
+     * multi-select form on the new entry page.
+     *
+     * @param 	mixed		int or array of category group ids
+     * @param
+     * @param 	string		c for custom, a alphabetical
+     *
+     * @return 	mixed		FALSE if no results or cat array of results.
+     */
+    public function category_tree($group_id, $selected = '', $order = 'c')
+    {
+        // reset $this->categories
+        $this->initialize(
+            array(
+                'categories' => array(),
+                'cat_parents' => array(),
+                'cat_array' => array(),
+            )
+        );
 
-		ee()->load->model('channel_model');
-		$this->assign_cat_parent = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
-	}
+        // Fetch the category group ID number
+        // Drop it into an array for where_in()
+        $group_ids = $group_id;
 
-	/**
-	 * Category tree
-	 *
-	 * This function (and the next) create a higherarchy tree
-	 * of categories.  There are two versions of the tree. The
-	 * "text" version is a list of links allowing the categories
-	 * to be edited.  The "form" version is displayed in a
-	 * multi-select form on the new entry page.
-	 *
-	 * @param 	mixed		int or array of category group ids
-	 * @param
-	 * @param 	string		c for custom, a alphabetical
-	 *
-	 * @return 	mixed		FALSE if no results or cat array of results.
-	 */
-	public function category_tree($group_id, $selected = '', $order = 'c')
-	{
-		// reset $this->categories
-		$this->initialize(array(
-				'categories'	=> array(),
-				'cat_parents'	=> array(),
-				'cat_array'		=> array(),
-			)
-		);
+        if (! is_array($group_id)) {
+            $group_ids = explode('|', $group_id);
+        }
 
-		// Fetch the category group ID number
-		// Drop it into an array for where_in()
-		$group_ids = $group_id;
+        $catarray = array();
 
-		if ( ! is_array($group_id))
-		{
-			$group_ids = explode('|', $group_id);
-		}
+        if (is_array($selected)) {
+            foreach ($selected as $key => $val) {
+                $catarray[$val] = $val;
+            }
+        } else {
+            $catarray[$selected] = $selected;
+        }
 
-		$catarray = array();
+        $order = ($order == 'a') ? "cat_name" : "cat_order";
 
-		if (is_array($selected))
-		{
-			foreach ($selected as $key => $val)
-			{
-				$catarray[$val] = $val;
-			}
-		}
-		else
-		{
-			$catarray[$selected] = $selected;
-		}
+        $query = ee()->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
+            ->from('category_groups g, categories c')
+            ->where('g.group_id', 'c.group_id', false)
+            ->where_in('g.group_id', $group_ids)
+            ->order_by('group_id, parent_id, ' . $order, 'asc')
+            ->get();
 
-		$order = ($order == 'a') ? "cat_name" : "cat_order";
+        if ($query->num_rows() === 0) {
+            return false;
+        }
 
-		$query = ee()->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
-						->from('category_groups g, categories c')
-						->where('g.group_id', 'c.group_id', FALSE)
-						->where_in('g.group_id', $group_ids)
-						->order_by('group_id, parent_id, '.$order, 'asc')
-						->get();
+        // Assign the query result to a multi-dimensional array
 
-		if ($query->num_rows() === 0)
-		{
-			return FALSE;
-		}
+        foreach ($query->result_array() as $row) {
+            $cat_array[$row['cat_id']] = array(
+                $row['parent_id'],
+                $row['cat_name'],
+                $row['group_id'],
+                $row['group_name'],
+                $row['cat_image'],
+                $row['cat_description'],
+                $row['cat_url_title']
+            );
+        }
 
-		// Assign the query result to a multi-dimensional array
+        // Build our output...
 
-		foreach($query->result_array() as $row)
-		{
-			$cat_array[$row['cat_id']]	= array(
-				$row['parent_id'],
-				$row['cat_name'],
-				$row['group_id'],
-				$row['group_name'],
-				$row['cat_image'],
-				$row['cat_description'],
-				$row['cat_url_title']
-			);
-		}
+        foreach ($cat_array as $key => $val) {
+            if (0 == $val[0]) {
+                $sel = (isset($catarray[$key])) ? true : false;
+                $depth = 1;
 
-		// Build our output...
+                $this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, false, $val[4], $val[5], $val[6]);
+                //$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
+                $this->_category_subtree($key, $cat_array, $depth, $selected);
+            }
+        }
 
-		foreach($cat_array as $key => $val)
-		{
-			if (0 == $val[0])
-			{
-				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
-				$depth = 1;
+        return $this->categories;
+    }
 
-				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE, $val[4], $val[5], $val[6]);
-				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
-				$this->_category_subtree($key, $cat_array, $depth, $selected);
-			}
-		}
+    /**
+     * Category sub-tree
+     *
+     * This function works with the preceeding one to show a
+     * hierarchical display of categories
+     *
+     * @param	mixed
+     * @param 	array
+     * @param 	int
+     * @param
+     */
+    protected function _category_subtree($cat_id, $cat_array, $depth, $selected = array())
+    {
+        // Just as in the function above, we'll figure out which items are selected.
 
-		return $this->categories;
-	}
+        $catarray = array();
 
-	/**
-	 * Category sub-tree
-	 *
-	 * This function works with the preceeding one to show a
-	 * hierarchical display of categories
-	 *
-	 * @param	mixed
-	 * @param 	array
-	 * @param 	int
-	 * @param
-	 */
-	protected function _category_subtree($cat_id, $cat_array, $depth, $selected = array())
-	{
-		// Just as in the function above, we'll figure out which items are selected.
+        if (is_array($selected)) {
+            foreach ($selected as $key => $val) {
+                $catarray[$val] = $val;
+            }
+        }
 
-		$catarray = array();
+        $depth++;
 
-		if (is_array($selected))
-		{
-			foreach ($selected as $key => $val)
-			{
-				$catarray[$val] = $val;
-			}
-		}
+        foreach ($cat_array as $key => $val) {
+            if ($cat_id == $val['0']) {
+                $sel = (isset($catarray[$key])) ? true : false;
+                $this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0], $val[4], $val[5], $val[6]);
+                //$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
 
-		$depth++;
+                $this->_category_subtree($key, $cat_array, $depth, $selected);
+            }
+        }
+    }
 
-		foreach ($cat_array as $key => $val)
-		{
-			if ($cat_id == $val['0'])
-			{
-				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
-				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0], $val[4], $val[5], $val[6]);
-				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
+    /**
+     * Category Form Tree
+     *
+     * @param 	string
+     * @param	mixed
+     * @param	boolean
+     */
+    public function category_form_tree($nested = 'y', $categories = false, $sites = false)
+    {
+        $order = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
 
-				$this->_category_subtree($key, $cat_array, $depth, $selected);
-			}
-		}
-	}
+        ee()->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
+        ee()->db->from('categories');
 
-	/**
-	 * Category Form Tree
-	 *
-	 * @param 	string
-	 * @param	mixed
-	 * @param	boolean
-	 */
-	public function category_form_tree($nested = 'y', $categories = FALSE, $sites = FALSE)
-	{
-		$order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
+        if ($sites == false) {
+            ee()->db->where('site_id', ee()->config->item('site_id'));
+        } elseif ($sites != 'all') {
+            if (is_array($sites)) {
+                $sites = implode('|', $sites);
+            }
 
-		ee()->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
-		ee()->db->from('categories');
+            ee()->functions->ar_andor_string($sites, 'site_id');
+        }
 
-		if ($sites == FALSE)
-		{
-			ee()->db->where('site_id', ee()->config->item('site_id'));
-		}
-		elseif ($sites != 'all')
-		{
-			if (is_array($sites))
-			{
-				$sites = implode('|', $sites);
-			}
+        if ($categories !== false) {
+            if (is_array($categories)) {
+                $categories = implode('|', $categories);
+            }
 
-			ee()->functions->ar_andor_string($sites, 'site_id');
-		}
+            ee()->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
+        }
 
+        ee()->db->order_by($order);
 
-		if ($categories !== FALSE)
-		{
-			if (is_array($categories))
-			{
-				$categories = implode('|', $categories);
-			}
+        $query = ee()->db->get();
 
-			ee()->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
-		}
+        // Load the text helper
+        ee()->load->helper('text');
 
-		ee()->db->order_by($order);
+        if ($query->num_rows() > 0) {
+            $categories = array();
 
-		$query = ee()->db->get();
+            foreach ($query->result_array() as $row) {
+                $categories[] = array($row['group_id'], $row['cat_id'], entities_to_ascii($row['cat_name']), $row['parent_id']);
+            }
 
-		// Load the text helper
-		ee()->load->helper('text');
+            if ($nested == 'y') {
+                foreach ($categories as $key => $val) {
+                    if (0 == $val['3']) {
+                        $this->cat_array[] = array($val['0'], $val['1'], $val['2']);
+                        $this->category_form_subtree($val['1'], $categories, $depth = 1);
+                    }
+                }
+            } else {
+                $this->cat_array = $categories;
+            }
+        }
 
-		if ($query->num_rows() > 0)
-		{
-			$categories = array();
+        return $this->cat_array;
+    }
 
-			foreach ($query->result_array() as $row)
-			{
-				$categories[] = array($row['group_id'], $row['cat_id'], entities_to_ascii($row['cat_name']), $row['parent_id']);
-			}
+    /**
+     * Category Edit Sub-tree
+     *
+     * @param 	string	category id
+     * @param	array 	array of categories
+     * @param 	int
+     * @return 	void
+     */
+    public function category_form_subtree($cat_id, $categories, $depth)
+    {
+        $spcr = '!-!';
 
-			if ($nested == 'y')
-			{
-				foreach($categories as $key => $val)
-				{
-					if (0 == $val['3'])
-					{
-						$this->cat_array[] = array($val['0'], $val['1'], $val['2']);
-						$this->category_form_subtree($val['1'], $categories, $depth=1);
-					}
-				}
-			}
-			else
-			{
-				$this->cat_array = $categories;
-			}
-		}
+        $indent = $spcr . $spcr . $spcr . $spcr;
 
-		return $this->cat_array;
-	}
+        if ($depth == 1) {
+            $depth = 4;
+        } else {
+            $indent = str_repeat($spcr, $depth) . $indent;
 
-	/**
-	 * Category Edit Sub-tree
-	 *
-	 * @param 	string	category id
-	 * @param	array 	array of categories
-	 * @param 	int
-	 * @return 	void
-	 */
-	public function category_form_subtree($cat_id, $categories, $depth)
-	{
-		$spcr = '!-!';
+            $depth = $depth + 4;
+        }
 
-		$indent = $spcr.$spcr.$spcr.$spcr;
+        $sel = '';
 
-		if ($depth == 1)
-		{
-			$depth = 4;
-		}
-		else
-		{
-			$indent = str_repeat($spcr, $depth).$indent;
+        foreach ($categories as $key => $val) {
+            if ($cat_id == $val['3']) {
+                $pre = ($depth > 2) ? $spcr : '';
 
-			$depth = $depth + 4;
-		}
+                $this->cat_array[] = array($val['0'], $val['1'], $pre . $indent . $spcr . $val['2']);
 
-		$sel = '';
+                $this->category_form_subtree($val['1'], $categories, $depth);
+            }
+        }
+    }
 
-		foreach ($categories as $key => $val)
-		{
-			if ($cat_id == $val['3'])
-			{
-				$pre = ($depth > 2) ? $spcr : '';
+    /**
+     * Fetch Parent Category ID
+     *
+     * @param 	array 	category array
+     */
+    public function fetch_category_parents($cat_array)
+    {
+        if (count($cat_array) == 0) {
+            return;
+        }
 
-				$this->cat_array[] = array($val['0'], $val['1'], $pre.$indent.$spcr.$val['2']);
+        $sql = "SELECT parent_id FROM exp_categories WHERE site_id = '" . ee()->db->escape_str(ee()->config->item('site_id')) . "' AND (";
 
-				$this->category_form_subtree($val['1'], $categories, $depth);
-			}
-		}
-	}
+        foreach ($cat_array as $val) {
+            $val = (int) $val;
+            $sql .= " cat_id = '$val' OR ";
+        }
 
-	/**
-	 * Fetch Parent Category ID
-	 *
-	 * @param 	array 	category array
-	 */
-	public function fetch_category_parents($cat_array)
-	{
-		if (count($cat_array) == 0)
-		{
-			return;
-		}
+        $sql = substr($sql, 0, -3) . ")";
 
-		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND (";
+        $query = ee()->db->query($sql);
 
-		foreach ($cat_array as $val)
-		{
-			$val = (int) $val;
-			$sql .= " cat_id = '$val' OR ";
-		}
+        if ($query->num_rows() == 0) {
+            return;
+        }
 
-		$sql = substr($sql, 0, -3).")";
+        $temp = array();
 
-		$query = ee()->db->query($sql);
+        foreach ($query->result_array() as $row) {
+            if ($row['parent_id'] != 0) {
+                $this->cat_parents[] = $row['parent_id'];
 
-		if ($query->num_rows() == 0)
-		{
-			return;
-		}
+                $temp[] = $row['parent_id'];
+            }
+        }
 
-		$temp = array();
+        $this->fetch_category_parents($temp);
+    }
 
-		foreach ($query->result_array() as $row)
-		{
-			if ($row['parent_id'] != 0)
-			{
-				$this->cat_parents[] = $row['parent_id'];
+    /**
+     * Fetch Allowed Category Groups
+     *
+     * @param 	string		String of cat groups.  either one, or a piped list
+     * @return 	mixed
+     */
+    public function fetch_allowed_category_groups($cat_group)
+    {
+        if (ee('Permission')->can('admin_channels') or ee('Permission')->can('edit_categories')) {
+            if (! is_array($cat_group)) {
+                $cat_group = explode('|', $cat_group);
+            }
 
-				$temp[] = $row['parent_id'];
-			}
-		}
+            ee()->load->model('category_model');
+            $catg_query = ee()->category_model->get_category_group_name($cat_group);
 
-		$this->fetch_category_parents($temp);
-	}
+            $link_info = array();
 
-	/**
-	 * Fetch Allowed Category Groups
-	 *
-	 * @param 	string		String of cat groups.  either one, or a piped list
-	 * @return 	mixed
-	 */
-	public function fetch_allowed_category_groups($cat_group)
-	{
-		if (ee('Permission')->can('admin_channels') OR ee('Permission')->can('edit_categories'))
-		{
-			if (! is_array($cat_group))
-			{
-				$cat_group = explode('|', $cat_group);
-			}
+            foreach ($catg_query->result_array() as $catg_row) {
+                $link_info[] = array('group_id' => $catg_row['group_id'], 'group_name' => $catg_row['group_name']);
+            }
 
-			ee()->load->model('category_model');
-			$catg_query = ee()->category_model->get_category_group_name($cat_group);
+            return $link_info;
+        } else {
+            return false;
+        }
+    }
 
-			$link_info = array();
-
-			foreach($catg_query->result_array() as $catg_row)
-			{
-				$link_info[] = array('group_id' => $catg_row['group_id'], 'group_name' => $catg_row['group_name']);
-			}
-
-			return $link_info;
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-
-	/**
-	 * Get Categories
-	 *
-	 * @return 	array
-	 */
-	public function get_categories()
-	{
-		return $this->categories;
-	}
-
+    /**
+     * Get Categories
+     *
+     * @return 	array
+     */
+    public function get_categories()
+    {
+        return $this->categories;
+    }
 }
 
 // END CLASS

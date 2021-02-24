@@ -15,7 +15,6 @@ use ExpressionEngine\Model\Template\Template;
 
 class TemplateAdvisor
 {
-
     // ---TAGS--- //
 
     /**
@@ -94,7 +93,6 @@ class TemplateAdvisor
                 $tags[$tag]['templates'][$tmpl_info['path']] = $tmpl_info;
             }
         }
-
 
         ksort($tags);
 

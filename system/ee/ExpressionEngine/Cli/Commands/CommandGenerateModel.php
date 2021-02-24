@@ -10,7 +10,6 @@ use ExpressionEngine\Cli\Generator\Services\ModelGeneratorService;
  */
 class CommandGenerateModel extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -46,7 +45,7 @@ class CommandGenerateModel extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'    => 'Folder for third-party add-on you want to add model to',
+        'addon,a:' => 'Folder for third-party add-on you want to add model to',
     ];
 
     /**
@@ -74,7 +73,6 @@ class CommandGenerateModel extends Cli
      */
     public function handle()
     {
-
         $this->info('Let\'s build your model!');
 
         $this->data['name'] = $this->getName();
@@ -85,7 +83,6 @@ class CommandGenerateModel extends Cli
         $this->build();
 
         $this->info('Your model has been created successfully!');
-
     }
 
     protected function build()
@@ -104,5 +101,4 @@ class CommandGenerateModel extends Cli
     {
         return $this->option('--addon') ? $this->option('--addon') : $this->ask("What addon do you want to add this to?");
     }
-
 }

@@ -13,9 +13,8 @@ namespace ExpressionEngine\Library\Advisor;
 
 class Advisor
 {
-
-    public function postUpdateChecks() {
-
+    public function postUpdateChecks()
+    {
         $messages = [];
 
         ee()->lang->loadfile('utilities');
@@ -34,6 +33,5 @@ class Advisor
 
         return $messages;
     }
-
 }
 // EOF

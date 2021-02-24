@@ -16,35 +16,34 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Writable Validation Rule
  */
-class Writable extends ValidationRule {
+class Writable extends ValidationRule
+{
+    protected $fs;
+    protected $all_values = array();
 
-	protected $fs;
-	protected $all_values = array();
+    public function validate($key, $value)
+    {
+        return $this->getFilesystem()->isWritable(parse_config_variables($value, $this->all_values));
+    }
 
-	public function validate($key, $value)
-	{
-		return $this->getFilesystem()->isWritable(parse_config_variables($value, $this->all_values));
-	}
+    public function getLanguageKey()
+    {
+        return 'invalid_path';
+    }
 
-	public function getLanguageKey()
-	{
-		return 'invalid_path';
-	}
+    protected function getFilesystem()
+    {
+        if (! isset($this->fs)) {
+            $this->fs = new Filesystem();
+        }
 
-	protected function getFilesystem()
-	{
-		if ( ! isset($this->fs))
-		{
-			$this->fs = new Filesystem();
-		}
+        return $this->fs;
+    }
 
-		return $this->fs;
-	}
-
-	public function setAllValues(array $values)
-	{
-		$this->all_values = $values;
-	}
+    public function setAllValues(array $values)
+    {
+        $this->all_values = $values;
+    }
 }
 
 // EOF

@@ -13,71 +13,69 @@ namespace ExpressionEngine\Updater\Version_3_0_6;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        ee()->load->dbforge();
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		ee()->load->dbforge();
+        $steps = new \ProgressIterator(
+            array(
+                'addStickyChannelPreference',
+                '_comment_formatting'
+            )
+        );
 
-		$steps = new \ProgressIterator(
-			array(
-				'addStickyChannelPreference',
-				'_comment_formatting'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Increase the column for storing comment formatting
+     */
+    private function _comment_formatting()
+    {
+        ee()->smartforge->modify_column(
+            'channels',
+            array(
+                'comment_text_formatting' => array(
+                    'type' => 'char',
+                    'constraint' => 40,
+                    'null' => false,
+                    'default' => 'xhtml',
+                ),
+            )
+        );
+    }
 
-	/**
-	 * Increase the column for storing comment formatting
-	 */
-	private function _comment_formatting()
-	{
-		ee()->smartforge->modify_column(
-			'channels',
-			array(
-				'comment_text_formatting' => array(
-					'type'			=> 'char',
-					'constraint'	=> 40,
-					'null'			=> FALSE,
-					'default'		=> 'xhtml',
-				),
-			)
-		);
+    private function addStickyChannelPreference()
+    {
+        if (!ee()->db->field_exists('sticky_enabled', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'sticky_enabled' => array(
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
 
-	}
-
-	private function addStickyChannelPreference()
-	{
-		if (!ee()->db->field_exists('sticky_enabled', 'channels')) {
-			ee()->smartforge->add_column(
-				'channels',
-				array(
-					'sticky_enabled' => array(
-						'type'				=> 'char',
-						'constraint'		=> 1,
-						'null'				=> FALSE,
-						'default'			=> 'n'
-					)
-				)
-			);
-
-			ee()->db->update('channels', ['sticky_enabled' => 'y']);
-		}
-	}
+            ee()->db->update('channels', ['sticky_enabled' => 'y']);
+        }
+    }
 }
 /* END CLASS */
 

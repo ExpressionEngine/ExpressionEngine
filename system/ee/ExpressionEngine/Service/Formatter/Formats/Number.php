@@ -16,279 +16,264 @@ use NumberFormatter;
 /**
  * Formatter\Number
  */
-class Number extends Formatter {
+class Number extends Formatter
+{
+    /**
+     * Format the memory to a sane byte format
+     *
+     * @param  bool $abbr Use the abbreviated form of the byte format
+     * @param  bool $include_markup Output with <abbr> HTML. Only affects abbreviated forms.
+     * @return self This returns a reference to itself
+     **/
+    public function bytes($abbr = true, $include_markup = true)
+    {
+        $memory = $this->content;
+        $precision = 0;
 
-	/**
-	 * Format the memory to a sane byte format
-	 *
-	 * @param  bool $abbr Use the abbreviated form of the byte format
-	 * @param  bool $include_markup Output with <abbr> HTML. Only affects abbreviated forms.
-	 * @return self This returns a reference to itself
-	 **/
-	public function bytes($abbr = TRUE, $include_markup = TRUE)
-	{
-		$memory = $this->content;
-		$precision = 0;
+        if ($abbr && $include_markup) {
+            $lang_suffix = '_abbr_html';
+        } elseif ($abbr) {
+            $lang_suffix = '_abbr';
+        } else {
+            $lang_suffix = '';
+        }
 
-		if ($abbr && $include_markup)
-		{
-			$lang_suffix = '_abbr_html';
-		}
-		elseif ($abbr)
-		{
-			$lang_suffix = '_abbr';
-		}
-		else
-		{
-			$lang_suffix = '';
-		}
+        if ($memory >= 1000000000) {
+            $precision = 2;
+            $memory = round($memory / 1073741824, $precision);
+            $unit = lang('formatter_gigabytes' . $lang_suffix);
+        } elseif ($memory >= 1000000) {
+            $precision = 1;
+            $memory = round($memory / 1048576, $precision);
+            $unit = lang('formatter_megabytes' . $lang_suffix);
+        } elseif ($memory >= 1000) {
+            $memory = round($memory / 1024);
+            $unit = lang('formatter_kilobytes' . $lang_suffix);
+        } else {
+            $unit = lang('formatter_bytes' . $lang_suffix);
+        }
 
-		if ($memory >= 1000000000)
-		{
-			$precision = 2;
-			$memory = round($memory / 1073741824, $precision);
-			$unit = lang('formatter_gigabytes'.$lang_suffix);
-		}
-		elseif ($memory >= 1000000)
-		{
-			$precision = 1;
-			$memory = round($memory / 1048576, $precision);
-			$unit = lang('formatter_megabytes'.$lang_suffix);
-		}
-		elseif ($memory >= 1000)
-		{
-			$memory = round($memory / 1024);
-			$unit = lang('formatter_kilobytes'.$lang_suffix);
-		}
-		else
-		{
-			$unit = lang('formatter_bytes'.$lang_suffix);
-		}
+        $unit = ($abbr) ? $unit : ' ' . $unit;
+        $this->content = number_format($memory, $precision) . $unit;
 
-		$unit = ($abbr) ? $unit : ' '.$unit;
-		$this->content = number_format($memory, $precision).$unit;
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Currency Formatter
-	 *
-	 * Greatest accuracy requires the PHP intl extension to be available
-	 *
-	 * @param  array  $options (string) currency, (string) locale
-	 * @return self This returns a reference to itself
-	 */
-	public function currency($options = [])
-	{
-		$options = [
-			'currency' => (isset($options['currency'])) ? $options['currency'] : 'USD',
-			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
-			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : NULL,
-		];
+    /**
+     * Currency Formatter
+     *
+     * Greatest accuracy requires the PHP intl extension to be available
+     *
+     * @param  array  $options (string) currency, (string) locale
+     * @return self This returns a reference to itself
+     */
+    public function currency($options = [])
+    {
+        $options = [
+            'currency' => (isset($options['currency'])) ? $options['currency'] : 'USD',
+            'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+            'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : null,
+        ];
 
-		// best option, will display the currency correctly based on the locale
-		// e.g. $112,358.13 and €112,358.13 in the US; 112.358,13 $ and 112.358,13 € in Germany
-		if ($this->intl_loaded)
-		{
-			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::CURRENCY);
+        // best option, will display the currency correctly based on the locale
+        // e.g. $112,358.13 and €112,358.13 in the US; 112.358,13 $ and 112.358,13 € in Germany
+        if ($this->intl_loaded) {
+            $fmt = new \NumberFormatter($options['locale'], \NumberFormatter::CURRENCY);
 
-			if (is_int($options['decimals']))
-			{
-				$fmt->setAttribute($fmt::FRACTION_DIGITS, $options['decimals']);
-			}
+            if (is_int($options['decimals'])) {
+                $fmt->setAttribute($fmt::FRACTION_DIGITS, $options['decimals']);
+            }
 
-			$this->content = $fmt->formatCurrency((float) $this->content, $options['currency']);
-			return $this;
-		}
+            $this->content = $fmt->formatCurrency((float) $this->content, $options['currency']);
 
-		// This PHP function is a wrapper for strfmon, so isn't available on all systems, e.g. Windows
-		// Won't get the position of the currency marker correct for non-US locales.
-		// This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
-		// localization formatting lookup tables. The 100% solution is easily achieved by ensuring
-		// that the intl extension is loaded in PHP, handled above.
-		// NOTE: `money_format` is deprecated in PHP7.4
-		if (function_exists('money_format'))
-		{
-			// grab the current monetary locale to reset after formatting
-			$sys_locale = setlocale(LC_MONETARY, 0);
+            return $this;
+        }
 
-			// set the monetary locale to the specified option
-			setlocale(LC_MONETARY, $options['locale']);
+        // This PHP function is a wrapper for strfmon, so isn't available on all systems, e.g. Windows
+        // Won't get the position of the currency marker correct for non-US locales.
+        // This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
+        // localization formatting lookup tables. The 100% solution is easily achieved by ensuring
+        // that the intl extension is loaded in PHP, handled above.
+        // NOTE: `money_format` is deprecated in PHP7.4
+        if (function_exists('money_format')) {
+            // grab the current monetary locale to reset after formatting
+            $sys_locale = setlocale(LC_MONETARY, 0);
 
-			$right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
-			//@-suppressing because we don't want deprecation error - see above on 20/80 effort
-			$this->content = @money_format("%.{$right_precision}n", (float) $this->content);
+            // set the monetary locale to the specified option
+            setlocale(LC_MONETARY, $options['locale']);
 
-			// set the monetary locale back to normal
-			setlocale(LC_MONETARY, $sys_locale);
-			return $this;
-		}
+            $right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
+            //@-suppressing because we don't want deprecation error - see above on 20/80 effort
+            $this->content = @money_format("%.{$right_precision}n", (float) $this->content);
 
-		throw new \Exception('<code>{...:currency}</code> modifier error: Environment does not support any known currency formatters, please install the PHP <b>intl</b> extension.');
-	}
+            // set the monetary locale back to normal
+            setlocale(LC_MONETARY, $sys_locale);
 
-	/**
-	 * Duration Formatter
-	 *
-	 * @param  array  $options (string) locale
-	 * @return self This returns a reference to itself
-	 */
-	public function duration($options = [])
-	{
-		$this->content = round($this->content);
+            return $this;
+        }
 
-		$options = [
-			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
-		];
+        throw new \Exception('<code>{...:currency}</code> modifier error: Environment does not support any known currency formatters, please install the PHP <b>intl</b> extension.');
+    }
 
-		if ($this->intl_loaded)
-		{
-			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::DURATION);
-			$this->content = $fmt->format($this->content);
-			return $this;
-		}
+    /**
+     * Duration Formatter
+     *
+     * @param  array  $options (string) locale
+     * @return self This returns a reference to itself
+     */
+    public function duration($options = [])
+    {
+        $this->content = round($this->content);
 
-		// the following is a fallback that follows the NumberFormatter::DURATION
-		// output pattern if the intl extension isn't available
+        $options = [
+            'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+        ];
 
-		if ($this->content < 60)
-		{
-			$this->content = sprintf(lang('formatter_duration_seconds_only'), $this->content);
-			return $this;
-		}
+        if ($this->intl_loaded) {
+            $fmt = new \NumberFormatter($options['locale'], \NumberFormatter::DURATION);
+            $this->content = $fmt->format($this->content);
 
-		$seconds = $this->content % 60;
+            return $this;
+        }
 
-		// NumberFormatter::DURATION zero pads everything but the left-most digit
-		if ($seconds < 10)
-		{
-			$seconds = '0'.$seconds;
-		}
+        // the following is a fallback that follows the NumberFormatter::DURATION
+        // output pattern if the intl extension isn't available
 
-		$remainder = ($this->content - $seconds) / 60;
-		$minutes = $remainder % 60;
+        if ($this->content < 60) {
+            $this->content = sprintf(lang('formatter_duration_seconds_only'), $this->content);
 
-		$remainder = $remainder - $minutes;
+            return $this;
+        }
 
-		if ($remainder <= 0)
-		{
-			$this->content = $minutes.':'.$seconds;
-			return $this->content;
-		}
+        $seconds = $this->content % 60;
 
-		if ($minutes < 10)
-		{
-			$minutes = '0'.$minutes;
-		}
+        // NumberFormatter::DURATION zero pads everything but the left-most digit
+        if ($seconds < 10) {
+            $seconds = '0' . $seconds;
+        }
 
-		$remainder = $remainder / 60;
-		$hours = number_format($remainder);
+        $remainder = ($this->content - $seconds) / 60;
+        $minutes = $remainder % 60;
 
-		$this->content = $hours.':'.$minutes.':'.$seconds;
-		return $this;
-	}
+        $remainder = $remainder - $minutes;
 
-	/**
-	 * Number Format Formatter
-	 *
-	 * Formats a number with typical options
-	 *
-	 * @param  array  $options (int) decimals, (string) decimal_point, (string) thousands_separator
-	 * @return self This returns a reference to itself
-	 */
-	public function number_format($options = [])
-	{
-		$options = [
-			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : 0,
-			'decimal_point' => (isset($options['decimal_point'])) ? $options['decimal_point'] : '.',
-			'thousands_separator' => (isset($options['thousands_separator'])) ? $options['thousands_separator'] : ',',
-		];
+        if ($remainder <= 0) {
+            $this->content = $minutes . ':' . $seconds;
 
-		$this->content = number_format(
-			(float) $this->content,
-			$options['decimals'],
-			$options['decimal_point'],
-			$options['thousands_separator']
-		);
+            return $this->content;
+        }
 
-		return $this;
-	}
+        if ($minutes < 10) {
+            $minutes = '0' . $minutes;
+        }
 
-	/**
-	 * Ordinal Formatter
-	 *
-	 * Locales other than English require the intl extension
-	 *
-	 * @param  array  $options (string) locale
-	 * @return self This returns a reference to itself
-	 */
-	public function ordinal($options = [])
-	{
-		$options = [
-			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
-		];
+        $remainder = $remainder / 60;
+        $hours = number_format($remainder);
 
-		if ($this->intl_loaded)
-		{
-			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::ORDINAL);
-			$this->content = $fmt->format($this->content);
-			return $this;
-		}
+        $this->content = $hours . ':' . $minutes . ':' . $seconds;
 
-		// fallback will only work for English ordinal indicators
-		$indicators = ['th','st','nd','rd','th','th','th','th','th','th'];
+        return $this;
+    }
 
-		$mod = (int) $this->content % 100;
-		if (($mod >= 11) && ($mod <= 13))
-		{
-			$indicator = $indicators[0];
-		}
-		else
-		{
-			$indicator = $indicators[(int) $this->content % 10];
-		}
+    /**
+     * Number Format Formatter
+     *
+     * Formats a number with typical options
+     *
+     * @param  array  $options (int) decimals, (string) decimal_point, (string) thousands_separator
+     * @return self This returns a reference to itself
+     */
+    public function number_format($options = [])
+    {
+        $options = [
+            'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : 0,
+            'decimal_point' => (isset($options['decimal_point'])) ? $options['decimal_point'] : '.',
+            'thousands_separator' => (isset($options['thousands_separator'])) ? $options['thousands_separator'] : ',',
+        ];
 
-		$this->content = number_format((float) $this->content).$indicator;
-		return $this;
-	}
+        $this->content = number_format(
+            (float) $this->content,
+            $options['decimals'],
+            $options['decimal_point'],
+            $options['thousands_separator']
+        );
 
-	/**
-	 * Spell Out Formatter
-	 *
-	 * Requires the PHP intl extension to be available
-	 *
-	 * @param  array  $options (string) capitalize, (string) locale
-	 * @return self This returns a reference to itself
-	 */
-	public function spellout($options = [])
-	{
-		if ( ! $this->intl_loaded)
-		{
-			throw new \Exception('<code>{...:spellout}</code> modifier error: This modifier requires the PHP <b>intl</b> extension to be installed.');
-		}
+        return $this;
+    }
 
-		$options = [
-			'capitalize' => (isset($options['capitalize'])) ? $options['capitalize'] : FALSE,
-			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
-		];
+    /**
+     * Ordinal Formatter
+     *
+     * Locales other than English require the intl extension
+     *
+     * @param  array  $options (string) locale
+     * @return self This returns a reference to itself
+     */
+    public function ordinal($options = [])
+    {
+        $options = [
+            'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+        ];
 
-		$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::SPELLOUT);
-		$this->content = $fmt->format($this->content);
+        if ($this->intl_loaded) {
+            $fmt = new \NumberFormatter($options['locale'], \NumberFormatter::ORDINAL);
+            $this->content = $fmt->format($this->content);
 
-		switch ($options['capitalize'])
-		{
-			case 'ucfirst':
-				$this->content = ucfirst($this->content);
-				break;
-			case 'ucwords':
-				$this->content = ucwords($this->content);
-				break;
-			default:
-				// nada
-		}
+            return $this;
+        }
 
-		return $this;
-	}
+        // fallback will only work for English ordinal indicators
+        $indicators = ['th','st','nd','rd','th','th','th','th','th','th'];
+
+        $mod = (int) $this->content % 100;
+        if (($mod >= 11) && ($mod <= 13)) {
+            $indicator = $indicators[0];
+        } else {
+            $indicator = $indicators[(int) $this->content % 10];
+        }
+
+        $this->content = number_format((float) $this->content) . $indicator;
+
+        return $this;
+    }
+
+    /**
+     * Spell Out Formatter
+     *
+     * Requires the PHP intl extension to be available
+     *
+     * @param  array  $options (string) capitalize, (string) locale
+     * @return self This returns a reference to itself
+     */
+    public function spellout($options = [])
+    {
+        if (! $this->intl_loaded) {
+            throw new \Exception('<code>{...:spellout}</code> modifier error: This modifier requires the PHP <b>intl</b> extension to be installed.');
+        }
+
+        $options = [
+            'capitalize' => (isset($options['capitalize'])) ? $options['capitalize'] : false,
+            'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+        ];
+
+        $fmt = new \NumberFormatter($options['locale'], \NumberFormatter::SPELLOUT);
+        $this->content = $fmt->format($this->content);
+
+        switch ($options['capitalize']) {
+            case 'ucfirst':
+                $this->content = ucfirst($this->content);
+
+                break;
+            case 'ucwords':
+                $this->content = ucwords($this->content);
+
+                break;
+            default:
+                // nada
+        }
+
+        return $this;
+    }
 }
 
 // EOF

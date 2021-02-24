@@ -15,32 +15,29 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Matches Validation Rule
  */
-class Matches extends ValidationRule {
+class Matches extends ValidationRule
+{
+    protected $all_values = array();
 
-	protected $all_values = array();
+    public function validate($key, $value)
+    {
+        foreach ($this->parameters as $field_name) {
+            if (! array_key_exists($field_name, $this->all_values)) {
+                return isset($value); // both not set technically matches
+            }
 
-	public function validate($key, $value)
-	{
-		foreach ($this->parameters as $field_name)
-		{
-			if ( ! array_key_exists($field_name, $this->all_values))
-			{
-				return isset($value); // both not set technically matches
-			}
+            if ($this->all_values[$field_name] != $value) {
+                return false;
+            }
+        }
 
-			if ($this->all_values[$field_name] != $value)
-			{
-				return FALSE;
-			}
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
-
-	public function setAllValues(array $values)
-	{
-		$this->all_values = $values;
-	}
+    public function setAllValues(array $values)
+    {
+        $this->all_values = $values;
+    }
 }
 
 // EOF

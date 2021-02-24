@@ -17,72 +17,72 @@ use Serializable;
  * This is basically like Entity, it's here to keep custom column Types
  * backwards compatible. Don't rely on this to stay, totally internal.
  */
-class SerializableEntity extends Entity implements JsonSerializable, Serializable {
+class SerializableEntity extends Entity implements JsonSerializable, Serializable
+{
+    /**
+     * Serialize
+     *
+     * @return String Serialized object
+     */
+    public function serialize()
+    {
+        return serialize($this->getSerializeData());
+    }
 
-	/**
-	 * Serialize
-	 *
-	 * @return String Serialized object
-	 */
-	public function serialize()
-	{
-		return serialize($this->getSerializeData());
-	}
+    /**
+     * Unserialize
+     *
+     * @param String $serialized Serialized object
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $this->__construct();
+        $this->setSerializeData(unserialize($serialized));
+    }
 
-	/**
-	 * Unserialize
-	 *
-	 * @param String $serialized Serialized object
-	 * @return void
-	 */
-	public function unserialize($serialized)
-	{
-		$this->__construct();
-		$this->setSerializeData(unserialize($serialized));
-	}
+    /**
+     * Overridable getter for serialization
+     *
+     * @return Mixed Data to serialize
+     */
+    protected function getSerializeData()
+    {
+        return $this->getRawValues();
+    }
 
-	/**
-	 * Overridable getter for serialization
-	 *
-	 * @return Mixed Data to serialize
-	 */
-	protected function getSerializeData()
-	{
-		return $this->getRawValues();
-	}
+    /**
+     * returns serialized data for json_encode
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $output = $this->getSerializeData();
 
-	/**
-	 * returns serialized data for json_encode
-	 * @return array
-	 */
-	public function jsonSerialize()
-	{
-		$output = $this->getSerializeData();
+        $classVars = get_class_vars($this);
 
-		$classVars = get_class_vars($this);
+        foreach ($classVars as $classVarKey => $classVarValue) {
+            $output[$classVarKey] = $classVarValue;
+        }
 
-		foreach ($classVars as $classVarKey => $classVarValue) {
-			$output[$classVarKey] = $classVarValue;
-		}
+        return $output;
+    }
 
-		return $output;
-	}
+    /**
+     * Overridable setter for unserialization
+     *
+     * @param Mixed $data Data returned from `getSerializedData`
+     * @return void
+     */
+    protected function setSerializeData($data)
+    {
+        // set() instead of fill() so properties are not lost on write
+        $this->set($data);
 
-	/**
-	 * Overridable setter for unserialization
-	 *
-	 * @param Mixed $data Data returned from `getSerializedData`
-	 * @return void
-	 */
-	protected function setSerializeData($data)
-	{
-		// set() instead of fill() so properties are not lost on write
-		$this->set($data);
+        // restore new/existing primary key
+        $this->setId($this->getId());
 
-		// restore new/existing primary key
-		$this->setId($this->getId());
-
-		// mark as clean, or all the backups will have null values
-		$this->markAsClean();
-	}
+        // mark as clean, or all the backups will have null values
+        $this->markAsClean();
+    }
 }

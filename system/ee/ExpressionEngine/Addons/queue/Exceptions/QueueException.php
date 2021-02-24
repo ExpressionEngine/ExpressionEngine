@@ -4,6 +4,6 @@ namespace ExpressionEngine\Addons\Queue\Exceptions;
 
 use Exception;
 
-class QueueException extends Exception {
-
+class QueueException extends Exception
+{
 }

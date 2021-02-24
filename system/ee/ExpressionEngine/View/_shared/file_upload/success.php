@@ -35,7 +35,7 @@
 	</table>	
 </div> <!-- .success -->
 
-<?= form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => "edit_file"), array('file_id' => $file_id)) ?>
+<?= form_open('C=content_files_modal' . AMP . 'M=edit_file', array('id' => "edit_file"), array('file_id' => $file_id)) ?>
 <?= form_close() ?>
 
 <script>

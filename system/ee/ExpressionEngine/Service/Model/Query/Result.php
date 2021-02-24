@@ -15,261 +15,235 @@ use ExpressionEngine\Service\Model\Collection;
 /**
  * Query Result
  */
-class Result {
+class Result
+{
+    protected $facade;
 
-	protected $facade;
+    protected $db_result;
 
-	protected $db_result;
+    protected $columns = array();
+    protected $aliases = array();
+    protected $objects = array();
+    protected $relations = array();
 
-	protected $columns = array();
-	protected $aliases = array();
-	protected $objects = array();
-	protected $relations = array();
+    protected $related_ids = array();
+    private $primary_keys = array();
 
-	protected $related_ids = array();
-	private $primary_keys = array();
+    public function __construct($db_result, $aliases, $relations)
+    {
+        $this->db_result = $db_result;
+        $this->aliases = $aliases;
+        $this->relations = array_reverse($relations);
+    }
 
-	public function __construct($db_result, $aliases, $relations)
-	{
-		$this->db_result = $db_result;
-		$this->aliases = $aliases;
-		$this->relations = array_reverse($relations);
-	}
+    public function first()
+    {
+        $all = $this->all();
 
-	public function first()
-	{
-		$all = $this->all();
+        if (! count($all)) {
+            return null;
+        }
 
-		if ( ! count($all))
-		{
-			return NULL;
-		}
+        return $all->first();
+    }
 
-		return $all->first();
-	}
+    public function all()
+    {
+        if (! count($this->db_result)) {
+            return new Collection();
+        }
 
-	public function all()
-	{
-		if ( ! count($this->db_result))
-		{
-			return new Collection;
-		}
+        $this->initializeResultArray();
 
+        foreach ($this->db_result as $row) {
+            $this->collectColumnsByAliasPrefix($row);
+            $this->parseRow($row);
+        }
 
-		$this->initializeResultArray();
+        $this->constructRelationshipTree();
 
-		foreach ($this->db_result as $row)
-		{
-			$this->collectColumnsByAliasPrefix($row);
-			$this->parseRow($row);
-		}
+        reset($this->aliases);
+        $root = key($this->aliases);
 
-		$this->constructRelationshipTree();
+        foreach ($this->objects as $type => $objs) {
+            foreach ($objs as $obj) {
+                $obj->emit('afterLoad');
+            }
+        }
 
-		reset($this->aliases);
-		$root = key($this->aliases);
+        return new Collection($this->objects[$root]);
+    }
 
-		foreach ($this->objects as $type => $objs)
-		{
-			foreach ($objs as $obj)
-			{
-				$obj->emit('afterLoad');
-			}
-		}
+    /**
+     * Take a single database row and turn it into one or more model objects.
+     */
+    protected function parseRow($row)
+    {
+        // track ids in this row [alias => id, alias2 => id2]
+        // we use this to match relationships later
+        $row_object_ids = array();
 
-		return new Collection($this->objects[$root]);
-	}
+        // run through the aliases in the query
+        foreach ($this->columns as $alias => $columns) {
+            $model_data = array();
 
+            // if we know the primary key for this alias, look up the value
+            // to see if we've already processed it. This happens when we have
+            // joins that pull in a duplicate data (e.g. Templates with TemplateGroup).
+            if (isset($this->primary_keys[$alias])) {
+                $pkey = $this->primary_keys[$alias];
+                $value = $row[$pkey];
 
-	/**
-	 * Take a single database row and turn it into one or more model objects.
-	 */
-	protected function parseRow($row)
-	{
-		// track ids in this row [alias => id, alias2 => id2]
-		// we use this to match relationships later
-		$row_object_ids = array();
+                if (isset($this->objects[$alias][$value])) {
+                    $object = $this->objects[$alias][$value];
+                    $row_object_ids[$alias] = $object->getId();
 
-		// run through the aliases in the query
-		foreach ($this->columns as $alias => $columns)
-		{
-			$model_data = array();
+                    continue;
+                }
+            }
 
-			// if we know the primary key for this alias, look up the value
-			// to see if we've already processed it. This happens when we have
-			// joins that pull in a duplicate data (e.g. Templates with TemplateGroup).
-			if (isset($this->primary_keys[$alias]))
-			{
-				$pkey = $this->primary_keys[$alias];
-				$value = $row[$pkey];
+            // pull out unprefixed properties for this alias
+            foreach ($columns as $property) {
+                if (! array_key_exists("{$alias}__{$property}", $row)) {
+                    throw new \Exception("Unknown model property in query result: `{$alias}.{$property}`");
+                }
 
-				if (isset($this->objects[$alias][$value]))
-				{
-					$object = $this->objects[$alias][$value];
-					$row_object_ids[$alias] = $object->getId();
+                $model_data[$property] = $row["{$alias}__{$property}"];
+            }
 
-					continue;
-				}
-			}
+            if (empty($model_data)) {
+                continue;
+            }
 
-			// pull out unprefixed properties for this alias
-			foreach ($columns as $property)
-			{
-				if ( ! array_key_exists("{$alias}__{$property}", $row))
-				{
-					throw new \Exception("Unknown model property in query result: `{$alias}.{$property}`");
-				}
+            $name = $this->aliases[$alias];
 
-				$model_data[$property] = $row["{$alias}__{$property}"];
-			}
+            // spin up the object
+            $object = $this->facade->make($name);
+            $object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
+            $object->fill($model_data);
 
-			if (empty($model_data))
-			{
-				continue;
-			}
+            // store for results and reuse
+            $this->objects[$alias][$object->getId()] = $object;
 
-			$name = $this->aliases[$alias];
+            // on the first pass, memoize primary key names
+            if (! isset($this->primary_keys[$alias])) {
+                $this->primary_keys[$alias] = $alias . '__' . $object->getPrimaryKey();
+            }
 
-			// spin up the object
-			$object = $this->facade->make($name);
-			$object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
-			$object->fill($model_data);
+            $row_object_ids[$alias] = $object->getId();
+        }
 
-			// store for results and reuse
-			$this->objects[$alias][$object->getId()] = $object;
+        // connect ids
+        foreach ($row_object_ids as $alias => $id) {
+            $related = $row_object_ids;
+            unset($related[$alias]);
 
-			// on the first pass, memoize primary key names
-			if ( ! isset($this->primary_keys[$alias]))
-			{
-				$this->primary_keys[$alias] = $alias.'__'.$object->getPrimaryKey();
-			}
+            if (! isset($this->related_ids[$alias])) {
+                $this->related_ids[$alias] = array();
+            }
 
-			$row_object_ids[$alias] = $object->getId();
-		}
+            if (! isset($this->related_ids[$alias][$id])) {
+                $this->related_ids[$alias][$id] = array();
+            }
 
-		// connect ids
-		foreach ($row_object_ids as $alias => $id)
-		{
-			$related = $row_object_ids;
-			unset($related[$alias]);
+            $this->related_ids[$alias][$id][] = $related;
+        }
+    }
 
-			if ( ! isset($this->related_ids[$alias]))
-			{
-				$this->related_ids[$alias] = array();
-			}
+    /**
+     *
+     */
+    protected function constructRelationshipTree()
+    {
+        foreach ($this->relations as $to_alias => $lookup) {
+            $kids = $this->objects[$to_alias];
 
-			if ( ! isset($this->related_ids[$alias][$id]))
-			{
-				$this->related_ids[$alias][$id] = array();
-			}
+            foreach ($lookup as $from_alias => $relation) {
+                $parents = $this->objects[$from_alias];
 
-			$this->related_ids[$alias][$id][] = $related;
-		}
-	}
+                $related_ids = $this->matchIds($parents, $from_alias, $to_alias);
 
-	/**
-	 *
-	 */
-	protected function constructRelationshipTree()
-	{
-		foreach ($this->relations as $to_alias => $lookup)
-		{
-			$kids = $this->objects[$to_alias];
+                $this->matchRelation($parents, $kids, $related_ids, $relation);
+            }
+        }
+    }
 
-			foreach ($lookup as $from_alias => $relation)
-			{
-				$parents = $this->objects[$from_alias];
+    /**
+     *
+     */
+    protected function matchIds($parents, $from_alias, $to_alias)
+    {
+        $related_ids = array();
 
-				$related_ids = $this->matchIds($parents, $from_alias, $to_alias);
+        foreach ($parents as $p_id => $parent) {
+            $related_ids[$p_id] = array();
 
-				$this->matchRelation($parents, $kids, $related_ids, $relation);
-			}
-		}
-	}
+            $all_related = $this->related_ids[$from_alias][$p_id];
 
-	/**
-	 *
-	 */
-	protected function matchIds($parents, $from_alias, $to_alias)
-	{
-		$related_ids = array();
+            foreach ($all_related as $potential) {
+                if (isset($potential[$to_alias])) {
+                    $related_ids[$p_id][] = $potential[$to_alias];
+                }
+            }
+        }
 
-		foreach ($parents as $p_id => $parent)
-		{
-			$related_ids[$p_id] = array();
+        return $related_ids;
+    }
 
-			$all_related = $this->related_ids[$from_alias][$p_id];
+    /**
+     *
+     */
+    protected function matchRelation($parents, $kids, $related_ids, $relation)
+    {
+        foreach ($parents as $p_id => $parent) {
+            $set = array_unique($related_ids[$p_id]);
+            $collection = array();
 
-			foreach ($all_related as $potential)
-			{
-				if (isset($potential[$to_alias]))
-				{
-					$related_ids[$p_id][] = $potential[$to_alias];
-				}
-			}
-		}
+            foreach ($set as $id) {
+                $collection[] = $kids[$id];
+            }
 
-		return $related_ids;
-	}
+            $name = $relation->getName();
+            $parent->getAssociation($name)->fill($collection);
+        }
+    }
 
-	/**
-	 *
-	 */
-	protected function matchRelation($parents, $kids, $related_ids, $relation)
-	{
-		foreach ($parents as $p_id => $parent)
-		{
-			$set = array_unique($related_ids[$p_id]);
-			$collection = array();
+    /**
+     * Group all columns by their alias prefix.
+     */
+    protected function collectColumnsByAliasPrefix($row)
+    {
+        $columns = array();
 
-			foreach ($set as $id)
-			{
-				$collection[] = $kids[$id];
-			}
+        foreach (array_keys($row) as $column) {
+            list($alias, $property) = explode('__', $column);
 
-			$name = $relation->getName();
-			$parent->getAssociation($name)->fill($collection);
-		}
-	}
+            if (! array_key_exists($alias, $columns)) {
+                $columns[$alias] = array();
+            }
 
-	/**
-	 * Group all columns by their alias prefix.
-	 */
-	protected function collectColumnsByAliasPrefix($row)
-	{
-		$columns = array();
+            $columns[$alias][] = $property;
+        }
 
-		foreach (array_keys($row) as $column)
-		{
-			list($alias, $property) = explode('__', $column);
+        $this->columns = $columns;
+    }
 
-			if ( ! array_key_exists($alias, $columns))
-			{
-				$columns[$alias] = array();
-			}
+    /**
+     * Set up an array to hold all of our temporary data.
+     */
+    protected function initializeResultArray()
+    {
+        foreach ($this->aliases as $alias => $model) {
+            $this->objects[$alias] = array();
+        }
+    }
 
-			$columns[$alias][] = $property;
-		}
+    public function setFacade($facade)
+    {
+        $this->facade = $facade;
 
-		$this->columns = $columns;
-	}
-
-	/**
-	 * Set up an array to hold all of our temporary data.
-	 */
-	protected function initializeResultArray()
-	{
-		foreach ($this->aliases as $alias => $model)
-		{
-			$this->objects[$alias] = array();
-		}
-	}
-
-	public function setFacade($facade)
-	{
-		$this->facade = $facade;
-		return $this;
-	}
+        return $this;
+    }
 }
 
 // EOF

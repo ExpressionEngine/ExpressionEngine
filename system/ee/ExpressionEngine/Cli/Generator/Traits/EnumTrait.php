@@ -6,27 +6,23 @@ use ReflectionClass;
 
 trait EnumTrait
 {
-
     /**
      * gets class constants with key and value
      * @return array
      */
-    static function constants() : array
+    public static function constants(): array
     {
-
         $refl = new ReflectionClass(__CLASS__);
 
         return $refl->getConstants();
-
     }
 
     /**
      * gets class constant values
      * @return array
      */
-    static function constantKeys() : array
+    public static function constantKeys(): array
     {
-
         $refl = new ReflectionClass(__CLASS__);
 
         $output = array();
@@ -42,9 +38,8 @@ trait EnumTrait
      * gets class constant values
      * @return array
      */
-    static function constantValues() : array
+    public static function constantValues(): array
     {
-
         $refl = new ReflectionClass(__CLASS__);
 
         $output = array();
@@ -61,15 +56,14 @@ trait EnumTrait
      * @param  [string]  $val [value to check]
      * @return boolean
      */
-    static function has($val) : bool
+    public static function has($val): bool
     {
-
         $constants = self::constantValues();
 
         return in_array($val, $constants);
     }
 
-    static function get($val) : array
+    public static function get($val): array
     {
         $constants = self::constantValues();
 
@@ -80,27 +74,25 @@ trait EnumTrait
         return [];
     }
 
-    static function getKey($val)
+    public static function getKey($val)
     {
-
         $constants = self::constants();
 
         foreach ($constants as $key => $value) {
-            if($val == $value) return $key;
+            if ($val == $value) {
+                return $key;
+            }
         }
 
         return false;
-
     }
 
-    static function getByKey($key)
+    public static function getByKey($key)
     {
-
-        if(!array_key_exists($key, self::constants())) {
+        if (!array_key_exists($key, self::constants())) {
             return false;
         }
 
-        return constant('self::'. $key);
-
+        return constant('self::' . $key);
     }
 }

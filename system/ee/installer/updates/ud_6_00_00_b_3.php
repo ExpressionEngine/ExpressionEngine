@@ -16,7 +16,6 @@ namespace ExpressionEngine\Updater\Version_6_0_0_b_3;
  */
 class Updater
 {
-
     public $version_suffix = '';
 
     /**
@@ -81,7 +80,7 @@ class Updater
                     'unsigned' => true,
                     'auto_increment' => true
                 ),
-                'whitelisted_type'  => array(
+                'whitelisted_type' => array(
                     'name' => 'allowedlist_type',
                     'type' => 'varchar',
                     'constraint' => '20',

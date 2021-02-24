@@ -11,8 +11,8 @@
 /**
  * Search Module control panel (nada)
  */
-class Search_mcp {
-
+class Search_mcp
+{
 }
 // END CLASS
 

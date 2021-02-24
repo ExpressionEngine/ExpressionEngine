@@ -15,173 +15,153 @@ use ExpressionEngine\Service\Addon\Installer;
  */
 class Pages_upd extends Installer
 {
-	public $has_cp_backend = 'y';
-	public $has_publish_fields = 'y';
+    public $has_cp_backend = 'y';
+    public $has_publish_fields = 'y';
 
     public function __construct()
     {
         parent::__construct();
     }
 
-	function tabs()
-	{
-		$tabs['pages'] = array(
-			'pages_template_id'	=> array(
-								'visible'		=> TRUE,
-								'collapse'		=> FALSE,
-								'htmlbuttons'	=> TRUE,
-								'width'			=> '100%'
-								),
+    public function tabs()
+    {
+        $tabs['pages'] = array(
+            'pages_template_id' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
+            ),
 
-			'pages_uri'		=> array(
-								'visible'		=> TRUE,
-								'collapse'		=> FALSE,
-								'htmlbuttons'	=> TRUE,
-								'width'			=> '100%'
-								)
-				);
+            'pages_uri' => array(
+                'visible' => true,
+                'collapse' => false,
+                'htmlbuttons' => true,
+                'width' => '100%'
+            )
+        );
 
-		return $tabs;
-	}
+        return $tabs;
+    }
 
+    /**
+     * Module Installer
+     *
+     * @access	public
+     * @return	bool
+     */
+    public function install()
+    {
+        parent::install();
 
-	/**
-	 * Module Installer
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
+        if (! ee()->db->field_exists('site_pages', 'exp_sites')) {
+            $sql[] = "ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL";
+        }
 
-	function install()
-	{
-		parent::install();
-
-		if ( ! ee()->db->field_exists('site_pages', 'exp_sites'))
-		{
-			$sql[] = "ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL";
-		}
-
-		$sql[] = "CREATE TABLE `exp_pages_configuration` (
+        $sql[] = "CREATE TABLE `exp_pages_configuration` (
 				`configuration_id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 				`site_id` INT( 8 ) UNSIGNED NOT NULL DEFAULT '1',
 				`configuration_name` VARCHAR( 60 ) NOT NULL ,
 				`configuration_value` VARCHAR( 100 ) NOT NULL
-				) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
+				) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
-		foreach ($sql as $query)
-		{
-			ee()->db->query($query);
-		}
+        foreach ($sql as $query) {
+            ee()->db->query($query);
+        }
 
-		ee()->load->library('layout');
-		ee()->layout->add_layout_tabs($this->tabs(), 'pages');
+        ee()->load->library('layout');
+        ee()->layout->add_layout_tabs($this->tabs(), 'pages');
 
-		return TRUE;
-	}
+        return true;
+    }
 
+    /**
+     * Module Uninstaller
+     *
+     * @access	public
+     * @return	bool
+     */
+    public function uninstall()
+    {
+        parent::uninstall();
+        $sql[] = "DROP TABLE `exp_pages_configuration`";
 
-	/**
-	 * Module Uninstaller
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function uninstall()
-	{
-		parent::uninstall();
-		$sql[] = "DROP TABLE `exp_pages_configuration`";
+        foreach ($sql as $query) {
+            ee()->db->query($query);
+        }
 
-		foreach ($sql as $query)
-		{
-			ee()->db->query($query);
-		}
+        ee()->load->library('layout');
+        ee()->layout->delete_layout_tabs($this->tabs());
 
-		ee()->load->library('layout');
-		ee()->layout->delete_layout_tabs($this->tabs());
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Module Updater
+     *
+     * @access	public
+     * @return	bool
+     */
+    public function update($current = '')
+    {
+        if ($current === $this->version) {
+            return false;
+        }
 
+        if (version_compare($current, '2.1', '<')) {
+            ee()->db->where('module_name', 'Pages');
+            ee()->db->update('modules', array('has_publish_fields' => 'y'));
+        }
 
+        if (version_compare($current, '2.2', '<')) {
+            $this->_do_22_update();
+        }
+    }
 
-	/**
-	 * Module Updater
-	 *
-	 * @access	public
-	 * @return	bool
-	 */
-	function update($current = '')
-	{
+    /**
+     * This is basically identical to the forum update script.
+     *
+     * @return void
+     */
+    private function _do_22_update()
+    {
+        ee()->load->library('layout');
 
-		if ($current === $this->version)
-		{
-			return FALSE;
-		}
+        $layouts = ee()->db->get('layout_publish');
 
-		if (version_compare($current, '2.1', '<'))
-		{
-			ee()->db->where('module_name', 'Pages');
-			ee()->db->update('modules', array('has_publish_fields' => 'y'));
-		}
+        if ($layouts->num_rows() === 0) {
+            return;
+        }
 
-		if (version_compare($current, '2.2', '<'))
-		{
-			$this->_do_22_update();
-		}
-	}
+        $layouts = $layouts->result_array();
 
-	/**
-	 * This is basically identical to the forum update script.
-	 *
-	 * @return void
-	 */
-	private function _do_22_update()
-	{
-		ee()->load->library('layout');
+        $old_pages_fields = array(
+            'pages_uri',
+            'pages_template_id',
+        );
 
-		$layouts = ee()->db->get('layout_publish');
+        foreach ($layouts as &$layout) {
+            $old_layout = unserialize($layout['field_layout']);
 
-		if ($layouts->num_rows() === 0)
-		{
-			return;
-		}
+            foreach ($old_layout as $tab => &$fields) {
+                $field_keys = array_keys($fields);
 
-		$layouts = $layouts->result_array();
+                foreach ($field_keys as &$key) {
+                    if (in_array($key, $old_pages_fields)) {
+                        $key = 'pages__' . $key;
+                    }
+                }
 
-		$old_pages_fields = array(
-							'pages_uri',
-							'pages_template_id',
-						);
+                $fields = array_combine($field_keys, $fields);
+            }
 
-		foreach ($layouts as &$layout)
-		{
-			$old_layout = unserialize($layout['field_layout']);
+            $layout['field_layout'] = serialize($old_layout);
+        }
 
-			foreach ($old_layout as $tab => &$fields)
-			{
-				$field_keys = array_keys($fields);
+        ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
 
-				foreach ($field_keys as &$key)
-				{
-					if (in_array($key, $old_pages_fields))
-					{
-						$key = 'pages__'.$key;
-					}
-				}
-
-				$fields = array_combine($field_keys, $fields);
-			}
-
-			$layout['field_layout'] = serialize($old_layout);
-
-		}
-
-		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
-
-		return TRUE;
-	}
-
-
+        return true;
+    }
 }
 // END CLASS
 

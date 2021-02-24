@@ -10,7 +10,6 @@ use ExpressionEngine\Cli\Generator\Services\AddonGeneratorService;
  */
 class CommandGenerateAddon extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -46,16 +45,16 @@ class CommandGenerateAddon extends Cli
      * @var array
      */
     public $commandOptions = [
-        'type,t:'       => 'Type of add-on',
-        'extension'     => 'Create an extension',
-        'plugin'        => 'Create a plugin',
-        'fieldtype'     => 'Create a fieldtype',
-        'module'        => 'Create a module',
-        'typography'    => 'Should use plugin typography',
-        'services:'     => 'Comma-separated names of services to create',
-        'models:'       => 'Comma-separated names of models to create',
-        'consents:'     => 'Comma-separated names of consents',
-        'cookies:'      => 'Comma-separated names of cookies to create, with a colon separating name and value (i.e. name:value)',
+        'type,t:' => 'Type of add-on',
+        'extension' => 'Create an extension',
+        'plugin' => 'Create a plugin',
+        'fieldtype' => 'Create a fieldtype',
+        'module' => 'Create a module',
+        'typography' => 'Should use plugin typography',
+        'services:' => 'Comma-separated names of services to create',
+        'models:' => 'Comma-separated names of models to create',
+        'consents:' => 'Comma-separated names of consents',
+        'cookies:' => 'Comma-separated names of cookies to create, with a colon separating name and value (i.e. name:value)',
     ];
 
     /**
@@ -92,7 +91,6 @@ class CommandGenerateAddon extends Cli
      */
     public function handle()
     {
-
         $this->info('Let\'s build your add-on!');
 
         $this->data['type'] = $this->getType();
@@ -112,46 +110,42 @@ class CommandGenerateAddon extends Cli
         $this->build();
 
         $this->info('Your add-on has been created successfully!');
-
     }
 
     private function getTypeSpecificData()
     {
-        if($this->type['slug'] == 'module' || $this->type['slug'] == 'extension')
-        {
+        if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
             $this->data['hooks'] = $this->ask('Extension hooks?');
         }
 
-        if($this->type['slug'] == 'fieldtype')
-        {
+        if ($this->type['slug'] == 'fieldtype') {
             $this->data['compatibility'] = $this->ask('Fieldtype compatibility?');
         }
-
     }
 
     private function getAdvancedSettings()
     {
-        if($this->option('--typography')) {
+        if ($this->option('--typography')) {
             $this->data['typography'] = $this->option('--typography') ? true : false;
         }
 
-        if($this->option('--services')) {
+        if ($this->option('--services')) {
             $this->data['services'] = explode(',', $this->option('--services'));
         }
-        if($this->option('--models')) {
+        if ($this->option('--models')) {
             $this->data['models'] = explode(',', $this->option('--models'));
         }
-        if($this->option('--consents')) {
+        if ($this->option('--consents')) {
             $this->data['consents'] = explode(',', $this->option('--consents'));
         }
-        if($this->option('--cookies')) {
-
+        if ($this->option('--cookies')) {
             $cookies = [];
 
             foreach (explode(',', $this->option('--cookies')) as $cookie) {
-                
-                if(strpos($cookie, ':') === false) continue;
-                
+                if (strpos($cookie, ':') === false) {
+                    continue;
+                }
+
                 $cookieSplit = explode(':', $cookie);
                 $cookies[$cookieSplit[0]] = $cookieSplit[1];
             }
@@ -171,14 +165,14 @@ class CommandGenerateAddon extends Cli
     {
         $type = $this->getTypeFromOptions() ?: $this->ask('What type of addon would you like to create?');
 
-        if( ! in_array($type, $this->types)) {
+        if (! in_array($type, $this->types)) {
             $this->error('Please select a proper type');
             $this->complete();
         }
 
         $this->type = [
-            'name'  => ucfirst($type),
-            'slug'  => $type,
+            'name' => ucfirst($type),
+            'slug' => $type,
         ];
 
         return $type;
@@ -192,11 +186,11 @@ class CommandGenerateAddon extends Cli
     private function getTypeFromOptions()
     {
         foreach ($this->types as $type) {
-            if($this->option('--' . $type)) {
+            if ($this->option('--' . $type)) {
                 return $type;
             }
         }
+
         return null;
     }
-
 }

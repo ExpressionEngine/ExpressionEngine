@@ -1,37 +1,34 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class Generator_upd {
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-	public $version = '1.0.0';
+class Generator_upd
+{
+    public $version = '1.0.0';
 
-	public function install()
-	{
+    public function install()
+    {
+        $data = array(
+            'module_name' => 'Generator',
+            'module_version' => $this->version,
+            'has_cp_backend' => 'n',
+            'has_publish_fields' => 'n'
+        );
 
-		$data = array(
-			'module_name'			=> 'Generator',
-			'module_version'		=> $this->version,
-			'has_cp_backend'		=> 'n',
-			'has_publish_fields'	=> 'n'
-		);
+        ee()->db->insert('modules', $data);
+    }
 
-		ee()->db->insert('modules', $data);
+    public function update($current = '')
+    {
+        return true;
+    }
 
-	}
+    public function uninstall()
+    {
+        ee()->db->where('class', 'Generator');
 
-	public function update($current = '')
-	{
-
-		return true;
-
-	}
-
-	public function uninstall()
-	{
-
-		ee()->db->where('class', 'Generator');
-
-		ee()->db->delete('modules');
-
-	}
-
+        ee()->db->delete('modules');
+    }
 }

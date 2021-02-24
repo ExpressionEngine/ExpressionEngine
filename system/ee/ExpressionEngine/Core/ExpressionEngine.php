@@ -13,19 +13,18 @@ namespace ExpressionEngine\Core;
 /**
  * Core\ExpressionEngine
  */
-class ExpressionEngine extends Core {
+class ExpressionEngine extends Core
+{
+    /**
+     *
+     */
+    public function boot()
+    {
+        define('APPPATH', BASEPATH);
+        define('INSTALLER', false);
 
-	/**
-	 *
-	 */
-	public function boot()
-	{
-		define('APPPATH', BASEPATH);
-		define('INSTALLER', FALSE);
+        get_config(array('subclass_prefix' => 'EE_'));
 
-		get_config(array('subclass_prefix' => 'EE_'));
-
-		parent::boot();
-	}
-
+        parent::boot();
+    }
 }

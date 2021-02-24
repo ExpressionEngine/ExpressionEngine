@@ -15,16 +15,15 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * No HTML Validation Rule
  */
-class NoHtml extends ValidationRule {
+class NoHtml extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return ! (bool) preg_match("/<[^>]*>/", $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return ! (bool) preg_match("/<[^>]*>/", $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'no_html';
-	}
-
+    public function getLanguageKey()
+    {
+        return 'no_html';
+    }
 }

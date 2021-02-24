@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Context\OptionFactory;
 
 class Cli
 {
-
     /**
      * Primary CLI object
      * @var \ExpressionEngine\Cli\Context
@@ -45,15 +44,15 @@ class Cli
      * @var array
      */
     public $internalCommands = [
-        'hello'             => Commands\CommandHelloWorld::class,
-        'list'              => Commands\CommandListCommands::class,
-        'update'            => Commands\CommandUpdate::class,
-        'prepare-upgrade'   => Commands\CommandPrepareUpgrade::class,
-        'run-update-hook'   => Commands\CommandRunUpdateHook::class,
-        'cache:clear'       => Commands\CommandClearCaches::class,
-        'generate:addon'    => Commands\CommandGenerateAddon::class,
-        'generate:model'    => Commands\CommandGenerateModel::class,
-        'generate:command'  => Commands\CommandGenerateCommand::class,
+        'hello' => Commands\CommandHelloWorld::class,
+        'list' => Commands\CommandListCommands::class,
+        'update' => Commands\CommandUpdate::class,
+        'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
+        'run-update-hook' => Commands\CommandRunUpdateHook::class,
+        'cache:clear' => Commands\CommandClearCaches::class,
+        'generate:addon' => Commands\CommandGenerateAddon::class,
+        'generate:model' => Commands\CommandGenerateModel::class,
+        'generate:command' => Commands\CommandGenerateCommand::class,
     ];
 
     /**
@@ -84,7 +83,7 @@ class Cli
     {
 
         // Initialize the object
-        $factory = new CliFactory;
+        $factory = new CliFactory();
 
         $this->command = $factory->newContext($GLOBALS);
         $this->output = $factory->newStdio();
@@ -101,8 +100,8 @@ class Cli
         $this->commandCalled = $this->argv[1];
 
         // Defining missing constants
-        defined('PATH_ADDONS') || define('PATH_ADDONS', SYSPATH .'ee/ExpressionEngine/Addons/');
-        defined('PATH_THIRD') || define('PATH_THIRD',  SYSPATH . 'user/addons/');
+        defined('PATH_ADDONS') || define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
+        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
     }
 
     /**
@@ -114,7 +113,6 @@ class Cli
         $this->standalone = defined('EE_INSTALLED') && EE_INSTALLED == false;
 
         $this->availableCommands = $this->availableCommands();
-
 
         // Check if command exists
         // If not, return
@@ -129,7 +127,7 @@ class Cli
         }
 
         // Try and initialize command
-        $command = new $commandClass;
+        $command = new $commandClass();
 
         $command->loadOptions();
 
@@ -150,12 +148,12 @@ class Cli
      */
     public function help()
     {
-        $help = new Help(new OptionFactory);
+        $help = new Help(new OptionFactory());
 
         $help->setSummary($this->summary)
-                ->setDescr($this->description)
-                ->setUsage($this->usage)
-                ->setOptions($this->commandOptions);
+            ->setDescr($this->description)
+            ->setUsage($this->usage)
+            ->setOptions($this->commandOptions);
 
         $this->output->outln($help->getHelp($this->name));
 
@@ -170,7 +168,7 @@ class Cli
     public function fail($messages = null)
     {
         if ($messages) {
-            if( ! is_array($messages) ) {
+            if (! is_array($messages)) {
                 $messages = [$messages];
             }
 
@@ -285,6 +283,7 @@ class Cli
             return array_key_exists($commandToParse, $this->availableCommands);
         } else {
             $this->error('EE is not currently installed.');
+
             return array_key_exists($commandToParse, $this->standaloneCommands);
         }
     }
@@ -343,7 +342,7 @@ class Cli
         $commandOptions = array_merge(
             $this->commandOptions,
             [
-                'help,h'    => 'See help'
+                'help,h' => 'See help'
             ]
         );
 
@@ -373,7 +372,6 @@ class Cli
         return $this->options->get($name, $default);
     }
 
-
     /**
      * Loads EE Core commands
      * @return void
@@ -381,7 +379,7 @@ class Cli
     private function loadInternalCommands()
     {
         foreach ($this->internalCommands as $key => $value) {
-            $obj = new $value;
+            $obj = new $value();
 
             if (isset($obj->standalone) && $obj->standalone) {
                 $this->standaloneCommands[$key] = $value;

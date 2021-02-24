@@ -9,7 +9,6 @@ use ExpressionEngine\Cli\Cli;
  */
 class CommandListCommands extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -69,7 +68,7 @@ class CommandListCommands extends Cli
         $this->info('-------------------------------------------------------------------------------------');
 
         foreach ($available as $availableCommand => $availableClass) {
-            $availableHydratedClass = new $availableClass;
+            $availableHydratedClass = new $availableClass();
 
             printf($mask, " {$availableCommand} ", " {$availableHydratedClass->description}");
         }

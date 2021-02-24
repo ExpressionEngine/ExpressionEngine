@@ -13,54 +13,52 @@ namespace ExpressionEngine\Updater\Version_4_0_5;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        $steps = new \ProgressIterator(
+            array(
+                'fixGridModifierParsing'
+            )
+        );
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		$steps = new \ProgressIterator(
-			array(
-				'fixGridModifierParsing'
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Change value of Grid fields to be a string with a single space again to
+     * keep modifier parsing working
+     */
+    private function fixGridModifierParsing()
+    {
+        $grid_fields = ee('Model')->get('ChannelField')
+            ->filter('field_type', 'grid')
+            ->all();
 
-	/**
-	 * Change value of Grid fields to be a string with a single space again to
-	 * keep modifier parsing working
-	 */
-	private function fixGridModifierParsing()
-	{
-		$grid_fields = ee('Model')->get('ChannelField')
-			->filter('field_type', 'grid')
-			->all();
+        foreach ($grid_fields as $field) {
+            $column = 'field_id_' . $field->getId();
 
-		foreach ($grid_fields as $field)
-		{
-			$column = 'field_id_'.$field->getId();
-
-			ee()->db
-				->where($column, '')
-				->or_where($column, NULL)
-				->update(
-					$field->getDataStorageTable(),
-					[$column => ' ']
-				);
-		}
-	}
+            ee()->db
+                ->where($column, '')
+                ->or_where($column, null)
+                ->update(
+                    $field->getDataStorageTable(),
+                    [$column => ' ']
+                );
+        }
+    }
 }
 // END CLASS
 

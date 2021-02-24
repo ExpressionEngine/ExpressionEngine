@@ -11,13 +11,12 @@
 /**
  * Template Router Integer Converter
  */
-class EE_Template_router_alpha_numeric_converter implements EE_Template_router_converter {
-
-	public function validator()
-	{
-		return "([a-zA-Z0-9]+)";
-	}
-
+class EE_Template_router_alpha_numeric_converter implements EE_Template_router_converter
+{
+    public function validator()
+    {
+        return "([a-zA-Z0-9]+)";
+    }
 }
 
 // EOF

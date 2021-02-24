@@ -10,46 +10,36 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use \ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\spam\Library\Vectorizer;
 
 /**
  * Spam Module Punctuation Vectorizer
  */
-class Punctuation implements Vectorizer {
+class Punctuation implements Vectorizer
+{
+    /**
+     * Calculates the ratio of punctuation to non-punctuation
+     *
+     * @param string $source The source text
+     * @access public
+     * @return float The calculated ratio
+     */
+    public function vectorize($source)
+    {
+        ee()->load->helper('multibyte');
 
-	/**
-	 * Calculates the ratio of punctuation to non-punctuation
-	 *
-	 * @param string $source The source text
-	 * @access public
-	 * @return float The calculated ratio
-	 */
-	public function vectorize($source)
-	{
+        $punctuation = preg_match_all('/[!-~]/u', $source, $matches);
 
-		ee()->load->helper('multibyte');
+        $characters = ee_mb_strlen($source);
 
-		$punctuation = preg_match_all('/[!-~]/u', $source, $matches);
+        if ($characters !== 0) {
+            $ratio = $punctuation / $characters;
+        } else {
+            $ratio = 1;
+        }
 
-		$characters  = ee_mb_strlen($source);
-
-		if ($characters !== 0)
-		{
-
-			$ratio = $punctuation / $characters;
-
-		}
-		else
-		{
-
-			$ratio = 1;
-
-		}
-
-		return $ratio;
-
-	}
-
+        return $ratio;
+    }
 }
 
 // EOF

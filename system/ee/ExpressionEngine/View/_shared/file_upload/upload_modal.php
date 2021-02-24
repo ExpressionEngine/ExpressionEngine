@@ -23,4 +23,3 @@ function _EE_uploader_attached()
 
 
 <?php
-

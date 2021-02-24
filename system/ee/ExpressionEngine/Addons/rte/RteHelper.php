@@ -15,7 +15,6 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class RteHelper
 {
-
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
     private static $_fileTags;
@@ -23,7 +22,6 @@ class RteHelper
     private static $_extraTags;
     private static $_sitePages;
     private static $_pageData;
-
 
     // --------------------------------------------------------------------
 
@@ -35,42 +33,42 @@ class RteHelper
     public static function languageMap()
     {
         return array(
-            'arabic'              => 'ar',
-            'arabic-utf8'         => 'ar',
+            'arabic' => 'ar',
+            'arabic-utf8' => 'ar',
             'arabic-windows-1256' => 'ar',
-            'czech'               => 'cs',
-            'cesky'               => 'cs',
-            'danish'              => 'da',
-            'german'              => 'de',
-            'deutsch'             => 'de',
-            'english'             => 'en',
-            'spanish'             => 'es',
-            'spanish_ee201pb'     => 'es',
-            'finnish'             => 'fi',
-            'french'              => 'fr',
-            'hungarian'           => 'hu',
-            'croatian'            => 'hr',
-            'italian'             => 'it',
-            'japanese'            => 'ja',
-            'korean'              => 'ko',
-            'dutch'               => 'nl',
-            'norwegian'           => 'no',
-            'polish'              => 'pl',
-            'brazilian'           => 'pt',
-            'portuguese'          => 'pt',
-            'brasileiro'          => 'pt',
-            'brasileiro_160'      => 'pt',
-            'russian'             => 'ru',
-            'russian_utf8'        => 'ru',
-            'russian_win1251'     => 'ru',
-            'slovak'              => 'sk',
-            'swedish'             => 'sv',
-            'swedish_ee20pb'      => 'sv',
-            'turkish'             => 'tr',
-            'ukrainian'           => 'uk',
-            'chinese'             => 'zh',
+            'czech' => 'cs',
+            'cesky' => 'cs',
+            'danish' => 'da',
+            'german' => 'de',
+            'deutsch' => 'de',
+            'english' => 'en',
+            'spanish' => 'es',
+            'spanish_ee201pb' => 'es',
+            'finnish' => 'fi',
+            'french' => 'fr',
+            'hungarian' => 'hu',
+            'croatian' => 'hr',
+            'italian' => 'it',
+            'japanese' => 'ja',
+            'korean' => 'ko',
+            'dutch' => 'nl',
+            'norwegian' => 'no',
+            'polish' => 'pl',
+            'brazilian' => 'pt',
+            'portuguese' => 'pt',
+            'brasileiro' => 'pt',
+            'brasileiro_160' => 'pt',
+            'russian' => 'ru',
+            'russian_utf8' => 'ru',
+            'russian_win1251' => 'ru',
+            'slovak' => 'sk',
+            'swedish' => 'sv',
+            'swedish_ee20pb' => 'sv',
+            'turkish' => 'tr',
+            'ukrainian' => 'uk',
+            'chinese' => 'zh',
             'chinese_traditional' => 'zh',
-            'chinese_simplified'  => 'zh'
+            'chinese_simplified' => 'zh'
         );
     }
 
@@ -86,9 +84,9 @@ class RteHelper
         $toolbars = static::defaultToolbars();
 
         return array(
-            'toolbar'        => $toolbars['Basic'],
-            'height'         => '200',
-            'upload_dir'     => 'all'
+            'toolbar' => $toolbars['Basic'],
+            'height' => '200',
+            'upload_dir' => 'all'
         );
     }
 
@@ -108,7 +106,7 @@ class RteHelper
                 "bulletedList",
                 "link"
             ),
-            'Full'  => array(
+            'Full' => array(
                 "bold",
                 "italic",
                 "strikethrough",
@@ -180,7 +178,7 @@ class RteHelper
     public static function insertConfigJsById($configId = null)
     {
         ee()->lang->loadfile('rte');
-        
+
         // starting point
         $baseConfig = static::defaultConfigSettings();
 
@@ -262,6 +260,7 @@ class RteHelper
                 $fileBrowser = new $fqcn();
                 if ($fileBrowser instanceof RteFilebrowserInterface) {
                     $fileBrowser->addJs($uploadDir);
+
                     break;
                 }
             }
@@ -282,14 +281,14 @@ class RteHelper
         //link
         $config['link'] = (object) ['decorators' => [
             'openInNewTab' => [
-                    'mode' => 'manual',
-                    'label' => lang('open_in_new_tab'),
-                    'attributes' => [
-                        'target' => '_blank',
-                        'rel' => 'noopener noreferrer'
-                    ]
+                'mode' => 'manual',
+                'label' => lang('open_in_new_tab'),
+                'attributes' => [
+                    'target' => '_blank',
+                    'rel' => 'noopener noreferrer'
                 ]
             ]
+        ]
         ];
 
         // -------------------------------------------
@@ -399,7 +398,6 @@ class RteHelper
             }
         }
     }
-
 
     // --------------------------------------------------------------------
 

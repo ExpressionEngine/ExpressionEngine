@@ -1,5 +1,9 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class Generator_mcp {
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
+class Generator_mcp
+{
 }

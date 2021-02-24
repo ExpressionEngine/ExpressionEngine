@@ -21,7 +21,7 @@
 			<h2><?=lang('profiler_queries')?> (<?=$label?>)</h2>
 			<ul class="query-list">
 				<?php foreach ($queries as $query): ?>
-					<?php $warn = ($query['memory'] > $query['memory_threshold'] OR $query['time'] > $query['time_threshold']) ? 'class="debug-warn"' : ''; ?>
+					<?php $warn = ($query['memory'] > $query['memory_threshold'] or $query['time'] > $query['time_threshold']) ? 'class="debug-warn"' : ''; ?>
 					<li <?=$warn?>>
 						<div class="query-time">
 							<?=$query['time']?>s

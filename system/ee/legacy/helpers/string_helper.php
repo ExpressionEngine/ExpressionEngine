@@ -1,4 +1,8 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed.');
+}
 
 /**
  * This source file is part of the open source project
@@ -28,8 +32,7 @@
  * @param   string
  * @return  string
  */
-if ( ! function_exists('trim_slashes'))
-{
+if (! function_exists('trim_slashes')) {
     function trim_slashes($str)
     {
         return trim($str, '/');
@@ -45,19 +48,14 @@ if ( ! function_exists('trim_slashes'))
  * @param   mixed   string or array
  * @return  mixed   string or array
  */
-if ( ! function_exists('strip_slashes'))
-{
+if (! function_exists('strip_slashes')) {
     function strip_slashes($str)
     {
-        if (is_array($str))
-        {
-            foreach ($str as $key => $val)
-            {
+        if (is_array($str)) {
+            foreach ($str as $key => $val) {
                 $str[$key] = strip_slashes($val);
             }
-        }
-        else
-        {
+        } else {
             $str = stripslashes($str);
         }
 
@@ -74,8 +72,7 @@ if ( ! function_exists('strip_slashes'))
  * @param   string
  * @return  string
  */
-if ( ! function_exists('strip_quotes'))
-{
+if (! function_exists('strip_quotes')) {
     function strip_quotes($str)
     {
         return str_replace(array('"', "'"), '', $str);
@@ -91,8 +88,7 @@ if ( ! function_exists('strip_quotes'))
  * @param   string
  * @return  string
  */
-if ( ! function_exists('quotes_to_entities'))
-{
+if (! function_exists('quotes_to_entities')) {
     function quotes_to_entities($str)
     {
         return str_replace(array("\'","\"","'",'"'), array("&#39;","&quot;","&#39;","&quot;"), $str);
@@ -115,8 +111,7 @@ if ( ! function_exists('quotes_to_entities'))
  * @param   string
  * @return  string
  */
-if ( ! function_exists('reduce_double_slashes'))
-{
+if (! function_exists('reduce_double_slashes')) {
     function reduce_double_slashes($str)
     {
         return preg_replace("#([^/:])/+#", "\\1/", $str);
@@ -140,14 +135,12 @@ if ( ! function_exists('reduce_double_slashes'))
  * @param   bool    TRUE/FALSE - whether to trim the character from the beginning/end
  * @return  string
  */
-if ( ! function_exists('reduce_multiples'))
-{
-    function reduce_multiples($str, $character = ',', $trim = FALSE)
+if (! function_exists('reduce_multiples')) {
+    function reduce_multiples($str, $character = ',', $trim = false)
     {
-        $str = preg_replace('#'.preg_quote($character, '#').'{2,}#', $character, $str);
+        $str = preg_replace('#' . preg_quote($character, '#') . '{2,}#', $character, $str);
 
-        if ($trim === TRUE)
-        {
+        if ($trim === true) {
             $str = trim($str, $character);
         }
 
@@ -165,49 +158,54 @@ if ( ! function_exists('reduce_multiples'))
  * @param   integer number of characters
  * @return  string
  */
-if ( ! function_exists('random_string'))
-{
+if (! function_exists('random_string')) {
     function random_string($type = 'alnum', $len = 8, $antipool = '')
     {
-        switch($type)
-        {
-            case 'basic'    : return mt_rand();
-                break;
-            case 'alnum'    :
-            case 'numeric'  :
-            case 'nozero'   :
-            case 'alpha'    :
+        switch ($type) {
+            case 'basic': return mt_rand();
 
-                    switch ($type)
-                    {
-                        case 'alpha'    :   $pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                break;
+            case 'alnum':
+            case 'numeric':
+            case 'nozero':
+            case 'alpha':
+
+                    switch ($type) {
+                        case 'alpha':   $pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
                             break;
-                        case 'alnum'    :   $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        case 'alnum':   $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
                             break;
-                        case 'numeric'  :   $pool = '0123456789';
+                        case 'numeric':   $pool = '0123456789';
+
                             break;
-                        case 'nozero'   :   $pool = '123456789';
+                        case 'nozero':   $pool = '123456789';
+
                             break;
                     }
 
                     $pool = str_replace(str_split($antipool), '', $pool);
 
                     $str = '';
-                    for ($i=0; $i < $len; $i++)
-                    {
-                        $str .= substr($pool, mt_rand(0, strlen($pool) -1), 1);
+                    for ($i = 0; $i < $len; $i++) {
+                        $str .= substr($pool, mt_rand(0, strlen($pool) - 1), 1);
                     }
+
                     return $str;
+
                 break;
-            case 'unique'   :
-            case 'md5'      :
+            case 'unique':
+            case 'md5':
 
                         return md5(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX)));
-                break;
-            case 'encrypt'  :
-            case 'sha1' :
 
-                        return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), TRUE));
+                break;
+            case 'encrypt':
+            case 'sha1':
+
+                        return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
+
                 break;
         }
     }
@@ -222,18 +220,18 @@ if ( ! function_exists('random_string'))
  * @param   string (as many parameters as needed)
  * @return  string
  */
-if ( ! function_exists('alternator'))
-{
+if (! function_exists('alternator')) {
     function alternator()
     {
         static $i;
 
-        if (func_num_args() == 0)
-        {
+        if (func_num_args() == 0) {
             $i = 0;
+
             return '';
         }
         $args = func_get_args();
+
         return $args[($i++ % count($args))];
     }
 }
@@ -246,8 +244,7 @@ if ( ! function_exists('alternator'))
  * @param   integer number of repeats
  * @return  string
  */
-if ( ! function_exists('repeater'))
-{
+if (! function_exists('repeater')) {
     function repeater($data, $num = 1)
     {
         return (($num > 0) ? str_repeat($data, $num) : '');
@@ -269,12 +266,11 @@ function unique_marker($ident)
 {
     static $rand;
 
-    if ( ! $rand)
-    {
+    if (! $rand) {
         $rand = random_string('alnum', 32);
     }
 
-    return $rand.$ident;
+    return $rand . $ident;
 }
 
 /**
@@ -285,7 +281,7 @@ function unique_marker($ident)
  */
 function trim_nbs($string)
 {
-    return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
+    return trim($string, " \t\n\r\0\xB\xA0" . chr(0xC2) . chr(0xA0));
 }
 
 /**
@@ -296,17 +292,15 @@ function trim_nbs($string)
  **/
 function valid_license_pattern($license)
 {
-    if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
-    {
-        return FALSE;
+    if (count(count_chars(str_replace('-', '', $license), 1)) == 1 or $license == '1234-1234-1234-1234') {
+        return false;
     }
 
-    if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
-    {
-        return FALSE;
+    if (! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license)) {
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /**
@@ -319,18 +313,16 @@ function surrounding_character($string)
 {
     $first_char = substr($string, 0, 1);
 
-    return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
+    return ($first_char == substr($string, -1, 1)) ? $first_char : false;
 }
 
 /**
  * creates uuid4
  * @return string
  */
-if ( ! function_exists('uuid4'))
-{
+if (! function_exists('uuid4')) {
     function uuid4($data = null)
     {
-
         $data = $data ?: random_bytes(16);
 
         assert(strlen($data) == 16);
@@ -339,9 +331,7 @@ if ( ! function_exists('uuid4'))
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-
     }
-
 }
 /*
  * Generate a URL friendly "slug" from a given string.
@@ -351,27 +341,25 @@ if ( ! function_exists('uuid4'))
  * @return string
  */
 
-if( ! function_exists('slug') ) {
-
+if (! function_exists('slug')) {
     function slug($title, $separator = '-')
     {
         // Convert all dashes/underscores into separator
         $flip = $separator === '-' ? '_' : '-';
 
-        $title = preg_replace('!['.preg_quote($flip).']+!u', $separator, $title);
+        $title = preg_replace('![' . preg_quote($flip) . ']+!u', $separator, $title);
 
         // Replace @ with the word 'at'
-        $title = str_replace('@', $separator.'at'.$separator, $title);
+        $title = str_replace('@', $separator . 'at' . $separator, $title);
 
         // Remove all characters that are not the separator, letters, numbers, or whitespace.
-        $title = preg_replace('![^'.preg_quote($separator).'\pL\pN\s]+!u', '', strtolower($title));
+        $title = preg_replace('![^' . preg_quote($separator) . '\pL\pN\s]+!u', '', strtolower($title));
 
         // Replace all separator characters and whitespace by a single separator
-        $title = preg_replace('!['.preg_quote($separator).'\s]+!u', $separator, $title);
+        $title = preg_replace('![' . preg_quote($separator) . '\s]+!u', $separator, $title);
 
         return trim($title, $separator);
     }
-
 }
 
 /**
@@ -380,16 +368,13 @@ if( ! function_exists('slug') ) {
  * @param  string  $value
  * @return string
  */
-
-if( ! function_exists('studly') ) {
-
+if (! function_exists('studly')) {
     function studly($value)
     {
         $value = ucwords(str_replace(['-', '_'], ' ', $value));
 
         return str_replace(' ', '', $value);
     }
-
 }
 
 /**
@@ -399,8 +384,7 @@ if( ! function_exists('studly') ) {
  * @param  string|string[]  $needles
  * @return bool
  */
-if( ! function_exists('string_contains') ) {
-
+if (! function_exists('string_contains')) {
     function string_contains($haystack, $needles)
     {
         ee()->load->helper('multibyte');
@@ -413,7 +397,6 @@ if( ! function_exists('string_contains') ) {
 
         return false;
     }
-
 }
 
 // EOF
