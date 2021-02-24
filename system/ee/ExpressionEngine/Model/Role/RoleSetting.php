@@ -19,6 +19,8 @@ class RoleSetting extends Model
     protected static $_primary_key = 'id';
     protected static $_table_name = 'role_settings';
 
+    protected static $_hook_id = 'role_setting';
+
     protected static $_typed_columns = [
         'role_id' => 'int',
         'site_id' => 'int',

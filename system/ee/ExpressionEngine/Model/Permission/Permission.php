@@ -19,6 +19,8 @@ class Permission extends Model
     protected static $_primary_key = 'permission_id';
     protected static $_table_name = 'permissions';
 
+    protected static $_hook_id = 'permission';
+
     protected static $_typed_columns = [
         'permission_id' => 'int',
         'role_id' => 'int',
