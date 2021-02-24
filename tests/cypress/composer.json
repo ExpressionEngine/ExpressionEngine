@@ -1,5 +1,12 @@
 {
+    "minimum-stability": "dev",
     "require": {
-        "fzaninotto/faker": "^1.6"
-    }
+        "fzaninotto/faker": "*"
+    },
+    "repositories":[
+        {
+            "type": "vcs",
+            "url": "git@github.com:fzaninotto/Faker.git"
+        }
+    ]
 }

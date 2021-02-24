@@ -14,7 +14,7 @@
 class Wizard extends CI_Controller
 {
 
-    public $version           = '6.0.0-b.1'; // The version being installed
+    public $version           = '6.0.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema            = null; // This will contain the schema object with our queries
     public $languages         = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -66,7 +66,7 @@ class Wizard extends CI_Controller
 
     // Native First Party ExpressionEngine Modules (everything else is in third
     // party folder)
-    public $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'consent',
+    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
         'email', 'file', 'forum', 'gallery', 'ip_to_nation',
         'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
@@ -310,7 +310,7 @@ class Wizard extends CI_Controller
         if (! isset($config)) {
             // Is the email template file available? We'll check since we need
             // this later
-            if (! file_exists(EE_APPPATH . '/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
+            if (! file_exists(SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php')) {
                 $this->set_output('error', array('error' => lang('unreadable_email')));
                 return false;
             }
@@ -468,6 +468,7 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        ee()->functions->clear_caching('all');
 
         foreach (ee('Model')->get('Channel')->all() as $channel)
         {
@@ -878,7 +879,7 @@ class Wizard extends CI_Controller
         }
 
         // Load the email template
-        require_once EE_APPPATH . '/language/' . $this->userdata['deft_lang'] . '/email_data.php';
+        require_once SYSPATH . 'ee/language/' . $this->userdata['deft_lang'] . '/email_data.php';
 
         // Install Database Tables!
         if (! $this->schema->install_tables_and_data()) {
@@ -1401,9 +1402,7 @@ class Wizard extends CI_Controller
     {
         if (! is_dir($path) && $depth < 10) {
             $path = $this->set_path('../' . $path, ++$depth);
-        } else if (strpos($path, '/') !== 0) {
-            $path = '/' . $path;
-        }
+        } 
 
         return $path;
     }
@@ -1473,7 +1472,10 @@ class Wizard extends CI_Controller
 
         ee()->load->helper('language');
         ee()->load->view('container', array_merge(
-            array('content' => ee()->load->view($view, $data, true)),
+            array(
+                'content' => ee()->load->view($view, $data, true),
+                'logo' => ee()->load->view('ee-logo', [], true)
+            ),
             $data
         ));
     }
@@ -1647,7 +1649,7 @@ class Wizard extends CI_Controller
             'mbr_notification_emails'   => '',
             'require_terms_of_service'  => 'y',
             'default_primary_role'      => '5',
-            'profile_trigger'           => 'member',
+            'profile_trigger'           => 'member' . $this->now,
             'member_theme'              => 'default',
             'avatar_url'                => '{base_url}' . $this->userdata['avatar_url'],
             'avatar_path'               => $this->userdata['avatar_path'],
@@ -1876,7 +1878,7 @@ class Wizard extends CI_Controller
 
             // Send version to update class and let it do any required work
             if (in_array($module, $this->native_modules)) {
-                $path = EE_APPPATH . '/modules/' . $module . '/';
+                $path = SYSPATH . 'ee/ExpressionEngine/Addons/' . $module . '/';
             } else {
                 $path = PATH_THIRD . $module . '/';
             }

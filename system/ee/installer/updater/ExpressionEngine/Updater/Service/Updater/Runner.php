@@ -19,7 +19,7 @@ use ExpressionEngine\Updater\Service\Updater\Logger;
  * database, and updating the files and database
  */
 class Runner {
-	use \ExpressionEngine\Service\Updater\SteppableTrait {
+	use Service\Updater\SteppableTrait {
 		runStep as runStepParent;
 	}
 
@@ -29,6 +29,7 @@ class Runner {
 	{
 		$this->setSteps([
 			'updateFiles',
+			'addLegacyFiles',
 			'checkForDbUpdates',
 			'backupDatabase',
 			'updateDatabase',
@@ -133,6 +134,8 @@ class Runner {
 	{
 		ee()->config->config['allow_extensions'] = 'n';
 
+		ee()->load->library('progress');
+
 		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
@@ -213,7 +216,11 @@ class Runner {
 	public function selfDestruct($rollback = NULL)
 	{
 		$config = ee('Config')->getFile();
-		$config->set('is_system_on', $config->get('is_system_on_before_updater', 'y'), TRUE);
+		$config->set(
+			'is_system_on',
+			$config->get('is_system_on_before_updater'),
+			$config->getBoolean('is_system_on_before_updater_file')
+		);
 		$config->set('app_version', APP_VER, TRUE);
 
 		// Legacy logger lib to log to update_log table
@@ -259,6 +266,14 @@ class Runner {
 	public function updateAddons()
 	{
 		$this->makeAddonUpdaterService()->updateAddons();
+	}
+
+	/**
+	 * Copies over legacy files needed when upgrading to different major version
+	 */
+	public function addLegacyFiles()
+	{
+		$this->makeLegacyFilesService()->addFiles();
 	}
 
 	/**
@@ -363,6 +378,17 @@ class Runner {
 			ee()->config->item('app_version')
 		);
 	}
+
+	/**
+	 * Makes LegacyFiles service
+	 */
+	protected function makeLegacyFilesService()
+	{
+		return new Service\Updater\LegacyFiles(
+			ee()->config->item('app_version'),
+			$this->logger
+		);
+	}	
 
 	/**
 	 * Makes Updater\Logger service

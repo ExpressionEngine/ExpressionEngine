@@ -353,27 +353,6 @@ class EE_Output {
 		}
 
 		// --------------------------------------------------------------------
-		//if fronteditor is enabled, include relevant scripts and styles
-		if (IS_PRO && REQ == 'PAGE')
-		{
-			if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage', 'static']))
-			{
-				if (isset(ee()->session->cache['channel']['entry_ids']))
-				{
-					$frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
-					$need_load_frontedit = $frontEdit->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids']);
-					if ($need_load_frontedit)
-					{
-						$frontedit_assets = '<div id="eeFrontEdit-content" style="display: none">...please wait...</div>';
-						$frontedit_assets .= '<script type="text/javascript" src="'.URL_PRO_THEMES.'js/fronteditor.min.js"></script>';
-						$frontedit_assets .= '<link rel="stylesheet" type="text/css"  media="screen" href="'.URL_PRO_THEMES.'css/fronteditor.min.css" />';
-						$output = $this->add_to_foot($output, $frontedit_assets);
-					}
-				}
-			}
-		}
-
-		// --------------------------------------------------------------------
 
 		// Do we need to generate profile data?
 		// If so, load the Profile service and run it.
@@ -675,7 +654,7 @@ class EE_Output {
 	 * @param	string
 	 * @return	void
 	 */
-	function show_user_error($type = 'submission', $errors, $heading = '', $redirect_url = '')
+	function show_user_error($type = 'submission', $errors = '', $heading = '', $redirect_url = '')
 	{
 		// If we have a redirect URL, use that instead of outputting the standard error page.
 		if (! empty($redirect_url))

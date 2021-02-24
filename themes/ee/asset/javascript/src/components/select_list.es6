@@ -155,6 +155,9 @@ class SelectList extends React.Component {
   // Allows for changing of parents and children, whereas sortable() will only
   // let you change the order constrained to a level
   bindNestable () {
+    // Make sure the draggable container is positioned relatively so that the nestable drag item is positioned correctly
+    this.container.parentNode.style.position = 'relative'
+
     $(this.container).nestable({
       listNodeName: 'ul',
       listClass: 'field-nested',

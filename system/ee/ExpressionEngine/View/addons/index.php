@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 <div class="panel">
   <div class="panel-body">
-<?=form_open($form_url)?>
+
 <div class="tab-wrap">
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -47,7 +47,7 @@
 </div>
 
 </div>
-<?=form_close()?>
+
 </div>
 </div>
 

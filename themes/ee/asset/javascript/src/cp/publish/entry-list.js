@@ -9,11 +9,17 @@
 
 $(document).ready(function () {
 
-	var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
+	var searching = null;
+	if (typeof(EE.viewManager)!=='undefined') {
+		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
+	}
+	var form_selector = '.ee-main__content .container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
-		$('.ee-main__content > .container').html(data.html);
+		$(form_selector).parents('.container').first().html(data.html);
 
-		saveDefaultUrl = data.viewManager_saveDefaultUrl;
+		if (typeof(EE.viewManager)!=='undefined') {
+			saveDefaultUrl = data.viewManager_saveDefaultUrl;
+		}
 
 		if (jQuery().toggle_all) {
 			$('table').toggle_all();
@@ -22,42 +28,92 @@ $(document).ready(function () {
 		window.history.pushState(null, '', data.url);
 	}
 
-	// Submitting the search form
-	$('body').on('submit', '.ee-main__content > .container > .tbl-ctrls > form', function(event) {
-		$.ajax({
-			url: $(this).attr('action'),
-			data: $(this).serialize(),
-			type: 'POST',
+	function searchEntries(type = 'GET', url = null) 
+	{
+		if (searching) {
+			searching.abort();
+		}
+
+		var _form = $(form_selector);
+
+		if (url === null) {
+			url = typeof(_form.data('search-url'))!='undefined' ? _form.data('search-url') : _form.attr('action');
+		}
+		
+		var data = {};
+		if (type != 'GET') {
+			data = $('input[name!="columns[]"]', _form).serialize();
+		}
+		
+		searching = $.ajax({
+			url: url,
+			type: type,
+			data: data,
 			dataType: 'json',
-			success: replaceData
+			error: function(response) {
+				searching = null;
+			},
+			success: function(response) {
+				searching = null;
+				replaceData(response);
+				sortableColumns();
+			}
 		});
+	}
+
+	// Submitting the search form
+	$('body').on('submit', form_selector, function(event) {
 
 		event.preventDefault();
+
+		var url = typeof($(this).data('search-url'))!='undefined' ? $(this).data('search-url') : $(this).attr('action');
+		url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + $('input[name="filter_by_keyword"]').val() + '$2');
+
+		searchEntries('POST', url)
+
 	});
 
 	// Typing into the search form
-	$('body').on('keyup', 'input[name="search"]', _.debounce(function() {
+	$('body').on('keyup', 'input[name="filter_by_keyword"]', _.debounce(function() {
 		if (location.protocol === 'https:' &&
 			navigator.userAgent.indexOf('Safari') > -1) {
 			return;
 		}
-		$(this).closest('form').submit();
+
+		var val = $(this).val();
+		//only submit when search is empty or min. 3 chars
+		if (val.length == 0 || val.length >= 3) {
+			var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
+			url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
+
+			searchEntries('POST', url)
+		}
+
 	}, 150));
 
+	//changind the search scope
+	$('body').on('change', 'input[name="search_in"]', function() {
+
+		if ($('input[name="filter_by_keyword"]').val()!='') {
+			searchEntries('POST');
+		}
+	
+	});
+
 	// Selecting a channel filter
-	$('body').on('click', 'form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
+	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
-		var search = $('input[name="search"]').serialize();
+		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		$.ajax({
-			url: $(this).attr('href') + '&' + search,
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				replaceData(data);
-				sortableColumns();
-			}
-		});
+		searchEntries('GET', $(this).attr('href') + '&' + search)
+
+		event.preventDefault();
+	});
+
+	$('body').on('click', 'form .filter-search-bar .filter-clear', function(event) {
+		var search = $('input[name="filter_by_keyword"]').serialize();
+
+		searchEntries('GET', $(this).attr('href') + '&' + search)
 
 		event.preventDefault();
 	});
@@ -70,7 +126,7 @@ $(document).ready(function () {
 	var loadViewRequest = null;
 	var viewColumns = [];
 	var viewColumnsChanged = false;
-	$('body').on('change', '.filter-bar div[rev="toggle-columns"] input', function(e){
+	$('body').on('change', '.filter-search-bar div[rev="toggle-columns"] input', function(e){
 		e.preventDefault();
 		if (saveViewRequest) {
 			saveViewRequest.abort();
@@ -79,7 +135,7 @@ $(document).ready(function () {
 			loadViewRequest.abort();
 		}
 
-		$('.filter-bar div[rev="toggle-columns"] input').each(function(el){
+		$('.filter-search-bar div[rev="toggle-columns"] input').each(function(el){
 			viewColumnsChanged = true;
 			if ($(this).is(':checked')) {
 				viewColumns.push($(this).val());
@@ -88,7 +144,7 @@ $(document).ready(function () {
 	});
 
 	$('body').on('click', function(e){
-		if ( $(e.target).closest('.filter-bar div[rev="toggle-columns"]').length === 0) {
+		if ( $(e.target).closest('.filter-search-bar div[rev="toggle-columns"]').length === 0) {
 			saveView();
 		}
 	});
@@ -107,7 +163,7 @@ $(document).ready(function () {
 				loadViewRequest.abort();
 			}
 
-			var _form = $('.filter-bar div[rev="toggle-columns"]').closest('form');
+			var _form = $('.filter-search-bar div[rev="toggle-columns"]').closest('form');
 			var _data = $('input[name!="columns[]"]', _form).serialize();
 
 			saveViewRequest = $.ajax({
@@ -142,7 +198,7 @@ $(document).ready(function () {
 
 	// Make the columns sortable
 	function sortableColumns() {
-		$('.filter-bar div[rev="toggle-columns"]').sortable({
+		$('.filter-search-bar div[rev="toggle-columns"]').sortable({
 			containment: false,
 			handle: '.dropdown-reorder', // Set drag handle to the top box
 			items: '.dropdown__item',			// Only allow these to be sortable
@@ -159,7 +215,7 @@ $(document).ready(function () {
 
 
 
-	$('.filter-bar #columns_view_choose').on('change', function() {
+	$('.filter-search-bar #columns_view_choose').on('change', function() {
 		var view = $(this).val();
 
 		$('#columns_view_new, #columns_view_options').hide();

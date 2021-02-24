@@ -378,7 +378,7 @@ class Forum_tab {
 								->get();
 
 		$member = ee()->session->getMember();
-		$role_ids = $member->getAllRoles()->pluck('role_id');
+		$role_ids = $member ? $member->getAllRoles()->pluck('role_id') : [];
 
 		foreach ($forums->result() as $row)
 		{

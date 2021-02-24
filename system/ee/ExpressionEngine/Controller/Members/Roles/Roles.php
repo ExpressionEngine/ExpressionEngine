@@ -629,12 +629,20 @@ class Roles extends AbstractRolesController {
 			'file' => array('cp/form_group'),
 		));
 
-		return [
-			'role'        => $this->renderRoleTab($role, $errors),
-			'site_access' => $this->renderSiteAccessTab($role, $errors),
-			'cp_access'   => $this->renderCPAccessTab($role, $errors),
-			'template_access'   => $this->renderTemplateAccessTab($role, $errors),
-		];
+		if ($role->getId() != 1) {
+			$tabs = [
+				'role'        => $this->renderRoleTab($role, $errors),
+				'site_access' => $this->renderSiteAccessTab($role, $errors),
+				'cp_access'   => $this->renderCPAccessTab($role, $errors),
+				'template_access'   => $this->renderTemplateAccessTab($role, $errors),
+			];
+		} else {
+			$tabs = [
+				'role' => $this->renderRoleTab($role, $errors)
+			];
+		}
+
+		return $tabs;
 	}
 
 	private function renderRoleTab(Role $role, $errors)
@@ -680,34 +688,39 @@ class Roles extends AbstractRolesController {
 						'value' => $role->description
 					]
 				]
-			],
-			[
-				'title' => 'security_lock',
-				'desc' => 'lock_description',
-				'fields' => [
-					'is_locked' => [
-						'type' => 'yes_no',
-						'value' => $role->is_locked,
+			]
+		];
+		
+		if ($role->getId() != 1) {
+			$section = array_merge($section, [
+				[
+					'title' => 'security_lock',
+					'desc' => 'lock_description',
+					'fields' => [
+						'is_locked' => [
+							'type' => 'yes_no',
+							'value' => $role->is_locked,
+						]
 					]
-				]
-			],
-			[
-				'title' => 'role_groups',
-				'desc' => 'role_groups_desc',
-				'fields' => [
-					'role_groups' => [
-						'type' => 'checkbox',
-						'choices' => $role_groups,
-						'value' => $role->RoleGroups->pluck('group_id'),
-						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('role_groups')),
-							'link_text' => lang('add_new'),
-							'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+				],
+				[
+					'title' => 'role_groups',
+					'desc' => 'role_groups_desc',
+					'fields' => [
+						'role_groups' => [
+							'type' => 'checkbox',
+							'choices' => $role_groups,
+							'value' => $role->RoleGroups->pluck('group_id'),
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('role_groups')),
+								'link_text' => lang('add_new'),
+								'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+							]
 						]
 					]
 				]
-			]
-		];
+			]);
+		}
 
 		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
@@ -1383,14 +1396,20 @@ class Roles extends AbstractRolesController {
 		foreach ($template_groups as $id => $name)
 		{
 			$templates = ee('Model')->get('Template')
-				->fields('template_id', 'template_name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('group_id', $id)
-				->all()
-				->getDictionary('template_id', 'template_name');
+				->all();
+			$children = [];
+			foreach ($templates as $template) {
+				$template_name = $template->template_name;
+				if ($template->enable_http_auth == 'y') {
+					$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+				}
+				$children[$template->getId()] = $template_name;
+			}
 			$template_access['choices']['template_group_' . $id] = [
 				'label' => $name,
-				'children' => $templates
+				'children' => $children
 			];
 		}
 
@@ -1842,8 +1861,14 @@ class Roles extends AbstractRolesController {
 		if ($replacement_role_id == 'delete') {
 			$replacement_role_id = NULL;
 		}
+
 		if (!empty($replacement_role_id)) {
-			if (in_array($replacement_role_id, $restricted) || ee('Model')->get('Role', $replacement_role_id)->first() === null) {
+			$allowed_roles = ee('Model')->get('Role')
+				->filter('role_id', 'NOT IN', array_merge($role_ids, [1 ,2, 3, 4]));
+			if (!ee('Permission')->isSuperAdmin()) {
+				$allowed_roles->filter('is_locked', 'n');
+			}
+			if (!in_array($replacement_role_id, $allowed_roles->all()->pluck('role_id')) || ee('Model')->get('Role', $replacement_role_id)->first() === null) {
 				ee('CP/Alert')->makeInline('roles-error')
 					->asIssue()
 					->withTitle(lang('roles_delete_error'))

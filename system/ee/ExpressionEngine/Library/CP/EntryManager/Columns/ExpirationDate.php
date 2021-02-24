@@ -31,6 +31,6 @@ class ExpirationDate extends Column
 
 	public function renderTableCell($data, $field_id, $entry)
 	{
-		return ee()->localize->human_time($entry->expiration_date);
+		return $entry->expiration_date ? ee()->localize->human_time($entry->expiration_date) : '';
 	}
 }

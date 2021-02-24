@@ -526,31 +526,35 @@ class Addon {
 	public function getJumps()
 	{
 		$class = $this->getJumpClass();
-		$jumpMenu = new $class;
+		$items = [];
+		try {
+			$jumpMenu = new $class;
 
-		$items = $jumpMenu->getItems();
+			$items = $jumpMenu->getItems();
 
-		foreach ($items as $key => $item)
-		{
-			// Prepend the add-on shortname to the item key to prevent command collisions.
-			$newKey = $this->shortname . '_' . ucfirst($key);
+			foreach ($items as $key => $item) {
+				// Prepend the add-on shortname to the item key to prevent command collisions.
+				$newKey = $this->shortname . '_' . ucfirst($key);
 
-			// Save the command under the new key.
-			$items[$newKey] = $item;
+				// Save the command under the new key.
+				$items[$newKey] = $item;
 
-			// Unset the old key so we don't end up with duplicates.
-			unset($items[$key]);
+				// Unset the old key so we don't end up with duplicates.
+				unset($items[$key]);
 
-			// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
-			$items[$newKey]['addon'] = true;
-			$items[$newKey]['command'] = $this->shortname . ' ' . lang($items[$newKey]['command']);
-			$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . lang($items[$newKey]['command_title']);
+				// Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
+				$items[$newKey]['addon'] = true;
+				$items[$newKey]['command'] = $this->shortname . ' ' . lang($items[$newKey]['command']);
+				$items[$newKey]['command_title'] = $this->provider->getName() . ': ' . lang($items[$newKey]['command_title']);
 
-			if ($item['dynamic'] === true) {
-				$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
-			} else {
-				$items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				if ($item['dynamic'] === true) {
+					$items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				} else {
+					$items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+				}
 			}
+		} catch (\Exception $e) {
+			//if add-on does not properly implement jumps, we don't want to take resposibility, so just skip that
 		}
 
 		return $items;
@@ -829,7 +833,7 @@ class Addon {
 				->get('actions');
 			$url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'addon='.$this->shortname . AMP . 'file=' . $mask;
 		} else {
-			if (empty($default)) $default = 'default-addon-on-icon.png';
+			if (empty($default)) $default = 'default-addon-icon.svg';
 			$url = URL_THEMES . 'asset/img/'.$default;
 		}
 

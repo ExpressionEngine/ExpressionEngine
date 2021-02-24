@@ -479,6 +479,16 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		/**
+		 * we're placing the hook call here, so it would be called a bit earlier,
+		 * when all data are still present
+		 */
+		if (ee()->extensions->active_hook('before_channel_entry_delete'))
+		{
+			$entry = ee('Model')->get('ChannelEntry', $this->entry_id)->first();
+			ee()->extensions->call('before_channel_entry_delete', $entry, $entry->getValues());
+		}
+		
 		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
@@ -1180,13 +1190,20 @@ class ChannelEntry extends ContentModel {
 		}
 
 		$member = ee()->session->getMember();
-		if (!empty($member)) {
-			$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
+		$channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
+		if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
+			$assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
 
 			foreach ($all_statuses as $status) {
-				if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses)) {
+				if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
 					$status_options[] = $status->getSelectOptionComponent();
 				}
+			}
+		} else {
+			//fallback to guest assigned statuses
+			foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status)
+			{
+				$status_options[] = $status->getSelectOptionComponent();
 			}
 		}
 

@@ -57,7 +57,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('.grid-field__table tbody');
+	this.rowContainer = this.root.find('.grid-field__table > tbody');
 	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
@@ -66,7 +66,7 @@ Grid.Publish = function(field, settings) {
 	this.cellSelector = 'td';
 	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'a[rel=remove_row]';
+	this.deleteButtonsSelector = '[rel=remove_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -189,6 +189,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		
 		// File Grid minimum row count validated on server
 		if (this.isFileGrid) {
 			return
@@ -200,7 +201,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		if (typeof(this.settings)!=='undefined')
 		{
-			this.settings.grid_min_rows - rowsCount;
+			neededRows = this.settings.grid_min_rows - rowsCount;
 		}
 
 		// Show empty field message if field is empty and no rows are needed
@@ -253,7 +254,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
 		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
-		$(this.reorderHandleContainerSelector, this.rowContainer).parent().toggleClass('sort-cancel', rowCount == 1);
 
 		// Inside File Grid? Hide Grid completely if there are no rows
 		if (this.isFileGrid) {
@@ -352,7 +352,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', 'a[rel=remove_row]', function(event) {
+		this.root.on('click', that.deleteButtonsSelector, function(event) {
 			event.preventDefault();
 
 			var row = $(this).closest(that.rowSelector);
@@ -919,7 +919,11 @@ Grid.Settings.prototype = {
  */
 EE.grid = function(field, settings) {
 	if (settings == undefined) {
-		settings = $(field).data('grid-settings');
+		if ($(field).is('[grid-settings]')) {
+			settings = $(field).data('grid-settings');
+		} else {
+			settings = $(field).find('.grid-field__table').first().data('grid-settings');
+		}
 	}
 
 	return new Grid.Publish(field, settings);

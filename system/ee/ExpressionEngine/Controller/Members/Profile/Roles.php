@@ -46,7 +46,7 @@ class Roles extends Profile {
 		$roles = $roles->all()
 			->getDictionary('role_id', 'name');
 
-		if ( ! array_key_exists($this->member->role_id, $roles))
+		if (!ee('Permission')->isSuperAdmin() && !array_key_exists($this->member->role_id, $roles))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

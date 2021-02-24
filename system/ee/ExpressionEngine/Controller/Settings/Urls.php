@@ -73,13 +73,14 @@ class Urls extends Settings {
 						'theme_folder_path' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
+				ee('Config')->getFile()->getBoolean('legacy_member_templates') ? 
 				array(
 					'title' => 'member_segment_trigger',
 					'desc' => 'member_segment_trigger_desc',
 					'fields' => array(
 						'profile_trigger' => array('type' => 'text')
 					)
-				),
+				) : null,
 				array(
 					'title' => 'category_segment_trigger',
 					'desc' => 'category_segment_trigger_desc',

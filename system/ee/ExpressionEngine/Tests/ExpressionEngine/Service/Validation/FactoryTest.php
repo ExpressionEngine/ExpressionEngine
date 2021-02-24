@@ -25,7 +25,7 @@ class FactoryTest extends TestCase {
 		$result = $this->factory->check('required', '');
 		$this->assertFalse($result);
 
-		$result = $this->factory->check('email', 'hello@ellislab.com');
+		$result = $this->factory->check('email', 'hello@packettide.com');
 		$this->assertTrue($result);
 
 		$result = $this->factory->check('integer', 1);

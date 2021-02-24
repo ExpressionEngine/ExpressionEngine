@@ -166,7 +166,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->isActive();
 		}
 
-		if (ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
+		if (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
@@ -482,6 +482,14 @@ abstract class AbstractDesign extends CP_Controller {
 			if (ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 			{
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
+			}
+			
+			if (ee('Config')->getFile()->getBoolean('allow_php') && $template->allow_php == 'y') {
+				$template_name = '<i class="fab fa-php fa-lg icon-left" title="' . lang('enable_php') . '"></i>' . $template_name;
+			}
+
+			if ($template->enable_http_auth == 'y') {
+				$template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
 			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)

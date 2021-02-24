@@ -1300,7 +1300,7 @@ class Members extends CP_Controller {
 					show_error(lang('must_be_superadmin_to_delete_one'));
 				}
 			}
-			if ($member->PrimaryRole->getId() == 1) {
+			if ($member->role_id == 1) {
 				$super_admins++;
 			}
 		}
@@ -1420,32 +1420,6 @@ class Members extends CP_Controller {
 
 		$vars['errors'] = NULL;
 
-		$vars = [
-			'sections' => [],
-			'tabs'     => [
-				'member' => $this->renderMemberTab($vars['errors']),
-				'roles'  => $this->renderRolesTab($vars['errors']),
-			]
-		];
-
-		if ( ! ee('Session')->isWithinAuthTimeout())
-		{
-			$vars['sections']['secure_form_ctrls'] = array(
-				array(
-					'title' => 'your_password',
-					'desc' => 'your_password_desc',
-					'group' => 'verify_password',
-					'fields' => array(
-						'verify_password' => array(
-							'type'      => 'password',
-							'required'  => TRUE,
-							'maxlength' => PASSWORD_MAX_LENGTH
-						)
-					)
-				)
-			);
-		}
-
 		if ( ! empty($_POST))
 		{
 			$member = ee('Model')->make('Member');
@@ -1453,7 +1427,7 @@ class Members extends CP_Controller {
 			// Separate validator to validate confirm_password and verify_password
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
-				'confirm_password' => 'matches[password]',
+				'confirm_password' => 'required|matches[password]',
 				'verify_password'  => 'whenGroupIdIs['.implode(',', ee('Permission')->rolesThatCan('access_cp')).']|authenticated[useAuthTimeout]'
 			));
 
@@ -1556,6 +1530,32 @@ class Members extends CP_Controller {
 			}
 		}
 
+		$vars = array_merge($vars, [
+			'sections' => [],
+			'tabs'     => [
+				'member' => $this->renderMemberTab($vars['errors']),
+				'roles'  => $this->renderRolesTab($vars['errors']),
+			]
+		]);
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
+				array(
+					'title' => 'your_password',
+					'desc' => 'your_password_desc',
+					'group' => 'verify_password',
+					'fields' => array(
+						'verify_password' => array(
+							'type'      => 'password',
+							'required'  => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
+					)
+				)
+			);
+		}
+
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('register_member');
@@ -1593,7 +1593,7 @@ class Members extends CP_Controller {
 
 	private function renderMemberTab($errors)
 	{
-		$section = [
+		$sections = [[
 			[
 				'title' => 'username',
 				'fields' => [
@@ -1636,10 +1636,33 @@ class Members extends CP_Controller {
 					]
 				]
 			]
-		];
+		]];
 
-		return ee('View')->make('_shared/form/section')
-				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+		foreach (ee('Model')->make('Member')->getDisplay()->getFields() as $field) {
+			if ($field->get('m_field_reg') == 'y' OR $field->isRequired()) {
+				$sections['custom_fields'][] = [
+					'title' => $field->getLabel(),
+					'desc' => '',
+					'fields' => [
+						$field->getName() => [
+							'type' => 'html',
+							'content' => $field->getForm(),
+							'required' => $field->isRequired(),
+						]
+					]
+				];
+			}
+		}
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
 	}
 
 	private function renderRolesTab($errors)

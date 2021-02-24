@@ -395,13 +395,17 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->session->set_flashdata('entry_id', $entry->entry_id);
 
+		$edit_entry_url = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
+
 		$alert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
 			? ee('CP/Alert')->makeStandard()
 			: ee('CP/Alert')->makeInline('entry-form');
 
+		$lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+
 		$alert->asSuccess()
 			->withTitle(lang($action . '_entry_success'))
-			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
+			->addToBody($lang_string)
 			->defer();
 
 
@@ -544,6 +548,13 @@ abstract class AbstractPublish extends CP_Controller {
 			{
 				$show_preview_button = TRUE;
 			}
+		}
+
+		$configured_site_url = explode('//', ee()->config->item('site_url'));
+		$configured_domain = explode('/', $configured_site_url[1]);
+
+		if (($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) || ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:')))) {
+			$has_preview_button  = FALSE;
 		}
 
 		if ($has_preview_button) {

@@ -869,9 +869,12 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderSettingsPartial(TemplateModel $template, $errors)
 	{
-		$sections = array(
-			array(
-				ee('CP/Alert')->makeInline('permissions-warn')
+		$sections = [
+			0 => []
+		];
+		if (ee('Permission')->isSuperAdmin()) {
+			if (ee('Config')->getFile()->getBoolean('allow_php')) {
+				$sections[0][] = ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('php_in_templates_warning'))
 					->addToBody(
@@ -879,82 +882,91 @@ class Template extends AbstractDesignController {
 						'caution'
 					)
 					->cannotClose()
-					->render(),
-				array(
-					'title' => 'template_name',
-					'desc' => 'alphadash_desc',
-					'fields' => array(
-						'template_name' => array(
-							'type' => 'text',
-							'value' => $template->template_name,
-							'required' => TRUE
-						)
+					->render();
+			} else {
+				$sections[0][] = ee('CP/Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('php_in_templates_warning'))
+					->addToBody(lang('php_in_templates_config_warning'))
+					->cannotClose()
+					->render();
+			}
+		}
+		$sections[0][] = array(
+			'title' => 'template_name',
+			'desc' => 'alphadash_desc',
+			'fields' => array(
+				'template_name' => array(
+					'type' => 'text',
+					'value' => $template->template_name,
+					'required' => TRUE
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'template_type',
+			'fields' => array(
+				'template_type' => array(
+					'type' => 'radio',
+					'choices' => $this->getTemplateTypes(),
+					'value' => $template->template_type
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'enable_caching',
+			'desc' => 'enable_caching_desc',
+			'fields' => array(
+				'cache' => array(
+					'type' => 'yes_no',
+					'value' => $template->cache
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'refresh_interval',
+			'desc' => 'refresh_interval_desc',
+			'fields' => array(
+				'refresh' => array(
+					'type' => 'text',
+					'value' => $template->refresh
+				)
+			)
+		);
+		if (ee('Permission')->isSuperAdmin() && ee('Config')->getFile()->getBoolean('allow_php')) {
+			$sections[0][] = array(
+				'title' => 'enable_php',
+				'desc' => 'enable_php_desc',
+				'caution' => TRUE,
+				'fields' => array(
+					'allow_php' => array(
+						'type' => 'yes_no',
+						'value' => $template->allow_php
 					)
-				),
-				array(
-					'title' => 'template_type',
-					'fields' => array(
-						'template_type' => array(
-							'type' => 'radio',
-							'choices' => $this->getTemplateTypes(),
-							'value' => $template->template_type
-						)
+				)
+			);
+			$sections[0][] = array(
+				'title' => 'parse_stage',
+				'desc' => 'parse_stage_desc',
+				'fields' => array(
+					'php_parse_location' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'i' => 'input',
+							'o' => 'output'
+						),
+						'value' => $template->php_parse_location
 					)
-				),
-				array(
-					'title' => 'enable_caching',
-					'desc' => 'enable_caching_desc',
-					'fields' => array(
-						'cache' => array(
-							'type' => 'yes_no',
-							'value' => $template->cache
-						)
-					)
-				),
-				array(
-					'title' => 'refresh_interval',
-					'desc' => 'refresh_interval_desc',
-					'fields' => array(
-						'refresh' => array(
-							'type' => 'text',
-							'value' => $template->refresh
-						)
-					)
-				),
-				array(
-					'title' => 'enable_php',
-					'desc' => 'enable_php_desc',
-					'caution' => TRUE,
-					'fields' => array(
-						'allow_php' => array(
-							'type' => 'yes_no',
-							'value' => $template->allow_php
-						)
-					)
-				),
-				array(
-					'title' => 'parse_stage',
-					'desc' => 'parse_stage_desc',
-					'fields' => array(
-						'php_parse_location' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'i' => 'input',
-								'o' => 'output'
-							),
-							'value' => $template->php_parse_location
-						)
-					)
-				),
-				array(
-					'title' => 'hit_counter',
-					'desc' => 'hit_counter_desc',
-					'fields' => array(
-						'hits' => array(
-							'type' => 'text',
-							'value' => $template->hits
-						)
-					)
+				)
+			);
+		}
+		$sections[0][] = array(
+			'title' => 'hit_counter',
+			'desc' => 'hit_counter_desc',
+			'fields' => array(
+				'hits' => array(
+					'type' => 'text',
+					'value' => $template->hits
 				)
 			)
 		);

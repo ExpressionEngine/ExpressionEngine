@@ -233,6 +233,35 @@ class Provider extends InjectionBindingDecorator {
 	}
 
 	/**
+	 * Set up aliases
+	 *
+	 * @return void
+	 */
+	public function setClassAliases()
+	{
+		$aliases = $this->get('aliases', array());
+		
+		if (!empty($aliases)) {
+			foreach ($aliases as $origClassName => $aliasClassName) {
+				if (is_numeric($origClassName)) {
+					$origClassName = $aliasClassName;
+					if (strpos($aliasClassName, 'ExpressionEngine\Addons')===0) {
+						$replace_once = 1;
+						$aliasClassName = str_replace('ExpressionEngine\Addons', 'Addons', $aliasClassName, $replace_once);
+					}
+					$aliasClassName = 'EllisLab\\' . $aliasClassName;
+				}
+				if (!class_exists($aliasClassName)) {
+					class_alias($aliasClassName, $origClassName);
+				}
+			}
+			unset($origClassName, $aliasClassName);
+		}
+	
+		unset($aliases);
+	}
+
+	/**
 	 * Helper function to get a given setup key
 	 *
 	 * @param String $key Key name

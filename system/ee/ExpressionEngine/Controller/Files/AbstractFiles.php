@@ -70,6 +70,10 @@ abstract class AbstractFiles extends CP_Controller {
 			{
 				$watermark_header->isActive();
 			}
+
+			if (ee('Model')->get('File')->count()) {
+				$sidebar->addItem(lang('export_all'), ee('CP/URL')->make('files/export'))->withIcon('download');
+			}
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
@@ -141,14 +145,6 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$toolbar_items = [];
-
-		if (ee('Model')->get('File')->count())
-		{
-			$toolbar_items['export'] = [
-				'href'  => ee('CP/URL')->make('files/export'),
-				'title' => lang('export_all')
-			];
-		}
 
 		if ($active !== NULL)
 		{
@@ -254,7 +250,7 @@ abstract class AbstractFiles extends CP_Controller {
 				unset($toolbar['crop']);
 			}
 
-			if ( ! $file->isImage())
+			if ( ! $file->isEditableImage())
 			{
 				unset($toolbar['view']);
 				unset($toolbar['crop']);
@@ -407,11 +403,16 @@ abstract class AbstractFiles extends CP_Controller {
 
 			ee()->view->filters = $filters->render($reset_url);
 
-			$files = $files->limit($perpage)
-						->offset($offset)
-						->all();
+			if ($files->count() == 0) {
+				$vars['no_results'] = [
+					'text' => sprintf(lang('no_found'), lang('files'))
+				];
+			}
 
-			$vars['files'] = $files;
+			$files = $files->limit($perpage)
+						->offset($offset);
+
+			$vars['files'] = $files->all();
 		}
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)

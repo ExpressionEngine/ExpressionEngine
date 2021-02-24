@@ -231,7 +231,6 @@ class Publish extends AbstractPublishController {
 			'form_title' => lang('new_entry'),
 			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
-			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),
 			'header' => [
 				'title' => lang('new_entry'),
@@ -249,16 +248,36 @@ class Publish extends AbstractPublishController {
 			]];
 		}
 
-		if ($entry->isLivePreviewable())
-		{
-			$action_id = ee()->db->select('action_id')
-				->where('class', 'Channel')
-				->where('method', 'live_preview')
-				->get('actions');
-			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url'	=> ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id
-			]);
-			ee('CP/Modal')->addModal('live-preview', $modal);
+		if ($entry->isLivePreviewable()) {
+			$lp_domain_mismatch = false;
+			$configured_site_url = explode('//', ee()->config->item('site_url'));
+			$configured_domain = explode('/', $configured_site_url[1]);
+
+			if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
+			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
+			}
+
+			if ($lp_domain_mismatch) {
+				$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+					->asIssue()
+					->canClose()
+					->withTitle(lang('preview_cannot_display'))
+					->addToBody($lp_message);
+				ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+			} else {
+				$action_id = ee()->db->select('action_id')
+					->where('class', 'Channel')
+					->where('method', 'live_preview')
+					->get('actions');
+				$modal = ee('View')->make('publish/live-preview-modal')->render([
+					'preview_url'	=> ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id
+				]);
+				ee('CP/Modal')->addModal('live-preview', $modal);
+			}
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 
 			$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')

@@ -9,19 +9,20 @@ class MemberGroups extends ControlPanel {
         'heading': 'div.col.w-12 form h1',
         'keyword_search': 'input[type!=hidden][name=filter_by_keyword]',
         'new_group': '.main-nav__toolbar a[href$="cp/members/roles/create"]',
-        'perpage_filter': 'div.filters a[data-filter-label^="show"]',
+        'perpage_filter': '.filter-bar [data-filter-label^="show"]',
 
         'list.batch_actions': 'select[name=bulk_action]',
-        'list.batch_submit': '.tbl-bulk-act button',
+        'list.batch_submit': '.bulk-action-bar button',
         'list.groups_table': '.list-group',
         'list.groups': '.list-group .list-item',
         'list.no_results': 'tr.no-results',
 
-        'edit.submit': '.tab-bar__right-buttons .form-btns input[type=submit]',
+        'edit.save_dropdown': '.title-bar__extra-tools .js-dropdown-toggle',
+        'edit.submit': '.title-bar__extra-tools button[type=submit][name=submit]',
 
          // Fields
-        'edit.name': 'input[type!=hidden][name="group_title"]',
-        'edit.description': 'textarea[name="group_description"]',
+        'edit.name': 'input[type!=hidden][name="name"]',
+        'edit.description': 'textarea[name="description"]',
         'edit.is_locked': 'input[name="is_locked"]', // :visible => false
         'edit.is_locked_toggle': '[data-toggle-for=is_locked]',
 
@@ -42,7 +43,7 @@ class MemberGroups extends ControlPanel {
         'edit.exclude_from_moderation_toggle': '[data-toggle-for=exclude_from_moderation]', // :visible => false
 
         'edit.comment_actions': 'div[data-input-value="comment_actions"]', // :visible => false
-        'edit.comment_actions_options': 'div[data-input-value="comment_actions"] input[type="checkbox"]', // :visible => false
+        'edit.comment_actions_options': 'div[data-input-value="comment_actions"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_search': 'input[name="can_search"]', // :visible => false
         'edit.can_search_toggle': '[data-toggle-for=can_search]',
@@ -64,7 +65,7 @@ class MemberGroups extends ControlPanel {
 
         'edit.cp_homepage': 'input[name="cp_homepage"]', // :visible => false
         'edit.footer_helper_links': 'div[data-input-value="footer_helper_links"]', // :visible => false
-        'edit.footer_helper_links_options': 'div[data-input-value="footer_helper_links"] input[type="checkbox"]', // :visible => false
+        'edit.footer_helper_links_options': 'div[data-input-value="footer_helper_links"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_view_homepage_news': 'input[name="can_view_homepage_news"]', // :visible => false
         'edit.can_view_homepage_news_toggle': '[data-toggle-for=can_view_homepage_news]', // :visible => false
@@ -73,27 +74,27 @@ class MemberGroups extends ControlPanel {
         'edit.can_admin_channels_toggle': '[data-toggle-for=can_admin_channels]', // :visible => false
 
         'edit.channel_permissions': 'div[data-input-value="channel_permissions"]', // :visible => false
-        'edit.channel_permissions_options': 'div[data-input-value="channel_permissions"] input[type="checkbox"]', // :visible => false
+        'edit.channel_permissions_options': 'div[data-input-value="channel_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
         'edit.channel_field_permissions': 'div[data-input-value="channel_field_permissions"]', // :visible => false
-        'edit.channel_field_permissions_options': 'div[data-input-value="channel_field_permissions"] input[type="checkbox"]', // :visible => false
+        'edit.channel_field_permissions_options': 'div[data-input-value="channel_field_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
         'edit.channel_category_permissions': 'div[data-input-value="channel_category_permissions"]', // :visible => false
-        'edit.channel_category_permissions_options': 'div[data-input-value="channel_category_permissions"] input[type="checkbox"]', // :visible => false
+        'edit.channel_category_permissions_options': 'div[data-input-value="channel_category_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
         'edit.channel_status_permissions': 'div[data-input-value="channel_status_permissions"]', // :visible => false
-        'edit.channel_status_permissions_options': 'div[data-input-value="channel_status_permissions"] input[type="checkbox"]', // :visible => false
+        'edit.channel_status_permissions_options': 'div[data-input-value="channel_status_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
 
-        'edit.channel_entry_actions': 'div[data-input-value="channel_entry_actions"]', // :visible => false
-        'edit.channel_entry_actions_options': 'div[data-input-value="channel_entry_actions"] input[type="checkbox"]', // :visible => false
+        'edit.channel_entry_actions': 'div[data-input-value="channel_access"]', // :visible => false
+        'edit.channel_entry_actions_options': 'div[data-input-value="channel_access"] .field-inputs input[type="checkbox"]', // :visible => false
 
-        'edit.allowed_channels': 'div[data-input-value="allowed_channels"]', // :visible => false
-        'edit.allowed_channels_options': 'div[data-input-value="allowed_channels"] input[type="checkbox"]', // :visible => false
+        //'edit.allowed_channels': 'div[data-input-value="allowed_channels"]', // :visible => false
+        //'edit.allowed_channels_options': 'div[data-input-value="allowed_channels"] input[type="checkbox"]', // :visible => false
 
         'edit.can_access_files': 'input[name="can_access_files"]', // :visible => false
         'edit.can_access_files_toggle': '[data-toggle-for=can_access_files]', // :visible => false
         'edit.file_upload_directories': 'div[data-input-value="file_upload_directories"]', // :visible => false
-        'edit.file_upload_directories_options': 'div[data-input-value="file_upload_directories"] input[type="checkbox"]', // :visible => false
+        'edit.file_upload_directories_options': 'div[data-input-value="file_upload_directories"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.files': 'div[data-input-value="files"]', // :visible => false
-        'edit.files_options': 'div[data-input-value="files"] input[type="checkbox"]', // :visible => false
+        'edit.files_options': 'div[data-input-value="files"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_access_members': 'input[name="can_access_members"]', // :visible => false
         'edit.can_access_members_toggle': '[data-toggle-for=can_access_members]',
@@ -101,10 +102,10 @@ class MemberGroups extends ControlPanel {
         'edit.can_admin_mbr_groups_toggle': '[data-toggle-for=can_admin_mbr_groups]',
 
         'edit.member_group_actions': 'div[data-input-value="member_group_actions"]', // :visible => false
-        'edit.member_group_actions_options': 'div[data-input-value="member_group_actions"] input[type="checkbox"]', // :visible => false
+        'edit.member_group_actions_options': 'div[data-input-value="member_group_actions"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.member_actions': 'div[data-input-value="member_actions"]', // :visible => false
-        'edit.member_actions_options': 'div[data-input-value="member_actions"] input[type="checkbox"]', // :visible => false
+        'edit.member_actions_options': 'div[data-input-value="member_actions"] .field-inputs input[type="checkbox"]', // :visible => false
 
 
         'edit.can_access_design': 'input[name="can_access_design"]', // :visible => false
@@ -113,16 +114,16 @@ class MemberGroups extends ControlPanel {
         'edit.can_admin_design_toggle': '[data-toggle-for=can_admin_design]', // :visible => false
 
         'edit.template_groups': 'div[data-input-value="template_group_permissions"]', // :visible => false
-        'edit.template_groups_options': 'div[data-input-value="template_group_permissions"] input[type="checkbox"]', // :visible => false
+        'edit.template_groups_options': 'div[data-input-value="template_group_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
         'edit.template_partials': 'div[data-input-value="template_partials"]', // :visible => false
-        'edit.template_partials_options': 'div[data-input-value="template_partials"] input[type="checkbox"]', // :visible => false
+        'edit.template_partials_options': 'div[data-input-value="template_partials"] .field-inputs input[type="checkbox"]', // :visible => false
         'edit.template_variables': 'div[data-input-value="template_variables"]', // :visible => false
-        'edit.template_variables_options': 'div[data-input-value="template_variables"] input[type="checkbox"]', // :visible => false
+        'edit.template_variables_options': 'div[data-input-value="template_variables"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.template_permissions': 'div[data-input-value="template_permissions"]', // :visible => false
-        'edit.template_permissions_options': 'div[data-input-value="template_permissions"] input[type="checkbox"]', // :visible => false
-        'edit.allowed_template_groups': 'div[data-input-value="allowed_template_groups"]', // :visible => false
-        'edit.allowed_template_groups_options': 'div[data-input-value="allowed_template_groups"] input[type="checkbox"]', // :visible => false
+        'edit.template_permissions_options': 'div[data-input-value="template_permissions"] .field-inputs input[type="checkbox"]', // :visible => false
+        'edit.allowed_template_groups': 'div[data-input-value="template_group_access"]', // :visible => false
+        'edit.allowed_template_groups_options': 'div[data-input-value="template_group_access"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_access_addons': 'input[name="can_access_addons"]', // :visible => false
         'edit.can_access_addons_toggle': '[data-toggle-for=can_access_addons]', // :visible => false
@@ -130,15 +131,15 @@ class MemberGroups extends ControlPanel {
         'edit.can_admin_addons_toggle': '[data-toggle-for=can_admin_addons]', // :visible => false
 
         'edit.addons_access': 'div[data-input-value="addons_access"]', // :visible => false
-        'edit.addons_access_options': 'div[data-input-value="addons_access"] input[type="checkbox"]', // :visible => false
+        'edit.addons_access_options': 'div[data-input-value="addons_access"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.rte_toolsets': 'div[data-input-value="rte_toolsets"]', // :visible => false
-        'edit.rte_toolsets_options': 'div[data-input-value="rte_toolsets"] input[type="checkbox"]', // :visible => false
+        'edit.rte_toolsets_options': 'div[data-input-value="rte_toolsets"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_access_utilities': 'input[name="can_access_utilities"]', // :visible => false
         'edit.can_access_utilities_toggle': '[data-toggle-for=can_access_utilities]', // :visible => false
         'edit.access_tools': 'div[data-input-value="access_tools"]', // :visible => false
-        'edit.access_tools_options': 'div[data-input-value="access_tools"] input[type="checkbox"]', // :visible => false
+        'edit.access_tools_options': 'div[data-input-value="access_tools"] .field-inputs input[type="checkbox"]', // :visible => false
 
         'edit.can_access_logs': 'input[name="can_access_logs"]', // :visible => false
         'edit.can_access_logs_toggle': '[data-toggle-for=can_access_logs]', // :visible => false

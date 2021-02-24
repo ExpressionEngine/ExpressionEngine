@@ -2,7 +2,7 @@
 
 $boot_with_spam = TRUE;
 require 'bootstrap.php';
-require_once 'vendor/fzaninotto/faker/src/autoload.php';
+require_once '../../vendor/fzaninotto/faker/src/autoload.php';
 
 $command = array_shift($argv);
 

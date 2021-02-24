@@ -133,7 +133,7 @@ class EE_Javascript {
 	 * @param	string	- Javascript code for mouse out
 	 * @return	string
 	 */
-	public function hover($element = 'this', $over, $out)
+	public function hover($element = 'this', $over = '', $out = '')
 	{
 		return $this->js->__hover($element, $over, $out);
 	}
@@ -718,6 +718,8 @@ class EE_Javascript {
 
 			if (typeof EE == "undefined" || ! EE) {
 				var EE = '.json_encode($this->global_vars).';
+			} else {
+				EE = Object.assign(EE, ' . json_encode($this->global_vars) . ');
 			}
 
 			if (typeof console === "undefined" || ! console.log) {

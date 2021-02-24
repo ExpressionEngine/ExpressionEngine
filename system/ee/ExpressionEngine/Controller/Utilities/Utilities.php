@@ -60,7 +60,7 @@ class Utilities extends CP_Controller {
 			}
 		}
 
-		$sidebar->addDivider();
+		$sidebar->addHeader(lang('general_utilities'));
 
 		if (ee('Permission')->can('access_translate'))
 		{
@@ -80,7 +80,7 @@ class Utilities extends CP_Controller {
 			->urlIsExternal();
 
 		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
-			$sidebar->addHeader(lang('manage_extensions'), ee('CP/URL')->make('utilities/extensions'));
+			$sidebar->addItem(lang('manage_extensions'), ee('CP/URL')->make('utilities/extensions'));
 		}
 
 		if (ee('Permission')->isSuperAdmin()) {

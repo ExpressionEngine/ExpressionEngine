@@ -140,6 +140,16 @@ class Member {
 			ee()->load->library('template', NULL, 'TMPL');
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
+
+		if ($this->member_template == true && !ee('Request')->isPost()) {
+			ee()->load->library('logger');
+			ee()->logger->developer('Member profile templates are now legacy and not recommended to use. Please use regular templates and {exp:member:...} tags.', TRUE, 60*60*24*30);
+
+			if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
+				ee()->logger->developer('Someone tried to access legacy member template, but those are not enabled in config.php', TRUE, 60*60*24*30);
+				return ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+			}
+		}
 	}
 
 	/**
@@ -1805,7 +1815,7 @@ class Member {
 			$MM->{$key} = $value;
 		}
 
-		return $MM->memberlist();
+		return $MM->member_search();
 	}
 
 	/**
@@ -2763,6 +2773,66 @@ class Member {
 
 		return ee()->TMPL->tagdata;
 	}
+
+	/**
+	 * Member roles list
+	 */
+	public function roles()
+	{
+		$member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->first();
+
+		if (!$member) {
+			return ee()->TMPL->no_results();
+		}
+
+		$roles = $member->getAllRoles()->getDictionary('role_id', 'name');
+
+		$vars = [];
+		$i = 0;
+		foreach ($roles as $id => $role) {
+			$vars[$i++] = [
+				'role_id' => $id,
+				'name' => $role,
+				'is_primary_role' => ($id == $member->PrimaryRole->getId()),
+				'primary_role_id' => $member->PrimaryRole->getId(),
+				'primary_role_name' => $member->PrimaryRole->name
+			];
+		}
+
+		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+	}
+
+	/**
+	 * Check member role assignment
+	 */
+	public function has_role()
+	{
+		if (ee()->TMPL->fetch_param('role_id') == '') {
+			return ee()->TMPL->no_results();
+		}
+		
+		$member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->first();
+
+		if (!$member) {
+			return ee()->TMPL->no_results();
+		}
+
+		$roles = $member->getAllRoles()->pluck('role_id');
+
+		if (in_array(ee()->TMPL->fetch_param('role_id'), $roles)) {
+			return ee()->TMPL->tagdata;
+		}
+
+		return ee()->TMPL->no_results();
+	}	
 
 	/**
 	 * Parse a custom member field

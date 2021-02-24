@@ -317,11 +317,11 @@ class EE_Lang {
 			// Check custom languages first
 			SYSPATH.'user/language/'.$idiom.'/'.$langfile,
 			// Check if the user session language is English
-			BASEPATH.'language/'.$idiom.'/'.$langfile,
+			SYSPATH.'ee/language/'.$idiom.'/'.$langfile,
 			// Check their defined default language
 			SYSPATH.'user/language/'.$deft_lang.'/'.$langfile,
 			// Lastly render the english
-			BASEPATH.'language/english/'.$langfile
+			SYSPATH.'ee/language/english/'.$langfile
 		);
 
 		// If we're in the installer, add those lang files

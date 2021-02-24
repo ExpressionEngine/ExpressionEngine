@@ -818,7 +818,11 @@ class Channel_form_lib
             )
         );
 
+        $this->compile_js($addt_js, $markItUp);
+    }
 
+    public function compile_js($addt_js = [], $markItUp = [])
+    {
         if ($this->datepicker) {
             $addt_js['date']['date_format'] = ee()->localize->get_date_format();
             $addt_js['lang']['date']['months']['full'] = array(
@@ -3166,7 +3170,7 @@ SCRIPT;
     private function switch_site($site_id)
     {
         ee()->config->set_item('site_id', $site_id);
-        ee()->config->site_prefs('', $site_id);
+        ee()->config->get_cached_site_prefs($site_id);
     }
 }
 

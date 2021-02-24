@@ -23,7 +23,6 @@ class BulkEdit extends AbstractBulkEdit {
 	protected $standard_default_fields = [
 		'status',
 		'expiration_date',
-		'sticky'
 		// Plus comment settings, author, and categories added dynamically below
 	];
 
@@ -56,6 +55,10 @@ class BulkEdit extends AbstractBulkEdit {
 		if (ee('Permission')->can('assign_post_authors'))
 		{
 			$this->standard_default_fields[] = 'author_id';
+		}
+
+		if ($entry->Channel->sticky_enabled) {
+			$this->standard_default_fields[] = 'sticky';
 		}
 
 		if ($entry->Channel->comment_system_enabled)

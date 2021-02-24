@@ -2237,7 +2237,31 @@ class EE_Template {
 		// Does the first segment exist?  No?  Show the default template
 		if (ee()->uri->segment(1) === FALSE)
 		{
-			return $this->fetch_template('', 'index', TRUE);
+			$default_template = $this->fetch_template('', 'index', TRUE);
+
+			if ($default_template === false) {
+				$this->log_item('Processing Default Template as 404 Page');
+
+				$tmpl_query = ee()->db->select('template_data')
+					->from('specialty_templates')
+					->where('site_id', ee()->config->item('site_id'))
+					->where('template_name', 'post_install_message_template')
+					->get();
+				if ($tmpl_query->num_rows() == 0) {
+					return false;
+				}
+
+				$this->template_type = "404";
+				$this->layout_vars = array(); // Reset Layout vars
+				$this->parse($tmpl_query->row('template_data'));
+				$out = $this->parse_globals($this->final_template);
+				ee()->output->out_type = "404";
+				ee()->output->set_output($out);
+				ee()->output->_display();
+				exit;
+			}
+			
+			return $default_template;
 		}
 
 		// Is only the pagination showing in the URI?
@@ -2728,7 +2752,7 @@ class EE_Template {
 		$row = $query->row_array();
 
 		// Is PHP allowed in this template?
-		if ($row['allow_php'] == 'y')
+		if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y')
 		{
 			$this->parse_php = TRUE;
 
@@ -4609,8 +4633,12 @@ class EE_Template {
 					 );
 
 					// do it!
-					$template_model = ee('Model')->make('Template', $data)->save();
-					$template_model->saveNewTemplateRevision($template_model);
+					try {
+						$template_model = ee('Model')->make('Template', $data)->save();
+						$template_model->saveNewTemplateRevision($template_model);
+					} catch (Exception $e) {
+						// if template has invalid characters that might be an issue with some databases, silently exiting here
+					}
 
 					// add to existing array so we don't try to create this template again
 					$existing[$group][] = $template_name;

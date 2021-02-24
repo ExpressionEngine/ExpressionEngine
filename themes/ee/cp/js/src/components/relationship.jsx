@@ -31,13 +31,15 @@ class Relationship extends React.Component {
 	}
 
 	componentDidMount() {
-		this.bindSortable()
+        this.bindSortable()
+        EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
 	}
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.selected !== prevState.selected) {
             // Refresh the sortable items when the selected items change
             this.bindSortable()
+            EE.cp.formValidation._sendAjaxRequest($(ReactDOM.findDOMNode(this).parentNode).find('input[type=hidden]').first());
         }
     }
 
@@ -169,7 +171,7 @@ class Relationship extends React.Component {
             return notInSelected && allowedChannel && filterName
         })
 
-        let showAddButton = ((this.props.limit > this.state.selected.length) && this.props.can_add_items)
+        let showAddButton = ((this.props.limit > this.state.selected.length) && (this.props.multi || this.state.selected.length==0))
 
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
@@ -233,6 +235,7 @@ class Relationship extends React.Component {
                                         buttonClass="filter-bar__button"
                                     />
                                 </div>
+                                {this.props.can_add_items &&
                                 <div className="filter-bar__item">
                                     {props.channels.length == 1 &&
                                     <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
@@ -250,6 +253,7 @@ class Relationship extends React.Component {
                                     </div>
                                     }
                                 </div>
+                                }
                             </div>
                         </div>
 

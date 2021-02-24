@@ -87,13 +87,15 @@ class BelongsTo extends Relation {
 	{
 		list($from, $_) = $this->getKeys();
 
+		// We are explicitly calling the __set methods because sometimes
+		// it does not get called, causing an error starting in PHP 7.4
 		if ($this->is_weak)
 		{
-			$source->$from = 0;
+			$source->__set($from, NULL);
 		}
 		else
 		{
-			$source->$from = NULL;
+			$source->__set($from, NULL);
 		}
 	}
 

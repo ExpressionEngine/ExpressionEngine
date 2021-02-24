@@ -51,7 +51,7 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
-			`site_pages` TEXT NOT NULL ,
+			`site_pages` MEDIUMTEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`)
 		)";
@@ -513,7 +513,6 @@ class EE_Schema {
 			channel_require_membership char(1) NOT NULL default 'y',
 			channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			channel_html_formatting char(4) NOT NULL default 'all',
-			extra_publish_controls char(1) NOT NULL default 'n',
 			channel_allow_img_urls char(1) NOT NULL default 'y',
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
@@ -1450,6 +1449,7 @@ class EE_Schema {
 
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('offline_template', 'system', " . time() . ", '', '".addslashes(offline_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('message_template', 'system', " . time() . ", '', '".addslashes(message_template())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('post_install_message_template', 'system', " . time() . ", '', '".addslashes(post_install_message_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_reg', 'email', 'members', " . time() . ", '".addslashes(trim(admin_notify_reg_title()))."', '".addslashes(admin_notify_reg())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_entry', 'email', 'content', " . time() . ", '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
@@ -1620,7 +1620,7 @@ class EE_Schema {
 				'can_admin_mbr_templates',
 				'can_ban_users',
 				'can_admin_addons',
-				'can_create_new_templates',
+				'can_create_templates',
 				'can_edit_templates',
 				'can_delete_templates',
 				'can_create_template_groups',

@@ -404,17 +404,18 @@ class EE_Functions {
 		$return = ee()->input->get_post('RET');
 		$return_link = false;
 
-		if (empty($return)) {
+		if (empty($return) && $go_to_index === TRUE) {
 			// If we don't have a return in the POST and we've specified to go to the site index.
-			if ($go_to_index === TRUE) {
-				$return_link = ee()->functions->fetch_site_index();
-			}
+			$return_link = ee()->functions->fetch_site_index();
 		} elseif (is_numeric($return)) {
 			// If the return is a number, it's a reference to how many pages back we have to go.
 			$return_link = ee()->functions->form_backtrack($return);
-		} else {
-			// If we're here, the return is a full string.
+		} elseif (substr(strtolower($return), 0, 4) === 'http') {
+			// If we're using a fully qualified URL, don't modify it.
 			$return_link = $return;
+		} else {
+			// If we're here, the return is a relative URL or template path so prepend the site URL to it.
+			$return_link = ee()->functions->create_url((string) $return);
 		}
 
 		return $return_link;
@@ -1016,7 +1017,10 @@ class EE_Functions {
 	 */
 	public function fetch_assigned_channels($all_sites = FALSE)
 	{
-		return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+		if (ee()->session->getMember()) {
+			return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+		}
+		return [];
 	}
 
 	/**

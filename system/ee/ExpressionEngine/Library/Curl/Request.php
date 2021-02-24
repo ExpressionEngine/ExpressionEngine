@@ -16,6 +16,7 @@ namespace ExpressionEngine\Library\Curl;
 abstract class Request {
 
 	protected $headers = array();
+	protected $headersLowercase = array();
 
 	public function __construct($url, $data, $callback = NULL)
 	{
@@ -94,12 +95,14 @@ abstract class Request {
 
 			$this->headers[$key] = $value;
 		}
+
+		$this->setHeadersLowercase();
 	}
 
 	/**
 	 * Returns the requested header value
 	 *
-	 * @param	string	$key	Header to return value for
+	 * @param	string	$key 	Header to return value for
 	 * @return	string	Value of header, or FALSE if header not found
 	 */
 	public function getHeader($key)
@@ -109,9 +112,44 @@ abstract class Request {
 			return $this->headers[$key];
 		}
 
-		return FALSE;
+		// check if key exists in lowercase array.. will return value or false
+		return $this->getHeaderLowercase($key);
 	}
 
+	/**
+	 * Sets all headers to be lowercase
+	 */
+	protected function setHeadersLowercase()
+	{
+		if(!empty($this->headers)) {
+			// loop over headers and set both key and value to lowecase
+			foreach($this->headers as $key => $value) {
+					if(!empty($value)) {
+						// Please note.. this is only lowercase key.. not value
+						// lowercase value will kill the code ee signiture one click download check.
+						$this->headersLowercase[strtolower($key)] = $value;
+					}
+			}
+		}
+	}
+
+	/**
+	 * Returns the requested header value all lowercase
+	 *
+	 * @param	string	$key	Header to return value for
+	 * @return	string	Value of header, or FALSE if header not found
+	 */
+	public function getHeaderLowercase($key)
+	{
+		$key = strtolower($key);
+
+		if (isset($this->headersLowercase[$key]))
+		{
+			return $this->headersLowercase[$key];
+		}
+
+		return FALSE;
+	}
 }
 
 // EOF

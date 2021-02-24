@@ -253,8 +253,8 @@ class Template extends FileSyncedModel {
 		$version->item_field = 'template_data';
 		$version->item_data = $this->template_data;
 		$version->item_date = ee()->localize->now;
-		if (!empty($this->LastAuthor)) {
-			$version->Author = $this->LastAuthor;
+		if (!empty($this->last_author_id)) {
+			$version->item_author_id = $this->last_author_id;
 		} else {
 			$version->item_author_id = 0;
 		}

@@ -83,18 +83,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse {title}
 		if ($key == $prefix.'title')
 		{
-			//frontend edit link
-			if (IS_PRO)
-			{
-				if (!isset($ft->disable_frontedit) || $ft->disable_frontedit!=true)
-				{
-					$frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
-					$tagdata = str_replace(
-						LD.$key.RD,
-						$frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $key).LD.$key.RD,
-						$tagdata);
-				}
-			}
 			$tagdata = str_replace(
 				LD.$key.RD,
 				ee()->typography->formatTitle($data['title']),

@@ -252,11 +252,18 @@ class Member_memberlist extends Member {
 		}
 	}
 
+	/**
+	 * Member search
+	 */
+	public function member_search()
+	{
+		return $this->memberlist(true);
+	}
 
 	/** ----------------------------------------
 	/**  Member List
 	/** ----------------------------------------*/
-	function memberlist()
+	function memberlist($is_search_form = false)
 	{
 		// Handle our protected data if any. This contains our extra params.
 		$protected = ee()->functions->handle_protected();
@@ -274,25 +281,19 @@ class Member_memberlist extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')), '', $return_error_link);
 		}
 
-		// Find out where our memberlist page actually is (for doing search results).
-		$result_page = ee()->TMPL->fetch_param('result_page');
-
-		// If the action is relative, make sure it has a leading slash so we don't append it to the current url.
-		if (!empty($result_page) && substr($result_page, 0, 4) !== 'http' && substr($result_page, 0, 1) !== '/')
-		{
-			$result_page = '/' . $result_page;
-		}
-
 		/** ----------------------------------------
 		/**  Grab the templates
 		/** ----------------------------------------*/
 
 		// Fetch the template tag data
 		$tagdata = trim(ee()->TMPL->tagdata);
+		$result_page = null;
 
 		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
 		if (! empty($tagdata)) {
 			$template = ee()->TMPL->tagdata;
+			// Find out where our memberlist page actually is (for doing search results).
+			$result_page = ee()->functions->fetch_current_uri();
 		} else {
 			$template = $this->_load_element('memberlist');
 		}
@@ -355,16 +356,27 @@ class Member_memberlist extends Member {
 			$group_id = 0;
 		}
 
+		if (ee()->TMPL->fetch_param('group_id') != '') {
+			$group_id = (int) ee()->TMPL->fetch_param('group_id');
+		}
+		if (ee()->TMPL->fetch_param('role_id') != '') {
+			$group_id = (int) ee()->TMPL->fetch_param('role_id');
+		}
+
 		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order');
+
+		if (in_array(strtolower(ee()->TMPL->fetch_param('sort')), ['asc', 'desc'])) {
+			$sort_order = ee()->TMPL->fetch_param('sort');
+		}
 
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
-			$row_limit = ee()->config->item('memberlist_row_limit');
+			$row_limit = (ee()->TMPL->fetch_param('limit') != '') ? ee()->TMPL->fetch_param('limit') : ee()->config->item('memberlist_row_limit');
 		}
 
 		if ( ! ($order_by = ee()->input->post('order_by')))
 		{
-			$order_by = ee()->config->item('memberlist_order_by');
+			$order_by = (ee()->TMPL->fetch_param('orderby') != '') ? ee()->TMPL->fetch_param('orderby') : ee()->config->item('memberlist_order_by');
 
 			// Normalizing cp available sorts
 			$order_by = ($order_by == 'username') ? 'screen_name' : $order_by;
@@ -404,6 +416,8 @@ class Member_memberlist extends Member {
 				}
 			}
 		}
+
+		$result_page = str_replace(trim($search_path, '/'), '', $result_page);
 
 		/** ----------------------------------------
 		/**  Parse the request URI
@@ -538,7 +552,7 @@ class Member_memberlist extends Member {
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$pagination->basepath = (! empty($result_page) ? $result_page : $this->_member_path('memberlist')) . $path;
+		$pagination->basepath = !empty($result_page) ? $result_page . $search_path : $this->_member_path('memberlist') . $path;
 
 		$template = $pagination->prepare($template);
 
@@ -1003,13 +1017,23 @@ class Member_memberlist extends Member {
 			}
 		}
 
-		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
-		$form_open_member_search = ee()->functions->form_declaration(array(
-			'method' => 'post',
-			'action' => $this->_member_path('do_member_search')
-		));
+		if ($is_search_form && !empty($tagdata)) {
+			$template = ee()->functions->form_declaration(array(
+				'hidden_fields' => array(
+					'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
+					'RET' => ee()->TMPL->fetch_param('return')!='' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
+					'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
+				)
+			)) . $template . '</form>';
+		} else {
+			$template = str_replace(LD."form_declaration".RD, $form_open, $template);
+			$form_open_member_search = ee()->functions->form_declaration(array(
+				'method' => 'post',
+				'action' => $this->_member_path('do_member_search')
+			));
 
-		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
+			$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
+		}
 
 		if (! empty($member_rows_diff))
 		{
@@ -1166,7 +1190,7 @@ class Member_memberlist extends Member {
 			$_POST['group_id'] = $_POST['search_group_id'];
 		}
 
-		if (count($search_array) == 0)
+		if (count($search_array) == 0 && REQ !== 'ACTION')
 		{
 			return $this->memberlist();
 		}
@@ -1219,6 +1243,25 @@ class Member_memberlist extends Member {
 
 		if ($query->num_rows() == 0)
 		{
+			if (REQ === 'ACTION') {
+				$return = ee()->input->get_post('no_result_page');
+
+				if (! empty($return)) {
+					if (is_numeric($return)) {
+						$return_link = ee()->functions->form_backtrack($return);
+					} else {
+						$return_link = $return;
+					}
+
+					// Make sure it's an actual URL.
+					if (substr($return_link, 0, 4) !== 'http') {
+						$return_link = ee()->functions->create_url($return_link);
+					}
+
+					ee()->functions->redirect($return_link);
+					exit;
+				}
+			}
 			return ee()->output->show_user_error('off', array(ee()->lang->line('search_no_result')), ee()->lang->line('search_result_heading'));
 		}
 
@@ -1245,6 +1288,27 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
+
+		$return = ee()->input->get_post('RET');
+
+		if (! empty($return))
+		{
+			if (is_numeric($return)) {
+				$return_link = ee()->functions->form_backtrack($return);
+			} else {
+				$return_link = $return;
+			}
+
+			// Make sure it's an actual URL.
+			if (substr($return_link, 0, 4) !== 'http') {
+				$return_link = ee()->functions->create_url($return_link);
+			}
+
+			$return_link = reduce_double_slashes($return_link . '/' . $hash);
+
+			ee()->functions->redirect($return_link);
+			exit;
+		}
 
 		if (! empty($protected['result_page']))
 		{

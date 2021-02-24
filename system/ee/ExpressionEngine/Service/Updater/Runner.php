@@ -74,9 +74,7 @@ class Runner {
 		$this->logger->log('Taking the site offline');
 
 		// We'll save the current system on setting
-		$config = ee('Config')->getFile();
-		$config->set('is_system_on_before_updater', $config->get('is_system_on', 'y'));
-		$config->set('is_system_on', 'n', TRUE);
+		$this->turnSystemOff();
 	}
 
 	public function rollback()
@@ -140,6 +138,14 @@ class Runner {
 			fwrite($stdout, $message);
 			fclose($stdout);
 		}
+	}
+
+	private function turnSystemOff()
+	{
+		$config = ee('Config')->getFile();
+		$config->set('is_system_on', 'n', false);
+		$config->set('is_system_on_before_updater_file', $config->has('is_system_on'), false);
+		$config->set('is_system_on_before_updater', $config->get('is_system_on'), false);
 	}
 
 }

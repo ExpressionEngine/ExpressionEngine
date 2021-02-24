@@ -169,8 +169,11 @@ class FieldFacade {
 	public function getIcon()
 	{
 		if (empty($this->icon)) {
-			$addon = ee('Addon')->get($this->getItem('field_type'));
+			$error_reporting = error_reporting(0);
+			$fts = $this->api->fetch_all_fieldtypes();
+			$addon = ee('Addon')->get($fts[$this->getItem('field_type')]['package']);
 			$this->icon = $addon->getIconUrl('field.svg');
+			error_reporting($error_reporting);
 		}
 		return $this->icon;
 	}

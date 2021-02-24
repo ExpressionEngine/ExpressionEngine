@@ -13,8 +13,6 @@ class Colorpicker_ft extends EE_Fieldtype {
 
 	var $info = [];
 
-	public $disable_frontedit = true;
-
     var $default_settings = [
 		'allowed_colors' 			=> 'any',
 		// The default color to use on invalid field input
@@ -105,10 +103,12 @@ class Colorpicker_ft extends EE_Fieldtype {
 	 * Creates a color picker input with the specified values
 	 * The values are passed to the react color picker component
 	*/
-    private function create_colorpicker($info) {
+    private function create_colorpicker($info, $disabled = false) {
 		$data = base64_encode(json_encode($info));
 
-        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" />";
+		$disabled = $disabled ? 'disabled' : '';
+
+        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled}/>";
     }
 
 	// -----------------------------------------------------------------------
@@ -317,7 +317,7 @@ class Colorpicker_ft extends EE_Fieldtype {
         $grid->setBlankRow([
 			// array('html' => '<input name="color" />'),
             // array('html' => form_input('color', ''))
-            array('html' => $this->create_colorpicker(['inputName' => 'color']))
+            array('html' => $this->create_colorpicker(['inputName' => 'color'], true))
 		]);
 
         $grid->setData([]);

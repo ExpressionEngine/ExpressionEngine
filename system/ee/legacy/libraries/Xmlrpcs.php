@@ -501,11 +501,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 			return $this->multicall_error('nomethod');
 		}
 
-		$tempArray = $methName->me;
-
-		$scalar_type = key($tempArray);
-		$scalar_value = current($tempArray);
-
+		list($scalar_value, $scalar_type) = array(reset($methName->me), key($methName->me));
 		$scalar_type = $scalar_type == $this->xmlrpcI4 ? $this->xmlrpcInt : $scalar_type;
 
 		if ($methName->kindOf() != 'scalar' OR $scalar_type != 'string') {
@@ -518,15 +514,10 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 			return $this->multicall_error('notarray');
 		}
 
-		$tempArray = $params->me;
-
-		$a = key($tempArray);
-		$b = current($tempArray);
-
-		$numParams = count($b);
+		list($b, $a) = array(reset($params->me), key($params->me));
 
 		$msg = new XML_RPC_Message($scalar_value);
-		for ($i = 0; $i < $numParams; $i++)
+		for ($i = 0, $numParams = count($b); $i < $numParams; $i++)
 		{
 			$msg->params[] = $params->me['array'][$i];
 		}

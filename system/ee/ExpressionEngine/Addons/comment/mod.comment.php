@@ -1557,10 +1557,10 @@ class Comment {
 		}
 
 		/** ----------------------------------------
-		/**  Blacklist/Whitelist Check
+		/**  Blocked/Allowed List Check
 		/** ----------------------------------------*/
 
-		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
+		if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n')
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}

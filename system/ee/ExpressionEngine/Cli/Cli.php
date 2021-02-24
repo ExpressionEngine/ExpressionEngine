@@ -167,10 +167,16 @@ class Cli
      * @param  string $message
      * @return null
      */
-    public function fail($message = null)
+    public function fail($messages = null)
     {
-        if ($message) {
-            $this->output->errln("<<red>>{$message}<<reset>>");
+        if ($messages) {
+            if( ! is_array($messages) ) {
+                $messages = [$messages];
+            }
+
+            foreach ($messages as $message) {
+                $this->output->errln("<<red>>{$message}<<reset>>");
+            }
         }
 
         exit(Status::FAILURE);

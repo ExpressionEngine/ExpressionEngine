@@ -6,18 +6,15 @@
 
     <?php foreach ($buttons as $button => $label): ?>
         <?php
-            $first = substr($label, 1);
-            $id = 'tb-option-'.$first;
+            $lc_class = str_replace(':', '', strtolower($button));
+            $id = 'tb-option-'.$lc_class;
         ?>
 
             <span id="<?php echo $id ?>" class="cke_toolbar tb-option tb-selected">
 
                     <span class="cke_toolgroup">
 
-                            <?php
-                                $lc_class = str_replace(':', '', strtolower($button));
-                            ?>
-                            <a class="cke_button cke_button_off cke_button__<?php echo $lc_class ?> <?php if (!in_array($button, $selection)) echo 'disabled'; ?>" title="<?php echo $label ?>">
+                            <a class="cke_button cke_button_off cke_button__<?php echo $lc_class ?> <?php if (!in_array($button, $selection)) echo 'disabled'; ?>" title="<?php echo htmlspecialchars($label) ?>">
                                 <span class="cke_button_icon cke_button__<?php echo $lc_class ?>_icon" data-icon="<?php echo $lc_class ?>">&nbsp;</span>
                                 <span class="cke_button_label cke_button__<?php echo $lc_class ?>_label"><?php echo $label ?></span>
                                 <input type="hidden" name="settings[toolbar][]" <?php if (!in_array($button, $selection)) echo 'disabled'; ?> value="<?php echo $button ?>">

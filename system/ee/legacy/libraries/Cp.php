@@ -157,17 +157,20 @@ class Cp {
 		);
 
 		ee()->javascript->set_global(array(
-			'BASE'             => str_replace(AMP, '&', BASE),
-			'XID'              => CSRF_TOKEN,
-			'CSRF_TOKEN'       => CSRF_TOKEN,
-			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
-			'username'         => ee()->session->userdata('username'),
-			'router_class'     => ee()->router->class, // advanced css
-			'lang'             => $js_lang_keys,
-			'THEME_URL'        => $this->cp_theme_url,
-			'hasRememberMe'    => (bool) ee()->remember->exists(),
+			'BASE'              => str_replace(AMP, '&', BASE),
+			'XID'               => CSRF_TOKEN,
+			'CSRF_TOKEN'        => CSRF_TOKEN,
+			'PATH_CP_GBL_IMG'   => PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE'  => ee()->session->userdata('show_sidebar'),
+			'username'          => ee()->session->userdata('username'),
+			'router_class'      => ee()->router->class, // advanced css
+			'lang'              => $js_lang_keys,
+			'THEME_URL'         => $this->cp_theme_url,
+			'hasRememberMe'     => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'site_id'           => ee()->config->item('site_id'),
+			'site_name'         => ee()->config->item('site_name'),
+			'site_url'          => ee()->config->item('site_url'),
 			'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
 		));
 
@@ -192,6 +195,25 @@ class Cp {
 		ee()->javascript->set_global(array(
 			'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
 			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+		));
+
+		$installed_modules = ee()->db->select('module_name,module_version')->get('modules');
+
+		$installed_modules_js = [];
+		foreach ($installed_modules->result() as $installed_module) {
+			$installed_modules_js[] = [
+				'slug' => strtolower($installed_module->module_name),
+				'version' => $installed_module->module_version,
+			];
+		}
+
+		// Grab the site's license key, license URL, and list of installed
+		// add-ons to send to the license validation service.
+		ee()->javascript->set_global(array(
+			'cp.appVer' => APP_VER,
+			'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+			'cp.lvUrl' => 'https://updates.expressionengine.com/check',
+			'cp.installedAddons' => json_encode($installed_modules_js)
 		));
 
 		$js_scripts['file'][] = 'cp/jump_menu';
@@ -236,6 +258,12 @@ class Cp {
 			$new_version = ee()->el_pings->getUpgradeInfo())
 		{
 			ee()->view->new_version = $new_version;
+			$version_major = explode('.', APP_VER, 2)[0];
+			$update_version_major = explode('.', $new_version['version'], 2)[0];
+
+			if (version_compare($version_major, $update_version_major, '<')) {
+				ee()->view->major_update = true;
+			}
 		}
 
 		$this->_notices();
@@ -349,6 +377,14 @@ class Cp {
 				lang('missing_encryption_key'),
 				'encryption_key',
 				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
+			);
+		}
+
+		if (ee('Filesystem')->exists(SYSPATH . 'ee/EllisLab')) {
+			$notices[] = sprintf(
+				lang('el_folder_present'),
+				SYSDIR . '/ee/EllisLab',
+				DOC_URL.'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
 			);
 		}
 

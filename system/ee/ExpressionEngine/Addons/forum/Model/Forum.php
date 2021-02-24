@@ -264,6 +264,13 @@ class Forum extends Model {
 
 		return $email_string;
 	}
+
+    // Clean XSS from forum name when saved
+    protected function set__forum_name($forumName)
+    {
+        $this->setRawProperty('forum_name', ee('Security/XSS')->clean($forumName));
+    }
+
 }
 
 // EOF

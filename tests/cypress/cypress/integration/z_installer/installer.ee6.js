@@ -55,21 +55,29 @@ context('Installer', () => {
   })
 
   function install_complete() {
-    page.get('header').invoke('text').then((text) => {
-      expect(text).to.be.oneOf([ "Install Complete!", "Log In", "Log into Default Site" ])
-      if (text == "Install Complete!") {
-        install_success.get('updater_msg').contains("ExpressionEngine has been installed")
-        for (const el in install_success.all_there) {
-          cy.get(install_success.all_there[el]).should('exist')
-        }
+    /*cy.wait(5000);
+    cy.get('body').then(($body) => {
+      if ($body.find('.login__title').length) {
+        const header = 'login_header';
       } else {
-        cy.contains('Username');
-        cy.contains('Password');
-        cy.contains('Remind me');
+        const header = 'header';
+      }*/
+      page.get('login_header').invoke('text').then((text) => {
+        expect(text).to.be.oneOf([ "Install Complete!", "Log In", "Log into Default Site" ])
+        if (text == "Install Complete!") {
+          install_success.get('updater_msg').contains("ExpressionEngine has been installed")
+          for (const el in install_success.all_there) {
+            cy.get(install_success.all_there[el]).should('exist')
+          }
+        } else {
+          cy.contains('Username');
+          cy.contains('Password');
+          cy.contains('Remind me');
 
-        cy.get('input[type=submit]').should('not.be.disabled');
-      }
-    })
+          cy.get('input[type=submit]').should('not.be.disabled');
+        }
+      })
+    //})
   }
 
   it('loads', () => {

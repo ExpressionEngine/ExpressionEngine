@@ -1010,16 +1010,6 @@ class Channels extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'extra_publish_controls',
-					'desc' => 'extra_publish_controls_desc',
-					'fields' => array(
-						'extra_publish_controls' => array(
-							'type' => 'yes_no',
-							'value' => $channel->extra_publish_controls
-						)
-					)
-				),
-				array(
 					'title' => 'convert_image_urls',
 					'desc' => 'convert_image_urls_desc',
 					'fields' => array(

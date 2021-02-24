@@ -46,6 +46,10 @@ if (REQ == 'CP')
 				$form .= ' method="post"';
 			}
 
+			if (!isset($attributes['class'])) {
+				$attributes['class'] = 'form-standard';
+			}
+
 			foreach ($attributes as $key => $val)
 			{
 				$form .= ' '.$key.'="'.$val.'"';

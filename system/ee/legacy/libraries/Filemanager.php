@@ -293,6 +293,22 @@ class Filemanager {
 			}
 		}
 
+		if ($mime == 'image/webp' && !defined('IMAGETYPE_WEBP')) {
+			return false;
+		}
+
+		$imageMimes = [
+			'image/gif', // .gif
+			'image/jpeg', // .jpg, .jpe, .jpeg
+			'image/pjpeg', // .jpg, .jpe, .jpeg
+			'image/png', // .png
+			'image/x-png', // .png
+			'image/webp' // .webp
+		];
+		if (!in_array($mime, $imageMimes)) {
+			return false;
+		}
+
 		return TRUE;
 	}
 
@@ -651,7 +667,7 @@ class Filemanager {
 		}
 
 		$member = ee()->session->getMember();
-		$assigned_upload_destinations = $member->getAssignedUploadDestinations()->indexBy('id');
+		$assigned_upload_destinations = $member ? $member->getAssignedUploadDestinations()->indexBy('id') : [];
 
 		return isset($assigned_upload_destinations[$dir_id]);
 	}
@@ -1944,7 +1960,7 @@ class Filemanager {
 				// Permissions can only get more strict!
 				if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image')
 				{
-					$allowed_types = 'gif|jpg|jpeg|png|jpe';
+					$allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp';
 				}
 			}
 

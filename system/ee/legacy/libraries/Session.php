@@ -427,14 +427,44 @@ class EE_Session {
 	 */
 	public function delete_old_sessions()
 	{
-		$expire = ee()->localize->now - $this->session_length;
-
 		srand(time());
 
 		if ((rand() % 100) < $this->gc_probability)
 		{
-			ee()->db->where('last_activity < ', $expire)
-						 ->delete('sessions');
+			$sessions_to_delete = [];
+			$cp_expire = ee()->localize->now - $this->cpan_session_len;
+			$user_expire = ee()->localize->now - $this->user_session_len;
+
+			// Get only the CP sessions that have expired.
+			$admin_results = ee()->db->select('session_id')
+				->where('admin_sess', 1)
+				->where('last_activity < ', $cp_expire)
+				->get('sessions');
+
+			// Loop through the old sessions and delete their session and security_hash data.
+			foreach ($admin_results->result() as $row) {
+				$sessions_to_delete[] = $row->session_id;
+			}
+
+			// Get only the user sessions that have expired.
+			$user_results = ee()->db->select('session_id')
+				->where('admin_sess', 0)
+				->where('last_activity < ', $user_expire)
+				->get('sessions');
+
+			// Loop through the old sessions and delete their session and security_hash data.
+			foreach ($user_results->result() as $row) {
+				$sessions_to_delete[] = $row->session_id;
+			}
+
+			// Free the memory from this query as it's at the start of our execution loop.
+			$admin_results->free_result();
+			$user_results->free_result();
+
+			if (!empty($sessions_to_delete)) {
+				ee()->db->where_in('session_id', $sessions_to_delete);
+				ee()->db->delete(array('security_hashes', 'sessions'));
+			}
 		}
 	}
 

@@ -3,9 +3,6 @@ name: Run Cypress Installer Tests
 on:
   push:
     branches:
-      - design/6.0.0/cp
-  pull_request:
-    branches:
       - release/6.0.0
 
 jobs:
@@ -26,7 +23,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.2, 7.1, 5.6]
+                php: [7.2, 7.1, 5.6]
                 os: [ubuntu-18.04]
                 include:
                   - php: 7.4
@@ -37,21 +34,22 @@ jobs:
         steps:
 
             - name: Checkout code
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v1
+              uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
 
             - name: Setup Permissions
               run: |
-                cp tests/docker/EllisLabUpdate.pub system/ee/ExpressionEngine
+                cp tests/docker/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -77,7 +75,7 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v1
+              uses: cypress-io/github-action@v2
               with:
                 browser: chrome
                 headless: true
@@ -85,9 +83,15 @@ jobs:
                 config-file: installer.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v2
               if: failure()
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
 
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: error.log
+                path: /home/runner/php_errors.log

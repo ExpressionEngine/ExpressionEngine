@@ -374,7 +374,12 @@ JSC;
 	 */
 	public function replace_resize($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		//this could be the name of pre-saved manipulation, check if params are set
+		if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
+			return $this->replace_tag_catchall($data, $params, $tagdata, 'resize');
+		}
+		
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -398,7 +403,12 @@ JSC;
 	 */
 	public function replace_crop($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		//this could be the name of pre-saved manipulation, check if params are set
+		if (empty($params) || (count($params)==1 && array_keys($params)[0] == 'wrap')) {
+			return $this->replace_tag_catchall($data, $params, $tagdata, 'crop');
+		}
+		
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -427,7 +437,7 @@ JSC;
 	 */
 	public function replace_resize_crop($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$params['function'] = 'resize_crop';
@@ -472,7 +482,7 @@ JSC;
 	 */
 	public function replace_rotate($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -490,7 +500,7 @@ JSC;
 	 */
 	public function replace_webp($data, $params = array(), $tagdata = FALSE)
 	{
-		if (empty($data)) {
+		if (empty($data) || !isset($data['model_object'])) {
 			return $this->replace_tag($data, $params, $tagdata);
 		}
 		$data['filename'] = $data['model_object']->file_name;
@@ -504,7 +514,7 @@ JSC;
 	/**
 	 * Generic image processing
 	 */
-	private function process_image($function = 'resize', $data, $params = array(), $tagdata = FALSE, $return_as_path = FALSE)
+	private function process_image($function = 'resize', $data = [], $params = array(), $tagdata = FALSE, $return_as_path = FALSE)
 	{
 		if (!in_array($function, ['resize', 'crop', 'rotate', 'webp'])) {
 			return false;
@@ -519,7 +529,7 @@ JSC;
 		if ($function == 'webp') {
 			$filename['ext'] = '.webp';
 		}
-		$new_image = $filename['name'] . '_' . md5(serialize($params)) . $filename['ext'];
+		$new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
 		$new_image_dir = rtrim($data['directory_path'], '/') . '/_' . $function . DIRECTORY_SEPARATOR;
 		if (!is_dir($new_image_dir)) {
 			mkdir($new_image_dir);
@@ -578,7 +588,7 @@ JSC;
 				'width' => $props['width'],
 				'height' => $props['height']
 			];
-			return ee()->TMPL->parse_variables_row($tagdata, $vars);
+			return ee()->TMPL->parse_variables($tagdata, [$vars]);
 		}
 	}
 
@@ -694,7 +704,7 @@ JSC;
 	 *
 	 * @access	public
 	 */
-	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
+	function replace_tag_catchall($file_info = [], $params = array(), $tagdata = FALSE, $modifier = '')
 	{
 		// These are single variable tags only, so no need for replace_tag
 		if ($modifier)

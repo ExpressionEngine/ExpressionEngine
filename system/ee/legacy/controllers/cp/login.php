@@ -470,7 +470,7 @@ class Login extends CP_Controller {
 	 */
 	public function logout()
 	{
-		if (ee()->session->getMember() && ee()->session->getMember()->isPending())
+		if ($this->session->userdata('group_id') == 3)
 		{
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
@@ -570,7 +570,7 @@ class Login extends CP_Controller {
 				->cannotClose()
 				->now();
 
-			return $this->forgotten_password_form();
+			return $this->index();
 		}
 
 		$member_id = $query->row('member_id');
@@ -637,7 +637,7 @@ class Login extends CP_Controller {
 				->now();
 		}
 
-		$this->forgotten_password_form();
+		$this->index();
 	}
 
 	/**

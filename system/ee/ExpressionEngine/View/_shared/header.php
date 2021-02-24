@@ -19,8 +19,8 @@
 		}
 		?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? 'class="' . $body_class . '"' : ''; ?>>
-		<script>
+	<body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
+		<script type="text/javascript">
 		var currentTheme = localStorage.getItem('theme');
 
 		// Restore the currently selected theme
@@ -44,7 +44,7 @@ $current_page = ee()->uri->segment(2);
 	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
 			<?php if (!isset($hide_sidebar) || $hide_sidebar!=true) :
-			echo ee('CP/NavigationSidebar')->render();
+				$this->embed('ee:_shared/sidebar/navigation/navigation');
 			endif; ?>
 			<div class="ee-main">
 

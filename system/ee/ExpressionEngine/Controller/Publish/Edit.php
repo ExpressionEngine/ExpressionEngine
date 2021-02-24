@@ -74,7 +74,7 @@ class Edit extends AbstractPublishController {
 
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
-			ee()->input->get_post('search_in') ?: 'titles',
+			ee()->input->get_post('search_in') ?: 'titles_and_content',
 			false,
 			null, //ee()->input->get_post('view') ?: '',//view is not used atm
 			$extra_filters
@@ -88,6 +88,7 @@ class Edit extends AbstractPublishController {
 		//which columns should we show
 		$selected_columns = $filter_values['columns'];
 		$selected_columns[] = 'checkbox';
+		// array_unshift($selected_columns, 'checkbox');
 
 		$columns = [];
 		foreach ($selected_columns as $column) {
@@ -109,7 +110,8 @@ class Edit extends AbstractPublishController {
 			$vars['channels_exist']  = (bool)ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
 		}
 
-		$vars['filters'] = $filters->render($base_url);
+		$vars['filters'] = $filters->renderEntryFilters($base_url);
+		$vars['filters_search'] = $filters->renderSearch($base_url);
 		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
 		$base_url->addQueryStringVariables(
@@ -234,6 +236,15 @@ class Edit extends AbstractPublishController {
 				'choices' => $channel_id ? NULL : $choices
 			] : NULL
 		);
+		
+		if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
+			$base_url->addQueryStringVariables(
+				array(
+					'sort_dir' => $table->sort_dir,
+					'sort_col' => $table->sort_col
+				)
+			);
+		}
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
@@ -410,7 +421,6 @@ class Edit extends AbstractPublishController {
 			'form_title' => lang('edit_entry'),
 			'errors' => new \ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
-			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry),
 			'in_modal_context' => $sequence_editing
 		);
@@ -435,21 +445,42 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->isLivePreviewable()) {
 
-			$action_id = ee()->db->select('action_id')
-				->where('class', 'Channel')
-				->where('method', 'live_preview')
-				->get('actions');
-			$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
-			if (ee()->input->get('return')!='')
-			{
-				$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+			$lp_domain_mismatch = false;
+			$configured_site_url = explode('//', ee()->config->item('site_url'));
+			$configured_domain = explode('/', $configured_site_url[1]);
+
+			if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
+			} elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
+				$lp_domain_mismatch = true;
+				$lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
 			}
-			$modal_vars = [
-				'preview_url' => $preview_url,
-				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
-			];
-			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
-			ee('CP/Modal')->addModal('live-preview', $modal);
+
+			if ($lp_domain_mismatch) {
+				$lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+					->asIssue()
+					->canClose()
+					->withTitle(lang('preview_cannot_display'))
+					->addToBody($lp_message);
+				ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+			} else {
+				$action_id = ee()->db->select('action_id')
+					->where('class', 'Channel')
+					->where('method', 'live_preview')
+					->get('actions');
+				$preview_url = ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id;
+				if (ee()->input->get('return')!='')
+				{
+					$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
+				}
+				$modal_vars = [
+					'preview_url' => $preview_url,
+					'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+				];
+				$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
+				ee('CP/Modal')->addModal('live-preview', $modal);
+			}
 
 		} elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
 

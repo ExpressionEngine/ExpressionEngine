@@ -69,7 +69,7 @@ class XSS {
 	 * prevented.  This function does a fair amount of work but
 	 * it is extremely thorough, designed to prevent even the
 	 * most obscure XSS attempts.  Nothing is ever 100% foolproof,
-	 * of course, but I haven't been able to get anything passed
+	 * of course, but I haven't been able to get anything past
 	 * the filter.
 	 *
 	 * Note: This function should only be used to deal with data
