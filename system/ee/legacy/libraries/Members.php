@@ -96,8 +96,8 @@ class Members
                 $member->set(array('avatar_filename' => ''));
                 $member->save();
 
-                if (strncmp($query->row('avatar_filename'), 'default/', 8) !== 0) {
-                    @unlink(ee()->config->slash_item('avatar_path') . $query->row('avatar_filename'));
+                if (strncmp($member->avatar_filename, 'default/', 8) !== 0) {
+                    @unlink(ee()->config->slash_item('avatar_path') . $member->avatar_filename);
                 }
             } elseif ($type == 'photo') {
                 if ($member->photo_filename == '') {
@@ -111,7 +111,7 @@ class Members
                 $member->set(array('photo_filename' => ''));
                 $member->save();
 
-                @unlink(ee()->config->slash_item('photo_path') . $query->row('photo_filename'));
+                @unlink(ee()->config->slash_item('photo_path') . $member->photo_filename);
             } else {
                 if ($member->sig_img_filename == '') {
                     if (REQ == 'CP') {
@@ -124,7 +124,7 @@ class Members
                 $member->set(array('sig_img_filename' => ''));
                 $member->save();
 
-                @unlink(ee()->config->slash_item('sig_img_path') . $query->row('sig_img_filename'));
+                @unlink(ee()->config->slash_item('sig_img_path') . $member->sig_img_filename);
             }
 
             if (REQ == 'CP') {

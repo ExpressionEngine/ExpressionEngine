@@ -53,14 +53,14 @@ class NavigationSidebar extends AbstractSidebar
                     $publishLink = null;
                     if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId())) {
                         // Only add Create link if channel has room for more entries
-                        if (empty($channel->max_entries) or ($channel->max_entries != 0 && $channel->total_records < $channel->max_entries)) {
+                        if (!$channel->maxEntriesLimitReached()) {
                             $publishLink = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
                         }
                     }
                     if (ee('Permission')->hasAny('can_edit_other_entries_channel_id_' . $channel->getId(), 'can_edit_self_entries_channel_id_' . $channel->getId())) {
                         $editLink = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
                         // If there's a limit of 1, just send them to the edit screen for that entry
-                        if (!empty($channel->max_entries) && $channel->total_records == 1 && $channel->max_entries == 1) {
+                        if ($channel->total_records == 1 && $channel->maxEntriesLimitReached()) {
                             $entry = ee('Model')->get('ChannelEntry')
                                 ->filter('channel_id', $channel->channel_id)
                                 ->first();

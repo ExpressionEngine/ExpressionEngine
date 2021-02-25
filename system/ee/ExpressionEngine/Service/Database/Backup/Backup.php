@@ -110,6 +110,11 @@ class Backup
             return array_keys($this->query->getTables());
         }
 
+        //make sure we only try to backup existing tables
+        $this->tables_to_backup = array_filter($this->tables_to_backup, function ($table) {
+            return in_array($table, array_keys($this->query->getTables()));
+        });
+
         return $this->tables_to_backup;
     }
 

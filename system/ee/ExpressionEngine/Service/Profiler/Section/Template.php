@@ -62,7 +62,12 @@ class Template extends ProfilerSection
     public function setData($log)
     {
         $last = end($log);
-        $this->template_memory = $last['memory'];
+
+        if ($last !== false) {
+            $this->template_memory = $last['memory'];
+        } else {
+            $this->template_memory = 0;
+        }
 
         foreach ($log as &$entry) {
             // convert human friendly megabytes into bytes for maths
