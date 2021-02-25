@@ -237,7 +237,7 @@ function cp_form_submit($value, $work_text, $name = null, $invalid = false, $des
         $name = ' name="' . $name . '"';
     }
     $shortcut = '';
-    if (strpos($value, 'save') !== false) {
+    if (stripos($value, lang('save')) !== false) {
         $shortcut = ' data-shortcut="s"';
     }
 
