@@ -4,6 +4,9 @@
 		<title><?=$error_type?> - ExpressionEngine</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<?php if (ee()->config->item('favicon')) : ?>
+		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
+		<?php endif; ?>
 		<style>
 			<?php echo file_get_contents(__DIR__ . '/eecms-error.min.css'); ?>
 		</style>

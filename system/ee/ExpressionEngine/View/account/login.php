@@ -1,7 +1,11 @@
 <?php $this->extend('_templates/login'); ?>
 
 	<div class="login__logo">
-        <?php $this->embed('ee:_shared/ee-logo')?>
+		<?php if (ee()->config->item('login_logo')) : ?>
+		<img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
+		<?php else: ?>
+		<?php $this->embed('ee:_shared/ee-logo')?>
+		<?php endif; ?>
 	</div>
 
 <div class="login__content">

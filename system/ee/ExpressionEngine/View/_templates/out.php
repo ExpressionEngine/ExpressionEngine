@@ -4,6 +4,9 @@
 		<title><?=$cp_page_title?> | ExpressionEngine</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<?php if (ee()->config->item('favicon')) : ?>
+		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
+		<?php endif; ?>
 		<meta name="referrer" content="no-referrer">
 		<?=ee()->view->head_link('css/common.min.css')?>
 	</head>
