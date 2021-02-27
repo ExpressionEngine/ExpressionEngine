@@ -69,9 +69,15 @@ class EE_Cache_redis extends CI_Driver
     {
         // Delete namespace contents
         if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== false) {
-            return ($this->_redis->delete(
-                $this->_redis->keys($this->unique_key($key, $scope) . '*')
-            ) === 1);
+            if (method_exists($this->_redis, 'del'))  {
+                return ($this->_redis->del(
+                    $this->_redis->keys($this->unique_key($key, $scope).'*')
+                ) === 1);
+            } else if (method_exists($this->_redis, 'delete')) {
+                return ($this->_redis->delete(
+                    $this->_redis->keys($this->unique_key($key, $scope).'*')
+                ) === 1);
+            }
         }
 
         // Delete specific key
