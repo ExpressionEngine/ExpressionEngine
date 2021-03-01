@@ -7,8 +7,9 @@
 		<div class="tab-bar tab-bar--sticky">
 			<div class="tab-bar__tabs">
 			<?php
-            foreach ($layout->getTabs() as $index => $tab):
-                if (! $tab->isVisible()) {
+            if (ee('Request')->get('field_name') == '') {
+			foreach ($layout->getTabs() as $index => $tab):
+				if (! $tab->isVisible()) {
                     continue;
                 }
                 $class = '';
@@ -25,7 +26,9 @@
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
-			<?php endif ?>
+			<?php 
+		endif; 
+	 } ?>
 			</div>
 
 			<div class="tab-bar__right-buttons">
@@ -34,13 +37,32 @@
 		</div>
 
 		<?=ee('CP/Alert')->getAllInlines()?>
-		<?php foreach ($layout->getTabs() as $index => $tab): ?>
-		<?php if (! $tab->isVisible()) {
+		<?php foreach ($layout->getTabs() as $index => $tab): 
+			if (ee('Request')->get('field_name') != '') {
+				$tabIsHidden = true;
+				foreach ($tab->getFields() as $field) {
+					if ($field->getShortName() == ee('Request')->get('field_name')) {
+						$tabIsHidden = false;
+						continue;
+					}
+				}
+				if ($tabIsHidden) {
+					continue;
+				}
+			}
+			
+			if (! $tab->isVisible()) {
                 continue;
             } ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?=$tab->renderAlert()?>
 		<?php foreach ($tab->getFields() as $field): ?>
+			<?php if (ee('Request')->get('field_name') != '') {
+				if ($field->getShortName() != ee('Request')->get('field_name')) {
+					continue;
+				}
+			}
+			?>
 			<?php if (! $field->isRequired() && ! $field->isVisible()) {
                 continue;
             } ?>

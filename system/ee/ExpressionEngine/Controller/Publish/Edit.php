@@ -403,6 +403,7 @@ class Edit extends AbstractPublishController
         if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('return') != '') {
             $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
             $vars['hide_sidebar'] = true;
+            $vars['hide_topbar'] = true;
         }
 
         if ($sequence_editing) {
@@ -413,7 +414,17 @@ class Edit extends AbstractPublishController
                 'value' => 'save_and_next',
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
-            ]];
+                ]];
+            if (IS_PRO) {
+                ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                $vars['buttons'][] = [
+                    'name' => 'edit_in_full_form',
+                    'type' => 'button',
+                    'value' => '',
+                    'text' => 'edit_in_full_form',
+                    'attrs' => 'onclick="window.top.location=\'' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y', 'hide_closer' => 'y', 'return' => ee('Request')->get('return')], ee()->config->item('cp_url'))->compile() . '\'"'
+                ];
+            }
         }
 
         if ($entry->isLivePreviewable()) {
@@ -492,12 +503,17 @@ class Edit extends AbstractPublishController
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
-        $result = $this->validateEntry($entry, $vars['layout']);
+        if (ee('Request')->get('field_name') == '') {
+            $result = $this->validateEntry($entry, $vars['layout']);
+        } else {
+            $entry->set($_POST);
+            $result = true;
+        }
 
-        if ($result instanceof ValidationResult) {
+        if ($_POST && $result === true || $result instanceof ValidationResult) {
             $vars['errors'] = $result;
 
-            if ($result->isValid()) {
+            if ($result === true || $result->isValid()) {
                 return $this->saveEntryAndRedirect($entry);
             }
         }
