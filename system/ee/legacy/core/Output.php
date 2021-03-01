@@ -330,24 +330,12 @@ class EE_Output
         // --------------------------------------------------------------------
         //if fronteditor is enabled, include relevant scripts and styles
         if (IS_PRO && REQ == 'PAGE') {
-            if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage', 'static'])) {
+            if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
                 if (isset(ee()->session->cache['channel']['entry_ids'])) {
                     $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
                     $need_load_frontedit = $frontEdit->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids']);
                     if ($need_load_frontedit) {
-                        $frontedit_assets = '<div id="eeFrontEdit-content" style="display: none">...please wait...</div>';
-                        $frontedit_assets .= '<script type="text/javascript" src="'.URL_PRO_THEMES.'js/fronteditor.min.js"></script>';
-                        $frontedit_assets .= '<link rel="stylesheet" type="text/css"  media="screen" href="'.URL_PRO_THEMES.'css/fronteditor.min.css" />';
-                        $output = $this->add_to_foot($output, $frontedit_assets);
-
-                        $proActionsQuery = ee()->db->select('action_id, method')->where('class', 'Pro')->get('actions');
-                        $globalActions = [];
-                        foreach ($proActionsQuery->result_array() as $row) {
-                            $globalActions['pro.' . $row['method']] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $row['action_id'];
-                        }
-                        ee()->load->library('javascript');
-                        ee()->javascript->set_global($globalActions);
-                        $output .= ee()->javascript->get_global();
+                        $output = $frontEdit->loadFrontEditAssets($output);
                     }
                 }
             }
