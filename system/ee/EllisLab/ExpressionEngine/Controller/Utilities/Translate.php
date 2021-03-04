@@ -349,6 +349,9 @@ class Translate extends Utilities {
 			$val = str_replace('<iframe', '', $val);
 			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
+			$key = ee()->db->escape_str(ee()->security->xss_clean($key));
+			$val = ee()->db->escape_str(ee()->security->xss_clean($val));
+
 			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
 		}
 

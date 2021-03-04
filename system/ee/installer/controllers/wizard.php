@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '5.4.0';	// The version being installed
+	public $version           = '5.4.2';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -504,7 +504,7 @@ class Wizard extends CI_Controller {
 			->with('Channel')
 			->all()
 			->synchronize();
-		
+
 		$advisor = new \EllisLab\ExpressionEngine\Library\Advisor\Advisor();
 
 		return $advisor->postUpdateChecks();
