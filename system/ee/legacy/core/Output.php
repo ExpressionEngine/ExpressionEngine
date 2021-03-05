@@ -328,15 +328,26 @@ class EE_Output
         }
 
         // --------------------------------------------------------------------
-        //if fronteditor is enabled, include relevant scripts and styles
-        if (IS_PRO && REQ == 'PAGE') {
-            if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
-                if (isset(ee()->session->cache['channel']['entry_ids'])) {
-                    $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
-                    $need_load_frontedit = $frontEdit->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids']);
-                    if ($need_load_frontedit) {
-                        $output = $frontEdit->loadFrontEditAssets($output);
+        // Include PRO stuff
+        if (IS_PRO && REQ == 'PAGE' && !bool_config_item('disable_dock')) {
+            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
+                /*
+                    At the minimum, we check following:
+                    - License is valid
+                    - Member has access to the dock
+                    - Member has access to frontedit feature
+                */
+                // should pro:Access be static maybe?
+                $proAccess = ee('pro:Access');
+                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission())
+                {
+                    // enable frontedit and load required assets
+                    if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->session->cache['channel']['entry_ids'])) {
+                        if ($proAccess->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids'])) {
+                            $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
+                        }
                     }
+                    $output = ee('pro:Dock')->build($output);
                 }
             }
         }

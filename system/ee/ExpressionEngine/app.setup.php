@@ -583,7 +583,6 @@ $setup = [
 
         // ..\Dashboard
         'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
-        'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
 
         // ..\Search
         'SearchLog' => 'Model\Search\SearchLog',

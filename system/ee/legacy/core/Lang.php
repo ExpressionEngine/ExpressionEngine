@@ -257,6 +257,10 @@ class EE_Lang
         $idiom = $this->getIdiom();
 
         $this->load($which, $idiom, false, true, PATH_THIRD . $package . '/', $show_errors);
+
+        if (IS_PRO) {
+            $this->load($which, $idiom, false, true, PATH_PRO_ADDONS . $package . '/', $show_errors);
+        }
     }
 
     /**
