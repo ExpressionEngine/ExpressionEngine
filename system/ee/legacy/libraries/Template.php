@@ -1889,7 +1889,7 @@ class EE_Template
         $status = & $this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (! isset($args['cache']) or $args['cache'] != 'yes') {
+        if (! isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
             $status = 'NO_CACHE';
 
             return false;

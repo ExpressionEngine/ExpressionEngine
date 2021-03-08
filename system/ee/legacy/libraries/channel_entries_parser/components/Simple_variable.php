@@ -81,12 +81,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         if ($key == $prefix . 'title') {
             //frontend edit link
             if (IS_PRO) {
-                if (ee()->input->cookie('frontedit') != 'off' && (!isset($ft->disable_frontedit) || $ft->disable_frontedit != true)) {
-                    $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
-                    $tagdata = str_replace(
-                        LD . $key . RD,
-                        $frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $key) . LD . $key . RD,
-                        $tagdata);
+                if (!isset($ft->disable_frontedit) || $ft->disable_frontedit != true) {
+                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['channel_id'], $data['entry_id'], $key);
+                    if ($frontEditLink) {
+                        $tagdata = str_replace(LD . $key . RD, $frontEditLink . LD . $key . RD, $tagdata);
+                    }
                 }
             }
             $tagdata = str_replace(

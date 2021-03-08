@@ -329,7 +329,7 @@ class EE_Output
 
         // --------------------------------------------------------------------
         // Include PRO stuff
-        if (IS_PRO && REQ == 'PAGE' && !bool_config_item('disable_dock')) {
+        if (IS_PRO && (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) && !bool_config_item('disable_dock')) {
             if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
                 /*
                     At the minimum, we check following:
@@ -342,13 +342,12 @@ class EE_Output
                 if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission())
                 {
                     // enable frontedit and load required assets
-                    if (ee()->input->cookie('frontedit') != 'off' && isset(ee()->session->cache['channel']['entry_ids'])) {
-                        if ($proAccess->hasAnyFrontEditPermission(ee()->session->cache['channel']['channel_ids'], ee()->session->cache['channel']['entry_ids'])) {
-                            $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
-                        }
+                    if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
+                        $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
                     }
                     $output = ee('pro:Dock')->build($output);
                 }
+                $output = ee('pro:FrontEdit')->clearFrontEdit($output);
             }
         }
 

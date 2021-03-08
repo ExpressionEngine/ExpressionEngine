@@ -237,16 +237,11 @@ class EE_Relationship_data_parser
 
         // frontend edit link
         if (IS_PRO) {
-            if (ee()->input->cookie('frontedit') != 'off') {
-                $entry_id = key($node->data['entry_ids']);
-                $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
-                $field_name = $node->data['field_name'];
+            $entry_id = key($node->data['entry_ids']);
+            $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
+            $field_name = $node->data['field_name'];
 
-                $frontEdit = new ExpressionEngine\Addons\Pro\Service\FrontEdit\FrontEdit();
-
-                $edit_link = $frontEdit->entryFieldEditLink($channel_id, $entry_id, $field_name);
-                $result = $edit_link . $result;
-            }
+            $result = ee('pro:FrontEdit')->entryFieldEditLink($channel_id, $entry_id, $field_name) . $result;
         }
 
         // Lastly, handle the backspace parameter
