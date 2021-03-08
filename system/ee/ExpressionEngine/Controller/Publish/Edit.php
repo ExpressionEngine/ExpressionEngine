@@ -415,7 +415,7 @@ class Edit extends AbstractPublishController
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
                 ]];
-            if (IS_PRO) {
+            if (IS_PRO && ee('Request')->get('modal_form') == 'y') {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 $vars['buttons'][] = [
                     'name' => 'edit_in_full_form',

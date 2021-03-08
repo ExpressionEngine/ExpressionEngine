@@ -24,9 +24,11 @@
 			document.body.dataset.theme = currentTheme;
 		}
 		</script>
+		<?php if (!isset($hide_topbar) || !$hide_topbar) : ?>
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
 		</div>
+		<?php endif; ?>
 
 		<?=$child_view?>
 
