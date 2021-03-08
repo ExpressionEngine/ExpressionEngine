@@ -82,7 +82,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
             //frontend edit link
             if (IS_PRO) {
                 if (!isset($ft->disable_frontedit) || $ft->disable_frontedit != true) {
-                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['channel_id'], $data['entry_id'], $key);
+                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['channel_id'], $data['entry_id'], 'title');
                     if ($frontEditLink) {
                         $tagdata = str_replace(LD . $key . RD, $frontEditLink . LD . $key . RD, $tagdata);
                     }

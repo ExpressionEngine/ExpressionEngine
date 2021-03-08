@@ -503,17 +503,12 @@ class Edit extends AbstractPublishController
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
-        if (ee('Request')->get('field_name') == '') {
-            $result = $this->validateEntry($entry, $vars['layout']);
-        } else {
-            $entry->set($_POST);
-            $result = true;
-        }
+        $result = $this->validateEntry($entry, $vars['layout']);
 
-        if ($_POST && $result === true || $result instanceof ValidationResult) {
+        if ($result instanceof ValidationResult) {
             $vars['errors'] = $result;
 
-            if ($result === true || $result->isValid()) {
+            if ($result->isValid()) {
                 return $this->saveEntryAndRedirect($entry);
             }
         }

@@ -237,11 +237,18 @@ class EE_Relationship_data_parser
 
         // frontend edit link
         if (IS_PRO) {
-            $entry_id = key($node->data['entry_ids']);
-            $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
-            $field_name = $node->data['field_name'];
-
-            $result = ee('pro:FrontEdit')->entryFieldEditLink($channel_id, $entry_id, $field_name) . $result;
+            foreach ($channel->cfields as $site_id => $cfields) {
+                if (!in_array($site_id, [0, ee()->config->item('site_id')])) {
+                    continue;
+                }
+                if (isset($cfields[$node->data['field_name']])) {
+                    $field_id = $cfields[$node->data['field_name']];
+                    $entry_id = key($node->data['entry_ids']);
+                    $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
+                    $result = ee('pro:FrontEdit')->entryFieldEditLink($channel_id, $entry_id, $field_id) . $result;
+                    break;
+                }
+            }
         }
 
         // Lastly, handle the backspace parameter

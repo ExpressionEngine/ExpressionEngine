@@ -117,7 +117,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     //frontend edit link
                     if (IS_PRO) {
                         if ($ft_api->field_type != 'fluid_field' && (!isset($obj->disable_frontedit) || $obj->disable_frontedit != true)) {
-                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['channel_id'], $orig_data['entry_id'], $field['field_name']);
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['channel_id'], $orig_data['entry_id'], $field_id);
                             if ($frontEditLink) {
                                 $tagdata = str_replace(LD . $tag . RD, $frontEditLink . LD . $tag . RD, $tagdata);
                             }

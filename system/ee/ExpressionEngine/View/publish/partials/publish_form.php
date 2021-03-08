@@ -7,7 +7,7 @@
 		<div class="tab-bar tab-bar--sticky">
 			<div class="tab-bar__tabs">
 			<?php
-            if (ee('Request')->get('field_name') == '') {
+            if (ee('Request')->get('field_id') == '') {
 			foreach ($layout->getTabs() as $index => $tab):
 				if (! $tab->isVisible()) {
                     continue;
@@ -38,10 +38,10 @@
 
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): 
-			if (ee('Request')->get('field_name') != '') {
+			if (ee('Request')->get('field_id') != '') {
 				$tabIsHidden = true;
 				foreach ($tab->getFields() as $field) {
-					if ($field->getShortName() == ee('Request')->get('field_name')) {
+					if ($field->getId() == ee('Request')->get('field_id')) {
 						$tabIsHidden = false;
 						continue;
 					}
@@ -57,8 +57,8 @@
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?=$tab->renderAlert()?>
 		<?php foreach ($tab->getFields() as $field): ?>
-			<?php if (ee('Request')->get('field_name') != '') {
-				if ($field->getShortName() != ee('Request')->get('field_name')) {
+			<?php if (ee('Request')->get('field_id') != '') {
+				if ($field->getId() != ee('Request')->get('field_id')) {
 					continue;
 				}
 			}
