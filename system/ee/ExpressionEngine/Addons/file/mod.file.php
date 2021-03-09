@@ -507,7 +507,7 @@ class File
         if (IS_PRO && ee()->input->get('prolet')) {
             $prolet = ee('Model')->get('pro:Prolet', (int) ee()->input->get('prolet'))->first();
             if (!empty($prolet)) {
-                $path = $prolet->getIconPath();
+                $path = $prolet->icon;
             }
         } else {
             $addon = ee('Addon')->get(ee()->input->get('addon'));
