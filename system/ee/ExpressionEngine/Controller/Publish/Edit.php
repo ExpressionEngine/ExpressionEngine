@@ -404,6 +404,7 @@ class Edit extends AbstractPublishController
             $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
             $vars['hide_sidebar'] = true;
             $vars['hide_topbar'] = true;
+            $vars['pro_class'] = 'pro-frontend-modal';
         }
 
         if ($sequence_editing) {
@@ -415,7 +416,7 @@ class Edit extends AbstractPublishController
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
                 ]];
-            if (IS_PRO && ee('Request')->get('modal_form') == 'y') {
+            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 $vars['buttons'][] = [
                     'name' => 'edit_in_full_form',

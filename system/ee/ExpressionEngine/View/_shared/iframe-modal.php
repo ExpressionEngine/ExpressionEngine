@@ -14,7 +14,7 @@
         }
         ?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" class="app-modal-inner">
+	<body data-ee-version="<?=APP_VER?>" class="<?php if (isset($pro_class)) echo $pro_class; ?> app-modal-inner">
 		<script type="text/javascript">
 		var currentTheme = localStorage.getItem('theme');
 
