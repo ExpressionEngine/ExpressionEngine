@@ -416,16 +416,6 @@ class Edit extends AbstractPublishController
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
                 ]];
-            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
-                ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-                $vars['buttons'][] = [
-                    'name' => 'edit_in_full_form',
-                    'type' => 'button',
-                    'value' => '',
-                    'text' => 'edit_in_full_form',
-                    'attrs' => 'onclick="window.top.location=\'' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y', 'hide_closer' => 'y', 'return' => ee('Request')->get('return')], ee()->config->item('cp_url'))->compile() . '\'"'
-                ];
-            }
         }
 
         if ($entry->isLivePreviewable()) {
@@ -535,6 +525,14 @@ class Edit extends AbstractPublishController
         if (ee('Request')->get('modal_form') == 'y') {
             $vars['layout']->setIsInModalContext(true);
             ee()->output->enable_profiler(false);
+
+            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
+                ee()->cp->add_js_script(array(
+                    'pro_file' => array(
+                        'iframe-listener'
+                    )
+                ));
+            }
 
             return ee()->view->render('publish/modal-entry', $vars);
         }

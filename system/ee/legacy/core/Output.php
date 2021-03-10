@@ -342,6 +342,7 @@ class EE_Output
                 if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission())
                 {
                     // enable frontedit and load required assets
+                    ee('pro:FrontEdit')->ensureEntryId();
                     if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
                         $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
                     }

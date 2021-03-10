@@ -4,10 +4,10 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
-		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
+		<?php if (!isset($pro_class)) : ?>
+		<div class="tab-bar tab-bar--sticky">
 			<div class="tab-bar__tabs">
 			<?php
-            if (ee('Request')->get('field_id') == '') {
 			foreach ($layout->getTabs() as $index => $tab):
 				if (! $tab->isVisible()) {
                     continue;
@@ -26,15 +26,14 @@
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
-			<?php 
-		endif; 
-	 } ?>
+			<?php endif; ?>
 			</div>
 
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
+		<?php endif; ?>
 
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): 
