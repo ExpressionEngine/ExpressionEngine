@@ -647,9 +647,9 @@ $setup = [
 
 if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {
     foreach ($setup['models'] as $model => $namespace) {
-        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/pro/' . str_replace("\\", "/", $namespace) . '.php';
         if (file_exists($pro_file)) {
-            $setup['models'][$model] = "\ExpressionEngine\Addons\Pro\\" . $namespace;
+            $setup['models'][$model] = "\ExpressionEngine\Addons\pro\\" . $namespace;
         }
     }
 }
