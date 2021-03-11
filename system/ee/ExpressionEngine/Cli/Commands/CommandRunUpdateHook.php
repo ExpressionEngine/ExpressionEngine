@@ -37,7 +37,7 @@ class CommandRunUpdateHook extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli run-update-hook functionName';
+    public $usage = 'php eecli.php run-update-hook functionName';
 
     /**
      * options available for use in command

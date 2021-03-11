@@ -34,7 +34,7 @@ class CommandHelloWorld extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli hello';
+    public $usage = 'php eecli.php hello';
 
     /**
      * options available for use in command

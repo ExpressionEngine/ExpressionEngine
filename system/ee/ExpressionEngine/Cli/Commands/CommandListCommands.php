@@ -37,7 +37,7 @@ class CommandListCommands extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli list';
+    public $usage = 'php eecli.php list';
 
     /**
      * options available for use in command

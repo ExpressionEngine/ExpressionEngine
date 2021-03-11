@@ -39,7 +39,7 @@ class CommandUpdate extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli update';
+    public $usage = 'php eecli.php update';
 
     /**
      * options available for use in command

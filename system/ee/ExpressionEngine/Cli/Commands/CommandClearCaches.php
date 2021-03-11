@@ -37,7 +37,7 @@ class CommandClearCaches extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli cache:clear --type=tag | php eecli cache:clear --t tag';
+    public $usage = 'php eecli.php cache:clear --type=tag | php eecli.php cache:clear --t tag';
 
     /**
      * options available for use in command

@@ -36,7 +36,7 @@ class CommandPrepareUpgrade extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli prepare-upgrade';
+    public $usage = 'php eecli.php prepare-upgrade';
 
     /**
      * options available for use in command
