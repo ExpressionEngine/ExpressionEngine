@@ -35,7 +35,7 @@
 		</div>
 		<?php endif; ?>
 
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
 		<?php foreach ($layout->getTabs() as $index => $tab): 
 			if (ee('Request')->get('field_id') != '') {
 				$tabIsHidden = true;

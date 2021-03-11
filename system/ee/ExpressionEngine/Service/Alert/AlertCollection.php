@@ -213,14 +213,16 @@ class AlertCollection
     /**
      * Gets the rendered value of all inline alerts.
      *
-     * @param string $name The name of the alert
+     * @param string $severity Get only alerts of certain severity (all by default)
      * @return string The rendered HTML of the alert
      */
-    public function getAllInlines()
+    public function getAllInlines($severity = null)
     {
         $return = '';
         foreach ($this->alerts['inline'] as $alert) {
-            $return .= $alert->render();
+            if (empty($severity) || $severity == $alert->severity) {
+                $return .= $alert->render();
+            }
         }
 
         return $return;

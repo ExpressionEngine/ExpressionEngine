@@ -35,10 +35,14 @@
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
-		<?php if (isset($blocks['modals'])) {
-            echo $blocks['modals'];
-        } ?>
-		<?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
+		<?php 
+		if (!isset($pro_class)) {
+			if (isset($blocks['modals'])) {
+				echo $blocks['modals'];
+			}
+			echo implode('', ee('CP/Modal')->getAllModals()); 
+		}
+		?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->javascript->get_global()?>
