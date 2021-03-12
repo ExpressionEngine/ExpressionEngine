@@ -48,6 +48,7 @@ class CommandMakeMigration extends Cli
     public $commandOptions = [
         'name,n:' => 'Name of migration',
         'table,t:' => 'Table name',
+        'location,l:' => 'Migration location. Current options are ExpressionEngine or shortname of an add-on that is currently installed. Defaults to ExpressionEngine.',
         'create,c' => 'Specify command is a create command',
         'update,u' => 'Specify command is an update command',
     ];
@@ -93,12 +94,22 @@ class CommandMakeMigration extends Cli
      */
     public function handle()
     {
-        $this->migration_name = $this->option('--name', null);
+        $this->migration_name = $this->option('--name');
+        // $this->migration_location = $this->option('--location', 'ExpressionEngine');
 
         // Name is a required field
         if (is_null($this->migration_name)) {
             $this->fail('No migration name specified. For help with this command, use --help');
         }
+
+        // // Check for location and set file location based on response
+        // if (! $this->migration_location != 'ExpressionEngine') {
+        //     // TODO: Implement Addon location setting
+        //     // This will set the location of the migrations to the add-on folder and set the namespace in the
+        //     // template used accordingly.
+        //     // All migrate commands will need to respect the locations set.
+        //     $this->fail('Location is not set to ExpressionEngine');
+        // }
 
         // Checks for migration folder and creates it if it does not exist
         MigrationUtility::ensureMigrationFolderExists($this->output);
