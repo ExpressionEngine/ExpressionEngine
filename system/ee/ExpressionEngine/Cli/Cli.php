@@ -49,6 +49,10 @@ class Cli
         'update' => Commands\CommandUpdate::class,
         'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
         'run-update-hook' => Commands\CommandRunUpdateHook::class,
+        'make:migration' => Commands\CommandMakeMigration::class,
+        'migrate' => Commands\CommandMigrate::class,
+        'migrate:reset' => Commands\CommandMigrateReset::class,
+        'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
     ];
 
