@@ -61,11 +61,6 @@ class MigrationUtility
         }
     }
 
-    public static function getExecutedMigrations()
-    {
-        return ee('Model')->get('Migration')->fields('migration')->all()->pluck('migration');
-    }
-
     public static function getLastMigrationGroup()
     {
         $groups = ee('Model')->get('Migration')->fields('migration_group')->all()->pluck('migration_group');

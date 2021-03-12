@@ -108,6 +108,8 @@ class CommandMigrate extends Cli
     private function getNewMigrations()
     {
         $filesystem = new Filesystem();
+        $allExecutedMigrations = ee('Model')->get('Migration')->fields('migration')->all()->pluck('migration');
+
         $newMigrations = array();
         foreach ($filesystem->getDirectoryContents(MigrationUtility::$migrationsPath) as $file) {
             // If it's not a PHP file, it's not a migration
@@ -119,7 +121,7 @@ class CommandMigrate extends Cli
             $migrationName = pathinfo($file, PATHINFO_FILENAME);
 
             // This migration has already run
-            if (in_array($migrationName, MigrationUtility::getExecutedMigrations())) {
+            if (in_array($migrationName, $allExecutedMigrations)) {
                 continue;
             }
 
