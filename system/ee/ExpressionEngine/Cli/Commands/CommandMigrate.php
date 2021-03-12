@@ -3,9 +3,9 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
-use ExpressionEngine\Cli\Commands\Migration\Migrator;
+use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Model\Migration\Migration;
 
 /**
  * Run migrations
@@ -71,7 +71,7 @@ class CommandMigrate extends Cli
         MigrationUtility::ensureMigrationFolderExists($this->output);
 
         // Checks for exp_migrations table and creates it if it does not exist
-        MigrationUtility::ensureMigrationTableExists($this->output);
+        Migration::ensureMigrationTableExists();
 
         // Get new migrations based on file and presence in the migrations table
         $newMigrations = $this->getNewMigrations();
@@ -81,7 +81,7 @@ class CommandMigrate extends Cli
         }
 
         $migrationsCount = 0;
-        $migrationGroup = MigrationUtility::getNextMigrationGroup();
+        $migrationGroup = Migration::getNextMigrationGroup();
         foreach ($newMigrations as $migrationName) {
             $this->info('Migrating: ' . $migrationName);
 

@@ -4,7 +4,7 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
-use ExpressionEngine\Cli\Commands\Migration\Migrator;
+use ExpressionEngine\Model\Migration\Migration;
 
 /**
  * Run migrations
@@ -66,7 +66,7 @@ class CommandMigrateReset extends Cli
         MigrationUtility::ensureMigrationFolderExists($this->output);
 
         // Checks for exp_migrations table and creates it if it does not exist
-        MigrationUtility::ensureMigrationTableExists($this->output);
+        Migration::ensureMigrationTableExists();
 
         // Get all migrations
         $migrations = ee('Model')->get('Migration')->order('migration_id', 'desc')->all();

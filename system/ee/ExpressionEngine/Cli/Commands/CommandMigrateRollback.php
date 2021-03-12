@@ -4,7 +4,7 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
-use ExpressionEngine\Cli\Commands\Migration\Migrator;
+use ExpressionEngine\Model\Migration\Migration;
 
 /**
  * Run migrations
@@ -70,7 +70,7 @@ class CommandMigrateRollback extends Cli
         MigrationUtility::ensureMigrationFolderExists($this->output);
 
         // Checks for exp_migrations table and creates it if it does not exist
-        MigrationUtility::ensureMigrationTableExists($this->output);
+        Migration::ensureMigrationTableExists();
 
         // Get new migrations based on file and presence in the migrations table
         $migrations = $this->getLastBatchOfMigrations();
@@ -100,6 +100,6 @@ class CommandMigrateRollback extends Cli
 
     public function getLastBatchOfMigrations()
     {
-        return ee('Model')->get('Migration')->filter('migration_group', MigrationUtility::getLastMigrationGroup())->order('migration_id', 'desc')->all();
+        return ee('Model')->get('Migration')->filter('migration_group', Migration::getLastMigrationGroup())->order('migration_id', 'desc')->all();
     }
 }
