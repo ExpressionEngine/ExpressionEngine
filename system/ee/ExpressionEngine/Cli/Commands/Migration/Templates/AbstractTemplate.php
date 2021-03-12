@@ -39,6 +39,7 @@ abstract class AbstractTemplate
         if (!empty($missing)) {
             echo "Missing required variable for parsing migration template:\n";
             echo implode("\n", $missing);
+            echo "\n";
             exit();
         }
     }

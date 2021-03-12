@@ -48,6 +48,8 @@ class CommandMakeMigration extends Cli
     public $commandOptions = [
         'name,n:' => 'Name of migration',
         'table,t:' => 'Table name',
+        'create,c' => 'Specify command is a create command',
+        'update,u' => 'Specify command is an update command',
     ];
 
     /**
@@ -55,6 +57,12 @@ class CommandMakeMigration extends Cli
      * @var boolean
      */
     public $standalone = true;
+
+    /**
+     * Passed in migration name
+     * @var string
+     */
+    public $migration_name;
 
     /**
      * Classname of migration to create
@@ -74,7 +82,10 @@ class CommandMakeMigration extends Cli
      */
     public $filepath;
 
-    public $tablename='my_table';
+    // For finding the right template
+    public $is_create = false;
+    public $is_update = false;
+    public $templateName = 'GenericMigration';
 
     /**
      * Run the command
@@ -82,10 +93,10 @@ class CommandMakeMigration extends Cli
      */
     public function handle()
     {
-        $name = $this->option('-n', null);
+        $this->migration_name = $this->option('--name', null);
 
         // Name is a required field
-        if (is_null($name)) {
+        if (is_null($this->migration_name)) {
             $this->fail('No migration name specified. For help with this command, use --help');
         }
 
@@ -93,20 +104,18 @@ class CommandMakeMigration extends Cli
         MigrationUtility::ensureMigrationFolderExists($this->output);
 
         // Set necessary variables
-        $this->filename = MigrationUtility::generateFileName($name);
-        $this->classname = MigrationUtility::generateClassName($name);
-        $this->filepath = MigrationUtility::$migrationsPath . $this->filename;
-        $this->tablename = $this->option('-t', MigrationUtility::parseForTablename($name));
+        $this->classname = MigrationUtility::camelCase($this->migration_name);
 
-        $this->info('<<bold>>Creating migration: ' . $this->classname);
+        $this->setFileinfo();
+        $this->setTableName();
+        $this->setTemplateName();
+
+        $this->writeMigrationSummary();
         $this->writeMigrationFileFromTemplate();
-
-        $this->info($name);
-        $this->info($this->filename);
-        $this->info($this->classname);
+        $this->info('<<bold>>Successfully wrote new migration file.');
     }
 
-    public function writeMigrationFileFromTemplate($templateName='GenericMigration')
+    public function writeMigrationFileFromTemplate()
     {
         $filesystem = new Filesystem();
 
@@ -115,7 +124,7 @@ class CommandMakeMigration extends Cli
                 . "Please correct this and then try again.");
         }
 
-        $templateClass = '\ExpressionEngine\Cli\Commands\Migration\Templates\\' . $templateName;
+        $templateClass = '\ExpressionEngine\Cli\Commands\Migration\Templates\\' . $this->templateName;
 
         $vars = [
             'classname' => $this->classname,
@@ -125,5 +134,67 @@ class CommandMakeMigration extends Cli
         $filecontents = $template->getParsedTemplate();
 
         $filesystem->write($this->filepath, $filecontents);
+    }
+
+    public function setTableName()
+    {
+        if ($this->option('--table')) {
+            $this->tablename = $this->option('--table');
+
+            return true;
+        }
+
+        $name = MigrationUtility::snakeCase($this->migration_name);
+
+        $words = explode('_', $name);
+        $words = array_diff($words, ['create', 'update', 'table']);
+        $this->tablename = implode('_', $words);
+
+        return true;
+    }
+
+    public function setTemplateName()
+    {
+        $migration_name = MigrationUtility::snakeCase($this->migration_name);
+        $words = explode('_', $migration_name);
+
+        // Set create and update flags and then find the template we are looking for
+        // Flags passed always take precedence and then looking for words in command
+        if ($this->option('--create')) {
+            $this->is_create = true;
+            $this->templateName = 'CreateTable';
+        } elseif ($this->option('--update')) {
+            $this->is_update = true;
+            $this->templateName = 'UpdateTable';
+        } elseif (in_array('create', $words)) {
+            $this->is_create = true;
+            $this->templateName = 'CreateTable';
+        } elseif (in_array('update', $words)) {
+            $this->is_update = true;
+            $this->templateName = 'UpdateTable';
+        }
+    }
+
+    public function writeMigrationSummary()
+    {
+        $this->info('<<bold>>Creating migration: ' . $this->filename);
+
+        if ($this->is_create) {
+            $this->info('  Migration type:  Create Table');
+            $this->info('  Table name:      ' . $this->tablename);
+        } elseif ($this->is_update) {
+            $this->info('  Migration type:  Update Table');
+            $this->info('  Table name:      ' . $this->tablename);
+        } else {
+            $this->info('  Migration type:  Generic');
+        }
+        $this->info('  Class name:      ' . $this->classname);
+        $this->info('  File Location:   ' . $this->filepath);
+    }
+
+    public function setFileinfo()
+    {
+        $this->filename = date('Y_m_d_His') . '_' . MigrationUtility::snakeCase($this->migration_name);
+        $this->filepath = MigrationUtility::$migrationsPath . $this->filename . '.php';
     }
 }

@@ -40,14 +40,14 @@ class Migration extends Model
     public function onBeforeSave()
     {
         if (empty($this->getProperty('migration_location'))) {
-            $this->setProperty('migration_location', 'core');
+            $this->setProperty('migration_location', 'user');
         }
     }
 
     public function getClassname()
     {
         $classname = substr($this->migration, 18);
-        $classname = MigrationUtility::generateClassName($classname);
+        $classname = MigrationUtility::camelCase($classname);
 
         return '\\' . $classname;
     }

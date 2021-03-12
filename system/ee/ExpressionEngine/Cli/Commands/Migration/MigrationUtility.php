@@ -87,27 +87,7 @@ class MigrationUtility
         return ++$lastMigrationGroup;
     }
 
-    public static function generateFileName($name)
-    {
-        return date('Y_m_d_His') . '_' . self::snakeCase($name) . '.php';
-    }
-
-    public static function generateClassName($name)
-    {
-        return self::camelCase($name);
-    }
-
-    public static function parseForTablename($name)
-    {
-        $name = self::snakeCase($name);
-        $words = explode('_', $name);
-        $words = array_diff($words, ['create', 'update', 'table']);
-        $name = implode('_', $words);
-
-        return $name;
-    }
-
-    private static function snakeCase($str)
+    public static function snakeCase($str)
     {
         $str = strtolower($str);
         $str = str_replace('-', '_', $str);
@@ -116,7 +96,7 @@ class MigrationUtility
         return $str;
     }
 
-    private static function camelCase($str)
+    public static function camelCase($str)
     {
         $str = mb_convert_case($str, MB_CASE_TITLE);
         $str = str_replace('-', '', $str);
