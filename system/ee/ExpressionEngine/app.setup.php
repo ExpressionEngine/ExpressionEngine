@@ -581,6 +581,9 @@ $setup = [
         'MenuSet' => 'Model\Menu\MenuSet',
         'MenuItem' => 'Model\Menu\MenuItem',
 
+        // ..\Migration
+        'Migration' => 'Model\Migration\Migration',
+
         // ..\Dashboard
         'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
         'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
