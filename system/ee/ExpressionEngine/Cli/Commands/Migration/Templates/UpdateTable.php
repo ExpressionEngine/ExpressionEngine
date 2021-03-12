@@ -26,7 +26,9 @@ class {classname} extends Migration
      */
     public function up()
     {
-        ee()->dbforge->add_column('{table}', 'new_column');
+        ee()->dbforge->add_column('{table}', array(
+            'new_column' => array('type' => 'text')
+        ));
     }
 
     /**
