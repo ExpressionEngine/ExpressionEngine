@@ -88,7 +88,7 @@ class Cli
         $this->argv = $this->command->argv->get();
 
         if (! isset($this->argv[1])) {
-            $this->fail('No command given');
+            $this->fail('No command given. Try `php eecli.php list` for full list of commands.');
         }
 
         $this->arguments = array_slice($this->command->argv->get(), 2);
@@ -110,13 +110,13 @@ class Cli
         // Check if command exists
         // If not, return
         if (! $this->commandExists()) {
-            return $this->fail('Command not found');
+            return $this->fail('Command not found. Try `php eecli.php list` for full list of commands.');
         }
 
         $commandClass = $this->getCommand($this->commandCalled);
 
         if (! class_exists($commandClass)) {
-            return $this->fail('Command not found');
+            return $this->fail('Command not found. Try `php eecli.php list` for full list of commands.');
         }
 
         // Try and initialize command
