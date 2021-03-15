@@ -1627,9 +1627,7 @@ class EE_Template
                 $package_path = '';
 
                 if (! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins)) {
-                    $package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_ADDONS : PATH_THIRD;
-                    $package_path .= strtolower($this->tag_data[$i]['class'] . '/');
-
+                    $package_path = $addon->getPath();
                     ee()->load->add_package_path($package_path, false);
                 }
 

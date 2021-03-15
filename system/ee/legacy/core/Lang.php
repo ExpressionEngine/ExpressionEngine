@@ -255,12 +255,12 @@ class EE_Lang
 
         // If we're in the installer, don't load Session library
         $idiom = $this->getIdiom();
+        $path = PATH_THIRD . $package . '/';
 
-        $this->load($which, $idiom, false, true, PATH_THIRD . $package . '/', $show_errors);
-
-        if (IS_PRO) {
-            $this->load($which, $idiom, false, true, PATH_PRO_ADDONS . $package . '/', $show_errors);
+        if (IS_PRO && file_exists(PATH_PRO_ADDONS . $package)) {
+            $path = PATH_PRO_ADDONS . $package . '/';
         }
+        $this->load($which, $idiom, false, true, $path, $show_errors);
     }
 
     /**
