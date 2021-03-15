@@ -236,13 +236,13 @@ class Member_group_model extends CI_Model
 
         // Then, add back in the only ones that should exist based on the form submission
         if (! empty($channel_ids_yes)) {
-            $this->db->insert_batch('channel_member_groups', $channel_ids_yes);
+            $this->db->insert_batch('channel_member_roles', $channel_ids_yes);
         }
         if (! empty($module_ids_yes)) {
             $this->db->insert_batch('module_member_roles', $module_ids_yes);
         }
         if (! empty($template_ids_yes)) {
-            $this->db->insert_batch('template_member_groups', $template_ids_yes);
+            $this->db->insert_batch('template_groups_roles', $template_ids_yes);
         }
     }
 
