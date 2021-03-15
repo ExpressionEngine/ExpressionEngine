@@ -92,6 +92,8 @@ class Rte_upd extends Installer
             ee()->db->insert('actions', $data);
 
             $this->install_rte_toolsets_table();
+
+            ee()->db->where('class', 'Rte_ext')->delete('extensions');
         }
 
         // -------------
