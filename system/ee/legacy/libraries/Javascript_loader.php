@@ -88,10 +88,17 @@ class Javascript_loader
                     }
                 }
 
-                $file = $path . $file . '.js';
+                if ($type == 'package' && IS_PRO && file_exists(PATH_PRO_ADDONS . $package)) {
+                    $path = PATH_PRO_ADDONS;
+                }
+                
 
-                if (file_exists($file)) {
-                    $contents .= file_get_contents($file) . "\n\n";
+                if (!empty($file)) {
+                    $file = $path . $file . '.js';
+
+                    if (file_exists($file)) {
+                        $contents .= file_get_contents($file) . "\n\n";
+                    }
                 }
             }
         }

@@ -50,6 +50,13 @@ class Css extends CI_Controller
             if (file_exists($path . 'css/' . $file . '.css')) {
                 return $this->_load_css_file($path, $file);
             }
+
+            if (IS_PRO) {
+                $path = PATH_PRO_ADDONS . $package . '/';
+                if (file_exists($path . 'css/' . $file . '.css')) {
+                    return $this->_load_css_file($path, $file);
+                }
+            }
         } elseif ($this->input->get_post('M') !== false) {
             $file = $this->input->get_post('M');
         }
