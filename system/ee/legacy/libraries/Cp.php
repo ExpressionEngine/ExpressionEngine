@@ -821,7 +821,7 @@ class Cp
     public function load_package_js($file)
     {
         $current_top_path = ee()->load->first_package_path();
-        $package = trim(str_replace(array(PATH_THIRD, PATH_PRO_ADDONS, 'views'), '', $current_top_path), '/');
+        $package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 
         $this->add_js_script(array('package' => $package . ':' . $file));
     }
@@ -837,7 +837,7 @@ class Cp
     public function load_package_css($file)
     {
         $current_top_path = ee()->load->first_package_path();
-        $package = trim(str_replace(array(PATH_THIRD, PATH_PRO_ADDONS, 'views'), '', $current_top_path), '/');
+        $package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 
         if (REQ == 'CP') {
             $url = BASE . AMP . 'C=css' . AMP . 'M=third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;
