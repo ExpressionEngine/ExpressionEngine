@@ -4,7 +4,7 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
-		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hiddend<?php endif; ?>">
+		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
 			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
 			<?php
