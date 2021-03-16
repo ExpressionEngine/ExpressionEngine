@@ -4,8 +4,8 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
-		<?php if (!isset($pro_class)) : ?>
-		<div class="tab-bar tab-bar--sticky">
+		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hiddend<?php endif; ?>">
+			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
 			<?php
 			foreach ($layout->getTabs() as $index => $tab):
@@ -28,13 +28,13 @@
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
 			<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
-		<?php endif; ?>
-
+		
 		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
 		<?php foreach ($layout->getTabs() as $index => $tab): 
 			if (ee('Request')->get('field_id') != '') {

@@ -418,7 +418,7 @@ class Edit extends AbstractPublishController
                 ]];
         }
 
-        if ($entry->isLivePreviewable()) {
+        if (ee('Request')->get('return') != '' || $entry->isLivePreviewable()) {
             $lp_domain_mismatch = false;
             $configured_site_url = explode('//', ee()->config->item('site_url'));
             $configured_domain = explode('/', $configured_site_url[1]);

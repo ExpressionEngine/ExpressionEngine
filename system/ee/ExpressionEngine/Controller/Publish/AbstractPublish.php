@@ -515,6 +515,10 @@ abstract class AbstractPublish extends CP_Controller
             }
         }
 
+        if (ee('Request')->get('return') != '') {
+            $has_preview_button = true;
+        }
+
         $configured_site_url = explode('//', ee()->config->item('site_url'));
         $configured_domain = explode('/', $configured_site_url[1]);
 
