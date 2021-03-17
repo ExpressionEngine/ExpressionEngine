@@ -229,7 +229,7 @@ class Factory
         $templateClass = '\ExpressionEngine\Cli\Commands\Migration\Templates\\' . $templateName;
 
         $vars = [
-            'classname' => $classname,
+            'classname' => $this->getClassname(),
             'table' => $tablename,
         ];
         $template = new $templateClass($vars);
