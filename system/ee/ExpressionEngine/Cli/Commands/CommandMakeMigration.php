@@ -4,7 +4,6 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Library\Filesystem\Filesystem;
-use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
 
 /**
  * Generate a new migration using the CLI
@@ -65,24 +64,6 @@ class CommandMakeMigration extends Cli
      */
     public $migration_name;
 
-    /**
-     * Classname of migration to create
-     * @var string
-     */
-    public $classname;
-
-    /**
-     * Filename of migration to create
-     * @var string
-     */
-    public $filename;
-
-    /**
-     * Full path to the new migration file
-     * @var string
-     */
-    public $filepath;
-
     // For finding the right template
     public $is_create = false;
     public $is_update = false;
@@ -94,79 +75,44 @@ class CommandMakeMigration extends Cli
      */
     public function handle()
     {
+        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
+
         $this->migration_name = $this->option('--name');
-        // $this->migration_location = $this->option('--location', 'ExpressionEngine');
+        $this->migration_location = $this->option('--location', 'ExpressionEngine');
 
         // Name is a required field
         if (is_null($this->migration_name)) {
             $this->fail('No migration name specified. For help with this command, use --help');
         }
 
-        // // Check for location and set file location based on response
-        // if (! $this->migration_location != 'ExpressionEngine') {
-        //     // TODO: Implement Addon location setting
-        //     // This will set the location of the migrations to the add-on folder and set the namespace in the
-        //     // template used accordingly.
-        //     // All migrate commands will need to respect the locations set.
-        //     $this->fail('Location is not set to ExpressionEngine');
-        // }
-
-        // Checks for migration folder and creates it if it does not exist
-        MigrationUtility::ensureMigrationFolderExists($this->output);
-
-        // Set necessary variables
-        $this->classname = MigrationUtility::camelCase($this->migration_name);
-
-        $this->setFileinfo();
-        $this->setTableName();
-        $this->setTemplateName();
-
-        $this->writeMigrationSummary();
-        $this->writeMigrationFileFromTemplate();
-        $this->info('<<bold>>Successfully wrote new migration file.');
-    }
-
-    public function writeMigrationFileFromTemplate()
-    {
-        $filesystem = new Filesystem();
-
-        if (! $filesystem->isWritable(MigrationUtility::$migrationsPath)) {
-            $this->fail("Error: " . MigrationUtility::$migrationsPath . " is not writable.\n"
-                . "Please correct this and then try again.");
-        }
-
-        $templateClass = '\ExpressionEngine\Cli\Commands\Migration\Templates\\' . $this->templateName;
-
-        $vars = [
-            'classname' => $this->classname,
-            'table' => $this->tablename,
-        ];
-        $template = new $templateClass($vars);
-        $filecontents = $template->getParsedTemplate();
-
-        $filesystem->write($this->filepath, $filecontents);
-    }
-
-    public function setTableName()
-    {
+        // If tablename is explicitly passed, use that
         if ($this->option('--table')) {
-            $this->tablename = $this->option('--table');
+            $this->tableName = $this->option('--table');
+        } else {
+            // Generate tablename since it wasnt passed
+            $name = ee('Migration')->snakeCase($this->migration_name);
 
-            return true;
+            $words = explode('_', $name);
+            $words = array_diff($words, ['create', 'update', 'table']);
+
+            // Parse key words out of passed string, and what is left we assume is the table name
+            $this->tableName = implode('_', $words);
         }
 
-        $name = MigrationUtility::snakeCase($this->migration_name);
+        // Generates an instance of a migration model using a timestamped, processed filename
+        $this->migration = ee('Migration')->generateMigration($this->migration_name, $this->migration_location);
 
-        $words = explode('_', $name);
-        $words = array_diff($words, ['create', 'update', 'table']);
-        $this->tablename = implode('_', $words);
+        $this->setTemplateName();
+        $this->writeMigrationSummary();
 
-        return true;
+        ee('Migration', $this->migration)->writeMigrationFileFromTemplate($this->templateName, $this->tableName);
+
+        $this->info('<<bold>>Successfully wrote new migration file.');
     }
 
     public function setTemplateName()
     {
-        $migration_name = MigrationUtility::snakeCase($this->migration_name);
+        $migration_name = ee('Migration')->snakeCase($this->migration_name);
         $words = explode('_', $migration_name);
 
         // Set create and update flags and then find the template we are looking for
@@ -188,24 +134,18 @@ class CommandMakeMigration extends Cli
 
     public function writeMigrationSummary()
     {
-        $this->info('<<bold>>Creating migration: ' . $this->filename);
+        $this->info('<<bold>>Creating migration: ' . $this->migration->migration);
 
         if ($this->is_create) {
             $this->info('  Migration type:  Create Table');
-            $this->info('  Table name:      ' . $this->tablename);
+            $this->info('  Table name:      ' . $this->tableName);
         } elseif ($this->is_update) {
             $this->info('  Migration type:  Update Table');
-            $this->info('  Table name:      ' . $this->tablename);
+            $this->info('  Table name:      ' . $this->tableName);
         } else {
             $this->info('  Migration type:  Generic');
         }
-        $this->info('  Class name:      ' . $this->classname);
-        $this->info('  File Location:   ' . $this->filepath);
-    }
-
-    public function setFileinfo()
-    {
-        $this->filename = date('Y_m_d_His') . '_' . MigrationUtility::snakeCase($this->migration_name);
-        $this->filepath = MigrationUtility::$migrationsPath . $this->filename . '.php';
+        $this->info('  Class name:      ' . $this->migration->getClassname());
+        $this->info('  File Location:   ' . $this->migration->getFilepath());
     }
 }

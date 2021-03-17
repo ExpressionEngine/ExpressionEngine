@@ -3,7 +3,6 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
 use ExpressionEngine\Model\Migration\Migration;
 
 /**
@@ -62,12 +61,6 @@ class CommandMigrateReset extends Cli
     {
         defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
 
-        // Checks for migration folder and creates it if it does not exist
-        MigrationUtility::ensureMigrationFolderExists($this->output);
-
-        // Checks for exp_migrations table and creates it if it does not exist
-        Migration::ensureMigrationTableExists();
-
         // Get all migrations
         $migrations = ee('Model')->get('Migration')->order('migration_id', 'desc')->all();
 
@@ -79,7 +72,6 @@ class CommandMigrateReset extends Cli
             $this->info('Rolling back: ' . $migration->migration);
 
             $migration->down();
-            $migration->delete();
         }
 
         $this->complete('All migrations have been rolled back successfully!');

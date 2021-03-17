@@ -33,6 +33,7 @@ use ExpressionEngine\Service\LivePreview;
 use ExpressionEngine\Service\Logger;
 use ExpressionEngine\Service\Member;
 use ExpressionEngine\Service\Memory;
+use ExpressionEngine\Service\Migration;
 use ExpressionEngine\Service\Modal;
 use ExpressionEngine\Service\Model;
 use ExpressionEngine\Service\Permission;
@@ -216,6 +217,10 @@ $setup = [
             $facade->setValidationFactory($ee->make('Validation'));
 
             return $facade;
+        },
+
+        'Migration' => function ($ee, $migration=null) {
+            return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
         },
 
         'Spam' => function ($ee) {

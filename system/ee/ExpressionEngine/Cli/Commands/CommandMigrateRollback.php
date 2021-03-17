@@ -3,7 +3,6 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Cli\Commands\Migration\MigrationUtility;
 use ExpressionEngine\Model\Migration\Migration;
 
 /**
@@ -66,25 +65,21 @@ class CommandMigrateRollback extends Cli
         // Specify the number of migrations to roll back
         $steps = $this->option('-s', -1);
 
-        // Checks for migration folder and creates it if it does not exist
-        MigrationUtility::ensureMigrationFolderExists($this->output);
+        // Get all migrations in last batch and sort them
+        $lastBatchofMigrations = ee('Model')->get('Migration')
+            ->filter('migration_group', ee('Migration')->getLastMigrationGroup())
+            ->order('migration_id', 'desc')
+            ->all();
 
-        // Checks for exp_migrations table and creates it if it does not exist
-        Migration::ensureMigrationTableExists();
-
-        // Get new migrations based on file and presence in the migrations table
-        $migrations = $this->getLastBatchOfMigrations();
-
-        if ($migrations->count() === 0) {
+        if ($lastBatchofMigrations->count() === 0) {
             $this->complete("No migrations to rollback.");
         }
 
         $migrationsCount = 0;
-        foreach ($migrations as $migration) {
+        foreach ($lastBatchofMigrations as $migration) {
             $this->info('Rolling back: ' . $migration->migration);
 
             $migration->down();
-            $migration->delete();
 
             // Increment the number of migrations that have run
             $migrationsCount++;
@@ -96,10 +91,5 @@ class CommandMigrateRollback extends Cli
         }
 
         $this->complete('All migrations in group rolled back successfully!');
-    }
-
-    public function getLastBatchOfMigrations()
-    {
-        return ee('Model')->get('Migration')->filter('migration_group', Migration::getLastMigrationGroup())->order('migration_id', 'desc')->all();
     }
 }
