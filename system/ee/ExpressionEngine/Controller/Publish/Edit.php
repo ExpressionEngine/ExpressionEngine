@@ -354,11 +354,21 @@ class Edit extends AbstractPublishController
 
         $entry = ee('Model')->get('ChannelEntry', $id)
             ->with('Channel')
-            ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
         if (! $entry) {
             show_error(lang('no_entries_matching_that_criteria'));
+        }
+
+        //if the entry-to-be-saved belongs to different site, switch to that site
+        if ($entry->site_id != ee()->config->item('site_id')) {
+            if (ee('Request')->isPost()) {
+                $orig_site_id = ee()->config->item('site_id');
+                ee()->cp->switch_site($entry->site_id, $base_url);
+            } else {
+                //but we only auto-switch if we're saving
+                show_error(lang('no_entries_matching_that_criteria'));
+            }
         }
 
         if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
@@ -521,6 +531,11 @@ class Edit extends AbstractPublishController
             ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
             '' => lang('edit_entry')
         );
+
+        //switch the site back if needed
+        if (ee('Request')->isPost() && isset($orig_site_id)) {
+            ee()->cp->switch_site($orig_site_id, $base_url);
+        }
 
         if (ee('Request')->get('modal_form') == 'y') {
             $vars['layout']->setIsInModalContext(true);

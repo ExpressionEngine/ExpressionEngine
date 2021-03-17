@@ -237,15 +237,16 @@ class EE_Relationship_data_parser
 
         // frontend edit link
         if (IS_PRO) {
-            foreach ($channel->cfields as $site_id => $cfields) {
-                if (!in_array($site_id, [0, ee()->config->item('site_id')])) {
+            foreach ($channel->cfields as $field_site_id => $cfields) {
+                if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
                     continue;
                 }
                 if (isset($cfields[$node->data['field_name']])) {
                     $field_id = $cfields[$node->data['field_name']];
                     $entry_id = key($node->data['entry_ids']);
                     $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
-                    $result = ee('pro:FrontEdit')->entryFieldEditLink($channel_id, $entry_id, $field_id) . $result;
+                    $site_id = $node->data['parser']->entry($entry_id)['entry_site_id'];
+                    $result = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id) . $result;
                     break;
                 }
             }
