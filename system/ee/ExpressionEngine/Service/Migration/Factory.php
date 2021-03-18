@@ -29,6 +29,9 @@ class Factory
         $this->filesystem = $filesystem;
         $this->migration = $migration;
 
+        // Load the logger
+        ee()->load->library('logger');
+
         // Checks for exp_migrations table and creates it if it does not exist
         $this->ensureMigrationTableExists();
     }
@@ -151,7 +154,7 @@ class Factory
         $classname = substr($this->migration->migration, 18);
         $classname = $this->camelCase($classname);
 
-        return '\\' . $classname;
+        return $classname;
     }
 
     public function getFilepath()
@@ -165,13 +168,15 @@ class Factory
         $this->ensureMigrationFolderExists();
 
         include_once($this->getFilepath());
-        $classname = $this->getClassname();
+        $classname = '\\' . $this->getClassname();
 
         return new $classname();
     }
 
     public function up()
     {
+        ee()->logger->developer('Running migration: ' . $this->migration->migration, true, 604800);
+
         $migrationClass = $this->getMigrateInstance();
         $migrationClass->up();
         $this->migration->save();
@@ -179,6 +184,8 @@ class Factory
 
     public function down()
     {
+        ee()->logger->developer('Rolling back migration: ' . $this->migration->migration, true, 604800);
+
         $migrationClass = $this->getMigrateInstance();
         $migrationClass->down();
         $this->migration->delete();
@@ -236,6 +243,8 @@ class Factory
         $filecontents = $template->getParsedTemplate();
 
         $this->filesystem->write($this->getFilepath(), $filecontents);
+
+        ee()->logger->developer('Created new migration: ' . $this->migration->migration, true, 604800);
     }
 
     // These string manipulation functions should be moved, but they are required for migrations
