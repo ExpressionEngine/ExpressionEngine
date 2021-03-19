@@ -54,6 +54,9 @@ class Cli
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
+        'generate:addon' => Commands\CommandGenerateAddon::class,
+        'generate:model' => Commands\CommandGenerateModel::class,
+        'generate:command' => Commands\CommandGenerateCommand::class,
     ];
 
     /**
