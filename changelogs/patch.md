@@ -22,6 +22,9 @@ Bullet list below, e.g.
    - Fix bug in the Template Profiler when it attempts to parse an empty array
    - Fixed issue with super admins seeing unauthorized message when accessing empty entry manager
    - Changed how permission check for members with CP access is handled
+   - Added Addon generator via CLI
+   - Added Model generator via CLI
+   - Added Command generator via CLI
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

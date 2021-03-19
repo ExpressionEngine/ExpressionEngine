@@ -72,5 +72,7 @@ class CommandListCommands extends Cli
 
             printf($mask, " {$availableCommand} ", " {$availableHydratedClass->description}");
         }
+
+        $this->info('-------------------------------------------------------------------------------------');
     }
 }

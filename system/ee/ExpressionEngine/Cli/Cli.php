@@ -50,6 +50,9 @@ class Cli
         'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
         'run-update-hook' => Commands\CommandRunUpdateHook::class,
         'cache:clear' => Commands\CommandClearCaches::class,
+        'generate:addon' => Commands\CommandGenerateAddon::class,
+        'generate:model' => Commands\CommandGenerateModel::class,
+        'generate:command' => Commands\CommandGenerateCommand::class,
     ];
 
     /**
