@@ -22,6 +22,8 @@ class Textarea_ft extends EE_Fieldtype
 
     public $has_array_data = false;
 
+    public $size = 'large';
+
     public function validate($data)
     {
         return true;

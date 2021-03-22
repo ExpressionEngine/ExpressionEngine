@@ -410,8 +410,12 @@ class Edit extends AbstractPublishController
             'in_modal_context' => $sequence_editing
         );
 
-        if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('return') != '') {
-            $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
+        if (ee()->input->get('hide_closer') === 'y') {
+            if (ee()->input->get('return') != '') {
+                $vars['form_hidden'] = [
+                    'return' => urldecode(ee()->input->get('return'))
+                ];
+            }
             $vars['hide_sidebar'] = true;
             $vars['hide_topbar'] = true;
             $vars['pro_class'] = 'pro-frontend-modal';

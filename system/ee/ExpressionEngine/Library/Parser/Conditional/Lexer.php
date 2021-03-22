@@ -498,8 +498,7 @@ class Lexer extends AbstractLexer
             //clean up the conditional from edit link
             //do regex search based on the marker in url
             if ($type == 'STRING') {
-                $lexeme = preg_replace("/\%FRONTEDIT\[.*?\]\%/s", '', $lexeme, 1);
-                $lexeme = preg_replace("/<a href=\"(.*?)\" class=\"eeFrontEdit\"(.*?)>(.*?)<\/a>/is", '', $lexeme, 1);
+                $lexeme = preg_replace("/{\s*front_edit_link\s+.*\}/sU", '', $lexeme, 1);
             }
 
             switch ($type) {
