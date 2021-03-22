@@ -86,13 +86,20 @@ class CommandMakeMigration extends Cli
 
         $this->migration_name = $this->option('--name');
 
+        // Ask for the name if they didnt specify one
+        if (empty($this->migration_name)) {
+            $this->migration_name = $this->ask('What is the name of your migration?');
+        }
+
         // Name is a required field
-        if (is_null($this->migration_name)) {
+        if (empty($this->migration_name)) {
             $this->fail('No migration name specified. For help with this command, use --help');
         }
 
         // Snakecase the passed in migration name
         $this->migration_name = ee('Migration')->snakeCase($this->migration_name);
+
+        $this->info('Using migration name:      ' . $this->migration_name);
 
         // Set location
         $this->migration_location = $this->option('--location', 'ExpressionEngine');
