@@ -135,6 +135,7 @@ class CommandMakeMigration extends Cli
         $this->info('  Table name:      ' . $this->tableName);
         $this->info('  Class name:      ' . $this->migration->getClassname());
         $this->info('  File Location:   ' . $this->migration->getFilepath());
+        $this->info('  Template name:   ' . $this->templateName);
 
         ee('Migration', $this->migration)->writeMigrationFileFromTemplate($this->templateName, $this->tableName);
 
@@ -191,9 +192,7 @@ class CommandMakeMigration extends Cli
 
     public function setTemplateName()
     {
-        $words = explode('_', $this->migration_name);
-
-        if (in_array($this->migrationType, array('create, update'))) {
+        if (in_array($this->migrationType, array('create', 'update'))) {
             $this->templateName = ucfirst($this->migrationType) . 'Table';
         }
     }
