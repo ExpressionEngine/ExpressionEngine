@@ -8,7 +8,7 @@ use ExpressionEngine\Cli\Generator\Services\AddonGeneratorService;
 /**
  * Command to clear selected caches
  */
-class CommandGenerateAddon extends Cli
+class CommandMakeAddon extends Cli
 {
     /**
      * name of command
@@ -20,7 +20,7 @@ class CommandGenerateAddon extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'generate:addon';
+    public $signature = 'make:addon';
 
     /**
      * Public description of command
@@ -38,7 +38,7 @@ class CommandGenerateAddon extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli generate:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
+    public $usage = 'php eecli make:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
 
     /**
      * options available for use in command

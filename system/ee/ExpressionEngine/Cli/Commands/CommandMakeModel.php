@@ -8,7 +8,7 @@ use ExpressionEngine\Cli\Generator\Services\ModelGeneratorService;
 /**
  * Command to clear selected caches
  */
-class CommandGenerateModel extends Cli
+class CommandMakeModel extends Cli
 {
     /**
      * name of command
@@ -20,7 +20,7 @@ class CommandGenerateModel extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'generate:model';
+    public $signature = 'make:model';
 
     /**
      * Public description of command
@@ -38,7 +38,7 @@ class CommandGenerateModel extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli generate:model MyAwesomeModel --addon=my_existing_addon';
+    public $usage = 'php eecli make:model MyAwesomeModel --addon=my_existing_addon';
 
     /**
      * options available for use in command
