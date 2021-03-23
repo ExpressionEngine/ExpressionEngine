@@ -293,14 +293,41 @@ class Template extends AbstractDesignController
             $view_url .= $group->group_name . (($template->template_name == 'index') ? '' : '/' . $template->template_name);
         }
 
-        $vars['action_button'] = [
-            'text' => 'view_rendered',
-            'href' => $view_url,
-            'rel' => 'external'
-        ];
-
-        $vars['view_url'] = $view_url;
-
+        $vars = array(
+            'hide_top_buttons' => false,
+            'view_url' => $view_url,
+            'action_button' => array (
+                'button_variation' => 'secondary',
+                'text' => 'view_rendered',
+                'href' => $view_url,
+                'rel' => 'external'
+            ),
+            'ajax_validate' => true,
+            'errors' => $errors,
+            'base_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+            'tabs' => array(
+                'edit' => $this->renderEditPartial($template, $errors),
+                'notes' => $this->renderNotesPartial($template, $errors),
+            ),
+            'buttons' => array(
+                array(
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'edit',
+                    'text' => trim(sprintf(lang('btn_save'), '')),
+                    'working' => 'btn_saving'
+                ),
+                array(
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'finish',
+                    'text' => 'btn_save_and_close',
+                    'working' => 'btn_saving'
+                ),
+            ),
+            'sections' => array(),
+        );
+        
         $this->stdHeader();
         $this->loadCodeMirrorAssets();
 

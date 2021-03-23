@@ -22,7 +22,10 @@
     			<div class="title-bar__extra-tools">
     			<?php if (isset($action_button)):
                     $rel = isset($action_button['rel']) ? $action_button['rel'] : ''; ?>
-    				<a class="button button--primary" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
+    				<a class="button button--<?php if (! isset($action_button['button_variation'])): ?>primary<?php else: echo $action_button['button_variation']; endif; ?>" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
+                    <?php if (! isset($hide_top_buttons) or ! $hide_top_buttons): ?>
+    				    <?php $this->embed('ee:_shared/form/buttons'); ?>
+    			    <?php endif ?>    
     			<?php elseif (! isset($hide_top_buttons) or ! $hide_top_buttons): ?>
     				<?php $this->embed('ee:_shared/form/buttons'); ?>
     			<?php endif ?>
