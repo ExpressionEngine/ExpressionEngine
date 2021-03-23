@@ -29,7 +29,11 @@ class {classname} extends Migration
         \$fields = array(
             '{table}_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
             'site_id' => array('type' => 'int', 'constraint' => '4', 'unsigned' => true, 'default' => 1),
-            'data' => array('type' => 'text')
+            'data' => array('type' => 'text'),
+            // 'name' => array('type' => 'varchar', 'constraint' => '50'),
+            // 'yes_or_no' => array('type' => 'ENUM("Yes","No")'),
+            // 'amount' => array('type' => 'double'),
+            // 'last_updated' => array('type' => 'datetime', 'null' => false),
         );
 
         ee()->dbforge->add_field(\$fields);
