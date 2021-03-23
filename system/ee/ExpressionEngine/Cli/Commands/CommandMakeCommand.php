@@ -8,7 +8,7 @@ use ExpressionEngine\Cli\Generator\Services\CommandGeneratorService;
 /**
  * Command to clear selected caches
  */
-class CommandGenerateCommand extends Cli
+class CommandMakeCommand extends Cli
 {
     /**
      * name of command
@@ -20,7 +20,7 @@ class CommandGenerateCommand extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'generate:command';
+    public $signature = 'make:command';
 
     /**
      * Public description of command
@@ -38,7 +38,7 @@ class CommandGenerateCommand extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli generate:command MakeMagic --addon=my_existing_addon';
+    public $usage = 'php eecli make:command MakeMagic --addon=my_existing_addon';
 
     /**
      * options available for use in command
