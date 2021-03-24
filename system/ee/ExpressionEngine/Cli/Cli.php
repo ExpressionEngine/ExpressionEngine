@@ -44,19 +44,18 @@ class Cli
      * @var array
      */
     public $internalCommands = [
-        'hello' => Commands\CommandHelloWorld::class,
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
-        'prepare-upgrade' => Commands\CommandPrepareUpgrade::class,
-        'run-update-hook' => Commands\CommandRunUpdateHook::class,
+        'update:prepare' => Commands\CommandUpdatePrepare::class,
+        'update:run-hook' => Commands\CommandUpdateRunHook::class,
+        'make:addon' => Commands\CommandMakeAddon::class,
+        'make:command' => Commands\CommandMakeCommand::class,
         'make:migration' => Commands\CommandMakeMigration::class,
+        'make:model' => Commands\CommandMakeModel::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
-        'make:addon' => Commands\CommandMakeAddon::class,
-        'make:model' => Commands\CommandMakeModel::class,
-        'make:command' => Commands\CommandMakeCommand::class,
     ];
 
     /**
