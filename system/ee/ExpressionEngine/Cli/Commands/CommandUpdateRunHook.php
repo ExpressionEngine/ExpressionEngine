@@ -7,7 +7,7 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Update or upgrade EE
  */
-class CommandRunUpdateHook extends Cli
+class CommandUpdateRunHook extends Cli
 {
     /**
      * name of command
@@ -19,7 +19,7 @@ class CommandRunUpdateHook extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'run-update-hook';
+    public $signature = 'update:run-hook';
 
     /**
      * Public description of command

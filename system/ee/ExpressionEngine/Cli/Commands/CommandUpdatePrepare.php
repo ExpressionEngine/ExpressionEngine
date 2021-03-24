@@ -6,19 +6,19 @@ use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeMap;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
-class CommandPrepareUpgrade extends Cli
+class CommandUpdatePrepare extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Prepare Upgrade';
+    public $name = 'Prepare Update';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'prepare-upgrade';
+    public $signature = 'update:prepare';
 
     /**
      * Public description of command
@@ -36,7 +36,7 @@ class CommandPrepareUpgrade extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php prepare-upgrade';
+    public $usage = 'php eecli.php update:prepare';
 
     /**
      * options available for use in command
