@@ -323,6 +323,9 @@ class Cli
             }
         }
 
+        // Always return the commands in a sorted list
+        asort($commands);
+
         return $commands;
     }
 
