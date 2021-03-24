@@ -52,6 +52,12 @@ class CommandListCommands extends Cli
     public $standalone = true;
 
     /**
+     * Sets the tablemask for the list table
+     * @var boolean
+     */
+    public $tableMask = "|%-20.20s |%-60.60s |";
+
+    /**
      * Run the command
      * @return mixed
      */
@@ -62,17 +68,53 @@ class CommandListCommands extends Cli
         $this->info('<<bold>>Available Commands');
         $this->info('');
 
-        $mask = "|%-20.20s |%-60.60s |\n";
-
-        printf($mask, ' Command', ' Description');
+        $this->write($this->fillTableLine('Command', 'Description'));
         $this->info('-------------------------------------------------------------------------------------');
+
+        // Build a headers array as we list
+        $headers = array();
 
         foreach ($available as $availableCommand => $availableClass) {
             $availableHydratedClass = new $availableClass();
 
-            printf($mask, " {$availableCommand} ", " {$availableHydratedClass->description}");
+            // Get the command header
+            $header = (explode(':', $availableCommand))[0];
+
+            // If this is a new header, we print a new line and then print the command header
+            if (! in_array($header, $headers)) {
+                $headers[] = $header;
+                $this->write($this->fillTableLine());
+                $this->printTableCommandHeader($header);
+            }
+
+            $this->printCommand($availableCommand, $availableHydratedClass->description);
         }
 
         $this->info('-------------------------------------------------------------------------------------');
+    }
+
+    public function printTableCommandHeader($header)
+    {
+        $headerLine = $this->fillTableLine($header);
+        $headerLine = $this->changeColumnColor($headerLine, "green", 1);
+        $this->write($headerLine);
+    }
+
+    public function printCommand($command, $description)
+    {
+        $this->write($this->fillTableLine($command, $description));
+    }
+
+    public function changeColumnColor($line, $color, $column=1)
+    {
+        $lineArray = explode('|', $line);
+        $lineArray[$column] = "<<{$color}>>{$lineArray[$column]}<<reset>>";
+
+        return implode('|', $lineArray);
+    }
+
+    public function fillTableLine($column1='', $column2='')
+    {
+        return sprintf($this->tableMask, " {$column1} ", " {$column2}");
     }
 }
