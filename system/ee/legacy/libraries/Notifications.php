@@ -62,7 +62,7 @@ class Notifications
         // We don't want to send a notification to the user
         // triggering the event
 
-        if (strpos($notify_address, ee()->session->userdata('email')) !== false) {
+        if ( ! empty(ee()->session->userdata('email')) && strpos($notify_address, ee()->session->userdata('email')) !== false) {
             $notify_address = str_replace(ee()->session->userdata('email'), "", $notify_address);
         }
 
