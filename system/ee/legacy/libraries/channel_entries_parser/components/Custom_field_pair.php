@@ -189,7 +189,16 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
                     //frontend edit link
                     if (IS_PRO) {
-                        if (!isset($ft->disable_frontedit) || $ft->disable_frontedit != true) {
+                        $frontedit_disabled = false;
+                        if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
+                            $frontedit_disabled = true;
+                        } elseif (isset($params['disable'])) {
+                            $disable = explode("|", $params['disable']);
+                            if (in_array('frontedit', $disable)) {
+                                $frontedit_disabled = true;
+                            }
+                        }
+                        if (!$frontedit_disabled) {
                             $tpl_chunk = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id) . $tpl_chunk;
                         }
                     }

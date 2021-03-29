@@ -247,7 +247,7 @@ class EE_Relationship_data_parser
                     $entry_id = key($node->data['entry_ids']);
                     $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
                     $site_id = $node->data['parser']->entry($entry_id)['entry_site_id'];
-                    $result = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_name) . $result;
+                    $result = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id) . $result;
                     break;
                 }
             }
