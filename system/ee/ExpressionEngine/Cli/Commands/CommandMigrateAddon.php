@@ -3,31 +3,29 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Library\Filesystem\Filesystem;
-use ExpressionEngine\Model\Migration\Migration;
 
 /**
  * Run migrations
  */
-class CommandMigrate extends Cli
+class CommandMigrateAddon extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Migrate';
+    public $name = 'Migrate Addon';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'migrate';
+    public $signature = 'migrate:addon';
 
     /**
      * Public description of command
      * @var string
      */
-    public $description = 'Runs specified migrations (all, core, or add-ons)';
+    public $description = 'Runs add-on migrations';
 
     /**
      * Summary of command functionality
@@ -39,7 +37,7 @@ class CommandMigrate extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php migrate';
+    public $usage = 'php eecli.php migrate:addon';
 
     /**
      * options available for use in command
@@ -49,9 +47,7 @@ class CommandMigrate extends Cli
         'steps,s:' => 'Specify the number of migrations to run',
         'everything,e' => 'Run all migrations. Core runs first, all add-on migrations, one at a time.',
         'all' => 'Run all migrations. Alias for --everything',
-        'core,c' => 'Run only core migrations. This excludes all add-on migrations.',
         'addon,a:' => 'Run migration only for specified addon.',
-        'addons' => 'Run migration only for specified addon.',
     ];
 
     /**
@@ -70,19 +66,13 @@ class CommandMigrate extends Cli
         $steps = $this->option('-s', -1);
 
         $all = $this->option('--everything', false) || $this->option('--all', false);
-        $core = $this->option('--core', false);
-        $addons = $this->option('--addons', false);
         $addon = $this->option('--addon', false);
 
         // Lets figure out the location we're migrating
         $location = null;
 
-        // If core is set, it means location is EE core
-        if ($core) {
-            $location = 'ExpressionEngine';
-        } elseif ($all) {
-            $location = 'all';
-        } elseif ($addons) {
+        // If all is set, it means location is all addons
+        if ($all) {
             $location = 'addons';
         } elseif ($addon) {
             $location = $addon;
@@ -90,16 +80,21 @@ class CommandMigrate extends Cli
 
         // No location set. Lets ask and default to all
         if (is_null($location)) {
-            $availableMigrationLocations = ee('Migration')->getAvailableLocations();
+            $availableMigrationLocations = ee('Migration')->getAddonsWithMigrations();
             if (count($availableMigrationLocations) === 0) {
-                $this->complete('All available migrations have already run.');
+                $this->complete('All available add-on migrations have already run.');
             }
-            $location = $this->ask('What is the location of your migration? [' . implode(', ', $availableMigrationLocations) . ']', 'all');
+            $location = $this->ask('What is the location of your migration? [all, ' . implode(', ', $availableMigrationLocations) . ']', 'addons');
         }
 
         // No location set, even after
         if (! $location) {
-            $this->fail('Please select location of migration using --core, --everything, --addons, or --addon=addon_name.');
+            $this->fail('Please select location of migration using --everything, or --addon=addon_name.');
+        }
+
+        // Location all means all addons
+        if ($location == 'all') {
+            $location = 'addons';
         }
 
         $migrationGroup = ee('Migration')->getNextMigrationGroup();
