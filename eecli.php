@@ -65,6 +65,12 @@ defined('DEBUG') || define('DEBUG', $debug);
 // If EE is not installed, we will not boot the core, but CLI commands are more limited as well.
 defined('EE_INSTALLED') || define('EE_INSTALLED', file_exists(SYSPATH . 'user/config/config.php'));
 
+defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH . 'user/cache/');
+defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
+defined('PATH_THEMES') || define('PATH_THEMES', SYSPATH . '../themes/');
+defined('IS_CORE') || define('IS_CORE', false);
+defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/latest/');
+
 /*
  * --------------------------------------------------------------------
  *  Set the error reporting level
