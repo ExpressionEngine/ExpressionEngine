@@ -24,18 +24,6 @@ class CommandMigrate extends Cli
     public $signature = 'migrate';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Runs specified migrations (all, core, or add-ons)';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'Loops through the SYSPATH/user/database/migrations folder and executes all migrations that have not previously been run.';
-
-    /**
      * How to use command
      * @var string
      */

@@ -23,18 +23,6 @@ class CommandMigrateRollback extends Cli
     public $signature = 'migrate:rollback';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Rolls back most recent migration group';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'Gets the most recent group of migrations and rolls them all back.';
-
-    /**
      * How to use command
      * @var string
      */
@@ -60,8 +48,6 @@ class CommandMigrateRollback extends Cli
      */
     public function handle()
     {
-        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
-
         // Specify the number of migrations to roll back
         $steps = $this->option('-s', -1);
 

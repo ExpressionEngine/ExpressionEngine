@@ -22,18 +22,6 @@ class CommandListCommands extends Cli
     public $signature = 'list';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Lists all available commands';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This gives a full listing of all commands.';
-
-    /**
      * How to use command
      * @var string
      */

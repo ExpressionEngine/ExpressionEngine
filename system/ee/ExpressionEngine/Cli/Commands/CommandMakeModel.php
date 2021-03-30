@@ -23,18 +23,6 @@ class CommandMakeModel extends Cli
     public $signature = 'make:model';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Creates a new model for an add-on';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary;
-
-    /**
      * How to use command
      * @var string
      */

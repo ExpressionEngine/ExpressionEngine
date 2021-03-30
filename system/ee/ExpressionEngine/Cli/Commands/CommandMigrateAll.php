@@ -24,18 +24,6 @@ class CommandMigrateAll extends Cli
     public $signature = 'migrate:all';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Runs core migrations, then each add-on\'s migrations';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'Loops through the SYSPATH/user/database/migrations folder and executes all migrations that have not previously been run. Then loops through each addon and runs all migrations.';
-
-    /**
      * How to use command
      * @var string
      */

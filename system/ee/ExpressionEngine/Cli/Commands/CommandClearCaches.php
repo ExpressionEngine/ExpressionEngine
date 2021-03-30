@@ -22,18 +22,6 @@ class CommandClearCaches extends Cli
     public $signature = 'cache:clear';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Clears all ExpressionEngine caches';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary;
-
-    /**
      * How to use command
      * @var string
      */

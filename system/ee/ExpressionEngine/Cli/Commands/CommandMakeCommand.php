@@ -23,18 +23,6 @@ class CommandMakeCommand extends Cli
     public $signature = 'make:command';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Creates a new CLI command for an add-on';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary;
-
-    /**
      * How to use command
      * @var string
      */

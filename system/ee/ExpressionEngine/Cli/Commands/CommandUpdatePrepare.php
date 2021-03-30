@@ -21,18 +21,6 @@ class CommandUpdatePrepare extends Cli
     public $signature = 'update:prepare';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Prepare a site to be upgraded using these files';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This command copies all files necessary for upgrading into a different ExpressionEngine site and restructures it';
-
-    /**
      * How to use command
      * @var string
      */

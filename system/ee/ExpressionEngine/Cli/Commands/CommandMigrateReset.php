@@ -23,18 +23,6 @@ class CommandMigrateReset extends Cli
     public $signature = 'migrate:reset';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Rolls back all migrations';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'Rolls back all migrations at once.';
-
-    /**
      * How to use command
      * @var string
      */
@@ -59,8 +47,6 @@ class CommandMigrateReset extends Cli
      */
     public function handle()
     {
-        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
-
         // Get all migrations
         $migrations = ee('Model')->get('Migration')->order('migration_id', 'desc')->all();
 

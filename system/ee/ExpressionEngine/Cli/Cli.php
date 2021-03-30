@@ -87,6 +87,9 @@ class Cli
 
     public function __construct()
     {
+        // Load the language helper
+        ee()->load->helper('language_helper');
+        ee()->lang->loadfile('cli');
 
         // Initialize the object
         $factory = new CliFactory();
@@ -104,6 +107,9 @@ class Cli
 
         // Get command called
         $this->commandCalled = $this->argv[1];
+
+        // This will set the desc and summary if theyre set in the lang file
+        $this->setDescriptionAndSummaryFromLang();
     }
 
     /**
@@ -387,6 +393,20 @@ class Cli
             if (isset($obj->standalone) && $obj->standalone) {
                 $this->standaloneCommands[$key] = $value;
             }
+        }
+    }
+
+    /**
+     * Loads description and summary from Lang file
+     * @return void
+     */
+    private function setDescriptionAndSummaryFromLang()
+    {
+        // Automatically load the description and signature from the lang file
+        if (isset($this->signature)) {
+            $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
+            $this->description = isset($this->description) ? $this->description : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = isset($this->summary) ? $this->summary : lang('command_' . $simplifiedSignature . '_description');
         }
     }
 }

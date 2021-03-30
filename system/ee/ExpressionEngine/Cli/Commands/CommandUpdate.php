@@ -24,18 +24,6 @@ class CommandUpdate extends Cli
     public $signature = 'update';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Runs all available ExpressionEngine updates';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This will run the update process of EE';
-
-    /**
      * How to use command
      * @var string
      */
@@ -73,7 +61,6 @@ class CommandUpdate extends Cli
      */
     public function handle()
     {
-
         // Preflight checks, download and unpack update
         $this->initUpgrade();
 
