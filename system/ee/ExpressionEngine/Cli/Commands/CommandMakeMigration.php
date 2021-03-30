@@ -35,6 +35,7 @@ class CommandMakeMigration extends Cli
     public $commandOptions = [
         'name,n:' => 'Name of migration',
         'table,t:' => 'Table name',
+        'status,s:' => 'Status name',
         'location,l:' => 'Migration location. Current options are ExpressionEngine or shortname of an add-on that is currently installed. Defaults to ExpressionEngine.',
         'create,c' => 'Specify command is a create command',
         'update,u' => 'Specify command is an update command',
@@ -44,7 +45,7 @@ class CommandMakeMigration extends Cli
      * Command can run without EE Core
      * @var boolean
      */
-    public $standalone = true;
+    public $standalone = false;
 
     /**
      * Passed in migration name
@@ -53,10 +54,10 @@ class CommandMakeMigration extends Cli
     public $migration_name;
 
     /**
-     * Migration type. Options are create, update, and generic
+     * Migration action. Options are create, update, and generic
      * @var string
      */
-    public $migrationType = 'generic';
+    public $migrationAction = 'generic';
 
     /**
      * Template name, generated from info about migration
@@ -70,38 +71,48 @@ class CommandMakeMigration extends Cli
      */
     public function handle()
     {
-        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
-
         $this->migration_name = $this->option('--name');
 
         // Ask for the name if they didnt specify one
         if (empty($this->migration_name)) {
-            $this->migration_name = $this->ask('What is the name of your migration?');
+            $this->migration_name = $this->ask('command_make_migration_what_is_migration_name');
         }
 
         // Name is a required field
         if (empty($this->migration_name)) {
-            $this->fail('No migration name specified. For help with this command, use --help');
+            $this->fail('command_make_migration_no_name_specified');
         }
 
         // Snakecase the passed in migration name
         $this->migration_name = ee('Migration')->snakeCase($this->migration_name);
 
-        $this->info('Using migration name:      ' . $this->migration_name);
+        $this->info(lang('command_make_migration_using_migration_name') . $this->migration_name);
 
         // Set location
         $this->migration_location = $this->option('--location', 'ExpressionEngine');
 
         // Set migration type based on create/update flags
         if ($this->option('--create')) {
-            $this->migrationType = 'create';
+            $this->migrationAction = 'create';
         } elseif ($this->option('--update')) {
-            $this->migrationType = 'update';
+            $this->migrationAction = 'update';
         } else {
             // No migration flags passed, so first we guess, then we ask,
             // defaulting to the guessed option
-            $this->migrationType = $this->guessMigrationType();
-            $this->askMigrationType();
+            $this->migrationAction = $this->guessMigrationAction();
+            $this->askMigrationAction();
+        }
+
+        // Set migration type based on create/update flags
+        if ($this->option('--table')) {
+            $this->migrationCategory = 'table';
+        } elseif ($this->option('--status')) {
+            $this->migrationCategory = 'status';
+        } else {
+            // No migration flags passed, so first we guess, then we ask,
+            // defaulting to the guessed option
+            $this->migrationCategory = $this->guessMigrationCategory();
+            $this->askMigrationCategory();
         }
 
         // If tablename is explicitly passed, use that
@@ -118,28 +129,28 @@ class CommandMakeMigration extends Cli
         $this->setTemplateName();
 
         // Print out info about generated migration
-        $this->info('<<bold>>Creating migration: ' . $this->migration->migration);
-        $this->info('  Migration type:  ' . $this->migrationType);
-        $this->info('  Table name:      ' . $this->tableName);
-        $this->info('  Class name:      ' . $this->migration->getClassname());
-        $this->info('  File Location:   ' . $this->migration->getFilepath());
-        $this->info('  Template name:   ' . $this->templateName);
+        $this->info('<<bold>>' . lang('command_make_migration_table_creating_migration') . $this->migration->migration);
+        $this->info(lang('command_make_migration_table_migration_action') . $this->migrationAction);
+        $this->info(lang('command_make_migration_table_type_name') . $this->migrationTypeName);
+        $this->info(lang('command_make_migration_table_class_name') . $this->migration->getClassname());
+        $this->info(lang('command_make_migration_table_file_location') . $this->migration->getFilepath());
+        $this->info(lang('command_make_migration_table_template_name') . $this->templateName);
 
         ee('Migration', $this->migration)->writeMigrationFileFromTemplate($this->templateName, $this->tableName);
 
-        $this->info('<<bold>>Successfully wrote new migration file.');
+        $this->info('<<bold>>' . lang('command_make_migration_successfully_wrote_file'));
     }
 
     public function askTablename()
     {
-        $this->tableName = $this->ask('What table is this migration for? [' . $this->tableName . ']', $this->tableName);
+        $this->tableName = $this->ask(lang('command_make_migration_what_table_is_migration_for') . ' [' . $this->tableName . ']', $this->tableName);
     }
 
     public function guessTablename()
     {
         // Generate tablename since it wasnt passed
         $words = explode('_', $this->migration_name);
-        $words = array_diff($words, ['create', 'update', 'table']);
+        $words = array_diff($words, ['create', 'update', 'table', 'status']);
 
         // Parse key words out of passed string, and what is left we assume is the table name
         $tablename = implode('_', $words);
@@ -151,7 +162,7 @@ class CommandMakeMigration extends Cli
         return $tablename;
     }
 
-    public function guessMigrationType()
+    public function guessMigrationAction()
     {
         $words = explode('_', $this->migration_name);
 
@@ -165,23 +176,50 @@ class CommandMakeMigration extends Cli
         return 'generic';
     }
 
-    public function askMigrationType()
+    public function askMigrationAction()
     {
-        $type = $this->ask('What is the migration type (generic/create/update)? [' . $this->migrationType . ']', $this->migrationType);
+        $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)? [' . $this->migrationAction . ']', $this->migrationAction);
 
-        $type = trim(strtolower($type));
+        $action = trim(strtolower($action));
 
-        if (in_array($type, array('create', 'update', 'generic'))) {
-            $this->migrationType = $type;
+        if (in_array($action, array('create', 'update', 'generic'))) {
+            $this->migrationAction = $action;
         } else {
-            $this->migrationType = 'generic';
+            $this->migrationAction = 'generic';
+        }
+    }
+
+    public function guessMigrationCategory()
+    {
+        $words = explode('_', $this->migration_name);
+
+        // Guess create and update flags based on keywords
+        if (in_array('status', $words)) {
+            return 'status';
+        } elseif (in_array('table', $words)) {
+            return 'table';
+        }
+
+        return 'generic';
+    }
+
+    public function askMigrationCategory()
+    {
+        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table/status)? [' . $this->migrationCategory . ']', $this->migrationCategory);
+
+        $category = trim(strtolower($category));
+
+        if (in_array($category, array('table', 'status', 'generic'))) {
+            $this->migrationCategory = $category;
+        } else {
+            $this->migrationCategory = 'generic';
         }
     }
 
     public function setTemplateName()
     {
-        if (in_array($this->migrationType, array('create', 'update'))) {
-            $this->templateName = ucfirst($this->migrationType) . 'Table';
+        if (in_array($this->migrationAction, array('create', 'update'))) {
+            $this->templateName = ucfirst($this->migrationAction) . ucfirst($this->migrationCategory);
         }
     }
 }
