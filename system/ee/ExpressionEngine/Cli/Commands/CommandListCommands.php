@@ -53,10 +53,10 @@ class CommandListCommands extends Cli
     {
         $available = $this->availableCommands();
 
-        $this->info('<<bold>>All Available Commands:');
-        $this->info('Run a command with --help for more information');
+        $this->info('<<bold>>' . lang('command_list_all_available_commands'));
+        $this->info('command_list_run_with_help');
         $this->info('-------------------------------------------------------------------------------------');
-        $this->write($this->fillTableLine('Command', 'Description'));
+        $this->write($this->fillTableLine(lang('command_list_command_header'), lang('command_list_description_header')));
         $this->info('-------------------------------------------------------------------------------------');
 
         // Build a headers array as we list

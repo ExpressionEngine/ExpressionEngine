@@ -58,12 +58,12 @@ class CommandMigrateRollback extends Cli
             ->all();
 
         if ($lastBatchofMigrations->count() === 0) {
-            $this->complete("No migrations to rollback.");
+            $this->complete('command_migrate_rollback_no_migrations_to_rollback');
         }
 
         $migrationsCount = 0;
         foreach ($lastBatchofMigrations as $migration) {
-            $this->info('Rolling back: ' . $migration->migration);
+            $this->info(lang('command_migrate_rollback_rolling_back') . $migration->migration);
 
             $migration->down();
 
@@ -72,10 +72,10 @@ class CommandMigrateRollback extends Cli
 
             // If the number of migrations run equals our step count, exit with a message
             if ($migrationsCount == $steps) {
-                $this->complete("Executed " . $migrationsCount . " migration" . (($steps > 1) ? 's' : '') . " successfully.");
+                $this->complete($migrationsCount . lang('command_migrate_rollback_migrations_executed_successfully'));
             }
         }
 
-        $this->complete('All migrations in group rolled back successfully!');
+        $this->complete('command_migrate_rollback_all_migrations_rolled_back');
     }
 }

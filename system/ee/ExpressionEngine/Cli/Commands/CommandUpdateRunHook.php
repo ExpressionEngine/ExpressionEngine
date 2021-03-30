@@ -57,15 +57,15 @@ class CommandUpdateRunHook extends Cli
 
         foreach ($this->arguments as $hook) {
             if (array_key_exists($hook, $this->hooks)) {
-                $this->info("Running {$hook}");
+                $this->info(lang('command_update_run_hook_running') . $hook);
 
                 call_user_func($this->hooks[$hook]);
             } else {
-                $this->error("Hook {$hook} not found.");
+                $this->error(lang('command_update_run_hook_hook_not_found') . $hook);
             }
         }
 
-        $this->complete('Success!');
+        $this->complete('command_update_run_hook_success');
     }
 
     private function getConfigFile()
@@ -74,10 +74,10 @@ class CommandUpdateRunHook extends Cli
             return;
         }
 
-        $path = $this->ask('What is the path to your upgrade.config.php? (defaults to SYSPATH)');
+        $path = $this->ask('command_update_run_hook_what_is_path_to_upgrade_config');
 
         if (! ($customConfig = $this->getConfigPath($path))) {
-            $this->fail('Custom config not found.');
+            $this->fail('command_update_run_hook_custom_config_not_found');
         }
 
         $this->upgradeConfigFile = include $customConfig;

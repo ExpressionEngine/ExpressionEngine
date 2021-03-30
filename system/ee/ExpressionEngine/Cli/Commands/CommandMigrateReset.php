@@ -51,15 +51,15 @@ class CommandMigrateReset extends Cli
         $migrations = ee('Model')->get('Migration')->order('migration_id', 'desc')->all();
 
         if ($migrations->count() === 0) {
-            $this->complete("No migrations to rollback.");
+            $this->complete("command_migrate_reset_no_migrations_to_rollback");
         }
 
         foreach ($migrations as $migration) {
-            $this->info('Rolling back: ' . $migration->migration);
+            $this->info(lang('command_migrate_reset_rolling_back') . $migration->migration);
 
             $migration->down();
         }
 
-        $this->complete('All migrations have been rolled back successfully!');
+        $this->complete('command_migrate_reset_all_migrations_rolled_back');
     }
 }

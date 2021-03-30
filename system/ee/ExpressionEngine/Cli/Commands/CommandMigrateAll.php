@@ -58,9 +58,9 @@ class CommandMigrateAll extends Cli
         $ran = ee('Migration')->migrateAllByType($location, $migrationGroup, $steps);
 
         foreach ($ran as $ranMigration) {
-            $this->info('Migrated: ' . $ranMigration);
+            $this->info(lang('command_migrate_all_migrated') . $ranMigration);
         }
 
-        $this->complete('All migrations completed successfully!');
+        $this->complete('command_migrate_all_all_migrations_completed');
     }
 }

@@ -94,7 +94,8 @@ class CommandUpdatePrepare extends Cli
      */
     public function handle()
     {
-        $this->info('Preparing the upgrade for a site.');
+        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
+        $this->info('command_update_prepare_preparing_upgrade_for_site');
 
         // Collect all the info we need before we can start
         // pull in the config
@@ -116,13 +117,13 @@ class CommandUpdatePrepare extends Cli
 
         // Done preparing - if they wanted the upgrade to be run after, run it here
         if ($upgrade = ($this->option('upgrade-ee') || $this->upgradeConfig['upgrade_ee'])) {
-            $this->info('Running EE upgrade');
+            $this->info('command_update_prepare_running_ee_upgrade');
             $this->runUpgrade();
         }
 
         $this->runPostflightHooks();
 
-        $this->complete('Process complete!');
+        $this->complete('command_update_prepare_process_complete');
     }
 
     private function runPreflightHooks()
@@ -131,7 +132,7 @@ class CommandUpdatePrepare extends Cli
             return;
         }
 
-        $this->info('Running preflight hooks');
+        $this->info('command_update_prepare_running_preflight_hooks');
 
         foreach ($this->upgradeConfig['preflight_hooks'] as $hook) {
             call_user_func_array($hook, func_get_args());
@@ -144,7 +145,7 @@ class CommandUpdatePrepare extends Cli
             return;
         }
 
-        $this->info('Running postflight hooks');
+        $this->info('command_update_prepare_running_postflight_hooks');
 
         foreach ($this->upgradeConfig['postflight_hooks'] as $hook) {
             call_user_func_array($hook, func_get_args());
@@ -153,7 +154,7 @@ class CommandUpdatePrepare extends Cli
 
     private function preChecks()
     {
-        $this->info("Here's how things are configured:");
+        $this->info('command_update_prepare_how_things_are_configured');
 
         foreach ($this->upgradeConfig as $upgradeKey => $upgradeValue) {
             if (is_bool($upgradeValue)) {
@@ -165,26 +166,26 @@ class CommandUpdatePrepare extends Cli
             }
         }
 
-        $this->info("We are about to move X file to tmp/X and Y to system/Y");
-        $this->info("Make sure you have backups!");
+        $this->info('command_update_prepare_notify_moving_files_to_tmp');
+        $this->info('command_update_prepare_make_sure_you_have_backups');
 
-        $continue = $this->confirm('Are you sure you want to proceed?');
+        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
 
         // User does not want to continue - abort!
         if (! $continue) {
-            $this->error('Upgrade aborted');
+            $this->error('command_update_prepare_upgrade_aborted');
             exit;
         }
 
         // Check if upgrade too
         if ($this->option('upgrade-ee')) {
-            $this->info("You also said you want to upgrade EE after moving these files around.");
+            $this->info('command_update_prepare_notify_also_upgrade_ee_after');
 
-            $continue = $this->confirm('Are you sure you want to proceed?');
+            $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
 
             // User does not want to continue - abort!
             if (! $continue) {
-                $this->error('Upgrade aborted');
+                $this->error('command_update_prepare_upgrade_aborted');
                 exit;
             }
         }
@@ -210,10 +211,10 @@ class CommandUpdatePrepare extends Cli
         $customConfig = $this->getConfigPath();
 
         if (! $customConfig) {
-            $path = $this->ask('What is the path to your upgrade.config.php? (defaults to SYSPATH, currently ' . SYSPATH . ')');
+            $path = $this->ask(lang('command_update_prepare_what_is_path_to_upgrade_config') . SYSPATH . ')');
 
             if (! ($customConfig = $this->getConfigPath($path))) {
-                $this->error('Custom config not found.');
+                $this->error('command_update_prepare_custom_config_not_found');
 
                 return;
             }
@@ -375,7 +376,7 @@ class CommandUpdatePrepare extends Cli
                     rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
                 );
 
-                $this->info('We found a database file. Please move this information in to config.php');
+                $this->info('command_update_prepare_database_file_found_move_to_config');
             }
         } else {
             // It's EE3+!

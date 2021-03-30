@@ -37,12 +37,6 @@ class CommandMakeCommand extends Cli
     ];
 
     /**
-     * list of available caches
-     * @var array
-     */
-    public $summaryText = 'This interactively generates an EE command for an existing third-party addon';
-
-    /**
      * Command can run without EE Core
      * @var boolean
      */
@@ -61,18 +55,18 @@ class CommandMakeCommand extends Cli
      */
     public function handle()
     {
-        $this->info('Let\'s build your command!');
+        $this->info('command_make_command_lets_build_command');
 
         $this->data['name'] = $this->getName();
         $this->data['addon'] = $this->getAddon();
-        $this->data['description'] = $this->ask('Command description?');
-        $this->data['signature'] = $this->ask('Command signature? (i.e. make:magic');
+        $this->data['description'] = $this->ask('command_make_command_ask_description');
+        $this->data['signature'] = $this->ask('command_make_command_ask_signature');
 
-        $this->info('Let\'s build!');
+        $this->info('command_make_command_lets_build');
 
         $this->build();
 
-        $this->info('Your model has been created successfully!');
+        $this->info('command_make_command_created_successfully');
     }
 
     protected function build()
@@ -84,11 +78,11 @@ class CommandMakeCommand extends Cli
 
     private function getName()
     {
-        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("Model name?");
+        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("command_make_command_ask_command_name");
     }
 
     private function getAddon()
     {
-        return $this->option('--addon') ? $this->option('--addon') : $this->ask("What addon do you want to add this to?");
+        return $this->option('--addon') ? $this->option('--addon') : $this->ask("command_make_command_ask_addon");
     }
 }

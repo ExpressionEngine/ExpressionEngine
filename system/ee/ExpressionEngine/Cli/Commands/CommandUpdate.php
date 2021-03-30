@@ -65,22 +65,22 @@ class CommandUpdate extends Cli
         $this->initUpgrade();
 
         if (version_compare($this->currentVersion, $this->updateVersion, '>=')) {
-            $this->complete('ExpressionEngine ' . $this->currentVersion . ' is already up-to-date!');
+            $this->complete('ExpressionEngine ' . $this->currentVersion . lang('command_update_is_already_up_to_date'));
         }
 
         // Advanced param checks
         $this->checkAdvancedParams();
-        $this->info("There is a new version of ExpressionEngine available: {$this->updateVersion}\n");
+        $this->info(lang('command_update_new_version_available') . " {$this->updateVersion}\n");
 
         if (! $this->defaultToYes) {
-            if (! $this->confirm("Would you like to upgrade?")) {
-                $this->complete("Update not run");
+            if (! $this->confirm("command_update_confirm_upgrade")) {
+                $this->complete("command_update_not_run");
             }
         }
 
         $this->runUpgrade();
         $this->postFlightCheck();
-        $this->complete('Success! Create something awesome!');
+        $this->complete('command_update_success');
     }
 
     protected function runUpdater($step = null, $microapp = false, $noBootstrap = false, $rollback = false)
@@ -256,11 +256,11 @@ class CommandUpdate extends Cli
     private function checkAdvancedParams()
     {
         if ($this->option('--force-addon-upgrades', false)) {
-            $this->write("<<red>>You have indicated you want to upgrade all addons.<<reset>>");
-            if ($this->defaultToYes || $this->confirm('Are you sure? This may be a destructive action.')) {
+            $this->write("<<red>>" . lang('command_update_indicated_upgrade_all_addons') . "<<reset>>");
+            if ($this->defaultToYes || $this->confirm('command_update_confirm_addon_upgrade')) {
                 defined('CLI_UPDATE_FORCE_ADDON_UPDATE') || define('CLI_UPDATE_FORCE_ADDON_UPDATE', $this->option('--force-addon-upgrades', false));
             } else {
-                $this->write('<<red>>Addon update halted<<reset>>');
+                $this->write('<<red>>' . lang('command_update_addon_update_halted') . '<<reset>>');
             }
         }
     }
@@ -289,7 +289,7 @@ class CommandUpdate extends Cli
 
         $wizard = get_class_vars('Wizard');
 
-        $this->info('Getting upgrade information from your local environment');
+        $this->info('command_update_getting_info_from_local_env');
 
         $this->updateType = 'local';
         $this->updateVersion = $wizard['version'];
@@ -297,7 +297,7 @@ class CommandUpdate extends Cli
 
     private function getUpgradeVersionFromCurl()
     {
-        $this->info('Getting upgrade information from ExpressionEngine.com');
+        $this->info('command_update_getting_info_from_ee_com');
         ee()->load->library('el_pings');
         $version_file = ee()->el_pings->get_version_info(true);
         $this->updateType == 'curl';
@@ -312,7 +312,7 @@ class CommandUpdate extends Cli
                     : $this->upgradeFromDownloadedVersion();
         } catch (\Exception $e) {
             $this->fail([
-                'Updater failed',
+                lang('command_update_updater_failed'),
                 $e->getMessage(),
                 $e->getTraceAsString(),
             ]);
@@ -353,7 +353,7 @@ class CommandUpdate extends Cli
 
         // This will loop through all versions of EE
         do {
-            $this->info('Updating to version ' . $next_version);
+            $this->info(lang('command_update_updating_to_version') . $next_version);
 
             // Instantiate the updater class
             if (class_exists('Updater')) {
@@ -370,7 +370,7 @@ class CommandUpdate extends Cli
 
                 $errorText = array_merge(
                     [
-                        'Failed on version ' . $next_version
+                        lang('command_update_failed_on_version') . $next_version
                     ],
                     $errors
                 );
@@ -381,7 +381,7 @@ class CommandUpdate extends Cli
             $currentVersionKey--;
 
             if (!isset($upgradeMap[$currentVersionKey])) {
-                $this->fail('Updater failed because of missing version (' . $currentVersionKey . '). Please update the UpgradeMap.');
+                $this->fail(lang('command_update_error_updater_failed_missing_version') . $currentVersionKey);
             }
 
             ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
@@ -412,12 +412,12 @@ class CommandUpdate extends Cli
     {
         if (version_compare($this->currentVersion, '3.0.0', '<')) {
             if (! ee()->config->item('avatar_path')) {
-                $this->info('Your update process will fail without a set avatar path.');
+                $this->info('command_update_missing_avatar_path_message');
                 $guess = ee()->config->item('base_path') ?: rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
                 SYSPATH . '../images/avatars';
                 $result = $this->confirm('Use ' . $guess . '?')
                         ? $guess
-                        : $this->ask('Enter full avatar path');
+                        : $this->ask('command_update_enter_full_avatar_path');
 
                 ee()->config->_update_config([
                     'avatar_path' => $result,

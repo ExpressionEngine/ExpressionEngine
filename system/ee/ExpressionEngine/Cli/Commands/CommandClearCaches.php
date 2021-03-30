@@ -62,12 +62,12 @@ class CommandClearCaches extends Cli
         $type = $this->option('-t', 'all');
 
         if (! in_array($type, $this->availableCaches)) {
-            $this->fail('Cache does not exist. Use --help to see available caches.');
+            $this->fail('command_cache_clear_cache_does_not_exist');
         }
 
         ee()->functions->clear_caching($type);
 
-        $this->info(ucfirst($type) . ' caches are cleared!');
+        $this->info(ucfirst($type) . lang('command_cache_clear_caches_cleared'));
     }
 
     /**

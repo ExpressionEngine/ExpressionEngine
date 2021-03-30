@@ -80,23 +80,23 @@ class CommandMigrate extends Cli
         if (is_null($location)) {
             $availableMigrationLocations = ee('Migration')->getAvailableLocations();
             if (count($availableMigrationLocations) === 0) {
-                $this->complete('All available migrations have already run.');
+                $this->complete('command_migrate_all_migrations_ran');
             }
-            $location = $this->ask('What is the location of your migration? [' . implode(', ', $availableMigrationLocations) . ']', 'all');
+            $location = $this->ask(lang('command_migrate_what_is_location') . ' [' . implode(', ', $availableMigrationLocations) . ']', 'all');
         }
 
         // No location set, even after
         if (! $location) {
-            $this->fail('Please select location of migration using --core, --everything, --addons, or --addon=addon_name.');
+            $this->fail('command_migrate_error_please_select_location');
         }
 
         $migrationGroup = ee('Migration')->getNextMigrationGroup();
         $ran = ee('Migration')->migrateAllByType($location, $migrationGroup, $steps);
 
         foreach ($ran as $ranMigration) {
-            $this->info('Migrated: ' . $ranMigration);
+            $this->info(lang('command_migrate_migrated') . $ranMigration);
         }
 
-        $this->complete('All migrations completed successfully!');
+        $this->complete('command_migrate_all_migrations_completed');
     }
 }

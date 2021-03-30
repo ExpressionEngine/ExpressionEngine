@@ -100,7 +100,7 @@ class Cli
         $this->argv = $this->command->argv->get();
 
         if (! isset($this->argv[1])) {
-            $this->fail('No command given. Try `php eecli.php list` for full list of commands.');
+            $this->fail('cli_error_no_command_given');
         }
 
         $this->arguments = array_slice($this->command->argv->get(), 2);
@@ -125,13 +125,13 @@ class Cli
         // Check if command exists
         // If not, return
         if (! $this->commandExists()) {
-            return $this->fail('Command not found. Try `php eecli.php list` for full list of commands.');
+            return $this->fail('cli_error_command_not_found');
         }
 
         $commandClass = $this->getCommand($this->commandCalled);
 
         if (! class_exists($commandClass)) {
-            return $this->fail('Command not found. Try `php eecli.php list` for full list of commands.');
+            return $this->fail('cli_error_command_not_found');
         }
 
         // Try and initialize command
@@ -181,7 +181,7 @@ class Cli
             }
 
             foreach ($messages as $message) {
-                $this->output->errln("<<red>>{$message}<<reset>>");
+                $this->output->errln("<<red>>" . lang($message) . "<<reset>>");
             }
         }
 
@@ -196,7 +196,7 @@ class Cli
     public function complete($message = null)
     {
         if ($message) {
-            $this->output->outln("<<green>>{$message}<<reset>>");
+            $this->output->outln("<<green>>" . lang($message) . "<<reset>>");
         }
 
         exit(Status::SUCCESS);
@@ -209,7 +209,7 @@ class Cli
      */
     public function write($message = null)
     {
-        $this->output->outln($message);
+        $this->output->outln(lang($message));
     }
 
     /**
@@ -219,7 +219,7 @@ class Cli
      */
     public function info($message = null)
     {
-        $this->output->outln("<<green>>{$message}<<reset>>");
+        $this->output->outln("<<green>>" . lang($message) . "<<reset>>");
     }
 
     /**
@@ -229,7 +229,7 @@ class Cli
      */
     public function error($message = null)
     {
-        $this->output->outln("<<red>>{$message}<<reset>>");
+        $this->output->outln("<<red>>" . lang($message) . "<<reset>>");
     }
 
     /**
@@ -239,7 +239,7 @@ class Cli
      */
     public function ask($question, $default = '')
     {
-        $this->output->out($question . ' ');
+        $this->output->out(lang($question) . ' ');
 
         $result = $this->input->in();
 
@@ -253,13 +253,13 @@ class Cli
      */
     public function confirm($question, $default = false)
     {
-        $choices = '(yes/no)';
+        $choices = lang('cli_prompt_yes_no');
 
-        $defaultText = $default ? 'yes' : 'no';
+        $defaultText = $default ? lang('cli_prompt_yes') : lang('cli_prompt_no');
 
         $defaultChoice = "<<white>>[<<yellow>>{$defaultText}<<white>>]<<reset>>";
 
-        $this->output->outln("<<green>>{$question} {$choices} {$defaultChoice}");
+        $this->output->outln("<<green>>" . lang($question) . " {$choices} {$defaultChoice}");
 
         $answer = $this->input->in();
 
@@ -290,7 +290,7 @@ class Cli
         if (EE_INSTALLED) {
             return array_key_exists($commandToParse, $this->availableCommands);
         } else {
-            $this->error('EE is not currently installed.');
+            $this->error('cli_error_ee_not_installed');
 
             return array_key_exists($commandToParse, $this->standaloneCommands);
         }

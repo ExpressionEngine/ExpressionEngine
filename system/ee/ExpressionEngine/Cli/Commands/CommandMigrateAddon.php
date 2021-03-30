@@ -70,14 +70,14 @@ class CommandMigrateAddon extends Cli
         if (is_null($location)) {
             $availableMigrationLocations = ee('Migration')->getAddonsWithMigrations();
             if (count($availableMigrationLocations) === 0) {
-                $this->complete('All available add-on migrations have already run.');
+                $this->complete('command_migrate_addon_all_migrations_ran');
             }
-            $location = $this->ask('What is the location of your migration? [all, ' . implode(', ', $availableMigrationLocations) . ']', 'addons');
+            $location = $this->ask(lang('command_migrate_addon_ask_location_of_migration') . ' [all, ' . implode(', ', $availableMigrationLocations) . ']', 'addons');
         }
 
         // No location set, even after
         if (! $location) {
-            $this->fail('Please select location of migration using --everything, or --addon=addon_name.');
+            $this->fail('command_migrate_addon_error_no_location_set');
         }
 
         // Location all means all addons
@@ -89,9 +89,9 @@ class CommandMigrateAddon extends Cli
         $ran = ee('Migration')->migrateAllByType($location, $migrationGroup, $steps);
 
         foreach ($ran as $ranMigration) {
-            $this->info('Migrated: ' . $ranMigration);
+            $this->info(lang('command_migrate_addon_migrated') . $ranMigration);
         }
 
-        $this->complete('All migrations completed successfully!');
+        $this->complete('command_migrate_addon_all_migrations_completed');
     }
 }

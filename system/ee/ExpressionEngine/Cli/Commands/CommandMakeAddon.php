@@ -46,12 +46,6 @@ class CommandMakeAddon extends Cli
     ];
 
     /**
-     * list of available caches
-     * @var array
-     */
-    private $summaryText = 'This interactively generates an EE addon directly in your user directory.';
-
-    /**
      * Command can run without EE Core
      * @var boolean
      */
@@ -79,35 +73,35 @@ class CommandMakeAddon extends Cli
      */
     public function handle()
     {
-        $this->info('Let\'s build your add-on!');
+        $this->info('command_make_addon_lets_build_addon');
 
         $this->data['type'] = $this->getType();
-
         $this->data['name'] = $this->getName();
-        $this->data['description'] = $this->ask("{$this->type['name']} description?");
-        $this->data['version'] = $this->ask("{$this->type['name']} version?");
-        $this->data['author'] = $this->ask("{$this->type['name']} author?");
-        $this->data['author_url'] = $this->ask("{$this->type['name']} author URL?");
-        $this->data['has_settings'] = $this->confirm("Does your {$this->type['slug']} have settings?");
+
+        $this->data['description']  = $this->ask("{$this->type['name']} " . lang('command_make_addon_description_question'));
+        $this->data['version']      = $this->ask("{$this->type['name']} " . lang('command_make_addon_version_question'));
+        $this->data['author']       = $this->ask("{$this->type['name']} " . lang('command_make_addon_author_question'));
+        $this->data['author_url']   = $this->ask("{$this->type['name']} " . lang(' command_make_addon_author_url_question'));
+        $this->data['has_settings'] = $this->confirm("Does your {$this->type['slug']} " . lang(' command_make_addon_have_settings_question'));
 
         $this->getTypeSpecificData();
         $this->getAdvancedSettings();
 
-        $this->info('Let\'s build!');
+        $this->info('command_make_addon_lets_build');
 
         $this->build();
 
-        $this->info('Your add-on has been created successfully!');
+        $this->info('command_make_addon_created_successfully');
     }
 
     private function getTypeSpecificData()
     {
         if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
-            $this->data['hooks'] = $this->ask('Extension hooks?');
+            $this->data['hooks'] = $this->ask(lang('command_make_addon_ext_hooks'));
         }
 
         if ($this->type['slug'] == 'fieldtype') {
-            $this->data['compatibility'] = $this->ask('Fieldtype compatibility?');
+            $this->data['compatibility'] = $this->ask(lang('command_make_addon_ft_compatibility'));
         }
     }
 
@@ -151,10 +145,10 @@ class CommandMakeAddon extends Cli
 
     private function getType()
     {
-        $type = $this->getTypeFromOptions() ?: $this->ask('What type of addon would you like to create?');
+        $type = $this->getTypeFromOptions() ?: $this->ask(lang('command_make_addon_what_type_of_addon') . '[' . implode(', ', $this->types) . ']');
 
         if (! in_array($type, $this->types)) {
-            $this->error('Please select a proper type');
+            $this->error('command_make_addon_select_proper_addon');
             $this->complete();
         }
 

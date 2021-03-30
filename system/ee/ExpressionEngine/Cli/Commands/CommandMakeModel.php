@@ -37,12 +37,6 @@ class CommandMakeModel extends Cli
     ];
 
     /**
-     * list of available caches
-     * @var array
-     */
-    public $summaryText = 'This interactively generates an EE model for an existing third-party addon';
-
-    /**
      * Command can run without EE Core
      * @var boolean
      */
@@ -61,16 +55,16 @@ class CommandMakeModel extends Cli
      */
     public function handle()
     {
-        $this->info('Let\'s build your model!');
+        $this->info('command_make_model_lets_build_model');
 
         $this->data['name'] = $this->getName();
         $this->data['addon'] = $this->getAddon();
 
-        $this->info('Let\'s build!');
+        $this->info('command_make_model_lets_build');
 
         $this->build();
 
-        $this->info('Your model has been created successfully!');
+        $this->info('command_make_model_created_successfully');
     }
 
     protected function build()
@@ -82,11 +76,11 @@ class CommandMakeModel extends Cli
 
     private function getName()
     {
-        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("Model name?");
+        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("command_make_model_ask_model_name");
     }
 
     private function getAddon()
     {
-        return $this->option('--addon') ? $this->option('--addon') : $this->ask("What addon do you want to add this to?");
+        return $this->option('--addon') ? $this->option('--addon') : $this->ask("command_make_model_ask_addon");
     }
 }
