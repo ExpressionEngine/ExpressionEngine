@@ -351,6 +351,9 @@ class EE_Output
                 $output = ee('pro:FrontEdit')->clearFrontEdit($output);
             }
         }
+        if (IS_PRO && REQ == 'ACTION' && ee('LivePreview')->hasEntryData()) {
+            $output = ee('pro:FrontEdit')->clearFrontEdit($output);
+        }
 
         // --------------------------------------------------------------------
 
