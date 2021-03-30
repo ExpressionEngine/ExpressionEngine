@@ -13,7 +13,7 @@ $(document).ready(function () {
 	if (typeof(EE.viewManager)!=='undefined') {
 		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	}
-	var form_selector = '.ee-main__content .container > .panel > .tbl-ctrls > form';
+	var form_selector = '.container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
 		$(form_selector).parents('.container').first().html(data.html);
 
