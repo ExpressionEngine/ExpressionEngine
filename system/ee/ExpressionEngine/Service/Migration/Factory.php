@@ -121,14 +121,17 @@ class Factory
             $location = $this->migration->migration_location;
         }
 
-        // Is the migration an addon?
-        if ($location === 'myaddon') {
-            // @todo
-            // Find the addon migration path and set it here. Make sure it exists
-            return PATH_THIRD . 'myaddon/database/migrations/';
+        if (is_null($location)) {
+            $location = 'ExpressionEngine';
         }
 
-        return SYSPATH . "user/database/migrations/";
+        // Standard location
+        if ($location === 'ExpressionEngine') {
+            return SYSPATH . "user/database/migrations/";
+        }
+        $addonLocation = PATH_THIRD . $location . '/database/migrations/';
+
+        return $addonLocation;
     }
 
     public function generateMigration($migrationName, $migrationLocation)
@@ -191,12 +194,16 @@ class Factory
         $this->migration->delete();
     }
 
-    public function getNewMigrations()
+    public function getNewMigrations($location=null)
     {
-        $allExecutedMigrations = ee('Model')->get('Migration')->fields('migration')->all()->pluck('migration');
-        $migrationPath = $this->getMigrationPath();
+        $allExecutedMigrations = ee('Model')->get('Migration')
+            ->fields('migration')
+            ->all()
+            ->pluck('migration');
 
-        $newMigrations = array();
+        $migrationPath = $this->getMigrationPath($location);
+
+        $newMigrations = [];
         foreach ($this->filesystem->getDirectoryContents($migrationPath) as $file) {
             // If it's not a PHP file, it's not a migration
             if (!$this->endsWith($file, '.php')) {
@@ -218,6 +225,118 @@ class Factory
         sort($newMigrations);
 
         return $newMigrations;
+    }
+
+    public function migrateAllByType($type, $migrationGroup=null, $stepsRemaining=-1)
+    {
+        // If we dont have a migration group for this run, lets set one
+        if (is_null($migrationGroup)) {
+            $migrationGroup = $this->getNextMigrationGroup();
+        }
+
+        // Keep track of the migrations that run
+        $ran = [];
+        $this->stepsRemaining = $stepsRemaining;
+
+        // If all, run core then all addons
+        if (strtolower($type) === 'all') {
+            $ranCore = $this->migrateAllByType('core', $migrationGroup, $this->stepsRemaining);
+            $ranAddons = $this->migrateAllByType('addons', $migrationGroup, $this->stepsRemaining);
+            $ran = array_merge($ran, $ranCore, $ranAddons);
+
+            // After migrating core and addons, we're done
+            return $ran;
+        }
+
+        // If addons, loop through each addon and migrate it
+        if ($type === 'addons') {
+            $addons = $this->getAddonsWithMigrations();
+            foreach ($addons as $addon) {
+                $ranAddons = $this->migrateAllByType($addon, $migrationGroup, $this->stepsRemaining);
+                $ran = array_merge($ran, $ranAddons);
+            }
+
+            // After migrating each addon, we're done
+            return $ran;
+        }
+
+        // If set to core, lets change that to ExpressionEngine
+        if (strtolower($type) === 'core') {
+            $type = 'ExpressionEngine';
+        }
+
+        // Get all the new migrations for a type
+        $newMigrations = $this->getNewMigrations($type);
+
+        foreach ($newMigrations as $migrationName) {
+            if ($this->stepsRemaining==0) {
+                break;
+            }
+            $migrationData = [
+                'migration' => $migrationName,
+                'migration_group' => $migrationGroup,
+                'migration_location' => $type,
+            ];
+
+            $migration = ee('Model')->make('Migration', $migrationData);
+            $migration->up();
+            $ran[] = $migrationName;
+
+            $this->stepsRemaining--;
+        }
+
+        return $ran;
+    }
+
+    public function getAvailableLocations()
+    {
+        $locations = [];
+
+        if (count($this->getNewMigrations('ExpressionEngine')) > 0) {
+            $locations[] = 'core';
+        }
+
+        $addonsWithMigrations = $this->getAddonsWithMigrations();
+        if (count($addonsWithMigrations) > 0) {
+            $locations[] = 'addons';
+            $locations = array_merge($locations, $addonsWithMigrations);
+        }
+
+        if (count($locations) > 0) {
+            $locations = array_merge(['all'], $locations);
+        }
+
+        return $locations;
+    }
+
+    public function getAddonsWithMigrations()
+    {
+        $addons = [];
+
+        foreach ($this->filesystem->getDirectoryContents(PATH_THIRD) as $name) {
+            // Skip non-directories
+            if (! $this->filesystem->isDir($name)) {
+                continue;
+            }
+
+            // Skip add-ons without migrations folder
+            if (! $this->filesystem->isDir($name . '/database/migrations/')) {
+                continue;
+            }
+
+            // There is a /database/migrations/ folder for this addon, so lets get the shortname
+            $addon_shortname = explode('/', $name);
+            $addon_shortname = end($addon_shortname);
+
+            // now lets get all the new migrations from the shortname
+            $newMigrationsForAddon = $this->getNewMigrations($addon_shortname);
+            if (!empty($newMigrationsForAddon)) {
+                // If there are new migrations, add this addon to the list
+                $addons[] = $addon_shortname;
+            }
+        }
+
+        return $addons;
     }
 
     public function writeMigrationFileFromTemplate($templateName, $tablename)
