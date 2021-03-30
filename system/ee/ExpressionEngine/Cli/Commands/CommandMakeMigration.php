@@ -23,18 +23,6 @@ class CommandMakeMigration extends Cli
     public $signature = 'make:migration';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Generate a new migration using the CLI';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This generates a new migration, located in SYSPATH/user/database/migrations folder. Migrations are ordered by timestamp and ran in order.';
-
-    /**
      * How to use command
      * @var string
      */

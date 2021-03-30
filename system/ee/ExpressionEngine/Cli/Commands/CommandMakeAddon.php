@@ -23,18 +23,6 @@ class CommandMakeAddon extends Cli
     public $signature = 'make:addon';
 
     /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Creates a new add-on';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary;
-
-    /**
      * How to use command
      * @var string
      */
