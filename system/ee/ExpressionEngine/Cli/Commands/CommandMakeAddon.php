@@ -62,11 +62,6 @@ class CommandMakeAddon extends Cli
         'module',
     ];
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * Run the command
      * @return mixed
@@ -81,8 +76,8 @@ class CommandMakeAddon extends Cli
         $this->data['description']  = $this->ask("{$this->type['name']} " . lang('command_make_addon_description_question'));
         $this->data['version']      = $this->ask("{$this->type['name']} " . lang('command_make_addon_version_question'));
         $this->data['author']       = $this->ask("{$this->type['name']} " . lang('command_make_addon_author_question'));
-        $this->data['author_url']   = $this->ask("{$this->type['name']} " . lang(' command_make_addon_author_url_question'));
-        $this->data['has_settings'] = $this->confirm("Does your {$this->type['slug']} " . lang(' command_make_addon_have_settings_question'));
+        $this->data['author_url']   = $this->ask("{$this->type['name']} " . lang('command_make_addon_author_url_question'));
+        $this->data['has_settings'] = $this->confirm("Does your {$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
 
         $this->getTypeSpecificData();
         $this->getAdvancedSettings();
@@ -97,11 +92,11 @@ class CommandMakeAddon extends Cli
     private function getTypeSpecificData()
     {
         if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
-            $this->data['hooks'] = $this->ask(lang('command_make_addon_ext_hooks'));
+            $this->data['hooks'] = $this->ask('command_make_addon_ext_hooks');
         }
 
         if ($this->type['slug'] == 'fieldtype') {
-            $this->data['compatibility'] = $this->ask(lang('command_make_addon_ft_compatibility'));
+            $this->data['compatibility'] = $this->ask('command_make_addon_ft_compatibility');
         }
     }
 
