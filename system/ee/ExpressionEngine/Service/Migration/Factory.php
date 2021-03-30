@@ -251,8 +251,7 @@ class Factory
     public function snakeCase($str)
     {
         $str = strtolower($str);
-        $str = str_replace('-', '_', $str);
-        $str = str_replace(' ', '_', $str);
+        $str = str_replace(['-', ' '], '_', $str);
 
         return $str;
     }
@@ -260,9 +259,7 @@ class Factory
     public function camelCase($str)
     {
         $str = mb_convert_case($str, MB_CASE_TITLE);
-        $str = str_replace('-', '', $str);
-        $str = str_replace('_', '', $str);
-        $str = str_replace(' ', '', $str);
+        $str = str_replace(['-', '_', ' '], '', $str);
 
         return $str;
     }
