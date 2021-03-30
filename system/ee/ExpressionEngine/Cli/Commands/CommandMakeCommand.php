@@ -26,7 +26,7 @@ class CommandMakeCommand extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Generates an EE command for an existing third-party addon';
+    public $description = 'Creates a new CLI command for an add-on';
 
     /**
      * Summary of command functionality
@@ -38,7 +38,7 @@ class CommandMakeCommand extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli make:command MakeMagic --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:command MakeMagic --addon=my_existing_addon';
 
     /**
      * options available for use in command

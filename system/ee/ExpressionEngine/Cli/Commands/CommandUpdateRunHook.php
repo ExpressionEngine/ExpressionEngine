@@ -25,13 +25,13 @@ class CommandUpdateRunHook extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Runs specific update hooks from your upgrade.config file (advanced)';
+    public $description = 'Runs update hooks from your upgrade.config.php file';
 
     /**
      * Summary of command functionality
      * @var [type]
      */
-    public $summary = 'This will run one of the preflight or postflight hooks as defined in the upgrade.config file. This can be a destructive action, so use with caution.';
+    public $summary = 'This will run one of the preflight or postflight hooks as defined in the upgrade.config.php file. This can be a destructive action, so use with caution.';
 
     /**
      * How to use command

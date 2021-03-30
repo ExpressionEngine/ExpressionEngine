@@ -65,9 +65,9 @@ class CommandListCommands extends Cli
     {
         $available = $this->availableCommands();
 
-        $this->info('<<bold>>Available Commands');
-        $this->info('');
-
+        $this->info('<<bold>>All Available Commands:');
+        $this->info('Run a command with --help for more information');
+        $this->info('-------------------------------------------------------------------------------------');
         $this->write($this->fillTableLine('Command', 'Description'));
         $this->info('-------------------------------------------------------------------------------------');
 

@@ -19,13 +19,13 @@ class CommandClearCaches extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'cache-clear';
+    public $signature = 'cache:clear';
 
     /**
      * Public description of command
      * @var string
      */
-    public $description = 'Clears all EE caches';
+    public $description = 'Clears all ExpressionEngine caches';
 
     /**
      * Summary of command functionality
@@ -37,7 +37,7 @@ class CommandClearCaches extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php cache:clear --type=tag | php eecli.php cache:clear --t tag';
+    public $usage = 'php eecli.php cache:clear --type=tag | php eecli.php cache:clear -t tag';
 
     /**
      * options available for use in command

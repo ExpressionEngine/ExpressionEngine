@@ -27,7 +27,7 @@ class CommandMigrate extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Run all migrations that have not been run from the migrations folder.';
+    public $description = 'Runs specified migrations (all, core, or add-ons)';
 
     /**
      * Summary of command functionality

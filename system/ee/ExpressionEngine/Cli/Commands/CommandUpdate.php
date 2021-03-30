@@ -27,7 +27,7 @@ class CommandUpdate extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Updates EE';
+    public $description = 'Runs all available ExpressionEngine updates';
 
     /**
      * Summary of command functionality

@@ -26,7 +26,7 @@ class CommandMakeAddon extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Generates an EE addon of any type';
+    public $description = 'Creates a new add-on';
 
     /**
      * Summary of command functionality
@@ -38,7 +38,7 @@ class CommandMakeAddon extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli make:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
+    public $usage = 'php eecli.php make:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
 
     /**
      * options available for use in command

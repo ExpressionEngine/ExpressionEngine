@@ -26,7 +26,7 @@ class CommandMigrateRollback extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Rolls back all migrations from the most recent migration group.';
+    public $description = 'Rolls back most recent migration group';
 
     /**
      * Summary of command functionality

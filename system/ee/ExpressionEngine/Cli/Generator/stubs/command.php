@@ -35,7 +35,7 @@ class Command{{class}} extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli {{signature}}';
+    public $usage = 'php eecli.php {{signature}}';
 
     /**
      * options available for use in command

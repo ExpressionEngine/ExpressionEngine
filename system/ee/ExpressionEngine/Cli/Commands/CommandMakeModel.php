@@ -26,7 +26,7 @@ class CommandMakeModel extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Generates an EE model for an existing third-party addon';
+    public $description = 'Creates a new model for an add-on';
 
     /**
      * Summary of command functionality
@@ -38,7 +38,7 @@ class CommandMakeModel extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli make:model MyAwesomeModel --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:model MyAwesomeModel --addon=my_existing_addon';
 
     /**
      * options available for use in command

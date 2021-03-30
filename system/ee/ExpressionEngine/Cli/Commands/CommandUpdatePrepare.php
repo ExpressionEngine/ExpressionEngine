@@ -24,7 +24,7 @@ class CommandUpdatePrepare extends Cli
      * Public description of command
      * @var string
      */
-    public $description = 'Prepare a different site to be upgraded using these files';
+    public $description = 'Prepare a site to be upgraded using these files';
 
     /**
      * Summary of command functionality
@@ -236,7 +236,7 @@ class CommandUpdatePrepare extends Cli
 
     private function runUpgrade()
     {
-        $command = "php {$this->upgradeConfig['new_base_path']}/eecli update -y";
+        $command = "php {$this->upgradeConfig['new_base_path']}/eecli.php update -y";
 
         if ($this->option('--force-add-on-upgrade')) {
             $command .= ' --force-addon-upgrades';
