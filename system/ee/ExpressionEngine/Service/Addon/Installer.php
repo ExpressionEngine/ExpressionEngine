@@ -52,6 +52,18 @@ class Installer
             ee('Model')->make('Action', $action)->save();
         }
 
+        ee('Migration')->migrateAllByType($this->addon->shortname);
+
+        return true;
+    }
+
+    /**
+     * Module updater
+     */
+    public function update($current = '')
+    {
+        ee('Migration')->migrateAllByType($this->addon->shortname);
+
         return true;
     }
 
@@ -61,6 +73,8 @@ class Installer
     public function uninstall()
     {
         $classname = $this->addon->getModuleClass();
+
+        ee('Migration')->rollbackAllByType($this->addon->shortname);
 
         ee('Model')
             ->get('Module')
