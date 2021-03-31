@@ -1,13 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 use ExpressionEngine\Service\Addon\Installer;
 
 class {{slug_uc}}_upd extends Installer
 {
-    public $version = '{{version}}';
     public $has_cp_backend = '{{has_cp_backend}}';
     public $has_publish_fields = '{{has_publish_fields}}';
-    public $version;
 
     public function install()
     {
@@ -34,5 +36,4 @@ class {{slug_uc}}_upd extends Installer
 
         return true;
     }
-
 }
