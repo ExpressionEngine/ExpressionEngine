@@ -131,7 +131,7 @@ class CommandMakeMigration extends Cli
         // Print out info about generated migration
         $this->info('<<bold>>' . lang('command_make_migration_table_creating_migration') . $this->migration->migration);
         $this->info(lang('command_make_migration_table_migration_action') . $this->migrationAction);
-        $this->info(lang('command_make_migration_table_type_name') . $this->migrationTypeName);
+        $this->info(lang('command_make_migration_table_type_name') . $this->migrationCategory);
         $this->info(lang('command_make_migration_table_class_name') . $this->migration->getClassname());
         $this->info(lang('command_make_migration_table_file_location') . $this->migration->getFilepath());
         $this->info(lang('command_make_migration_table_template_name') . $this->templateName);
@@ -205,7 +205,7 @@ class CommandMakeMigration extends Cli
 
     public function askMigrationCategory()
     {
-        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table/status)? [' . $this->migrationCategory . ']', $this->migrationCategory);
+        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)? [' . $this->migrationCategory . ']', $this->migrationCategory);
 
         $category = trim(strtolower($category));
 
