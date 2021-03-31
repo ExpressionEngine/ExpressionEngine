@@ -134,14 +134,14 @@ class CommandMakeAddon extends Cli
 
     private function build()
     {
-        $service = new AddonGeneratorService($this->data);
+        $service = ee('AddonGenerator', $this->data);
 
         return $service->build();
     }
 
     private function getType()
     {
-        $type = $this->getTypeFromOptions() ?: $this->ask(lang('command_make_addon_what_type_of_addon') . '[' . implode(', ', $this->types) . ']');
+        $type = $this->getTypeFromOptions() ?: $this->ask(lang('command_make_addon_what_type_of_addon') . ' [' . implode(', ', $this->types) . ']');
 
         if (! in_array($type, $this->types)) {
             $this->error('command_make_addon_select_proper_addon');
