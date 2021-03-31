@@ -74,7 +74,7 @@ class Installer
     {
         $classname = $this->addon->getModuleClass();
 
-        ee('Migration')->rollbackAllByType($this->addon->shortname);
+        ee('Migration')->rollbackAllByType($this->addon->shortname, false);
 
         ee('Model')
             ->get('Module')
