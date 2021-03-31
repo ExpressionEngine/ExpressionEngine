@@ -151,9 +151,7 @@ case 'textarea':
     if ($class): ?>
 		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
 	<?php endif ?>
-
-			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
-
+			<textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
 	<?php if ($margin_top or $margin_left): ?>
 		</div>
 	<?php endif ?>
