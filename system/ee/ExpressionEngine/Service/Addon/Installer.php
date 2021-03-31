@@ -16,6 +16,7 @@ namespace ExpressionEngine\Service\Addon;
 class Installer
 {
     public $addon;
+    public $shortname;
     public $has_cp_backend = 'n';
     public $has_publish_fields = 'n';
     public $version;
@@ -25,8 +26,8 @@ class Installer
 
     public function __construct($settings = [])
     {
-        $caller = strtolower(str_replace(['_upd', '_ext'], '', get_class($this)));
-        $this->addon = ee('Addon')->get($caller);
+        $this->shortname = strtolower(str_replace(['_upd', '_ext'], '', get_class($this)));
+        $this->addon = ee('Addon')->get($this->shortname);
         $this->settings = $settings;
         $this->version = $this->addon->getVersion();
     }
@@ -52,7 +53,7 @@ class Installer
             ee('Model')->make('Action', $action)->save();
         }
 
-        ee('Migration')->migrateAllByType($this->addon->shortname);
+        ee('Migration')->migrateAllByType($this->shortname);
 
         return true;
     }
@@ -62,7 +63,7 @@ class Installer
      */
     public function update($current = '')
     {
-        ee('Migration')->migrateAllByType($this->addon->shortname);
+        ee('Migration')->migrateAllByType($this->shortname);
 
         return true;
     }
@@ -74,7 +75,7 @@ class Installer
     {
         $classname = $this->addon->getModuleClass();
 
-        ee('Migration')->rollbackAllByType($this->addon->shortname, false);
+        ee('Migration')->rollbackAllByType($this->shortname, false);
 
         ee('Model')
             ->get('Module')
