@@ -204,6 +204,12 @@ class Factory
         $migrationPath = $this->getMigrationPath($location);
 
         $newMigrations = [];
+
+        // If theres no migrations folder, then there are no new migrations, so we just return here
+        if (! $this->filesystem->isDir($migrationPath)) {
+            return $newMigrations;
+        }
+
         foreach ($this->filesystem->getDirectoryContents($migrationPath) as $file) {
             // If it's not a PHP file, it's not a migration
             if (!$this->endsWith($file, '.php')) {
