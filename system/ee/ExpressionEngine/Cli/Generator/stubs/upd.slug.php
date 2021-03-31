@@ -1,45 +1,38 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class {{slug_uc}}_upd {
+use ExpressionEngine\Service\Addon\Installer;
 
+class {{slug_uc}}_upd extends Installer
+{
     public $version = '{{version}}';
+    public $has_cp_backend = '{{has_cp_backend}}';
+    public $has_publish_fields = '{{has_publish_fields}}';
+    public $version;
 
     public function install()
     {
-
-        $data = array(
-            'module_name'           => '{{slug_uc}}',
-            'module_version'        => $this->version,
-            'has_cp_backend'        => '{{has_cp_backend}}',
-            'has_publish_fields'    => '{{has_publish_fields}}'
-        );
-
-        ee()->db->insert('modules', $data);
+        parent::install();
 
         {{conditional_hooks}}
 
         return true;
-
     }
 
     public function update($current = '')
     {
+        // Runs migrations
+        parent::update($current);
 
         return true;
-
     }
 
     public function uninstall()
     {
-
-        ee()->db->where('class', '{{slug_uc}}');
-
-        ee()->db->delete('modules');
+        parent::uninstall();
 
         {{conditional_hooks_uninstall}}
 
         return true;
-
     }
 
 }
