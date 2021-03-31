@@ -10,6 +10,7 @@ class AddonGeneratorService
 {
     public $name;
     public $data;
+    public $filesystem;
     public $slug;
     public $slug_uc;
     public $namespace;
@@ -33,13 +34,14 @@ class AddonGeneratorService
 
     public $fileName;
 
-    public function __construct(array $data)
+    public function __construct(Filesystem $filesystem, array $data)
     {
         ee()->load->helper('string');
 
+        $this->filesystem  = $filesystem;
         $this->type = $data['type'];
         $this->name = $data['name'];
-        $this->slug = slug($data['name'], '_');
+        $this->slug = $this->slug($data['name']);
         $this->slug_uc = ucfirst($this->slug);
 
         $this->init();
@@ -47,7 +49,7 @@ class AddonGeneratorService
         // Catch all, especially for advanced settings
         $this->data = $data;
 
-        $this->namespace = studly($data['name']) . '\\\\';
+        $this->namespace = $this->studly($data['name']) . '\\\\';
         $this->description = $data['description'];
         $this->version = $data['version'];
         $this->author = $data['author'];
@@ -63,7 +65,6 @@ class AddonGeneratorService
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->slug . '/';
-        $filesystem = new Filesystem();
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
@@ -71,8 +72,8 @@ class AddonGeneratorService
         // Create temp directory
         $tempDir = random_string();
 
-        if (! $filesystem->isDir($this->addonPath)) {
-            $filesystem->mkDir($this->addonPath);
+        if (! $this->filesystem->isDir($this->addonPath)) {
+            $this->filesystem->mkDir($this->addonPath);
         }
     }
 
@@ -102,9 +103,7 @@ class AddonGeneratorService
 
     protected function buildFieldtype()
     {
-        $filesystem = new Filesystem();
-
-        $stub = $filesystem->read($this->stub('ft.slug.php'));
+        $stub = $this->filesystem->read($this->stub('ft.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('version', $this->version, $stub);
         $stub = $this->write('name', $this->name, $stub);
@@ -113,9 +112,7 @@ class AddonGeneratorService
 
     protected function buildExtension()
     {
-        $filesystem = new Filesystem();
-
-        $stub = $filesystem->read($this->stub('ext.slug.php'));
+        $stub = $this->filesystem->read($this->stub('ext.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('version', $this->version, $stub);
 
@@ -129,11 +126,11 @@ class AddonGeneratorService
         foreach (array_unique(explode(',', $this->hooks)) as $hook) {
             $hookData = Hooks::getByKey(strtoupper($hook));
 
-            $hookArrayStub = $filesystem->read($this->stub('hook_array.php'));
+            $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
             $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
             $hook_array .= "{$hookArrayStub}\n";
 
-            $hookMethodStub = $filesystem->read($this->stub('hook_method.php'));
+            $hookMethodStub = $this->filesystem->read($this->stub('hook_method.php'));
             $hookMethodStub = $this->write('hook_name', $hook, $hookMethodStub);
             $hookMethodStub = $this->write('hook_methods', $hookData['params'], $hookMethodStub);
             $hook_method .= "{$hookMethodStub}\n";
@@ -147,10 +144,9 @@ class AddonGeneratorService
 
     protected function buildModule()
     {
-        $filesystem = new Filesystem();
 
         // Create upd file
-        $stub = $filesystem->read($this->stub('upd.slug.php'));
+        $stub = $this->filesystem->read($this->stub('upd.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('version', $this->version, $stub);
         $stub = $this->write('has_cp_backend', $this->has_cp_backend, $stub);
@@ -159,12 +155,12 @@ class AddonGeneratorService
         if ($this->hooks) {
             $conditionalHooks = '';
 
-            $hookInstall = $filesystem->read($this->stub('hook_install.php'));
+            $hookInstall = $this->filesystem->read($this->stub('hook_install.php'));
 
             foreach (array_unique(explode(',', $this->hooks)) as $hook) {
                 $hookData = Hooks::getByKey(strtoupper($hook));
 
-                $hookArrayStub = $filesystem->read($this->stub('hook_array.php'));
+                $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
                 $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
                 $conditionalHooks .= "{$hookArrayStub}\n";
             }
@@ -173,7 +169,7 @@ class AddonGeneratorService
 
             $stub = $this->write('conditional_hooks', $hookInstall, $stub);
 
-            $hooksUninstall = $filesystem->read($this->stub('hook_uninstall.php'));
+            $hooksUninstall = $this->filesystem->read($this->stub('hook_uninstall.php'));
             $hooksUninstall = $this->write('slug_uc', $this->slug_uc, $hooksUninstall);
 
             $stub = $this->write('conditional_hooks_uninstall', $hooksUninstall, $stub);
@@ -187,20 +183,20 @@ class AddonGeneratorService
         $this->putFile('upd.' . $this->slug . '.php', $stub);
 
         // Create module file
-        $stub = $filesystem->read($this->stub('mod.slug.php'));
+        $stub = $this->filesystem->read($this->stub('mod.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $this->putFile('mod.' . $this->slug . '.php', $stub);
 
         // Create control panel file
-        $stub = $filesystem->read($this->stub('mcp.slug.php'));
+        $stub = $this->filesystem->read($this->stub('mcp.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile('mcp.' . $this->slug . '.php', $stub);
 
         // Create lang file
-        $filesystem->mkDir($this->addonPath . 'language');
-        $filesystem->mkDir($this->addonPath . 'language/english');
-        $stub = $filesystem->read($this->stub('slug_lang.php'));
+        $this->filesystem->mkDir($this->addonPath . 'language');
+        $this->filesystem->mkDir($this->addonPath . 'language/english');
+        $stub = $this->filesystem->read($this->stub('slug_lang.php'));
         $stub = $this->write('name', $this->name, $stub);
         $stub = $this->write('description', $this->description, $stub);
         $stub = $this->write('slug', $this->slug, $stub);
@@ -209,9 +205,7 @@ class AddonGeneratorService
 
     protected function buildPlugin()
     {
-        $filesystem = new Filesystem();
-
-        $stub = $filesystem->read($this->stub('pi.slug.php'));
+        $stub = $this->filesystem->read($this->stub('pi.slug.php'));
 
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
 
@@ -220,9 +214,7 @@ class AddonGeneratorService
 
     private function buildAddonSetup()
     {
-        $filesystem = new Filesystem();
-
-        $stub = $filesystem->read($this->stub('addon.setup.php'));
+        $stub = $this->filesystem->read($this->stub('addon.setup.php'));
 
         $stub = $this->write('author', $this->author, $stub);
         $stub = $this->write('author_url', $this->author_url, $stub);
@@ -233,7 +225,7 @@ class AddonGeneratorService
         $stub = $this->write('settings_exist', $this->has_settings ? 'true' : 'false', $stub);
 
         if ($this->type == 'fieldtype') {
-            $ftSetup = $filesystem->read($this->stub('fieldtype_setup.php'));
+            $ftSetup = $this->filesystem->read($this->stub('fieldtype_setup.php'));
             $ftSetup = $this->write('fieldtype_slug', $this->slug, $ftSetup);
             $ftSetup = $this->write('fieldtype_name', $this->name, $ftSetup);
             $ftSetup = $this->write('fieldtype_compatibility', $this->compatibility, $ftSetup);
@@ -254,23 +246,23 @@ class AddonGeneratorService
         if (array_key_exists('services', $this->data) && ($services = $this->data['services'])) {
             $servicesWriteData = '';
 
-            $filesystem->mkDir($this->addonPath . 'Services');
+            $this->filesystem->mkDir($this->addonPath . 'Services');
 
             foreach (explode(',', $services) as $service) {
                 if (!$service || $service == '') {
                     continue;
                 }
 
-                $servicesStub = $filesystem->read($this->stub('addon_service.php'));
-                $servicesStub = $this->write('service_name', studly($service), $servicesStub);
+                $servicesStub = $this->filesystem->read($this->stub('addon_service.php'));
+                $servicesStub = $this->write('service_name', $this->studly($service), $servicesStub);
 
                 $servicesWriteData .= "\n\t\t" . $servicesStub . "\n";
 
-                $serviceStub = $filesystem->read($this->stub('service.php'));
+                $serviceStub = $this->filesystem->read($this->stub('service.php'));
                 $serviceStub = $this->write('namespace', $this->namespace, $serviceStub);
-                $serviceStub = $this->write('class', studly($service), $serviceStub);
+                $serviceStub = $this->write('class', $this->studly($service), $serviceStub);
 
-                $this->putFile(studly($service) . '.php', $serviceStub, '/Services');
+                $this->putFile($this->studly($service) . '.php', $serviceStub, '/Services');
             }
 
             $stub = $this->write('services', $servicesWriteData . "\t", $stub);
@@ -282,24 +274,24 @@ class AddonGeneratorService
         if (array_key_exists('models', $this->data) && ($models = $this->data['models'])) {
             $modelsWriteData = '';
 
-            $filesystem->mkDir($this->addonPath . 'Models');
+            $this->filesystem->mkDir($this->addonPath . 'Models');
 
             foreach (explode(',', $models) as $service) {
                 if (!$service || $service == '') {
                     continue;
                 }
 
-                $modelsStub = $filesystem->read($this->stub('addon_model.php'));
-                $modelsStub = $this->write('model_name', studly($service), $modelsStub);
+                $modelsStub = $this->filesystem->read($this->stub('addon_model.php'));
+                $modelsStub = $this->write('model_name', $this->studly($service), $modelsStub);
 
                 $modelsWriteData .= "\n" . $modelsStub . "\n";
 
-                $modelStub = $filesystem->read($this->stub('model.php'));
+                $modelStub = $this->filesystem->read($this->stub('model.php'));
                 $modelStub = $this->write('namespace', $this->namespace, $modelStub);
                 $modelStub = $this->write('slug', $this->slug, $modelStub);
-                $modelStub = $this->write('class', studly($service), $modelStub);
+                $modelStub = $this->write('class', $this->studly($service), $modelStub);
 
-                $this->putFile(studly($service) . '.php', $modelStub, '/Models');
+                $this->putFile($this->studly($service) . '.php', $modelStub, '/Models');
             }
 
             $stub = $this->write('models', $modelsWriteData . "\t", $stub);
@@ -316,9 +308,9 @@ class AddonGeneratorService
                     continue;
                 }
 
-                $consentsStub = $filesystem->read($this->stub('addon_consent.php'));
-                $consentsStub = $this->write('consent_name', studly($consent), $consentsStub);
-                $consentsStub = $this->write('consent_slug', slug($consent, '_'), $consentsStub);
+                $consentsStub = $this->filesystem->read($this->stub('addon_consent.php'));
+                $consentsStub = $this->write('consent_name', $this->studly($consent), $consentsStub);
+                $consentsStub = $this->write('consent_slug', ee('Format')->make('Text', $consent)->urlSlug()->compile(), $consentsStub);
 
                 $consentsWriteData .= "\n" . $consentsStub . "\n\t";
             }
@@ -347,7 +339,7 @@ class AddonGeneratorService
             }
 
             foreach (explode(':', $cookieData) as $cookieType => $cookieValues) {
-                $cookiesStub = $filesystem->read($this->stub('cookies.php'));
+                $cookiesStub = $this->filesystem->read($this->stub('cookies.php'));
                 $cookiesStub = $this->write('cookies_type', $cookieType, $cookiesStub);
 
                 $valueToWrite = "'" . implode("',\n\t'", $cookieValues) . "',";
@@ -399,16 +391,14 @@ class AddonGeneratorService
 
     private function putFile($name, $contents, $path = null)
     {
-        $filesystem = new Filesystem();
-
         if ($path) {
             $path = trim($path, '/') . '/';
         } else {
             $path = '';
         }
 
-        if (!$filesystem->exists($this->addonPath . $path . $name)) {
-            $filesystem->write($this->addonPath . $path . $name, $contents);
+        if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
+            $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
     }
 
@@ -422,8 +412,17 @@ class AddonGeneratorService
         return str_replace($string . "\n", '', $contents);
     }
 
-    private function undo($confirm = false)
+    public function slug($word)
     {
-        $filesystem->delete($this->addonPath);
+        $str = strtolower($str);
+
+        return str_replace(['-', ' '], '_', $str);
+    }
+
+    public function studly($word)
+    {
+        $str = mb_convert_case($str, MB_CASE_TITLE);
+
+        return  str_replace(['-', '_', ' '], '', $str);
     }
 }
