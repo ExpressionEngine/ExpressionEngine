@@ -288,6 +288,70 @@ class Factory
         return $ran;
     }
 
+    public function rollbackAllByType($type, $respectMigrationGroups=true, $stepsRemaining=-1)
+    {
+        // Keep track of the migrations that have rolled back
+        $rolledback = [];
+        $this->respectMigrationGroups = $respectMigrationGroups;
+        $this->stepsRemaining = $stepsRemaining;
+
+        // If all, run addons then core
+        if (strtolower($type) === 'all' || strtolower($type) === 'reset') {
+            $rolledbackAddons = $this->rollbackAllByType('addons', $this->respectMigrationGroups, $this->stepsRemaining);
+            $rolledbackCore = $this->rollbackAllByType('core', $this->respectMigrationGroups, $this->stepsRemaining);
+            $rolledback = array_merge($rolledback, $rolledbackAddons, $rolledbackCore);
+
+            // After migrating core and addons, we're done
+            return $rolledback;
+        }
+
+        // If addons, loop through each addon and migrate it
+        if ($type === 'addons') {
+            $addons = $this->getAddonsThatRanMigrations();
+
+            foreach ($addons as $addon) {
+                $rolledbackAddons = $this->rollbackAllByType($addon, $this->respectMigrationGroups, $this->stepsRemaining);
+                $rolledback = array_merge($rolledback, $rolledbackAddons);
+            }
+
+            // After migrating each addon, we're done
+            return $rolledback;
+        }
+
+        // If set to core, lets change that to ExpressionEngine
+        if (strtolower($type) === 'core') {
+            $type = 'ExpressionEngine';
+        }
+
+        // Get all the ran migrations for a type. This is our base case
+        $ranMigrations = ee('Model')->get('Migration')
+            ->filter('migration_location', $type)
+            ->order('migration_id', 'desc')
+            ->all();
+
+        $migrationGroup = null;
+        foreach ($ranMigrations as $migration) {
+            if ($this->stepsRemaining==0) {
+                break;
+            }
+
+            // This allows us to know the first migration group that was ran
+            $migrationGroup = $migrationGroup ?: $migration->migration_group;
+
+            // If we are respecting migration groups and the groups have changed, we can safely break out of the loop
+            if ($this->respectMigrationGroups && $migrationGroup != $migration->migration_group) {
+                break;
+            }
+
+            $migration->down();
+            $rolledback[] = $migration->migration;
+
+            $this->stepsRemaining--;
+        }
+
+        return $rolledback;
+    }
+
     public function getAvailableLocations()
     {
         $locations = [];
@@ -337,6 +401,20 @@ class Factory
         }
 
         return $addons;
+    }
+
+    public function getAddonsThatRanMigrations()
+    {
+        // Get all migrations that are not core, and pluck the location
+        $migrations =  ee('Model')->get('Migration')
+            ->filter('migration_location', '!=', 'ExpressionEngine')
+            ->all()->pluck('migration_location');
+
+        // Reduce to a unique array and then sort
+        $migrations = array_unique($migrations);
+        sort($migrations);
+
+        return $migrations;
     }
 
     public function writeMigrationFileFromTemplate($templateName, $tablename)
