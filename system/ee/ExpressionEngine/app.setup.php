@@ -327,6 +327,12 @@ $setup = [
             return new Template\Variables\LegacyParser();
         },
 
+        'AddonGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ExpressionEngine\Cli\Generator\Services\AddonGeneratorService($filesystem, $data);
+        },
+
         'Consent' => function ($ee, $member_id = null) {
             $actor_userdata = ee()->session->userdata;
             if (! ee()->session->userdata('member_id')) {
