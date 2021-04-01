@@ -321,6 +321,7 @@ class Publish extends AbstractPublishController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+            ee('CP/URL')->make('publish/edit', ['filter_by_channel' => $channel_id])->compile() => $channel->channel_title,
             '' => lang('new_entry')
         );
 
