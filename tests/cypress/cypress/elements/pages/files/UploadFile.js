@@ -15,7 +15,7 @@ class UploadFile extends FileManagerSection {
         'description_input': 'div.col.w-12 div.form-standard form fieldset textarea[name="description"]',
         'credit_input': 'div.col.w-12 div.form-standard form fieldset input[type!=hidden][name="credit"]',
         'location_input': 'div.col.w-12 div.form-standard form fieldset input[type!=hidden][name="location"]',
-        'form_submit_button': 'div.form-standard form .tab-bar__right-buttons .form-btns input[type="submit"]'
+        'form_submit_button': 'div.form-standard form .tab-bar__right-buttons .form-btns [type="submit"]'
 
       })
     }

@@ -4,7 +4,11 @@ const { _, $ } = Cypress
 
 context('Throttle Logging', () => {
 
-    	beforeEach(function() {
+        before(function() {
+          cy.task('db:seed')
+      })
+  
+      beforeEach(function() {
           cy.visit('admin.php?/cp/login');
           cy.get('#username').type('admin');
           cy.get('#password').type('password');

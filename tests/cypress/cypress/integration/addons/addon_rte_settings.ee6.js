@@ -152,7 +152,7 @@ context('RTE Settings', () => {
 
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
-            cy.get('input[type="submit"][value="Confirm, and Remove"]').eq(1).click() //try this instead.
+            cy.get('[type="submit"][value="Confirm, and Remove"]').eq(1).click() //try this instead.
 
             cy.hasNoErrors()
 

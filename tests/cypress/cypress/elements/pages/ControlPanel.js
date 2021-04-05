@@ -43,7 +43,7 @@ class ControlPanel {
             "modal": 'div.modal:visible',
             "modal_title": 'div.modal:visible h2',
             "modal_submit_button": 'div.modal:visible .button', //dont use for andy's branches
-            "new_modal_submit_button" : 'input[type="submit"]', //use this instead
+            "new_modal_submit_button" : '[type="submit"]', //use this instead
 
             // Grid
             "grid_add_no_results": 'tr.no-results [rel="add_row"]',
