@@ -73,7 +73,7 @@ context('Template Partials', () => {
         form.get('contents_editor').type('Lorem ipsum...')
 
         //form.get('save_button').first().click()
-        cy.get('input').contains('Save Partial').first().click()
+        cy.get('button').contains('Save Partial').first().click()
 
         cy.hasNoErrors()
 

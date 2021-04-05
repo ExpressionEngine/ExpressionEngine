@@ -80,7 +80,7 @@ context('RTE Settings', () => {
             });
 
             //page.get('modal_submit_button').click() // Submits a form AJ
-            cy.get('input').contains('Confirm, and Remove').first().click({force:true})
+            cy.get('button').contains('Confirm, and Remove').first().click({force:true})
             cy.hasNoErrors()
 
             page.hasAlert('error')
