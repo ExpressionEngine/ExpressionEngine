@@ -42,7 +42,7 @@ class ControlPanel {
             // Modals
             "modal": 'div.modal:visible',
             "modal_title": 'div.modal:visible h2',
-            "modal_submit_button": 'div.modal:visible input.button', //dont use for andy's branches
+            "modal_submit_button": 'div.modal:visible .button', //dont use for andy's branches
             "new_modal_submit_button" : 'input[type="submit"]', //use this instead
 
             // Grid

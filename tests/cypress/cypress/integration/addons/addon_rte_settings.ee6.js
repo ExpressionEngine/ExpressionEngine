@@ -74,7 +74,7 @@ context('RTE Settings', () => {
             page.get('action_submit_button').click()
 
             cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('input[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
+                cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
                     elem.val(val)
                 });
             });

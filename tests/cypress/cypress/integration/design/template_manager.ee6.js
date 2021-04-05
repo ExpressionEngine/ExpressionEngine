@@ -35,7 +35,7 @@ context('Template Manager', () => {
 
             form.get('name').clear().type('cypress-test')
             //form.get('save_button').first().click()
-            cy.get('input[value="Save Template Group"]').first().click()
+            cy.get('[value="Save Template Group"]').first().click()
 
             cy.hasNoErrors()
 
@@ -57,7 +57,7 @@ context('Template Manager', () => {
             form.get('duplicate_existing_group').check('1') // about
 
             //form.get('save_button').first().click()//AJ
-            cy.get('input[value="Save Template Group"]').first().click()
+            cy.get('[value="Save Template Group"]').first().click()
 
             cy.hasNoErrors()
 
@@ -102,7 +102,7 @@ context('Template Manager', () => {
             page.get('template_groups').its('length').then((length) => {
                 page.get('template_groups').last().find('a[rel="modal-confirm-template-group"]').first().click({force: true})
 
-                cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click({force:true})
+                cy.get('[value="Confirm and Delete"]').filter(':visible').first().click({force:true})
 
                 cy.hasNoErrors()
 
@@ -137,7 +137,7 @@ context('Template Manager', () => {
             let form = new TemplateGroupEdit
             form.get('is_site_default').click()
             //form.get('save_button').first().click() AJ
-            cy.get('input[value="Save Template Group"]').first().click()
+            cy.get('[value="Save Template Group"]').first().click()
 
 
             cy.hasNoErrors()
@@ -241,7 +241,7 @@ context('Template Manager', () => {
                 page.get('action_submit_button').click()
 
                 //page.get('modal_submit_button').click()
-                cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+                cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
                 cy.hasNoErrors()
 

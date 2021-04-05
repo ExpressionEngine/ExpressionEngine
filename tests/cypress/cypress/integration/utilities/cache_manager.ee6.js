@@ -20,7 +20,7 @@ context('Cache Manager', () => {
   })
 
   it('should successfully submit with one cache type selected', () => {
-    cy.get('input[value="Clear Caches"]').click()
+    cy.get('inut[value="Clear Caches"]').click()
     cy.hasNoErrors()
 
     page.get('wrap').contains('Caches cleared')

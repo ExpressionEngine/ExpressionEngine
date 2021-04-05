@@ -340,7 +340,7 @@ context('File Manager', () => {
 		page.get('action_submit_button').click()
 		//page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		page.get('wrap').invoke('text').then((text) => {
@@ -357,7 +357,7 @@ context('File Manager', () => {
 		page.get('action_submit_button').click()
 		//page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 	});
@@ -411,7 +411,7 @@ context('File Manager', () => {
 
 		//page.wait_until_remove_directory_modal_visible
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {
