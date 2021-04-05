@@ -442,7 +442,7 @@ context('File Manager', () => {
 
 		//page.wait_until_remove_directory_modal_visible
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('input').contains('Confirm and Delete').click()
+		cy.get('button').contains('Confirm and Delete').click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {

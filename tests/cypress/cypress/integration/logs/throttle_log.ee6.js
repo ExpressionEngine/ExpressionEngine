@@ -18,7 +18,7 @@ context('Throttle Logging', () => {
       it('turns throttling on',() => {
         cy.get('a').contains('Turn Throttling On').first().click()
         cy.get('#fieldset-enable_throttling > .field-control > .toggle-btn').click()
-        cy.get('input').contains('Save Settings').first().click()
+        cy.get('button').contains('Save Settings').first().click()
 
       })
 
@@ -144,4 +144,3 @@ context('Throttle Logging', () => {
 
 
   })
-

@@ -76,7 +76,7 @@ context('Template Manager', () => {
             form.get('name').clear().type('cypress-test-three')//.trigger('blur')
             //cy.wait("@ajax")
             //form.get('save_button').first().click()
-            cy.get('input').contains('Save Template Group').first().click({failOnStatusCode:false})
+            cy.get('button').contains('Save Template Group').first().click({failOnStatusCode:false})
 
             cy.hasNoErrors()
 

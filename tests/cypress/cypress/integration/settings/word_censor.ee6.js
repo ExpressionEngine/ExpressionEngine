@@ -43,7 +43,7 @@ context('Word Censorship Settings', () => {
   it('should reject XSS', () => {
     page.get('censor_replacement').clear().type(page.messages.xss_vector)
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.hasError(page.get('censor_replacement'), page.messages.xss_error)
     //page.hasErrors()
@@ -55,7 +55,7 @@ context('Word Censorship Settings', () => {
     page.get('censor_replacement').clear().type('####')
     page.get('censored_words').clear().type("Poop\nPerl")
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('enable_censoring').invoke('val').then((val) => { expect(val).to.be.equal('y') })

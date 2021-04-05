@@ -69,7 +69,7 @@ context('Member Settings', () => {
 
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     //page.hasErrors()
@@ -122,7 +122,7 @@ context('Member Settings', () => {
     page.get('new_member_notification_toggle').click()
     page.get('mbr_notification_emails').clear().type('test@test.com')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences Updated')
     page.get('allow_member_registration').invoke('val').then((val) => {
