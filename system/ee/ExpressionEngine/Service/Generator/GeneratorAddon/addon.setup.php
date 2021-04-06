@@ -1,6 +1,6 @@
 <?php
 
-use Generator\Services\AddonGeneratorService;
+use Generator\AddonGenerator;
 
 return [
     'author' => 'Packet Tide',
@@ -13,8 +13,8 @@ return [
     'built_in' => true,
     // Advanced settings
     'services' => [
-        'AddonGeneratorService' => function ($addon, array $data) {
-            return new AddonGeneratorService($data);
+        'AddonGenerator' => function ($addon, array $data) {
+            return new AddonGenerator($data);
         },
     ],
 ];
