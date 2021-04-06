@@ -1,6 +1,6 @@
 <?php
 
-namespace ExpressionEngine\Cli\Generator\Services;
+namespace ExpressionEngine\Service\Generator\Services;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
@@ -35,7 +35,7 @@ class CommandGeneratorService {
 	private function init()
 	{
 
-		$this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
+		$this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
 		$this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 		$this->commandsPath = SYSPATH . 'user/addons/' . $this->addon . '/Commands/';
 		$filesystem = new Filesystem;

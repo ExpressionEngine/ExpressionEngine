@@ -1,6 +1,6 @@
 <?php
 
-namespace ExpressionEngine\Cli\Generator\Traits;
+namespace ExpressionEngine\Service\Generator\Traits;
 
 use ReflectionClass;
 

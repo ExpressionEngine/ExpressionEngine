@@ -1,8 +1,8 @@
 <?php
 
-namespace ExpressionEngine\Cli\Generator\Enums;
+namespace ExpressionEngine\Service\Generator\Enums;
 
-use ExpressionEngine\Cli\Generator\Traits\EnumTrait;
+use ExpressionEngine\Service\Generator\Traits\EnumTrait;
 
 class FieldtypeCompatibility
 {

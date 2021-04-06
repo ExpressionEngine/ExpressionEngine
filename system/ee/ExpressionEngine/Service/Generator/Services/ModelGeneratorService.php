@@ -1,6 +1,6 @@
 <?php
 
-namespace ExpressionEngine\Cli\Generator\Services;
+namespace ExpressionEngine\Service\Generator\Services;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
@@ -26,7 +26,7 @@ class ModelGeneratorService
 
     private function init()
     {
-        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
+        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
         $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Models/';
 

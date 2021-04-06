@@ -49,8 +49,8 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
-use ExpressionEngine\Cli\Generator\Services\AddonGeneratorService;
-use ExpressionEngine\Cli\Generator\Services\ModelGeneratorService;
+use ExpressionEngine\Service\Generator\Services\AddonGeneratorService;
+use ExpressionEngine\Service\Generator\Services\ModelGeneratorService;
 
 // TODO should put the version in here at some point ...
 $setup = [
