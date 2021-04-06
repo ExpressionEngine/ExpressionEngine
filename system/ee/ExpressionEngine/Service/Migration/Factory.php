@@ -73,10 +73,10 @@ class Factory
      */
     public function ensureMigrationTableExists()
     {
-        ee()->load->database();
-        ee()->load->dbforge();
-
         if (! $this->db->table_exists('migrations')) {
+            // Load DBForge if the table doesnt exist to create the table
+            ee()->load->dbforge();
+
             $fields = array(
                 'migration_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
                 'migration' => array('type' => 'text'),
