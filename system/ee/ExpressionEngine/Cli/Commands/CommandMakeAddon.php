@@ -3,7 +3,6 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Cli\Generator\Services\AddonGeneratorService;
 
 /**
  * Command to clear selected caches

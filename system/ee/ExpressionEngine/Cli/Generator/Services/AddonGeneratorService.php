@@ -414,15 +414,15 @@ class AddonGeneratorService
 
     public function slug($word)
     {
-        $str = strtolower($str);
+        $word = strtolower($word);
 
-        return str_replace(['-', ' '], '_', $str);
+        return str_replace(['-', ' '], '_', $word);
     }
 
     public function studly($word)
     {
-        $str = mb_convert_case($str, MB_CASE_TITLE);
+        $word = mb_convert_case($word, MB_CASE_TITLE);
 
-        return  str_replace(['-', '_', ' '], '', $str);
+        return  str_replace(['-', '_', ' '], '', $word);
     }
 }

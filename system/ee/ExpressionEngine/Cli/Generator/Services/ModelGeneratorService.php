@@ -8,18 +8,18 @@ class ModelGeneratorService
 {
     public $name;
     public $addon;
+    protected $filesystem;
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
 
-    public function __construct(array $data)
+    public function __construct(Filesystem $filesystem, array $data)
     {
-        ee()->load->helper('string');
-
         $this->name = $data['name'];
-        $this->className = studly($data['name']);
+        $this->filesystem = $filesystem;
+        $this->className = $this->studly($data['name']);
         $this->addon = $data['addon'];
-        $this->namespace = studly($data['addon']);
+        $this->namespace = $this->studly($data['addon']);
 
         $this->init();
     }
@@ -29,21 +29,18 @@ class ModelGeneratorService
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Cli/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
         $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Models/';
-        $filesystem = new Filesystem();
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
 
-        if (! $filesystem->isDir($this->modelPath)) {
-            $filesystem->mkDir($this->modelPath);
+        if (! $this->filesystem->isDir($this->modelPath)) {
+            $this->filesystem->mkDir($this->modelPath);
         }
     }
 
     public function build()
     {
-        $filesystem = new Filesystem();
-
-        $modelStub = $filesystem->read($this->stub('model.php'));
+        $modelStub = $this->filesystem->read($this->stub('model.php'));
         $modelStub = $this->write('namespace', $this->namespace, $modelStub);
         $modelStub = $this->write('class', $this->className, $modelStub);
 
@@ -54,23 +51,21 @@ class ModelGeneratorService
 
     private function addModelToAddonSetup()
     {
-        $filesystem = new Filesystem();
-
         try {
-            $addonSetup = $filesystem->read($this->addonPath . 'addon.setup.php');
+            $addonSetup = $this->filesystem->read($this->addonPath . 'addon.setup.php');
         } catch (FilesystemException $e) {
             return false;
         } catch (\Exception $e) {
             return false;
         }
 
-        $modelsStub = $filesystem->read($this->stub('addon_model.php'));
+        $modelsStub = $this->filesystem->read($this->stub('addon_model.php'));
         $modelsStub = $this->write('namespace', $this->namespace, $modelsStub);
         $modelsStub = $this->write('class', $this->className, $modelsStub);
 
-        if (string_contains($addonSetup, "'models'") || string_contains($addonSetup, '"models"')) {
-            $modelsStub = $filesystem->read($this->stub('model.addon.php'));
-            $modelsStub = $this->write('model_data', $commandString, $modelsStub);
+        if ($this->string_contains($addonSetup, "'models'") || $this->string_contains($addonSetup, '"models"')) {
+            $modelsStub = $this->filesystem->read($this->stub('model.addon.php'));
+            $modelsStub = $this->write('model_data', $modelsStub, $modelsStub);
 
             preg_match('(\]\;|\)\;)', $addonSetup, $matches);
 
@@ -80,11 +75,11 @@ class ModelGeneratorService
                 $addonSetup = $this->write($last, $modelsStub . "\n\n" . $last, $addonSetup);
             }
         } else {
-            $stringToReplace = string_contains($addonSetup, "'models'")
+            $stringToReplace = $this->string_contains($addonSetup, "'models'")
                                 ? '"models"'
                                 : "'models'";
 
-            // TODO: Find command array and add $modelstring to the array
+            // TODO: Find models array and add $modelstring to the array
             preg_match('/(\'|\")models(\'|\")(\s+)=>(\s+)(\[|array\()/', $addonSetup, $matches);
 
             if (! empty($matches) && isset($matches[1])) {
@@ -105,16 +100,37 @@ class ModelGeneratorService
 
     private function putFile($name, $contents, $path = null)
     {
-        $filesystem = new Filesystem();
-
         if ($path) {
             $path = trim($path, '/') . '/';
         } else {
             $path = '';
         }
 
-        if (!$filesystem->exists($this->modelPath . $path . $name)) {
-            $filesystem->write($this->modelPath . $path . $name, $contents);
+        if (!$this->filesystem->exists($this->modelPath . $path . $name)) {
+            $this->filesystem->write($this->modelPath . $path . $name, $contents);
         }
+    }
+
+    public function slug($word)
+    {
+        $word = strtolower($word);
+
+        return str_replace(['-', ' '], '_', $word);
+    }
+
+    public function studly($word)
+    {
+        $word = mb_convert_case($word, MB_CASE_TITLE);
+
+        return  str_replace(['-', '_', ' '], '', $word);
+    }
+
+    public function string_contains($textToSearch, $word)
+    {
+        if (strpos($textToSearch, $word) !== false) {
+            return true;
+        }
+
+        return false;
     }
 }
