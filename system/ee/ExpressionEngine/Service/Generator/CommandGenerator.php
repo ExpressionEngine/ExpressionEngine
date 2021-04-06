@@ -1,11 +1,11 @@
 <?php
 
-namespace ExpressionEngine\Service\Generator\Services;
+namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
 
-class CommandGeneratorService {
+class CommandGenerator {
 
 	protected $name;
 	protected $className;

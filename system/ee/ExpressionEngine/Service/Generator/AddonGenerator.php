@@ -1,12 +1,12 @@
 <?php
 
-namespace ExpressionEngine\Service\Generator\Services;
+namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Service\Generator\Enums\FieldtypeCompatibility;
 use ExpressionEngine\Service\Generator\Enums\Hooks;
 
-class AddonGeneratorService
+class AddonGenerator
 {
     public $name;
     public $data;

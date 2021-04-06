@@ -49,8 +49,8 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
-use ExpressionEngine\Service\Generator\Services\AddonGeneratorService;
-use ExpressionEngine\Service\Generator\Services\ModelGeneratorService;
+use ExpressionEngine\Service\Generator\AddonGenerator;
+use ExpressionEngine\Service\Generator\ModelGenerator;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -332,13 +332,13 @@ $setup = [
         'AddonGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
-            return new AddonGeneratorService($filesystem, $data);
+            return new AddonGenerator($filesystem, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
-            return new ModelGeneratorService($filesystem, $data);
+            return new ModelGenerator($filesystem, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {

@@ -1,10 +1,10 @@
 <?php
 
-namespace ExpressionEngine\Service\Generator\Services;
+namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
-class ModelGeneratorService
+class ModelGenerator
 {
     public $name;
     public $addon;

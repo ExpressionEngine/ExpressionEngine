@@ -3,7 +3,7 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Generator\Services\CommandGeneratorService;
+use ExpressionEngine\Service\Generator\CommandGenerator;
 
 /**
  * Command to clear selected caches
@@ -71,7 +71,7 @@ class CommandMakeCommand extends Cli
 
     protected function build()
     {
-        $service = new CommandGeneratorService($this->data);
+        $service = new CommandGenerator($this->data);
 
         return $service->build();
     }
