@@ -50,6 +50,7 @@ use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 use ExpressionEngine\Service\Generator\AddonGenerator;
+use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 
 // TODO should put the version in here at some point ...
@@ -333,6 +334,12 @@ $setup = [
             $filesystem = $ee->make('Filesystem');
 
             return new AddonGenerator($filesystem, $data);
+        },
+
+        'CommandGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new CommandGenerator($filesystem, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {

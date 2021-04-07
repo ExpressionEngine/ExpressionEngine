@@ -71,7 +71,7 @@ class CommandMakeCommand extends Cli
 
     protected function build()
     {
-        $service = new CommandGenerator($this->data);
+        $service = ee('CommandGenerator', $this->data);
 
         return $service->build();
     }

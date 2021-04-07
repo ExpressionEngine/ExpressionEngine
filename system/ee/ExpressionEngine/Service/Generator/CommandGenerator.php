@@ -7,6 +7,7 @@ use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 class CommandGenerator
 {
+    protected $filesystem;
     protected $name;
     protected $className;
     protected $signature;
@@ -16,15 +17,14 @@ class CommandGenerator
     protected $addonPath;
     protected $stubPath;
 
-    public function __construct(array $data)
+    public function __construct(Filesystem $filesystem, array $data)
     {
-        ee()->load->helper('string');
-
+        $this->filesystem  = $filesystem;
         $this->name = $data['name'];
         $this->addon = $data['addon'];
-        $this->addonClass = studly($data['addon']);
-        $this->className = studly($data['name']);
-        $this->fullClass = $this->addonClass . '\\Commands\\' . studly($data['name']);
+        $this->addonClass = $this->studly($data['addon']);
+        $this->className = $this->studly($data['name']);
+        $this->fullClass = $this->addonClass . '\\Commands\\' . $this->studly($data['name']);
         $this->signature = $data['signature'];
         $this->description = $data['description'];
 
@@ -36,27 +36,24 @@ class CommandGenerator
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
         $this->commandsPath = SYSPATH . 'user/addons/' . $this->addon . '/Commands/';
-        $filesystem = new Filesystem();
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
 
-        if (! $filesystem->isDir($this->commandsPath)) {
-            $filesystem->mkDir($this->commandsPath);
+        if (! $this->filesystem->isDir($this->commandsPath)) {
+            $this->filesystem->mkDir($this->commandsPath);
         }
     }
 
     public function build()
     {
-        $filesystem = new Filesystem();
-
-        $commandStub = $filesystem->read($this->stub('command.php'));
+        $commandStub = $this->filesystem->read($this->stub('command.php'));
         $commandStub = $this->write('name', $this->name, $commandStub);
         $commandStub = $this->write('class', $this->className, $commandStub);
         $commandStub = $this->write('signature', $this->signature, $commandStub);
         $commandStub = $this->write('description', $this->description, $commandStub);
 
-        $this->putFile(studly('Command' . $this->className) . '.php', $commandStub);
+        $this->putFile($this->studly('Command' . $this->className) . '.php', $commandStub);
 
         $this->addCommandToAddonSetup();
 
@@ -65,10 +62,8 @@ class CommandGenerator
 
     private function addCommandToAddonSetup()
     {
-        $filesystem = new Filesystem();
-
         try {
-            $addonSetup = $filesystem->read($this->addonPath . 'addon.setup.php');
+            $addonSetup = $this->filesystem->read($this->addonPath . 'addon.setup.php');
         } catch (FilesystemException $e) {
             return false;
         } catch (\Exception $e) {
@@ -78,10 +73,10 @@ class CommandGenerator
         $commandString = "    '{$this->signature}' => {$this->fullClass}::class,";
         $useCommandString = "use {$this->fullClass};";
 
-        $filesystem->findAndReplace($this->addonPath . 'addon.setup.php', "<?php", "<?php\n\n{$useCommandString}\n\n");
+        $this->filesystem->findAndReplace($this->addonPath . 'addon.setup.php', "<?php", "<?php\n\n{$useCommandString}\n\n");
 
-        if (string_contains($addonSetup, "'commands'") || string_contains($addonSetup, '"commands"')) {
-            $commandStub = $filesystem->read($this->stub('command.addon.php'));
+        if ($this->string_contains($addonSetup, "'commands'") || $this->string_contains($addonSetup, '"commands"')) {
+            $commandStub = $this->filesystem->read($this->stub('command.addon.php'));
             $commandStub = $this->write('command_data', $commandString, $commandStub);
 
             preg_match('(\]\;|\)\;)', $addonSetup, $matches);
@@ -91,7 +86,7 @@ class CommandGenerator
 
                 $addonSetup = $this->write($last, $commandStub . "\n\n" . $last, $addonSetup);
             } else {
-                $stringToReplace = string_contains($addonSetup, "'commands'")
+                $stringToReplace = $this->string_contains($addonSetup, "'commands'")
                                 ? '"commands"'
                                 : "'commands'";
 
@@ -117,16 +112,26 @@ class CommandGenerator
 
     private function putFile($name, $contents, $path = null)
     {
-        $filesystem = new Filesystem();
-
         if ($path) {
             $path = trim($path, '/') . '/';
         } else {
             $path = '';
         }
 
-        if (!$filesystem->exists($this->commandsPath . $path . $name)) {
-            $filesystem->write($this->commandsPath . $path . $name, $contents);
+        if (!$this->filesystem->exists($this->commandsPath . $path . $name)) {
+            $this->filesystem->write($this->commandsPath . $path . $name, $contents);
         }
+    }
+
+    public function studly($word)
+    {
+        $word = mb_convert_case($word, MB_CASE_TITLE);
+
+        return  str_replace(['-', '_', ' '], '', $word);
+    }
+
+    public function string_contains($textToSearch, $word)
+    {
+        return (strpos($textToSearch, $word) !== false);
     }
 }

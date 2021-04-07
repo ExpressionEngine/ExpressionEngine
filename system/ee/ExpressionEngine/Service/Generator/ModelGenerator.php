@@ -127,10 +127,6 @@ class ModelGenerator
 
     public function string_contains($textToSearch, $word)
     {
-        if (strpos($textToSearch, $word) !== false) {
-            return true;
-        }
-
-        return false;
+        return (strpos($textToSearch, $word) !== false);
     }
 }

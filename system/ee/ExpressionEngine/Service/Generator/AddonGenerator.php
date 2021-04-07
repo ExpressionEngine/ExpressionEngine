@@ -26,7 +26,6 @@ class AddonGenerator
     public $compatibility;
 
     protected $package;
-
     protected $stubPath;
     protected $tempPath;
     protected $generatorPath;
@@ -36,8 +35,6 @@ class AddonGenerator
 
     public function __construct(Filesystem $filesystem, array $data)
     {
-        ee()->load->helper('string');
-
         $this->filesystem  = $filesystem;
         $this->type = $data['type'];
         $this->name = $data['name'];
