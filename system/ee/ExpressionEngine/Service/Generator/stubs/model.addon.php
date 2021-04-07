@@ -1,3 +1,3 @@
 'models' => [
-    {{model_data}}
-],
+{{model_data}}
+    ],

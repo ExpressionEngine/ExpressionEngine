@@ -1,3 +1,3 @@
 'commands' => [
-    {{command_data}}
-],
+{{command_data}}
+    ],
