@@ -44,7 +44,7 @@ class ModelGenerator
         $modelStub = $this->write('namespace', $this->namespace, $modelStub);
         $modelStub = $this->write('class', $this->className, $modelStub);
 
-        $this->putFile($this->className . '.php', $modelStub);
+        // $this->putFile($this->className . '.php', $modelStub);
 
         $this->addModelToAddonSetup();
     }
@@ -52,39 +52,29 @@ class ModelGenerator
     private function addModelToAddonSetup()
     {
         try {
-            $addonSetup = $this->filesystem->read($this->addonPath . 'addon.setup.php');
+            $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
         } catch (FilesystemException $e) {
             return false;
         } catch (\Exception $e) {
             return false;
         }
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
 
-        $modelsStub = $this->filesystem->read($this->stub('addon_model.php'));
-        $modelsStub = $this->write('namespace', $this->namespace, $modelsStub);
-        $modelsStub = $this->write('class', $this->className, $modelsStub);
+        $modelStub = $this->filesystem->read($this->stub('addon_model.php'));
+        $modelStub = $this->write('namespace', $this->namespace, $modelStub);
+        $modelStub = $this->write('class', $this->className, $modelStub);
 
-        if ($this->string_contains($addonSetup, "'models'") || $this->string_contains($addonSetup, '"models"')) {
+        // The addon setup has the models array
+        if (array_key_exists('models', $addonSetupArray)) {
+            $pattern = "/(models)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
+            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$modelStub$5$6$7", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        } else { // The addon setup does not have the models array
             $modelsStub = $this->filesystem->read($this->stub('model.addon.php'));
-            $modelsStub = $this->write('model_data', $modelsStub, $modelsStub);
-
-            preg_match('(\]\;|\)\;)', $addonSetup, $matches);
-
-            if (! empty($matches)) {
-                $last = array_values(array_slice($matches, -1))[0];
-
-                $addonSetup = $this->write($last, $modelsStub . "\n\n" . $last, $addonSetup);
-            }
-        } else {
-            $stringToReplace = $this->string_contains($addonSetup, "'models'")
-                                ? '"models"'
-                                : "'models'";
-
-            // TODO: Find models array and add $modelstring to the array
-            preg_match('/(\'|\")models(\'|\")(\s+)=>(\s+)(\[|array\()/', $addonSetup, $matches);
-
-            if (! empty($matches) && isset($matches[1])) {
-                $addonSetup = $this->write($matches[1], $matches[1] . "\n\n" . $modelsStub, $addonSetup);
-            }
+            $modelsStub = $this->write('model_data', $modelStub, $modelsStub);
+            $pattern = '/(,)([^,]+)$/';
+            $addonSetupFile = preg_replace($pattern, ",\n    $modelsStub $2", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         }
     }
 
