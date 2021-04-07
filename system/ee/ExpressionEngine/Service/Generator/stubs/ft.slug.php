@@ -1,7 +1,11 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class {{slug_uc}}_ft extends EE_Fieldtype {
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
+class {{slug_uc}}_ft extends EE_Fieldtype
+{
     public $info = array(
         'name'      => '{{name}}',
         'version'   => '{{version}}',
@@ -19,7 +23,6 @@ class {{slug_uc}}_ft extends EE_Fieldtype {
         $form = '';
 
         return $form;
-
     }
 
     public function save_global_settings()
@@ -29,7 +32,6 @@ class {{slug_uc}}_ft extends EE_Fieldtype {
 
     public function display_settings($data)
     {
-
     }
 
     public function save_settings($data)

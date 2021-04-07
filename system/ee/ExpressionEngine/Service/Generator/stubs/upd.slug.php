@@ -16,7 +16,6 @@ class {{slug_uc}}_upd extends Installer
         parent::install();
 
         {{conditional_hooks}}
-
         return true;
     }
 
@@ -33,7 +32,6 @@ class {{slug_uc}}_upd extends Installer
         parent::uninstall();
 
         {{conditional_hooks_uninstall}}
-
         return true;
     }
 }

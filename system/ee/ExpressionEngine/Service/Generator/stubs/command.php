@@ -6,7 +6,6 @@ use ExpressionEngine\Cli\Cli;
 
 class Command{{class}} extends Cli
 {
-
     /**
      * name of command
      * @var string
@@ -51,9 +50,6 @@ class Command{{class}} extends Cli
      */
     public function handle()
     {
-
         // Make magic, my friend
-
     }
-
 }

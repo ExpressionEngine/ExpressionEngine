@@ -1,10 +1,13 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class {{slug_uc}}_mcp {
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
+class {{slug_uc}}_mcp
+{
     public function index()
     {
-
         $html = '<p>Time to make magic</p>';
 
         return [
@@ -14,7 +17,5 @@ class {{slug_uc}}_mcp {
             ],
             'heading' => lang('{{slug}}_settings'),
         ];
-
     }
-
 }
