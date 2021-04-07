@@ -24,7 +24,7 @@ class CommandGenerator
         $this->addon = $data['addon'];
         $this->addonClass = $this->studly($data['addon']);
         $this->className = $this->studly($data['name']);
-        $this->fullClass = $this->addonClass . '\\Commands\\' . $this->studly($data['name']);
+        $this->fullClass = $this->addonClass . '\\Commands\\Command' . $this->studly($data['name']);
         $this->signature = $data['signature'];
         $this->description = $data['description'];
 
@@ -63,40 +63,30 @@ class CommandGenerator
     private function addCommandToAddonSetup()
     {
         try {
-            $addonSetup = $this->filesystem->read($this->addonPath . 'addon.setup.php');
+            $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
         } catch (FilesystemException $e) {
             return false;
         } catch (\Exception $e) {
             return false;
         }
 
-        $commandString = "    '{$this->signature}' => {$this->fullClass}::class,";
-        $useCommandString = "use {$this->fullClass};";
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
 
-        $this->filesystem->findAndReplace($this->addonPath . 'addon.setup.php', "<?php", "<?php\n\n{$useCommandString}\n\n");
+        // Parse Command Stubs
+        $commandString = "        '{$this->signature}' => {$this->fullClass}::class,";
+        $commandStub = $this->filesystem->read($this->stub('command.addon.php'));
+        $commandStub = $this->write('command_data', $commandString, $commandStub);
 
-        if ($this->string_contains($addonSetup, "'commands'") || $this->string_contains($addonSetup, '"commands"')) {
-            $commandStub = $this->filesystem->read($this->stub('command.addon.php'));
-            $commandStub = $this->write('command_data', $commandString, $commandStub);
+        // The addon setup has the commands array
+        if (array_key_exists('commands', $addonSetupArray)) {
+            $pattern = "/(commands)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
+            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$commandString$5$6$7", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        } else { // The addon setup does not have the commands array
 
-            preg_match('(\]\;|\)\;)', $addonSetup, $matches);
-
-            if (! empty($matches)) {
-                $last = array_values(array_slice($matches, -1))[0];
-
-                $addonSetup = $this->write($last, $commandStub . "\n\n" . $last, $addonSetup);
-            } else {
-                $stringToReplace = $this->string_contains($addonSetup, "'commands'")
-                                ? '"commands"'
-                                : "'commands'";
-
-                // TODO: Find command array and add $commandString to the array
-                preg_match('/(\'|\")commands(\'|\")(\s+)=>(\s+)(\[|array\()/', $addonSetup, $matches);
-
-                if (! empty($matches) && isset($matches[1])) {
-                    $addonSetup = $this->write($matches[1], $matches[1] . "\n\n" . $commandString, $addonSetup);
-                }
-            }
+            $pattern = '/(,)([^,]+)$/';
+            $addonSetupFile = preg_replace($pattern, ",\n    $commandStub $2", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         }
     }
 
