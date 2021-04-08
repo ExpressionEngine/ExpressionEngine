@@ -48,16 +48,22 @@ class AddonGenerator
         // Catch all, especially for advanced settings
         $this->data = $data;
 
-        $this->namespace = $this->studly($data['name']) . '\\\\';
+        $this->namespace = $this->studly($data['author']) . '\\' . $this->studly($data['name']);
         $this->description = $data['description'];
         $this->version = $data['version'];
         $this->author = $data['author'];
         $this->author_url = $data['author_url'];
-        $this->has_settings = isset($data['has_settings']) ? $data['has_settings'] : false;
-        $this->has_cp_backend = (isset($data['has_settings']) && $data['has_settings']) ? 'y' : 'n';
-        $this->has_publish_fields = (isset($data['has_settings']) && $data['has_settings']) ? 'y' : 'n';
+        $this->has_settings = get_bool_from_string($data['has_settings']);
+        $this->has_cp_backend = $data['has_settings'] ? 'y' : 'n';
+        $this->has_publish_fields = $data['has_settings'] ? 'y' : 'n';
         $this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
+        $this->models = isset($data['models']) ? $data['models'] : null;
+
+        // Make sure we've got an array of hooks
+        if (!is_array($this->hooks)) {
+            $this->hooks = array_unique(explode(',', $this->hooks));
+        }
     }
 
     private function init()
@@ -97,6 +103,8 @@ class AddonGenerator
             $this->buildFieldtype();
         }
 
+        $this->buildModels();
+
         return true;
     }
 
@@ -118,11 +126,7 @@ class AddonGenerator
         $hook_array = '';
         $hook_method = '';
 
-        if (!$this->hooks) {
-            $hook_array = '// Add your hooks here!';
-        }
-
-        foreach (array_unique(explode(',', $this->hooks)) as $hook) {
+        foreach ($this->hooks as $hook) {
             $hookData = Hooks::getByKey(strtoupper($hook));
 
             $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
@@ -143,7 +147,6 @@ class AddonGenerator
 
     protected function buildModule()
     {
-
         // Create upd file
         $stub = $this->filesystem->read($this->stub('upd.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
@@ -156,7 +159,7 @@ class AddonGenerator
 
             $hookInstall = $this->filesystem->read($this->stub('hook_install.php'));
 
-            foreach (array_unique(explode(',', $this->hooks)) as $hook) {
+            foreach ($this->hooks as $hook) {
                 $hookData = Hooks::getByKey(strtoupper($hook));
 
                 $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
@@ -269,35 +272,6 @@ class AddonGenerator
             $stub = $this->clearLine("    'services'          => [{{services}}],", $stub);
         }
 
-        // Models
-        if (array_key_exists('models', $this->data) && ($models = $this->data['models'])) {
-            $modelsWriteData = '';
-
-            $this->filesystem->mkDir($this->addonPath . 'Models');
-
-            foreach (explode(',', $models) as $service) {
-                if (!$service || $service == '') {
-                    continue;
-                }
-
-                $modelsStub = $this->filesystem->read($this->stub('addon_model.php'));
-                $modelsStub = $this->write('model_name', $this->studly($service), $modelsStub);
-
-                $modelsWriteData .= "\n" . $modelsStub . "\n";
-
-                $modelStub = $this->filesystem->read($this->stub('model.php'));
-                $modelStub = $this->write('namespace', $this->namespace, $modelStub);
-                $modelStub = $this->write('slug', $this->slug, $modelStub);
-                $modelStub = $this->write('class', $this->studly($service), $modelStub);
-
-                $this->putFile($this->studly($service) . '.php', $modelStub, '/Models');
-            }
-
-            $stub = $this->write('models', $modelsWriteData . "\t", $stub);
-        } else {
-            $stub = $this->clearLine("    'models'            => [{{models}}],", $stub);
-        }
-
         // Consents
         if (array_key_exists('consents', $this->data) && ($consents = $this->data['consents'])) {
             $consentsWriteData = '';
@@ -353,6 +327,19 @@ class AddonGenerator
         }
 
         $this->putFile('addon.setup.php', $stub);
+    }
+
+    private function buildModels()
+    {
+        // Build all Models
+        if (array_key_exists('models', $this->data) && ($models = $this->data['models'])) {
+            foreach ($models as $model) {
+                $model_data['name'] = $model;
+                $model_data['addon'] = $this->slug;
+                $modelGenerator = ee('ModelGenerator', $model_data);
+                $modelGenerator->build();
+            }
+        }
     }
 
     private function createComposerJson()
