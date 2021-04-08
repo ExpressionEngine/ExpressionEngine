@@ -32,16 +32,29 @@ class CommandMakeAddon extends Cli
      * @var array
      */
     public $commandOptions = [
-        'type,t:' => 'Type of add-on',
-        'extension' => 'Create an extension',
-        'plugin' => 'Create a plugin',
-        'fieldtype' => 'Create a fieldtype',
-        'module' => 'Create a module',
-        'typography' => 'Should use plugin typography',
-        'services:' => 'Comma-separated names of services to create',
-        'models:' => 'Comma-separated names of models to create',
-        'consents:' => 'Comma-separated names of consents',
-        'cookies:' => 'Comma-separated names of cookies to create, with a colon separating name and value (i.e. name:value)',
+        // Addon types
+        'extension,ext' => 'Create an extension',
+        'plugin,pi' => 'Create a plugin',
+        'fieldtype,ft' => 'Create a fieldtype',
+        'module,mod' => 'Create a module',
+
+        // Addon setup toggles
+        'typography,t' => 'Should use plugin typography',
+        'has-settings,e:' => 'Add-on has settings (yes/no)',
+
+        // Addon values
+        'version,v:' => 'Version of the add-on',
+        'description,d:' => 'Description of the add-on',
+        'author,a:' => 'Author of the add-on',
+        'author-url,u:' => 'Author url of the add-on',
+
+        // Generate things for the addon
+        'services,s*:' => 'Services to create. Multi-pass option.',
+        'models,m*:' => 'Models to create. Multi-pass option.',
+        'commands,c*:' => 'Commands to create. Multi-pass option.',
+        'consents,n*:' => 'Consents. Multi-pass option.',
+        'cookies,k*:' => 'Cookies to create, with a colon separating name and value (i.e. name:value). Multi-pass option.',
+        'hooks,o*:' => 'Hooks in use. Multi-pass option.',
     ];
 
     /**
@@ -69,14 +82,45 @@ class CommandMakeAddon extends Cli
     {
         $this->info('command_make_addon_lets_build_addon');
 
-        $this->data['type'] = $this->getType();
         $this->data['name'] = $this->getName();
+        $this->data['type'] = $this->getType();
 
-        $this->data['description']  = $this->ask("{$this->type['name']} " . lang('command_make_addon_description_question'));
-        $this->data['version']      = $this->ask("{$this->type['name']} " . lang('command_make_addon_version_question'));
-        $this->data['author']       = $this->ask("{$this->type['name']} " . lang('command_make_addon_author_question'));
-        $this->data['author_url']   = $this->ask("{$this->type['name']} " . lang('command_make_addon_author_url_question'));
-        $this->data['has_settings'] = $this->confirm("Does your {$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
+        // Get description
+        $this->data['description']  = $this->getOptionOrAsk(
+            "--description",
+            "{$this->type['name']} " . lang('command_make_addon_description_question')
+        );
+
+        // Get version
+        $this->data['version']  = $this->getOptionOrAsk(
+            "--version",
+            "{$this->type['name']} " . lang('command_make_addon_version_question'),
+            '1.0.0',
+            true
+        );
+
+        // Get author
+        $this->data['author']  = $this->getOptionOrAsk(
+            "--author",
+            "{$this->type['name']} " . lang('command_make_addon_author_question')
+        );
+
+        // Get author_url
+        $this->data['author_url']  = $this->getOptionOrAsk(
+            "--author-url",
+            "{$this->type['name']} " . lang('command_make_addon_author_url_question')
+        );
+
+        // If they passed the settings flag, always take that
+        if ($this->option('--has-settings')) {
+            $this->data['has_settings'] = $this->option('--has-settings');
+        } elseif ($this->data['type'] == 'plugin') {
+            // Default to no if it's a plugin
+            $this->data['has_settings'] = 'no';
+        } else {
+            // Ask if not passed and not a plugin
+            $this->data['has_settings']  = $this->confirm("Does your {$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
+        }
 
         $this->getTypeSpecificData();
         $this->getAdvancedSettings();
@@ -91,8 +135,12 @@ class CommandMakeAddon extends Cli
     private function getTypeSpecificData()
     {
         if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
-            $this->info('command_make_addon_what_hooks_to_use');
-            $this->data['hooks'] = $this->ask('command_make_addon_ext_hooks');
+            // No hooks were passed, so we're giving info on the hooks
+            if (! $this->option('--hooks')) {
+                $this->info('command_make_addon_what_hooks_to_use');
+            }
+
+            $this->data['hooks'] = $this->getOptionOrAsk('--hooks', 'command_make_addon_ext_hooks');
         }
 
         if ($this->type['slug'] == 'fieldtype') {
@@ -103,22 +151,21 @@ class CommandMakeAddon extends Cli
     private function getAdvancedSettings()
     {
         if ($this->option('--typography')) {
-            $this->data['typography'] = $this->option('--typography') ? true : false;
+            $this->data['typography'] = $this->option('--typography');
         }
-
         if ($this->option('--services')) {
-            $this->data['services'] = explode(',', $this->option('--services'));
+            $this->data['services'] = $this->option('--services');
         }
         if ($this->option('--models')) {
-            $this->data['models'] = explode(',', $this->option('--models'));
+            $this->data['models'] = $this->option('--models');
         }
         if ($this->option('--consents')) {
-            $this->data['consents'] = explode(',', $this->option('--consents'));
+            $this->data['consents'] = $this->option('--consents');
         }
         if ($this->option('--cookies')) {
             $cookies = [];
 
-            foreach (explode(',', $this->option('--cookies')) as $cookie) {
+            foreach ($this->option('--cookies') as $cookie) {
                 if (strpos($cookie, ':') === false) {
                     continue;
                 }
@@ -143,8 +190,7 @@ class CommandMakeAddon extends Cli
         $type = $this->getTypeFromOptions() ?: $this->ask(lang('command_make_addon_what_type_of_addon') . ' [' . implode(', ', $this->types) . ']');
 
         if (! in_array($type, $this->types)) {
-            $this->error('command_make_addon_select_proper_addon');
-            $this->complete();
+            $this->fail('command_make_addon_select_proper_addon');
         }
 
         $this->type = [
@@ -157,7 +203,17 @@ class CommandMakeAddon extends Cli
 
     private function getName()
     {
-        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("{$this->type['name']} name?");
+        $name = $this->getFirstUnnamedArgument();
+
+        if (is_null($name)) {
+            $name = $this->ask("What is the name of your add-on?");
+        }
+
+        if (empty(trim($name))) {
+            $this->fail('command_make_addon_addon_name_required');
+        }
+
+        return $name;
     }
 
     private function getTypeFromOptions()
