@@ -19,9 +19,11 @@ class ModelGenerator
         $this->filesystem = $filesystem;
         $this->className = $this->studly($data['name']);
         $this->addon = $data['addon'];
-        $this->namespace = $this->studly($data['addon']);
 
         $this->init();
+
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
+        $this->namespace = $addonSetupArray['namespace'];
     }
 
     private function init()
