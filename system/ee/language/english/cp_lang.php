@@ -253,6 +253,8 @@ $lang = array(
 
     'ip_address' => 'IP Address',
 
+    'user_agent' => 'User Agent',
+
     'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
     'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',

@@ -121,6 +121,7 @@ class Consent
         if ($this->isAnonymous()) {
             $this->cookie[$request->getId()] = ['has_granted' => true, 'timestamp' => $this->now];
             $this->saveConsentCookie($this->cookie);
+            $request->log(sprintf(lang('consent_granted_log_msg'), $via));
             $this->updateConsentCache($request);
         } else {
             $consent = $this->getOrMakeConsent($request);

@@ -35,7 +35,7 @@ class Consent extends Logs
         $logs = ee('Model')->get('ConsentAuditLog')->with('Member', 'ConsentRequest');
 
         if ($search = ee()->input->get_post('filter_by_keyword')) {
-            $logs->search(['action', 'Member.username', 'ConsentRequest.title'], $search);
+            $logs->search(['action', 'ip_address', 'user_agent', 'Member.username', 'ConsentRequest.title'], $search);
         }
 
         $filters = ee('CP/Filter')

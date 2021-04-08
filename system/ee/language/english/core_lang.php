@@ -170,6 +170,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'super_admins' => 'Super Admins',
 
+    'anonymous' => 'Anonymous',
+
     /* Template.php */
     'error_fix_module_processing' => 'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
 

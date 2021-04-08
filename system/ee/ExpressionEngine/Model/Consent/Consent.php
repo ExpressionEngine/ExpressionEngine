@@ -130,6 +130,8 @@ class Consent extends Model
         $log = $this->getModelFacade()->make('ConsentAuditLog');
         $log->ConsentRequest = $this->ConsentRequest;
         $log->Member = $this->Member;
+        $log->ip_address = ee()->input->ip_address();
+        $log->user_agent = ee()->input->user_agent();
         $log->action = $action;
         $log->log_date = ee()->localize->now;
         $log->save();

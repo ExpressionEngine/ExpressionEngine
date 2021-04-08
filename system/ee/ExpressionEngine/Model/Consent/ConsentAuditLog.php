@@ -50,6 +50,8 @@ class ConsentAuditLog extends Model
     protected $consent_audit_id;
     protected $consent_request_id;
     protected $member_id;
+    protected $ip_address;
+    protected $user_agent;
     protected $action;
     protected $log_date;
 }

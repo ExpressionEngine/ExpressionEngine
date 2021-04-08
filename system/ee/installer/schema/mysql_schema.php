@@ -1405,6 +1405,8 @@ class EE_Schema
 			`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_id` int(10) unsigned NOT NULL,
 			`member_id` int(10) unsigned NOT NULL,
+			`ip_address` varchar(45) default '0' NOT NULL,
+			`user_agent` varchar(120) NOT NULL,
 			`action` text NOT NULL,
 			`log_date` int(10) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_audit_id`),
