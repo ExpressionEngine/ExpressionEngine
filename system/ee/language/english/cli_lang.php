@@ -5,9 +5,7 @@ $lang = array(
     'cli_error_no_command_given'                                => 'No command given. Try `php eecli.php list` for full list of commands.',
     'cli_error_command_not_found'                               => 'Command not found. Try `php eecli.php list` for full list of commands.',
     'cli_error_ee_not_installed'                                => 'EE is not currently installed.',
-    'cli_prompt_yes'                                            => 'yes',
-    'cli_prompt_no'                                             => 'no',
-    'cli_prompt_yes_no'                                         => '(yes/no)',
+    'cli_error_is_required'                                     => ' is a required field.',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'                           => 'Clears all ExpressionEngine caches',
@@ -39,7 +37,8 @@ $lang = array(
     'command_make_addon_ext_hooks'                              => 'Extension hooks:',
     'command_make_addon_ft_compatibility'                       => 'Fieldtype compatibility?',
     'command_make_addon_what_type_of_addon'                     => 'What type of addon would you like to create?',
-    'command_make_addon_select_proper_addon'                    => 'Please select a proper type',
+    'command_make_addon_select_proper_addon'                    => 'Please select a proper add-on type.',
+    'command_make_addon_addon_name_required'                    => 'Addon name is required.',
 
     // Lang entries for command make:command
     'command_make_command_description'                          => 'Creates a new CLI command for an add-on',
