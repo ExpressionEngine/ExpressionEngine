@@ -239,11 +239,41 @@ class Cli
      */
     public function ask($question, $default = '')
     {
-        $this->output->out(lang($question) . ' ');
+        $defaultChoice = !empty($default) ? "<<white>>[<<yellow>>{$default}<<white>>]<<reset>>" : '';
+
+        $this->output->out(lang($question) . ' ' . $defaultChoice);
 
         $result = $this->input->in();
 
         return $result ? $result : $default;
+    }
+
+    public function getFirstUnnamedArgument()
+    {
+        $name = isset($this->arguments[0]) ? $this->arguments[0] : null;
+
+        // If the first argument is an option, we have nothing so return null
+        if (substr($name, 0, 1) === '-') {
+            $name = null;
+        }
+
+        return $name;
+    }
+
+    public function getOptionOrAsk($option, $askText, $default=null, $required=false)
+    {
+        // Get option if it was passed
+        if ($this->option($option)) {
+            return $this->option($option);
+        }
+
+        // Get the answer by asking
+        $answer = $this->ask($askText, $default);
+
+        // If it was a required field and no answer was passed, fail
+        if ($required && empty(trim($answer))) {
+            $this->fail($option . lang('cli_error_is_required'));
+        }
     }
 
     /**
@@ -253,9 +283,9 @@ class Cli
      */
     public function confirm($question, $default = false)
     {
-        $choices = lang('cli_prompt_yes_no');
+        $choices = '(yes/no)';
 
-        $defaultText = $default ? lang('cli_prompt_yes') : lang('cli_prompt_no');
+        $defaultText = $default ? 'yes' : 'no';
 
         $defaultChoice = "<<white>>[<<yellow>>{$defaultText}<<white>>]<<reset>>";
 
@@ -323,6 +353,12 @@ class Cli
         }
 
         $commands = $this->internalCommands;
+
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+            ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
+            ee('App')->setupAddons(PATH_THIRD);
+        }
 
         $providers = ee('App')->getProviders();
 
