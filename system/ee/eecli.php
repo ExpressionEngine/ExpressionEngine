@@ -3,7 +3,7 @@
 define('EE_START', microtime(true));
 
 // Set the system path
-$system_path = './system';
+$system_path = dirname(__DIR__);
 
 if (PHP_SAPI !== 'cli') {
     header('HTTP/1.1 404 Not Found.', true, '404');
