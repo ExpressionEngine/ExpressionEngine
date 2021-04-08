@@ -19,12 +19,15 @@ class CommandGenerator
 
     public function __construct(Filesystem $filesystem, array $data)
     {
+        $studlyAddon = $this->studly($data['addon']);
+        $studlyName = $this->studly($data['addon']);
+
         $this->filesystem  = $filesystem;
         $this->name = $data['name'];
         $this->addon = $data['addon'];
-        $this->addonClass = $this->studly($data['addon']);
-        $this->className = $this->studly($data['name']);
-        $this->fullClass = $this->addonClass . '\\Commands\\Command' . $this->studly($data['name']);
+        $this->addonClass = $studlyAddon;
+        $this->className = $studlyName;
+        $this->fullClass = $this->addonClass . '\\Commands\\Command' . $studlyName;
         $this->signature = $data['signature'];
         $this->description = $data['description'];
 
@@ -53,7 +56,7 @@ class CommandGenerator
         $commandStub = $this->write('signature', $this->signature, $commandStub);
         $commandStub = $this->write('description', $this->description, $commandStub);
 
-        $this->putFile($this->studly('Command' . $this->className) . '.php', $commandStub);
+        $this->putFile('Command' . $this->className . '.php', $commandStub);
 
         $this->addCommandToAddonSetup();
 
