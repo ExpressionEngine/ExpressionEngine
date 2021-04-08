@@ -14,8 +14,7 @@ class {{slug_uc}}_upd extends Installer
     public function install()
     {
         parent::install();
-
-        {{conditional_hooks}}
+{{conditional_hooks}}
         return true;
     }
 
@@ -30,8 +29,7 @@ class {{slug_uc}}_upd extends Installer
     public function uninstall()
     {
         parent::uninstall();
-
-        {{conditional_hooks_uninstall}}
+{{conditional_hooks_uninstall}}
         return true;
     }
 }

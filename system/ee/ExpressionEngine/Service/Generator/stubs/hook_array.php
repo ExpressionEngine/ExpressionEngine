@@ -1,4 +1,4 @@
-[
+            [
                 'class'     => __CLASS__,
                 'method'    => '{{hook_name}}',
                 'hook'      => '{{hook_name}}',

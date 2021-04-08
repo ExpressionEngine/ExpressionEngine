@@ -11,8 +11,7 @@ return [
     'fieldtypes'        => [{{fieldtypes}}],
     // Advanced settings
     'plugin.typography' => {{plugin_typography}},
-    'services'          => [{{services}}],
-    'models'            => [{{models}}],
     'consent.requests'  => [{{consents}}],
+    'services'          => [{{services}}],
 {{cookies}}
 ];

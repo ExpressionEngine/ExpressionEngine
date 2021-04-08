@@ -17,7 +17,7 @@ class {{slug_uc}}_ext
     public function activate_extension()
     {
         $data = [
-            {{hook_array}}
+{{hook_array}}
         ];
 
         foreach ($data as $hook) {
@@ -37,6 +37,5 @@ class {{slug_uc}}_ext
     {
         return true;
     }
-
-    {{hook_methods}}
+{{hook_methods}}
 }

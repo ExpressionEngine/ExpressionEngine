@@ -50,6 +50,6 @@ class Command{{class}} extends Cli
      */
     public function handle()
     {
-        // Make magic, my friend
+        $this->info('Hello World!');
     }
 }
