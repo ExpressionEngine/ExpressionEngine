@@ -275,6 +275,16 @@ class Grid_parser
         } catch (EE_Relationship_exception $e) {
             $relationship_parser = null;
         }
+        
+        if (empty($display_entry_data)) {
+            if (strpos($tagdata, 'if no_results') !== false && preg_match("/" . LD . "if no_results" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", $tagdata, $match)) {
+                if (stristr($match[1], LD . 'if')) {
+                    $match[0] = ee('Variables/Parser')->getFullTag($tagdata, $match[0], LD . 'if', LD . '/if' . RD);
+                }
+                ee()->TMPL->no_results = substr($match[0], strlen(LD . "if no_results" . RD), -strlen(LD . '/' . "if" . RD));
+                return ee()->TMPL->no_results();
+            }
+        }
 
         foreach ($display_entry_data as $row) {
             $grid_row = $tagdata;
