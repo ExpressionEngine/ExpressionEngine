@@ -2244,8 +2244,7 @@ class Forum_Core extends Forum
         $read_topics = $this->_fetch_read_topics($this->current_id);
 
         if (ee()->session->userdata('member_id') == 0) {
-            $expire = 60 * 60 * 24 * 365;
-            ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+            ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
         } else {
             if ($this->read_topics_exist === false) {
                 $d = array(
@@ -5355,8 +5354,7 @@ class Forum_Core extends Forum
             $read_topics = $this->_fetch_read_topics($data['topic_id']);
 
             if (ee()->session->userdata('member_id') == 0) {
-                $expire = 60 * 60 * 24 * 365;
-                ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+                ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
             }
         }
 

@@ -1821,8 +1821,7 @@ class Forum
         $this->_forum_set_basepath();
 
         // Set a cookie!
-        $expire = 60 * 60 * 24 * 365;
-        ee()->input->set_cookie('forum_theme', $theme, $expire);
+        ee()->input->set_cookie('forum_theme', $theme, 31104000);
 
         if (isset(ee()->session->tracker[0])) {
             $return = ($this->fetch_pref('board_forum_trigger') != '') ? str_replace($this->fetch_pref('board_forum_trigger'), '', ee()->session->tracker[0]) : ee()->session->tracker[0];

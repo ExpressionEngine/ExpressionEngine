@@ -41,7 +41,7 @@ class Cookie
      * @param int $expire Cookie expiration in seconds
      * @return void
      */
-    public function setSignedCookie($cookie_name, $cookie_data, $expire = null)
+    public function setSignedCookie($cookie_name, $cookie_data, $expire = 0)
     {
         $signed_cookie_data = ee('Encrypt/Cookie')->signCookieData($cookie_data);
 

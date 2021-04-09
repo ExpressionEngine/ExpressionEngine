@@ -963,7 +963,7 @@ class EE_Session
             );
         }
 
-        ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+        ee()->input->set_cookie('tracker', json_encode($tracker), 0);
     }
 
     /**
@@ -1269,7 +1269,7 @@ class EE_Session
     protected function _set_flash_cookie()
     {
         if (count($this->flashdata) > 0) {
-            ee('Cookie')->setSignedCookie('flash', $this->flashdata, 86500);
+            ee('Cookie')->setSignedCookie('flash', $this->flashdata);
         }
     }
 
