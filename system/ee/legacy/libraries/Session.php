@@ -219,8 +219,10 @@ class EE_Session
 
     public function setSessionCookies()
     {
-        ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
-        ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        if (bool_config_item('forum_is_installed')) {
+            ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
+            ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        }
 
         // Update session ID cookie
         if ($this->session_exists === true && $this->validation != 's') {
