@@ -68,6 +68,12 @@ return array(
             'ee:Member'
         ),
     ),
+    'cookies.functionality' => [
+        'last_activity',
+        'last_visit',
+        'forum_theme',
+        'forum_topics'
+    ],
 );
 
 // EOF

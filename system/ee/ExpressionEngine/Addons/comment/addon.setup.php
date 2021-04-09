@@ -9,4 +9,14 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Comment',
     'settings_exist' => false,
     'built_in' => true,
+    'cookies.functionality' => [
+        'last_activity',
+        'last_visit',
+        'my_email',
+        'my_location',
+        'my_name',
+        'my_url',
+        'notify_me',
+        'save_info'
+    ],
 );
