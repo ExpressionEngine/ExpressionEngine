@@ -1462,7 +1462,6 @@ class Member
             ->delete('sessions');
 
         ee()->input->delete_cookie(ee()->session->c_session);
-        ee()->input->delete_cookie(ee()->session->c_expire);
         ee()->input->delete_cookie(ee()->session->c_anon);
         ee()->input->delete_cookie('read_topics');
         ee()->input->delete_cookie('tracker');

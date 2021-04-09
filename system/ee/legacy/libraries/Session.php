@@ -59,7 +59,6 @@ class EE_Session
     public $valid_session_types = array('cs', 'c', 's');
 
     public $c_session = 'sessionid';
-    public $c_expire = 'expiration';
     public $c_anon = 'anon';
     public $c_prefix = '';
 

@@ -160,7 +160,6 @@ class Login extends Profile
         $type = $redirect == 'cp' ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
         if ($type != 's') {
-            ee()->input->set_cookie(ee()->session->c_expire, time() + $expire, $expire);
             ee()->input->set_cookie(ee()->session->c_anon, 1, $expire);
         }
 
