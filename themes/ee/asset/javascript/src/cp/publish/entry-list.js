@@ -26,6 +26,9 @@ $(document).ready(function () {
 		}
 
 		window.history.pushState(null, '', data.url);
+		var searchInput = $(form_selector).find('input[name="filter_by_keyword"]')[0];
+		searchInput.focus();
+		searchInput.setSelectionRange(1000, 1000);
 	}
 
 	function searchEntries(type = 'GET', url = null) 
@@ -93,7 +96,7 @@ $(document).ready(function () {
 			searchEntries('POST', url)
 		}
 
-	}, 150));
+	}, 300));
 
 	//changind the search scope
 	$('body').on('change', 'input[name="search_in"]', function() {
