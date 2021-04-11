@@ -330,7 +330,7 @@ $setup = [
             }
 
             if (! $member_id) {
-                $member_id = $actor_userdata['member_id'];
+                $member_id = ee()->session->userdata('member_id');
             }
 
             return new Consent\Consent(
