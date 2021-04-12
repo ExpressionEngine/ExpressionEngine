@@ -6,7 +6,7 @@ class FileManagerSection extends ControlPanel {
 
 		this.selectors = Object.assign(this.selectors, {
 			// Title/header box elements
-			'manager_title': '.title-bar .title-bar__title',
+			'manager_title': '.main-nav__title',
 			'title_toolbar': '.main-nav__toolbar .button--action',
 			'download_all': 'a:contains("Export All Files")',
 			// phrase_search, 'fieldset.tbl-search input[type!=hidden][name=search]',
@@ -18,10 +18,12 @@ class FileManagerSection extends ControlPanel {
 
 			// Sidebar elements
 			'upload_directories_header': 'div.sidebar h2:first-child',
-			'new_directory_button': 'div.sidebar h2:first-child .button--action',
+			'new_directory_button': 'div.sidebar h2:first-child .button--xsmall',
 			'watermarks_header': 'div.sidebar .sidebar__link:contains("Watermarks")',
 			'new_watermark_button': 'fieldset.right a.button.action',
-			'folder_list': 'div.sidebar div.scroll-wrap .folder-list div'
+			'folder_list': 'div.sidebar div.scroll-wrap .folder-list div',
+
+			'selected_file': '.ee-main__content form .table-responsive table tr.selected',
 
 		});
 	}
