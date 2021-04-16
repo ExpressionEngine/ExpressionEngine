@@ -276,20 +276,18 @@ class Fluid_field_ft extends EE_Fieldtype
 
         if (ee()->extensions->active_hook('fluid_field_update_field') === TRUE)
         {
-            ee()->extensions->call(
+            $values = ee()->extensions->call(
                 'fluid_field_update_field',
                 $fluid_field,
                 $field_table_name,
                 $values
             );
         }
-        else
-        {
-            ee('db')
-                ->set($values)
-                ->where('id', $field_data_id)
-                ->update($field_table_name);
-        }
+        
+        ee('db')
+            ->set($values)
+            ->where('id', $field_data_id)
+            ->update($field_table_name);
     }
 
     private function addField($order, $field_id, array $values)
@@ -314,23 +312,18 @@ class Fluid_field_ft extends EE_Fieldtype
 
         if (ee()->extensions->active_hook('fluid_field_add_field') === TRUE)
         {
-            $id = ee()->extensions->call(
+            $values = ee()->extensions->call(
                 'fluid_field_add_field',
                 $field_table_name,
                 $values
             );
         }
-        else
-        {
-            $query = ee('db')
-                        ->set($values)
-                        ->insert($field_table_name);
 
-            $id = $query->insert_id();
+        $query = ee('db')
+                    ->set($values)
+                    ->insert($field_table_name);
 
-            $fluid_field->field_data_id = $id;
-            $fluid_field->save();
-        }
+        $id = $query->insert_id();
 
         $fluid_field->field_data_id = $id;
         $fluid_field->save();
@@ -342,13 +335,11 @@ class Fluid_field_ft extends EE_Fieldtype
         {
             ee()->extensions->call('fluid_field_remove_field', $fluid_field);
         }
-        else
-        {
-            $query = ee('db');
-            $query->where('id', $fluid_field->field_data_id);
-            $query->delete($fluid_field->ChannelField->getTableName());
-            $fluid_field->delete();
-        }
+        
+        $query = ee('db');
+        $query->where('id', $fluid_field->field_data_id);
+        $query->delete($fluid_field->ChannelField->getTableName());
+        $fluid_field->delete();
 
     }
 
