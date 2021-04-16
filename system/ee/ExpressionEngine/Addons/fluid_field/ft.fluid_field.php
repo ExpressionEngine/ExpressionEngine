@@ -279,15 +279,15 @@ class Fluid_field_ft extends EE_Fieldtype
             $values = ee()->extensions->call(
                 'fluid_field_update_field',
                 $fluid_field,
-                $field_table_name,
+                $fluid_field->ChannelField->getTableName(),
                 $values
             );
         }
         
-        ee('db')
-            ->set($values)
-            ->where('id', $field_data_id)
-            ->update($field_table_name);
+        $query = ee('db');
+        $query->set($values);
+        $query->where('id', $fluid_field->field_data_id);
+        $query->update($fluid_field->ChannelField->getTableName());
     }
 
     private function addField($order, $field_id, array $values)
