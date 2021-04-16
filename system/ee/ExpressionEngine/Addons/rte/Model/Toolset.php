@@ -26,6 +26,7 @@ class Toolset extends Model
     );
 
     protected $toolset_id;
+    protected $toolset_type;
     protected $toolset_name;
     protected $settings;
 }

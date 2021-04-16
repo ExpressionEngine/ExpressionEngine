@@ -105,6 +105,7 @@ class Rte_mcp
             }
             $toolset = array(
                 'tool_set' => $toolset_name,
+                'tool_type' => $t->toolset_type,
                 array('toolbar_items' => array(
                     'edit' => array(
                         'href' => $url,
@@ -173,6 +174,9 @@ class Rte_mcp
                 'tool_set' => array(
                     'encode' => false
                 ),
+                'tool_type' => array(
+                    'encode' => false
+                ),
                 'manage' => array(
                     'type' => Table::COL_TOOLBAR
                 ),
@@ -211,6 +215,7 @@ class Rte_mcp
 
             $toolset_id = ee('Request')->post('toolset_id');
             $configName = ee('Request')->post('toolset_name');
+            $toolsetType = ee('Request')->post('toolset_type');
 
             if (!$configName) {
                 $configName = 'Untitled';
@@ -227,6 +232,7 @@ class Rte_mcp
             }
 
             $config->toolset_name = $configName;
+            $config->toolset_type = $toolsetType;
             $config->settings = $settings;
 
             $validate = $config->validate();
@@ -261,14 +267,14 @@ class Rte_mcp
 
         $request = ee('Request');
 
-        $defaultConfigSettings = RteHelper::defaultConfigSettings();
-
         $headingTitle = lang('rte_create_config');
 
         if (
             ($toolset_id = $request->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
+            $serviceName = ucfirst($config->toolset_type) . 'Service';
+            $defaultConfigSettings = ee('rte:' . $serviceName)->defaultConfigSettings();
             $config->settings = array_merge($defaultConfigSettings, $config->settings);
 
             // Clone a config?
@@ -280,10 +286,12 @@ class Rte_mcp
                 $headingTitle = lang('rte_edit_config') . ' - ' . $config->toolset_name;
             }
         } elseif (!isset($config) || empty($config)) {
+
             $config = ee('Model')->make('rte:Toolset', array(
                 'toolset_id' => '',
+                'toolset_type' => 'ckeditor',
                 'toolset_name' => '',
-                'settings' => $defaultConfigSettings
+                'settings' => ee('rte:CkeditorService')->defaultConfigSettings(),
             ));
         }
 
@@ -319,15 +327,8 @@ class Rte_mcp
         //  Advanced Settings
         // -------------------------------------------
 
-        $fullToolbar = RteHelper::defaultToolbars()['Full'];
-        $fullToolset = array();
-        foreach ($fullToolbar as $i => $tool) {
-            $fullToolset[$tool] = lang($tool . '_rte');
-        }
-
-        $toolbarInputHtml = ee('View')->make('rte:toolbar')->render(
-            ['buttons' => $fullToolset, 'selection' => $config->settings['toolbar']]
-        );
+        $serviceName = ucfirst($config->toolset_type) . 'Service';
+        $toolbarInputHtml = ee('rte:' . $serviceName)->toolbarInputHtml($config);
 
         $sections = array(
             'rte_basic_settings' => array(
@@ -344,6 +345,19 @@ class Rte_mcp
                         'toolset_name' => array(
                             'type' => 'text',
                             'value' => $config->toolset_name
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('tool_type'),
+                    'fields' => array(
+                        'toolset_type' => array(
+                            'type' => 'select',
+                            'choices' => [
+                                'ckeditor'  => 'CKEditor',
+                                'redactor'  => 'Redactor',
+                            ],
+                            'value' => $config->toolset_type
                         )
                     )
                 ),

@@ -35,8 +35,8 @@ $lang = array(
 
     'rte_editor_config' => 'Editor Configuration',
     'rte_edit_configs' => 'Edit&nbsp;Configurations',
-    'rte_defer' => 'Defer CKEditor initialization?',
-    'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize CKEditor until the field is clicked on.',
+    'rte_defer' => 'Defer Editor initialization?',
+    'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize the field javascript until the field is clicked on.',
 
     // RTE
 
@@ -69,6 +69,8 @@ $lang = array(
     'tool_set' => 'Tool Set',
 
     'tool_set_name' => 'Name',
+
+    'tool_type' => 'Editor Type',
 
     /* Headings */
     'create_new_toolset' => 'Create a New Tool Set',
@@ -213,6 +215,14 @@ $lang = array(
 
     'italic_rte' => 'Italic',
 
+    'deleted_rte' => 'Deleted',
+
+    'lists_rte' => 'Lists',
+
+    'image_rte' => 'Image',
+
+    'file_rte' => 'File',
+
     'strikethrough_rte' => 'Strikethrough',
 
     'underline_rte' => 'Underline',
@@ -226,6 +236,8 @@ $lang = array(
     'blockquote_rte' => 'Block quote',
 
     'heading_rte' => 'Heading',
+
+    'format_rte' => 'Format',
 
     'removeFormat_rte' => 'Remove formatting',
 
@@ -243,9 +255,13 @@ $lang = array(
 
     'link_rte' => 'Link',
 
+    'horizontalrule_rte' => 'hr',
+
     'filemanager_rte' => 'Image',
 
     'insertTable_rte' => 'Table',
+
+    'table_rte' => 'Table',
 
     'mediaEmbed_rte' => 'Media',
 
@@ -268,6 +284,73 @@ $lang = array(
     'fontBackgroundColor_rte' => 'Font background',
 
     'open_in_new_tab' => 'Open in a new tab',
+
+    'source_rte' => 'View Source',
+
+    'video_rte' => 'Video',
+
+    'fullscreen_rte' => 'Fullscreen',
+
+    'properties_rte' => 'Properties',
+
+    'textdirection_rte' => 'Text Direction',
+
+    'codemirror_rte' => 'Codemirror',
+
+    'redactor_advanced_air' => 'Air',
+    'redactor_advanced_airWidth' => 'Air Width',
+    'redactor_advanced_buttonsHide' => 'Hide Buttons on Launch',
+    'redactor_advanced_buttonsHideOnMobile' => 'Hide Buttons on Mobile',
+    'redactor_advanced_focus' => 'Focus on Load',
+    'redactor_advanced_focusEnd' => 'Set Focus on End',
+    'redactor_advanced_formatting' => 'Formatting',
+    'redactor_advanced_minHeight' => 'Minimum Height',
+    'redactor_advanced_maxHeight' => 'Maximum Height',
+    'redactor_advanced_tabKey' => 'Tab Key',
+    'redactor_advanced_tabAsSpaces' => 'Tab as Spaces',
+    'redactor_advanced_preSpaces' => 'Pre-spaces',
+    'redactor_advanced_direction' => 'Direction',
+    'redactor_advanced_linkNofollow' => 'Link No Follow',
+    'redactor_advanced_linkSize' => 'Link Size',
+    'redactor_advanced_linkTooltip' => 'Link Tooltip',
+    'redactor_advanced_linkify' => 'Linkify',
+    'redactor_advanced_placeholder' => 'Placeholder',
+    'redactor_advanced_shortcuts' => 'Shortcuts',
+    'redactor_advanced_script' => 'Script Use',
+    'redactor_advanced_structure' => 'Structure Hints',
+    'redactor_advanced_preClass' => 'pre class',
+    'redactor_advanced_animation' => 'Animation',
+    'redactor_advanced_toolbarFixed' => 'Fixed',
+    'redactor_advanced_toolbarFixedTopOffset' => 'Fixed Top Offset',
+    'redactor_advanced_toolbarFixedTarget' => 'Fixed Target',
+    'redactor_advanced_toolbarOverflow' => 'Overflow',
+    'redactor_advanced_air_desc'                     => 'Use this setting to turn on Air toolbar. This toolbar only shows up when a user selects some text with a mouse in Redactor. This is an ultimate distraction-free inline editing mode.',
+    'redactor_advanced_airWidth_desc'                => 'This setting allows to set maximum width for Air toolbar. In pixels.',
+    'redactor_advanced_buttonsHide_desc'             => 'This setting allows to hide certain buttons on launch.',
+    'redactor_advanced_buttonsHideOnMobile_desc'     => 'This setting allows to hide certain buttons on mobile devices:',
+    'redactor_advanced_focus_desc'                   => "By default, Redactor doesn't receive focus on load, because there may be other input fields on a page. However, to set focus to Redactor, you can use this setting.",
+    'redactor_advanced_focusEnd_desc'                => 'This setting allows to set focus after the last character in Redactor',
+    'redactor_advanced_formatting_desc'              => 'This setting allows to adjust a list of formatting tags in the default formatting dropdown.',
+    'redactor_advanced_minHeight_desc'               => 'This setting allows to set minimum height for Redactor (in pixels).',
+    'redactor_advanced_maxHeight_desc'               => 'This setting allows to set maximum height for Redactor (in pixels).',
+    'redactor_advanced_tabKey_desc'                  => 'This setting turns on Tab key handling. If tabKey is set to false, Tab key will set focus to the next input field on a page.',
+    'redactor_advanced_tabAsSpaces_desc'             => 'This setting allows to apply spaces instead of tabulation on Tab key. To turn this setting on, set number of spaces.',
+    'redactor_advanced_preSpaces_desc'               => "This setting allows to set the number of spaces that will be applied when a user presses Tab key inside of preformatted blocks. If set to 'disabled', Tab key will apply tabulation instead of spaces inside of preformatted blocks.",
+    'redactor_advanced_direction_desc'               => 'Redactor supports both right-to-left and left-to-right text directions. By default, Redactor is set to work with left-to-right.',
+    'redactor_advanced_linkNofollow_desc'            => "When set to 'yes', all links inside of Redactor will get a 'nofollow' attribute. This attribute restricts search engines indexing for these links.",
+    'redactor_advanced_linkSize_desc'                => "This setting allows to automatically truncate link text. Set to '50' characters by default.",
+    'redactor_advanced_linkTooltip_desc'             => 'Shows link tooltip with Edit and Unlink buttons on click.',
+    'redactor_advanced_linkify_desc'                 => 'This setting turns off the default conversion of video and image URLs into embedded videos and images, and turns off auromatic conversion of text URLs into clickable links.',
+    'redactor_advanced_placeholder_desc'             => 'Placeholder text to show when the field has no text.',
+    'redactor_advanced_shortcuts_desc'               => "Enable or disable the default shortcuts. Keep in mind, that turning 'shortcuts' off will also disable Tab key, however, 'tabAsSpaces' will still function.",
+    'redactor_advanced_script_desc'                  => 'You can restrict use of script tag in your HTML. Redactor will automatically and always strip this tag form the code.',
+    'redactor_advanced_structure_desc'               => 'This settings introduces visual indicators for HTML tags h1-h6 and div, helping users understand the structure of the document.',
+    'redactor_advanced_preClass_desc'                => 'This setting allows to set a predefined class for the pre tag.',
+    'redactor_advanced_animation_desc'               => 'This setting makes it easy to turn dropdown animation on and off.',
+    'redactor_advanced_toolbarFixed_desc'            => 'This setting affixes external toolbar to a specific position on a page. When the is being scrolled down, fixed toolbar will remain in place and preserve its initial width.',
+    'redactor_advanced_toolbarFixedTopOffset_desc'   => 'This setting allows to set how far from the top of the page the fixed toolbar will be placed. In pixels.',
+    'redactor_advanced_toolbarFixedTarget_desc'      => "This setting allows to set a specific element on a page in relation to which fixed toolbar will be displayed. By default, toolbarFixedTarget is set to 'document'.",
+    'redactor_advanced_toolbarOverflow_desc'         => "When set to 'yes', this setting will place all toolbar buttons on mobile devices in a single line regardless of how many buttons are there. If there's more buttons then can fit on a screen, horizontal scroll will appear.",
 
     '' => ''
 );

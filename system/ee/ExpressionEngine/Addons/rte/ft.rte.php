@@ -19,7 +19,7 @@ class Rte_ft extends EE_Fieldtype
 
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.0.0'
+        'version' => '2.1.0'
     ];
 
     /**
@@ -162,11 +162,18 @@ class Rte_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
-        RteHelper::includeFieldResources();
-        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+        $toolset = ee('Model')->get('rte:Toolset')
+                            ->filter('toolset_id', $this->settings['toolset_id'])
+                            ->first();
+
+        // Load proper toolset
+        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
-        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? true : false;
+        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
+                    ? true
+                    : false;
 
         if (strpos($id, '_new_') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
@@ -198,7 +205,7 @@ class Rte_ft extends EE_Fieldtype
             'id' => $id,
             'rows' => 10,
             'data-config' => $configHandle,
-            'class' => 'rte-textarea',
+            'class' => ee('rte:' . $serviceName)->getClass(),
             'data-defer' => ($defer ? 'y' : 'n')
         );
 
@@ -214,6 +221,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function grid_display_field($data)
     {
+        // @TODO: Repeat this code
         RteHelper::includeFieldResources();
         $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
 
