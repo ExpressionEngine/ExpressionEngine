@@ -1,4 +1,7 @@
 <?php
+
+use EllisLab\Addons\FluidField\Model\FluidField;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -271,10 +274,22 @@ class Fluid_field_ft extends EE_Fieldtype
         $fluid_field->order = $order;
         $fluid_field->save();
 
-        $query = ee('db');
-        $query->set($values);
-        $query->where('id', $fluid_field->field_data_id);
-        $query->update($fluid_field->ChannelField->getTableName());
+        if (ee()->extensions->active_hook('fluid_field_update_field') === TRUE)
+        {
+            ee()->extensions->call(
+                'fluid_field_update_field',
+                $fluid_field,
+                $field_table_name,
+                $values
+            );
+        }
+        else
+        {
+            ee('db')
+                ->set($values)
+                ->where('id', $field_data_id)
+                ->update($field_table_name);
+        }
     }
 
     private function addField($order, $field_id, array $values)
@@ -295,10 +310,27 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field = ee('Model')->get('ChannelField', $field_id)->first();
 
-        $query = ee('db');
-        $query->set($values);
-        $query->insert($field->getTableName());
-        $id = $query->insert_id();
+        $field_table_name = $field->getTableName();
+
+        if (ee()->extensions->active_hook('fluid_field_add_field') === TRUE)
+        {
+            $id = ee()->extensions->call(
+                'fluid_field_add_field',
+                $field_table_name,
+                $values
+            );
+        }
+        else
+        {
+            $query = ee('db')
+                        ->set($values)
+                        ->insert($field_table_name);
+
+            $id = $query->insert_id();
+
+            $fluid_field->field_data_id = $id;
+            $fluid_field->save();
+        }
 
         $fluid_field->field_data_id = $id;
         $fluid_field->save();
@@ -306,11 +338,18 @@ class Fluid_field_ft extends EE_Fieldtype
 
     private function removeField($fluid_field)
     {
-        $query = ee('db');
-        $query->where('id', $fluid_field->field_data_id);
-        $query->delete($fluid_field->ChannelField->getTableName());
+        if (ee()->extensions->active_hook('fluid_field_remove_field') === TRUE)
+        {
+            ee()->extensions->call('fluid_field_remove_field', $fluid_field);
+        }
+        else
+        {
+            $query = ee('db');
+            $query->where('id', $fluid_field->field_data_id);
+            $query->delete($fluid_field->ChannelField->getTableName());
+            $fluid_field->delete();
+        }
 
-        $fluid_field->delete();
     }
 
     /**
@@ -612,7 +651,9 @@ class Fluid_field_ft extends EE_Fieldtype
             ee()->session->set_cache("FluidField", $cache_key, $fluid_field_data);
         }
 
-        return $fluid_field_data;
+        return ee('Model')
+                ->make('fluid_field:FluidField')
+                ->fetchAllFieldData($entry_id, $fluid_field_id);
     }
 
     /**
