@@ -808,6 +808,8 @@ CREATE TABLE IF NOT EXISTS `exp_consent_audit_log` (
   `consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `consent_request_id` int(10) unsigned NOT NULL,
   `member_id` int(10) unsigned NOT NULL,
+  `ip_address` varchar(45) default '0' NOT NULL,
+  `user_agent` varchar(120) NOT NULL,
   `action` text NOT NULL,
   `log_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`consent_audit_id`),
@@ -835,6 +837,10 @@ CREATE TABLE IF NOT EXISTS `exp_consent_requests` (
 -- Dumping data for table ee-test.exp_consent_requests: ~0 rows (approximately)
 DELETE FROM `exp_consent_requests`;
 /*!40000 ALTER TABLE `exp_consent_requests` DISABLE KEYS */;
+INSERT INTO `exp_consent_requests` (`consent_request_id`, `consent_request_version_id`, `user_created`, `title`, `consent_name`, `double_opt_in`, `retention_period`) VALUES
+	(1, 1, 'n', 'Functionality Cookies', 'ee:cookies_functionality', 'n', NULL),
+	(2, 2, 'n', 'Performance Cookies', 'ee:cookies_performance', 'n', NULL),
+	(3, 3, 'n', 'Targeting Cookies', 'ee:cookies_targeting', 'n', NULL);
 /*!40000 ALTER TABLE `exp_consent_requests` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_consent_request_versions
@@ -853,6 +859,10 @@ CREATE TABLE IF NOT EXISTS `exp_consent_request_versions` (
 -- Dumping data for table ee-test.exp_consent_request_versions: ~0 rows (approximately)
 DELETE FROM `exp_consent_request_versions`;
 /*!40000 ALTER TABLE `exp_consent_request_versions` DISABLE KEYS */;
+INSERT INTO `exp_consent_request_versions` (`consent_request_version_id`, `consent_request_id`, `request`, `request_format`, `create_date`, `author_id`) VALUES
+	(1, 1, 'These cookies help us personalize content and functionality for you, including remembering changes you have made to parts of the website that you can customize, or selections for services made on previous visits. If you do not allow these cookies, some portions of our website may be less friendly and easy to use, forcing you to enter content or set your preferences on each visit.', 'none', 1615821718, 0),
+	(2, 2, 'These cookies allow us measure how visitors use our website, which pages are popular, and what our traffic sources are. This helps us improve how our website works and make it easier for all visitors to find what they are looking for. The information is aggregated and anonymous, and cannot be used to identify you. If you do not allow these cookies, we will be unable to use your visits to our website to help make improvements.', 'none', 1615821718, 0),
+	(3, 3, 'These cookies are usually placed by third-party advertising networks, which may use information about your website visits to develop a profile of your interests. This information may be shared with other advertisers and/or websites to deliver more relevant advertising to you across multiple websites. If you do not allow these cookies, visits to this website will not be shared with advertising partners and will not contribute to targeted advertising on other websites.', 'none', 1615821718, 0);
 /*!40000 ALTER TABLE `exp_consent_request_versions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_content_types

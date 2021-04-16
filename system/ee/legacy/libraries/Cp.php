@@ -408,6 +408,18 @@ class Cp
             );
         }
 
+        //do they need to accept consent?
+        if (bool_config_item('require_cookie_consent')) {
+            $consentRequest = ee('Model')->get('ConsentRequest')->filter('consent_name', 'ee:cookies_functionality')->first();
+            if (!empty($consentRequest)) {
+                $consent = ee()->session->getMember()->Consents->filter('consent_request_id', $consentRequest->getId())->first();
+                if (empty($consent) || !$consent->isGranted()) {
+                    $notices[] = sprintf(lang('cookies_functionality_consent_required'), ee('CP/URL', 'members/profile/consent'));
+                }
+            }
+        }
+        
+
         if (! empty($notices)) {
             if (! $alert) {
                 $alert = ee('CP/Alert')->makeBanner('notices')

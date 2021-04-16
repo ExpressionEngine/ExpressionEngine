@@ -1736,7 +1736,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command_title' => lang('view') . ' <b>' . lang('view_consent_log') . '</b>',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'logs/cp',
+                'target' => 'logs/consent',
                 'permission' => 'can_manage_consents'
             ),
             'logsCp' => array(
@@ -1745,7 +1745,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command_title' => lang('view') . ' <b>' . lang('view_cp_log') . '</b>',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'logs/consent',
+                'target' => 'logs/cp',
                 'permission' => 'can_access_logs'
             ),
             'logsThrottle' => array(

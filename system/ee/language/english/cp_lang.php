@@ -607,6 +607,8 @@ $lang = array(
 
     'xhtml' => 'XHTML',
 
+    'cookies_functionality_consent_required' => 'In order to use all features of Control Panel, please opt in <a href="%s">Functionality Cookies consent</a>.',
+
     /* Members Menu */
 
     'new_member' => 'New Member',
