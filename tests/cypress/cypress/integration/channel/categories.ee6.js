@@ -9,8 +9,7 @@ context('Categories', () => {
     before(function() {
         cy.task('db:seed')
 
-        //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
 
         //add manipulation
         cy.authVisit('admin.php?/cp/files/uploads/edit/2');
@@ -23,11 +22,19 @@ context('Categories', () => {
         cy.get('input[name="sizes[]"]').first().check();
         cy.contains('Sync Directory').first().click()
 
+        /*cy.visit('admin.php?/cp/design/group/create')
+        cy.get('input[name="group_name"]').eq(0).type('cats')
+        cy.get('input[value="Save Template Group"]').eq(0).click()
+        cy.get('p').contains('has been created')*/
+
+        //copy templates
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+
         cy.visit('admin.php?/cp/design')
     })
 
     after(function() {
-        //cy.task('filesystem:delete', '../../images/uploads/programming.gif')
+        cy.task('filesystem:delete', '../../system/user/templates/default_site/cats.group')
     })
 
     beforeEach(function() {
