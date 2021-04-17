@@ -22,6 +22,8 @@ context('Categories', () => {
         cy.get('.icon--sync').click();
         cy.get('input[name="sizes[]"]').first().check();
         cy.contains('Sync Directory').first().click()
+
+        cy.visit('admin.php?/cp/design')
     })
 
     after(function() {
