@@ -3844,9 +3844,11 @@ class Channel
 
                 if (! empty($var_props['modifier'])) {
                     $parse_fnc = 'replace_' . $var_props['modifier'];
+                    
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
                         ee()->load->library('file_field');
+                        ee()->api_channel_fields->field_type = 'file';
                         $content = ee()->file_field->parse_field($content);
                     } else {
                         $class = $fieldtype;
