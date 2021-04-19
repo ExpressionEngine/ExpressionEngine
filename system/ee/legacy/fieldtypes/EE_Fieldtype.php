@@ -837,6 +837,7 @@ abstract class EE_Fieldtype
 
             $data = ee('Model')->get('ChannelEntry')
                 ->filter('channel_id', $this->settings['field_pre_channel_id'])
+                ->order($field, 'asc')
                 ->all()
                 ->pluck($field);
 
