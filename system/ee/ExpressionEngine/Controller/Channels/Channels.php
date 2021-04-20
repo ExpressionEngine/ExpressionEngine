@@ -1373,7 +1373,6 @@ class Channels extends AbstractChannelsController
      */
     private function setWithPost($channel)
     {
-
         if (isset($_POST['cat_group']) && is_array($_POST['cat_group'])) {
             $_POST['cat_group'] = implode('|', array_filter($_POST['cat_group'], 'is_numeric'));
         } else {
@@ -1383,7 +1382,6 @@ class Channels extends AbstractChannelsController
         if (! ee('Request')->post('comment_expiration')) {
             $_POST['comment_expiration'] = 0;
         }
-       // var_dump($_POST); exit();
         $channel->set($_POST);
 
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();

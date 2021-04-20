@@ -244,6 +244,7 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `preview_url` varchar(100) DEFAULT NULL,
   `max_entries` int(10) unsigned NOT NULL DEFAULT 0,
+  `allow_preview` char(1) NOT NULL DEFAULT 'y',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
   KEY `channel_name` (`channel_name`),
