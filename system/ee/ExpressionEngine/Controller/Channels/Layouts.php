@@ -154,7 +154,7 @@ class Layouts extends AbstractChannelsController
             ee('CP/URL')->make('channels')->compile() => lang('channels')
         );
         if (!empty($channel_id)) {
-            //$breadcrumbs[ee('CP/URL')->make('channels/' . $channel_id)->compile()] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
+            $breadcrumbs[ee('CP/URL')->make('channels/' . $channel_id)->compile()] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
         }
         $breadcrumbs[''] = lang('form_layouts');
         ee()->view->cp_breadcrumbs = $breadcrumbs;
@@ -285,9 +285,9 @@ class Layouts extends AbstractChannelsController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels'),
-            //ee('CP/URL')->make('channels/edit/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+            ee('CP/URL')->make('channels/edit/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
             ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => lang('form_layouts'),
-            '' => lang('new_layout')
+            '' => lang('create')
         );
 
         ee()->view->cp_page_title = lang('create_form_layout');
@@ -409,9 +409,9 @@ class Layouts extends AbstractChannelsController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels'),
-            //ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+            ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
             ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile() => lang('form_layouts'),
-            '' => lang('edit_layout')
+            '' => lang('edit')
         );
 
         ee()->view->cp_page_title = lang('edit_form_layout');

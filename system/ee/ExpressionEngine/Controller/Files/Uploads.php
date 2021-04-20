@@ -71,7 +71,7 @@ class Uploads extends AbstractFilesController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
-            //ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
+            ee('CP/URL')->make('files/directory/' . $upload_id)->compile() => ee('Model')->get('UploadDestination', $upload_id)->fields('name')->first()->name,
             '' => lang('edit_upload_directory')
         );
 
