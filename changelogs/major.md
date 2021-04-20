@@ -56,6 +56,7 @@ Developers
 
 - Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).
 - Fixed a bug where table bulk selections can be saved by the browser on page reload, but don't show in the UI.
+- Control panel status column in entry list displays status text casing which matches the actual casing as entered into the system on creation. 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
