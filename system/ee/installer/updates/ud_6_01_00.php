@@ -40,18 +40,19 @@ class Updater
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function addAllowPreview()
     {
-
-        ee()->smartforge->add_column(
-            'channels',
-            array(
-                'allow_preview' => array(
-                    'type' => 'CHAR',
-                    'constraint' => 1,
-                    'default' => 'y',
-                    'null' => false,
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false,
+                    )
                 )
-            )
-        );
+            );
+        }
     }
 }
 // END CLASS
