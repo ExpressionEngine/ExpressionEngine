@@ -184,8 +184,17 @@ class MimeType
      */
     public function fileIsImage($path)
     {
-        if (! $this->isImage($this->ofFile($path))) {
+        $mime = $this->ofFile($path);
+        if (! $this->isImage($mime)) {
             return false;
+        }
+
+        if ($mime == 'image/svg+xml') {
+            $file = file_get_contents($path);
+            if (strpos($file, '<?xml') !==0 || strpos($file, '<svg') === false) {
+                return false;
+            }
+            return true;
         }
 
         // If the reported mime-type is an image we'll do an extra validation
