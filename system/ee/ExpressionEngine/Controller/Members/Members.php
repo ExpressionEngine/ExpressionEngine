@@ -344,7 +344,10 @@ class Members extends CP_Controller
                 'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $member->authcode
             );
 
-            $this->pendingMemberNotification($template, $member, $swap);
+            if (!$this->pendingMemberNotification($template, $member, $swap)) {
+                $debug_msg = ee()->email->print_debugger(array());
+                show_error(lang('error_sending_email') . BR . BR . $debug_msg);
+            }
         }
 
         if ($members->count() == 1) {
