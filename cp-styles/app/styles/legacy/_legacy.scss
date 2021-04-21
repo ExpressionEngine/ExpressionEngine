@@ -134,6 +134,13 @@
   }
 }
 
+.panel-heading {
+  .title-bar__extra-tools > .button,
+  .title-bar__extra-tools > .button-group {
+    margin-left: 5px;
+  }
+}
+
 .form-standard {
     // border: 1px solid color(border);
     // border-radius: 5px;

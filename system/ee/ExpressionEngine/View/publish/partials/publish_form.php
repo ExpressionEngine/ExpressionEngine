@@ -1,9 +1,18 @@
-<div class="panel">
+<div class="panel" style="margin-top: -20px;">
+  <div class="panel-heading">
+    <div class="title-bar title-bar--large">
+      <h3 class="title-bar__title">New Entry</h3>
+
+    </div>
+  </div>
   <div class="panel-body">
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
+    <div class="title-bar__extra-tools title-bar__extra-tools-publish">
+      <?php $this->embed('ee:_shared/form/buttons'); ?>
+    </div>
 		<div class="tab-bar tab-bar--sticky">
 			<div class="tab-bar__tabs">
 			<?php
@@ -28,9 +37,6 @@
 			<?php endif ?>
 			</div>
 
-			<div class="tab-bar__right-buttons">
-				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
-			</div>
 		</div>
 
 		<?=ee('CP/Alert')->getAllInlines()?>
