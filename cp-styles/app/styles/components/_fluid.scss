@@ -89,11 +89,16 @@
 	// flex: 0 1;
 	// padding: $s-s 0 0 0;
 	transition: opacity 100ms ease;
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  z-index: 1;
+	position: absolute;
+	top: 50%;
+	right: 15px;
+	transform: translateY(-50%);
+	z-index: 1;
+
+	.dropdown {
+		max-height: 90vh;
+		overflow-y: auto;
+	}
 }
 
 .fluid__item-tools--item-closed {
@@ -137,6 +142,11 @@
 
   .button {
     margin-bottom: 5px;
+  }
+
+  .dropdown {
+	max-height: 98vh;
+	overflow-y: auto;
   }
 }
 
