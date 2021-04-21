@@ -483,6 +483,12 @@ class Grid_parser
                 $replace_data = $row[$match[2]];
             } else {
                 $replace_data = $match[0];
+                if (isset($row[$field['field_name']]) && !empty($field['modifier'])) {
+                    $parse_fnc = 'replace_' . $field['modifier'];
+                    if (method_exists(ee('Variables/Parser'), $parse_fnc)) {
+                        $replace_data = ee('Variables/Parser')->{$parse_fnc}($row[$field['field_name']], $field['params']);
+                    }
+                }
             }
 
             // Finally, do the replacement
