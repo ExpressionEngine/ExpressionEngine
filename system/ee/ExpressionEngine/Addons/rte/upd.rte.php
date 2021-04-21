@@ -92,7 +92,9 @@ class Rte_upd extends Installer
             ee()->db->insert('actions', $data);
 
             $this->install_rte_toolsets_table();
+        }
 
+        if (version_compare($current, '2.0.1', '<')) {
             ee()->db->where('class', 'Rte_ext')->delete('extensions');
         }
 

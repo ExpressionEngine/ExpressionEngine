@@ -19,7 +19,7 @@ class Rte_ft extends EE_Fieldtype
 
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.0.0'
+        'version' => '2.0.1'
     ];
 
     /**
