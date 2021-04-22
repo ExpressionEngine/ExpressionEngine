@@ -9,7 +9,8 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "@(utilities|settings|logs|field|channel|addons)/*.ee6.js",
+    "redirectionLimit": 200,
+    "testFiles": "z_installer/*.ee6.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

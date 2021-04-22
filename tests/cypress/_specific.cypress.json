@@ -1,6 +1,5 @@
 {
     "baseUrl": "http://localhost:8888/",
-    "video": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
@@ -9,7 +8,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "addons/*.ee6.js",
+    "testFiles": "files/edit_file.ee6.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

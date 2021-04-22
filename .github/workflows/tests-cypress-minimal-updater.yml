@@ -1,4 +1,4 @@
-name: Run Cypress Content Tests
+name: Run Cypress Installer Tests
 
 on:
   pull_request:
@@ -54,7 +54,7 @@ jobs:
                 sudo systemctl start mysql
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
-
+                
             - name: Install PHP dependencies
               working-directory: tests/cypress
               run: composer install
@@ -68,18 +68,18 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: content.cypress.json
+                config-file: updater.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-content
+                name: cypress-tests-updater
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: content.error.log
+                name: updater.error.log
                 path: /home/runner/php_errors.log

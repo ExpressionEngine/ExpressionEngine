@@ -1,4 +1,4 @@
-name: Run Cypress Content Tests
+name: Run Cypress Admin Tests
 
 on:
   pull_request:
@@ -68,18 +68,18 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: content.cypress.json
+                config-file: misc.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-content
+                name: cypress-tests-misc
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: content.error.log
+                name: misc.error.log
                 path: /home/runner/php_errors.log

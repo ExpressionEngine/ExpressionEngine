@@ -43,7 +43,7 @@ class Installer {
 	//
 	// @param [Type] file The path to the config file you want to use, set to blank to only move existing file
 	// @return [void]
-	replace_config(file = '', options = { attempt: 0 }) {
+	replace_config(file = 'support/config/config.php', options = { attempt: 0 }) {
 		if (typeof(options.attempt)==='undefined') {
 			options.attempt = 0;
 		}

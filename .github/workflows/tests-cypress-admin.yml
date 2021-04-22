@@ -34,7 +34,7 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
 
             - name: Setup Permissions
               run: |
@@ -75,12 +75,12 @@ jobs:
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests
+                name: cypress-tests-admin
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: error.log
+                name: admin.error.log
                 path: /home/runner/php_errors.log
