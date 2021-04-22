@@ -9,7 +9,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "@(publish|members|member_roles|files)/**.ee6.js",
+    "testFiles": "files/**.ee6.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

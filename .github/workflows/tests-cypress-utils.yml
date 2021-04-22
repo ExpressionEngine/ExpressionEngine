@@ -1,0 +1,86 @@
+name: Cypress Utilities Tests
+
+on:
+  push:
+    branches:
+      - 6.dev
+
+jobs:
+    cypress-tests:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [7.2, 7.1, 5.6, 8.0]
+                os: [ubuntu-18.04]
+                include:
+                  - php: 7.4
+                    os: ubuntu-20.04 #is using mysql8
+
+        name: PHP${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+
+            - name: Setup Permissions
+              run: |
+                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: utils.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-utils
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: utils.error.log
+                path: /home/runner/php_errors.log

@@ -1,22 +1,21 @@
-name: Cypress Content Tests
+name: Cypress Utilities Tests (minimal)
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev
 
 jobs:
     cypress-tests:
+        if: github.event.pull_request.draft == false
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [7.4]
                 os: [ubuntu-18.04]
-                include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -69,18 +68,18 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: content.cypress.json
+                config-file: utils.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-content
+                name: cypress-tests-utils
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: content.error.log
+                name: utils.error.log
                 path: /home/runner/php_errors.log

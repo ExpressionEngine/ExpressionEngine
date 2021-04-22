@@ -53,9 +53,12 @@ jobs:
             - name: Run PHPLint
               run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
 
+            - name: Configure matchers
+              uses: mheap/phpunit-matcher-action@v1
+
             - name: Run PHPUnit Tests
               working-directory: system/ee/ExpressionEngine/Tests/
-              run: vendor/bin/phpunit --configuration=phpunit.xml
+              run: vendor/bin/phpunit --teamcity --configuration=phpunit.xml
 
 #            - name: Install PHP dependencies for updater tests
 #              working-directory: system/ee/installer/updater/ExpressionEngine/Tests/
