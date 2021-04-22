@@ -65,7 +65,7 @@ jobs:
       - name: Add artifact links to pull request
         uses: tonyhallett/artifacts-url-comments@v1.1.0
         with:
-            prefix: Files: 
+            prefix: 'Files: '
             format: name
             addTo: pull
 
