@@ -475,7 +475,7 @@ if (! function_exists('log_message')) {
             header("Status: {$code} {$text}", true);
         } elseif ($server_protocol == 'HTTP/1.1' or $server_protocol == 'HTTP/1.0') {
             header($server_protocol . " {$code} {$text}", true, $code);
-        } else {
+        } elseif ($server_protocol !== false) {
             header("HTTP/1.1 {$code} {$text}", true, $code);
         }
     }
