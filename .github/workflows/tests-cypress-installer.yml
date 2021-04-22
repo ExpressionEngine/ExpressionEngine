@@ -1,4 +1,4 @@
-name: Run Cypress Installer Tests
+name: Cypress Installer Tests
 
 on:
   push:
@@ -49,7 +49,7 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/docker/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
+                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
