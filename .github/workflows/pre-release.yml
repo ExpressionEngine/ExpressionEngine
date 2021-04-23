@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.actor == intoeetive
+    if: ${{ github.actor == 'intoeetive' }}
     name: Build Release
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +32,7 @@ jobs:
           ref: 6.x
 
       - name: Copy build.json
-      - id: build_json
+        id: build_json
         run: |
           cp build.json build-tools/build.json
           content=`cat build.json`
