@@ -8,14 +8,12 @@ on:
 
 jobs:
   build:
+    if: github.actor == intoeetive
     name: Build Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - uses: codacy/git-version@2.4.0
-        id: version
 
       - name: Checkout build tools
         uses: actions/checkout@v2
@@ -32,6 +30,18 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: ExpressionEngine-User-Guide
           ref: 6.x
+
+      - name: Copy build.json
+      - id: build_json
+        run: |
+          cp build.json build-tools/build.json
+          content=`cat build.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=buildJson::$content"
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -54,12 +64,12 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{ steps.version.outputs.version }}
+        run: gulp default --local --head --skip-lint --version=${{fromJson(steps.build_json.outputs.buildJson).tag}}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
         with:
-          name: EE${{ steps.version.outputs.version }}
+          name: EE${{fromJson(steps.build_json.outputs.buildJson).tag}}
           path: build-tools/builds
 
       - name: Add artifact links to pull request
