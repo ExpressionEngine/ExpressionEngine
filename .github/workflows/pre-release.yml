@@ -14,15 +14,3 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Copy build.json
-        id: build_json
-        run: |
-          cp build.json build-tools/build.json
-          content=`cat build.json`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=buildJson::$content"
