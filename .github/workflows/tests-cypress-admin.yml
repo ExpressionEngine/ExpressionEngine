@@ -10,7 +10,7 @@ on:
 
 jobs:
     cypress-tests:
-        if: ${{ github.event.workflow_run.conclusion != 'failure' }}
+
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -25,6 +25,10 @@ jobs:
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+
+            - name: TESTING TEST
+              run: |
+                echo 'TESTING TEST${{ github.event.workflow_run.conclusion }}'
 
             - name: Checkout code
               if: ${{ github.event_name != "Pre-Release" }}
