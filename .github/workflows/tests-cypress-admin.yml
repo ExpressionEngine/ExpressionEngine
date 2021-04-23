@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - 6.dev
+  workflow_run:
+    workflows: ["Pre-Release"]
+    types: [completed]
 
 jobs:
     cypress-tests:
+        if: ${{ github.event.workflow_run.conclusion != 'failure' }}
         runs-on: ${{ matrix.os }}
 
         strategy:

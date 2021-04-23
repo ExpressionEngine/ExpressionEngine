@@ -15,22 +15,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Checkout build tools
-        uses: actions/checkout@v2
-        with:
-          repository: EllisLab/ExpressionEngine-Build
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: build-tools
-          ref: npm-update # Remove once testing is complete
-
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          repository: ExpressionEngine/ExpressionEngine-User-Guide
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: ExpressionEngine-User-Guide
-          ref: 6.x
-
       - name: Copy build.json
         id: build_json
         run: |
@@ -42,47 +26,3 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=buildJson::$content"
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@v1
-
-      - name: Install asdf dependencies
-        working-directory: build-tools
-        run: |
-          asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-          bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-          asdf install
-
-      - name: Install build tool dependencies
-        working-directory: build-tools
-        run: npm install
-
-      - name: Run build process
-        working-directory: build-tools
-        env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{fromJson(steps.build_json.outputs.buildJson).tag}}
-
-      - name: Archive Build files
-        uses: actions/upload-artifact@v2
-        with:
-          name: EE${{fromJson(steps.build_json.outputs.buildJson).tag}}
-          path: build-tools/builds
-
-      - name: Add artifact links to pull request
-        uses: tonyhallett/artifacts-url-comments@v1.1.0
-        with:
-            prefix: 'Files: '
-            format: name
-            addTo: pull
-
-      - name: Directory Listing on Failure
-        if: failure()
-        run: |
-          ls -latr
-          ls -latr ExpressionEngine-User-Guide
-          ls -latr build-tools
-          ls -latr build-tools/builds
