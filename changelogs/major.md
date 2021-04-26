@@ -45,6 +45,7 @@ Bullet list below, e.g.
 - Changed sidebar copyright company name
 - Default avatars have been removed
 - The system avatar settings "Allow avatar uploads?" and "Allow avatars?" have been removed
+- Fixed bug #996 where resizing textareas beyond the parent element was breaking other children of that parent.
 
 Developers
 - Updated CodeMirror to version 5.48
