@@ -561,6 +561,13 @@ $(document).ready(function(){
 			return false;
 		});
 
+		//make spans act as links, when we need that
+		$('[data-href]').on('click', function(e){
+			e.preventDefault();
+			window.location.href = $(this).data('href');
+			return false;
+		})
+
 		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 
 			// Hide any dropdowns that are currently shown
