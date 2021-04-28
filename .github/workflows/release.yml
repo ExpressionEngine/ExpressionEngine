@@ -7,22 +7,14 @@ on:
 
 jobs:
   build:
-    name: Build Release
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: olegtarasov/get-tag@v2
+      - uses: olegtarasov/get-tag@v2.1
         id: tagName
 
-      - name: Checkout build tools
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          repository: EllisLab/ExpressionEngine-Build
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: build-tools
-          ref: npm-update # Remove once testing is complete
 
       - name: Checkout docs
         uses: actions/checkout@v2
@@ -60,6 +52,15 @@ jobs:
         with:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/EEDocs*"
+          name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
+          allowUpdates: true
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          #prerelease: true
+          body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
 
       - name: Directory Listing on Failure
         if: failure()

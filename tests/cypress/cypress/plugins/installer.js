@@ -14,16 +14,20 @@ const current_templates = system + 'user/templates/default_site'
 
 class Installer {
 	enable_installer() {
-		let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-		dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
-		fs.writeFileSync(path.resolve(env), dotenv)
+		if (fs.existsSync(path.resolve(env))) {
+			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
+			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
+			fs.writeFileSync(path.resolve(env), dotenv)
+		}
 		return true
 	}
 
 	disable_installer() {
-		let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-		dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
-		fs.writeFileSync(path.resolve(env), dotenv)
+		if (fs.existsSync(path.resolve(env))) {
+			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
+			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
+			fs.writeFileSync(path.resolve(env), dotenv)
+		}
 		return true
 	}
 

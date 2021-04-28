@@ -63,7 +63,9 @@ context('URL and Path Settings', () => {
 
   it('should only show member trigger if enabled', () => {
     cy.eeConfig({item: 'legacy_member_templates', value: 'y'}).then(() => {
+      cy.wait(500);
       cy.eeConfig({item: 'profile_trigger'}).then((config) => {
+        cy.wait(500);
         expect(config).to.be.not.empty
         page.load()
         cy.hasNoErrors()
