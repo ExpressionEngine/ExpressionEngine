@@ -150,25 +150,6 @@ To run the tests locally, you would need to ensure you have NPM and Cypress inst
 
 8. If you prefer to have all tests run, excecute command `npm run cypress:run` (Note: running all tests locally might be time-consuming)
 
-
-The `eetools` utility in the root of the repo is used to run tests.
-
-`./eetools test`
-
-To run a specific test, just specify the test file, and optional line number. The test file path is relative to the tests/rspec folder:
-
-`./eetools test tests/files/test_upload_file.rb:56`
-
-To run the tests or a specific test under a certain PHP version, just specify it with the `-p` flag:
-
-`./eetools test tests/files/test_upload_file.rb:56 -p 5.4.45`
-
-To run only the unit tests:
-
-`./eetools unittest`
-
-Test artifacts such as screenshots are placed in `/tmp/artifacts`.
-
 #### Writing Tests
 
 Whenever possible, a test should be written or modified and included in your pull request for any bug fix or new feature. This prevents regressions, and provides a baseline expectation for behavior of new features.
