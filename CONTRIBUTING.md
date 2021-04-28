@@ -128,9 +128,28 @@ All additive changes and new features should have a corresponding pull request i
 
 ### Tests
 
-Integration testing helps maintain the quality of the application and prevents unintentional regressions. ExpressionEnigne uses rspec with Capybara Webkit for behavioral tests, and PHPUnit for unit testing. At a minimum, you should make sure that your changes do not break existing tests. Pull requests will automatically run tests on all supported PHP versions using Circle CI, and will not be merged if tests fail.
+Integration testing helps maintain the quality of the application and prevents unintentional regressions. ExpressionEnigne uses [Cypress](https://www.cypress.io/) for behavioral tests, and [PHPUnit](https://phpunit.de/) for unit testing. At a minimum, you should make sure that your changes do not break existing tests. Pull requests will automatically run tests on all supported PHP versions using GitHub actions, and will not be merged if tests fail.
 
 #### Running Tests
+
+To run the tests locally, you would need to ensure you have NPM and Cypress installed and then follow some steps as outlined below.
+
+1. Back up your existing database and `system/user/config.php` file.
+
+2. Copy `tests/cypress/support/config/config.php` over to `system/user/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
+
+3. Copy `tests/cypress/cypress.env.example.json` to `tests/cypress/cypress.env.json`. Update the configuration in file if necessary.
+
+4. Using command line interface, change your working directory to `tests/cypress`
+
+5. If this is your first time running ExpressionEngine Cypress tests, ensure you have Node.js installed and then run `npm i`
+
+6. Execute command `npm run cypress:open`
+
+7. In Cypress UI, click on the tests that you know might be affected to run them.
+
+8. If you prefer to have all tests run, excecute command `npm run cypress:run` (Note: running all tests locally might be time-consuming)
+
 
 The `eetools` utility in the root of the repo is used to run tests.
 
