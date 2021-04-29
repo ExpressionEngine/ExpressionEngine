@@ -98,6 +98,7 @@
 	.dropdown {
 		max-height: 90vh;
 		overflow-y: auto;
+		white-space: nowrap;
 	}
 
 	&.has-open-dropdown {
@@ -151,6 +152,7 @@
   .dropdown {
 	max-height: 98vh;
 	overflow-y: auto;
+	white-space: nowrap;
   }
 }
 
