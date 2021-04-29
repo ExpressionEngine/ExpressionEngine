@@ -99,6 +99,10 @@
 		max-height: 90vh;
 		overflow-y: auto;
 	}
+
+	&.has-open-dropdown {
+		z-index: 2;
+	}
 }
 
 .fluid__item-tools--item-closed {
