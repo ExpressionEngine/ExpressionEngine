@@ -99,10 +99,14 @@
 		max-height: 90vh;
 		overflow-y: auto;
 		white-space: nowrap;
+
+		img {
+			opacity: 0.35;
+		}
 	}
 
 	&.has-open-dropdown {
-		z-index: 2;
+		z-index: 200;
 	}
 }
 
