@@ -86,7 +86,10 @@ class RteHelper
         return array(
             'toolbar' => $toolbars['Basic'],
             'height' => '200',
-            'upload_dir' => 'all'
+            'upload_dir' => 'all',
+            'mediaEmbed' => [
+                'previewsInData' => true
+            ]
         );
     }
 
