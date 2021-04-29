@@ -365,9 +365,9 @@ EE.cp.formValidation = {
 					thisButton = $(thisButton);
 					if (!thisButton.hasClass('dropdown-toggle')) {
 						if (thisButton.is('input')) {
-							thisButton.attr('value', thisButton.data('submit-text'));
+							thisButton.attr('value', decodeURIComponent(thisButton.data('submit-text')));
 						} else if (thisButton.is('button')) {
-							thisButton.text(thisButton.data('submit-text'));
+							thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
 						}
 					}
 				});
