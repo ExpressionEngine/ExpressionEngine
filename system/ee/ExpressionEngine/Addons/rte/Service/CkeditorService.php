@@ -198,7 +198,7 @@ class CkeditorService {
 		//  JSONify Config and Return
 		// -------------------------------------------
 		ee()->javascript->set_global([
-			'Rte.configs.' . $configHandle => $config
+			'Rte.configs.' . $configHandle => ((array) $config)
 		]);
 
 		$this->_includedConfigs[] = $configHandle;
