@@ -131,7 +131,7 @@ class Consent extends Model
         $log->ConsentRequest = $this->ConsentRequest;
         $log->Member = $this->Member;
         $log->ip_address = ee()->input->ip_address();
-        $log->user_agent = ee()->input->user_agent();
+        $log->user_agent = substr(ee()->input->user_agent(), 0, 120);
         $log->action = $action;
         $log->log_date = ee()->localize->now;
         $log->save();
