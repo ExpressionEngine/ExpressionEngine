@@ -42,6 +42,13 @@ class Updater
             ee()->smartforge->add_column(
                 'consent_audit_log',
                 array(
+                    'consent_request_version_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
+                    ],
                     'ip_address' => array(
                         'type' => 'varchar',
                         'constraint' => 45,

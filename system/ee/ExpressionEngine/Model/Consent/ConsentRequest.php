@@ -101,6 +101,7 @@ class ConsentRequest extends Model
     {
         $log = $this->getModelFacade()->make('ConsentAuditLog');
         $log->ConsentRequest = $this;
+        $log->ConsentRequestVersion = $this->CurrentVersion;
         $log->member_id = ee()->session->userdata('member_id');
         $log->ip_address = ee()->input->ip_address();
         $log->user_agent = substr(ee()->input->user_agent(), 0, 120);

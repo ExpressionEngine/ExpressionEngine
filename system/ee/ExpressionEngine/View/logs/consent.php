@@ -30,7 +30,7 @@
 						<b><?=lang('user_agent')?>:</b> <?=$log->user_agent?><?php endif; ?>
 					</div>
 					<div class="list-item__body">
-						<pre><code class="hljs"><a href="<?=ee('CP/URL')->make('settings/consents/versions/' . $log->ConsentRequest->consent_request_id)?>"><?=$log->ConsentRequest->title?></a>: <?=$log->action?>
+						<pre><code class="hljs"><a href="<?=ee('CP/URL')->make('settings/consents/versions/' . $log->ConsentRequest->consent_request_id)?>#modal-consent-request-<?=$log->consent_request_version_id?>"><?=$log->ConsentRequest->title?></a>: <?=$log->action?>
 						</pre></code>
 					</div>
 				</div>

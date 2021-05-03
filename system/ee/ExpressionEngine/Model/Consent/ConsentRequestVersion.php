@@ -46,6 +46,10 @@ class ConsentRequestVersion extends Model
             'from_key' => 'author_id',
             'weak' => true
         ],
+        'Logs' => [
+            'type' => 'hasMany',
+            'model' => 'ConsentAuditLog'
+        ],
     ];
 
     protected static $_validation_rules = [

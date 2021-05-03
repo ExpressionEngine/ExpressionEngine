@@ -121,7 +121,7 @@ class Consent
         if ($this->isAnonymous()) {
             $this->cookie[$request->getId()] = ['has_granted' => true, 'timestamp' => $this->now];
             $this->saveConsentCookie($this->cookie);
-            $request->log(sprintf(lang('consent_granted_log_msg'), $via));
+            $request->log(sprintf(lang('consent_granted_log_msg'), lang($via)));
             $this->updateConsentCache($request);
         } else {
             $consent = $this->getOrMakeConsent($request);
@@ -135,9 +135,9 @@ class Consent
             $consent->save();
 
             if ($this->memberIsActor()) {
-                $consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+                $consent->log(sprintf(lang('consent_granted_log_msg'), lang($via)));
             } else {
-                $consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
+                $consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), lang($via)));
             }
 
             $this->updateConsentCache($consent);

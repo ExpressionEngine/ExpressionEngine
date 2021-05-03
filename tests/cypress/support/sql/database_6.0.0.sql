@@ -26,29 +26,35 @@ DELETE FROM `exp_actions`;
 /*!40000 ALTER TABLE `exp_actions` DISABLE KEYS */;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(1, 'Channel', 'submit_entry', 0),
-	(3, 'Channel', 'smiley_pop', 0),
-	(4, 'Channel', 'combo_loader', 0),
-	(5, 'Member', 'registration_form', 0),
-	(6, 'Member', 'register_member', 0),
-	(7, 'Member', 'activate_member', 0),
-	(8, 'Member', 'member_login', 0),
-	(9, 'Member', 'member_logout', 0),
-	(10, 'Member', 'send_reset_token', 0),
-	(11, 'Member', 'process_reset_password', 0),
-	(12, 'Member', 'send_member_email', 0),
-	(13, 'Member', 'update_un_pw', 0),
-	(14, 'Member', 'member_search', 0),
-	(15, 'Member', 'member_delete', 0),
-	(16, 'Rte', 'get_js', 0),
-	(17, 'Email', 'send_email', 0),
-	(18, 'Comment', 'insert_new_comment', 0),
-	(19, 'Comment_mcp', 'delete_comment_notification', 0),
-	(20, 'Comment', 'comment_subscribe', 0),
-	(21, 'Comment', 'edit_comment', 0),
-	(22, 'Search', 'do_search', 1),
-	(23, 'Channel', 'live_preview', 0),
-	(24, 'File', 'addonIcon', 1),
-  (25, 'Rte', 'pages_autocomplete', 0);
+	(2, 'Channel', 'smiley_pop', 0),
+	(3, 'Channel', 'combo_loader', 0),
+	(4, 'Channel', 'live_preview', 0),
+	(5, 'Comment', 'insert_new_comment', 0),
+	(6, 'Comment_mcp', 'delete_comment_notification', 0),
+	(7, 'Comment', 'comment_subscribe', 0),
+	(8, 'Comment', 'edit_comment', 0),
+	(9, 'Consent', 'grantConsent', 0),
+	(10, 'Consent', 'submitConsent', 0),
+	(11, 'Consent', 'withdrawConsent', 0),
+	(12, 'Member', 'registration_form', 0),
+	(13, 'Member', 'register_member', 0),
+	(14, 'Member', 'activate_member', 0),
+	(15, 'Member', 'member_login', 0),
+	(16, 'Member', 'member_logout', 0),
+	(17, 'Member', 'send_reset_token', 0),
+	(18, 'Member', 'process_reset_password', 0),
+	(19, 'Member', 'send_member_email', 0),
+	(20, 'Member', 'update_un_pw', 0),
+	(21, 'Member', 'do_member_search', 0),
+	(22, 'Member', 'member_delete', 0),
+	(23, 'Member', 'send_username', 0),
+	(24, 'Member', 'update_profile', 0),
+	(25, 'Member', 'upload_avatar', 0),
+	(26, 'Rte', 'pages_autocomplete', 0),
+	(27, 'File', 'addonIcon', 1),
+	(28, 'Relationship', 'entryList', 0),
+	(29, 'Search', 'do_search', 1),
+	(30, 'Email', 'send_email', 0);
 /*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_captcha
@@ -807,13 +813,15 @@ DROP TABLE IF EXISTS `exp_consent_audit_log`;
 CREATE TABLE IF NOT EXISTS `exp_consent_audit_log` (
   `consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `consent_request_id` int(10) unsigned NOT NULL,
+  `consent_request_version_id` int(10) unsigned DEFAULT NULL,
   `member_id` int(10) unsigned NOT NULL,
   `ip_address` varchar(45) default '0' NOT NULL,
   `user_agent` varchar(120) NOT NULL,
   `action` text NOT NULL,
   `log_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`consent_audit_id`),
-  KEY `consent_request_id` (`consent_request_id`)
+  KEY `consent_request_id` (`consent_request_id`),
+  KEY `consent_request_version_id` (`consent_request_version_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table ee-test.exp_consent_audit_log: ~0 rows (approximately)
@@ -1824,6 +1832,8 @@ CREATE TABLE IF NOT EXISTS `exp_modules` (
 DELETE FROM `exp_modules`;
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
+	(1, 'Consent', '1.0.0', 'n', 'n'),
+	(2, 'Relationship', '1.0.0', 'n', 'n'),
 	(3, 'Channel', '2.0.1', 'n', 'n'),
 	(4, 'Member', '2.1.0', 'n', 'n'),
 	(5, 'Stats', '2.0.0', 'n', 'n'),
