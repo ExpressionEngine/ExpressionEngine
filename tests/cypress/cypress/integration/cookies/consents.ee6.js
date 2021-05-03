@@ -14,12 +14,8 @@ context('Cookie Consents', () => {
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' })
     })
 
-    beforeEach(function() {
-
-    })
-
-    afterEach(function() {
-
+    after(function() {
+        cy.eeConfig({ item: 'require_cookie_consent', value: 'n' })
     })
 
     it('tracker cookie not set if consent not granted', function() {
