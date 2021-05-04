@@ -88,7 +88,7 @@
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
 				<div class="field-instruct">
-					<label><span class="ico sub-arrow js-toggle-field"></span><?=$field->getLabel()?></label>
+					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
 					<?php
                     $fieldInstructions = $field->getInstructions();
                     if (!empty($fieldInstructions)) : ?>
