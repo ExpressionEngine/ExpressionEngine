@@ -12,6 +12,7 @@ context('Cookie Consents', () => {
     before(function() {
         cy.task('db:seed')
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' })
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
     })
