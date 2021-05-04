@@ -7,6 +7,7 @@
     "defaultCommandTimeout": 6000,
     "animationDistanceThreshold": 40,
     "requestTimeout": 20000,
+    "redirectionLimit": 500,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "testFiles": "z_installer/*.ee6.js",
