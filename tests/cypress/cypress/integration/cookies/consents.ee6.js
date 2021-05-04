@@ -19,6 +19,7 @@ context('Cookie Consents', () => {
 
     after(function() {
         cy.eeConfig({ item: 'require_cookie_consent', value: 'n' })
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
     })
 
     it('tracker cookie not set if consent not granted', function() {
