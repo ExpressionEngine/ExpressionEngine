@@ -69,19 +69,17 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
-      - uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+      - uses: ncipollo/release-action@v1
         with:
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
-          tag_name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
-          target_commitish: ${{ github.head_ref }}
+          tag: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          commit: ${{ github.event.pull_request.head.sha }}
+          allowUpdates: true
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
           draft: true
           body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} developer preview ${{ env.dp_ver }}
-          files: |
-            build-tools/builds/ExpressionEngine*
-            build-tools/builds/signature.txt
 
       - name: Directory Listing on Failure
         if: failure()
