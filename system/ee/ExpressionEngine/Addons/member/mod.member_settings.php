@@ -761,6 +761,14 @@ class Member_settings extends Member
 
         $this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
+        if (empty($this->member)) {
+            if (! empty($tagdata)) {
+                return ee()->TMPL->no_results();
+            } else {
+                return ee()->output->show_user_error('general', array(ee()->lang->line('must_be_logged_in')));
+            }
+        }
+
         $result_row = $this->member->getValues();
 
         if ($query->num_rows() > 0) {
