@@ -70,6 +70,8 @@ jobs:
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
       - uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
           tag_name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
