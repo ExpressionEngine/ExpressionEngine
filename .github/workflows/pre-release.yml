@@ -78,20 +78,12 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
-      - name: Create the tag
-        uses: julb/action-manage-tag@v1
-        id: make_tag
-        with:
-          name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
-          state: present
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
-
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
-          tag: ${{ steps.make_tag.outputs.name }}
+          tag: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          commit: ${{ github.head_ref }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: github.event.base_ref == 'refs/heads/6.x'
+    if: github.base_ref == '6.x'
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
