@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    #if: ${{ github.actor == 'intoeetive' }}
+    if: github.event.pull_request.draft == false
     name: TEST BUILD
     runs-on: ubuntu-latest
     steps:
@@ -60,11 +60,39 @@ jobs:
         with:
           name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
           path: build-tools/builds
+      
+      - name: Set DP version
+        run: echo "dp_ver=1" >> $GITHUB_ENV
+
+      - name: Get previous DP tag
+        id: prev_tag
+        continue-on-error: true
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: ExpressionEngine/ExpressionEngine
+          # releases-only: false  # This repository doesn't use GitHub's "release" feature.
+          prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
+
+      - name: Increase DP version
+        if: ${{ steps.prev_tag.outcome == 'success' }}
+        run: |
+          content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
+          echo "dp_ver=$content" >> $GITHUB_ENV
+
+      - name: Create the tag
+        uses: julb/action-manage-tag@v1
+        id: make_tag
+        with:
+          name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          state: present
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} (pre-release)
+          tag: ${{ steps.make_tag.outputs.name }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
