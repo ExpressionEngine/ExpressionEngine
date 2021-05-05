@@ -2,13 +2,12 @@ name: Release
 
 on:
   push:
-    branches:
-    - 6.x
     tags:
       - '*'
 
 jobs:
   build:
+    if: github.event.base_ref == 'refs/heads/6.x'
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
