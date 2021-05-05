@@ -57,6 +57,5 @@ jobs:
         if: failure()
         run: |
           ls -latr
-          ls -latr ExpressionEngine-User-Guide
           ls -latr build-tools
           ls -latr build-tools/builds

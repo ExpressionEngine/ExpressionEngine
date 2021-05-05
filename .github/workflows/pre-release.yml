@@ -69,7 +69,7 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
-      - uses: softprops/action-gh-release@v1
+      - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
@@ -86,6 +86,5 @@ jobs:
         if: failure()
         run: |
           ls -latr
-          ls -latr ExpressionEngine-User-Guide
           ls -latr build-tools
           ls -latr build-tools/builds
