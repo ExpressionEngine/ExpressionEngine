@@ -64,7 +64,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
-          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }}
+          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} (pre-release)
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
