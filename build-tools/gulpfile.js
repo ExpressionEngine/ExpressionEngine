@@ -818,8 +818,8 @@ var getBuildSignature = function(path, version) {
 				var hash = hash.substring(0, hash.indexOf(' '));
 				var cmd = `php sign.php "${hash}"`;
 
-				console.log('Hash:', hash);
-				console.log('Command:', cmd);
+				//console.log('Hash:', hash);
+				//console.log('Command:', cmd);
 
 				exec(cmd, { cwd: '.' },
 					function(err, signature, stderr) {

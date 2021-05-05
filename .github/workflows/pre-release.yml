@@ -49,7 +49,7 @@ jobs:
       - name: Run build process
         working-directory: build-tools
         env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
@@ -70,7 +70,6 @@ jobs:
         uses: oprypin/find-latest-tag@v1
         with:
           repository: ExpressionEngine/ExpressionEngine
-          # releases-only: false  # This repository doesn't use GitHub's "release" feature.
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version
@@ -91,13 +90,13 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
-          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} (pre-release)
+          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
           tag: ${{ steps.make_tag.outputs.name }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
           draft: true
-          body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }}
+          body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} developer preview ${{ env.dp_ver }}
 
       - name: Directory Listing on Failure
         if: failure()
