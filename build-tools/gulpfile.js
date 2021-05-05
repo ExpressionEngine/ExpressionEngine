@@ -79,7 +79,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 	deleteFiles(paths.app, filesToDelete)
 		.then(() => createHashManifest(paths.app))
 		.then(() => compressPackage(paths.app))
-		.then(() => getBuildSignature(paths.app, 'Pro'))
+		.then(() => getBuildSignature(paths.app, 'Core'))
 		.then(signature => {
 			if (process.argv.indexOf('--upload-circle-build') > -1) {
 				var version = properties.dp ? properties.tag : properties.version,

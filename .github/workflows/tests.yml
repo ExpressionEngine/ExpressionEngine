@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Tests (full)
 
 on:
   push:
@@ -6,7 +6,67 @@ on:
       - 6.dev
 
 jobs:
+
+    cancel-running-tests:
+      runs-on: ubuntu-latest
+      timeout-minutes: 3
+      steps:
+          - name: Cancel running tests
+            uses: styfle/cancel-workflow-action@0.9.0
+
+    php-tests:
+        if: github.event.pull_request.draft == false
+        needs: cancel-running-tests
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [7.3, 7.4, 8.0]
+                os: [ubuntu-latest]
+
+        name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
+            - name: Checkout code
+              uses: actions/checkout@v1
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
+
+            - name: Install PHP dependencies
+              working-directory: system/ee/ExpressionEngine/Tests/
+              run: |
+                composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
+                composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
+
+            - name: Run PHPLint
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+
+            - name: Configure matchers
+              uses: mheap/phpunit-matcher-action@v1
+
+            - name: Run PHPUnit Tests
+              working-directory: system/ee/ExpressionEngine/Tests/
+              run: vendor/bin/phpunit --teamcity --configuration=phpunit.xml
+
     build-for-testing:
+        needs: cancel-running-tests
 
         name: Build EE for testing
 
@@ -75,7 +135,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -169,7 +229,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Files, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -263,7 +323,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Members, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -357,7 +417,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -451,7 +511,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -545,7 +605,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -639,7 +699,7 @@ jobs:
                   - php: 7.4
                     os: ubuntu-20.04 #is using mysql8
 
-        name: Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
