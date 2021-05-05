@@ -206,14 +206,14 @@ gulp.task('_set_debug', function (cb) {
  * Change PATH_JS constant to compressed for non-DP builds
  */
 gulp.task('_dp_config', function (cb) {
-	if (properties.dp !== true) {
-		return gulp.src(paths.app + 'system/ee/legacy/libraries/Core.php')
+	//if (properties.dp !== true) {
+		/*return */gulp.src(paths.app + 'system/ee/legacy/libraries/Core.php')
 			.pipe(plugin.replace(
 				/define\('PATH_JS',(\s+)'.*?'\);/gi,
 				"define('PATH_JS',$1'" + 'compressed' + "');"
 			))
 			.pipe(gulp.dest(paths.app + 'system/ee/legacy/libraries/'));
-	}
+	//}
 	cb();
 });
 
@@ -221,10 +221,10 @@ gulp.task('_dp_config', function (cb) {
  * Add developer preview license for DP and RC builds
  */
 gulp.task('_dp_license', function (cb) {
-	if (properties.dp || properties.rc) {
+	//if (properties.dp || properties.rc) {
 		gulp.src('./license.dp.key')
 			.pipe(gulp.dest(paths.app + 'system/user/config/license.key'))
-	}
+	//}
 	cb()
 })
 
@@ -314,11 +314,11 @@ gulp.task('_delete_files', function (cb) {
 		'system/ee/ExpressionEngine/Tests/',
 	];
 
-	if (properties.dp !== true) {
+	//if (properties.dp !== true) {
 		filesToDelete.push(
 			'themes/ee/asset/javascript/src/'
 		);
-	}
+	//}
 	if (properties.dp || properties.rc) {
 		filesToDelete.push(
 			'!system/user/config/license.key'

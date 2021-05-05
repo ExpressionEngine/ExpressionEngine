@@ -41,7 +41,7 @@ jobs:
       - name: Run build process
         working-directory: build-tools
         env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
@@ -55,11 +55,11 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/EEDocs*"
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          #prerelease: true
+          prerelease: true
           body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
 
       - name: Directory Listing on Failure

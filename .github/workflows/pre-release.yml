@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 6.x
+      - 6.dev
 
 jobs:
   build:
@@ -60,6 +60,16 @@ jobs:
         with:
           name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
           path: build-tools/builds
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
+          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }}
+          allowUpdates: true
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          prerelease: true
+          draft: true
+          body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Directory Listing on Failure
         if: failure()
