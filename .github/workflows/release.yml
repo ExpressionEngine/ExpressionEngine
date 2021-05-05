@@ -17,14 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          repository: ExpressionEngine/ExpressionEngine-User-Guide
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: ExpressionEngine-User-Guide
-          ref: 6.x
-
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
 
@@ -45,8 +37,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
+        run: gulp app --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2

@@ -17,14 +17,6 @@ jobs:
         with:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          repository: ExpressionEngine/ExpressionEngine-User-Guide
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: ExpressionEngine-User-Guide
-          ref: 6.x
-
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
 
@@ -52,8 +44,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+        run: gulp app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
@@ -78,11 +69,12 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
-      - uses: ncipollo/release-action@v1
+      - uses: softprops/action-gh-release@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
           tag: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          tag_name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
           commit: ${{ github.head_ref }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
