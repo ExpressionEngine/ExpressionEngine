@@ -12,11 +12,9 @@ jobs:
       timeout-minutes: 3
       steps:
           - name: Cancel running tests
-            uses: potiuk/cancel-workflow-runs@master
+            uses: fkirc/skip-duplicate-actions@master
             with:
-              cancelMode: allDuplicates
-              notifyPRCancel: true
-              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              cancel_others: true
 
     php-tests:
         if: github.event.pull_request.draft == false
