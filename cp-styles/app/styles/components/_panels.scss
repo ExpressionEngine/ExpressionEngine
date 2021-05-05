@@ -40,6 +40,11 @@
   }
 }
 
+// If the screen lacks a main title above the panel
+.panel__no-main-title {
+  margin-top: -20px;
+}
+
 // Optional footer
 .panel-footer {
   padding: 20px 25px;

@@ -8,7 +8,7 @@
 
 $tool-corners: 3px;
 
-.toolbar, button-toolbar {
+.toolbar, .button-toolbar {
 	// background: color(button-secondary-alt-bg);
 	// border: 1px solid color(button-secondary-alt-border);
 	display: inline-block;
@@ -439,6 +439,13 @@ $tool-corners: 3px;
 				}
 		}
 
+}
+
+.app-listing__row {
+
+  .toolbar, .button-toolbar {
+    vertical-align: middle;
+  }
 }
 
 // Field pairs
