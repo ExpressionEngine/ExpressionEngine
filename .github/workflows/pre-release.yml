@@ -77,7 +77,7 @@ jobs:
         if: ${{ steps.prev_tag.outcome == 'success' }}
         run: |
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 4`
-          echo "dp_ver=$content" >> $GITHUB_ENV
+          echo "dp_ver=$content+1" >> $GITHUB_ENV
 
       - name: Create the tag
         uses: julb/action-manage-tag@v1

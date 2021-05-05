@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+    - 6.x
     tags:
       - '*'
 
@@ -59,7 +61,6 @@ jobs:
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          prerelease: true
           body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
 
       - name: Directory Listing on Failure
