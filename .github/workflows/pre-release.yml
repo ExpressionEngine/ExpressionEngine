@@ -87,7 +87,7 @@ jobs:
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
-          draft: true
+          #draft: true
           body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} developer preview ${{ env.dp_ver }}
 
       - name: Directory Listing on Failure
