@@ -427,11 +427,7 @@ class Grid_model extends CI_Model
 
         $entry_data = isset($this->_grid_data[$content_type][$field_id][$marker]) ? $this->_grid_data[$content_type][$field_id][$marker] : false;
 
-        return $this->overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id);
-    }
-
-    private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id = 0)
-    {
+        // override With Preview Data
         if (ee('LivePreview')->hasEntryData()) {
             $data = ee('LivePreview')->getEntryData();
             $entry_id = $data['entry_id'];
@@ -456,7 +452,41 @@ class Grid_model extends CI_Model
                         'row_order' => $i,
                         'fluid_field_data_id' => $fluid_field_data_id
                     ] + $row_data;
+                    // search:field parameter
+                    if (isset($options['search']) && ! empty($options['search'])) {
+                        $conditions = $this->_field_search($options['search'], $field_id, $content_type, false);
+                        if (!empty($conditions)) {
+                            $valid = false;
+                            foreach ($conditions as $sub_condition) {
+                                $valid = $this->previewDataPassesCondition($sub_condition, $override[$i]);
+                                if ($valid) {
+                                    break;
+                                }
+                            }
+                            if (!$valid) {
+                                unset($override[$i]);
+                            }
+                        }
+                    }
                     $i++;
+                }
+
+                if (isset($options['orderby']) || isset($options['sort'])) {
+                    $orderby = element('orderby', $options);
+                    $sort = element('sort', $options, 'asc');
+                    if ($orderby == 'random' || empty($orderby)) {
+                        $orderby = 'row_order';
+                    }
+                    if ($orderby == 'row_id') {
+                        $orderby = 'orig_row_id';
+                    }
+                    usort($override, function ($a, $b) use ($orderby, $sort) {
+                        if ($sort == 'asc') {
+                            return $a[$orderby] > $b[$orderby];
+                        } else {
+                            return $a[$orderby] < $b[$orderby];
+                        }
+                    });
                 }
 
                 $entry_data[$entry_id] = $override;
@@ -464,6 +494,83 @@ class Grid_model extends CI_Model
         }
 
         return $entry_data;
+    }
+
+    private function previewDataPassesCondition($condition, $data)
+    {
+        $condition = str_replace("  ", " ", trim(trim($condition, ') '), ' ('));
+        list($column, $comparison, $value) = explode(' ', trim($condition));
+        if (strpos($column, '.') !== false) {
+            list($table, $key) = explode('.', $column);
+        } else {
+            $key = $column;
+        }
+
+        $datum = $data[$key];
+        $value = trim($value, "'");
+
+        $passes = false;
+
+        switch ($comparison) {
+            case 'LIKE':
+                $value = trim(trim($value, '"'), '%');
+                $passes = stripos($datum, $value)!==false;
+
+                break;
+
+            case '=':
+                if (is_array($datum)) {
+                    $passes = in_array($value, $datum);
+                } else {
+                    $passes = ($datum == $value);
+                }
+
+                break;
+
+            case '!=':
+                if (is_array($datum)) {
+                    $passes = ! in_array($value, $datum);
+                } else {
+                    $passes = ($datum != $value);
+                }
+
+                break;
+
+            case '>':
+                $passes = ($datum > $value);
+
+                break;
+
+            case '<':
+                $passes = ($datum < $value);
+
+                break;
+
+            case '>=':
+                $passes = ($datum >= $value);
+
+                break;
+
+            case '<=':
+                $passes = ($datum <= $value);
+
+                break;
+
+            case 'IN':
+                $value = trim($value, '()');
+                $value = explode(',', str_replace("'", '', $value));
+
+                if (is_array($datum)) {
+                    $passes = array_intersect($datum, $value);
+                    $passes = ! empty($passes);
+                } else {
+                    $passes = in_array($datum, $value);
+                }
+
+                break;
+        }
+
+        return $passes;
     }
 
     /**
@@ -582,7 +689,7 @@ class Grid_model extends CI_Model
      * @param	array	Array of field names mapped to search terms
      * @param	int		Field ID to get column data for
      */
-    protected function _field_search($search_terms, $field_id, $content_type = 'channel')
+    protected function _field_search($search_terms, $field_id, $content_type = 'channel', $set_sql_query = true)
     {
         if (empty($search_terms)) {
             return;
@@ -598,6 +705,7 @@ class Grid_model extends CI_Model
             $column_ids[$col['col_name']] = $col['col_id'];
         }
 
+        $conditions = [];
         foreach ($search_terms as $col_name => $terms) {
             $terms = trim($terms);
 
@@ -612,9 +720,13 @@ class Grid_model extends CI_Model
             $field_name = 'col_id_' . $column_ids[$col_name];
 
             $search_sql = ee()->channel_model->field_search_sql($terms, $field_name);
+            $conditions[] = $search_sql;
 
-            ee()->db->where('(' . $search_sql . ')');
+            if ($set_sql_query) {
+                ee()->db->where('(' . $search_sql . ')');
+            }
         }
+        return $conditions;
     }
 
     /**
