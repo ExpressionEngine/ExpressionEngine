@@ -647,6 +647,22 @@ $lang = array(
 
     'require_captcha_desc' => 'When enabled, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
+    'use_recaptcha' => 'Use ReCaptcha v3?',
+
+    'use_recaptcha_desc' => 'When enabled, system will use ReCaptcha v3 - Please make sure to sign up for a key / account',
+
+    'recaptcha_site_key' => 'ReCaptcha site key',
+
+    'recaptcha_site_key_desc' => 'Enter the site key',
+
+    'recaptcha_site_secret' => 'ReCaptcha site secret?',
+
+    'recaptcha_site_secret_desc' => 'Enter the secret',
+
+    'recaptcha_score_threshold' => 'Threshold score',
+
+    'recaptcha_score_threshold_desc' => 'Enter the score to pass, 0.5 is the default setting',
+
     /* Security & Privacy */
     'allow_dictionary_pw' => 'Allow dictionary words in passwords?',
 

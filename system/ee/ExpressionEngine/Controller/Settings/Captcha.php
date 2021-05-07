@@ -52,6 +52,34 @@ class Captcha extends Settings
                     )
                 ),
                 array(
+                    'title' => 'use_recaptcha',
+                    'desc' => 'use_recaptcha_desc',
+                    'fields' => array(
+                        'use_recaptcha' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_site_key',
+                    'desc' => 'recaptcha_site_key_desc',
+                    'fields' => array(
+                        'recaptcha_site_key' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_site_secret',
+                    'desc' => 'recaptcha_site_secret_desc',
+                    'fields' => array(
+                        'recaptcha_site_secret' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_score_threshold',
+                    'desc' => 'recaptcha_score_threshold_desc',
+                    'fields' => array(
+                        'recaptcha_score_threshold' => array('type' => 'text', 'value' => '0.5')
+                    )
+                ),
+                array(
                     'title' => 'captcha_require_members',
                     'desc' => 'captcha_require_members_desc',
                     'fields' => array(
