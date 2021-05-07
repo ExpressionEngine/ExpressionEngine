@@ -128,7 +128,7 @@ class EE_Encrypt
      * This allows for backwards compatibility and a method to transition to the
      * new encryption algorithms.
      *
-     * For more details, see http://codeigniter.com/user_guide/installation/upgrade_200.html#encryption
+     * For more details, see https://www.codeigniter.com/userguide3/installation/upgrade_300.html#the-encrypt-library
      *
      * @access	public
      * @param	string

@@ -85,8 +85,8 @@ $config['enable_hooks'] = false;
 | This item allows you to set the filename/classname prefix when extending
 | native libraries.  For more information please see the user guide:
 |
-| http://codeigniter.com/user_guide/general/core_classes.html
-| http://codeigniter.com/user_guide/general/creating_libraries.html
+| https://docs.expressionengine.com/latest/development/legacy/libraries/index.html
+| https://docs.expressionengine.com/latest/development/legacy/libraries/creating-libraries.html
 |
 */
 $config['subclass_prefix'] = 'Installer_';

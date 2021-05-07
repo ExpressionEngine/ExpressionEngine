@@ -95,8 +95,6 @@ class LexerTest extends TestCase
      * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
      * confirms that.
      *
-     * See: https://github.com/ExpressionEngine/pull/208
-     *      https://expressionengine.com/forums/viewthread/245744/#1066847
      */
     public function testCommentsAtEndOfTag()
     {
@@ -2505,7 +2503,7 @@ class LexerTest extends TestCase
         return $return;
     }
 
-    // See: https://support.ellislab.com/bugs/detail/15654
+    // See: https://expressionengine.com/support/bugs/15654
     protected function bug15654_boolean_operator_substring()
     {
         $return = array();
