@@ -329,6 +329,7 @@ class EE_Output
 
         // --------------------------------------------------------------------
         // Include PRO stuff
+        $frontEditLoaded = false;
         if (IS_PRO && REQ == 'PAGE' && !bool_config_item('disable_dock')) {
             if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
                 /*
@@ -337,18 +338,19 @@ class EE_Output
                     - Member has access to the dock
                     - Member has access to frontedit feature
                 */
-                // should pro:Access be static maybe?
                 $proAccess = ee('pro:Access');
-                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission())
-                {
+                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission()) {
                     // enable frontedit and load required assets
                     ee('pro:FrontEdit')->ensureEntryId();
                     if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
                         $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
+                        $frontEditLoaded = true;
                     }
                     $output = ee('pro:Dock')->build($output);
                 }
-                $output = ee('pro:FrontEdit')->clearFrontEdit($output);
+                if (!$frontEditLoaded) {
+                    $output = ee('pro:FrontEdit')->clearFrontEdit($output);
+                }
             }
         }
         if (IS_PRO && REQ == 'ACTION' && ee('LivePreview')->hasEntryData()) {

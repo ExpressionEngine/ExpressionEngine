@@ -1200,6 +1200,9 @@ class EE_Template
                 $data_start = $this->in_point + $tag_length;
 
                 $tag = trim(substr($raw_tag, 1, -1));
+                if (IS_PRO) {
+                    $tag = preg_replace("/\{front_edit_link\s+(.*)\}/sU", '', $tag);
+                }
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
 
@@ -1342,6 +1345,11 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
+
+                if (IS_PRO) {
+                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{front_edit_link\s+(.*)\}/sU", '', $chunk);
+                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{front_edit_link\s+(.*)\}/sU", '', $block);
+                }
             } // END IF
 
             // Increment counter
