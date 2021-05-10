@@ -52,6 +52,31 @@ class Captcha extends Settings
                     )
                 ),
                 array(
+                    'title' => 'captcha_require_members',
+                    'desc' => 'captcha_require_members_desc',
+                    'fields' => array(
+                        'captcha_require_members' => array('type' => 'yes_no')
+                    )
+                )
+            ),
+            'url_path_settings_title' => array(
+                array(
+                    'title' => 'captcha_url',
+                    'desc' => 'captcha_url_desc',
+                    'fields' => array(
+                        'captcha_url' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'captcha_path',
+                    'desc' => 'captcha_path_desc',
+                    'fields' => array(
+                        'captcha_path' => array('type' => 'text')
+                    )
+                )
+            ),
+            'recatpcha_settings_title' => array(
+                array(
                     'title' => 'use_recaptcha',
                     'desc' => 'use_recaptcha_desc',
                     'fields' => array(
@@ -79,30 +104,8 @@ class Captcha extends Settings
                         'recaptcha_score_threshold' => array('type' => 'text', 'value' => '0.5')
                     )
                 ),
-                array(
-                    'title' => 'captcha_require_members',
-                    'desc' => 'captcha_require_members_desc',
-                    'fields' => array(
-                        'captcha_require_members' => array('type' => 'yes_no')
-                    )
-                )
-            ),
-            'url_path_settings_title' => array(
-                array(
-                    'title' => 'captcha_url',
-                    'desc' => 'captcha_url_desc',
-                    'fields' => array(
-                        'captcha_url' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'captcha_path',
-                    'desc' => 'captcha_path_desc',
-                    'fields' => array(
-                        'captcha_path' => array('type' => 'text')
-                    )
-                )
             )
+
         );
 
         ee()->form_validation->set_rules(array(

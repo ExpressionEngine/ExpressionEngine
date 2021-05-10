@@ -647,15 +647,17 @@ $lang = array(
 
     'require_captcha_desc' => 'When enabled, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
-    'use_recaptcha' => 'Use ReCaptcha v3?',
+    'recatpcha_settings_title' => 'reCAPTCHA v3 Settings',
 
-    'use_recaptcha_desc' => 'When enabled, system will use ReCaptcha v3 - Please make sure to sign up for a key / account',
+    'use_recaptcha' => 'Use reCAPTCHA  v3?',
 
-    'recaptcha_site_key' => 'ReCaptcha site key',
+    'use_recaptcha_desc' => 'When enabled, system will use reCAPTCHA  v3 - Please make sure to sign up for a key / account ( https://www.google.com/recaptcha/admin/create )',
+
+    'recaptcha_site_key' => 'reCAPTCHA  site key',
 
     'recaptcha_site_key_desc' => 'Enter the site key',
 
-    'recaptcha_site_secret' => 'ReCaptcha site secret?',
+    'recaptcha_site_secret' => 'reCAPTCHA  site secret?',
 
     'recaptcha_site_secret_desc' => 'Enter the secret',
 
