@@ -49,7 +49,7 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(23, 'Channel', 'live_preview', 0),
 	(24, 'File', 'addonIcon', 1),
   (25, 'Rte', 'pages_autocomplete', 0),
-  (25, 'Member', 'recaptcha_check', 1);
+  (26, 'Member', 'recaptcha_check', 1);
 /*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_captcha
