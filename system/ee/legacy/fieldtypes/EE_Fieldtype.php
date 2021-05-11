@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -231,6 +231,31 @@ abstract class EE_Fieldtype
         }
 
         return $data;
+    }
+
+    public function replace_edit_link($data, $params = array(), $tagdata = false)
+    {
+        return '';
+
+        if (IS_PRO) {
+            if ($ft_api->field_type != 'fluid_field') {
+                $frontedit_disabled = false;
+                if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
+                    $frontedit_disabled = true;
+                } elseif (isset($field['params']['disable'])) {
+                    $disable = explode("|", $field['params']['disable']);
+                    if (in_array('frontedit', $disable)) {
+                        $frontedit_disabled = true;
+                    }
+                }
+                if (!$frontedit_disabled) {
+                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
+                    if ($frontEditLink) {
+                        $tagdata = str_replace(LD . $tag . RD, $frontEditLink . LD . $tag . RD, $tagdata);
+                    }
+                }
+            }
+        }
     }
 
     /**
