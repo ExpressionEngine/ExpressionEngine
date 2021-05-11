@@ -110,34 +110,6 @@ gulp.task('app', ['_preflight'], function (cb) {
 });
 
 /**
- * Uploads a build to our Circle test product
- *
- * @param  {string} zip_file  Path of local zip file to upload
- * @param  {string} version   Version of build, i.e. 4.0.0, or 4.0.0-dp.1
- * @param  {string} signature Signature of build
- *
- * @return {Promise}
- */
-var uploadBuild = function(zip_file, version, signature) {
-	return new Promise((resolve, reject) => {
-		exec('curl \
-				-F "action=upload_test_build" \
-				-F "key=wBfBcDnW9X9RkFz22nTKArpZuDg7hDJQ8eghRrBV6R3WG2aajipWXx2YFFmZkYrN" \
-				-F "signature='+signature+'" \
-				-F "version='+version+'" \
-				-F "file=@'+zip_file+'" \
-				"https://update.expressionengine.com"', { cwd: paths.builds },
-			function(err, stdout, stderr) {
-				if (err) return reject(err);
-				if (stdout != 'success') return reject(stdout);
-
-				resolve();
-			}
-		);
-	})
-};
-
-/**
  * Run some preflight tasks:
  * - setup properties
  * - clone the application repo
