@@ -79,6 +79,14 @@ function (_React$Component) {
   }, {
     key: "getFieldContainer",
     value: function getFieldContainer() {
+      var fluidContainer = $(this.props.thisField).closest('.fluid__item-field'); // Is this file field inside of a fluid field? 
+      // If it is, we need to get the fluid item container, 
+      // not the container that holds the entire fluid field
+
+      if (fluidContainer.length) {
+        return fluidContainer;
+      }
+
       return $(this.props.thisField).closest('.grid-file-upload, .field-control');
     }
   }, {
