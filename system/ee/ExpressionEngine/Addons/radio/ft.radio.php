@@ -124,7 +124,7 @@ class Radio_ft extends OptionFieldtype
         foreach ($field_options as $key => $value) {
             $selected = ($key == $data);
 
-            $r .= '<label>' . form_radio($this->field_name, $value, $selected, $extra) . NBS . $key . '</label>';
+            $r .= '<label>' . form_radio($this->field_name, $key, $selected, $extra) . NBS . $value . '</label>';
         }
 
         switch ($container) {

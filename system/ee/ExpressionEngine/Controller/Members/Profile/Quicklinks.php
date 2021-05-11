@@ -93,7 +93,11 @@ class Quicklinks extends Settings
         $id = count($this->quicklinks) + 1;
 
         if (! empty($_POST)) {
-            $order = count($this->quicklinks) + 1;
+            $order = 0;
+            foreach ($this->quicklinks as $quicklink) {
+                $order = ($quicklink['order'] > $order) ? $quicklink['order'] : $order;
+            }
+            $order++;
             $this->quicklinks[$order] = array(
                 'title' => ee()->input->post('name'),
                 'link' => ee()->input->post('url'),

@@ -1066,7 +1066,7 @@ class Cp
      */
     public function switch_site($site_id, $redirect = '')
     {
-        if (! ee('Permission')->isSuperAdmin() && ee('Permission', $site_id)->can('access_cp')) {
+        if (!ee('Permission')->isSuperAdmin() && !ee('Permission', $site_id)->can('access_cp')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
