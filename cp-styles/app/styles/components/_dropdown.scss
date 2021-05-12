@@ -166,10 +166,9 @@
 		flex: 1 1;
 		display: block;
 		height: 100%;
-		padding: 0px $s-m;
+		padding: $s-xs $s-m;
+		line-height: $line-height-small;
 		color: color(text-primary);
-    height: 38px;
-    line-height: 38px;
 
 		&:hover {
 			color: color(text-primary);

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -837,6 +837,7 @@ abstract class EE_Fieldtype
 
             $data = ee('Model')->get('ChannelEntry')
                 ->filter('channel_id', $this->settings['field_pre_channel_id'])
+                ->order($field, 'asc')
                 ->all()
                 ->pluck($field);
 

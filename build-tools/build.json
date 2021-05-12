@@ -1,0 +1,12 @@
+{
+    "tag": "6.0.4",
+
+    "repositories": {
+        "app": "git@github.com:ExpressionEngine/ExpressionEngine",
+        "docs": "git@github.com:ExpressionEngine/ExpressionEngine-User-Guide"
+    },
+
+    "local_repositories": {
+
+    }
+}
