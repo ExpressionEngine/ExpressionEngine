@@ -110,10 +110,8 @@ class FluidField extends Model
         }
         else
         {
-            $rows = ee('db')
-                ->where('id', $this->field_data_id)
-                ->get('channel_data_field_' . $this->field_id)
-                ->result_array();
+            ee()->db->where('id', $this->field_data_id);
+            $rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
         }
 
         if (! empty($rows)) {
@@ -123,43 +121,19 @@ class FluidField extends Model
         return array();
     }
 
-    /**
-     * @param $entry_id
-     * @param $fluid_field_id
-     * @return array
-     */
-    public function fetchAllFieldData($entry_id, $fluid_field_id)
-    {
-        $cache_key = "FluidField/{$fluid_field_id}/{$entry_id}";
-
-        if (($data = ee()->session->cache("FluidField", $cache_key, FALSE)) === FALSE)
-        {
-            $data = $this->getModelFacade()->get('fluid_field:FluidField')
-                            ->with('ChannelField')
-                            ->filter('fluid_field_id', $fluid_field_id)
-                            ->filter('entry_id', $entry_id)
-                            ->order('order')
-                            ->all();
-
-            ee()->session->set_cache("FluidField", $cache_key, $data);
-        }
-
-        if (ee()->extensions->active_hook('fluid_field_get_all_data') === TRUE)
-        {
-            $data = ee()->extensions->call(
-                'fluid_field_get_all_data',
-                $data,
-                $fluid_field_id
-            );
-        }
-
-        return $data;
-    }
-
     public function getFieldData()
     {
         if (($field_data = ee()->session->cache(__CLASS__, $this->getSessionCacheKey(), false)) === false) {
             $field_data = $this->setFieldData($this->fetchFieldData());
+        }
+
+        if (ee()->extensions->active_hook('fluid_field_get_all_data') === TRUE)
+        {
+            $field_data = ee()->extensions->call(
+                'fluid_field_get_all_data',
+                $field_data,
+                $fluid_field_id
+            );
         }
 
         return $field_data;
