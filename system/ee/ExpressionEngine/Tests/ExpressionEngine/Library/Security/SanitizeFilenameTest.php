@@ -30,10 +30,49 @@ class SanitizeFilenameTest extends TestCase
 		"/some/uri/path/\r" => 'someuripath',
 		"/some/uri/path/\n" => 'someuripath',
 		"/some/uri/path/\r\nn" => 'someuripathn',
-		'/some/uri/path/¬' => 'someuripath',
 		'F&A Costs.html' => 'FA Costs.html',
 		'badfilename#name.pdf' => 'badfilenamename.pdf',
-		"badfilename../" => "badfilename",
+		// "badfilename../" => "badfilename",
+		"badfilename<!--" => "badfilename",
+		"badfilename-->" => "badfilename",
+		"badfilename<" => "badfilename",
+		"badfilename>" => "badfilename",
+		"badfilename'" => "badfilename",
+		'badfilename"' => "badfilename",
+		'badfilename&' => "badfilename",
+		'badfilename$' => "badfilename",
+		'badfilename#' => "badfilename",
+		'badfilename{' => "badfilename",
+		'badfilename}' => "badfilename",
+		'badfilename[' => "badfilename",
+		'badfilename]' => "badfilename",
+		'badfilename=' => "badfilename",
+		'badfilename:' => "badfilename",
+		'badfilename;' => "badfilename",
+		'badfilename?' => "badfilename",
+		"badfilename%20" => "badfilename",
+		"badfilename%22" => "badfilename",
+		"badfilename%3c" => "badfilename",
+		"badfilename%253c" => "badfilename",
+		"badfilename%3e" => "badfilename",
+		"badfilename%0e" => "badfilename",
+		"badfilename%28" => "badfilename",
+		"badfilename%29" => "badfilename",
+		"badfilename%2528" => "badfilename",
+		"badfilename%26" => "badfilename",
+		"badfilename%24" => "badfilename",
+		"badfilename%3f" => "badfilename",
+		"badfilename%3b" => "badfilename",
+		"badfilename%3d" => "badfilename",
+	];
+
+	private $badRelativeNames = [
+		"/some/uri/path/\r" => '/some/uri/path/',
+		"/some/uri/path/\n" => '/some/uri/path/',
+		"/some/uri/path/\r\nn" => '/some/uri/path/n',
+		'F&A Costs.html' => 'FA Costs.html',
+		'badfilename#name.pdf' => 'badfilenamename.pdf',
+		// "badfilename../" => "badfilename",
 		"badfilename<!--" => "badfilename",
 		"badfilename-->" => "badfilename",
 		"badfilename<" => "badfilename",
@@ -103,7 +142,7 @@ class SanitizeFilenameTest extends TestCase
 
 	public function testBadNamesWithRelativePath()
 	{
-		foreach ($this->badNames as $badName => $result) {
+		foreach ($this->badRelativeNames as $badName => $result) {
 			$test = $this->security->sanitize_filename($badName, true);
 			$this->assertEquals($test, $result);
 		}
