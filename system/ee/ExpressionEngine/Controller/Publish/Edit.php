@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -549,12 +549,24 @@ class Edit extends AbstractPublishController
 
         $entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
 
-        ee('CP/Alert')->makeInline('entries-form')
-            ->asSuccess()
-            ->withTitle(lang('success'))
-            ->addToBody(lang('entries_deleted_desc'))
-            ->addToBody($entry_names)
-            ->defer();
+        if (!empty($entry_names)) {
+            ee('CP/Alert')->makeInline('entries-form')
+                ->asSuccess()
+                ->withTitle(lang('success'))
+                ->addToBody(lang('entries_deleted_desc'))
+                ->addToBody($entry_names)
+                ->defer();
+        }
+
+        if (count($entry_names) != count($entry_ids)) {
+            $entries_not_deleted = ee('Model')->get('ChannelEntry', $entry_ids)->all()->pluck('title');
+            ee('CP/Alert')->makeInline('entries-form-error')
+                ->asWarning()
+                ->withTitle(lang('warning'))
+                ->addToBody(lang('entries_not_deleted_desc'))
+                ->addToBody($entries_not_deleted)
+                ->defer();
+        }
 
         ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
     }

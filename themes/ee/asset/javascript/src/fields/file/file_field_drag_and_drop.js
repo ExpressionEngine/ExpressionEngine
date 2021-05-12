@@ -26,7 +26,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 var FileField =
@@ -79,6 +79,14 @@ function (_React$Component) {
   }, {
     key: "getFieldContainer",
     value: function getFieldContainer() {
+      var fluidContainer = $(this.props.thisField).closest('.fluid__item-field'); // Is this file field inside of a fluid field? 
+      // If it is, we need to get the fluid item container, 
+      // not the container that holds the entire fluid field
+
+      if (fluidContainer.length) {
+        return fluidContainer;
+      }
+
       return $(this.props.thisField).closest('.grid-file-upload, .field-control');
     }
   }, {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -140,12 +140,8 @@ class ChannelField extends FieldModel
         parent::set($data);
         $old_field_type = $this->getBackup('field_type');
 
-        if (! empty($old_field_type) && $old_field_type != $this->getFieldType()) {
-            $this->setProperty('field_settings', array());
-        } else {
-            $field = $this->getField($this->getSettingsValues());
-            $this->setProperty('field_settings', $field->saveSettingsForm($data));
-        }
+        $field = $this->getField($this->getSettingsValues());
+        $this->setProperty('field_settings', $field->saveSettingsForm($data));
 
         return $this;
     }
