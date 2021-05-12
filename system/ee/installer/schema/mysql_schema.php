@@ -537,6 +537,7 @@ class EE_Schema
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			preview_url varchar(100) NULL DEFAULT NULL,
+			allow_preview char(1) NOT NULL default 'y',
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`(191)),
