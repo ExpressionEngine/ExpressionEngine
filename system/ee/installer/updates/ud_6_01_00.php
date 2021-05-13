@@ -26,7 +26,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             array(
-                'addAllowPreview',
+                '_addAllowPreview',
             )
         );
 
@@ -38,7 +38,7 @@ class Updater
     }
 
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
-    private function addAllowPreview()
+    private function _addAllowPreview()
     {
         if (!ee()->db->field_exists('allow_preview', 'channels')) {
             ee()->smartforge->add_column(
@@ -48,10 +48,12 @@ class Updater
                         'type' => 'CHAR',
                         'constraint' => 1,
                         'default' => 'y',
-                        'null' => false,
+                        'null' => FALSE,
                     )
                 )
             );
+
+            ee()->db->update('channels', ['allow_preview' => 'y']);
         }
     }
 }

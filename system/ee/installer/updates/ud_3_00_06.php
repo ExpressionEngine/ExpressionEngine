@@ -28,6 +28,7 @@ class Updater
 
         $steps = new \ProgressIterator(
             array(
+                '_addAllowPreview',
                 'addStickyChannelPreference',
                 '_comment_formatting'
             )
@@ -56,6 +57,25 @@ class Updater
                 ),
             )
         );
+    }
+
+    private function _addAllowPreview()
+    {
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => FALSE,
+                    )
+                )
+            );
+
+            ee()->db->update('channels', ['allow_preview' => 'y']);
+        }
     }
 
     private function addStickyChannelPreference()
