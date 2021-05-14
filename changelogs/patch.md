@@ -25,6 +25,7 @@ Bullet list below, e.g.
    - Fixed issue with super admins seeing unauthorized message when accessing empty entry manager
    - Changed how permission check for members with CP access is handled
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
+   - Fixed implementation of usort in system/ee/ExpressionEngine/Model/Member/Display/MemberFieldLayout.php
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
