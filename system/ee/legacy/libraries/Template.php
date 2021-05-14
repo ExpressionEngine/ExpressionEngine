@@ -1903,6 +1903,13 @@ class EE_Template
             return false;
         }
 
+        // do not use cache with Pro editing
+        if (IS_PRO && ee('pro:Access')->hasDockPermission()) {
+            $status = 'NO_CACHE';
+
+            return false;
+        }
+
         // Get refresh setting in minutes, convert to seconds
         $refresh = (! isset($args['refresh'])) ? 0 : $args['refresh'];
         $refresh *= 60;

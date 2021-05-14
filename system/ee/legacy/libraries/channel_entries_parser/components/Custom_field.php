@@ -118,6 +118,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     if (IS_PRO) {
                         if ($ft_api->field_type != 'fluid_field') {
                             $frontedit_disabled = false;
+                            $frontEditLink = '';
                             if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
                                 $frontedit_disabled = true;
                             } elseif (isset($field['params']['disable'])) {
@@ -128,10 +129,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                             }
                             if (!$frontedit_disabled) {
                                 $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
-                                if ($frontEditLink) {
-                                    $tagdata = str_replace(LD . $tag . RD, $frontEditLink . LD . $tag . RD, $tagdata);
-                                }
                             }
+                            $tagdata = str_replace(LD . $tag . ':pro_edit' . RD, $frontEditLink, $tagdata);
                         }
                     }
                 } else {

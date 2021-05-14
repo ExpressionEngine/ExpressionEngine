@@ -495,11 +495,8 @@ class Lexer extends AbstractLexer
                 }
             }
 
-            //clean up the conditional from edit link
-            //do regex search based on the marker in url
-            if ($type == 'STRING') {
-                $lexeme = preg_replace("/{\s*front_edit_link\s+.*\}/sU", '', $lexeme, 1);
-            }
+            // EE PRO: we do not need to do anything here 
+            // since the template is modified after lexemes are built
 
             switch ($type) {
                 case 'BOOL': $obj = new Boolean($lexeme);

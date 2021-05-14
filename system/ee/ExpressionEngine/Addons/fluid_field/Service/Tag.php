@@ -127,8 +127,14 @@ class Tag
             );
 
             if (! is_null($relationship_parser)) {
+                // just before we pass the data to hook, let Pro do its thing
+                if (IS_PRO) {
+                    $tagdata = ee('pro:FrontEdit')->prepareTemplate($tagdata, 'content:');
+                }
                 $tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
             }
+
+            
 
             return $field->replaceTag($tagdata);
         }
