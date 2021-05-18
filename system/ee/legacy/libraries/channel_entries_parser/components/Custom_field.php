@@ -130,7 +130,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                             if (!$frontedit_disabled) {
                                 $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
                             }
-                            $tagdata = str_replace(LD . $tag . ':pro_edit' . RD, $frontEditLink, $tagdata);
+                            $tagdata = str_replace(LD . $prefix . $tag . ':pro_edit' . RD, $frontEditLink, $tagdata);
                         }
                     }
                 } else {
