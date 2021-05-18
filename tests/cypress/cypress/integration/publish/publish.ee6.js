@@ -251,7 +251,7 @@ context('Publish Page - Create', () => {
               cy.wait(500)
               file_modal.get('files').eq(0 + skew).click()
               cy.wait(500)
-              page.get('modal').should('not.be.visible')
+              cy.get('div.modal').should('not.be.visible')
               //page.wait_until_modal_invisible
               break;
             case 'relationship':
