@@ -979,20 +979,12 @@ class Metaweblog_api
         }
 
         // load userdata from Auth object, a few fields from the members table, but most from the group
-
-        foreach (array('screen_name', 'member_id', 'email', 'url', 'role_id') as $member_item) {
-            $this->userdata[$member_item] = $auth->member($member_item);
-        }
-
-        // foreach (ee()->db->list_fields('member_groups') as $field)
-        // {
-        // 	$this->userdata[$field] = $auth->group($field);
-        // }
+        $auth->start_session();
 
         /** -------------------------------------------------
         /**  Find Assigned Channels
         /** -------------------------------------------------*/
-        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title');
 
         if (empty($assigned_channels)) {
             return false; // Nowhere to Post!!
@@ -1004,6 +996,7 @@ class Metaweblog_api
             ee()->session->userdata,
             $this->userdata
         );
+        $this->userdata = ee()->session->userdata;
 
         return true;
     }
@@ -1182,7 +1175,7 @@ class Metaweblog_api
             if (in_array($row['cat_id'], $categories) or in_array($row['cat_name'], $categories)) {
                 $good++;
 
-                $this->categories['cat_group_id_' . $row['group_id']][] = $row['cat_id'];
+                $this->categories[$row['cat_id']] = $row['cat_id'];
             }
         }
 

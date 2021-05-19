@@ -621,7 +621,11 @@ class Template extends AbstractDesignController
     private function validateTemplateRoute(TemplateModel $template)
     {
         if (! ee()->input->post('route')) {
-            $template->TemplateRoute = null;
+            // before erasing the route,
+            // make sure is was not assigned after template was opened
+            if (ee()->input->post('orig_route') !== '' ) {
+                $template->TemplateRoute = null;
+            }
 
             return false;
         }
@@ -1003,6 +1007,10 @@ class Template extends AbstractDesignController
             'title' => 'template_route_override',
             'desc' => 'template_route_override_desc',
             'fields' => array(
+                'orig_route' => array(
+                    'type' => 'hidden',
+                    'value' => $route->route
+                ),
                 'route' => array(
                     'type' => 'text',
                     'value' => $route->route
