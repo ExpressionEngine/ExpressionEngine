@@ -260,6 +260,16 @@ EE.cp.validateLicense = function() {
 		success: function(result) {
 			var validLicense = true;
 
+			// Testing result override.
+			result.messageType = 'missing_license_key';
+			result.addons = [
+				{
+					status: 'invalid',
+					slug: 'low_search',
+					name: 'Low Search'
+				}
+			];
+
 			switch (result.messageType) {
 				case 'success':
 					break;
@@ -302,7 +312,29 @@ EE.cp.validateLicense = function() {
 			}
 
 			if (!validLicense && !validAddons) {
-				// console.log('Invalid License and Invalid Add-ons');
+				// Post the response to the backend.
+				$.ajax({
+					type: 'POST',
+					url: EE.cp.accessResponseURL,
+					dataType: 'json',
+					data: {
+						appVer: EE.cp.appVer,
+						license: EE.cp.licenseKey,
+						validLicense: validLicense,
+						validAddons: validAddons,
+						addons: JSON.parse(EE.cp.installedAddons),
+						site_name: EE.site_name,
+						site_id: EE.site_id,
+						site_url: EE.site_url
+					},
+
+					success: function (result) {
+
+					},
+					error: function (data, textStatus, errorThrown) {
+						console.log('Error Data:', data, data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+					}
+				});
 			}
 		},
 
