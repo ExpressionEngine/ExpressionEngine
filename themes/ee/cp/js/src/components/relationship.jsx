@@ -142,6 +142,8 @@ class Relationship extends React.Component {
 				selected.splice(newIndex, 0, selected.splice(oldIndex, 1)[0]);
 
 				thisRef.setState({ selected: selected })
+
+				$(document).trigger('entry:preview');
 			}
 		})
 	}

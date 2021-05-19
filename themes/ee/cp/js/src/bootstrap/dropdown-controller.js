@@ -112,12 +112,14 @@ var DropdownController = (function() {
 	})
 
     function hideAllDropdowns(excludeDropdown) {
+		$('.has-open-dropdown').removeClass('has-open-dropdown')
 		$('.dropdown--open').not(excludeDropdown).removeClass('dropdown--open')
 		$('.dropdown-open').removeClass('dropdown-open')
     }
 
     function showDropdown(dropdown, button) {
 		button.classList.add('dropdown-open')
+		$(button).parent().addClass('has-open-dropdown');
 		dropdown.classList.add('dropdown--open');
 
 		if (dropdown.classList.contains('js-dropdown-auto-focus-input')) {
@@ -129,6 +131,7 @@ var DropdownController = (function() {
 
     function hideDropdown(dropdown, button) {
 		button.classList.remove('dropdown-open')
+		$(button).parent().removeClass('has-open-dropdown');
 		dropdown.classList.remove('dropdown--open');
 	}
 

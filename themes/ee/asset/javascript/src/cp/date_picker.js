@@ -183,9 +183,9 @@ EE.cp.datePicker = {
 
 					if ($(that.element).val()) {
 						var d = new Date($(that.element).data('timestamp') * 1000);
-						d.setYear(that.year);
-						d.setMonth(that.month);
-						d.setDate($(this).text());
+						var lastDayOfCurrentMonth = new Date(that.year, that.month + 1, 0).getDate()
+						var dateToSet = lastDayOfCurrentMonth <= $(this).text() ? lastDayOfCurrentMonth : $(this).text()
+						d = new Date(that.year, that.month, dateToSet)
 					} else {
 						var d = new Date(that.year, that.month, $(this).text());
 					}
