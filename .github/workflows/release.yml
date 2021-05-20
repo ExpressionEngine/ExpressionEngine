@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - '6.0.5'
 
 jobs:
   build:
-    if: github.base_ref == '6.x'
+    #if: github.base_ref == '6.x'
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
