@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -93,7 +93,11 @@ class Quicklinks extends Settings
         $id = count($this->quicklinks) + 1;
 
         if (! empty($_POST)) {
-            $order = count($this->quicklinks) + 1;
+            $order = 0;
+            foreach ($this->quicklinks as $quicklink) {
+                $order = ($quicklink['order'] > $order) ? $quicklink['order'] : $order;
+            }
+            $order++;
             $this->quicklinks[$order] = array(
                 'title' => ee()->input->post('name'),
                 'link' => ee()->input->post('url'),
