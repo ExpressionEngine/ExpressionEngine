@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -422,9 +422,13 @@ class Roles extends AbstractRolesController
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
-
+        
         foreach (array_keys($settings) as $key) {
-            $settings[$key] = ee('Request')->post($key);
+            if (ee('Request')->post($key) !== null) {
+                $settings[$key] = ee('Request')->post($key);
+            } else {
+                unset($settings[$key]);
+            }
         }
         if (!empty(ee('Request')->post('include_members_in'))) {
             foreach (ee('Request')->post('include_members_in', []) as $key) {

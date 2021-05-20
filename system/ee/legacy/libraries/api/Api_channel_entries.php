@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -285,11 +285,11 @@ class Api_channel_entries extends Api
             }
 
             if ($row['author_id'] == ee()->session->userdata('member_id')) {
-                if (! ee('Permission')->can('delete_self_entries')) {
+                if (! ee('Permission')->has('can_delete_self_entries_channel_id_' . $row['channel_id'])) {
                     return $this->_set_error('unauthorized_to_delete_self');
                 }
             } else {
-                if (! ee('Permission')->can('delete_all_entries')) {
+                if (! ee('Permission')->has('can_delete_all_entries_channel_id_' . $row['channel_id'])) {
                     return $this->_set_error('unauthorized_to_delete_others');
                 }
             }

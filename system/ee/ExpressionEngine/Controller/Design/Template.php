@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -621,7 +621,11 @@ class Template extends AbstractDesignController
     private function validateTemplateRoute(TemplateModel $template)
     {
         if (! ee()->input->post('route')) {
-            $template->TemplateRoute = null;
+            // before erasing the route,
+            // make sure is was not assigned after template was opened
+            if (ee()->input->post('orig_route') !== '' ) {
+                $template->TemplateRoute = null;
+            }
 
             return false;
         }
@@ -989,6 +993,10 @@ class Template extends AbstractDesignController
             'title' => 'template_route_override',
             'desc' => 'template_route_override_desc',
             'fields' => array(
+                'orig_route' => array(
+                    'type' => 'hidden',
+                    'value' => $route->route
+                ),
                 'route' => array(
                     'type' => 'text',
                     'value' => $route->route
