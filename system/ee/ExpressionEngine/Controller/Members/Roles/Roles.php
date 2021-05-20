@@ -420,16 +420,16 @@ class Roles extends AbstractRolesController
         $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
         $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
 
-        $upload_destination_ids = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
+        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
         $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
         if (!empty($assignedUploadDestinations)) {
             foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
                 if ($dest_site_id != $site_id) {
-                    $upload_destination_ids[] = $dest_id;
+                    $uploadDestinationIds[] = $dest_id;
                 }
             }
         }
-        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $upload_destination_ids)->all();
+        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
