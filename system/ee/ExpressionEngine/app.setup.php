@@ -601,6 +601,9 @@ $setup = [
         'ConsentRequest' => 'Model\Consent\ConsentRequest',
         'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
 
+        // ..\Cookie
+        'CookieSetting' => 'Model\Cookie\CookieSetting',
+
         // ..\Permission
         'Permission' => 'Model\Permission\Permission',
 
@@ -626,6 +629,8 @@ $setup = [
         'visitor_consents',
     ],
     'cookies.functionality' => [
+        'last_activity',
+        'last_visit',
         'anon',
         'tracker',
         'viewtype',

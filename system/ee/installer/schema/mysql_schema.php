@@ -1363,6 +1363,17 @@ class EE_Schema
 			PRIMARY KEY (`widget_id`)
 	  	)";
 
+		$Q[] = "CREATE TABLE `exp_cookie_settings` (
+			`cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`cookie_provider` varchar(50) NOT NULL,
+			`cookie_name` varchar(50) NOT NULL,
+			`cookie_lifetime` int(10) unsigned DEFAULT NULL,
+			`cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+			`cookie_title` varchar(200) NOT NULL,
+			`cookie_description` text NULL,
+			PRIMARY KEY (`cookie_id`)
+		)";
+
         $Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
@@ -1383,6 +1394,12 @@ class EE_Schema
 			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
 			KEY `consent_request_id` (`consent_request_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_consent_request_version_cookies` (
+			`consent_request_version_id` int(10) unsigned NOT NULL,
+			`cookie_id` int(10) unsigned NOT NULL,
+			KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_consents` (

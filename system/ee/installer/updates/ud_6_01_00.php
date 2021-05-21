@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'addConsentLogColumns',
+            'addCookieSettingsTable',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -38,7 +39,7 @@ class Updater
 
     private function addConsentLogColumns()
     {
-        if (!ee()->db->field_exists('ip_address', 'consent_audit_log')) {
+        if (!ee()->db->field_exists('consent_request_version_id', 'consent_audit_log')) {
             ee()->smartforge->add_column(
                 'consent_audit_log',
                 array(
@@ -62,6 +63,80 @@ class Updater
                     )
                 )
             );
+        }
+    }
+
+    private function addCookieSettingsTable()
+    {
+        if (! ee()->db->table_exists('cookie_settings')) {
+            ee()->dbforge->add_field(
+                [
+                    'cookie_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'cookie_provider' => [
+                        'type' => 'varchar',
+                        'constraint' => 50,
+                        'null' => false
+                    ],
+                    'cookie_name' => [
+                        'type' => 'varchar',
+                        'constraint' => 50,
+                        'null' => false
+                    ],
+                    'cookie_lifetime' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'default' => null,
+                    ],
+                    'cookie_enforced_lifetime' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'default' => null,
+                    ],
+                    'cookie_title' => [
+                        'type' => 'varchar',
+                        'constraint' => 200,
+                        'null' => false,
+                    ],
+                    'cookie_description' => [
+                        'type' => 'text',
+                        'null' => true
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('cookie_id', true);
+            ee()->smartforge->create_table('cookie_settings');
+        }
+
+        if (! ee()->db->table_exists('consent_request_version_cookies')) {
+            ee()->dbforge->add_field(
+                [
+                    'consent_request_version_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'null' => false,
+                        'unsigned' => true
+                    ],
+                    'cookie_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'null' => false,
+                        'unsigned' => true
+                    ]
+                ]
+            );
+
+            ee()->smartforge->create_table('consent_request_version_cookies');
+
+            ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+            ee()->smartforge->add_key('consent_request_version_cookies', ['consent_request_version_id', 'cookie_id'], 'consent_request_version_cookies');
         }
     }
 

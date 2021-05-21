@@ -10,8 +10,6 @@ return array(
     'settings_exist' => false,
     'built_in' => true,
     'cookies.functionality' => [
-        'last_activity',
-        'last_visit',
         'my_email',
         'my_location',
         'my_name',

@@ -69,8 +69,6 @@ return array(
         ),
     ),
     'cookies.functionality' => [
-        'last_activity',
-        'last_visit',
         'forum_theme',
         'forum_topics'
     ],
