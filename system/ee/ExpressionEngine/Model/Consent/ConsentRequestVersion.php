@@ -99,11 +99,13 @@ class ConsentRequestVersion extends Model
         if (strpos($this->ConsentRequest->consent_name, 'ee:cookies_') === 0) {
             $consentType = substr($this->ConsentRequest->consent_name, 11);
             $method = 'is' . ucfirst($consentType);
-            $cookieSettings = ee('Model')->get('CookieSetting')->fields('cookie_id', 'cookie_name')->all();
+            $cookieSettings = ee('Model')->get('CookieSetting')->all();
             $cookieIds = [];
             foreach ($cookieSettings as $cookie) {
                 if (ee('CookieRegistry')->{$method}($cookie->cookie_name)) {
-                    $cookieIds[] = $cookie->cookie_id;
+                    if ($cookie->cookie_provider == 'ee' || (ee('Addon')->get($cookie->cookie_provider) !== null && ! ee('Addon')->get($cookie->cookie_provider)->isInstalled())) {
+                        $cookieIds[] = $cookie->cookie_id;
+                    }
                 }
             }
             if (!empty($cookieIds)) {
