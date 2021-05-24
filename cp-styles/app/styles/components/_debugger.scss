@@ -10,6 +10,13 @@
 	padding: $main-content-padding-y $main-content-padding-x;
 	// background: color(bg-0);
 
+	line-height: 1.6;
+	font-size: 15px;
+	-webkit-font-smoothing: antialiased;
+
+	*, :after, :before {
+		box-sizing: inherit;
+	}
 
 	a {
 		color: color(link);
@@ -18,6 +25,37 @@
 
 	a:hover {
 		color: color(link-hover);
+	}
+
+	button, input, optgroup, select, textarea {
+		font-family: inherit;
+		line-height: 1.15;
+		font-size: 100%;
+		margin: 0;
+	}
+
+	button, select {
+		text-transform: none;
+	}
+
+	ol, ul {
+		padding-left: 0;
+	}
+
+	ol li, ul li {
+		list-style-position: inside;
+	}
+
+	pre {
+		overflow-x: auto;
+	}
+
+	pre code {
+		white-space: nowrap;
+	}
+
+	code {
+		font-size: 0.96em;
 	}
 }
 

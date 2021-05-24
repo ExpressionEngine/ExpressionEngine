@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -422,7 +422,7 @@ class Template_model extends CI_Model
             $data['group_id'] = $this->session->userdata('group_id');
             $data['template_group_id'] = $template_group_id;
 
-            $this->db->insert('template_member_groups', $data);
+            $this->db->insert('template_groups_roles', $data);
         }
 
         return $template_group_id;
