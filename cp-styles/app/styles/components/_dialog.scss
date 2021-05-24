@@ -81,6 +81,7 @@ body[data-theme="dark"] .dialog--danger .dialog__header {
 
 .dialog__actions {
 	padding: $sq-inset-m;
+  background-color: color(bg-0);
 
   .button + .button {
     margin-left: 7px;
