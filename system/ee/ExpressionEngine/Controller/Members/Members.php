@@ -1313,13 +1313,13 @@ class Members extends CP_Controller
         $role_ids = $role_ids->indexBy('role_id');
 
         $members = ee('Model')->get('Member', $member_ids)
-            ->fields('member_id', 'screen_name', 'email')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->all();
 
         foreach ($members as $member) {
             $notify_address = [];
 
-            foreach ($member->getAllRoles() as $role) {
+            foreach ($member->getAllRoles(false) as $role) {
                 if (isset($role_ids[$role->getId()])) {
                     $notify_address[] = $role_ids[$role->getId()];
                 }

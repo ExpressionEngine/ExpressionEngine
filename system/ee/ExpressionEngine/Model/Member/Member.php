@@ -1051,14 +1051,15 @@ class Member extends ContentModel
     
     /**
      * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
+     * @param  bool $cache Whether to cache roles during this request
      *
      * @return Collection 
      */
-    public function getAllRoles()
+    public function getAllRoles($cache = true)
     {
         $cache_key = "Member/{$this->member_id}/Roles";
 
-        $roles = $this->getFromCache($cache_key);
+        $roles = ($cache == true) ? $this->getFromCache($cache_key) : false;
 
         if ($roles === false) {
             $roles = $this->Roles->indexBy('name');
@@ -1074,7 +1075,9 @@ class Member extends ContentModel
 
             $roles = new Collection($roles);
 
-            $this->saveToCache($cache_key, $roles);
+            if ($cache == true) {
+                $this->saveToCache($cache_key, $roles);
+            }
         }
 
         return $roles;

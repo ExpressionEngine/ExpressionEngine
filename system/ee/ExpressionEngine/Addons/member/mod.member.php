@@ -2562,6 +2562,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {
@@ -2598,6 +2599,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {
