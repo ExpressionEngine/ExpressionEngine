@@ -433,7 +433,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             $choices[] = [
                 'value' => $entry->getId(),
                 'label' => $entry->title,
-                'instructions' => $entry->Channel->channel_title,
+                'instructions' => sprintf('%s (#%d)', $entry->Channel->channel_title, $entry->entry_id),
                 'channel_id' => $entry->Channel->getId()
             ];
         }
@@ -443,7 +443,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             $selected[] = [
                 'value' => $child->getId(),
                 'label' => $child->title,
-                'instructions' => $child->Channel->channel_title,
+                'instructions' => sprintf('%s (#%d)', $child->Channel->channel_title, $child->entry_id),
                 'channel_id' => $entry->Channel->getId()
             ];
         }

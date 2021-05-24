@@ -4,10 +4,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+   - Display entry_id with channel name in Relationship fields
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
