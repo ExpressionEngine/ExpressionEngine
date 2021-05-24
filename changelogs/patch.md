@@ -8,6 +8,8 @@ Bullet list below, e.g.
 
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
+
+   - Fixed a bug in the control panel menu where channel names showed for members who did not have access to them.
    - Fixed a PHP 7.3+ warning that occurred when non-members triggered email notifications.
    - Fixed a bug where the initial sorting of content when populating a custom field based on other fields was incorrect.
    - Fixed a bug that prevented the instal wizard from auto-renaming the installer folder after install.
