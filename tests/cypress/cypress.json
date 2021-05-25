@@ -9,6 +9,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
+    "redirectionLimit": 200,
     "testFiles": "**/*.ee6.js",
     "env": {
         "USER_EMAIL": "admin",
