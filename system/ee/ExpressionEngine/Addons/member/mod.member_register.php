@@ -190,6 +190,10 @@ class Member_register extends Member
             'P' => ee()->functions->get_protected_form_params(),
         );
 
+        if(!empty(ee()->TMPL->form_class)) {
+            $data['class'] = ee()->TMPL->form_class;
+        }
+
         if ($this->in_forum === true) {
             $data['hidden_fields']['board_id'] = $this->board_id;
         }
