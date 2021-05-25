@@ -43,7 +43,7 @@ class Publish extends AbstractPublishController
      * @param int $entry_id The Entry ID
      * @return array An associative array (for JSON) containing the rendered HTML
      */
-    public function field($channel_id, $entry_id)
+    public function field(int $channel_id, int $entry_id)
     {
         if (is_numeric($entry_id) && $entry_id != 0) {
             $entry = ee('Model')->get('ChannelEntry', $entry_id)
@@ -93,7 +93,7 @@ class Publish extends AbstractPublishController
      * @param int $entry_id The Entry ID
      * @return void
      */
-    public function autosave($channel_id, $entry_id)
+    public function autosave(int $channel_id, int $entry_id)
     {
         $site_id = ee()->config->item('site_id');
 
@@ -147,7 +147,7 @@ class Publish extends AbstractPublishController
      *   the form
      * @return string Rendered HTML
      */
-    public function create($channel_id = null, $autosave_id = null)
+    public function create(int $channel_id = null, int $autosave_id = null)
     {
         if (! $channel_id) {
             show_404();
@@ -363,7 +363,7 @@ class Publish extends AbstractPublishController
         $entry->set($data);
     }
 
-    public function preview($channel_id, $entry_id = null)
+    public function preview(int $channel_id, $entry_id = null)
     {
         return ee('LivePreview')->preview($channel_id, $entry_id);
     }
