@@ -8,6 +8,7 @@ node_modules/
 .vscode/
 cypress.env.json
 phpcs.ruleset.xml
+.phpunit.result.cache
 
 system/user/addons/*
 !system/user/addons/index.html

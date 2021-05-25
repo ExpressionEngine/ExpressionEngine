@@ -8,7 +8,7 @@
 | :-) and :) use the same image replacement.
 |
 | Please see user guide for more info:
-| http://codeigniter.com/user_guide/helpers/smiley_helper.html
+| https://www.codeigniter.com/userguide3/helpers/smiley_helper.html
 |
 */
 

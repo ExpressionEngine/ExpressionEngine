@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -169,7 +169,7 @@ class Relationships_ft_cp
 
         // Then all authors who are in those groups or who have author access
         $members = ee('Model')->get('Member')
-            ->fields('member_id', 'screen_name', 'username')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->filter('in_authorlist', 'y')
             ->order('screen_name', 'asc')
             ->order('username', 'asc')
@@ -189,7 +189,7 @@ class Relationships_ft_cp
         $role_to_member = array_fill_keys($role_ids, array());
 
         foreach ($members->all() as $m) {
-            foreach ($m->getAllRoles() as $role) {
+            foreach ($m->getAllRoles(false) as $role) {
                 if (isset($role_to_member[$role->role_id])) {
                     $role_to_member[$role->role_id][] = $m;
                 }

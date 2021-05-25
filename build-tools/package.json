@@ -1,0 +1,20 @@
+{
+  "name": "ExpressionEngine",
+  "repository": "https://github.com/EllisLab/ExpressionEngine-Build",
+  "private": true,
+  "devDependencies": {
+    "dateformat": "^1.0.11",
+    "del": "^1.2.0",
+    "gulp": "^3.9.1",
+    "gulp-git": "^2.4.2",
+    "gulp-hashsum": "^1.0.1",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-replace": "^0.5.3",
+    "gulp-uglify": "^1.4.0",
+    "jszip": "^2.5.0",
+    "mkdirp": "^0.5.1",
+    "phplint": "^1.5.0",
+    "q": "^1.4.1",
+    "run-sequence": "^1.1.1"
+  }
+}

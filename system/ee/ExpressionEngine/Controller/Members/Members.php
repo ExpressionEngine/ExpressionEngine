@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -93,7 +93,7 @@ class Members extends CP_Controller
             ee()->functions->redirect($this->base_url);
         }
 
-        $members = ee('Model')->get('Member')->with('PrimaryRole');
+        $members = ee('Model')->get('Member')->with('PrimaryRole', 'Roles');
 
         $filters = $this->makeAndApplyFilters($members, true);
         $vars['filters'] = $filters->render($this->base_url);
@@ -187,6 +187,7 @@ class Members extends CP_Controller
         $this->generateSidebar('pending');
 
         $members = ee('Model')->get('Member')
+            ->with('PrimaryRole', 'Roles')
             ->filter('role_id', 4);
 
         $vars = array(
@@ -415,6 +416,7 @@ class Members extends CP_Controller
         $this->generateSidebar('banned');
 
         $members = ee('Model')->get('Member')
+            ->with('PrimaryRole', 'Roles')
             ->filter('role_id', 2);
 
         $filters = $this->makeAndApplyFilters($members, false);
@@ -851,7 +853,7 @@ class Members extends CP_Controller
             'dates' => array(
                 'encode' => false
             ),
-            'primary_role' => array(
+            'roles' => array(
                 'encode' => false
             )
         );
@@ -869,13 +871,15 @@ class Members extends CP_Controller
 
     private function buildTableFromMemberQuery(Builder $members, $checkboxes = null)
     {
+        $primary_icon = ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
+        
         $table = $this->initializeTable();
 
         $sort_map = array(
             'member_id' => 'member_id',
             'username' => 'username',
             'dates' => 'join_date',
-            'primary_role' => 'PrimaryRole.name'
+            'roles' => 'role_id'
         );
 
         $members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
@@ -896,13 +900,13 @@ class Members extends CP_Controller
 
             $attrs = array();
 
-            switch ($member->PrimaryRole->name) {
-                case 'Banned':
+            switch ($member->PrimaryRole->getId()) {
+                case ee('Member')::BANNED:
                     $group = "<span class='st-banned'>" . lang('banned') . "</span>";
                     $attrs['class'] = 'banned';
 
                     break;
-                case 'Pending':
+                case ee('Member')::PENDING:
                     $group = "<span class='st-pending'>" . lang('pending') . "</span>";
                     $attrs['class'] = 'pending';
 
@@ -912,7 +916,13 @@ class Members extends CP_Controller
 
                     break;
                 default:
-                    $group = $member->PrimaryRole->name;
+                    $group = $member->PrimaryRole->name . $primary_icon;
+            }
+
+            foreach ($member->getAllRoles() as $role) {
+                if ($role->getId() != 0 && $role->getId() != $member->role_id) {
+                    $group .= ', ' . $role->name;
+                }
             }
 
             $email = "<a class=\"text-muted\" href='" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>" . $member->email . "</a>";
@@ -983,7 +993,7 @@ class Members extends CP_Controller
                 ->all()
                 ->getDictionary('role_id', 'name');
 
-            $role_filter = $filters->make('role_id', 'role_filter', $roles);
+            $role_filter = $filters->make('role_filter', 'role_filter', $roles);
             $role_filter->setPlaceholder(lang('all'));
             $role_filter->disableCustomValue();
 
@@ -1002,7 +1012,7 @@ class Members extends CP_Controller
                     $role = ee('Model')->get('Role', $value)->first();
 
                     if ($role) {
-                        $members->filter('member_id', 'IN', $role->Members->pluck('member_id'));
+                        $members->filter('member_id', 'IN', $role->getAllMembers()->pluck('member_id'));
                     }
                 } else {
                     $members->filter($key, $value);
@@ -1303,13 +1313,13 @@ class Members extends CP_Controller
         $role_ids = $role_ids->indexBy('role_id');
 
         $members = ee('Model')->get('Member', $member_ids)
-            ->fields('member_id', 'screen_name', 'email')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->all();
 
         foreach ($members as $member) {
             $notify_address = [];
 
-            foreach ($member->getAllRoles() as $role) {
+            foreach ($member->getAllRoles(false) as $role) {
                 if (isset($role_ids[$role->getId()])) {
                     $notify_address[] = $role_ids[$role->getId()];
                 }

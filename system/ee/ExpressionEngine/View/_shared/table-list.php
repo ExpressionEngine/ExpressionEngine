@@ -16,7 +16,7 @@
 					<div class="list-item__title">
 						<?=ee('Format')->make('Text', $row['label'])->convertToEntities()?>
 						<?php if (isset($row['faded'])): ?>
-							<span class="faded"><?=$row['faded']?></span>
+							<span class="faded"<?php echo isset($row['faded-href']) ? ' data-href="' . $row['faded-href'] . '"' : ''; ?>><?=$row['faded']?></span>
 						<?php endif ?>
 					</div>
 					<div class="list-item__secondary">
