@@ -3,13 +3,16 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 $(document).ready(function () {
 
 	var searching = null;
+
+	var searchingTimeout = null
+
 	if (typeof(EE.viewManager)!=='undefined') {
 		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	}
@@ -26,6 +29,9 @@ $(document).ready(function () {
 		}
 
 		window.history.pushState(null, '', data.url);
+		var searchInput = $(form_selector).find('input[name="filter_by_keyword"]')[0];
+		searchInput.focus();
+		searchInput.setSelectionRange(1000, 1000);
 	}
 
 	function searchEntries(type = 'GET', url = null) 
@@ -82,18 +88,22 @@ $(document).ready(function () {
 	});
 
 	// Typing into the search form
-	$('body').on('keyup', 'input[name="filter_by_keyword"]', _.debounce(function() {
-
+	$('body').on('keyup', 'input[name="filter_by_keyword"]', function() {
 		var val = $(this).val();
-		//only submit when search is empty or min. 3 chars
-		if (val.length == 0 || val.length >= 3) {
-			var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
-			url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
+		clearTimeout(searchingTimeout)
+		searchingTimeout = setTimeout(function() {
+			//only submit when search is empty or min. 3 chars
+			if (val.length == 0 || val.length >= 3) {
+				var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
+				url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
 
-			searchEntries('POST', url)
-		}
+				searchEntries('POST', url)
 
-	}, 150));
+				searchingTimeout = null
+			}
+
+		}, 1000)
+	});
 
 	//changind the search scope
 	$('body').on('change', 'input[name="search_in"]', function() {

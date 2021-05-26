@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -599,7 +599,7 @@ class RunnerTest extends TestCase
         );
     }
 
-    // See: https://support.ellislab.com/bugs/detail/20323
+    // See: https://expressionengine.com/support/bugs/20323
     protected function bug20323_variables_in_strings()
     {
         $vars = array(
@@ -613,7 +613,7 @@ class RunnerTest extends TestCase
         );
     }
 
-    // See: https://support.ellislab.com/bugs/detail/20767
+    // See: https://expressionengine.com/support/bugs/detail/20767
     public function testBug20767_automatic_brace_encoding()
     {
         $runner = new Runner();
