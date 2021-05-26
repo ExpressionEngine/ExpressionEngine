@@ -16,15 +16,15 @@ use ExpressionEngine\Service\Model\Association\ToOne;
 /**
  * HasOne Relation
  */
-class HasOne extends HasOneOrMany {
-
-	/**
-	 *
-	 */
-	public function createAssociation()
-	{
-		return new ToOne($this);
-	}
+class HasOne extends HasOneOrMany
+{
+    /**
+     *
+     */
+    public function createAssociation()
+    {
+        return new ToOne($this);
+    }
 }
 
 // EOF

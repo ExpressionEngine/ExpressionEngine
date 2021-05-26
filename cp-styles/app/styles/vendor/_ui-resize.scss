@@ -1,0 +1,17 @@
+.ui-resizable-handle {
+	font-size: 0.1px;
+	position: absolute;
+	z-index: 9;
+
+	.ui-resizable & {
+		display: block;
+	}
+}
+
+.ui-resizable-s {
+	bottom: -5px;
+	cursor: s-resize;
+	height: 7px;
+	left: 0;
+	width: 100%;
+}

@@ -13,23 +13,22 @@ namespace ExpressionEngine\Controller\Utilities;
 /**
  * PHP Info Controller
  */
-class Php extends Utilities {
+class Php extends Utilities
+{
+    /**
+     * PHP Info
+     *
+     * @access	public
+     * @return	void
+     */
+    public function index()
+    {
+        if (! ee('Permission')->can('access_utilities')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
 
-	/**
-	 * PHP Info
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function index()
-	{
-		if ( ! ee('Permission')->can('access_utilities'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		exit(phpinfo());
-	}
+        exit(phpinfo());
+    }
 }
 // END CLASS
 

@@ -11,14 +11,13 @@
  /**
  * Relationship Fieldtype control panel
  */
-class Relationship_mcp {
-
-	public function ajaxFilter()
-	{
-		ee()->load->library('EntryList');
-		ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
-	}
-
+class Relationship_mcp
+{
+    public function ajaxFilter()
+    {
+        ee()->load->library('EntryList');
+        ee()->output->send_ajax_response(ee()->entrylist->ajaxFilter());
+    }
 }
 
 // EOF

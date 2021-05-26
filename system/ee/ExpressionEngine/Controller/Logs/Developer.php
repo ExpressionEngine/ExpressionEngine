@@ -61,26 +61,26 @@ class Developer extends Logs
              *  ) LIKE '%exp:foo:bar%';
              */
 
-            $deprecated_function   = str_replace('%s', "', exp_developer_log.function, '", lang('deprecated_function'));
-            $deprecated_on_line    = str_replace('%s', "', file, '", lang('deprecated_on_line'));
-            $deprecated_on_line    = str_replace('%d', "', line, '", $deprecated_on_line);
+            $deprecated_function = str_replace('%s', "', exp_developer_log.function, '", lang('deprecated_function'));
+            $deprecated_on_line = str_replace('%s', "', file, '", lang('deprecated_on_line'));
+            $deprecated_on_line = str_replace('%d', "', line, '", $deprecated_on_line);
 
-            $deprecated_template    = str_replace(' %s ', " exp:', addon_module, ':', addon_method, ' ", lang('deprecated_template'));
-            $deprecated_template    = str_replace(' %s.', " ', template_group, '/', template_name, '.", $deprecated_template);
+            $deprecated_template = str_replace(' %s ', " exp:', addon_module, ':', addon_method, ' ", lang('deprecated_template'));
+            $deprecated_template = str_replace(' %s.', " ', template_group, '/', template_name, '.", $deprecated_template);
 
-            $deprecated_snippets    = str_replace('%s', "', snippets, '", lang('deprecated_snippets'));
-            $deprecated_since       = str_replace('%s', "', deprecated_since, '", lang('deprecated_since'));
+            $deprecated_snippets = str_replace('%s', "', snippets, '", lang('deprecated_snippets'));
+            $deprecated_since = str_replace('%s', "', deprecated_since, '", lang('deprecated_since'));
             $deprecated_use_instead = str_replace('%s', "', use_instead, '", lang('deprecated_use_instead'));
 
-            $localized_description  = "IFNULL(description,\n";
-            $localized_description .=   "CONCAT_WS(' ',\n";
-            $localized_description .=       "CONCAT('" . $deprecated_function . "'),\n";
-            $localized_description .=       "CONCAT('" . $deprecated_on_line . "'),\n";
-            $localized_description .=       "CONCAT('" . $deprecated_template . "'),\n";
-            $localized_description .=       "CONCAT('" . $deprecated_snippets . "'),\n";
-            $localized_description .=       "CONCAT('" . $deprecated_since . "'),\n";
-            $localized_description .=       "CONCAT('" . $deprecated_use_instead . "')\n";
-            $localized_description .=   ")\n";
+            $localized_description = "IFNULL(description,\n";
+            $localized_description .= "CONCAT_WS(' ',\n";
+            $localized_description .= "CONCAT('" . $deprecated_function . "'),\n";
+            $localized_description .= "CONCAT('" . $deprecated_on_line . "'),\n";
+            $localized_description .= "CONCAT('" . $deprecated_template . "'),\n";
+            $localized_description .= "CONCAT('" . $deprecated_snippets . "'),\n";
+            $localized_description .= "CONCAT('" . $deprecated_since . "'),\n";
+            $localized_description .= "CONCAT('" . $deprecated_use_instead . "')\n";
+            $localized_description .= ")\n";
             $localized_description .= ")\n";
 
             // @TODO refactor to eliminate this query
@@ -145,7 +145,7 @@ class Developer extends Logs
             ->offset($offset)
             ->all();
 
-        $rows   = array();
+        $rows = array();
 
         foreach ($logs as $log) {
             if (! $log->function) {
@@ -203,8 +203,8 @@ class Developer extends Logs
             }
 
             $rows[] = array(
-                'log_id'      => $log->log_id,
-                'timestamp'   => ee()->localize->human_time($log->timestamp),
+                'log_id' => $log->log_id,
+                'timestamp' => ee()->localize->human_time($log->timestamp),
                 'description' => $description
             );
         }
@@ -221,8 +221,8 @@ class Developer extends Logs
         );
 
         ee()->view->cp_breadcrumbs = array(
-			'' => lang('view_developer_log')
-		);
+            '' => lang('view_developer_log')
+        );
 
         ee()->cp->render('logs/developer', $vars);
     }

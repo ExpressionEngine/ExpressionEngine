@@ -7,6 +7,10 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 class UpgradeMap
 {
     public static $versionsSupported = [
+        '6.0.3',
+        '6.0.2',
+        '6.0.1',
+        '6.0.0',
         '6.0.0_rc_1',
         '6.0.0_b_4',
         '6.0.0_b_3',
@@ -149,11 +153,15 @@ class UpgradeMap
     ];
 
     public static $versionNaming = [
-        '6.0.0_rc_1'    => '6.0.0_rc.1',
-        '6.0.0_b_4'     => '6.0.0_b.4',
-        '6.0.0_b_3'     => '6.0.0_b.3',
-        '6.0.0_b_2'     => '6.0.0_b.2',
-        '6.0.0_b_1'     => '6.0.0_b.1',
+        '6.0.3' => '6.0.3',
+        '6.0.2' => '6.0.2',
+        '6.0.1' => '6.0.1',
+        '6.0.0' => '6.0.0',
+        '6.0.0_rc_1' => '6.0.0_rc.1',
+        '6.0.0_b_4' => '6.0.0_b.4',
+        '6.0.0_b_3' => '6.0.0_b.3',
+        '6.0.0_b_2' => '6.0.0_b.2',
+        '6.0.0_b_1' => '6.0.0_b.1',
     ];
 
     public static $versionMap = [
@@ -200,75 +208,75 @@ class UpgradeMap
     public static function version_2_11_9_map()
     {
         return [
-            'config_path'       => 'expressionengine/config',
-            'database_path'     => 'expressionengine/database',
-            'config_file'       => 'config.php',
-            'database_file'     => 'database.php',
-            'template_path'     => 'expressionengine/templates',
-            'index_file'        => 'index.php',
-            'admin_file'        => 'admin.php',
-            'index_file_old'    => 'index.php',
-            'admin_file_old'    => 'admin.php',
+            'config_path' => 'expressionengine/config',
+            'database_path' => 'expressionengine/database',
+            'config_file' => 'config.php',
+            'database_file' => 'database.php',
+            'template_path' => 'expressionengine/templates',
+            'index_file' => 'index.php',
+            'admin_file' => 'admin.php',
+            'index_file_old' => 'index.php',
+            'admin_file_old' => 'admin.php',
         ];
     }
 
     public static function version_3_0_4_map()
     {
         return [
-            'config_path'       => 'user/config',
-            'database_path'     => 'user/config',
-            'config_file'       => 'config.php',
-            'database_file'     => 'config.php',
-            'template_path'     => 'user/templates',
-            'index_file'        => 'index.php',
-            'admin_file'        => 'admin.php',
-            'index_file_old'    => 'index.php',
-            'admin_file_old'    => 'admin.php',
+            'config_path' => 'user/config',
+            'database_path' => 'user/config',
+            'config_file' => 'config.php',
+            'database_file' => 'config.php',
+            'template_path' => 'user/templates',
+            'index_file' => 'index.php',
+            'admin_file' => 'admin.php',
+            'index_file_old' => 'index.php',
+            'admin_file_old' => 'admin.php',
         ];
     }
 
     public static function version_3_5_11_map()
     {
         return [
-            'config_path'       => 'user/config',
-            'database_path'     => 'user/config',
-            'config_file'       => 'config.php',
-            'database_file'     => 'config.php',
-            'template_path'     => 'user/templates',
-            'index_file'        => 'index.php',
-            'admin_file'        => 'admin.php',
-            'index_file_old'    => 'index.php',
-            'admin_file_old'    => 'admin.php',
+            'config_path' => 'user/config',
+            'database_path' => 'user/config',
+            'config_file' => 'config.php',
+            'database_file' => 'config.php',
+            'template_path' => 'user/templates',
+            'index_file' => 'index.php',
+            'admin_file' => 'admin.php',
+            'index_file_old' => 'index.php',
+            'admin_file_old' => 'admin.php',
         ];
     }
 
     public static function version_4_0_0_map()
     {
         return [
-            'config_path'       => 'user/config',
-            'database_path'     => 'user/config',
-            'config_file'       => 'config.php',
-            'database_file'     => 'config.php',
-            'template_path'     => 'user/templates',
-            'index_file'        => 'index.php',
-            'admin_file'        => 'admin.php',
-            'index_file_old'    => 'index.php',
-            'admin_file_old'    => 'admin.php',
+            'config_path' => 'user/config',
+            'database_path' => 'user/config',
+            'config_file' => 'config.php',
+            'database_file' => 'config.php',
+            'template_path' => 'user/templates',
+            'index_file' => 'index.php',
+            'admin_file' => 'admin.php',
+            'index_file_old' => 'index.php',
+            'admin_file_old' => 'admin.php',
         ];
     }
 
     public static function version_5_0_0_map()
     {
         return [
-            'config_path'       => 'user/config',
-            'database_path'     => 'user/config',
-            'config_file'       => 'config.php',
-            'database_file'     => 'config.php',
-            'template_path'     => 'user/templates',
-            'index_file'        => 'index.php',
-            'admin_file'        => 'admin.php',
-            'index_file_old'    => 'index.php',
-            'admin_file_old'    => 'admin.php',
+            'config_path' => 'user/config',
+            'database_path' => 'user/config',
+            'config_file' => 'config.php',
+            'database_file' => 'config.php',
+            'template_path' => 'user/templates',
+            'index_file' => 'index.php',
+            'admin_file' => 'admin.php',
+            'index_file_old' => 'index.php',
+            'admin_file_old' => 'admin.php',
         ];
     }
 

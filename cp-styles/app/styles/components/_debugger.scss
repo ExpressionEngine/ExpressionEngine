@@ -1,0 +1,339 @@
+
+// Has the ee prefix since it's a standalone component
+.ee-debugger {
+	// Import the tab bar since these styles can be loaded on the front end
+	@import '_tab-bar';
+
+	@include font-normal;
+
+	// font-size: 15px;
+	padding: $main-content-padding-y $main-content-padding-x;
+	// background: color(bg-0);
+
+	line-height: 1.6;
+	font-size: 15px;
+	-webkit-font-smoothing: antialiased;
+
+	*, :after, :before {
+		box-sizing: inherit;
+	}
+
+	a {
+		color: color(link);
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: color(link-hover);
+	}
+
+	button, input, optgroup, select, textarea {
+		font-family: inherit;
+		line-height: 1.15;
+		font-size: 100%;
+		margin: 0;
+	}
+
+	button, select {
+		text-transform: none;
+	}
+
+	ol, ul {
+		padding-left: 0;
+	}
+
+	ol li, ul li {
+		list-style-position: inside;
+	}
+
+	pre {
+		overflow-x: auto;
+	}
+
+	pre code {
+		white-space: nowrap;
+	}
+
+	code {
+		font-size: 0.96em;
+	}
+}
+
+.ee-debugger__inner {
+	// max-width: 1000px;
+	margin: auto;
+	padding: $sq-inset-m;
+	background: color(bg-5);
+	border: 1px solid color(border);
+	border-radius: $border-radius-large;
+}
+
+.ee-debugger__title {
+	font-size: 1.35em;
+	font-weight: 500;
+	margin: 0 0 $s-s 0;
+	color: color(text-normal);
+}
+
+
+.ee-debugger {
+	// background-color: $black-light;
+
+	h2 {
+		border-bottom: 1px solid color(border);
+		font-size: 16px;
+		color: color(text-primary);
+		font-weight: 500;
+		margin: 20px 0;
+		padding: 0 0 10px;
+	}
+
+	.box {
+		border-color: $white;
+	}
+
+	.debug-content {
+		// background-color: $white;
+		// padding: 0 20px;
+
+		ul {
+			margin: 20px 0 20px 20px;
+
+			&.arrow-list {
+				li.debug-warn {
+					color: $gray-dark;
+					margin-left: 20px;
+
+					mark {
+						background-color: $yellow-light;
+						color: $gray-dark;
+						padding: 0 3px;
+					}
+
+					&:before {
+						color: $yellow;
+						// content: $fa-var-exclamation-triangle;
+						// font-family: $font-family-icon;
+						font-size: 12px;
+						font-weight: normal;
+						margin-right: 4px;
+					}
+				}
+			}
+		}
+
+		.query-list {
+			list-style-type: none;
+			margin: 20px 0;
+
+			li {
+				margin: 0 0 20px;
+			}
+
+			.query-time {
+				background-color: color(bg-10);
+				font-weight: bold;
+				padding: 10px;
+				-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+				-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+				box-sizing: border-box;         /* Opera/IE 8+ */
+				// .font-wk;
+
+				i {
+					display: block;
+					font-size: 12px;
+					font-style: normal;
+					font-weight: normal;
+					margin-top: 3px;
+				}
+
+				@include m-tablet-up {
+					float: left;
+					width: 100px;
+				}
+			}
+
+			.query-wrap {
+				code {
+					border: 1px solid color(border);
+					display: block;
+					margin: 0;
+					border-radius: 0;
+					border-bottom: 0;
+					padding: 10px;
+				}
+
+				pre {
+					tab-size: 4;
+					white-space: pre-wrap;
+				}
+
+				@include m-tablet-up {
+					margin-left: 100px;
+				}
+			}
+
+			.query-file {
+				background-color: color(bg-15);
+				// border: solid $gray-medium-light;
+				// border-width: 0 1px 1px;
+				overflow: hidden;
+				padding: 10px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+
+				@include m-tablet-up {
+					margin-left: 100px;
+				}
+			}
+
+			.debug-warn {
+				.query-time {
+					background-color: $yellow-light;
+					color: $gray-dark;
+
+					&:before {
+						color: $yellow;
+						// content: $fa-var-exclamation-triangle;
+						// font-family: $font-family-icon;
+						font-size: 12px;
+						font-weight: normal;
+						margin-right: 4px;
+					}
+
+					i {
+						margin-left: 18px;
+					}
+				}
+
+				.query-wrap {
+					code {
+						background-color: $yellow-light;
+						border-color: $yellow-medium;
+						color: $gray-dark;
+					}
+				}
+
+				.query-file {
+					background-color: $yellow-light;
+					border-color: $yellow-medium;
+					color: $gray-dark;
+				}
+			}
+		}
+
+		.process-list {
+			list-style-type: none;
+			margin: -20px 0 20px;
+
+			li {
+				border-bottom: 1px solid $gray-medium-light;
+				padding-bottom: 10px;
+				word-break: break-all;
+
+				mark {
+					background-color: $gray-light;
+					display: block;
+					margin-bottom: 10px;
+					padding: 10px;
+
+					@include m-tablet-up {
+						display: inline-block;
+						margin-bottom: 10px;
+						margin-right: 10px;
+					}
+				}
+
+				&:last-child {
+					border-bottom: 0;
+				}
+
+				&.debug-warn {
+					mark {
+						background-color: $yellow-light;
+						color: $gray-dark;
+
+						&:before {
+							color: $yellow;
+							// content: $fa-var-exclamation-triangle;
+							// font-family: $font-family-icon;
+							font-size: 12px;
+							font-weight: normal;
+							margin-right: 4px;
+						}
+					}
+				}
+
+				@include m-tablet-up {
+					padding: 0 10px 10px 0;
+				}
+			}
+		}
+
+		.var-list {
+			list-style-type: none;
+			margin: -20px 0 20px;
+
+			li {
+				border-bottom: 1px solid color(border);
+				font-weight: bold;
+				padding: 10px;
+				word-break: break-all;
+
+				code {
+					border: 0;
+					padding: 0;
+					background: 0;
+					font-weight: normal;
+
+					@include m-tablet-up {
+						display: inline-block;
+						text-indent: -260px;
+					}
+				}
+
+				&:last-child {
+					border-bottom: 0;
+				}
+
+				&:nth-child(2n) {
+					background-color: color(bg-10);
+				}
+
+				&.debug-warn {
+					background-color: $yellow-light;
+					color: $gray-dark;
+
+					code {
+						&:before {
+							color: $yellow;
+							// content: $fa-var-exclamation-triangle;
+							// font-family: $font-family-icon;
+							font-size: 11px;
+							font-weight: normal;
+							margin-right: 5px;
+
+							@include m-tablet-up {
+								content: '';
+								margin-right: 0;
+							}
+						}
+					}
+				}
+
+				@include m-tablet-up {
+					text-indent: 260px;
+				}
+			}
+		}
+
+		.details {
+			background-color: $gray-light;
+			display: none;
+			font-size: 14px;
+			line-height: 1.5;
+			margin-top: 10px;
+			padding: 15px 20px;
+		}
+	}
+}

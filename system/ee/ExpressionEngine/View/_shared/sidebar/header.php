@@ -1,6 +1,10 @@
-<h2 class="sidebar__section-title <?php if ($class) echo $class; ?>">
+<h2 class="sidebar__section-title <?php if ($class) {
+    echo $class;
+} ?>">
 <?php if ($url): ?>
-	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
+	<a href="<?=$url?>"<?php if ($external) {
+    echo ' rel="external"';
+}?>><?=$text?></a>
 <?php else: ?>
 	<?=$text?>
 <?php endif; ?>

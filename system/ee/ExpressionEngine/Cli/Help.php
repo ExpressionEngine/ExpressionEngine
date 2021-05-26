@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli;
 
 use ExpressionEngine\Cli\Context\OptionFactory;
@@ -258,6 +259,7 @@ class Help
             }
             $text .= "    <<ul>>$name<<reset>>{$usage}" . PHP_EOL;
         }
+
         return $text . PHP_EOL;
     }
 
@@ -274,6 +276,7 @@ class Help
         if (! $this->usage) {
             $usage = $this->getUsageArguments();
         }
+
         return (array) $usage;
     }
 
@@ -291,6 +294,7 @@ class Help
             $option = $this->option_factory->newInstance($string, $descr);
             $this->addUsageArgument($args, $option);
         }
+
         return implode(' ', $args);
     }
 
@@ -310,7 +314,7 @@ class Help
             return;
         }
 
-        $arg =  '<' . $option->alias . '>';
+        $arg = '<' . $option->alias . '>';
 
         if ($option->param == 'argument-optional') {
             $arg = "[{$arg}]";
@@ -373,6 +377,7 @@ class Help
             $option = $this->option_factory->newInstance($string, $descr);
             $text .= $this->getHelpOption($option);
         }
+
         return $text;
     }
 
@@ -435,6 +440,7 @@ class Help
         if ($multi) {
             $text .= " [$text [...]]";
         }
+
         return $text;
     }
 

@@ -1,0 +1,229 @@
+// Default Dark Theme
+// -------------------------------------------------------------------
+
+// Base Variables - Default Dark Theme
+
+// Base Colors - Default Dark Theme
+// To create a new Dark theme simply update these Base Colors. Your changes will automatically update all the other colors in the theme accordingly.
+$brand-primary: #5D63F1;
+$brand-success: #00C571;
+$brand-warning: #FFB40B;
+$brand-danger: #FA5252;
+
+// Base Grays - Default Dark Theme
+$gray-blank: #000000;
+$gray-0: #121212;
+// Note: If you want your Dark theme to take on the subtle hue of your Brand Primary color then use the $gray-0 variable below instead of the one above, and adjust the saturation and lightness as needed.
+// $gray-0: desaturate(darken($brand-primary, 54), 65);
+$gray-5: lighten($gray-0, 5);
+$gray-10: lighten($gray-0, 7);
+$gray-20: lighten($gray-0, 15);
+$gray-30: lighten($gray-0, 25);
+$gray-40: lighten($gray-0, 35);
+$gray-50: lighten($gray-0, 55);
+$gray-60: lighten($gray-0, 80);
+$gray-70: lighten($gray-0, 90);
+
+// Base Text - Default Dark Theme
+$text-primary: $gray-60;
+$text-normal: $gray-60;
+$text-secondary: $gray-40;
+$text-tertiary: $gray-50;
+$text-placeholder: $gray-30;
+$text-selection: inherit;
+$text-selection-bg: lighten($brand-primary, 3%);
+$link: $brand-primary;
+$link-hover: lighten($link, 10%);
+
+// #Details - Default Dark Theme
+$dark-theme: (
+
+  brand-primary: $brand-primary,
+  brand-success: $brand-success,
+  brand-warning: $brand-warning,
+  brand-danger: $brand-danger,
+
+  accent: $brand-primary,
+  accent-dark: lighten($brand-primary, 10%),
+  accent-medium: darken($brand-primary, 35%),
+  accent-light: darken($brand-primary, 53%),
+
+  // Grays
+  gray-blank: $gray-blank,
+  gray-0: $gray-0,
+  gray-5: $gray-5,
+  gray-10: $gray-10,
+  gray-20: $gray-20,
+  gray-30: $gray-30,
+  gray-40: $gray-40,
+  gray-50: $gray-50,
+  gray-60: $gray-60,
+  gray-70: $gray-70,
+
+  // Semantic
+	success-dark: lighten($brand-success, 15%),
+  success: $brand-success,
+  success-light: darken($brand-success, 30%),
+  warning-dark: lighten($brand-warning, 15%),
+  warning: $brand-warning,
+	warning-light: darken($brand-warning, 40%),
+  error-dark: lighten($brand-danger, 15%),
+	error: $brand-danger,
+	error-light: darken($brand-danger, 52%),
+	security-caution: $brand-warning,
+	danger: $brand-danger,
+	keyboard-focus: $brand-primary,
+	notification: #fa5252,
+
+  // Text
+  text-primary: $text-primary,
+  text-normal: $text-normal,
+  text-secondary: $text-secondary,
+  text-tertiary: $text-tertiary,
+  text-placeholder: $text-placeholder,
+  text-selection: $text-selection,
+  text-selection-bg: $text-selection-bg,
+  link: $link,
+  link-hover: $link-hover,
+
+  // Background
+	main-bg: $gray-0,
+	dashboard-bg: $gray-0, // deprecated - use main-bg
+  bg-blank: $gray-blank,
+  bg-0: $gray-0,
+	bg-5: $gray-5,
+	bg-10: $gray-10,
+	bg-15: $gray-20,
+	bg-25: $gray-30,
+
+  bg-neutral-light: #ededed,
+	bg-neutral-dark: #434249,
+
+  // Dropdowns
+  bg-dropdown: $gray-5,
+  bg-dropdown-hover: $gray-0,
+  bg-dropdown-selected: darken($brand-primary, 35%),
+  dropdown-border: $gray-20,
+
+  // Borders
+	border: $gray-10,
+	border-dark: $gray-20,
+
+  // Buttons
+  button-default-color: $text-primary,
+  button-default-bg: $gray-0,
+  button-default-border: $gray-20,
+  button-default-hover-bg: $gray-5,
+  button-default-hover-border: $gray-20,
+
+  button-primary-color: $text-normal,
+	button-primary-bg: $brand-primary,
+  button-primary-border: $brand-primary,
+	button-primary-hover-bg: lighten($brand-primary, 5%),
+  button-primary-hover-border: lighten($brand-primary, 5%),
+
+  button-secondary-color: $text-normal,
+	button-secondary-bg: desaturate(darken($brand-primary, 30), 30),
+  button-secondary-border: desaturate(darken($brand-primary, 30), 30),
+	button-secondary-hover-bg: desaturate(darken($brand-primary, 20), 30),
+  button-secondary-hover-border: desaturate(darken($brand-primary, 20), 30),
+
+  // deprecated - replaced by button--default
+  button-secondary-alt-color: $text-primary,
+	button-secondary-alt-bg: $gray-blank,
+	button-secondary-alt-border: $gray-20,
+	button-secondary-alt-hover-bg: $gray-0,
+  button-secondary-alt-hover-border: $gray-20,
+	// button-secondary-alt-shadow: 0 1px 0 #eee,
+
+  button-success-color: $text-normal,
+  button-success-bg: $brand-success,
+  button-success-border: $brand-success,
+  button-success-hover-bg: lighten($brand-success, 5%),
+  button-success-hover-border: lighten($brand-success, 5%),
+
+  // deprecated - replaced by button--success
+  button-action-color: $gray-0,
+  button-action-bg: $brand-success,
+  button-action-border: $brand-success,
+  button-action-hover-bg: lighten($brand-success, 5%),
+  button-action-hover-border: lighten($brand-success, 5%),
+
+	button-danger-color: $text-normal,
+	button-danger-bg: $brand-danger,
+  button-danger-border: $brand-danger,
+	button-danger-hover-bg: lighten($brand-danger, 5%),
+  button-danger-hover-border: lighten($brand-danger, 5%),
+
+  // Inputs
+  input-color: $text-primary,
+  input-bg: $gray-0,
+	input-placeholder: $text-placeholder,
+	input-border: $gray-20,
+	input-border-accent: $gray-5,
+	input-focus-border: $brand-primary,
+	input-focus-shadow: (0 3px 6px -3px rgba($brand-primary, 0.14), 0 5px 10px -3px rgba($brand-primary, 0.05)),
+
+	input-toggle-bg: $gray-20,
+	input-toggle-fg: #ffffff,
+	input-toggle-shadow: rgba(120, 119, 140, 0.077),
+
+	input-toggle-active-bg: $brand-primary,
+	input-toggle-active-fg: #ffffff,
+
+  input-disabled-bg: $gray-10,
+
+  input-jump-bg: $gray-5,
+
+  // Sidebar
+  sidebar-text: $gray-50,
+  sidebar-text-primary: #ffffff,
+  sidebar-text-faded: darken($gray-50, 10%),
+  sidebar-text-active: #ffffff,
+  sidebar-icon-active: #ffffff,
+  sidebar-bg-active: $gray-0,
+  sidebar-bg: $gray-5,
+  sidebar-title-bg: lighten($gray-5, 4%),
+  sidebar-title-bg-hover: lighten($gray-5, 6%),
+  sidebar-version-bg: lighten($gray-5, 4%),
+  sidebar-version-bg-hover: lighten($gray-5, 6%),
+
+  secondary-sidebar-item-bg: $gray-5,
+  secondary-sidebar-item-icon: $text-secondary,
+  secondary-sidebar-item-bg-active: $gray-5,
+
+  // Tables
+  table-bg: $gray-5,
+  table-border: $gray-20,
+
+  // Panels
+  panel-bg: $gray-5,
+  panel-border: $gray-20,
+
+  // Shadows
+  shadow-modal: rgba($gray-blank, 0.5),
+  shadow-dropdown: rgba($gray-blank, 0.5),
+
+  // Other Colors
+  mark-bg: darken($brand-warning, 35%),
+  form-section-title-border: $gray-20,
+  key-border: $gray-20,
+  list-item-border: $gray-20,
+  tab-bar-border: $gray-20,
+  code-border: $gray-20,
+  add-on-card-border: $gray-20,
+  lots-of-checkboxes-border: $gray-20,
+  layout-item-border: $gray-20,
+  fluid-item-border: $gray-20,
+
+  // EE Update Indicators
+  ee-update: $brand-primary,
+  ee-update-bg: darken($brand-primary, 40%),
+  ee-update-dev: $brand-warning,
+  ee-update-dev-bg: darken($brand-warning, 40%),
+  ee-update-vital: $brand-danger,
+  ee-update-vital-bg: darken($brand-danger, 45%),
+
+  // LEGACY
+  modal-overlay-bg: $gray-0,
+);

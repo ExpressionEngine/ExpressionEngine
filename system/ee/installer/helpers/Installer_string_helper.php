@@ -11,6 +11,6 @@
 /**
  * ExpressionEngine String Helper
  */
-include_once(EE_APPPATH.'helpers/string_helper.php');
+include_once(EE_APPPATH . 'helpers/string_helper.php');
 
 // EOF

@@ -11,36 +11,34 @@
 /**
  * HTML Buttons
  */
-class EE_Html_buttons {
+class EE_Html_buttons
+{
+    public $allow_img = false;
+    public $buttons = array();
 
-	var $allow_img	= FALSE;
-	var $buttons 	= array();
+    /**
+     * Resets the class vars.
+     */
+    public function reset()
+    {
+        $this->buttons = array();
+        $this->allow_img = false;
+    }
 
-	/**
-	 * Resets the class vars.
-	 */
-	public function reset()
-	{
-		$this->buttons = array();
-		$this->allow_img = FALSE;
-	}
+    public function create_buttons()
+    {
+        $this->buttons[] = array("<b>",	"[strong]",	"[/strong]", "Bold Text");
+        $this->buttons[] = array("<i>",	"[em]", 	"[/em]", "Italic Text");
+        $this->buttons[] = array("<u>",	"[u]", 	"[/u]", "Underline Text");
 
-	public function create_buttons()
-	{
-		$this->buttons[] = array("<b>",	"[strong]",	"[/strong]", "Bold Text");
-		$this->buttons[] = array("<i>",	"[em]", 	"[/em]", "Italic Text");
-		$this->buttons[] = array("<u>",	"[u]", 	"[/u]", "Underline Text");
+        if ($this->allow_img == true) {
+            $this->buttons[] = array("<img>", "[img]", "[/img]", "Image Link");
+        }
 
-		if ($this->allow_img == TRUE)
-		{
-			$this->buttons[] = array("<img>", "[img]", "[/img]", "Image Link");
-		}
+        $this->buttons[] = array("quote", "[quote]", "[/quote]", "Quoted Text");
+        $this->buttons[] = array("code",  "[code]",  "[/code]", "Code Example");
 
-		$this->buttons[] = array("quote", "[quote]", "[/quote]", "Quoted Text");
-		$this->buttons[] = array("code",  "[code]",  "[/code]", "Code Example");
-
-		ob_start();
-?>
+        ob_start(); ?>
 
 <script type="text/javascript">
 //<![CDATA[
@@ -58,11 +56,9 @@ var enter_text	= "Enter the text you want to format";
 
 <?php
 
-	for ($i = 0; $i < count($this->buttons); $i++)
-	{
-		echo "var button_{$i} = 0;\n";
-	}
-?>
+    for ($i = 0; $i < count($this->buttons); $i++) {
+        echo "var button_{$i} = 0;\n";
+    } ?>
 
 
 tagarray  = new Array();
@@ -473,16 +469,11 @@ function closeall()
 
 $i = 0;
 
-foreach ($this->buttons as $val)
-{
-	$style = ($i == 0) ? 'htmlButtonOuterL' : 'htmlButtonOuter';
+        foreach ($this->buttons as $val) {
+            $style = ($i == 0) ? 'htmlButtonOuterL' : 'htmlButtonOuter'; ?><td class='<?php echo $style; ?>'><div class='htmlButtonInner'><div class='htmlButtonOff' id='button_<?php echo $i; ?>'><a href='javascript:nullo();' title="<?php echo $val['3']; ?>" name='button_<?php echo $i; ?>' onclick='taginsert(this, "<?php echo htmlspecialchars($val['1']); ?>", "<?php echo htmlspecialchars($val['2']); ?>")' ><?php echo htmlspecialchars($val['0']); ?></a></div></div></td><?php echo "\n";
 
-	?><td class='<?php echo $style; ?>'><div class='htmlButtonInner'><div class='htmlButtonOff' id='button_<?php echo $i; ?>'><a href='javascript:nullo();' title="<?php echo $val['3']; ?>" name='button_<?php echo $i; ?>' onclick='taginsert(this, "<?php echo htmlspecialchars($val['1']); ?>", "<?php echo htmlspecialchars($val['2']); ?>")' ><?php echo htmlspecialchars($val['0']); ?></a></div></div></td><?php echo "\n";
-
-	$i++;
-}
-
-?>
+            $i++;
+        } ?>
 <td class='htmlButtonOuter'><div class='htmlButtonInner'><div class='htmlButtonOff'><a href='javascript:promptTag("email");' >&nbsp;@&nbsp;</a></div></div></td>
 <td class='htmlButtonOuter'><div class='htmlButtonInner'><div class='htmlButtonOff'><a href='javascript:promptTag("link");' >&lt;a&gt;</a></div></div></td>
 
@@ -493,28 +484,24 @@ foreach ($this->buttons as $val)
 /*	- remove_close_all_button => Remove the Close All button from the Publish/Edit page (y/n)
 /*	  Useful because most browsers no longer need it and Admins might want it gone
 /* -------------------------------------------*/
-if (ee()->config->item('remove_close_all_button') !== 'y')
-{
-?>
+if (ee()->config->item('remove_close_all_button') !== 'y') {
+    ?>
 
 <td class='htmlButtonOuter'><div class='htmlButtonInner'><div class='htmlButtonOff'><a href='javascript:closeall();' >{lang:close_tags}</a></div></div></td>
 
 <?php
-}
-?>
+} ?>
 
 </tr>
 </table>
 
 <?php
-	$out = ob_get_contents();
+    $out = ob_get_contents();
 
-	ob_end_clean();
+        ob_end_clean();
 
-	return $out;
-}
-
-
+        return $out;
+    }
 }
 // END CLASS
 

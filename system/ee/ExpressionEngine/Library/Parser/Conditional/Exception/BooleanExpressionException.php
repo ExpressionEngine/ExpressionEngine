@@ -15,4 +15,6 @@ use Exception;
 /**
  * Boolean Expression Exception
  */
-class BooleanExpressionException extends Exception {}
+class BooleanExpressionException extends Exception
+{
+}

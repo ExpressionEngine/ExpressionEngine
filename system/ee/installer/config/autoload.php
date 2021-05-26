@@ -40,7 +40,6 @@
 
 $autoload['libraries'] = array('addons');
 
-
 /*
 | -------------------------------------------------------------------
 |  Auto-load Helper Files
@@ -52,7 +51,6 @@ $autoload['libraries'] = array('addons');
 
 $autoload['helper'] = array();
 
-
 /*
 | -------------------------------------------------------------------
 |  Auto-load Plugins
@@ -63,7 +61,6 @@ $autoload['helper'] = array();
 */
 
 $autoload['plugin'] = array();
-
 
 /*
 | -------------------------------------------------------------------
@@ -79,7 +76,6 @@ $autoload['plugin'] = array();
 */
 
 $autoload['config'] = array();
-
 
 /*
 | -------------------------------------------------------------------

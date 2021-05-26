@@ -19,9 +19,10 @@ use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
  *
  * Copies over necessary legacy files when upgrading between major versions
  */
-class LegacyFiles {
-
+class LegacyFiles
+{
     protected $from_version;
+    protected $backup_path;
     protected $logger;
 
     /**
@@ -31,9 +32,10 @@ class LegacyFiles {
      * @param	Logger		$logger	Logger instance
      * @return  void
      */
-    public function __construct($from_version, Logger $logger)
+    public function __construct($from_version, $backup_path, Logger $logger)
     {
         $this->from_version = $from_version;
+        $this->backup_path = $backup_path;
         $this->logger = $logger;
     }
 
@@ -44,7 +46,9 @@ class LegacyFiles {
     public function addFiles()
     {
         $version = explode('.', $this->from_version, 2);
-        if ($version[0] < 6) {
+        $filesystem = new Filesystem();
+
+        if ($filesystem->exists($this->backup_path . 'system_ee/EllisLab')) {
             $this->copyFiles(
                 SYSPATH . 'ee/installer/files/ee5/',
                 SYSPATH . 'ee/'
@@ -59,20 +63,15 @@ class LegacyFiles {
      * @param [type] $destination
      * @return void
      */
-    private function copyFiles($source, $destination) 
+    private function copyFiles($source, $destination)
     {
         $filesystem = new Filesystem();
-        if ( ! $filesystem->exists($destination))
-        {
-            $filesystem->mkDir($destination, FALSE);
-        }
-        elseif ( ! $filesystem->isDir($destination))
-        {
-            throw new UpdaterException('Destination path not a directory: '.$destination, 18);
-        }
-        elseif ( ! $filesystem->isWritable($destination))
-        {
-            throw new UpdaterException('Destination path not writable: '.$destination, 21);
+        if (! $filesystem->exists($destination)) {
+            $filesystem->mkDir($destination, false);
+        } elseif (! $filesystem->isDir($destination)) {
+            throw new UpdaterException('Destination path not a directory: ' . $destination, 18);
+        } elseif (! $filesystem->isWritable($destination)) {
+            throw new UpdaterException('Destination path not writable: ' . $destination, 21);
         }
 
         $contents = $filesystem->getDirectoryContents($source);
@@ -89,10 +88,9 @@ class LegacyFiles {
                 throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
             }
 
-            $this->logger->log('Moving '.$path.' to '.$new_path);
+            $this->logger->log('Moving ' . $path . ' to ' . $new_path);
 
             $filesystem->copy($path, $new_path);
         }
     }
-
 }

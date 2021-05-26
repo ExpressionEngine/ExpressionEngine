@@ -13,12 +13,12 @@ namespace ExpressionEngine\Library\Parser;
 /**
  * Core Parser Factory
  */
-class ParserFactory {
-
-	public static function createConditionalRunner()
-	{
-		return new Conditional\Runner();
-	}
+class ParserFactory
+{
+    public static function createConditionalRunner()
+    {
+        return new Conditional\Runner();
+    }
 }
 
 // EOF

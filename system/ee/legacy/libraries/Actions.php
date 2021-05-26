@@ -36,183 +36,148 @@
  * When a new module is installed, ExpressionEngine will update the action table.  When a module
  * is de-installed, the actions are deleted.
  */
-class EE_Actions {
+class EE_Actions
+{
+    /**
+     * Constructor
+     *
+     * Loads the class and calls the method associated with
+     * a particular action request
+     *
+     */
+    public function __construct($can_view_system = false, $callback = null)
+    {
+        // Define special actions
+        // These are actions that are triggered manually
+        // rather than doing a lookup in the actions table.
+        $specials = array(
+            'jquery' => array('Jquery', 'output_javascript'),
+            'comment_editor' => array('Comment', 'comment_editor')
+        );
 
-	/**
-	 * Constructor
-	 *
-	 * Loads the class and calls the method associated with
-	 * a particular action request
-	 *
-	 */
+        // Make sure the ACT variable is set
+        if (! $action_id = ee()->input->get_post('ACT')) {
+            return false;
+        }
 
-	public function __construct($can_view_system = FALSE, $callback = NULL)
-	{
-		// Define special actions
-		// These are actions that are triggered manually
-		// rather than doing a lookup in the actions table.
-		$specials = array(
-			'jquery'			=> array('Jquery', 'output_javascript'),
-			'comment_editor'	=> array('Comment', 'comment_editor')
-		 );
+        // Fetch the class and method name (checks to make sure module is installed too)
+        // If the ID is numeric we need to do an SQL lookup
+        if (is_numeric($action_id)) {
+            ee()->db->select('class, method, csrf_exempt');
+            ee()->db->where('action_id', $action_id);
+            $query = ee()->db->get('actions');
 
-		// Make sure the ACT variable is set
-		if ( ! $action_id = ee()->input->get_post('ACT'))
-		{
-			return FALSE;
-		}
+            if ($query->num_rows() == 0) {
+                if (ee()->config->item('debug') >= 1) {
+                    ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+                } else {
+                    return false;
+                }
+            }
 
-		// Fetch the class and method name (checks to make sure module is installed too)
-		// If the ID is numeric we need to do an SQL lookup
-		if (is_numeric($action_id))
-		{
-			ee()->db->select('class, method, csrf_exempt');
-			ee()->db->where('action_id', $action_id);
-			$query = ee()->db->get('actions');
+            $class = ucfirst($query->row('class'));
+            $method = strtolower($query->row('method'));
+            $csrf_exempt = (bool) $query->row('csrf_exempt');
+        } else {
+            // If the ID is not numeric we'll invoke the class/method manually
+            if (! isset($specials[$action_id])) {
+                return false;
+            }
 
-			if ($query->num_rows() == 0)
-			{
-				if (ee()->config->item('debug') >= 1)
-				{
-					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-				}
-				else
-				{
-					return FALSE;
-				}
-			}
+            $class = $specials[$action_id]['0'];
+            $method = $specials[$action_id]['1'];
+            $csrf_exempt = false;
 
-			$class  = ucfirst($query->row('class'));
-			$method = strtolower($query->row('method'));
-			$csrf_exempt = (bool) $query->row('csrf_exempt');
-		}
-		else
-		{
-			// If the ID is not numeric we'll invoke the class/method manually
-			if ( ! isset($specials[$action_id]))
-			{
-				return FALSE;
-			}
+            // Double check that the module is actually installed
+            ee()->db->select('module_version');
+            ee()->db->where('module_name', ucfirst($class));
+            $query = ee()->db->get('modules');
 
-			$class  = $specials[$action_id]['0'];
-			$method = $specials[$action_id]['1'];
-			$csrf_exempt = FALSE;
+            if ($query->num_rows() == 0) {
+                if (ee()->config->item('debug') >= 1) {
+                    ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+                } else {
+                    return false;
+                }
+            }
+        }
 
-			// Double check that the module is actually installed
-			ee()->db->select('module_version');
-			ee()->db->where('module_name', ucfirst($class));
-			$query = ee()->db->get('modules');
+        // What type of module is being requested?
+        if (substr($class, -4) == '_mcp') {
+            $type = 'mcp';
 
-			if ($query->num_rows() == 0)
-			{
-				if (ee()->config->item('debug') >= 1)
-				{
-					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-				}
-				else
-				{
-					return FALSE;
-				}
-			}
-		}
+            $base_class = strtolower(substr($class, 0, -4));
+        } else {
+            if ($can_view_system === false) {
+                ee()->output->system_off_msg();
+                exit;
+            }
 
-		// What type of module is being requested?
-		if (substr($class, -4) == '_mcp')
-		{
-			$type = 'mcp';
+            $type = 'mod';
 
-			$base_class = strtolower(substr($class, 0, -4));
-		}
-		else
-		{
-			if ($can_view_system === FALSE)
-			{
-				ee()->output->system_off_msg();
-				exit;
-			}
+            $base_class = strtolower($class);
+        }
 
-			$type = 'mod';
+        // Assign the path
+        $package_path = PATH_ADDONS . $base_class . '/';
 
-			$base_class = strtolower($class);
-		}
+        // Third parties have a different package and view path
+        if (! in_array($base_class, ee()->core->native_modules)) {
+            $package_path = PATH_THIRD . $base_class . '/';
+        }
 
-		// Assign the path
-		$package_path = PATH_ADDONS.$base_class.'/';
+        ee()->load->add_package_path($package_path, false);
 
-		// Third parties have a different package and view path
-		if ( ! in_array($base_class, ee()->core->native_modules))
-		{
-			$package_path = PATH_THIRD.$base_class.'/';
-		}
+        $addon = ee('Addon')->get($base_class);
 
-		ee()->load->add_package_path($package_path, FALSE);
+        if (! $addon) {
+            if (ee()->config->item('debug') >= 1) {
+                ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+            } else {
+                return false;
+            }
+        }
 
-		$addon = ee('Addon')->get($base_class);
+        if ($type == 'mcp') {
+            $fqcn = $addon->getControlPanelClass();
+        } else {
+            $fqcn = $addon->getModuleClass();
+        }
 
-		if ( ! $addon)
-		{
-			if (ee()->config->item('debug') >= 1)
-			{
-				ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
+        // Instantiate the class/method
+        $ACT = new $fqcn(0);
 
-		if ($type == 'mcp')
-		{
-			$fqcn = $addon->getControlPanelClass();
-		}
-		else
-		{
-			$fqcn = $addon->getModuleClass();
-		}
+        $flags = 0;
 
-		// Instantiate the class/method
-		$ACT = new $fqcn(0);
+        if (! AJAX_REQUEST || $ACT instanceof Strict_XID) {
+            $flags |= EE_Security::CSRF_STRICT;
+        }
 
-		$flags = 0;
+        if ($csrf_exempt) {
+            $flags |= EE_Security::CSRF_EXEMPT;
+        }
 
-		if ( ! AJAX_REQUEST || $ACT instanceOf Strict_XID)
-		{
-			$flags |= EE_Security::CSRF_STRICT;
-		}
+        ee()->core->process_secure_forms($flags);
 
-		if ($csrf_exempt)
-		{
-			$flags |= EE_Security::CSRF_EXEMPT;
-		}
+        if ($method != '') {
+            if (! is_callable(array($ACT, $method))) {
+                if (ee()->config->item('debug') >= 1) {
+                    ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+                } else {
+                    return false;
+                }
+            }
 
-		ee()->core->process_secure_forms($flags);
+            if (is_callable($callback)) {
+                call_user_func($callback, $class, $method);
+            }
 
-		if ($method != '')
-		{
-			if ( ! is_callable(array($ACT, $method)))
-			{
-				if (ee()->config->item('debug') >= 1)
-				{
-					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-				}
-				else
-				{
-					return FALSE;
-				}
-			}
+            $ACT->$method();
+        }
 
-			if (is_callable($callback))
-			{
-				call_user_func($callback, $class, $method);
-			}
-
-			$ACT->$method();
-		}
-
-		// remove the temporarily added path for local libraries, models, etc.
-		ee()->load->remove_package_path($package_path);
-	}
-
+        // remove the temporarily added path for local libraries, models, etc.
+        ee()->load->remove_package_path($package_path);
+    }
 }
 // END CLASS
 

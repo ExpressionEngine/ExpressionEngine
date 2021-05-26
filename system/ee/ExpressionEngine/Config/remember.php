@@ -14,7 +14,7 @@
 
  // default expiration of two weeks, in seconds
 return array(
-    'remember_me_ttl' => 60*60*24*14
+    'remember_me_ttl' => 60 * 60 * 24 * 14
 );
 
 // EOF

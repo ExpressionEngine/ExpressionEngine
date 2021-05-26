@@ -22,23 +22,17 @@
 			<div class="tab-bar__tabs">
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 				<?php
-				$icon = '';
-				if (strpos($tab->id, 'custom_') !== FALSE)
-				{
-					$icon = '<i class="tab-remove">';
-				}
-				else
-				{
-					if ($tab->isVisible())
-					{
-						$icon = '<i class="tab-on">';
-					}
-					else
-					{
-						$icon = '<i class="tab-off">';
-					}
-				}
-				?>
+                $icon = '';
+                if (strpos($tab->id, 'custom_') !== false) {
+                    $icon = '<i class="tab-remove">';
+                } else {
+                    if ($tab->isVisible()) {
+                        $icon = '<i class="tab-on">';
+                    } else {
+                        $icon = '<i class="tab-off">';
+                    }
+                }
+                ?>
 				<button type="button" class="tab-bar__tab js-tab-button <?php if ($index == 0): ?>active<?php endif; ?>" rel="t-<?=$index?>"><?=lang($tab->title)?> <?php if ($tab->title != 'publish'): ?><?=$icon?></i><?php endif; ?></button>
 			<?php endforeach; ?>
 			</div>
@@ -51,7 +45,7 @@
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 				<div class="layout-item-wrapper">
 			<?php $fields = $tab->getFields();
-			foreach ($fields as $field): ?>
+            foreach ($fields as $field): ?>
 						<div class="js-layout-item">
 							<div class="layout-item">
 								<div class="layout-item__handle ui-sortable-handle"></div>
@@ -61,7 +55,7 @@
 										<?php if ($field->isRequired()): ?>
 										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
 										<?php else: ?>
-										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if ( ! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
+										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if (! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
 										<?php endif; ?>
 										<label class="field-option-collapse"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isCollapsed()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
 									</div>

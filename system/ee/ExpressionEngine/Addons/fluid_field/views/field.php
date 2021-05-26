@@ -4,7 +4,7 @@
 
       <div class="fluid__item-tools fluid__item-tools--item-open">
 
-    		<?php if ( empty($is_bulk_edit)): ?>
+    		<?php if (empty($is_bulk_edit)): ?>
     		<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>
     		<div class="dropdown">
     			<a href class="dropdown__link js-toggle-fluid-item"><?=lang('collapse')?></a>
@@ -17,11 +17,11 @@
     			<button type="button" class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></button>
     		<?php endif; ?>
 
-    		<?php if ( empty($is_bulk_edit) AND isset($fields)): ?>
+    		<?php if (empty($is_bulk_edit) and isset($fields)): ?>
     			<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></button>
     			<div class="dropdown">
     			<?php foreach ($fields as $field_item): ?>
-    				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>">
+    				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" width="12" height="12" /> 
     					<?=$field_item->getItem('field_label')?>
     				</a>
     			<?php endforeach; ?>
@@ -38,18 +38,19 @@
 			</div>
 		</div>
 
-		<div class="fluid__item-field no-drag <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid') echo 'fieldset-faux'; ?>">
+		<div class="fluid__item-field no-drag <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid') {
+    echo 'fieldset-faux';
+} ?>">
 			<?php
-				$field_name = $field->getName();
-				$form = $field->getForm();
+                $field_name = $field->getName();
+                $form = $field->getForm();
 
-				if (strpos($form, 'name="' . $field_name . '"') === FALSE)
-				{
-					echo form_hidden($field_name, 1);
-				}
+                if (strpos($form, 'name="' . $field_name . '"') === false) {
+                    echo form_hidden($field_name, 1);
+                }
 
-				echo $form;
-			?>
+                echo $form;
+            ?>
 			<?=isset($errors) ? $errors->renderError($field_name) : ''?>
 		</div>
 	</div>

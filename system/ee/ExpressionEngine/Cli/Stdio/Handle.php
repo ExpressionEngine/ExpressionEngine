@@ -6,6 +6,7 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
+
 namespace ExpressionEngine\Cli\Stdio;
 
 /**
@@ -119,6 +120,7 @@ class Handle
         // forcing it off or on?
         if (is_bool($posix)) {
             $this->posix = $posix;
+
             return;
         }
 
@@ -126,6 +128,7 @@ class Handle
         if (strtolower(substr($this->php_os, 0, 3)) == 'win') {
             // windows is not posix
             $this->posix = false;
+
             return;
         }
 

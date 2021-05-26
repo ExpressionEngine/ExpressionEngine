@@ -1,0 +1,141 @@
+.app-about {
+	padding-bottom: 0;
+	max-width: 400px;
+
+	margin-bottom: -35px;
+	margin-left: 20px;
+}
+
+.app-about__title {
+	font-weight: 500;
+	font-size: 1.2em;
+	padding: $s-xs $s-m 0 $s-m;
+	margin-bottom: $s-xs;
+}
+
+.app-about__subtitle {
+	color: color(text-secondary);
+	padding: 0 $s-m;
+	font-size: 0.9em;
+	margin-bottom: $s-m;
+}
+
+.app-about__title .float-right, .app-about__subtitle .float-right {
+	margin-left: $s-l;
+}
+
+.app-about__link {
+	font-size: 1rem !important;
+
+	i {
+		font-size: 1.1rem;
+		// -webkit-background-clip: text;
+		// -webkit-text-fill-color: transparent;
+	}
+}
+
+.app-about__support-link i {
+	// color: #9c47fc;
+	// background-image: -webkit-linear-gradient(#a352ff, #6646f5);
+ }
+.app-about__bug-link i {
+	// color: #e3b604 !important;
+	// background-image: -webkit-linear-gradient(#eebf00, #e6a502);
+
+}
+.app-about__user-guide-link i {
+	// color: #009eeb !important;
+	// background-image: -webkit-linear-gradient(#4789fc, #356ad2);
+}
+.app-about__whats-new-link i {
+	// background-image: -webkit-linear-gradient(#eb2979, #dd27a6);
+	// color: #e5288f !important;
+}
+
+
+.app-about__info {
+	line-height: 1.4;
+	padding: $s-m $s-m;
+	font-size: 14px;
+
+	h3 {
+		color: color(text-primary);
+		font-size: 15px;
+		font-weight: bold;
+	}
+
+	em {
+		color: color(text-tertiary);
+		font-size: 12px;
+		font-style: normal;
+	}
+}
+
+$progress-bg-pos: 40px;
+
+@-webkit-keyframes progressed {
+	from { background-position: 0 0; }
+	to { background-position: $progress-bg-pos 0; }
+}
+
+@keyframes progressed {
+	from { background-position: 0 0; }
+	to { background-position: $progress-bg-pos 0; }
+}
+
+.app-about__status {
+	@include clear-float;
+	padding: $s-m;
+	margin-top: $s-m;
+  border-radius: 0 0 $border-radius-base $border-radius-base;
+
+	// display: flex;
+	// align-items: center;
+
+	.button {
+		// margin-top: $s-s;
+		margin-left: $s-m;
+		float: right;
+	}
+}
+
+.app-about__status-version {
+	margin-top: $s-xs;
+
+	em {
+		display: block;
+	}
+}
+
+.app-about__status--checking {
+	text-align: center;
+
+	$color1: color(bg-10);
+	$color2: color(bg-5);
+	background: linear-gradient(-45deg, $color1 0%, $color1 25%, $color2 25%, $color2 50%, $color1 50%, $color1 75%, $color2 75%);
+	background-size: 40px 40px, 100% 100%;
+
+	-webkit-animation: progressed 0.9s linear 0s infinite;
+	animation: progressed 0.9s linear 0s infinite;
+}
+
+.app-about__status--update-to-date {
+	text-align: center;
+	background-color: color(success);
+	color: $white;
+}
+
+.app-about__status--update {
+	background-color: color(warning);
+	color: $white;
+}
+
+.app-about__status--update-vital {
+	background-color: color(error);
+	color: $white;
+}
+
+.app-about__status--update-major {
+	background-color: color(error);
+	color: $white;
+}

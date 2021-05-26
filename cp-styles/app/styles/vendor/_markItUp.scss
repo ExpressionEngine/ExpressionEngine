@@ -1,0 +1,282 @@
+/* -------------------------------------------------------------------
+// markItUp! Universal MarkUp Engine, JQuery plugin
+// By Jay Salvat - http://markitup.jaysalvat.com/
+// ------------------------------------------------------------------*/
+.markItUp * {
+	margin:0px; padding:0px;
+	outline:none;
+}
+.markItUp a:link,
+.markItUp a:visited {
+	// color:#000;
+	text-decoration:none;
+}
+.markItUp  {
+	// width:700px;
+	// margin:5px 0 5px 0;
+}
+.markItUpContainer  {
+	// font:11px Verdana, Arial, Helvetica, sans-serif;
+}
+.markItUpEditor {
+	font-family: $font-family-monospace;
+	padding: $padding-base-vertical $padding-base-horizontal;
+	// width:690px;
+	// height: 210px;
+	clear:both;
+	// line-height:18px;
+	overflow:auto;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.markItUpPreviewFrame	{
+	overflow:auto;
+	background-color:#FFF;
+	width:99.9%;
+	height:300px;
+	margin:5px 0;
+}
+.markItUpHeader {
+  background-color: color(bg-0);
+  border: 1px solid color(border);
+  border-bottom: none;
+  padding: 5px;
+  border-radius: $border-radius-base $border-radius-base 0 0;
+}
+.markItUpFooter {
+	width:100%;
+  display: none;
+}
+.markItUpResizeHandle {
+	overflow:hidden;
+	width:22px; height:5px;
+	margin-left:auto;
+	margin-right:auto;
+	background-image:url(images/handle.png);
+	cursor:n-resize;
+}
+/***************************************************************************************/
+/* first row of buttons */
+.markItUpHeader ul li	{
+	list-style:none;
+	// float:left;
+  display: inline-block;
+	position:relative;
+}
+.markItUpHeader ul li:hover > ul{
+	display:block;
+}
+.markItUpHeader ul .markItUpDropMenu {
+	background:transparent url(images/menu.png) no-repeat 115% 50%;
+	margin-right:5px;
+}
+.markItUpHeader ul .markItUpDropMenu li {
+	margin-right:0px;
+}
+.markItUpHeader .toolbar {
+  margin-bottom: 0px !important;
+}
+/* next rows of buttons */
+.markItUpHeader ul ul {
+	display:none;
+	position:absolute;
+	top:18px; left:0px;
+	background:#FFF;
+	border:1px solid #000;
+}
+.markItUpHeader ul ul li {
+	float:none;
+	border-bottom:1px solid #000;
+}
+.markItUpHeader ul ul .markItUpDropMenu {
+	background:#FFF url(images/submenu.png) no-repeat 100% 50%;
+}
+.markItUpHeader ul .markItUpSeparator {
+	margin:0 10px;
+	width:1px;
+	height:16px;
+	overflow:hidden;
+	background-color:#CCC;
+}
+.markItUpHeader ul ul .markItUpSeparator {
+	width:auto; height:1px;
+	margin:0px;
+}
+/* next rows of buttons */
+.markItUpHeader ul ul ul {
+	position:absolute;
+	top:-1px; left:150px;
+}
+.markItUpHeader ul ul ul li {
+	float:none;
+}
+.markItUpHeader ul a {
+	// display:block;
+	// width:16px; height:16px;
+	// text-indent:-10000px;
+	// background-repeat:no-repeat;
+	// padding:3px;
+	// margin:0px;
+
+  @extend .button;
+  @extend .button--default;
+  @extend .button--xsmall;
+}
+.markItUpHeader ul ul a {
+	display:block;
+	padding-left:0px;
+	text-indent:0;
+	width:120px;
+	padding:5px 5px 5px 25px;
+	background-position:2px 50%;
+}
+.markItUpHeader ul ul a:hover  {
+	color:#FFF;
+	background-color:#000;
+}
+.markItUp .html-bold a {
+  &:before {
+    content: fa-content($fa-var-bold);
+  }
+}
+.markItUp .html-italic a {
+  &:before{
+    content: fa-content($fa-var-italic);
+  }
+}
+.markItUp .html-quote a {
+  &:before{
+    content: fa-content($fa-var-quote-right);
+  }
+}
+.markItUp .html-link a {
+  &:before{
+    content: fa-content($fa-var-link);
+  }
+}
+.markItUp .html-upload a {
+  &:before{
+    content: fa-content($fa-var-cloud-upload-alt);
+  }
+}
+.markItUp .html-list a {
+  &:before{
+    content: fa-content($fa-var-list-ul);
+  }
+}
+.markItUp .html-order-list a {
+  &:before{
+    content: fa-content($fa-var-list-ol);
+  }
+}
+.markItUp .html-underline a {
+  &:before{
+    content: fa-content($fa-var-underline);
+  }
+}
+.markItUp .html-del a,
+.markItUp .html-strike a {
+  &:before{
+    content: fa-content($fa-var-strikethrough);
+  }
+}
+
+
+/* Style markItUp buttons as button groups */
+
+//
+// Button groups
+// --------------------------------------------------
+
+// Make the div behave like a button
+.markItUpHeader .toolbar {
+  position: relative;
+  display: inline-block;
+  margin-top: -1px;
+  vertical-align: middle; // match .button alignment given font-size hack above
+  > .markItUpButton a {
+    position: relative;
+    // float: left;
+    // Bring the "active" button to the front
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      z-index: 2;
+    }
+  }
+}
+
+// Remove space between buttons when buttons are next to each other
+.markItUpHeader .toolbar {
+  .markItUpButton + .markItUpButton,
+  .markItUpButton + .markItUpHeader .toolbar,
+  .markItUpHeader .toolbar + .button,
+  .markItUpHeader .toolbar + .markItUpHeader .toolbar {
+    margin-left: -1px;
+  }
+}
+
+.markItUpHeader .toolbar > .markItUpButton:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle) a {
+  border-radius: 0;
+}
+
+// Set corners individual because sometimes a single button can be in a .button-group and we need :first-child and :last-child to both match
+.markItUpHeader .toolbar > .markItUpButton:first-of-type a {
+  margin-left: 0;
+}
+.markItUpHeader .toolbar > .markItUpButton:not(:last-of-type):not(.dropdown-toggle) a {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+// Need .dropdown-toggle since :last-child doesn't apply, given that a .dropdown-menu is used immediately after it
+.markItUpHeader .toolbar > .markItUpButton:last-of-type:not(:first-of-type) a,
+.markItUpHeader .toolbar > .dropdown-toggle:not(:first-of-type) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+// Custom edits for including button-groups within button-groups (useful for including dropdown buttons within a button-group)
+.markItUpHeader .toolbar > .markItUpHeader .toolbar {
+  float: left;
+}
+.markItUpHeader .toolbar > .markItUpHeader .toolbar:not(:first-of-type):not(:last-of-type) > .button {
+  border-radius: 0;
+}
+.markItUpHeader .toolbar > .markItUpHeader .toolbar:first-of-type:not(:last-of-type) {
+  > .button:last-of-type,
+  > .dropdown-toggle {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+.markItUpHeader .toolbar > .markItUpHeader .toolbar:last-of-type:not(:first-of-type) > .button:first-child {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+// On active and open, don't show outline
+.markItUpHeader .toolbar .dropdown-toggle:active,
+.markItUpHeader .toolbar.open .dropdown-toggle {
+  outline: 0;
+}
+
+.button-segment {
+  .button {
+    margin-right: 5px;
+  }
+}
+
+
+// Split button dropdowns
+// ----------------------
+
+// Give the line between buttons some depth
+.markItUpHeader .toolbar > .button + .dropdown-toggle {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+.markItUpHeader .toolbar > .button-lg + .dropdown-toggle {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}

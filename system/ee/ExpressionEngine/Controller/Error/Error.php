@@ -15,12 +15,12 @@ use CP_Controller;
 /**
  * Error / 404 Controller
  */
-class Error extends CP_Controller {
-
-	public function index()
-	{
-		show_404();
-	}
+class Error extends CP_Controller
+{
+    public function index()
+    {
+        show_404();
+    }
 }
 
 // EOF

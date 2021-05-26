@@ -1,10 +1,10 @@
 <div id="file_browser" class="pageContents" style="padding: 0 10px">
 	<div id="filterMenu">
-		<?php if ( ! empty($filemanager_directories)):?>
+		<?php if (! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
 				<span class="dir_choice_container">
-					<?=lang('upload_directory', 'dir_choice').NBS?>
-					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
+					<?=lang('upload_directory', 'dir_choice') . NBS?>
+					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"') . NBS?>
 				</span>
 				<input type="text" name="keywords" value="" id="keywords" placeholder="<?= lang('keywords') ?>" />
 			<?=form_close()?>
@@ -28,10 +28,9 @@
 	</div>
 
 	<div id="file_browser_footer">
-		<p><?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?></p>
+		<p><?=sprintf(lang('pagination_filter_text'), $view_filters) . NBS?></p>
 		<?=$pagination_html?>
 	</div>
 </div>
 
 <?php
-

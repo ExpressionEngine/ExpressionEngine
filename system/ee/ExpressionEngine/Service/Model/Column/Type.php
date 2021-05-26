@@ -13,10 +13,9 @@ namespace ExpressionEngine\Service\Model\Column;
 /**
  * Model Service Typed Column Interface
  */
-interface Type {
-
-	public static function create();
-
+interface Type
+{
+    public static function create();
 }
 
 // EOF

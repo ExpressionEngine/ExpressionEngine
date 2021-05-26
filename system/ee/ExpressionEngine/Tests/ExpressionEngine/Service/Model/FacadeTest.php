@@ -14,73 +14,72 @@ use Mockery as m;
 use ExpressionEngine\Service\Model\Facade;
 use PHPUnit\Framework\TestCase;
 
-class FacadeTest extends TestCase {
+class FacadeTest extends TestCase
+{
+    public function tearDown(): void
+    {
+        m::close();
+    }
 
-	public function tearDown() : void
-	{
-		m::close();
-	}
+    public function testGet()
+    {
+        $store = m::mock('ExpressionEngine\Service\Model\DataStore');
+        $qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
 
-	public function testGet()
-	{
-		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
-		$qb = m::mock('ExpressionEngine\Service\Model\Query\Builder');
+        $facade = new Facade($store);
 
-		$facade = new Facade($store);
+        $store->shouldReceive('get')->with('TestModel')->andReturn($qb);
+        $qb->shouldReceive('setFacade')->with($facade);
 
-		$store->shouldReceive('get')->with('TestModel')->andReturn($qb);
-		$qb->shouldReceive('setFacade')->with($facade);
+        $result = $facade->get('TestModel');
 
-		$result = $facade->get('TestModel');
+        $this->assertSame($qb, $result);
+    }
 
-		$this->assertSame($qb, $result);
-	}
+    public function testMakeWithString()
+    {
+        $store = m::mock('ExpressionEngine\Service\Model\DataStore');
+        $result = m::mock('ExpressionEngine\Service\Model\Model');
 
-	public function testMakeWithString()
-	{
+        $facade = new Facade($store);
 
-		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('ExpressionEngine\Service\Model\Model');
+        $store->shouldReceive('make')
+            ->with('TestModel', $facade, array())
+            ->andReturn($result);
 
-		$facade = new Facade($store);
+        $this->assertSame($result, $facade->make('TestModel'));
+    }
 
-		$store->shouldReceive('make')
-			->with('TestModel', $facade, array())
-			->andReturn($result);
+    public function testMakeWithExisting()
+    {
+        $store = m::mock('ExpressionEngine\Service\Model\DataStore');
+        $result = m::mock('ExpressionEngine\Service\Model\Model');
 
-		$this->assertSame($result, $facade->make('TestModel'));
-	}
+        $facade = new Facade($store);
 
-	public function testMakeWithExisting()
-	{
-		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('ExpressionEngine\Service\Model\Model');
+        $store
+            ->shouldReceive('make')
+            ->with($result, $facade, array())
+            ->andReturn($result);
 
-		$facade = new Facade($store);
+        $this->assertSame($result, $facade->make($result));
+    }
 
-		$store
-			->shouldReceive('make')
-			->with($result, $facade, array())
-			->andReturn($result);
+    public function testMakeWithData()
+    {
+        $store = m::mock('ExpressionEngine\Service\Model\DataStore');
+        $result = m::mock('ExpressionEngine\Service\Model\Model');
 
-		$this->assertSame($result, $facade->make($result));
-	}
+        $facade = new Facade($store);
+        $data = array('foo' => 'bar');
 
-	public function testMakeWithData()
-	{
-		$store = m::mock('ExpressionEngine\Service\Model\DataStore');
-		$result = m::mock('ExpressionEngine\Service\Model\Model');
+        $store
+            ->shouldReceive('make')
+            ->with('TestModel', $facade, $data)
+            ->andReturn($result);
 
-		$facade = new Facade($store);
-		$data = array('foo' => 'bar');
-
-		$store
-			->shouldReceive('make')
-			->with('TestModel', $facade, $data)
-			->andReturn($result);
-
-		$this->assertSame($result, $facade->make('TestModel', $data));
-	}
+        $this->assertSame($result, $facade->make('TestModel', $data));
+    }
 }
 
 // EOF

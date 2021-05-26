@@ -21,7 +21,7 @@
 			<?php if (bool_config_item('multiple_sites_enabled')): ?>
 				&mdash; <i><?=lang('choose_channels_per_site')?></i>
 			<?php else: ?>
-				<?=form_dropdown('cp_homepage_channel['.ee()->config->item('site_id').']', $allowed_channels, $selected_channel)?>
+				<?=form_dropdown('cp_homepage_channel[' . ee()->config->item('site_id') . ']', $allowed_channels, $selected_channel)?>
 			<?php endif ?>
 		</label>
 		<?php if (bool_config_item('multiple_sites_enabled')): ?>
@@ -30,7 +30,7 @@
 					<li>
 						<label>
 							<?=$sites[$site_id]?> &mdash;
-							<?=form_dropdown('cp_homepage_channel['.$site_id.']', $channels, isset($member->cp_homepage_channel[$site_id]) ? $member->cp_homepage_channel[$site_id] : 0)?>
+							<?=form_dropdown('cp_homepage_channel[' . $site_id . ']', $channels, isset($member->cp_homepage_channel[$site_id]) ? $member->cp_homepage_channel[$site_id] : 0)?>
 						</label>
 					</li>
 				<?php endforeach ?>

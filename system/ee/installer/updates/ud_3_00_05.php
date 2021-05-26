@@ -13,61 +13,58 @@ namespace ExpressionEngine\Updater\Version_3_0_5;
 /**
  * Update
  */
-class Updater {
+class Updater
+{
+    public $version_suffix = '';
 
-	var $version_suffix = '';
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        ee()->load->dbforge();
 
-	/**
-	 * Do Update
-	 *
-	 * @return TRUE
-	 */
-	public function do_update()
-	{
-		ee()->load->dbforge();
+        $steps = new \ProgressIterator(
+            array(
+                'install_required_modules',
+            )
+        );
 
-		$steps = new \ProgressIterator(
-			array(
-				'install_required_modules',
-			)
-		);
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
 
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
+        return true;
+    }
 
-		return TRUE;
-	}
+    /**
+     * Ensure required modules are installed
+     * @return void
+     */
+    public function install_required_modules()
+    {
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
 
-	/**
-	 * Ensure required modules are installed
-	 * @return void
-	 */
-	public function install_required_modules()
-	{
-		if(!isset(ee()->addons)) {
-			ee()->load->library('addons');
-		}
+        $installed_modules = ee()->db->select('module_name')->get('modules');
+        $required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
 
-		$installed_modules = ee()->db->select('module_name')->get('modules');
-		$required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'file', 'filepicker', 'search');
+        foreach ($installed_modules->result() as $installed_module) {
+            $key = array_search(
+                strtolower($installed_module->module_name),
+                $required_modules
+            );
 
-		foreach ($installed_modules->result() as $installed_module)
-		{
-			$key = array_search(
-				strtolower($installed_module->module_name),
-				$required_modules
-			);
+            if ($key !== false) {
+                unset($required_modules[$key]);
+            }
+        }
 
-			if ($key !== FALSE)
-			{
-				unset($required_modules[$key]);
-			}
-		}
-
-		ee()->addons->install_modules($required_modules);
-	}
+        ee()->addons->install_modules($required_modules);
+    }
 }
 /* END CLASS */
 

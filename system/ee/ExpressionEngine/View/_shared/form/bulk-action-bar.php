@@ -3,13 +3,13 @@
 		<?php foreach ($options as $option): ?>
 		<option
 			<?php
-			if (isset($option['value'])) {
-				echo ' value="' . $option['value'] . '"';
-			}
-			if (isset($option['attrs'])) {
-				echo $option['attrs'];
-			}
-			?>
+            if (isset($option['value'])) {
+                echo ' value="' . $option['value'] . '"';
+            }
+            if (isset($option['attrs'])) {
+                echo $option['attrs'];
+            }
+            ?>
 		><?=$option['text']?></option>
 		<?php endforeach; ?>
 	</select>

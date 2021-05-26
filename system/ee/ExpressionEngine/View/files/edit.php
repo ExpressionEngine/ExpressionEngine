@@ -16,31 +16,31 @@
 
 		<div class="file-preview-modal__preview-file">
 			<?php if ($is_image) {
-				echo "<img src=\"{$file->getAbsoluteURL()}\">";
-				} else {
-					echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
-				}
-			?>
+    echo "<img src=\"{$file->getAbsoluteURL()}\">";
+} else {
+    echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
+}
+            ?>
 
 			<div class="file-preview-modal__preview-file-meta">
 				<?php
-				if ($is_image) {
-					echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . ' - ';
-				}
-				?><i><?= $size ?></i>
+                if ($is_image) {
+                    echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . ' - ';
+                }
+                ?><i><?= $size ?></i>
 			</div>
 		</div>
 	</div>
 	<div class="file-preview-modal__form">
 
 	<?php
-	$this->embed('_shared/form');
+    $this->embed('_shared/form');
 
-	$modal = ee('View')->make('ee:_shared/modal-form')->render([
-		'name' => 'modal-form',
-		'contents' => ''
-	]);
-	ee('CP/Modal')->addModal('modal-form', $modal);
+    $modal = ee('View')->make('ee:_shared/modal-form')->render([
+        'name' => 'modal-form',
+        'contents' => ''
+    ]);
+    ee('CP/Modal')->addModal('modal-form', $modal);
 ?>
 
 

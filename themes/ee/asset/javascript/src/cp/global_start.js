@@ -231,14 +231,6 @@ $(document).ready(function () {
 	EE.cp.validateLicense();
 });
 
-// Scroll to version popover on successful update
-if (EE.cp.updateCompleted) {
-	$('.app-about-info').show()
-	$('.app-about-info__update').hide()
-	$('html, body').animate({
-		scrollTop: $('.app-about-info').offset().top
-	}, 500)
-}
 
 /**
  * Posts the current EE license to the EE main site for validation purposes.
@@ -425,7 +417,7 @@ EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 	EE.CSRF_TOKEN = newToken;
 
 	if ( ! skipBroadcast) {
-		$(window).trigger('broadcast.setCsrfToken', newToken);
+		$(window.parent).trigger('broadcast.setCsrfToken', newToken);
 	}
 };
 
@@ -468,7 +460,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 	EE.BASE = newBase;
 
 	if ( ! skipBroadcast) {
-		$(window).trigger('broadcast.setBasePath', newBase);
+		$(window.parent).trigger('broadcast.setBasePath', newBase);
 	}
 };
 

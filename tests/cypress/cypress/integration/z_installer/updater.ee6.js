@@ -173,6 +173,60 @@ context('Updater', () => {
         expect(installed_modules).to.include('search')
       })
     })
+
+    it('turns system on if system was on before updating', () => {
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config,
+          options: {
+            is_system_on: 'y',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_update()
+          test_templates()
+          cy.eeConfig({item: 'is_system_on'}) .then((config) => {
+            expect(config.trim()).to.be.equal('y')
+          })
+        })
+      })
+    })
+
+    it('turns system off if system was off before updating', () => {
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config,
+          options: {
+            is_system_on: 'n',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_update()
+          test_templates()
+          cy.eeConfig({item: 'is_system_on'}) .then((config) => {
+            expect(config.trim()).to.be.equal('n')
+          })
+        })
+      })
+    })
+
+    // it('keeps system off if system was off before updating', () => {
+    //   cy.task('installer:revert_config').then(()=>{
+    //     cy.task('installer:replace_config', {
+    //       file: config,
+    //       options: {
+    //         is_system_on: 'n',
+    //         app_version: '2.20.0'
+    //       }
+    //     }).then(()=>{
+    //       test_update()
+    //       test_templates()
+    //       cy.eeConfig({item: 'is_system_on'}) .then((config) => {
+    //         expect(config.trim()).to.be.equal('n')
+    //       })
+    //     })
+    //   })
+    // })
   })
 
   it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {

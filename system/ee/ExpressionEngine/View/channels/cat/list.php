@@ -8,7 +8,7 @@
         <h3 class="title-bar__title"><?=$cp_page_title?></h3>
         <div class="title-bar__extra-tools">
   				<?php if ($can_create_categories):?>
-  					<a class="tn button button--primary" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
+  					<a class="tn button button--primary" href="<?=ee('CP/URL')->make('categories/create/' . $cat_group->group_id)?>"><?=lang('new_category')?></a>
   				<?php endif; ?>
   			</div>
       </div>
@@ -33,7 +33,7 @@
 						<li>
 							<div class="tbl-row no-results">
 								<div class="none">
-									<p><?=lang('categories_not_found')?> <a href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('add_new')?></a></p>
+									<p><?=lang('categories_not_found')?> <a href="<?=ee('CP/URL')->make('categories/create/' . $cat_group->group_id)?>"><?=lang('add_new')?></a></p>
 								</div>
 							</div>
 						</li>
@@ -42,18 +42,18 @@
 			</div>
 		</div>
 		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			'options' => [
-				[
-					'value' => "",
-					'text' => '-- ' . lang('with_selected') . ' --'
-				],
-				[
-					'value' => "remove",
-					'text' => lang('delete'),
-					'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-				]
-			],
-			'modal' => true
+		    'options' => [
+		        [
+		            'value' => "",
+		            'text' => '-- ' . lang('with_selected') . ' --'
+		        ],
+		        [
+		            'value' => "remove",
+		            'text' => lang('delete'),
+		            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+		        ]
+		    ],
+		    'modal' => true
 		]); ?>
   </div>
 	</form>
@@ -64,12 +64,12 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-delete',
-	'form_url'	=> ee('CP/URL')->make('categories/remove'),
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove',
-		'cat_group_id'	=> $cat_group->group_id
-	)
+    'name' => 'modal-confirm-delete',
+    'form_url' => ee('CP/URL')->make('categories/remove'),
+    'hidden' => array(
+        'bulk_action' => 'remove',
+        'cat_group_id' => $cat_group->group_id
+    )
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

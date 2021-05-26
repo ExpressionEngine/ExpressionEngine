@@ -1,0 +1,94 @@
+.ee-main-header {
+  height: 70px;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid color(border);
+	padding: 0px 20px 0px 30px;
+	margin-bottom: 30px;
+
+  .breadcrumb-wrapper {
+    width: 100%;
+    padding-right: 475px;
+  }
+
+  .breadcrumb {
+    // margin-top: -2px;
+    margin-left: -3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media only screen and (max-width: 999px) {
+    .breadcrumb {
+      display: none;
+    }
+  }
+
+  .field-control_input--jump {
+    position: absolute;
+    top: 13px;
+    right: 82px;
+  }
+
+  .input--jump {
+    min-width: 400px;
+    background-color: color(input-jump-bg);
+
+    @media only screen and (max-width: 559px) {
+      width: 350px;
+      min-width: 350px;
+    }
+
+    @media only screen and (max-width: 509px) {
+      width: 300px;
+      min-width: 300px;
+    }
+
+    @media only screen and (max-width: 454px) {
+      width: 250px;
+      min-width: 250px;
+    }
+
+    @media only screen and (max-width: 409px) {
+      width: 200px;
+      min-width: 200px;
+    }
+
+    @media only screen and (max-width: 354px) {
+      width: 170px;
+      min-width: 170px;
+    }
+  }
+
+  .main-header__account {
+    position: absolute;
+    right: 20px;
+    top: 13px;
+
+    .main-header__account-icon {
+      -webkit-appearance: none;
+    	appearance: none;
+    	display: inline-block;
+    	$size: 42px;
+    	width: $size;
+    	height: $size;
+    	border: none;
+    	border-radius: $border-radius-full;
+    	max-width: initial;
+    	cursor: pointer;
+    	border: none;
+    	overflow: hidden;
+    	padding: 0;
+    	box-shadow: none;
+    	background: color(bg-neutral-light);
+
+      img {
+        width: $size;
+        height: $size;
+      }
+    }
+  }
+}

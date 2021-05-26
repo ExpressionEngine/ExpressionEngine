@@ -1,0 +1,246 @@
+
+.dropdown {
+	@include shadow-dropdown;
+
+	border: 1px solid color(dropdown-border);
+	background: color(bg-dropdown);
+	padding: $s-s 0;
+	border-radius: $border-radius-base;
+	// overflow: hidden;
+	text-align: left;
+	z-index: 200;
+	max-width: 600px;
+	min-width: 160px;
+
+	display: none;
+}
+
+.dropdown--open {
+	display: block;
+}
+
+.dropdown--accent {
+  border-top: 5px solid color(brand-primary);
+}
+
+.dropdown--full-width {
+	width: 100%;
+	max-width: 100%;
+}
+
+.dropdown__scroll {
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.dropdown__scroll--small {
+	max-height: 180px;
+}
+
+
+.dropdown__link {
+	// transition: background ease 150ms;
+	$h: 38px;
+	display: table;
+	height: $h;
+	line-height: $h;
+	padding: 0 $s-m;
+	// font-size: 0.92em;
+	color: color(text-primary);
+	width: 100%;
+
+	a {
+		color: color(text-primary);
+	}
+
+	&:hover, &:focus {
+		// background: color(bg-10);
+		// color: color(text-primary);
+		background-color: color(bg-dropdown-hover);
+		color: color(text-primary);
+
+		i {
+			// color: color(link-hover);
+		}
+	}
+
+	.fas, .fal, .far {
+		// Make sure icons line up next to each other
+		@extend .fa-fw;
+		margin-right: $s-xs;
+		color: color(text-secondary);
+	}
+
+	@include focus-visible {
+		@include focus-outline-inset;
+	}
+}
+
+.dropdown__link--selected {
+	background-color: color(bg-dropdown-selected);
+
+	&::before {
+		@extend %fa-icon;
+		@extend .fas;
+		@extend .fa-fw;
+
+		margin-right: 5px;
+		content: fa-content($fa-var-check);
+		color: color(accent);
+	}
+
+	&:hover {
+		background: color(accent-light);
+		// color: color(error);
+
+		&::before {
+			content: fa-content($fa-var-times);
+			color: color(accent);
+		}
+	}
+}
+
+.dropdown__link--danger {
+	&:hover {
+		background: color(error-light);
+		color: color(error);
+
+		i {
+			color: color(error);
+		}
+	}
+}
+
+.dropdown__link-shortcut {
+	// @include font-monospace;
+	float: right;
+	letter-spacing: 1px;
+	color: color(text-secondary);
+	text-transform: uppercase;
+  font-size: 80%;
+}
+
+.dropdown__link-right {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 80%;
+  color: color(text-secondary);
+  margin-left: auto;
+  padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40%;
+  flex-shrink: 0;
+  float: right;
+}
+
+.dropdown__item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	// font-size: 0.92em;
+	color: color(text-primary);
+
+	&:hover {
+		// background: color(bg-10);
+		// color: color(text-primary);
+		background-color: color(bg-dropdown-hover);
+		color: color(text-primary);
+
+		i {
+			// color: color(link-hover);
+		}
+
+    .dropdown-reorder {
+      cursor: move;
+
+      label {
+        cursor: move;
+      }
+    }
+	}
+
+	a:not(.dropdown__item-button) {
+		width: 100%;
+		flex: 1 1;
+		display: block;
+		height: 100%;
+		padding: $s-xs $s-m;
+		line-height: $line-height-small;
+		color: color(text-primary);
+
+		&:hover {
+			color: color(text-primary);
+		}
+
+		.fas {
+			// Make sure icons line up next to each other
+			@extend .fa-fw;
+
+			margin-right: $s-xs;
+			color: color(text-secondary);
+		}
+	}
+
+  label {
+    font-weight: normal;
+    white-space: nowrap;
+  }
+}
+
+.dropdown__item-button {
+	// font-size: 0.8em !important;
+	// height: 18px;
+	// line-height: 18px;
+	margin-right: $s-m;
+
+	i {
+		// color: #fff !important;
+		margin: 0 !important;
+	}
+}
+
+.dropdown__divider {
+	margin: $s-s 0;
+	border-top: 1px solid color(dropdown-border);
+
+	// Hide redundant dropdown dividers that are next to each other
+	& + .dropdown__divider {
+		display: none;
+	}
+}
+
+.dropdown__header {
+	font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+	// font-weight: bold;
+	margin: $s-s $s-m $s-xs;
+	color: color(text-secondary);
+}
+
+.dropdown__search {
+	padding: $s-s;
+	margin-top: -$s-s;
+	margin-bottom: $s-s;
+	background: color(bg-0);
+	border-radius: $border-radius-small $border-radius-small 0 0;
+  border-bottom: 1px solid color(border);
+
+  .filter-bar {
+    margin-top: 0px;
+
+    .filter-bar__item {
+      margin-bottom: 0px;
+
+      @include m-tablet-down {
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.dropdown__search-input {
+	min-width: 100%;
+}

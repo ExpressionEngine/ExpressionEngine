@@ -1,0 +1,19 @@
+@border-radius: 5px;
+
+/*
+	applies rounded corners to block level elements
+	-------------
+	arguments
+		border-radius
+	examples
+		.class{
+			.corners(5px); all corners
+			.corners(5px 10px 15px); top left+right bottom
+			.corners(5px 10px 15px 20px); top-left top-right bottom-right bottom-left
+		}
+*/
+.corners(@radius: @border-radius){
+	-moz-border-radius: @radius;
+	-webkit-border-radius: @radius;
+	border-radius: @radius;
+}

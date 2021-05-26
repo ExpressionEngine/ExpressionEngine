@@ -2,77 +2,75 @@
 
 $lang = array(
 
-'system_logs' => 'System Logs',
+    'system_logs' => 'System Logs',
 
+    /* Sidebar */
+    'all_consent_logs' => 'All %d Consent Audit Logs',
 
-/* Sidebar */
-'all_consent_logs' => 'All %d Consent Audit Logs',
+    'all_cp_logs' => 'All %d Control Panel Logs',
 
-'all_cp_logs' => 'All %d Control Panel Logs',
+    'all_developer_logs' => 'All %d Developer Logs',
 
-'all_developer_logs' => 'All %d Developer Logs',
+    'all_email_logs' => 'All %d Email Logs',
 
-'all_email_logs' => 'All %d Email Logs',
+    'all_search_logs' => 'All %d Search Logs',
 
-'all_search_logs' => 'All %d Search Logs',
+    'all_throttle_logs' => 'All %d Throttling Logs',
 
-'all_throttle_logs' => 'All %d Throttling Logs',
+    'clear_cp_logs' => 'Delete all CP Access Logs',
 
-'clear_cp_logs' => 'Delete all CP Access Logs',
+    'consent_log' => 'Consent',
 
-'consent_log' => 'Consent',
+    'cp_log' => 'Control Panel',
 
-'cp_log' => 'Control Panel',
+    'date_logged' => 'Date logged',
 
-'date_logged' => 'Date logged',
+    'developer_log' => 'Developer',
 
-'developer_log' => 'Developer',
+    'email_log' => 'Email',
 
-'email_log' => 'Email',
+    'logs_deleted' => 'Logs Deleted',
 
-'logs_deleted' => 'Logs Deleted',
+    'logs_deleted_desc' => '<b>%d</b> log(s) deleted from <b>%s</b> logs',
 
-'logs_deleted_desc' => '<b>%d</b> log(s) deleted from <b>%s</b> logs',
+    'no_consent_logs_found' => 'No <b>Consent audit logs</b> found.',
 
-'no_consent_logs_found' => 'No <b>Consent audit logs</b> found.',
+    'no_control_panel_logs_found' => 'No <b>Control panel logs</b> found.',
 
-'no_control_panel_logs_found' => 'No <b>Control panel logs</b> found.',
+    'search_log' => 'Search',
 
-'search_log' => 'Search',
+    'search_logs_button' => 'search logs',
 
-'search_logs_button' => 'search logs',
+    'search_results' => 'Search Results',
 
-'search_results' => 'Search Results',
+    'search_terms' => 'Search Terms',
 
-'search_terms' => 'Search Terms',
+    'searched_in' => 'Searched In',
 
-'searched_in' => 'Searched In',
+    'site_search' => 'Site',
 
-'site_search' => 'Site',
+    'throttle_log' => 'Throttling',
 
-'throttle_log' => 'Throttling',
+    'view_consent_log' => 'Consent Audit Logs',
 
-'view_consent_log' => 'Consent Audit Logs',
+    'view_cp_log' => 'Control Panel Access Logs',
 
-'view_cp_log' => 'Control Panel Access Logs',
+    'view_developer_log' => 'Developer Logs',
 
-'view_developer_log' => 'Developer Logs',
+    'view_email_logs' => 'Email Logs',
 
-'view_email_logs' => 'Email Logs',
+    'view_search_log' => 'Search Logs',
 
-'view_search_log' => 'Search Logs',
+    'view_throttle_log' => 'Access Throttling Logs',
 
-'view_throttle_log' => 'Access Throttling Logs',
+    /* Developer Log */
+    'clear_developer_logs' => 'Delete all Developer Logs',
 
+    'deprecated_function' => 'Deprecated function %s called',
 
-/* Developer Log */
-'clear_developer_logs' => 'Delete all Developer Logs',
+    'deprecated_hook' => 'Deprecated extension hook called by the following extensions (Class::method) <ul>%s</ul>',
 
-'deprecated_function' => 'Deprecated function %s called',
-
-'deprecated_hook' => 'Deprecated extension hook called by the following extensions (Class::method) <ul>%s</ul>',
-
-'deprecated_meaning' => '<p>One of two things has happened:</p>
+    'deprecated_meaning' => '<p>One of two things has happened:</p>
 <ol>
  <li>The system has detected native code or an add-on that is using outdated code that may stop working or cause issues with the system. This means an add-on in your installation is accessing a part of ExpressionEngine\'s core code which Packet Tide plans to remove in the future in order to improve the quality of the product.</li>
  <li>A warning or message was raised by native code or an add-on for the Super Admin to view.</li>
@@ -84,72 +82,68 @@ $lang = array(
  <li>Contact the developer of the offending add-on to make sure they\'re aware of the problem and plans to issue an update</li>
 </ul>',
 
-'deprecated_on_line' => 'in %s on line %d.',
+    'deprecated_on_line' => 'in %s on line %d.',
 
-'deprecated_since' => 'Deprecated since %s.',
+    'deprecated_since' => 'Deprecated since %s.',
 
-'deprecated_snippets' => 'This tag may have been parsed from one of these snippets: %s',
+    'deprecated_snippets' => 'This tag may have been parsed from one of these snippets: %s',
 
-'deprecated_template' => 'From template tag %s in %s.',
+    'deprecated_template' => 'From template tag %s in %s.',
 
-'deprecated_use_instead' => 'Use %s instead.',
+    'deprecated_use_instead' => 'Use %s instead.',
 
-'deprecation_detected' => 'This is a log for developers to bring notices or warnings to the attention of the Super Admins.',
+    'deprecation_detected' => 'This is a log for developers to bring notices or warnings to the attention of the Super Admins.',
 
-'dev_log_help' => 'What does this mean?',
+    'dev_log_help' => 'What does this mean?',
 
-'dev_log_view_report' => 'View report',
+    'dev_log_view_report' => 'View report',
 
-'log_id' => 'Log ID',
+    'log_id' => 'Log ID',
 
-'log_message' => 'Message',
+    'log_message' => 'Message',
 
-'no_developer_logs_found' => 'No <b>Developer logs</b> found.',
+    'no_developer_logs_found' => 'No <b>Developer logs</b> found.',
 
+    /* Email Log */
+    'clear_email_logs' => 'Delete all Email Logs',
 
-/* Email Log */
-'clear_email_logs' => 'Delete all Email Logs',
+    'no_email_logs_found' => 'No <b>Email logs</b> found.',
 
-'no_email_logs_found' => 'No <b>Email logs</b> found.',
+    'sent_to' => 'Sent Email to',
 
-'sent_to' => 'Sent Email to',
+    'subject' => 'Subject',
 
-'subject' => 'Subject',
+    /* Search Log */
+    'clear_search_logs' => 'Delete all Search Logs',
 
+    'no_search_logs_found' => 'No <b>Search logs</b> found.',
 
-/* Search Log */
-'clear_search_logs' => 'Delete all Search Logs',
+    'searched_for' => 'Searched for',
 
-'no_search_logs_found' => 'No <b>Search logs</b> found.',
+    /* Throttle Log */
 
-'searched_for' => 'Searched for',
+    'clear_throttle_logs' => 'Delete all Throttling Logs',
 
+    'enable_throttling' => 'Turn Throttling On',
 
-/* Throttle Log */
+    'front_end_requests' => 'Front End Requests',
 
-'clear_throttle_logs' => 'Delete all Throttling Logs',
+    'last_activity' => 'Last Activity',
 
-'enable_throttling' => 'Turn Throttling On',
+    'no_throttle_logs' => 'No IPs are currently being throttled by the system.',
 
-'front_end_requests' => 'Front End Requests',
+    'no_throttling_logs_found' => 'No <b>Throttling logs</b> found.',
 
-'last_activity' => 'Last Activity',
+    'throttling_disabled' => '<b>Throttling</b> Disabled',
 
-'no_throttle_logs' => 'No IPs are currently being throttled by the system.',
+    /* Filters */
+    'custom_date' => 'custom date',
 
-'no_throttling_logs_found' => 'No <b>Throttling logs</b> found.',
+    'custom_limit' => 'custom limit',
 
-'throttling_disabled' => '<b>Throttling</b> Disabled',
+    'filter_by_site' => 'filter sites',
 
-
-/* Filters */
-'custom_date' => 'custom date',
-
-'custom_limit' => 'custom limit',
-
-'filter_by_site' => 'filter sites',
-
-'filter_by_username' => 'filter username',
+    'filter_by_username' => 'filter username',
 
 );
 

@@ -15,13 +15,12 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Alpha Validation Rule
  */
-class Alpha extends ValidationRule {
-
-	public function validate($key, $value)
-	{
-		return (bool) preg_match("/^([a-z])+$/i", $value);
-	}
-
+class Alpha extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match("/^([a-z])+$/i", $value);
+    }
 }
 
 // EOF

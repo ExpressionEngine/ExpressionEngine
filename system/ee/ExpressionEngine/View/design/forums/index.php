@@ -13,6 +13,8 @@
   </div>
 
 		<?php $this->embed('_shared/table', $table); ?>
-		<?php if (isset($pagination)) echo $pagination; ?>
+		<?php if (isset($pagination)) {
+    echo $pagination;
+} ?>
 	<?=form_close()?>
 </div>

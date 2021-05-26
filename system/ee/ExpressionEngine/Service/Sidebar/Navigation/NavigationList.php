@@ -17,7 +17,6 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class NavigationList
 {
-
     /**
      * @var array $items Items in the list
      */
@@ -56,7 +55,7 @@ class NavigationList
         }
 
         return $view->make('_shared/sidebar/navigation/list')
-                 ->render(array('items' => $items));
+            ->render(array('items' => $items));
     }
 }
 

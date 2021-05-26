@@ -17,7 +17,6 @@ use ExpressionEngine\Library\CP\URL;
  */
 class URLFactory
 {
-
     /**
      * @var string $cp_url The URL to the CP
      */
@@ -130,6 +129,7 @@ class URLFactory
                 foreach ($qs as $key => $value) {
                     if (strpos($key, '/cp/') === 0) {
                         $path = $key;
+
                         continue;
                     }
 

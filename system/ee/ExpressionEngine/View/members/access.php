@@ -7,7 +7,9 @@
 </div>
 
 <div class="title-bar">
-	<?php if (isset($filters)) echo $filters; ?>
+	<?php if (isset($filters)) {
+    echo $filters;
+} ?>
 </div>
 </div>
 

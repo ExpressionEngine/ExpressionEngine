@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/wrapper'); ?>
 
 <?php if (isset($header)): ?>
-<div class="main-nav<?php if ((!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) && (empty(ee()->uri->segment(2)) || ee()->uri->segment(2)=='homepage')) : ?> hidden<?php endif; ?>">
+<div class="main-nav<?php if ((!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) && (empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage')) : ?> hidden<?php endif; ?>">
 	<div class="main-nav__wrap">
 
 	<div class="main-nav__title">

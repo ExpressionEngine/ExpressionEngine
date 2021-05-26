@@ -11,6 +11,8 @@
 /**
  * Relationship Runtime Exception
  */
-class EE_Relationship_exception extends RuntimeException {}
+class EE_Relationship_exception extends RuntimeException
+{
+}
 
 // EOF

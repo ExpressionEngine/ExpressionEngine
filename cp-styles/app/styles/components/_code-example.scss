@@ -1,0 +1,46 @@
+
+$code-example-radius: $border-radius-xlarge;
+
+.code-example {
+	display: flex;
+    flex-direction: column;
+    border-radius: $code-example-radius;
+	overflow: hidden;
+}
+
+.code-example__content {
+	position: relative;
+  background-color: color(bg-blank);
+	border: 1px solid color(border);
+	padding: 1.5rem;
+	margin: 0;
+	border-radius: $code-example-radius;
+
+	// Code example on top
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-width: 0px;
+
+	// Code example without code
+	&:nth-child(1):nth-last-child(1) {
+		border-bottom-right-radius: $code-example-radius;
+		border-bottom-left-radius: $code-example-radius;
+		border-bottom-width: 1px;
+	}
+}
+
+.code-example__code {
+	margin: 0 !important;
+	background: color(bg-5);
+
+	pre, code {
+        margin: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+	}
+
+	code {
+		@include font-monospace;
+		padding: $sq-inset-m;
+	}
+}

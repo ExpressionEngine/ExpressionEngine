@@ -13,7 +13,7 @@
 	<?php if (!empty($available_views)) : ?>
 	<div class="dropdown__header">Saved Views</div>
 	<?php endif; ?>
-	<?php foreach($available_views as $available_view): ?>
+	<?php foreach ($available_views as $available_view): ?>
 	<div class="dropdown__item">
 		<a href="<?=$available_view['url']?>" data-id="<?=$available_view['view_id']?>"><?=$available_view['name']?></a>
 	</div>
@@ -27,12 +27,12 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-delete-view',
-	'form_url'	=> '',//$form_url,
-	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
-	),
-	'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : NULL
+    'name' => 'modal-confirm-delete-view',
+    'form_url' => '',//$form_url,
+    'hidden' => array(
+        'bulk_action' => 'remove'
+    ),
+    'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : null
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

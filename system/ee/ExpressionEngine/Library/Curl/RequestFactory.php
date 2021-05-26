@@ -13,18 +13,17 @@ namespace ExpressionEngine\Library\Curl;
 /**
  * Curl Request Factory
  */
-class RequestFactory {
+class RequestFactory
+{
+    public function get($url, $data = array(), $callback = null)
+    {
+        return new GetRequest($url, $data, $callback);
+    }
 
-	public function get($url, $data = array(), $callback = NULL)
-	{
-		return new GetRequest($url, $data, $callback);
-	}
-
-	public function post($url, $data = array(), $callback = NULL)
-	{
-		return new PostRequest($url, $data, $callback);
-	}
-
+    public function post($url, $data = array(), $callback = null)
+    {
+        return new PostRequest($url, $data, $callback);
+    }
 }
 
 // EOF

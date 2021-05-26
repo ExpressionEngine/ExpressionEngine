@@ -13,11 +13,11 @@ namespace ExpressionEngine\Library\Rte;
 /**
  * RTE File Browser interface
  */
-interface RteFilebrowserInterface {
-
+interface RteFilebrowserInterface
+{
     /**
      * Function which will be called when displaying field
-     * Should include all necessary JS/CSS and define `window.Artee_browseImages` JS function
+     * Should include all necessary JS/CSS and define `window.Rte_browseImages` JS function
      *
      * @param String $uploadDir Upload directory identifier
      * @return void
@@ -49,5 +49,4 @@ interface RteFilebrowserInterface {
      * @return Array
      */
     public function getUploadDestinations();
-
 }

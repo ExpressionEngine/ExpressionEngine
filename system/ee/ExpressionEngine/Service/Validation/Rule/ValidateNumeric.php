@@ -15,17 +15,17 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Numeric Validation Rule
  */
-class ValidateNumeric extends ValidationRule {
+class ValidateNumeric extends ValidationRule
+{
+    public function validate($key, $value)
+    {
+        return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
+    }
 
-	public function validate($key, $value)
-	{
-		return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
-	}
-
-	public function getLanguageKey()
-	{
-		return 'is_numeric';
-	}
+    public function getLanguageKey()
+    {
+        return 'is_numeric';
+    }
 }
 
 // EOF

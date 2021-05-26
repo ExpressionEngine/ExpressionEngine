@@ -2,779 +2,777 @@
 
 $lang = array(
 
-/* no Javascript Warning */
-'no_js_warning' => 'Javascript must be enabled in order for this theme to function properly. Please check your browser settings.',
+    /* no Javascript Warning */
+    'no_js_warning' => 'Javascript must be enabled in order for this theme to function properly. Please check your browser settings.',
 
+    /* Develop Menu */
+    'addon_manager' => 'Add-Ons',
 
-/* Develop Menu */
-'addon_manager' => 'Add-Ons',
+    'channel_manager' => 'Channels',
 
-'channel_manager' => 'Channels',
+    'entries' => 'Entries',
 
-'entries' => 'Entries',
+    'menu_entries' => 'Entries',
 
-'menu_entries' => 'Entries',
+    'logs' => 'Logs',
 
-'logs' => 'Logs',
+    'msm_manager' => 'Sites',
 
-'msm_manager' => 'Sites',
+    'nav_content' => 'Content',
 
-'nav_content' => 'Content',
+    'nav_developer' => 'Developer',
 
-'nav_developer' => 'Developer',
+    'nav_developer_tools' => 'Developer Tools',
 
-'nav_developer_tools' => 'Developer Tools',
+    'nav_tools' => 'Tools',
 
-'nav_tools' => 'Tools',
+    'nav_design' => 'Design',
 
-'nav_design' => 'Design',
+    'template_manager' => 'Templates',
 
-'template_manager' => 'Templates',
+    'utilities' => 'Utilities',
 
-'utilities' => 'Utilities',
+    'dark_theme' => 'Dark Theme',
 
-'dark_theme' => 'Dark Theme',
+    'light_theme' => 'Light Theme',
 
-'light_theme' => 'Light Theme',
+    'dark' => 'Dark',
 
-'dark' => 'Dark',
+    'light' => 'Light',
 
-'light' => 'Light',
+    'jump_menu_item' => 'Jump Menu',
 
-'jump_menu_item' => 'Jump Menu',
+    'jump_menu_input' => 'Jump To...',
 
-'jump_menu_input' => 'Jump To...',
+    'many_jump_results' => 'More than 10 results found, please refine your search',
 
-'menu_manager' => 'Menu Manager',
+    'menu_manager' => 'Menu Manager',
 
-/* Control Panel */
-'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
+    /* Control Panel */
+    'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
-'add_new' => 'Add New',
+    'add_new' => 'Add New',
 
-'addons' => 'Add-Ons',
+    'addons' => 'Add-Ons',
 
-'all' => 'All',
+    'all' => 'All',
 
-'any' => 'Any',
+    'any' => 'Any',
 
-'back' => 'Back',
+    'back' => 'Back',
 
-'be_careful' => 'BE CAREFUL!',
+    'be_careful' => 'BE CAREFUL!',
 
-'build' => 'Build:',
+    'build' => 'Build:',
 
-'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
+    'offline' => 'Offline',
 
-'categories' => 'Categories',
+    'online' => 'Online',
 
-'channels' => 'Channels',
+    'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
-'choose_wisely' => 'Choose wisely',
+    'categories' => 'Categories',
 
-'click_to_edit' => 'Click to Edit',
+    'channels' => 'Channels',
 
-'close_modal' => 'Close modal',
+    'choose_wisely' => 'Choose wisely',
 
-'consult_user_guide' => 'Consult User Guide',
+    'click_to_edit' => 'Click to Edit',
 
-'control_panel' => 'Control Panel',
+    'close_modal' => 'Close modal',
 
-'copyright' => 'Copyright',
+    'consult_user_guide' => 'Consult User Guide',
 
-'custom_limit' => 'custom limit',
+    'control_panel' => 'Control Panel',
 
-'details' => 'Details',
+    'copyright' => 'Copyright',
 
-'do_not_duplicate' => 'Do not duplicate',
+    'custom_limit' => 'custom limit',
 
-'e_no_css' => 'The requested CSS file could not be opened.',
+    'details' => 'Details',
 
-'edit_quicklinks' => 'Edit Quick Links',
+    'do_not_duplicate' => 'Do not duplicate',
 
-'fields' => 'Fields',
+    'e_no_css' => 'The requested CSS file could not be opened.',
 
-'forgot_password' => 'Forgot your password?',
+    'edit_quicklinks' => 'Edit Quick Links',
 
-'forgotten_password' => 'Forgotten password',
+    'fields' => 'Fields',
 
-'hide_sidebar' => 'hide sidebar',
+    'forgot_password' => 'Forgot your password?',
 
-'invalid_license' => 'INVALID LICENSE',
+    'forgotten_password' => 'Forgotten password',
 
-'license_number' => 'License Number',
+    'hide_sidebar' => 'hide sidebar',
 
-'loading' => 'Loading',
+    'invalid_license' => 'INVALID LICENSE',
 
-'logged_back_in' => 'You are now logged back in!',
+    'license_number' => 'License Number',
 
-'logout' => 'Log-out',
+    'loading' => 'Loading',
 
-'main_menu' => 'CP Home',
+    'logged_back_in' => 'You are now logged back in!',
 
-'my_account' => 'My Account',
+    'logout' => 'Log-out',
 
-'myaccount' => 'My Account',
+    'main_menu' => 'CP Home',
 
-'nav_homepage' => 'CP Home',
+    'my_account' => 'My Account',
 
-'nav_overview' => 'Overview',
+    'myaccount' => 'My Account',
 
-'nav_settings' => 'Settings',
+    'nav_homepage' => 'CP Home',
 
-'new_tab' => 'New Tab',
+    'nav_overview' => 'Overview',
 
-'new_version_available' => 'ExpressionEngine Version %s is now available',
+    'nav_settings' => 'Settings',
 
-'notepad' => 'Notepad',
+    'new_tab' => 'New Tab',
 
-'notepad_no_content' => 'No Notepad Entry. Click to create one.',
+    'new_version_available' => 'ExpressionEngine Version %s is now available',
 
-'page_rendered' => 'Script executed in %x seconds',
+    'notepad' => 'Notepad',
 
-'password' => 'Password',
+    'notepad_no_content' => 'No Notepad Entry. Click to create one.',
 
-'password_for' => 'Password for %s',
+    'page_rendered' => 'Script executed in %x seconds',
 
-'password_label' => 'Password:',
+    'password' => 'Password',
 
-'powered_by' => 'Powered By',
+    'password_for' => 'Password for %s',
 
-'queries_executed' => '%x SQL queries used',
+    'password_label' => 'Password:',
 
-'quick_links' => 'Quick Links',
+    'powered_by' => 'Powered By',
 
-'quicklinks_manager' => 'Quick Links Manager',
+    'queries_executed' => '%x SQL queries used',
 
-'required_field' => 'required field',
+    'quick_links' => 'Quick Links',
 
-'required_fields' => 'Required Fields',
+    'quicklinks_manager' => 'Quick Links Manager',
 
-'retry' => 'Retry?',
+    'required_field' => 'required field',
 
-'reveal_sidebar' => 'show sidebar',
+    'required_fields' => 'Required Fields',
 
-'rights_reserved' => 'All Rights Reserved',
+    'retry' => 'Retry?',
 
-'running_current' => 'ExpressionEngine is up to date',
+    'reveal_sidebar' => 'show sidebar',
 
-'running_current_desc' => 'ExpressionEngine %s is the latest version.',
+    'rights_reserved' => 'All Rights Reserved',
 
-'searching' => 'Searching',
+    'running_current' => 'ExpressionEngine is up to date',
 
-'session_idle' => 'Idle session detected',
+    'running_current_desc' => 'ExpressionEngine %s is the latest version.',
 
-'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
+    'searching' => 'Searching',
 
-'session_idle_not_name' => 'Not %s?',
+    'session_idle' => 'Idle session detected',
 
-'show_hide' => 'Show/Hide All',
+    'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
 
-'submit_email_address' => 'Submit your email address',
+    'session_idle_not_name' => 'Not %s?',
 
-'templates' => 'Templates',
+    'show_hide' => 'Show/Hide All',
 
-'unauthorized' => 'Unauthorized',
+    'submit_email_address' => 'Submit your email address',
 
-'unauthorized_access' => 'You are not authorized to access this page',
+    'templates' => 'Templates',
 
-'machines_only_request' => 'You really shouldn\'t be here. This land is only for bots and machines.',
+    'unauthorized' => 'Unauthorized',
 
-'addon_missing_jump_method' => 'Add-on missing requested jump menu method.',
+    'unauthorized_access' => 'You are not authorized to access this page',
 
-'update_check_btn' => 'Check for Update',
+    'machines_only_request' => 'You really shouldn\'t be here. This land is only for bots and machines.',
 
-'update_btn' => 'Upgrade Now',
+    'addon_missing_jump_method' => 'Add-on missing requested jump menu method.',
 
-'user_account' => 'Member Account',
+    'update_check_btn' => 'Check for Update',
 
-'user_avatar_alt' => 'User Avatar',
+    'update_btn' => 'Upgrade Now',
 
-'user_label' => 'User:',
+    'user_account' => 'Member Account',
 
-'username' => 'Username',
+    'user_avatar_alt' => 'User Avatar',
 
-'username_filter' => 'username',
+    'user_label' => 'User:',
 
-'version_identifier' => 'identifier:',
+    'username' => 'Username',
 
-'version_update_available' => 'A newer version of ExpressionEngine is available',
+    'username_filter' => 'username',
 
-'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
+    'version_identifier' => 'identifier:',
 
-'navigation_toggle' => 'Toggle Navigation',
+    'version_update_available' => 'A newer version of ExpressionEngine is available',
 
-/* Buttons */
-'cancel' => 'Cancel',
+    'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
 
-'accept' => 'Accept',
+    'navigation_toggle' => 'Toggle Navigation',
 
-'decline' => 'Decline',
+    /* Buttons */
+    'cancel' => 'Cancel',
 
-'needs_review' => 'Needs Review',
+    'accept' => 'Accept',
 
-'delete' => 'Delete',
+    'decline' => 'Decline',
 
-'done' => 'Done',
+    'needs_review' => 'Needs Review',
 
-'preview' => 'Preview',
+    'delete' => 'Delete',
 
-'save' => 'Save',
+    'done' => 'Done',
 
-'save_and_new' => 'Save & New',
+    'preview' => 'Preview',
 
-'save_and_close' => 'Save & Close',
+    'save' => 'Save',
 
-'save_changes' => 'Save changes',
+    'save_and_new' => 'Save & New',
 
-'submit' => 'Submit',
+    'save_and_close' => 'Save & Close',
 
-'sync' => 'Synchronize',
+    'save_changes' => 'Save changes',
 
-'update' => 'Update',
+    'submit' => 'Submit',
 
+    'sync' => 'Synchronize',
 
-/* Log */
-'action' => 'Action',
+    'update' => 'Update',
 
-'clear_logs' => 'Clear Log Files',
+    /* Log */
+    'action' => 'Action',
 
-'close' => 'Close',
+    'clear_logs' => 'Clear Log Files',
 
-'date' => 'Date',
+    'close' => 'Close',
 
-'internet_protocol' => 'Internet Protocol',
+    'date' => 'Date',
 
-'ip' => 'IP',
+    'internet_protocol' => 'Internet Protocol',
 
-'ip_address' => 'IP Address',
+    'ip' => 'IP',
 
-'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
+    'ip_address' => 'IP Address',
 
-'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
+    'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
-'member_changed_password' => 'Changed password for "%s" (%d)',
+    'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
 
-'member_anonymized_member' => 'Anonymized member with ID: %d',
+    'member_changed_password' => 'Changed password for "%s" (%d)',
 
-'member_hash_algo_changed' => 'Hash algorithm changed for "%s" (%d)',
+    'member_anonymized_member' => 'Anonymized member with ID: %d',
 
-'member_id' => 'Member ID',
+    'member_hash_algo_changed' => 'Hash algorithm changed for "%s" (%d)',
 
-'member_logged_in' => 'Logged in',
+    'member_id' => 'Member ID',
 
-'member_logged_out' => 'Logged out',
+    'member_logged_in' => 'Logged in',
 
-'member_login_as' => 'Member logged in as "%s" (%d)',
+    'member_logged_out' => 'Logged out',
 
+    'member_login_as' => 'Member logged in as "%s" (%d)',
 
-/* Common */
-'by_date' => 'by date',
+    /* Common */
+    'by_date' => 'by date',
 
-'by_site' => 'by site',
+    'by_site' => 'by site',
 
-'by_username' => 'by username',
+    'by_username' => 'by username',
 
-'channel' => 'Channel',
+    'channel' => 'Channel',
 
-'check_all' => 'Check All',
+    'check_all' => 'Check All',
 
-'clear_all' => 'Clear All',
+    'clear_all' => 'Clear All',
 
-'create' => 'Create',
+    'create' => 'Create',
 
-'create_and_edit' => 'Create and Edit',
+    'create_and_edit' => 'Create and Edit',
 
-'custom_date_range' => 'Custom Date Range',
+    'custom_date_range' => 'Custom Date Range',
 
-'date_added' => 'Date Added',
+    'date_added' => 'Date Added',
 
-'edit' => 'Edit',
+    'edit' => 'Edit',
 
-'ee_wiki' => 'EE Wiki',
+    'ee_wiki' => 'EE Wiki',
 
-'entry' => 'Entry',
+    'entry' => 'Entry',
 
-'limit_by' => 'limit by',
+    'limit_by' => 'limit by',
 
-'keyword_search' => 'Keyword Search',
+    'keyword_search' => 'Keyword Search',
 
-'manage' => 'Manage',
+    'manage' => 'Manage',
 
-'modify' => 'Modify',
+    'modify' => 'Modify',
 
-'most_recent_comment' => 'Most Recent Comment',
+    'most_recent_comment' => 'Most Recent Comment',
 
-'most_recent_entry' => 'Most Recent Entry',
+    'most_recent_entry' => 'Most Recent Entry',
 
-'no_search_results' => 'No Results Found',
+    'no_search_results' => 'No Results Found',
 
-'or_delete' => 'or delete',
+    'or_delete' => 'or delete',
 
-'page' => 'Page',
+    'page' => 'Page',
 
-'recent_comments' => 'Recent Comments',
+    'recent_comments' => 'Recent Comments',
 
-'recent_entries' => 'Recent Entries',
+    'recent_entries' => 'Recent Entries',
 
-'recent_members' => 'Recent Members',
+    'recent_members' => 'Recent Members',
 
-'results' => 'results',
+    'results' => 'results',
 
-'select_row' => 'Select Row',
+    'select_row' => 'Select Row',
 
-'select_all' => 'Select All',
+    'select_all' => 'Select All',
 
-'search_in' => 'Search in',
+    'search_in' => 'Search in',
 
-'show' => 'Show',
+    'show' => 'Show',
 
-'search_in_filter' => 'search in',
+    'search_in_filter' => 'search in',
 
-'search_titles_only' => 'Search Titles Only',
+    'search_titles_only' => 'Search Titles Only',
 
-'columns_filter' => 'Columns',
+    'columns_filter' => 'Columns',
 
-'perpage_filter' => 'show',
+    'perpage_filter' => 'show',
 
-'date_filter' => 'Date',
+    'date_filter' => 'Date',
 
-'group_filter' => 'group',
+    'group_filter' => 'group',
 
-'type_filter' => 'type',
+    'type_filter' => 'type',
 
-'site' => 'Site',
+    'site' => 'Site',
 
-'site_filter' => 'site',
+    'site_filter' => 'site',
 
-'status' => 'Status',
+    'status' => 'Status',
 
-'switch' => 'Switch',
+    'switch' => 'Switch',
 
-'template' => 'Template',
+    'template' => 'Template',
 
-'template_group' => 'Template Group',
+    'template_group' => 'Template Group',
 
-'total_entries' => 'total entries',
+    'total_entries' => 'total entries',
 
-'type_phrase' => 'type phrase...',
+    'type_phrase' => 'type phrase...',
 
-'user_guide' => 'User Guide',
+    'user_guide' => 'User Guide',
 
-'view' => 'View',
+    'view' => 'View',
 
-'with_selected' => 'with selected',
+    'with_selected' => 'with selected',
 
-'export' => 'Export',
+    'export' => 'Export',
 
-'btn_exporting' => 'Exporting',
+    'btn_exporting' => 'Exporting',
 
-'btn_downloading' => 'Downloading',
+    'btn_downloading' => 'Downloading',
 
-'will_be_logged' => 'This action will be logged',
+    'will_be_logged' => 'This action will be logged',
 
-'important' => 'Important!',
+    'important' => 'Important!',
 
-'view_as' => 'View as ',
+    'view_as' => 'View as ',
 
-'viewtype_list' => 'List',
+    'viewtype_list' => 'List',
 
-'viewtype_thumb' => 'Thumbnails',
+    'viewtype_thumb' => 'Thumbnails',
 
-'viewtype_hybrid' => 'Hybrid',
+    'viewtype_hybrid' => 'Hybrid',
 
-/* Sites and Channels */
-'avatar_path' => 'Avatar Path',
+    /* Sites and Channels */
+    'avatar_path' => 'Avatar Path',
 
-'edit_channels' => 'Edit Channels',
+    'edit_channels' => 'Edit Channels',
 
-'edit_sites' => 'Edit Sites',
+    'edit_sites' => 'Edit Sites',
 
-'not_writable_path' => 'The following folders are not writeable:',
+    'not_writable_path' => 'The following folders are not writeable:',
 
-'photo_path' => 'Member Photo Path',
+    'photo_path' => 'Member Photo Path',
 
-'prv_msg_upload_path' => 'Private Message Upload Path',
+    'prv_msg_upload_path' => 'Private Message Upload Path',
 
-'sig_img_path' => 'Signature Image Path',
+    'sig_img_path' => 'Signature Image Path',
 
-'site_id' => 'Site ID',
+    'site_id' => 'Site ID',
 
-'site_specific_data' => 'This data is site specific. If you wish to select or change data for another site, then use the \'Sites\' menu tab to switch to that site.',
+    'site_specific_data' => 'This data is site specific. If you wish to select or change data for another site, then use the \'Sites\' menu tab to switch to that site.',
 
-'sites' => 'Sites',
+    'sites' => 'Sites',
 
-'view_site' => 'View Site',
+    'view_site' => 'View Site',
 
-'add_site' => 'Add Site',
+    'add_site' => 'Add Site',
 
+    /* learning EE lang vars */
+    'building_ee_site_01' => 'Building An ExpressionEngine Site - Chapter 01',
 
-/* learning EE lang vars */
-'building_ee_site_01' => 'Building An ExpressionEngine Site - Chapter 01',
+    'channel_template_relationship' => 'Channel Template Relationship',
 
-'channel_template_relationship' => 'Channel Template Relationship',
+    'channels_custom_fields' => 'Channels and Custom Fields',
 
-'channels_custom_fields' => 'Channels and Custom Fields',
+    'community_resources' => 'Community Resources',
 
-'community_resources' => 'Community Resources',
+    'community_tutorials' => 'Community Tutorials',
 
-'community_tutorials' => 'Community Tutorials',
+    'designing_ee_architecture' => 'Designing and ExpressionEngine Architecture',
 
-'designing_ee_architecture' => 'Designing and ExpressionEngine Architecture',
+    'devot_ee' => 'Devot-EE',
 
-'devot_ee' => 'Devot-EE',
+    'documentation' => 'Documentation',
 
-'documentation' => 'Documentation',
+    'ee_cp_overview' => 'ExpressionEngine Control Panel Overview',
 
-'ee_cp_overview' => 'ExpressionEngine Control Panel Overview',
+    'ee_insider' => 'EE Insider',
 
-'ee_insider' => 'EE Insider',
+    'ee_podcast' => 'EE Podcast',
 
-'ee_podcast' => 'EE Podcast',
+    'ee_screencasts' => 'EE Screencasts',
 
-'ee_screencasts' => 'EE Screencasts',
+    'ee_seach_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
 
-'ee_seach_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
+    'installing_ee' => 'Installing ExpressionEngine',
 
-'installing_ee' => 'Installing ExpressionEngine',
+    'introduction_to_templates' => 'Introduction to Templates',
 
-'introduction_to_templates' => 'Introduction to Templates',
+    'knowledge_base' => 'Knowledge Base',
 
-'knowledge_base' => 'Knowledge Base',
+    'my_downloads' => 'My Downloads',
 
-'my_downloads' => 'My Downloads',
+    'support' => 'Support',
 
-'support' => 'Support',
+    'support_forums' => 'Support Forums',
 
-'support_forums' => 'Support Forums',
+    'train_ee' => 'Train-EE',
 
-'train_ee' => 'Train-EE',
+    'troubleshooting_file_uploads' => 'Troubleshooting Problems with File Uploads',
 
-'troubleshooting_file_uploads' => 'Troubleshooting Problems with File Uploads',
+    'videos' => 'Videos',
 
-'videos' => 'Videos',
+    'wiki' => 'Wiki',
 
-'wiki' => 'Wiki',
+    /* License Errors */
+    'corrupt_license_file' => 'The license file provided is missing data. <a href="%s">Please upload your license.</a>',
 
+    'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
 
-/* License Errors */
-'corrupt_license_file' => 'The license file provided is missing data. <a href="%s">Please upload your license.</a>',
+    'invalid_signature' => 'The license file provided has an invalid signature. <a href="%s">Please upload your license.</a>',
 
-'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
+    'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
 
-'invalid_signature' => 'The license file provided has an invalid signature. <a href="%s">Please upload your license.</a>',
+    'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
-'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
+    /* CP Errors */
+    '404_does_not_exist' => '404: Item does not exist',
 
-'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
+    '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
 
+    /* Common */
+    'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 
-/* CP Errors */
-'404_does_not_exist' => '404: Item does not exist',
+    'auto_br' => 'Auto line break',
 
-'404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
+    'btn_authenticate' => 'Authenticate',
 
+    'btn_authenticate_and_save' => 'Authenticate &amp; Save',
 
-/* Common */
-'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
+    'btn_canceling' => 'Canceling...',
 
-'auto_br' => 'Auto line break',
+    'btn_fix_errors' => 'Errors Found',
 
-'btn_authenticate' => 'Authenticate',
+    'btn_save' => 'Save %s',
 
-'btn_authenticate_and_save' => 'Authenticate &amp; Save',
+    'btn_save_and_close' => 'Save &amp; Close',
 
-'btn_canceling' => 'Canceling...',
+    'btn_saving' => 'Saving...',
 
-'btn_fix_errors' => 'Errors Found',
+    'clear_filters' => 'Clear filters',
 
-'btn_save' => 'Save %s',
+    'col_id' => 'ID#',
 
-'btn_save_and_close' => 'Save &amp; Close',
+    'cp_message_issue' => 'An error occurred',
 
-'btn_saving' => 'Saving...',
+    'cp_message_success' => 'Action was a success',
 
-'clear_filters' => 'Clear filters',
+    'cp_message_warn' => 'Warning',
 
-'col_id' => 'ID#',
+    'create_new' => 'Create New',
 
-'cp_message_issue' => 'An error occurred',
+    'create_new_channel' => 'Create New Channel',
 
-'cp_message_success' => 'Action was a success',
+    'current' => 'Current',
 
-'cp_message_warn' => 'Warning',
+    'description' => 'Description',
 
-'create_new' => 'Create New',
+    'disable' => 'Disable',
 
-'create_new_channel' => 'Create New Channel',
+    'edit' => 'Edit',
 
-'current' => 'Current',
+    'enable' => 'Enable',
 
-'description' => 'Description',
+    'filter_authors' => 'filter authors',
 
-'disable' => 'Disable',
+    'filter_categories' => 'filter categories',
 
-'edit' => 'Edit',
+    'filter_channels' => 'filter channels',
 
-'enable' => 'Enable',
+    'filters' => 'filters',
 
-'filter_authors' => 'filter authors',
+    'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 
-'filter_categories' => 'filter categories',
+    'image' => 'Image',
 
-'filter_channels' => 'filter channels',
+    'keyword_filter' => 'Search',
 
-'filters' => 'filters',
+    'log_out' => 'Log Out',
 
-'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
+    'menu_create' => 'Create',
 
-'image' => 'Image',
+    'menu_edit' => 'Edit',
 
-'keyword_filter' => 'Search',
+    'menu_files' => 'Files',
 
-'log_out' => 'Log Out',
+    'menu_members' => 'Members',
 
-'menu_create' => 'Create',
+    'my_profile' => 'My Profile',
 
-'menu_edit' => 'Edit',
+    'name' => 'Name',
 
-'menu_files' => 'Files',
+    'short_name' => 'Short name',
 
-'menu_members' => 'Members',
+    'name_your_site' => 'Name your site',
 
-'my_profile' => 'My Profile',
+    'new' => 'New',
 
-'name' => 'Name',
+    'new_channel' => 'New Channel',
 
-'short_name' => 'Short name',
+    'new_link' => 'New Link',
 
-'name_your_site' => 'Name your site',
+    'new_site' => 'New Site',
 
-'new' => 'New',
+    'no_channels' => 'No <b>Channels</b> found.',
 
-'new_channel' => 'New Channel',
+    'no_found' => 'No <b>%s</b> found.',
 
-'new_link' => 'New Link',
+    'no_roles_with_design_access_found' => 'No <b>Roles</b> with <b>template manager access</b> found.',
 
-'new_site' => 'New Site',
+    'no_rows_returned' => 'No rows returned',
 
-'no_channels' => 'No <b>Channels</b> found.',
+    'none' => 'None',
 
-'no_found' => 'No <b>%s</b> found.',
+    'preferences_updated' => 'Preferences updated',
 
-'no_roles_with_design_access_found' => 'No <b>Roles</b> with <b>template manager access</b> found.',
+    'preferences_updated_desc' => 'Your preferences have been saved successfully.',
 
-'no_rows_returned' => 'No rows returned',
+    'remove' => 'Remove',
 
-'none' => 'None',
+    'rev_author' => 'Author',
 
-'preferences_updated' => 'Preferences updated',
+    'rev_date' => 'Date',
 
-'preferences_updated_desc' => 'Your preferences have been saved successfully.',
+    'rev_id' => '#',
 
-'remove' => 'Remove',
+    'revisions' => 'Revisions',
 
-'rev_author' => 'Author',
+    'search_results' => 'Search Results',
 
-'rev_date' => 'Date',
+    'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
-'rev_id' => '#',
+    'settings_save_error' => 'Attention: Settings not saved',
 
-'revisions' => 'Revisions',
+    'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
-'search_results' => 'Search Results',
+    'success' => 'Success',
 
-'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
+    'type' => 'Type',
 
-'settings_save_error' => 'Attention: Settings not saved',
+    'url' => 'URL',
 
-'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
+    'url_title' => 'URL Title',
 
-'success' => 'Success',
+    'url_title_lc' => 'URL title',
 
-'type' => 'Type',
+    'used_in_cp_only' => 'Used in the control panel only.',
 
-'url' => 'URL',
+    'view_all' => 'View All',
 
-'url_title' => 'URL Title',
+    'xhtml' => 'XHTML',
 
-'url_title_lc' => 'URL title',
+    /* Members Menu */
 
-'used_in_cp_only' => 'Used in the control panel only.',
+    'new_member' => 'New Member',
 
-'view_all' => 'View All',
+    'all_members' => 'All Members',
 
-'xhtml' => 'XHTML',
+    'pending_members' => 'Pending Members',
 
-/* Members Menu */
+    'ban_management' => 'Ban Management',
 
-'new_member' => 'New Member',
+    'roles' => 'Roles',
 
-'all_members' => 'All Members',
+    'custom_member_fields' => 'Member Fields',
 
-'pending_members' => 'Pending Members',
+    /* Footer */
+    'about_expressionengine' => 'About ExpressionEngine',
 
-'ban_management' => 'Ban Management',
+    'authenticating' => 'authenticating...',
 
-'roles' => 'Roles',
+    'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
 
-'custom_member_fields' => 'Member Fields',
+    'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
 
-/* Footer */
-'about_expressionengine' => 'About ExpressionEngine',
+    'checking_for_updates' => 'Checking for updates...',
 
-'authenticating' => 'authenticating...',
+    'download' => 'download',
 
-'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
+    'installed' => 'Installed',
 
-'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
+    'latest_version' => 'Latest',
 
-'checking_for_updates' => 'Checking for updates...',
+    'license_no' => 'License #',
 
-'download' => 'download',
+    'login' => 'Log In',
 
-'installed' => 'Installed',
+    'new_ticket' => 'Get Support',
 
-'latest_version' => 'Latest',
+    'not_entered' => 'not entered',
 
-'license_no' => 'License #',
+    'out_of_date' => 'out of date',
 
-'login' => 'Log In',
+    'out_of_date_recommended' => 'Recommended Upgrade',
 
-'new_ticket' => 'Get Support',
+    'out_of_date_upgrade' => 'New version found',
 
-'not_entered' => 'not entered',
+    'out_of_date_upgrade_major' => 'New major version available',
 
-'out_of_date' => 'out of date',
+    'owned_by' => 'Owned by',
 
-'out_of_date_recommended' => 'Recommended Upgrade',
+    'recommended_upgrade' => '<b>Recommended</b> upgrade.',
 
-'out_of_date_upgrade' => 'New version found',
+    'register_now' => 'Register Now',
 
-'out_of_date_upgrade_major' => 'New major version available',
+    'report_bug' => 'Report Bug',
 
-'owned_by' => 'Owned by',
+    'whats_new' => 'What\'s New?',
 
-'recommended_upgrade' => '<b>Recommended</b> upgrade.',
+    'scroll_to_top' => 'scroll to top',
 
-'register_now' => 'Register Now',
+    'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
-'report_bug' => 'Report Bug',
+    'log_into' => 'Log into %s',
 
-'whats_new' => 'What\'s New?',
+    'up_to_date' => 'Up to date!',
 
-'scroll_to_top' => 'scroll to top',
+    'version' => 'Version',
 
-'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+    /* confirm removal modal */
+    'btn_confirm_and_remove' => 'Confirm, and Remove',
 
-'up_to_date' => 'Up to date!',
+    'btn_confirm_and_remove_working' => 'Removing...',
 
-'version' => 'Version',
+    'confirm_removal' => 'Confirm Removal',
 
+    'confirm_removal_desc' => 'You are attempting to remove the following items, please confirm this action.',
 
-/* confirm removal modal */
-'btn_confirm_and_remove' => 'Confirm, and Remove',
+    'btn_confirm_and_save' => 'Confirm, and Save',
 
-'btn_confirm_and_remove_working' => 'Removing...',
+    'btn_confirm_and_save_working' => 'Saving...',
 
-'confirm_removal' => 'Confirm Removal',
+    /* confirm delete modal */
+    'btn_confirm_and_delete' => 'Confirm and Delete',
 
-'confirm_removal_desc' => 'You are attempting to remove the following items, please confirm this action.',
+    'btn_confirm_and_delete_working' => 'Deleting...',
 
-'btn_confirm_and_save' => 'Confirm, and Save',
+    'confirm_delete' => 'Are You Sure?',
 
-'btn_confirm_and_save_working' => 'Saving...',
+    'confirm_deletion_desc' => 'You are attempting to delete the following items:',
 
-/* confirm delete modal */
-'btn_confirm_and_delete' => 'Confirm and Delete',
+    /*confirm show all modal */
+    'all_items' => 'All %d items',
 
-'btn_confirm_and_delete_working' => 'Deleting...',
+    'confirm_show_all' => 'Confirm Show All',
 
-'confirm_delete' => 'Are You Sure?',
+    'confirm_show_all_btn' => 'Show All',
 
-'confirm_deletion_desc' => 'You are attempting to delete the following items:',
+    'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 
-/*confirm show all modal */
-'all_items' => 'All %d items',
+    /* HTML Buttons */
+    'html_btn_anchor' => 'Link',
 
-'confirm_show_all' => 'Confirm Show All',
+    'html_btn_blockquote' => 'Blockquote',
 
-'confirm_show_all_btn' => 'Show All',
+    'html_btn_bold' => 'Bold text',
 
-'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
+    'html_btn_ins' => 'Insert text',
 
+    'html_btn_italic' => 'Italic text',
 
-/* HTML Buttons */
-'html_btn_anchor' => 'Link',
+    'html_btn_ol' => 'Ordered list',
 
-'html_btn_blockquote' => 'Blockquote',
+    'html_btn_picture' => 'Image',
 
-'html_btn_bold' => 'Bold text',
+    'html_btn_strike' => 'Strikethrough text',
 
-'html_btn_ins' => 'Insert text',
+    'html_btn_ul' => 'Unordered list',
 
-'html_btn_italic' => 'Italic text',
+    'html_button_ajax_reorder_fail' => 'Attention: Failed to save html buttons order',
 
-'html_btn_ol' => 'Ordered list',
+    'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
 
-'html_btn_picture' => 'Image',
+    /* Search Reindex tip */
 
-'html_btn_strike' => 'Strikethrough text',
+    'search_reindex_tip' => 'Search Reindex',
 
-'html_btn_ul' => 'Unordered list',
+    'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
 
-'html_button_ajax_reorder_fail' => 'Attention: Failed to save html buttons order',
+    'reindex_not_needed' => 'Reindexing Not Necessary',
 
-'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
+    'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-/* Search Reindex tip */
+    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/cp/utilities/reindex.html">user guide</a> for more details.',
 
-'search_reindex_tip' => 'Search Reindex',
+    /* Permissions */
 
-'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
+    'can_create_templates' => 'Create templates',
 
-'reindex_not_needed' => 'Reindexing Not Necessary',
+    'can_edit_templates' => 'Edit templates',
 
-'reindex_not_needed_desc' => 'Your search index is up-to-date!',
+    'can_delete_templates' => 'Delete templates',
 
-'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/cp/utilities/reindex.html">user guide</a> for more details.',
+    'can_manage_settings' => 'Manage settings & access',
 
-/* Permissions */
+    'can_create_entries' => 'Create entries',
 
-'can_create_templates' => 'Create templates',
+    'can_edit_self_entries' => 'Edit own entries',
 
-'can_edit_templates' => 'Edit templates',
+    'can_delete_self_entries' => 'Delete own entries',
 
-'can_delete_templates' => 'Delete templates',
+    'can_edit_other_entries' => 'Edit entries, by others',
 
-'can_manage_settings' => 'Manage settings & access',
+    'can_delete_all_entries' => 'Delete entries, by others',
 
-'can_create_entries' => 'Create entries',
+    'can_assign_post_authors' => 'Change entry author',
 
-'can_edit_self_entries' => 'Edit own entries',
+    /* Dashboard Widgets */
 
-'can_delete_self_entries' => 'Delete own entries',
+    'dashboard' => 'Dashboard',
 
-'can_edit_other_entries' => 'Edit entries, by others',
+    'save_dashboard_layout' => 'Save layout',
 
-'can_delete_all_entries' => 'Delete entries, by others',
+    'edit_dashboard_layout' => 'Edit layout',
 
-'can_assign_post_authors' => 'Change entry author',
+    'dashboard_layout_saved' => 'Layout saved',
 
-/* Dashboard Widgets */
+    'dashboard_layout_save_error' => 'Could not save layout',
 
-'dashboard' => 'Dashboard',
-
-'save_dashboard_layout' => 'Save layout',
-
-'edit_dashboard_layout' => 'Edit layout',
-
-'dashboard_layout_saved' => 'Layout saved',
-
-'dashboard_layout_save_error' => 'Could not save layout',
-
-'dashboard_needs_some_widgets' => 'Please enable at least one widget',
-
+    'dashboard_needs_some_widgets' => 'Please enable at least one widget',
 
 );
 

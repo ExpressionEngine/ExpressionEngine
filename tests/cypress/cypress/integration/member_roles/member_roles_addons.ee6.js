@@ -108,12 +108,9 @@ context('Test Member roles Addons ', () => {
 		btn.click()
 		btn.next('.dropdown').find('a:contains("Uninstall")').click()
 
-		/*page.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
-		cy.hasNoErrors()*/
+		addonManager.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
+		cy.hasNoErrors()
 		
-		/*page.get('modal_submit_button').click()*/
-
-		cy.get('.button--danger').click();
 		// The filter should not change
 		page.hasAlert()
 

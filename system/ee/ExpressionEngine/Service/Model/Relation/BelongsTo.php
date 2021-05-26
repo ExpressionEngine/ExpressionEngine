@@ -16,109 +16,105 @@ use ExpressionEngine\Service\Model\Association\ToOne;
 /**
  * BelongsTo Relation
  */
-class BelongsTo extends Relation {
+class BelongsTo extends Relation
+{
+    /**
+     *
+     */
+    public function createAssociation()
+    {
+        return new ToOne($this);
+    }
 
-	/**
-	 *
-	 */
-	public function createAssociation()
-	{
-		return new ToOne($this);
-	}
+    /**
+     *
+     */
+    public function canSaveAcross()
+    {
+        return false;
+    }
 
-	/**
-	 *
-	 */
-	public function canSaveAcross()
-	{
-		return FALSE;
-	}
+    /**
+     *
+     */
+    public function fillLinkIds(Model $source, Model $target)
+    {
+        list($from, $to) = $this->getKeys();
 
-	/**
-	 *
-	 */
-	public function fillLinkIds(Model $source, Model $target)
-	{
-		list($from, $to) = $this->getKeys();
+        $source->fill(array($from => $target->$to));
+    }
 
-		$source->fill(array($from => $target->$to));
-	}
+    /**
+    * Insert a database link between the model and targets
+    */
+    public function insert(Model $source, $targets)
+    {
+        // nada;
+    }
 
-	/**
-	* Insert a database link between the model and targets
-	*/
-	public function insert(Model $source, $targets)
-	{
-		// nada;
-	}
+    /**
+    * Drop the database link between the model and targets, potentially
+    * triggering a soft delete.
+    */
+    public function drop(Model $source, $targets = null)
+    {
+        // nada;
+    }
 
-	/**
-	* Drop the database link between the model and targets, potentially
-	* triggering a soft delete.
-	*/
-	public function drop(Model $source, $targets = NULL)
-	{
-		// nada;
-	}
+    /**
+    * Set the relationship
+    */
+    public function set(Model $source, $targets)
+    {
+        // nada;
+    }
 
-	/**
-	* Set the relationship
-	*/
-	public function set(Model $source, $targets)
-	{
-		// nada;
-	}
+    /**
+     *
+     */
+    public function linkIds(Model $source, Model $target)
+    {
+        list($from, $to) = $this->getKeys();
 
+        $source->$from = $target->$to;
+    }
 
-	/**
-	 *
-	 */
-	public function linkIds(Model $source, Model $target)
-	{
-		list($from, $to) = $this->getKeys();
+    /**
+     *
+     */
+    public function unlinkIds(Model $source, Model $target)
+    {
+        list($from, $_) = $this->getKeys();
 
-		$source->$from = $target->$to;
-	}
+        // We are explicitly calling the __set methods because sometimes
+        // it does not get called, causing an error starting in PHP 7.4
+        if ($this->is_weak) {
+            $source->__set($from, null);
+        } else {
+            $source->__set($from, null);
+        }
+    }
 
-	/**
-	 *
-	 */
-	public function unlinkIds(Model $source, Model $target)
-	{
-		list($from, $_) = $this->getKeys();
+    /**
+     *
+     */
+    public function markLinkAsClean(Model $source, Model $target)
+    {
+        list($from, $_) = $this->getKeys();
 
-		// We are explicitly calling the __set methods because sometimes
-		// it does not get called, causing an error starting in PHP 7.4
-		if ($this->is_weak)
-		{
-			$source->__set($from, NULL);
-		}
-		else
-		{
-			$source->__set($from, NULL);
-		}
-	}
+        $source->markAsClean($from);
+    }
 
-	/**
-	 *
-	 */
-	public function markLinkAsClean(Model $source, Model $target)
-	{
-		list($from, $_) = $this->getKeys();
+    /**
+     *
+     */
+    protected function deriveKeys()
+    {
+        $to = $this->to_key ?: $this->to_primary_key;
+        $from = $this->from_key ?: $to;
 
-		$source->markAsClean($from);
-	}
-
-	/**
-	 *
-	 */
-	protected function deriveKeys()
-	{
-		$to   = $this->to_key   ?: $this->to_primary_key;
-		$from = $this->from_key ?: $to;
-
-		return array($from, $to);
-	}
+        return array($from, $to);
+    }
 }
 
 // EOF

@@ -1,0 +1,40 @@
+
+
+// $s-xs: 4px;
+// $s-s: 8px;
+// $s-m: 16px;
+// $s-l: 32px;
+// $s-xl: 64px;
+
+
+// Space
+$s-xs: 5px;
+$s-s: 10px;
+$s-m: 20px;
+$s-l: 40px;
+$s-xl: 80px;
+
+// Inset space. Basically padding
+$s-inset-xs: $s-xs $s-xs $s-xs $s-xs;
+$s-inset-s:  $s-s $s-s $s-s $s-s;
+$s-inset-m:  $s-m $s-m $s-m $s-m;
+$s-inset-l:  $s-l $s-l $s-l $s-l;
+$s-inset-xl: $s-xl $s-xl $s-xl $s-xl;
+
+// Inset squashed space. Same as inset, but with more horizontal padding.
+$h-multiplier: 1.5;
+
+// Squashed space. More padding on the x axis.
+$sq-xs: round($s-xs * $h-multiplier);
+$sq-s:  round($s-s * $h-multiplier);
+$sq-m:  round($s-m * $h-multiplier);
+$sq-l:  round($s-l * $h-multiplier);
+$sq-xl: round($s-xl * $h-multiplier);
+
+$sq-inset-xs: $s-xs $sq-xs $s-xs $sq-xs;
+$sq-inset-s:  $s-s  $sq-s  $s-s  $sq-s;
+$sq-inset-m:  $s-m  $sq-m  $s-m  $sq-m;
+$sq-inset-l:  $s-l  $sq-l  $s-l  $sq-l;
+$sq-inset-xl: $s-xl $sq-xl $s-xl $sq-xl;
+
+

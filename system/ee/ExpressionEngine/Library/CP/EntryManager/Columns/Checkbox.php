@@ -18,31 +18,31 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Checkbox extends Column
 {
-	public function getTableColumnLabel()
-	{
-		return 'checkbox';
-	}
+    public function getTableColumnLabel()
+    {
+        return 'checkbox';
+    }
 
-	public function getTableColumnConfig()
-	{
-		return [
-			'type' => Table::COL_CHECKBOX
-		];
-	}
+    public function getTableColumnConfig()
+    {
+        return [
+            'type' => Table::COL_CHECKBOX
+        ];
+    }
 
-	public function renderTableCell($data, $field_id, $entry)
-	{
-		$title = ee('Format')->make('Text', $entry->title)->convertToEntities();
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
 
-		return [
-			'name' => 'selection[]',
-			'value' => $entry->getId(),
-			'disabled' => ! $this->canEdit($entry) && ! $this->canDelete($entry),
-			'data' => [
-				'title' => $title,
-				'channel-id' => $entry->Channel->getId(),
-				'confirm' => lang('entry') . ': <b>' . $title . '</b>'
-			]
-		];
-	}
+        return [
+            'name' => 'selection[]',
+            'value' => $entry->getId(),
+            'disabled' => ! $this->canEdit($entry) && ! $this->canDelete($entry),
+            'data' => [
+                'title' => $title,
+                'channel-id' => $entry->Channel->getId(),
+                'confirm' => lang('entry') . ': <b>' . $title . '</b>'
+            ]
+        ];
+    }
 }
