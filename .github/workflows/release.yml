@@ -3,34 +3,19 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - '6.0.6'
 
 jobs:
   build:
-    name: Build Release
+    #if: github.base_ref == '6.x'
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: olegtarasov/get-tag@v2
+      - uses: olegtarasov/get-tag@v2.1
         id: tagName
 
-      - name: Checkout build tools
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          repository: EllisLab/ExpressionEngine-Build
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: build-tools
-          ref: npm-update # Remove once testing is complete
-
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          repository: ExpressionEngine/ExpressionEngine-User-Guide
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: ExpressionEngine-User-Guide
-          ref: 6.x
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -49,11 +34,10 @@ jobs:
       - name: Run build process
         working-directory: build-tools
         env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
-        run: gulp default --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
+        run: gulp app --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
@@ -61,10 +45,17 @@ jobs:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds
 
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
+          name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
+          allowUpdates: true
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
+
       - name: Directory Listing on Failure
         if: failure()
         run: |
           ls -latr
-          ls -latr ExpressionEngine-User-Guide
           ls -latr build-tools
           ls -latr build-tools/builds
