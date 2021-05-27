@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -514,8 +514,8 @@ class Categories extends AbstractCategoriesController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('categories')->compile() => lang('categories'),
-            //ee('CP/URL')->make('categories/group/' . $cat_group->group_id)->compile() => $cat_group->group_name,
-            '' => is_null($category_id) ? lang('create_category') : lang('edit_category')
+            ee('CP/URL')->make('categories/group/' . $cat_group->group_id)->compile() => $cat_group->group_name,
+            '' => is_null($category_id) ? lang('create') : lang('edit')
         );
 
         ee()->cp->render('settings/form', $vars);
