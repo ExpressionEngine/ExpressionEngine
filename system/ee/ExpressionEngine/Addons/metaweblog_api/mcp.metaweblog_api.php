@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -185,11 +185,6 @@ class Metaweblog_api_mcp
                 $channels[$channel->channel_id] = $channel->channel_title;
             });
 
-        // Filtering Javascript
-        $cid = ($id == 'new') ? null : $id;
-        $this->filtering_menus($cid);
-        ee()->javascript->compile();
-
         $values = array();
 
         if ($id == 'new') {
@@ -209,6 +204,11 @@ class Metaweblog_api_mcp
                 $values[$name] = $value;
             }
         }
+
+        // Filtering Javascript
+        $cid = ($id == 'new') ? null : $values['channel_id'];
+        $this->filtering_menus($cid);
+        ee()->javascript->compile();
 
         // Get the directories
         $upload_directories = array(0 => lang('none'));
@@ -523,16 +523,16 @@ class Metaweblog_api_mcp
                 array('0', lang('none'))
             );
 
+            if (empty($id)) {
+                $id = $channel->channel_id;
+            }
+
             foreach ($channel->getAllCustomFields() as $field) {
                 if (! in_array($field->field_type, $allowed_fieldtypes)) {
                     continue;
                 }
 
-                if ($id) {
-                    if ($channel->channel_id == $id) {
-                        $this->_field_list[$field->field_id] = $field->field_label;
-                    }
-                } elseif (empty($this->_field_list)) {
+                if ($channel->channel_id == $id) {
                     $this->_field_list[$field->field_id] = $field->field_label;
                 }
 

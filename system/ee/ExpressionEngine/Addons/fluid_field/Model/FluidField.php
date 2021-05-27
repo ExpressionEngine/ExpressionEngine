@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -101,8 +101,16 @@ class FluidField extends Model
 
     public function fetchFieldData()
     {
-        ee()->db->where('id', $this->field_data_id);
-        $rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+        if (ee()->extensions->active_hook('fluid_field_get_field_data') === true) {
+            $rows = ee()->extensions->call(
+                'fluid_field_get_field_data',
+                $this->field_id,
+                $this->field_data_id
+            );
+        } else {
+            ee()->db->where('id', $this->field_data_id);
+            $rows = ee()->db->get('channel_data_field_' . $this->field_id)->result_array();
+        }
 
         if (! empty($rows)) {
             return $rows[0];
@@ -115,6 +123,14 @@ class FluidField extends Model
     {
         if (($field_data = ee()->session->cache(__CLASS__, $this->getSessionCacheKey(), false)) === false) {
             $field_data = $this->setFieldData($this->fetchFieldData());
+        }
+
+        if (ee()->extensions->active_hook('fluid_field_get_all_data') === true) {
+            $field_data = ee()->extensions->call(
+                'fluid_field_get_all_data',
+                $field_data,
+                $fluid_field_id
+            );
         }
 
         return $field_data;

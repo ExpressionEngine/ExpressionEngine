@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -104,7 +104,7 @@ class Access extends Profile
         static $permissions = [];
 
         if (empty($permissions)) {
-            $primary_icon = ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
+            $primary_icon = ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
 
             $allowed = ee('Model')->get('Permission')
                 ->with('Role')
@@ -195,7 +195,7 @@ class Access extends Profile
             $display = ee('Format')->make('Text', 'Super Admin')->convertToEntities();
 
             if (1 == $this->member->role_id) {
-                $display .= ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
+                $display .= ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
             }
             $permissions[$permission][] = $display;
         }

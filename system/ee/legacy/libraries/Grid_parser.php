@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -275,6 +275,16 @@ class Grid_parser
         } catch (EE_Relationship_exception $e) {
             $relationship_parser = null;
         }
+        
+        if (empty($display_entry_data)) {
+            if (strpos($tagdata, 'if no_results') !== false && preg_match("/" . LD . "if no_results" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", $tagdata, $match)) {
+                if (stristr($match[1], LD . 'if')) {
+                    $match[0] = ee('Variables/Parser')->getFullTag($tagdata, $match[0], LD . 'if', LD . '/if' . RD);
+                }
+                ee()->TMPL->no_results = substr($match[0], strlen(LD . "if no_results" . RD), -strlen(LD . '/' . "if" . RD));
+                return ee()->TMPL->no_results();
+            }
+        }
 
         foreach ($display_entry_data as $row) {
             $grid_row = $tagdata;
@@ -473,6 +483,12 @@ class Grid_parser
                 $replace_data = $row[$match[2]];
             } else {
                 $replace_data = $match[0];
+                if (isset($row[$field['field_name']]) && !empty($field['modifier'])) {
+                    $parse_fnc = 'replace_' . $field['modifier'];
+                    if (method_exists(ee('Variables/Parser'), $parse_fnc)) {
+                        $replace_data = ee('Variables/Parser')->{$parse_fnc}($row[$field['field_name']], $field['params']);
+                    }
+                }
             }
 
             // Finally, do the replacement
