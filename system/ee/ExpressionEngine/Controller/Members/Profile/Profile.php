@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -51,7 +51,7 @@ class Profile extends CP_Controller
         $this->query_string = $qs;
         $this->base_url = ee('CP/URL')->make('members/profile/settings');
         $this->base_url->setQueryStringVariable('id', $id);
-        $this->member = ee('Model')->get('Member', $id)->first();
+        $this->member = ee('Model')->get('Member', $id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
         if (is_null($this->member)) {
             show_404();
@@ -67,7 +67,7 @@ class Profile extends CP_Controller
 
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
-            ee('CP/URL')->make('members/profile', $qs)->compile() => lang('profile')//$this->member->screen_name
+            ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name
         );
 
         ee()->view->header = array(
