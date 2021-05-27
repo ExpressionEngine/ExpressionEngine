@@ -75,6 +75,7 @@ class Factory
     {
         if (! $this->db->table_exists('migrations')) {
             // Load DBForge if the table doesnt exist to create the table
+            ee()->load->database();
             ee()->load->dbforge();
 
             $fields = array(

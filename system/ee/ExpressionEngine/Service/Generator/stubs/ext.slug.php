@@ -4,7 +4,9 @@ if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class {{slug_uc}}_ext
+use ExpressionEngine\Service\Addon\Installer;
+
+class {{slug_uc}}_ext extends Installer
 {
     public $settings = [];
     public $version = "{{version}}";
