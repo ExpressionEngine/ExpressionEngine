@@ -46,7 +46,7 @@
  *
  * @package SimplePie
  * @subpackage HTTP
- * @link http://www.gzip.org/format.txt
+ * @link http://www.gzip.org/
  */
 class SimplePie_gzdecode
 {

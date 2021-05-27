@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -82,7 +82,6 @@ class XSS
      * To help develop this script I used this great list of
      * vulnerabilities along with a few other hacks I've
      * harvested from examining vulnerabilities in other programs:
-     * http://ha.ckers.org/xss.html
      *
      * @param	string|array[string]	$str	The string to be cleaned or an
      * 		array of strings to be cleaned.  This needs to contain enough of the

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
@@ -684,7 +684,7 @@ class Channel_form_lib
                 'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
                 'name' => ee()->TMPL->fetch_param('name'),
                 'id' => ee()->TMPL->fetch_param('id'),
-                'class' => ee()->TMPL->fetch_param('class')
+                'class' => 'ee-cform ' . ee()->TMPL->fetch_param('class')
             )
         );
 

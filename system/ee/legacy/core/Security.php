@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,12 +85,16 @@ class EE_Security
         if (! $relative_path) {
             $bad[] = './';
             $bad[] = '/';
+            $str = str_replace(['./', '/'], '', $str);
         }
 
         $str = remove_invisible_characters($str, false);
-        $str = preg_replace('/\.+[\/\\\]/', '', $str);
+        $str = str_replace($bad, '', $str);
+        $str = preg_replace('/\.+[\/\\\]/i', '', $str);
+        $str = preg_replace( '/\r|\n/i', "", $str );
+        $str = stripslashes($str);
 
-        return stripslashes(str_replace($bad, '', $str));
+        return $str;
     }
 
     /**

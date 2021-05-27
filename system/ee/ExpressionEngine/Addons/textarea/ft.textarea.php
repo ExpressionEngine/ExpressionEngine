@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -93,7 +93,7 @@ class Textarea_ft extends EE_Fieldtype
 						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')) . '"
 					});
 
-					$(".textarea-field-filepicker").FilePicker({callback: EE.filePickerCallback});
+					$(".textarea-field-filepicker, li.html-upload").FilePicker({callback: EE.filePickerCallback});
 
 				});
 			');
