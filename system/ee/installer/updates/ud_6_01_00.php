@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'livePreviewCsrfExcempt',
+            'longerWatermarkImagePath',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -46,7 +47,27 @@ class Updater
         );
     }
 
+    private function longerWatermarkImagePath()
+    {
+        $fields = array(
+            'wm_image_path' => array(
+                'name' => 'wm_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            ),
+            'wm_test_image_path' => array(
+                'name' => 'wm_test_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            )
+        );
 
+        ee()->smartforge->modify_column('file_watermarks', $fields);
+    }
 }
 
 // EOF
