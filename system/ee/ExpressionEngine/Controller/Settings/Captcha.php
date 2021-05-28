@@ -75,7 +75,7 @@ class Captcha extends Settings
                     )
                 )
             ),
-            'recatpcha_settings_title' => array(
+            'recaptcha_settings_title' => array(
                 array(
                     'title' => 'use_recaptcha',
                     'desc' => 'use_recaptcha_desc',

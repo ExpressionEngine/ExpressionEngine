@@ -47,8 +47,8 @@ class Updater
 
         ee()->db->insert('actions', array(
             'class' => 'Member',
-            'method' => 'recatpcha_check',
-            'csrf_exempt' => 1
+            'method' => 'recaptcha_check',
+            'csrf_exempt' => 0
         ));
     }
 

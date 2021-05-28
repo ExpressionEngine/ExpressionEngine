@@ -647,7 +647,7 @@ $lang = array(
 
     'require_captcha_desc' => 'When enabled, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
-    'recatpcha_settings_title' => 'reCAPTCHA v3 Settings',
+    'recaptcha_settings_title' => 'reCAPTCHA v3 Settings',
 
     'use_recaptcha' => 'Use reCAPTCHA  v3?',
 
