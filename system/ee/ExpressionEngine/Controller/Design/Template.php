@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -238,7 +238,7 @@ class Template extends AbstractDesignController
                         ->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
                         ->defer();
 
-                    if (ee()->input->post('submit') == 'finish') {
+                    if (ee()->input->post('submit') == 'save_and_close') {
                         ee()->session->set_flashdata('template_id', $template->template_id);
                         ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
                     }
@@ -260,14 +260,14 @@ class Template extends AbstractDesignController
                 array(
                     'name' => 'submit',
                     'type' => 'submit',
-                    'value' => 'edit',
+                    'value' => 'save',
                     'text' => trim(sprintf(lang('btn_save'), '')),
                     'working' => 'btn_saving'
                 ),
                 array(
                     'name' => 'submit',
                     'type' => 'submit',
-                    'value' => 'finish',
+                    'value' => 'save_and_close',
                     'text' => 'btn_save_and_close',
                     'working' => 'btn_saving'
                 ),
@@ -293,10 +293,10 @@ class Template extends AbstractDesignController
             $view_url .= $group->group_name . (($template->template_name == 'index') ? '' : '/' . $template->template_name);
         }
 
-        $vars['action_button'] = [
+        $vars['buttons'][] = [
             'text' => 'view_rendered',
             'href' => $view_url,
-            'rel' => 'external'
+            'attrs' => 'rel="external"'
         ];
 
         $vars['view_url'] = $view_url;

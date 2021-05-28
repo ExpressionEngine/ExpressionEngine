@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1236,8 +1236,8 @@ class EE_Schema
 			`wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
 			`wm_name` varchar(80) DEFAULT NULL,
 			`wm_type` varchar(10) DEFAULT 'text',
-			`wm_image_path` varchar(100) DEFAULT NULL,
-			`wm_test_image_path` varchar(100) DEFAULT NULL,
+			`wm_image_path` varchar(255) DEFAULT NULL,
+			`wm_test_image_path` varchar(255) DEFAULT NULL,
 			`wm_use_font` char(1) DEFAULT 'y',
 			`wm_font` varchar(30) DEFAULT NULL,
 			`wm_font_size` int(3) unsigned DEFAULT NULL,

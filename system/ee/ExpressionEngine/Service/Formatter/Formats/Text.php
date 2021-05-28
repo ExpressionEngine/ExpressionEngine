@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -389,7 +389,7 @@ class Text extends Formatter
     {
         $limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
         $end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
-        $preserve_words = (isset($options['preserve_words'])) ? $options['preserve_words'] : false;
+        $preserve_words = (isset($options['preserve_words'])) ? get_bool_from_string($options['preserve_words']) : false;
         $this->content = strip_tags($this->content);
 
         $length = ee_mb_strlen($this->content, 'utf8');

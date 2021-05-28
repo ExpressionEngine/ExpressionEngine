@@ -1,10 +1,11 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             array(
                 '_addAllowPreview',
+                'longerWatermarkImagePath',
             )
         );
 
@@ -56,7 +58,29 @@ class Updater
             ee()->db->update('channels', ['allow_preview' => 'y']);
         }
     }
+
+    private function longerWatermarkImagePath()
+    {
+        $fields = array(
+            'wm_image_path' => array(
+                'name' => 'wm_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            ),
+            'wm_test_image_path' => array(
+                'name' => 'wm_test_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            )
+        );
+
+        ee()->smartforge->modify_column('file_watermarks', $fields);
+    }
+
 }
-// END CLASS
 
 // EOF

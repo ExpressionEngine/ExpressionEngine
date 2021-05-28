@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -331,6 +331,7 @@ class Publish extends AbstractPublishController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+            ee('CP/URL')->make('publish/edit', ['filter_by_channel' => $channel_id])->compile() => $channel->channel_title,
             '' => lang('new_entry')
         );
 

@@ -2,11 +2,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
-class FileField extends React.Component {
+ class FileField extends React.Component {
   constructor(props) {
     super(props)
 
@@ -38,6 +38,12 @@ class FileField extends React.Component {
   }
 
   getFieldContainer() {
+
+    // If in a grid, return that
+    if($(this.props.thisField).closest('.grid-file-upload').length) {
+      return $(this.props.thisField).closest('.grid-file-upload')
+    }
+
     let fluidContainer = $(this.props.thisField).closest('.fluid__item-field')
 
     // Is this file field inside of a fluid field? 

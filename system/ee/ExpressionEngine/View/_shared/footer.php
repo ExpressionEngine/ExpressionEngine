@@ -96,6 +96,8 @@
         }
 
         ?>
+
+		<script type="text/javascript" src="<?=ee('CP/URL')->make('jumps/js')->compile()?>"></script>
 		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
 			<div class="modal modal--no-padding dialog dialog--warning">
 
