@@ -27,6 +27,8 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'removeRteExtension',
+            '_addAllowPreview',
+            'longerWatermarkImagePath',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -45,7 +47,47 @@ class Updater
         ee()->db->where('class', 'Rte_ext')->delete('extensions');
     }
 
+    // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
+    private function _addAllowPreview()
+    {
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => FALSE,
+                    )
+                )
+            );
 
+            ee()->db->update('channels', ['allow_preview' => 'y']);
+        }
+    }
+
+    private function longerWatermarkImagePath()
+    {
+        $fields = array(
+            'wm_image_path' => array(
+                'name' => 'wm_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            ),
+            'wm_test_image_path' => array(
+                'name' => 'wm_test_image_path',
+                'type' => 'varchar',
+                'constraint' => '255',
+                'null' => true,
+                'default' => null
+            )
+        );
+
+        ee()->smartforge->modify_column('file_watermarks', $fields);
+    }
 }
 
 // EOF

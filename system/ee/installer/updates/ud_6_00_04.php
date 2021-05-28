@@ -25,8 +25,33 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator([
+            'addreCaptchaAction'
+        ]);
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
     }
+
+    private function addreCaptchaAction()
+    {
+
+        $action = ee()->db->get_where('actions', array('method' => 'recaptcha_check'));
+
+        if ($action->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert('actions', array(
+            'class' => 'Member',
+            'method' => 'recaptcha_check',
+            'csrf_exempt' => 0
+        ));
+    }
+
 }
 
 // EOF
