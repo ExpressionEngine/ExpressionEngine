@@ -99,7 +99,9 @@ class Filemanager
             $filename = implode('.', $parts);
         }
 
-        $ext = '.' . $ext;
+        if (!empty($ext)) {
+            $ext = '.' . $ext;
+        }
 
         // Figure out a unique filename
         if ($parameters['ignore_dupes'] === false) {
