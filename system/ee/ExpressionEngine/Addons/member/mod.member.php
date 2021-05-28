@@ -1324,7 +1324,9 @@ class Member
         $captcha->word = $string;
         $captcha->save();
 
-        if($result['success'] !== true || $result['score'] < $recaptcha_threshold) { $string = "failed"; }
+        if ($result['success'] !== true || $result['score'] < $recaptcha_threshold) {
+            $string = "failed";
+        }
         return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);
     }
 
