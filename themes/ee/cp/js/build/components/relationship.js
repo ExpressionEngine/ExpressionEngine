@@ -102,6 +102,7 @@ function (_React$Component) {
           thisRef.setState({
             selected: selected
           });
+          $(document).trigger('entry:preview');
         }
       });
     });

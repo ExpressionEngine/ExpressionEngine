@@ -1025,7 +1025,6 @@ class XML_RPC_Message extends EE_Xmlrpc
             $parameters = $array;
         } else {
             $parameters = array();
-
             for ($i = 0; $i < count($this->params); $i++) {
                 $a_param = $this->decode_message($this->params[$i]);
 
@@ -1042,6 +1041,9 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function decode_message($param)
     {
+        if (empty($param)) {
+            return $param;
+        }
         $kind = $param->kindOf();
 
         if ($kind == 'scalar') {

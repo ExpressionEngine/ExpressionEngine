@@ -37,10 +37,6 @@
                         'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-template"'
                     ];
                 }
-                $options[] = [
-                    'value' => "export",
-                    'text' => lang('export_templates')
-                ];
                 $this->embed('ee:_shared/form/bulk-action-bar', [
                     'options' => $options,
                     'modal' => true

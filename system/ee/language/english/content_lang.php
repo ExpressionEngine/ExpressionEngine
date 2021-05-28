@@ -120,6 +120,8 @@ $lang = array(
 
     'entries_deleted_desc' => 'The following entries were deleted',
 
+    'entries_not_deleted_desc' => 'The following entries could not be deleted. Please verify you have sufficient permissions.',
+
     'entry' => 'Entry',
 
     'entry_date' => 'Entry date',

@@ -422,7 +422,7 @@ class Template_model extends CI_Model
             $data['group_id'] = $this->session->userdata('group_id');
             $data['template_group_id'] = $template_group_id;
 
-            $this->db->insert('template_member_groups', $data);
+            $this->db->insert('template_groups_roles', $data);
         }
 
         return $template_group_id;
