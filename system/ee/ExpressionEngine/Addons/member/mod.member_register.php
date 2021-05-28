@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -189,6 +189,10 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params(),
         );
+
+        if(!empty(ee()->TMPL->form_class)) {
+            $data['class'] = ee()->TMPL->form_class;
+        }
 
         if ($this->in_forum === true) {
             $data['hidden_fields']['board_id'] = $this->board_id;

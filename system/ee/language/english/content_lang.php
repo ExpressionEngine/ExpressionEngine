@@ -120,6 +120,8 @@ $lang = array(
 
     'entries_deleted_desc' => 'The following entries were deleted',
 
+    'entries_not_deleted_desc' => 'The following entries could not be deleted. Please verify you have sufficient permissions.',
+
     'entry' => 'Entry',
 
     'entry_date' => 'Entry date',
@@ -620,6 +622,10 @@ $lang = array(
     'preview_url_not_set' => 'Preview URL is not set',
 
     'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
+
+    'preview_not_allowed' => 'Preview not allowed',
+
+    'preview_not_allowed_desc' => "Change your channel settings to allow Preview.",
 
     'preview_cannot_display' => 'Live Preview cannot be displayed',
 

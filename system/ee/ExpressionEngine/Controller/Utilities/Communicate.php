@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -84,7 +84,7 @@ class Communicate extends Utilities
             foreach ($roles as $role) {
                 $member_roles[$role->role_id] = $role->name;
 
-                if ($role->getAllMembers()->count() == 0) {
+                if ($role->PrimaryMembers->count() == 0 && $role->Members->count() == 0) {
                     $disabled_roles[] = $role->role_id;
                 }
             }

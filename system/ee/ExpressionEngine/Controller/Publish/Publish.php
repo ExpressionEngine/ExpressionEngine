@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -269,6 +269,16 @@ class Publish extends AbstractPublishController
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
+
+            if (!$entry->livePreviewAllowed()) {
+                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                ->asIssue()
+                ->canClose()
+                ->withTitle(lang('preview_not_allowed'))
+                ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
+            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+            }
         }
 
         if ($autosave_id) {
@@ -321,6 +331,7 @@ class Publish extends AbstractPublishController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
+            ee('CP/URL')->make('publish/edit', ['filter_by_channel' => $channel_id])->compile() => $channel->channel_title,
             '' => lang('new_entry')
         );
 

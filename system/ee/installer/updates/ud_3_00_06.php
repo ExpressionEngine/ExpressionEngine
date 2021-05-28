@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,6 +28,7 @@ class Updater
 
         $steps = new \ProgressIterator(
             array(
+                '_addAllowPreview',
                 'addStickyChannelPreference',
                 '_comment_formatting'
             )
@@ -56,6 +57,25 @@ class Updater
                 ),
             )
         );
+    }
+
+    private function _addAllowPreview()
+    {
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => FALSE,
+                    )
+                )
+            );
+
+            ee()->db->update('channels', ['allow_preview' => 'y']);
+        }
     }
 
     private function addStickyChannelPreference()

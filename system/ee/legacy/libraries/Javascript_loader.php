@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,8 +18,10 @@ class Javascript_loader
      */
     public function __construct()
     {
-        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
-        define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
+        if (!defined('PATH_JAVASCRIPT')) {
+            define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
+            define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
+        }
     }
 
     /**

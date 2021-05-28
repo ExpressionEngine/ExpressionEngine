@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -760,6 +760,14 @@ class Member_settings extends Member
         //		$result_row = $result->row_array()
 
         $this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+        if (empty($this->member)) {
+            if (! empty($tagdata)) {
+                return ee()->TMPL->no_results();
+            } else {
+                return ee()->output->show_user_error('general', array(ee()->lang->line('must_be_logged_in')));
+            }
+        }
 
         $result_row = $this->member->getValues();
 

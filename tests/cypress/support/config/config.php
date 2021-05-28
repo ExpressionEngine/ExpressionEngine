@@ -1,25 +1,19 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-|--------------------------------------------------------------------------
-| ExpressionEngine Config Items
-|--------------------------------------------------------------------------
-|
-| The following items are for use with ExpressionEngine.  The rest of
-| the config items are for use with CodeIgniter, some of which are not
-| observed by ExpressionEngine, e.g. 'permitted_uri_chars'
-|
-*/
+// ExpressionEngine Config Items
+// Find more configs and overrides at
+// https://docs.expressionengine.com/latest/general/system_configuration_overrides.html
 
-// Reset opcache, otherwise this file gets cached with old values on
-// Circle's PHP 5.5 machine
-if (function_exists('opcache_reset'))
-{
-    opcache_reset();
-}
+$config['save_tmpl_files'] = 'n';
+$config['legacy_member_templates'] = 'y';
 
+$config['app_version'] = '6.1.0';
+$config['encryption_key'] = '4b9e521eb02751d8466a3e9b764524aff14b91ad';
+$config['session_crypt_key'] = '1f307a8afe66e692c2689508a5d9f783606379a8';
+$config['base_path'] = $_SERVER['DOCUMENT_ROOT'];
 $config['base_url'] = 'http://localhost:8888/';
 $config['site_url'] = $config['base_url'];
+<<<<<<< HEAD
 $config['app_version'] = '6.0.4';
 $config['license_contact'] = 'ellislab.developers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
@@ -32,14 +26,19 @@ $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
 $config['cache_driver'] = 'file';
+=======
+>>>>>>> 6.dev
 $config['database'] = array(
 	'expressionengine' => array(
+		'hostname' => '127.0.0.1',
 		'database' => 'ee-test',
 		'username' => 'root',
-		'password' => 'root'
+		'password' => 'root',
+		'dbprefix' => 'exp_',
+		'char_set' => 'utf8mb4',
+		'dbcollat' => 'utf8mb4_unicode_ci',
+		'port'     => ''
 	),
 );
-$config['encryption_key'] = '631cbbc6e1de577805226ce0d1cc6c144cfd6c86';
-$config['session_crypt_key'] = '549782140d653f8865b6cbabb36600766d5e25a0';
 
 // EOF
