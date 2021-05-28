@@ -5,6 +5,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Minor Release
 
 Bullet list below, e.g.
+
+   - Added ability to disable Live Preview on a per channel basis
    - Added extension hooks for Fluid Fields
 
 

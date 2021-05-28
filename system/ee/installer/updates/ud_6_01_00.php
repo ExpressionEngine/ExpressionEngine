@@ -25,15 +25,38 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator([
-            'longerWatermarkImagePath',
-        ]);
+        $steps = new \ProgressIterator(
+            array(
+                '_addAllowPreview',
+                'longerWatermarkImagePath',
+            )
+        );
 
         foreach ($steps as $k => $v) {
             $this->$v();
         }
 
         return true;
+    }
+
+    // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
+    private function _addAllowPreview()
+    {
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => FALSE,
+                    )
+                )
+            );
+
+            ee()->db->update('channels', ['allow_preview' => 'y']);
+        }
     }
 
     private function longerWatermarkImagePath()
@@ -57,7 +80,6 @@ class Updater
 
         ee()->smartforge->modify_column('file_watermarks', $fields);
     }
-
 
 }
 
