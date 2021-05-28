@@ -1213,12 +1213,9 @@ class ChannelEntry extends ContentModel
         if ($this->Channel->preview_url || $this->hasPageURI()) {
             if ($this->Channel->allow_preview =='y') {
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-
         }
 
         return false;
