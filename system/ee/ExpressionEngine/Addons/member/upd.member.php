@@ -58,6 +58,10 @@ class Member_upd extends Installer
         ],
         [
             'method' => 'upload_avatar'
+        ],
+        [
+            'method' => 'recaptcha_check',
+            'csrf_exempt' => 1
         ]
     ];
 

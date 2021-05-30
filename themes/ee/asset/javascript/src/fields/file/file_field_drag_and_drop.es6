@@ -6,7 +6,7 @@
  * @license   https://expressionengine.com/license
  */
 
-class FileField extends React.Component {
+ class FileField extends React.Component {
   constructor(props) {
     super(props)
 
@@ -38,6 +38,12 @@ class FileField extends React.Component {
   }
 
   getFieldContainer() {
+
+    // If in a grid, return that
+    if($(this.props.thisField).closest('.grid-file-upload').length) {
+      return $(this.props.thisField).closest('.grid-file-upload')
+    }
+
     let fluidContainer = $(this.props.thisField).closest('.fluid__item-field')
 
     // Is this file field inside of a fluid field? 

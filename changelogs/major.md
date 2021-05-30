@@ -45,6 +45,7 @@ Bullet list below, e.g.
 - Changed sidebar copyright company name
 - Default avatars have been removed
 - The system avatar settings "Allow avatar uploads?" and "Allow avatars?" have been removed
+- Fixed bug #996 where resizing textareas beyond the parent element was breaking other children of that parent.
 
 Developers
 - Updated CodeMirror to version 5.48
@@ -56,6 +57,8 @@ Developers
 
 - Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).
 - Fixed a bug where table bulk selections can be saved by the browser on page reload, but don't show in the UI.
+- Resending member activation emails now displays returned errors on failures to send.
+- Control panel status column in entry list displays status text casing which matches the actual casing as entered into the system on creation. 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
