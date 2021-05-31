@@ -131,7 +131,12 @@ class Consent extends Model
         $log->ConsentRequest = $this->ConsentRequest;
         $log->ConsentRequestVersion = $this->ConsentRequestVersion;
         $log->Member = $this->Member;
-        $log->ip_address = ee()->input->ip_address();
+        $anonymize = ee()->config->item('anonymize_consent_logs');
+        if (!empty($anonymize) && in_array('ip_address', $anonymize)) {
+            $log->ip_address = ee('IpAddress')->anonymize(ee()->input->ip_address());
+        } else {
+            $log->ip_address = ee()->input->ip_address();
+        }
         $log->user_agent = substr(ee()->input->user_agent(), 0, 120);
         $log->action = $action;
         $log->log_date = ee()->localize->now;

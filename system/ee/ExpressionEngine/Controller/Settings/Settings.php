@@ -58,6 +58,8 @@ class Settings extends CP_Controller
 
         $sidebar->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
 
+        $sidebar->addItem(lang('logging'), ee('CP/URL')->make('settings/logging'));
+
         $content_and_design_link = null;
 
         if (ee('Permission')->can('admin_channels')) {
