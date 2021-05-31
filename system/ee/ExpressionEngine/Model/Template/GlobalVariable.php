@@ -246,6 +246,10 @@ class GlobalVariable extends FileSyncedModel
      */
     private function getNewVariablesFromFiles($path, $site_id, $existing)
     {
+        if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y') {
+            return [];
+        }
+        
         $fs = new Filesystem();
         $variables = [];
 
