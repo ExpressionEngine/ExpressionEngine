@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'livePreviewCsrfExcempt',
+            '_addAllowPreview',
             'longerWatermarkImagePath',
         ]);
 
@@ -45,6 +46,26 @@ class Updater
                 'csrf_exempt' => '1'
             ]
         );
+    }
+    
+    // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
+    private function _addAllowPreview()
+    {
+        if (!ee()->db->field_exists('allow_preview', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'allow_preview' => array(
+                        'type' => 'CHAR',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => FALSE,
+                    )
+                )
+            );
+
+            ee()->db->update('channels', ['allow_preview' => 'y']);
+        }
     }
 
     private function longerWatermarkImagePath()

@@ -74,7 +74,38 @@ class Captcha extends Settings
                         'captcha_path' => array('type' => 'text')
                     )
                 )
+            ),
+            'recaptcha_settings_title' => array(
+                array(
+                    'title' => 'use_recaptcha',
+                    'desc' => 'use_recaptcha_desc',
+                    'fields' => array(
+                        'use_recaptcha' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_site_key',
+                    'desc' => 'recaptcha_site_key_desc',
+                    'fields' => array(
+                        'recaptcha_site_key' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_site_secret',
+                    'desc' => 'recaptcha_site_secret_desc',
+                    'fields' => array(
+                        'recaptcha_site_secret' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'recaptcha_score_threshold',
+                    'desc' => 'recaptcha_score_threshold_desc',
+                    'fields' => array(
+                        'recaptcha_score_threshold' => array('type' => 'text', 'value' => '0.5')
+                    )
+                ),
             )
+
         );
 
         ee()->form_validation->set_rules(array(
