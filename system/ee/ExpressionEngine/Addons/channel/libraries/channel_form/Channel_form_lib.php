@@ -993,22 +993,6 @@ GRID_FALLBACK;
 
         $include_jquery = ($this->bool_string($include_jquery, true)) ? '&include_jquery=y' : '';
 
-        // RTE Selector parameter?
-        $rte_selector = ee()->TMPL->fetch_param('rte_selector');
-
-        if ($rte_selector) {
-            // toolset id specified?
-            $rte_toolset_id = (int) ee()->TMPL->fetch_param('rte_toolset_id', 0);
-
-            $js_url = ee()->functions->fetch_site_index() . QUERY_MARKER
-                . 'ACT=' . ee()->functions->fetch_action_id('Rte', 'get_js')
-                . '&toolset_id=' . $rte_toolset_id
-                . '&selector=' . urlencode($rte_selector)
-                . '&include=jquery_ui';
-
-            $this->head .= '<script type="text/javascript" src="' . $js_url . '"></script>' . "\n";
-        }
-
         $this->head .= '<script type="text/javascript" charset="utf-8" src="' . ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . '&' . str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)) . '&v=' . max($mtime) . $use_live_url . $include_jquery . '"></script>' . "\n";
 
         if ($this->bool_string(ee()->TMPL->fetch_param('include_css'), true)) {

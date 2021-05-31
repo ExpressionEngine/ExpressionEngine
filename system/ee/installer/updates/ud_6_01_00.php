@@ -44,6 +44,10 @@ class Updater
 
         ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.1']);
 
+        ee()->db->where('class', 'Rte')
+            ->where('method', 'get_js')
+            ->delete('actions');
+
         ee()->db->where('class', 'Rte_ext')->delete('extensions');
     }
 
