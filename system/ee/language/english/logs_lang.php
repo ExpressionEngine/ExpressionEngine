@@ -53,6 +53,10 @@ $lang = array(
 
     'view_consent_log' => 'Consent Audit Logs',
 
+    'export_consent_log' => 'Export Consent Audit Logs',
+
+    'exported_consent_log' => 'Exported Consent Audit Logs',
+
     'view_cp_log' => 'Control Panel Access Logs',
 
     'view_developer_log' => 'Developer Logs',
