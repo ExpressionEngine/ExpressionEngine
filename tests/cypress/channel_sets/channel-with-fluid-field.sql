@@ -423,77 +423,13 @@ CREATE TABLE `exp_channel_grid_field_19` (
 # Dump of table exp_channels
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_channels`;
+DELETE FROM `exp_channels`;
 
-CREATE TABLE `exp_channels` (
-  `channel_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `channel_name` varchar(40) NOT NULL,
-  `channel_title` varchar(100) NOT NULL,
-  `channel_url` varchar(100) NOT NULL,
-  `channel_description` varchar(255) DEFAULT NULL,
-  `channel_lang` varchar(12) NOT NULL,
-  `total_entries` mediumint(8) NOT NULL DEFAULT '0',
-  `total_records` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `total_comments` mediumint(8) NOT NULL DEFAULT '0',
-  `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
-  `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
-  `cat_group` varchar(255) DEFAULT NULL,
-  `status_group` int(4) unsigned DEFAULT NULL,
-  `deft_status` varchar(50) NOT NULL DEFAULT 'open',
-  `search_excerpt` int(4) unsigned DEFAULT NULL,
-  `deft_category` varchar(60) DEFAULT NULL,
-  `deft_comments` char(1) NOT NULL DEFAULT 'y',
-  `channel_require_membership` char(1) NOT NULL DEFAULT 'y',
-  `channel_max_chars` int(5) unsigned DEFAULT NULL,
-  `channel_html_formatting` char(4) NOT NULL DEFAULT 'all',
-  `channel_allow_img_urls` char(1) NOT NULL DEFAULT 'y',
-  `channel_auto_link_urls` char(1) NOT NULL DEFAULT 'n',
-  `channel_notify` char(1) NOT NULL DEFAULT 'n',
-  `channel_notify_emails` varchar(255) DEFAULT NULL,
-  `sticky_enabled` char(1) NOT NULL default 'n',
-  `comment_url` varchar(80) DEFAULT NULL,
-  `comment_system_enabled` char(1) NOT NULL DEFAULT 'y',
-  `comment_require_membership` char(1) NOT NULL DEFAULT 'n',
-  `comment_moderate` char(1) NOT NULL DEFAULT 'n',
-  `comment_max_chars` int(5) unsigned DEFAULT '5000',
-  `comment_timelock` int(5) unsigned NOT NULL DEFAULT '0',
-  `comment_require_email` char(1) NOT NULL DEFAULT 'y',
-  `comment_text_formatting` char(5) NOT NULL DEFAULT 'xhtml',
-  `comment_html_formatting` char(4) NOT NULL DEFAULT 'safe',
-  `comment_allow_img_urls` char(1) NOT NULL DEFAULT 'n',
-  `comment_auto_link_urls` char(1) NOT NULL DEFAULT 'y',
-  `comment_notify` char(1) NOT NULL DEFAULT 'n',
-  `comment_notify_authors` char(1) NOT NULL DEFAULT 'n',
-  `comment_notify_emails` varchar(255) DEFAULT NULL,
-  `comment_expiration` int(4) unsigned NOT NULL DEFAULT '0',
-  `search_results_url` varchar(80) DEFAULT NULL,
-  `rss_url` varchar(80) DEFAULT NULL,
-  `enable_versioning` char(1) NOT NULL DEFAULT 'n',
-  `max_revisions` smallint(4) unsigned NOT NULL DEFAULT '10',
-  `default_entry_title` varchar(100) DEFAULT NULL,
-  `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
-  `url_title_prefix` varchar(80) DEFAULT NULL,
-  `preview_url` varchar(100) DEFAULT NULL,
-  `max_entries` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`channel_id`),
-  KEY `cat_group` (`cat_group`),
-  KEY `status_group` (`status_group`),
-  KEY `channel_name` (`channel_name`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `exp_channels` WRITE;
-/*!40000 ALTER TABLE `exp_channels` DISABLE KEYS */;
-
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`,  `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`)
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`,  `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`)
 VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1',1,'open',2,'2','y','y',0,'all','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
-	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2',1,'open',7,'','y','y',0,'all','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
-	(3,1,'fluid_fields','Fluid Fields','',NULL,'en',0,0,0,0,0,NULL,1,'open',NULL,NULL,'y','y',NULL,'all','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,'',0);
-
-/*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
-UNLOCK TABLES;
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
+	(3,1,'fluid_fields','Fluid Fields','',NULL,'en',0,0,0,0,0,NULL,'open',NULL,NULL,'y','y',NULL,'all','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,'',0);
 
 
 # Dump of table exp_channels_channel_field_groups
