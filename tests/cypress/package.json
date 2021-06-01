@@ -16,7 +16,7 @@
         "@4tw/cypress-drag-drop": "^1.6.0"
     },
     "dependencies": {
-        "cypress": "7.2.0",
+        "cypress": "7.4.0",
         "cypress-xpath": "^1.6.0",
         "cypress-file-upload": "^5.0.7",
         "del": "^5.1.0",

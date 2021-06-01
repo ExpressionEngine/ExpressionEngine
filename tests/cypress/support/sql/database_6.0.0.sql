@@ -915,6 +915,20 @@ INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`
 	(3, 1, 1, 'admin', '127.0.0.1', 1588591844, 'Logged in');
 /*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
 
+-- Dumping structure for table ee6pro.exp_cookie_settings
+DROP TABLE IF EXISTS `exp_cookie_settings`;
+CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
+  `cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cookie_provider` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`cookie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 -- Dumping structure for table ee-test.exp_dashboard_layouts
 DROP TABLE IF EXISTS `exp_dashboard_layouts`;
 CREATE TABLE IF NOT EXISTS `exp_dashboard_layouts` (
