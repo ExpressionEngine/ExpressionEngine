@@ -89,6 +89,7 @@ return array(
     'application/zip', // .zip
     'audio/flac', // .flac
     'audio/m4a', // .m4a
+    'audio/x-m4a', // m4a
     'audio/midi', // .mid, .midi
     'audio/mp4', // .mp4
     'audio/mpeg', // .mp2, .mp3, .mpga

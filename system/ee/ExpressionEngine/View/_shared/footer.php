@@ -99,6 +99,8 @@
 
         ?>
 
+		<script type="text/javascript" src="<?=ee('CP/URL')->make('jumps/js')->compile()?>"></script>
+
 		<div id="jump-menu" class="hidden<?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) {
             echo ' on-welcome';
         } ?>" style="display:none;">

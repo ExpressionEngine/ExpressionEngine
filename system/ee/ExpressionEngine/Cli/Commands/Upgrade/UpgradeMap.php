@@ -8,6 +8,8 @@ class UpgradeMap
 {
     public static $versionsSupported = [
         '6.1.0',
+        '6.0.6',
+        '6.0.5',
         '6.0.4',
         '6.0.3',
         '6.0.2',

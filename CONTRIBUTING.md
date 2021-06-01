@@ -78,25 +78,22 @@ Don't worry about your commit history, you can make small, atomic commits. Frequ
 
 #### Branches / Semantic Versioning
 
-You will want to make sure your fork is easily updated from the upstream repo, so do not make changes on any published branches, including `stability`. Recommended branch names are namespaced and unique, e.g.:
+You will want to make sure your fork is easily updated from the upstream repo, so do not make changes on any published branches, including `6.x`. Recommended branch names are namespaced and unique, e.g.:
 
 - `feature/my-feature-slug`
 - `bug/bug-description-slug`
 
-ExpressionEngine uses [Semantic Versioning](https://semver.org/), which will inform what to branch off of and target for your pull request.
+| Branch | Purpose |
+| ------ | ------- |
+| 6.x |  Currently released version. Never target or branch.
+| 6.dev | Next planned release. |
 
-| Branch | Semantic Version | Purpose |
-| ------ | ---------------- | ------- |
-| master | n/a | Currently released version. Never target or branch.
-| stability | x.x.**X** | Bug fixes, non-functional changes |
-| release/next-minor | x.**X**.x | Small additive, non-breaking changes |
-| release/next-major | **X**.x.x | Large changes, features, or backwards-incompatible changes | 
+Ensure that any PRs you submit are based against `6.dev`. No PRs will be accepted into `6.x`
 
-If the next minor or major numbered branch already exists, you should branch off of that for minor/major changes, e.g. `release/5.1.0`, `release/6.0.0`.
 
 **Legacy Branches**
 
-Older major versions [are supported for a year](https://expressionengine.com/support/version-support) after the release of a new major version, but only for security-related issues or bugs that can result in data-loss or a completely broken site. Pull requests of this nature should always branch off of and target `stability-vN` where `N` is the major version number being updated, e.g. `stability-v4`. As with `stability`, do not make your commits directly to that published branch.
+Older major versions [are supported for a year](https://expressionengine.com/support/version-support) after the release of a new major version, but only for security-related issues or bugs that can result in data-loss or a completely broken site. Pull requests of this nature should always branch off of and target `N.x` where `N` is the major version number being updated, e.g. `5.x`. As with `6.x`, do not make your commits directly to that published branch.
 
 #### Unrelated Code Changes
 
@@ -131,27 +128,27 @@ All additive changes and new features should have a corresponding pull request i
 
 ### Tests
 
-Integration testing helps maintain the quality of the application and prevents unintentional regressions. ExpressionEnigne uses rspec with Capybara Webkit for behavioral tests, and PHPUnit for unit testing. At a minimum, you should make sure that your changes do not break existing tests. Pull requests will automatically run tests on all supported PHP versions using Circle CI, and will not be merged if tests fail.
+Integration testing helps maintain the quality of the application and prevents unintentional regressions. ExpressionEnigne uses [Cypress](https://www.cypress.io/) for behavioral tests, and [PHPUnit](https://phpunit.de/) for unit testing. At a minimum, you should make sure that your changes do not break existing tests. Pull requests will automatically run tests on all supported PHP versions using GitHub actions, and will not be merged if tests fail.
 
 #### Running Tests
 
-The `eetools` utility in the root of the repo is used to run tests.
+To run the tests locally, you would need to ensure you have NPM and Cypress installed and then follow some steps as outlined below.
 
-`./eetools test`
+1. Back up your existing database and `system/user/config.php` file.
 
-To run a specific test, just specify the test file, and optional line number. The test file path is relative to the tests/rspec folder:
+2. Copy `tests/cypress/support/config/config.php` over to `system/user/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
 
-`./eetools test tests/files/test_upload_file.rb:56`
+3. Copy `tests/cypress/cypress.env.example.json` to `tests/cypress/cypress.env.json`. Update the configuration in file if necessary.
 
-To run the tests or a specific test under a certain PHP version, just specify it with the `-p` flag:
+4. Using command line interface, change your working directory to `tests/cypress`
 
-`./eetools test tests/files/test_upload_file.rb:56 -p 5.4.45`
+5. If this is your first time running ExpressionEngine Cypress tests, ensure you have Node.js installed and then run `npm i`
 
-To run only the unit tests:
+6. Execute command `npm run cypress:open`
 
-`./eetools unittest`
+7. In Cypress UI, click on the tests that you know might be affected to run them.
 
-Test artifacts such as screenshots are placed in `/tmp/artifacts`.
+8. If you prefer to have all tests run, excecute command `npm run cypress:run` (Note: running all tests locally might be time-consuming)
 
 #### Writing Tests
 
@@ -165,9 +162,9 @@ You can ping `@ExpressionEngine/Maintainers` if your change is urgent. Please pr
 
 ### Coding Styles
 
-ExpressionEngine has a long history of readable code, and as a large project with over 15 years of continual development, does not get rewritten every few years to match changing stylistic trends. Instead, we use sensible guidelines that are compatible with many stylistic preferences. Internal consistency on a project of this size is far more important than following a particular specification.
+As off ExpressionEngine 6, all new code submitted to the ExpressionEngine core should follow the PSR-12 recommendations. [https://expressionengine.com/blog/expressionengine-adopts-psr-12](https://expressionengine.com/blog/expressionengine-adopts-psr-12)
 
-These guidelines are published in the ExpressionEngine User Guide: [Development Style & Syntax](https://docs.expressionengine.com/latest/development/guidelines/general.html). Feel free to open a pull request against that page to make suggestions or corrections.
+For specific style guidelines, reference the ExpressionEngine User Guide: [Development Style & Syntax](https://docs.expressionengine.com/latest/development/guidelines/general.html). Feel free to open a pull request against that page to make suggestions or corrections.
 
 Don't feel like you need to memorize these. You're a good developer, and when modifying an existing file are fully capable of keeping the internal style consistent. When adding new files, make sure of the big things, including attribution below.
 

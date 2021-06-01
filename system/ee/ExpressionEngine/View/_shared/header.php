@@ -63,7 +63,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>""><i class="fas fa-home"></i></a></li>
+					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><i class="fas fa-home"></i></a></li>
 						<?php
                         $i = 0;
                         foreach ($cp_breadcrumbs as $link => $title):

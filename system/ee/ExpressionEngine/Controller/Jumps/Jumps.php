@@ -21,21 +21,41 @@ class Jumps extends CP_Controller
     {
         parent::__construct();
 
-        if (! AJAX_REQUEST) {
-            $this->invalidRequest();
-        }
-
         $this->checkRequestSegments();
     }
 
     public function index()
     {
+        if (! AJAX_REQUEST) {
+            $this->invalidRequest();
+        }
+        
         // Dummy method to make sure it doesn't come up as a 404.
         // Is validated by the `checkRequestSegments()` in the constructor.
     }
 
+    public function js()
+    {
+        ee()->load->library('javascript_loader');
+
+        $jumpMenuItems = ee('CP/JumpMenu')->getItems();
+
+        $contents = "
+        EE.cp.jumpMenuURL = '" . ee('CP/URL', 'JUMPTARGET')->compile() . "';
+        EE.cp.JumpMenuCommands = " . json_encode($jumpMenuItems) .";";
+
+        $finfo = ee()->cache->file->get_metadata('jumpmenu/' . ee()->session->getMember()->getId());
+        ee()->javascript_loader->set_headers('jumpmenu', $finfo['mtime']);
+        ee()->output->set_header('Content-Length: ' . strlen($contents));
+        ee()->output->set_output($contents);
+    }
+
     public function addons()
     {
+        if (! AJAX_REQUEST) {
+            $this->invalidRequest();
+        }
+        
         if (!ee('Permission')->can('access_addons')) {
             $this->sendResponse([]);
         }

@@ -8,6 +8,7 @@
 		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
 		<?php endif; ?>
 		<meta name="referrer" content="no-referrer">
+		<meta name="robots" content="noindex, nofollow">
 		<?=ee()->view->head_link('css/common.min.css')?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>" class="installer-page">

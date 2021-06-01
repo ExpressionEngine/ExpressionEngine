@@ -13,6 +13,24 @@
 	// padding-bottom: 10px;
 	border: 1px solid color(fluid-item-border);
   position: relative;
+
+  .fluid__item-fieldset {
+    padding: 10px 15px 5px 15px;
+    position: relative;
+
+    .icon--reorder {
+      display: none;
+    }
+
+    .field-instruct {
+      padding-right: 55px;
+    }
+  }
+
+  .fluid__item-field {
+    padding: 15px 20px;
+    border-top: 1px solid var(--ee-border);
+	}
 }
 
 .fluid__item--dragging {
@@ -30,8 +48,6 @@
 
 .fluid__item--reorderable {
 	.fluid__item-fieldset {
-    padding: 10px 15px 5px 15px;
-    position: relative;
 
 		&, * {
 			// cursor: move;
@@ -43,18 +59,13 @@
       .icon--reorder {
         margin-right: 5px;
         color: color(text-secondary);
+        display: inline-block;
       }
 		}
-
-    .field-instruct {
-      padding-right: 55px;
-    }
 	}
 
 	.fluid__item-field {
 		cursor: initial;
-    padding: 15px 20px;
-    border-top: 1px solid var(--ee-border);
 	}
 }
 

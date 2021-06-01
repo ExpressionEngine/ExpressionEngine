@@ -12,6 +12,7 @@ $(document).ready(function () {
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
+	var isNavigatingAway = false;
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -48,6 +49,30 @@ $(document).ready(function () {
 		});
 	}
 
+	//prevent navigating away
+	$('body').on('click', 'a', function(e) {
+		if (
+			sessionStorage.getItem("preventNavigateAway") == 'true' &&
+			$(this).attr('href') != null && 
+			$(this).attr('href') != '' && 
+			$(this).attr('href').indexOf('#') != 0  && 
+			$(this).attr('href').indexOf('javascript:') != 0 &&
+			$(this).attr('target') != '_blank' && 
+			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
+		) {
+			isNavigatingAway = confirm(EE.lang.confirm_exit);
+			return isNavigatingAway;
+		}
+	});
+
+	window.addEventListener('beforeunload', function(e) {
+		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+			e.returnValue = EE.lang.confirm_exit;
+			return EE.lang.confirm_exit;
+		}
+	});
+	
+
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
@@ -67,7 +92,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('[data-publish] .form-btns-top h1');
+						var publishHeading = $('.main-nav__title h1');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
@@ -75,6 +100,7 @@ $(document).ready(function () {
 						}
 						else if (result.success) {
 							publishHeading.append(result.success);
+							sessionStorage.removeItem("preventNavigateAway");
 						}
 						else {
 							console.log('Autosave Failed');
