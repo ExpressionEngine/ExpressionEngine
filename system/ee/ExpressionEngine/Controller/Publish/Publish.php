@@ -210,13 +210,15 @@ class Publish extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
+        $livePreviewReady = $this->createLivePreviewModal($entry);
+
         $vars = array(
             'form_url' => ee('CP/URL')->getCurrentUrl(),
             'form_attributes' => $form_attributes,
             'form_title' => lang('new_entry'),
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
-            'buttons' => $this->getPublishFormButtons($entry),
+            'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
             'header' => [
                 'title' => lang('new_entry'),
             ],

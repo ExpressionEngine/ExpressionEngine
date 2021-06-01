@@ -25,12 +25,11 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator(
-            array(
-                '_addAllowPreview',
-                'longerWatermarkImagePath',
-            )
-        );
+        $steps = new \ProgressIterator([
+            'livePreviewCsrfExcempt',
+            '_addAllowPreview',
+            'longerWatermarkImagePath',
+        ]);
 
         foreach ($steps as $k => $v) {
             $this->$v();
@@ -39,6 +38,16 @@ class Updater
         return true;
     }
 
+    private function livePreviewCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Channel', 'method' => 'live_preview'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+    
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {
@@ -80,7 +89,6 @@ class Updater
 
         ee()->smartforge->modify_column('file_watermarks', $fields);
     }
-
 }
 
 // EOF
