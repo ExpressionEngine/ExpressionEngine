@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'removeRteExtension',
+            'livePreviewCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
         ]);
@@ -51,6 +52,16 @@ class Updater
         ee()->db->where('class', 'Rte_ext')->delete('extensions');
     }
 
+    private function livePreviewCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Channel', 'method' => 'live_preview'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+    
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {
