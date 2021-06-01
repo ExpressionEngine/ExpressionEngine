@@ -48,16 +48,22 @@ class Consent extends Logs
             );
         }
 
-        ee()->view->header = [
+        $header = [
             'title' => lang('system_logs'),
-            'form_url' => $this->base_url->compile(),
-            'toolbar_items' => [
+            'form_url' => $this->base_url->compile()
+        ];
+
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $header['toolbar_items'] = [
                 'export' => [
-                    'href' => ee('CP/URL', 'logs/consent/export')->addQueryStringVariables($this->params),
+                    'href' => ee('CP/URL', 'logs/pro/consent/export')->addQueryStringVariables($this->params),
                     'title' => lang('export_consent_log')
                 ]
-            ]
-        ];
+            ];
+        }
+
+        ee()->view->header = $header;
 
         $logs = $logs->order('log_date', 'desc')
             ->limit($this->params['perpage'])
@@ -83,39 +89,11 @@ class Consent extends Logs
     }
 
     /**
-     * Export Consent Audit Logs
-     *
-     */
-    public function export()
-    {
-        $csv = ee('CSV');
-
-        $logs = $this->_get_logs()->order('log_date', 'desc')->all();
-
-        foreach ($logs as $log) {
-            $datum = [
-                lang('date_logged') => ee()->localize->human_time($log->log_date->getTimestamp()),
-                lang('username') => !empty($log->member_id) ? $log->Member->username : lang('anonymous'),
-                lang('ip_address') => $log->ip_address,
-                lang('user_agent') => $log->user_agent,
-                lang('consent_title') => $log->ConsentRequest->title,
-                lang('action')  => $log->action
-            ];
-            $csv->addRow($datum);
-        }
-
-        ee()->logger->log_action(lang('exported_consent_log'));
-
-        ee()->load->helper('download');
-        force_download('consent-audit-log.csv', (string) $csv);
-    }
-
-    /**
      * Get logs based on submitted parameters
      *
      * @return Collection
      */
-    private function _get_logs()
+    protected function _get_logs()
     {
         $logs = ee('Model')->get('ConsentAuditLog')->with('Member', 'ConsentRequest');
 
@@ -128,9 +106,11 @@ class Consent extends Logs
             ->add('Date')
             ->add('Keyword')
             ->add('Perpage', $logs->count(), 'all_consent_logs');
-        ee()->view->filters = $filters->render($this->base_url);
         $this->params = $filters->values();
-        $this->base_url->addQueryStringVariables($this->params);
+        if (!empty($this->base_url)) {
+            ee()->view->filters = $filters->render($this->base_url);
+            $this->base_url->addQueryStringVariables($this->params);
+        }
 
         if (! empty($this->params['filter_by_username'])) {
             $logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
