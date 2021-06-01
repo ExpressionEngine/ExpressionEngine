@@ -875,6 +875,13 @@ INSERT INTO `exp_consent_request_versions` (`consent_request_version_id`, `conse
 	(3, 3, 'These cookies are usually placed by third-party advertising networks, which may use information about your website visits to develop a profile of your interests. This information may be shared with other advertisers and/or websites to deliver more relevant advertising to you across multiple websites. If you do not allow these cookies, visits to this website will not be shared with advertising partners and will not contribute to targeted advertising on other websites.', 'none', 1615821718, 0);
 /*!40000 ALTER TABLE `exp_consent_request_versions` ENABLE KEYS */;
 
+DROP TABLE IF EXISTS `exp_consent_request_version_cookies`;
+CREATE TABLE IF NOT EXISTS `exp_consent_request_version_cookies` (
+  `consent_request_version_id` int(10) unsigned NOT NULL,
+  `cookie_id` int(10) unsigned NOT NULL,
+  KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Dumping structure for table ee-test.exp_content_types
 DROP TABLE IF EXISTS `exp_content_types`;
 CREATE TABLE IF NOT EXISTS `exp_content_types` (
