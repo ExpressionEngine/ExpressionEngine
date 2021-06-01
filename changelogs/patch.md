@@ -25,6 +25,7 @@ Bullet list below, e.g.
    - Changed how permission check for members with CP access is handled
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
    - Added a filter to the category group name field
+   - Added type hinting to the channel publish controller
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
