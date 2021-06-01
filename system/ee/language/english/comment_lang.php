@@ -136,6 +136,8 @@ $lang = array(
 
     'location' => 'Location',
 
+    'marked_as' => 'marked as',
+
     'move' => 'Move',
 
     'move_comment_instr' => 'Enter the new entry id number:',

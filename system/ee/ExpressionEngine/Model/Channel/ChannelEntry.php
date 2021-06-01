@@ -1192,7 +1192,7 @@ class ChannelEntry extends ContentModel
 
     public function isLivePreviewable()
     {
-        if ($this->Channel->preview_url) {
+        if ($this->Channel->preview_url && $this->Channel->allow_preview =='y') {
             return true;
         }
 
@@ -1211,11 +1211,22 @@ class ChannelEntry extends ContentModel
     public function hasLivePreview()
     {
         if ($this->Channel->preview_url || $this->hasPageURI()) {
-            return true;
+            if ($this->Channel->allow_preview =='y') {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         return false;
     }
+
+    public function livePreviewAllowed() {
+        if ($this->Channel->allow_preview =='y') {
+                return true;
+            }
+        }
+
 }
 
 // EOF

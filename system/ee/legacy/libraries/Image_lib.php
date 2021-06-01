@@ -193,7 +193,12 @@ class EE_Image_lib
 
                 // Is there a file name?
                 if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
-                    $this->dest_folder = $full_dest_path . '/';
+                    $filenameInPathPosition = strrpos($full_dest_path, $this->source_image);
+                    if ($filenameInPathPosition == (strlen($full_dest_path) - strlen($this->source_image))) {
+                        $this->dest_folder = substr($full_dest_path, 0, $filenameInPathPosition);
+                    } else {
+                        $this->dest_folder = $full_dest_path . '/';
+                    }
                     $this->dest_image = $this->source_image;
                 } else {
                     $x = explode('/', $full_dest_path);

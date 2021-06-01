@@ -353,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->first();
+            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -1182,7 +1182,7 @@ class EE_Session
 
         if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
             $this->member_model = ee('Model')->get('Member', $member_id)
-                ->with('PrimaryRole')
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
                 ->first();
         }
 

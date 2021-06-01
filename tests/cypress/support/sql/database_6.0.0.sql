@@ -50,11 +50,12 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(23, 'Member', 'send_username', 0),
 	(24, 'Member', 'update_profile', 0),
 	(25, 'Member', 'upload_avatar', 0),
-	(26, 'Rte', 'pages_autocomplete', 0),
-	(27, 'File', 'addonIcon', 1),
-	(28, 'Relationship', 'entryList', 0),
-	(29, 'Search', 'do_search', 1),
-	(30, 'Email', 'send_email', 0);
+  (26, 'Member', 'recaptcha_check', 0),
+	(27, 'Rte', 'pages_autocomplete', 0),
+	(28, 'File', 'addonIcon', 1),
+	(29, 'Relationship', 'entryList', 0),
+	(30, 'Search', 'do_search', 1),
+	(31, 'Email', 'send_email', 0);
 /*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_captcha
@@ -249,6 +250,7 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `preview_url` varchar(100) DEFAULT NULL,
+  `allow_preview` char(1) NOT NULL DEFAULT 'y',
   `max_entries` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
@@ -259,9 +261,9 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
 -- Dumping data for table ee-test.exp_channels: ~2 rows (approximately)
 DELETE FROM `exp_channels`;
 /*!40000 ALTER TABLE `exp_channels` DISABLE KEYS */;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`) VALUES
-	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 0, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 0),
-	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `allow_preview`, `max_entries`) VALUES
+	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 0, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0),
+	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0);
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channels_channel_fields
@@ -1253,8 +1255,8 @@ CREATE TABLE IF NOT EXISTS `exp_file_watermarks` (
   `wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
   `wm_name` varchar(80) DEFAULT NULL,
   `wm_type` varchar(10) DEFAULT 'text',
-  `wm_image_path` varchar(100) DEFAULT NULL,
-  `wm_test_image_path` varchar(100) DEFAULT NULL,
+  `wm_image_path` varchar(255) DEFAULT NULL,
+  `wm_test_image_path` varchar(255) DEFAULT NULL,
   `wm_use_font` char(1) DEFAULT 'y',
   `wm_font` varchar(30) DEFAULT NULL,
   `wm_font_size` int(3) unsigned DEFAULT NULL,

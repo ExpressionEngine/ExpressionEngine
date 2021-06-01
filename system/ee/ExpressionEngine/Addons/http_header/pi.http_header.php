@@ -39,6 +39,7 @@ class Http_header
             'last_modified' => 'Last-Modified',
             'link' => 'Link',
             'location' => 'Location',
+            'permissions_policy' => 'Permissions-Policy',
             'pragma' => 'Pragma',
             'refresh' => 'Refresh',
             'retry_after' => 'Retry-After',
