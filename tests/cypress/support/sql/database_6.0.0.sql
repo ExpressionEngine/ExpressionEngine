@@ -39,7 +39,6 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(13, 'Member', 'update_un_pw', 0),
 	(14, 'Member', 'member_search', 0),
 	(15, 'Member', 'member_delete', 0),
-	(16, 'Rte', 'get_js', 0),
 	(17, 'Email', 'send_email', 0),
 	(18, 'Comment', 'insert_new_comment', 0),
 	(19, 'Comment_mcp', 'delete_comment_notification', 0),

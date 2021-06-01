@@ -26,6 +26,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
+            'removeRteExtension',
             'livePreviewCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
@@ -36,6 +37,19 @@ class Updater
         }
 
         return true;
+    }
+
+    private function removeRteExtension()
+    {
+        ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.1']);
+
+        ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.1']);
+
+        ee()->db->where('class', 'Rte')
+            ->where('method', 'get_js')
+            ->delete('actions');
+
+        ee()->db->where('class', 'Rte_ext')->delete('extensions');
     }
 
     private function livePreviewCsrfExcempt()
