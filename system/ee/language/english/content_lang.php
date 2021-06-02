@@ -633,6 +633,8 @@ $lang = array(
 
     'preview_protocol_mismatch_desc' => "Your Site URL is set to use <code>%1\$s</code> but you are accessing Control Panel with <code>%2\$s</code>.",
 
+    'preview_domain_error_instructions' => "You can only invoke Live Preview from domains that are configured as <code>Base URL</code>, <code>CP URL</code>, <code>Site URL</code> or added as <code>allowed_preview_domains</code> config override.",
+
     'publish' => 'Publish',
 
     'publish_another_entry' => 'Publish Another Entry',
