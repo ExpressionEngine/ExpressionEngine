@@ -90,6 +90,12 @@ class CategoryGroup extends StructureModel
         return $this->getCategoryFields();
     }
 
+    // Clean XSS from group name when saved
+    protected function set__group_name($groupName)
+    {
+        $this->setRawProperty('group_name', ee('Security/XSS')->clean($groupName));
+    }
+
     /**
      * Convenience method to fix inflection
      */
