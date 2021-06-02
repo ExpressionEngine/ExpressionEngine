@@ -334,7 +334,7 @@ $lang = array(
 
     'allow_preview' => 'Allow Preview?',
 
-    'allow_preview_desc' => 'When enabled, users will be able to preview entries if the Preview <abbr title="Unified Resource Locator">URL</abbr> is set>',
+    'allow_preview_desc' => 'When enabled, users will be able to preview entries if the Preview <abbr title="Unified Resource Locator">URL</abbr> is set',
 
     'max_characters' => 'Maximum characters allowed?',
 

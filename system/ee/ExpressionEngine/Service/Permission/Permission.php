@@ -101,6 +101,29 @@ class Permission
     }
 
     /**
+     * Can they use Pro?
+     *
+     * @return boolean
+     */
+    public function canUsePro()
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        
+        //currently. anyone with CP access 
+        //if the future, inject into Permissions service
+        if ($this->has('can_access_cp')) {
+            $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
+            if (in_array('Pro', $assigned_modules)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Has a single permission
      *
      * Member access validation

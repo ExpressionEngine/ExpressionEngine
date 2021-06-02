@@ -1208,24 +1208,12 @@ class ChannelEntry extends ContentModel
         return false;
     }
 
-    public function hasLivePreview()
-    {
-        if ($this->Channel->preview_url || $this->hasPageURI()) {
-            if ($this->Channel->allow_preview =='y') {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
     public function livePreviewAllowed() {
         if ($this->Channel->allow_preview =='y') {
-                return true;
-            }
+            return true;
         }
+        return false;
+    }
 
 }
 
