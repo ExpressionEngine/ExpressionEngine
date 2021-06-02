@@ -26,6 +26,7 @@ Bullet list below, e.g.
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
    - Added a filter to the category group name field
    - Added type hinting to the channel publish controller
+   - Fixed a bug in the channel title filtering in the control panel
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
