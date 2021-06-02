@@ -387,6 +387,8 @@ class Edit extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
+        $livePreviewReady = $this->createLivePreviewModal($entry);
+
         $vars = array(
             'header' => [
                 'title' => lang('edit_entry'),
@@ -396,7 +398,7 @@ class Edit extends AbstractPublishController
             'form_title' => lang('edit_entry'),
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
-            'buttons' => $this->getPublishFormButtons($entry),
+            'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
             'in_modal_context' => $sequence_editing
         );
 
@@ -459,6 +461,15 @@ class Edit extends AbstractPublishController
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
+            if (!$entry->livePreviewAllowed()) {
+                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                ->asIssue()
+                ->canClose()
+                ->withTitle(lang('preview_not_allowed'))
+                ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
+            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+            }
         }
 
         $version_id = ee()->input->get('version');

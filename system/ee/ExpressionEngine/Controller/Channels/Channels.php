@@ -887,7 +887,18 @@ class Channels extends AbstractChannelsController
                             'value' => $channel->getRawProperty('preview_url')
                         )
                     )
+                        ),
+                array(
+                    'title' => 'allow_preview',
+                    'desc' => 'allow_preview_desc',
+                    'fields' => array(
+                        'allow_preview' => array(
+                            'type' => 'yes_no',
+                            'value' => $channel->allow_preview
+                        )
+                    )
                 )
+
             ),
             'channel_defaults' => array(
                 array(
@@ -1371,7 +1382,6 @@ class Channels extends AbstractChannelsController
         if (! ee('Request')->post('comment_expiration')) {
             $_POST['comment_expiration'] = 0;
         }
-
         $channel->set($_POST);
 
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
