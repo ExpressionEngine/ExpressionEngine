@@ -1077,6 +1077,7 @@ class Updater
     {
         ee()->smartforge->drop_table('rte_toolsets');
         ee()->smartforge->drop_table('rte_tools');
+        ee()->db->data_cache = [];
 
         require_once PATH_ADDONS . 'rte/upd.rte.php';
         $Rte_upd = new \Rte_upd();

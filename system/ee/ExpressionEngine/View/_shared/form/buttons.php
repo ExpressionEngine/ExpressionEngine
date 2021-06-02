@@ -35,7 +35,7 @@
 		<?php if (isset($button['href'])) : ?>
             <a class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> href="<?=$button['href']?>"><?=$button_html?><?=$button_text?></a>
         <?php else : ?>
-            <button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=isset($button['working']) ? lang($button['working']) : lang($button['text'])?>"><?=$button_html?><?=$button_text?></button>
+            <button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=rawurlencode($button_html).lang($button['text'])?>" data-work-text="<?=isset($button['working']) ? lang($button['working']) : lang($button['text'])?>"><?=$button_html?><?=$button_text?></button>
         <?php endif; ?>
 	<?php endforeach; ?>
 

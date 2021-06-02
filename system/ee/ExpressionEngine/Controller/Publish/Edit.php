@@ -397,6 +397,8 @@ class Edit extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
+        $livePreviewReady = $this->createLivePreviewModal($entry);
+
         $vars = array(
             'header' => [
                 'title' => lang('edit_entry'),
@@ -406,7 +408,7 @@ class Edit extends AbstractPublishController
             'form_title' => lang('edit_entry'),
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
-            'buttons' => $this->getPublishFormButtons($entry),
+            'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
             'in_modal_context' => $sequence_editing
         );
 

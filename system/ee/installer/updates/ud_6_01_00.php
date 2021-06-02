@@ -25,13 +25,13 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator(
-            array(
-                '_addAllowPreview',
-                'longerWatermarkImagePath',
-                'addProTemplateSettings',
-            )
-        );
+        $steps = new \ProgressIterator([
+            'removeRteExtension',
+            'livePreviewCsrfExcempt',
+            '_addAllowPreview',
+            'longerWatermarkImagePath',
+            'addProTemplateSettings',
+        ]);
 
         foreach ($steps as $k => $v) {
             $this->$v();
@@ -57,6 +57,29 @@ class Updater
         }
     }
 
+    private function removeRteExtension()
+    {
+        ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.1']);
+
+        ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.1']);
+
+        ee()->db->where('class', 'Rte')
+            ->where('method', 'get_js')
+            ->delete('actions');
+
+        ee()->db->where('class', 'Rte_ext')->delete('extensions');
+    }
+
+    private function livePreviewCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Channel', 'method' => 'live_preview'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+    
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {
@@ -98,7 +121,6 @@ class Updater
 
         ee()->smartforge->modify_column('file_watermarks', $fields);
     }
-
 }
 
 // EOF
