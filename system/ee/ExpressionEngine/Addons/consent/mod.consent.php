@@ -28,6 +28,19 @@ class Consent
     }
 
     /**
+     * Lists registered cookies
+     *
+     * @return string
+     */
+    public function cookies()
+    {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            return ee('pro:Cookie')->cookiesTag();
+        }
+        return ee()->TMPL->no_results();
+    }
+
+    /**
      * {exp:consent:form}
      *
      * @return string The Consent Form

@@ -253,6 +253,8 @@ $lang = array(
 
     'ip_address' => 'IP Address',
 
+    'user_agent' => 'User Agent',
+
     'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
     'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
@@ -606,6 +608,8 @@ $lang = array(
     'view_all' => 'View All',
 
     'xhtml' => 'XHTML',
+
+    'cookies_functionality_consent_required' => 'In order to use all features of Control Panel, please opt in <a href="%s">Functionality Cookies consent</a>.',
 
     /* Members Menu */
 

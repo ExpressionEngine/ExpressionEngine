@@ -29,7 +29,7 @@ context('File Manager / Edit File', () => {
     cy.get('a[class="dropdown__link"]').contains('About').filter(':visible').first().click()
     const fileName = 'pictureUpload.png'
     cy.get('input[name="file"]').attachFile(fileName)
-    cy.get('input[value="Upload File"]').filter(':visible').first().click()
+    cy.get('[value="Upload File"]').filter(':visible').first().click()
     cy.hasNoErrors()
 
   })

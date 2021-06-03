@@ -13,7 +13,7 @@ class ImportConverter extends ControlPanel {
 			  "delimiter_special" :'input[type!=hidden][name=delimiter_special]',
 			  "enclosing_char": 'input[type!=hidden][name=enclosure]',
 
-              "send_it" : 'input[value="Convert File"]',
+              "send_it" : '[value="Convert File"]',
 
 
 
@@ -25,7 +25,7 @@ class ImportConverter extends ControlPanel {
 			  // XML Code page
 			  "xml_code" :'textarea.template-edit',
 
-              "send_it_2" : 'input[value="Assign Fields"]'
+              "send_it_2" : '[value="Assign Fields"]'
 
         })
     }
@@ -58,4 +58,3 @@ class ImportConverter extends ControlPanel {
 
 }
 export default ImportConverter;
-

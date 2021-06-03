@@ -104,11 +104,18 @@ class EE_Core
         ee('App')->setupAddons(PATH_THIRD);
 
         //is this pro version?
-        if (is_dir(PATH_ADDONS . 'pro') && ee('Addon')->get('pro')->isInstalled()) {
+        if (ee('Addon')->get('pro') && ee('Addon')->get('pro')->isInstalled()) {
             define('IS_PRO', true);
         } else {
             define('IS_PRO', false);
         }
+
+        // setup cookie settings for all providers
+        $providers = ee('App')->getProviders();
+        foreach ($providers as $provider) {
+            $provider->registerCookiesSettings();
+        }
+        ee('CookieRegistry')->loadCookiesSettings();
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
