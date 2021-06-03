@@ -415,7 +415,7 @@ class Edit extends AbstractPublishController
         if (ee()->input->get('hide_closer') === 'y') {
             if (ee()->input->get('return') != '') {
                 $vars['form_hidden'] = [
-                    'return' => urldecode(ee()->input->get('return'))
+                    'return' => urldecode(ee()->input->get('return', true))
                 ];
             }
             $vars['hide_sidebar'] = true;

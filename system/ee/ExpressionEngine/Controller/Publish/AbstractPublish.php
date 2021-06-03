@@ -567,7 +567,7 @@ abstract class AbstractPublish extends CP_Controller
                     $preview_url .= AMP . 'entry_id=' . $entry->entry_id;
                 }
                 if (ee()->input->get('return') != '') {
-                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return'))));
+                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
                 }
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
