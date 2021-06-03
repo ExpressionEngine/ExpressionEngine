@@ -485,12 +485,13 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'email':
-                                if (! in_array($tag->value, $e)) {
-                                    $e[] = $tag->value;
+                                $value = htmlspecialchars($tag->value);
+                                if (! in_array($value, $e)) {
+                                    $e[] = $value;
                                 } else {
-                                    $errors[] = array(lang('duplicate_email') . $tag->value);
+                                    $errors[] = array(lang('duplicate_email') . $value);
                                 }
-                                $this->validate->email = $tag->value;
+                                $this->validate->email = $value;
 
                                 break;
                             case 'member_id':
@@ -530,7 +531,7 @@ class MemberImport extends Utilities
 
                     $username = (isset($this->members[$i]['username'])) ? $this->members[$i]['username'] : '';
                     $screen_name = (isset($this->members[$i]['screen_name'])) ? $this->members[$i]['screen_name'] : '';
-                    $email = (isset($this->members[$i]['email'])) ? $this->members[$i]['email'] : '';
+                    $email = (isset($this->members[$i]['email'])) ? htmlspecialchars($this->members[$i]['email']) : '';
 
                     /* -------------------------------------
                     /*  Validate separately to display
