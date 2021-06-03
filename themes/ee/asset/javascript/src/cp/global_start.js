@@ -260,16 +260,6 @@ EE.cp.validateLicense = function() {
 		success: function(result) {
 			var validLicense = true;
 
-			// Testing result override.
-			result.messageType = 'missing_license_key';
-			result.addons = [
-				{
-					status: 'invalid',
-					slug: 'low_search',
-					name: 'Low Search'
-				}
-			];
-
 			switch (result.messageType) {
 				case 'success':
 					break;
