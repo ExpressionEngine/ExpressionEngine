@@ -19,7 +19,7 @@ context('Template Routes', () => {
     it('displays', function() {
         //page.get('new_route_button').should('exist')
         cy.get('a').contains('New route').should('exist')
-        cy.get('input[value="Update"]').should('exist')
+        cy.get('[value="Update"]').should('exist')
         page.get('no_results').should('exist')
     })
 

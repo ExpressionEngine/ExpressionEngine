@@ -382,6 +382,29 @@ $(document).ready(function(){
 		}
 	}
 
+	// Ctrls+S to save
+	// -------------------------------------------------------------------
+	window.addEventListener('keydown', function (key) {
+		if (key.ctrlKey || key.metaKey){
+			$('.button[data-shortcut]:visible').each(function(e) {
+				$(this).addClass('button--with-shortcut');
+				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
+					$(this).removeClass('button--with-shortcut');
+					key.preventDefault();
+					$(this).trigger('click');
+					return false;
+				}
+			});
+		}
+	});
+
+	window.addEventListener('keyup', function (key) {
+		if (key.ctrlKey || key.metaKey || key.key == 'Control' || key.key == 'Meta'){
+			$('.button[data-shortcut]').removeClass('button--with-shortcut');
+		}
+	});
+
+
 	// Filter bar toggle
 	// -------------------------------------------------------------------
 

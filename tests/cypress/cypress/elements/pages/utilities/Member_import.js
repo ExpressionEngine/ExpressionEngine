@@ -8,7 +8,7 @@ class MemberImport extends ControlPanel {
         this.selectors = Object.assign(this.selectors, {
 
         	"general_radio" : 'div[class="checkbox-label__text"]',
-            "send_it" : 'input[value="Import Members"]',
+            "send_it" : '[value="Import Members"]',
 
 		  "file_location": 'input[type!=hidden][name=xml_file]',
 		  "member_group": 'input[type!=hidden][name=group_id]',

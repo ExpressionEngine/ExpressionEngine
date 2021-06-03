@@ -29,7 +29,7 @@ context('Search and Replace', () => {
 	  	if error check: 
 	    the last eq in page.get('wrap').find('div').eq(4).find('input').eq(1).click()*/
 	  	//page.get('wrap').find('div').eq(4).find('input').eq(1).click()
-	  	cy.get('input[value="Search and Replace"]').first().click()
+	  	cy.get('[value="Search and Replace"]').first().click()
 	  	page.get('wrap').contains("Attention")
 	  	page.get('wrap').contains("not run")
 
@@ -48,14 +48,14 @@ context('Search and Replace', () => {
 	  	page.get('password_auth').clear()
 	  	page.get('password_auth').type("password")
 	  	page.get('replace_where').select("Channel Entry Titles")
-	   cy.get('input[value="Search and Replace"]').first().click()
+	   cy.get('[value="Search and Replace"]').first().click()
 	  	page.get('wrap').contains('Action was a success')
 	  	page.get('wrap').contains('Number of database records in which a replacement occurred:')
 
 	  })
 	  //Works
 	  it('should fail validation without AJAX too', () =>{
-	    cy.get('input[value="Search and Replace"]').first().click()
+	    cy.get('[value="Search and Replace"]').first().click()
 	  	page.get('wrap').contains("Attention")
 	  	page.get('wrap').contains("not run")
 	    cy.auth()
@@ -65,7 +65,7 @@ context('Search and Replace', () => {
 	  	cy.wait(500)
 	  	page.get('password_auth').type("password")
 	  	
-	    cy.get('input[value="Search and Replace"]').first().click()
+	    cy.get('[value="Search and Replace"]').first().click()
 	  	page.get('wrap').contains('Action was a success')
 	  })
 	  //Works
@@ -74,10 +74,9 @@ context('Search and Replace', () => {
 	  	page.get('replace_term').type("Test")
 	  	page.get('replace_where').select("Channel Entry Titles")
 	  	page.get('password_auth').type("password")
-	    cy.get('input[value="Search and Replace"]').first().click()
+	    cy.get('[value="Search and Replace"]').first().click()
 	  	page.get('wrap').contains('Action was a success')
 	  	page.get('wrap').contains('Number of database records in which a replacement occurred:')
 	  })
 
 })
-

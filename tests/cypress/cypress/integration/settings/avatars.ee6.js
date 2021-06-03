@@ -57,7 +57,7 @@ context('Avatar Settings', () => {
   it('should validate the form', () => {
     page.get('avatar_path').clear().type('sdfsdfsd')
    // page.submit()
-   cy.get('input[value="Save Settings"]').first().click()
+   cy.get('[value="Save Settings"]').first().click()
 
     cy.hasNoErrors()
     
@@ -166,7 +166,7 @@ context('Avatar Settings', () => {
     page.get('avatar_max_height').clear().type('101')
     page.get('avatar_max_kb').clear().type('102')
 
-    cy.get('input[value="Save Settings"]').first().click()
+    cy.get('[value="Save Settings"]').first().click()
     //page.submit()
 
     page.get('wrap').contains('Preferences updated')

@@ -261,6 +261,7 @@ class Template extends AbstractDesignController
                     'name' => 'submit',
                     'type' => 'submit',
                     'value' => 'save',
+                    'shortcut' => 's',
                     'text' => trim(sprintf(lang('btn_save'), '')),
                     'working' => 'btn_saving'
                 ),
