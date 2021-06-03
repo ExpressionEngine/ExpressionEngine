@@ -46,6 +46,17 @@ class ConsentRequestVersion extends Model
             'from_key' => 'author_id',
             'weak' => true
         ],
+        'Logs' => [
+            'type' => 'hasMany',
+            'model' => 'ConsentAuditLog'
+        ],
+        'Cookies' => [
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CookieSetting',
+            'pivot' => array(
+                'table' => 'consent_request_version_cookies'
+            )
+        ],
     ];
 
     protected static $_validation_rules = [
@@ -53,7 +64,9 @@ class ConsentRequestVersion extends Model
         'author_id' => 'required',
     ];
 
-    // protected static $_events = [];
+    protected static $_events = [
+        'afterInsert',
+    ];
 
     // Properties
     protected $consent_request_version_id;
@@ -78,6 +91,28 @@ class ConsentRequestVersion extends Model
             'auto_links' => 'n',
             'allow_img_url' => 'y'
         ));
+    }
+
+    //when created, associate with all existing cookies for given consent
+    public function onAfterInsert()
+    {
+        if (strpos($this->ConsentRequest->consent_name, 'ee:cookies_') === 0) {
+            $consentType = substr($this->ConsentRequest->consent_name, 11);
+            $method = 'is' . ucfirst($consentType);
+            $cookieSettings = ee('Model')->get('CookieSetting')->all();
+            $cookieIds = [];
+            foreach ($cookieSettings as $cookie) {
+                if (ee('CookieRegistry')->{$method}($cookie->cookie_name)) {
+                    if ($cookie->cookie_provider == 'ee' || (ee('Addon')->get($cookie->cookie_provider) !== null && ! ee('Addon')->get($cookie->cookie_provider)->isInstalled())) {
+                        $cookieIds[] = $cookie->cookie_id;
+                    }
+                }
+            }
+            if (!empty($cookieIds)) {
+                $this->Cookies = ee('Model')->get('CookieSetting')->filter('cookie_id', 'IN', $cookieIds)->all();
+                $this->save();
+            }
+        }
     }
 }
 

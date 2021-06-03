@@ -716,6 +716,13 @@ $(document).ready(function(){
 			}
 		});
 
+		// if we have modal ID in hash, open it
+		if (window.location.hash.length > 5) {
+			if ($('.app-modal[rev=' + window.location.hash.substring(1) + ']').length > 0) {
+				$('.app-modal[rev=' + window.location.hash.substring(1) + ']').trigger('modal:open');
+			}
+		}
+
 		// listen for clicks to elements with a class of m-link
 		$('body').on('click', '.m-link', function(e) {
 			// set the modalIs variable

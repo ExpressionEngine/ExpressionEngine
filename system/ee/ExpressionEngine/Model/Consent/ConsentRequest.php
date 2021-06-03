@@ -90,6 +90,25 @@ class ConsentRequest extends Model
 
         return $this->CurrentVersion->render();
     }
+
+    /**
+     * Adds a record to the Consent Audit Log
+     *
+     * @param string $action The action/log message
+     * @return NULL
+     */
+    public function log($action)
+    {
+        $log = $this->getModelFacade()->make('ConsentAuditLog');
+        $log->ConsentRequest = $this;
+        $log->ConsentRequestVersion = $this->CurrentVersion;
+        $log->member_id = ee()->session->userdata('member_id');
+        $log->ip_address = ee()->input->ip_address();
+        $log->user_agent = substr(ee()->input->user_agent(), 0, 120);
+        $log->action = $action;
+        $log->log_date = ee()->localize->now;
+        $log->save();
+    }
 }
 
 // EOF

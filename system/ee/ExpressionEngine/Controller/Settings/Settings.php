@@ -58,6 +58,8 @@ class Settings extends CP_Controller
 
         $sidebar->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
 
+        $sidebar->addItem(lang('logging'), ee('CP/URL')->make('settings/logging'));
+
         $content_and_design_link = null;
 
         if (ee('Permission')->can('admin_channels')) {
@@ -120,6 +122,15 @@ class Settings extends CP_Controller
                 $item->isActive();
             }
         }
+
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $list = $sidebar->addHeader(lang('pro_settings'))
+                ->addBasicList();
+
+            $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
+        }
+
     }
 
     /**

@@ -76,6 +76,7 @@ context('URL and Path Settings', () => {
     })
 
     cy.eeConfig({item: 'legacy_member_templates', value: 'n'}).then(() => {
+      cy.wait(3000)
       page.load()
       cy.hasNoErrors()
       page.get('profile_trigger').should('not.exist')
