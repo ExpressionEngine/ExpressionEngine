@@ -262,7 +262,7 @@ class Settings extends Profile {
 				}
 				break;
 			case "choose":
-				$choice = ee()->input->post('avatar_filename');
+                $choice = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
 				$this->member->avatar_filename = $choice;
 				break;
 		}
