@@ -113,6 +113,26 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     }
 
                     ee()->load->remove_package_path($_ft_path);
+
+                    //frontend edit link
+                    if (IS_PRO) {
+                        if ($ft_api->field_type != 'fluid_field') {
+                            $frontedit_disabled = false;
+                            $frontEditLink = '';
+                            if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
+                                $frontedit_disabled = true;
+                            } elseif (isset($field['params']['disable'])) {
+                                $disable = explode("|", $field['params']['disable']);
+                                if (in_array('frontedit', $disable)) {
+                                    $frontedit_disabled = true;
+                                }
+                            }
+                            if (!$frontedit_disabled) {
+                                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
+                            }
+                            $tagdata = str_replace(LD . $prefix . $tag . ($modifier != 'pro_edit' ? ':pro_edit' : '') . RD, $frontEditLink, $tagdata);
+                        }
+                    }
                 } else {
                     // Couldn't find a fieldtype
                     $entry = ee()->typography->parse_type(

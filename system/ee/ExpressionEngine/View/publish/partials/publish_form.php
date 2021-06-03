@@ -4,11 +4,12 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
-		<div class="tab-bar tab-bar--sticky">
+		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
+			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
 			<?php
-            foreach ($layout->getTabs() as $index => $tab):
-                if (! $tab->isVisible()) {
+			foreach ($layout->getTabs() as $index => $tab):
+				if (! $tab->isVisible()) {
                     continue;
                 }
                 $class = '';
@@ -25,22 +26,42 @@
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
-			<?php endif ?>
+			<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
-
-		<?=ee('CP/Alert')->getAllInlines()?>
-		<?php foreach ($layout->getTabs() as $index => $tab): ?>
-		<?php if (! $tab->isVisible()) {
+		
+		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
+		<?php foreach ($layout->getTabs() as $index => $tab): 
+			if (ee('Request')->get('field_id') != '') {
+				$tabIsHidden = true;
+				foreach ($tab->getFields() as $field) {
+					if ($field->getId() == ee('Request')->get('field_id')) {
+						$tabIsHidden = false;
+						continue;
+					}
+				}
+				if ($tabIsHidden) {
+					continue;
+				}
+			}
+			
+			if (! $tab->isVisible()) {
                 continue;
             } ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?=$tab->renderAlert()?>
 		<?php foreach ($tab->getFields() as $field): ?>
+			<?php if (ee('Request')->get('field_id') != '') {
+				if ($field->getId() != ee('Request')->get('field_id')) {
+					continue;
+				}
+			}
+			?>
 			<?php if (! $field->isRequired() && ! $field->isVisible()) {
                 continue;
             } ?>
@@ -67,7 +88,7 @@
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
 				<div class="field-instruct">
-					<label><span class="ico sub-arrow js-toggle-field"></span><?=$field->getLabel()?></label>
+					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
 					<?php
                     $fieldInstructions = $field->getInstructions();
                     if (!empty($fieldInstructions)) : ?>
@@ -92,6 +113,7 @@
 		<?php endforeach; ?>
 		</div>
 		<?php endforeach; ?>
+		<?php if (!isset($pro_class)) : ?>
 		<div class="tab t-autosaves">
 			<fieldset>
 				<div class="field-instruct<?=$field_class?>">
@@ -103,6 +125,7 @@
 				</div>
 			</fieldset>
 		</div>
+		<?php endif; ?>
   </div>
 
 	</form>

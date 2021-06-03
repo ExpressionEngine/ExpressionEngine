@@ -14,7 +14,7 @@
         }
         ?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" class="app-modal-inner">
+	<body data-ee-version="<?=APP_VER?>" class="<?php if (isset($pro_class)) echo $pro_class; ?> app-modal-inner">
 		<script type="text/javascript">
 		var currentTheme = localStorage.getItem('theme');
 
@@ -24,19 +24,23 @@
 			document.body.dataset.theme = currentTheme;
 		}
 		</script>
+		<?php if (!isset($hide_topbar) || !$hide_topbar) : ?>
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
 		</div>
+		<?php endif; ?>
 
 		<?=$child_view?>
 
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
-		<?php if (isset($blocks['modals'])) {
-            echo $blocks['modals'];
-        } ?>
-		<?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
+		<?php 
+		if (isset($blocks['modals'])) {
+			echo $blocks['modals'];
+		}
+		echo implode('', ee('CP/Modal')->getAllModals()); 
+		?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->javascript->get_global()?>

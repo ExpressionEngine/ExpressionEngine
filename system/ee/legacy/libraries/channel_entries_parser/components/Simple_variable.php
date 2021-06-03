@@ -77,6 +77,12 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         $key = $tag;
         $val = $tag_options;
 
+        if ($key == $prefix . 'title:pro_edit') {
+            if (IS_PRO) {
+                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], 'title');
+                $tagdata = str_replace(LD . $key . RD, $frontEditLink, $tagdata);
+            }
+        }
         //  parse {title}
         if ($key == $prefix . 'title') {
             $tagdata = str_replace(

@@ -501,7 +501,7 @@ abstract class AbstractPublish extends CP_Controller
             unset($buttons[1]);
         }
 
-        if ($livePreviewSetup === true && $entry->hasLivePreview()) {
+        if ($livePreviewSetup === true) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -568,7 +568,7 @@ abstract class AbstractPublish extends CP_Controller
                     $preview_url .= AMP . 'entry_id=' . $entry->entry_id;
                 }
                 if (ee()->input->get('return') != '') {
-                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(ee()->input->get('return')));
+                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
                 }
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
@@ -589,6 +589,15 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
+            if (!$entry->livePreviewAllowed()) {
+                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                    ->asIssue()
+                    ->canClose()
+                    ->withTitle(lang('preview_not_allowed'))
+                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-allow_preview'));
+                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+            }
             return false;
         }
 

@@ -296,7 +296,7 @@ class Addons extends CP_Controller
         );
 
         foreach ($addons as $addon) {
-            $addon_info = ee('Addon')->get($addon);
+            $addon_info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
             $party = ($addon_info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
             $addon_info->updateConsentRequests();
@@ -408,7 +408,10 @@ class Addons extends CP_Controller
                 }
             }
 
-            $addon_info->updateDashboardWidgets();
+            if (IS_PRO) {
+                $addon_info->updateDashboardWidgets();
+                $addon_info->updateProlets();
+            }
         }
 
         ee('CP/JumpMenu')->clearAllCaches();
@@ -488,7 +491,7 @@ class Addons extends CP_Controller
 
         if ($can_install) {
             foreach ($addons as $addon) {
-                $info = ee('Addon')->get($addon);
+                $info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
                 ee()->load->add_package_path($info->getPath());
 
                 $party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
@@ -550,7 +553,10 @@ class Addons extends CP_Controller
                     }
                 }
 
-                $info->updateDashboardWidgets();
+                if (IS_PRO) {
+                    $info->updateDashboardWidgets();
+                    $info->updateProlets();
+                }
 
                 ee()->load->remove_package_path($info->getPath());
             }
@@ -602,7 +608,7 @@ class Addons extends CP_Controller
         );
 
         foreach ($addons as $addon) {
-            $info = ee('Addon')->get($addon);
+            $info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
 
             $info->removeConsentRequests();
 
@@ -649,7 +655,10 @@ class Addons extends CP_Controller
                 }
             }
 
-            $info->updateDashboardWidgets(true);
+            if (IS_PRO && $addon != 'pro') {
+                $info->updateDashboardWidgets(true);
+                $info->updateProlets(true);
+            }
         }
 
         ee('CP/JumpMenu')->clearAllCaches();

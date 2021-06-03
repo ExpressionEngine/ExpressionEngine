@@ -32,6 +32,7 @@ class Updater
             'livePreviewCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
+            'addProTemplateSettings',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -39,6 +40,23 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addProTemplateSettings()
+    {
+        if (!ee()->db->field_exists('disable_frontedit', 'templates')) {
+            ee()->smartforge->add_column(
+                'templates',
+                [
+                    'disable_frontedit' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 
     private function addConsentLogColumns()

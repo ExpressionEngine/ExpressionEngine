@@ -165,6 +165,7 @@ class Cp
             'THEME_URL' => $this->cp_theme_url,
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+            'cp.accessResponseURL' => ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $this->fetch_action_id('Pro', 'handleAccessResponse'),
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
@@ -194,7 +195,7 @@ class Cp
                     (ee()->config->item('is_system_on') == 'y') ? lang('online') : lang('offline'),
                     ee('CP/URL')->make('settings/general')
                 ));
-                
+
             $button = form_open(
                 ee('CP/URL')->make('settings/config'),
                 '',

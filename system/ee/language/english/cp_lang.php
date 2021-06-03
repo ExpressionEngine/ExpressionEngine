@@ -324,6 +324,8 @@ $lang = array(
 
     'recent_members' => 'Recent Members',
 
+    'recent_templates' => 'Recent Templates',
+
     'results' => 'results',
 
     'select_row' => 'Select Row',

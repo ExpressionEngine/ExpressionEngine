@@ -333,6 +333,36 @@ class EE_Output
         }
 
         // --------------------------------------------------------------------
+        // Include PRO stuff
+        $frontEditLoaded = false;
+        if (IS_PRO && REQ == 'PAGE' && (ee()->config->item('enable_dock') == 'y' || ee()->config->item('enable_dock') === false)) {
+            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
+                /*
+                    At the minimum, we check following:
+                    - License is valid
+                    - Member has access to the dock
+                    - Member has access to frontedit feature
+                */
+                $proAccess = ee('pro:Access');
+                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission()) {
+                    // enable frontedit and load required assets
+                    ee('pro:FrontEdit')->ensureEntryId();
+                    if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
+                        $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
+                        $frontEditLoaded = true;
+                    }
+                    $output = ee('pro:Dock')->build($output);
+                }
+                if (!$frontEditLoaded) {
+                    $output = ee('pro:FrontEdit')->clearFrontEdit($output);
+                }
+            }
+        }
+        if (IS_PRO && REQ == 'ACTION' && ee('LivePreview')->hasEntryData()) {
+            $output = ee('pro:FrontEdit')->clearFrontEdit($output);
+        }
+
+        // --------------------------------------------------------------------
 
         // Do we need to generate profile data?
         // If so, load the Profile service and run it.

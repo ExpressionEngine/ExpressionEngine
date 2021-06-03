@@ -902,6 +902,20 @@ class Template extends AbstractDesignController
             )
         );
 
+        if (IS_PRO) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $sections['pro_settings'][] = array(
+                'title' => 'disable_frontedit',
+                'desc' => 'disable_frontedit_tmpl_desc',
+                'fields' => array(
+                    'disable_frontedit' => array(
+                        'type' => 'yes_no',
+                        'value' => $template->disable_frontedit
+                    )
+                )
+            );
+        }
+
         $html = '';
 
         foreach ($sections as $name => $settings) {

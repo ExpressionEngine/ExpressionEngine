@@ -1200,6 +1200,9 @@ class EE_Template
                 $data_start = $this->in_point + $tag_length;
 
                 $tag = trim(substr($raw_tag, 1, -1));
+                if (IS_PRO) {
+                    $tag = preg_replace("/\{front_edit_link\s+(.*)[\"\']\s?\}/sU", '', $tag);
+                }
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
 
@@ -1342,6 +1345,10 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
+                if (IS_PRO && $tag != 'exp:channel:entries') {
+                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{front_edit_link\s+(.*)[\"\']\s?\}/sU", '', $chunk);
+                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{front_edit_link\s+(.*)[\"\']\s?\}/sU", '', $block);
+                }
             } // END IF
 
             // Increment counter
@@ -1889,7 +1896,14 @@ class EE_Template
         $status = & $this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (ee('LivePreview')->hasEntryData() or ! isset($args['cache']) or $args['cache'] != 'yes') {
+        if (! isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
+            $status = 'NO_CACHE';
+
+            return false;
+        }
+
+        // do not use cache with Pro editing
+        if (IS_PRO && ee('pro:Access')->hasDockPermission()) {
             $status = 'NO_CACHE';
 
             return false;

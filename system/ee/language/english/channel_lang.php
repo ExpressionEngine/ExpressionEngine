@@ -334,7 +334,7 @@ $lang = array(
 
     'allow_preview' => 'Allow Preview?',
 
-    'allow_preview_desc' => 'When enabled, users will be able to preview entries if the Preview <abbr title="Unified Resource Locator">URL</abbr> is set>',
+    'allow_preview_desc' => 'When enabled, users will be able to preview entries if the Preview <abbr title="Unified Resource Locator">URL</abbr> is set',
 
     'max_characters' => 'Maximum characters allowed?',
 
@@ -607,8 +607,6 @@ $lang = array(
     'channel_roles' => 'Allowed Roles',
 
     'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
-
-    'edit_in_full_form' => 'Edit in full form'
 
 );
 
