@@ -17,6 +17,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Checkout Pro
+        uses: actions/checkout@v2
+        with:
+          repository: EllisLab/ExpressionEngine-Pro
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __pro
+
+      - name: Move Pro into core
+        run: |
+          mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+          mv __pro/themes/ee/pro themes/ee/pro
+          [ -f __pro/tests/cypress/cypress/integration/pro ] && mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+          rm -rf __pro
+
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
 

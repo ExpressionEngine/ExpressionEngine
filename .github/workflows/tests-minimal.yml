@@ -16,9 +16,49 @@ jobs:
             with:
               cancel_others: true
 
+    checkout-code:
+      name: Build EE for testing
+
+      needs: cancel-running-tests
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Checkout Pro
+          uses: actions/checkout@v2
+          with:
+            repository: EllisLab/ExpressionEngine-Pro
+            token: ${{ secrets.ORG_ACCESS_TOKEN }}
+            path: __pro
+
+        - name: Move Pro into core
+          run: |
+            mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+            mv __pro/themes/ee/pro themes/ee/pro
+            [ -f __pro/tests/cypress/cypress/integration/pro ] && mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+            rm -rf __pro
+
+        - name: Move build to subfolder
+          run: |
+            shopt -s extglob
+            shopt -s dotglob
+            mkdir -p build-tools/builds/ExpressionEngine && cp -R !(build-tools) build-tools/builds/ExpressionEngine
+
+        - name: Cache built EE version
+          uses: actions/cache@v2
+          with:
+            path: build-tools/builds/ExpressionEngine
+            key: cache-ee-${{ github.sha }}
+        
+        - name: Directory Listing
+          if: always()
+          run: |
+            ls -lar build-tools/builds/ExpressionEngine
+
     php-tests:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -39,7 +79,7 @@ jobs:
                 sudo locale-gen ru
 
             - name: Checkout code
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -69,7 +109,7 @@ jobs:
 
     cypress-minimal-admin:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -82,8 +122,21 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
+                rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -146,7 +199,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-files:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -159,8 +212,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -223,7 +284,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-members:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -236,8 +297,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -300,7 +369,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-publish:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -313,8 +382,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -377,7 +454,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-utils:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -390,8 +467,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -454,7 +539,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-misc:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -467,8 +552,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -531,7 +624,7 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-installer:
         if: github.event.pull_request.draft == false
-        needs: cancel-running-tests
+        needs: [cancel-running-tests, checkout-code]
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -544,8 +637,16 @@ jobs:
 
         steps:
 
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
