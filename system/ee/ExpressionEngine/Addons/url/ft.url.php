@@ -29,7 +29,7 @@ class Url_Ft extends EE_Fieldtype
     /**
      * Validate Field
      *
-     * 	Note, we can't use filter_var() here, as FILTER_VALIDATE_URL will not
+     *  Note, we can't use filter_var() here, as FILTER_VALIDATE_URL will not
      *  validate internationalized URLs that contain non-ASCII characters.
      *  Plus, FILTER_VALIDATE_URL uses parse_url() internally for some bits
      *  anyway, go figure.
@@ -56,8 +56,7 @@ class Url_Ft extends EE_Fieldtype
         // is the scheme valid?
         if (! isset($parsed_url['host']) or ! isset($parsed_url['scheme'])) {
             // check for protocol relativity allowance before bailing
-            if (
-                in_array('//', $this->get_setting('allowed_url_schemes'))
+            if (in_array('//', $this->get_setting('allowed_url_schemes'))
                 && strncasecmp($data, '//', 2) === 0
                 ) {
                 // I'll allow it!
@@ -65,8 +64,7 @@ class Url_Ft extends EE_Fieldtype
             }
 
             // mailto: won't have a 'host', but should have a 'path'
-            if (
-                isset($parsed_url['scheme'], $parsed_url['path']) &&
+            if (isset($parsed_url['scheme'], $parsed_url['path']) &&
                 $parsed_url['scheme'] == 'mailto' &&
                 in_array('mailto:', $this->get_setting('allowed_url_schemes'))
                 ) {
