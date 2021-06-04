@@ -220,8 +220,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -305,8 +310,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -390,8 +400,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -475,8 +490,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -560,8 +580,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -645,8 +670,13 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                cp -R build-tools/builds/ExpressionEngine/* ./
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
                 rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
