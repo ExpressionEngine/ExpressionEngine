@@ -225,13 +225,14 @@ class Url_Ft extends EE_Fieldtype
             return $protocols;
         }
 
-        $protocols += array(
+        $protocols += [
             '//' => '// (' . lang('url_ft_protocol_relative_url') . ')',
             'ftp://' => 'ftp://',
             'mailto:' => 'mailto:',
             'sftp://' => 'sftp://',
             'ssh://' => 'ssh://',
-        );
+            'tel://' => 'tel://',
+        ];
 
         return $protocols;
     }
