@@ -28,7 +28,6 @@ jobs:
         run: |
           mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
           mv __pro/themes/ee/pro themes/ee/pro
-          [ -f __pro/tests/cypress/cypress/integration/pro ] && mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
           rm -rf __pro
 
       - name: Setup asdf

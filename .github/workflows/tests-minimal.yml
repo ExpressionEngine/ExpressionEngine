@@ -37,6 +37,7 @@ jobs:
             mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
             mv __pro/themes/ee/pro themes/ee/pro
             [ -f __pro/tests/cypress/cypress/integration/pro ] && mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+            [ -f __pro/tests/cypress/support/templates ] && cp __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
             rm -rf __pro
 
         - name: Move build to subfolder
