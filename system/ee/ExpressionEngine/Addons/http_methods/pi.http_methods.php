@@ -20,9 +20,9 @@ class Http_methods
      *
      * @return mixed [string|false]
      */
-	public function get()
+    public function get()
     {
-    	return $this->approvedMethod('get');
+        return $this->approvedMethod('get');
     }
 
     /**
@@ -32,7 +32,7 @@ class Http_methods
      */
     public function get_post()
     {
-    	return $this->approvedMethod('get_post');
+        return $this->approvedMethod('get_post');
     }
 
 
@@ -43,7 +43,7 @@ class Http_methods
      */
     public function post()
     {
-    	return $this->approvedMethod('post');
+        return $this->approvedMethod('post');
     }
 
     /**
@@ -53,7 +53,7 @@ class Http_methods
      */
     public function cookie()
     {
-    	return $this->approvedMethod('cookie');
+        return $this->approvedMethod('cookie');
     }
 
     /**
@@ -62,9 +62,9 @@ class Http_methods
      */
     public function ip_address()
     {
-    	$ip = ee()->input->ip_address();
-    	$this->return_data = $ip;
-    	return $ip;
+        $ip = ee()->input->ip_address();
+        $this->return_data = $ip;
+        return $ip;
     }
 
     /**
@@ -73,9 +73,9 @@ class Http_methods
      */
     public function user_agent()
     {
-    	$user_agent = ee()->input->user_agent();
-    	$this->return_data = $user_agent;
-    	return $user_agent;
+        $user_agent = ee()->input->user_agent();
+        $this->return_data = $user_agent;
+        return $user_agent;
     }
 
     /**
@@ -84,7 +84,7 @@ class Http_methods
      */
     public function request_header()
     {
-    	return $this->approvedMethod('get_request_header');
+        return $this->approvedMethod('get_request_header');
     }
 
     /**
@@ -94,19 +94,18 @@ class Http_methods
      */
     private function approvedMethod($method)
     {
-    	$name = ee()->TMPL->fetch_param('name');
+        $name = ee()->TMPL->fetch_param('name');
 
-    	if(!$name) {
-    		$this->return_data = '';
-    		return '';
-    	}
+        if (!$name) {
+            $this->return_data = '';
+            return '';
+        }
 
-    	// We will always want to XSS code, since we will be accessing
-    	// this from the front end.
-    	$val = ee()->input->{$method}($name, true);
+        // We will always want to XSS code, since we will be accessing
+        // this from the front end.
+        $val = ee()->input->{$method}($name, true);
 
-    	$this->return_data = $val;
-    	return $val;
+        $this->return_data = $val;
+        return $val;
     }
-
 }
