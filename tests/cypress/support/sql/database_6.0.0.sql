@@ -2492,7 +2492,7 @@ CREATE TABLE IF NOT EXISTS `exp_templates` (
   `php_parse_location` char(1) NOT NULL DEFAULT 'o',
   `hits` int(10) unsigned NOT NULL DEFAULT 0,
   `protect_javascript` char(1) NOT NULL DEFAULT 'n',
-  `disable_frontedit` char(1) NOT NULL default 'n',
+  `enable_frontedit` char(1) NOT NULL default 'y',
   PRIMARY KEY (`template_id`),
   KEY `group_id` (`group_id`),
   KEY `template_name` (`template_name`),

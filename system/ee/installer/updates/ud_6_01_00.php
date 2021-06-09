@@ -44,14 +44,14 @@ class Updater
 
     private function addProTemplateSettings()
     {
-        if (!ee()->db->field_exists('disable_frontedit', 'templates')) {
+        if (!ee()->db->field_exists('enable_frontedit', 'templates')) {
             ee()->smartforge->add_column(
                 'templates',
                 [
-                    'disable_frontedit' => [
+                    'enable_frontedit' => [
                         'type' => 'char',
                         'constraint' => 1,
-                        'default' => 'n',
+                        'default' => 'y',
                         'null' => false
                     ]
                 ]

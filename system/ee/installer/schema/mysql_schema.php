@@ -922,7 +922,7 @@ class EE_Schema
 			php_parse_location char(1) NOT NULL default 'o',
 			hits int(10) unsigned NOT NULL default 0,
 			protect_javascript char(1) NOT NULL default 'n',
-			disable_frontedit char(1) NOT NULL default 'n',
+			enable_frontedit char(1) NOT NULL default 'y',
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),
