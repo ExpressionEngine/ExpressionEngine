@@ -1,7 +1,7 @@
 <div data-addon="<?=$addon['package']?>" <?php if (isset($addon['settings_url'])) : ?>data-card-link="<?= $addon['settings_url'] ?>"<?php endif; ?> class="add-on-card <?php if (isset($addon['settings_url']) && $addon['installed']) : ?>add-on-card--clickable<?php endif; ?> <?php if (!$addon['installed']) : ?>add-on-card--uninstalled<?php endif; ?>">
 	<div class="add-on-card__icon">
 		<div class="add-on-card__image">
-			<img src="<?= (!empty($addon['icon_url']) ? $addon['icon_url'] : URL_THEMES . 'asset/img/default-addon-icon.svg') ?>" alt="<?= $addon['name'] ?>">
+			<img src="<?= (!empty($addon['icon_url']) ? $addon['icon_url'] : URL_THEMES . 'asset/img/default-addon-icon.svg') ?>" alt="<?= $addon['name'] ?>" width="50">
 		</div>
 	</div>
 	<div class="add-on-card__text">
