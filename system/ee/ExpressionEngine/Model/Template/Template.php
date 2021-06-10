@@ -83,7 +83,7 @@ class Template extends FileSyncedModel
         'php_parse_location' => 'enum[i,o]',
         'hits' => 'isNatural',
         'protect_javascript' => 'enum[y,n]',
-        'disable_frontedit' => 'enum[y,n]',
+        'enable_frontedit' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -108,7 +108,7 @@ class Template extends FileSyncedModel
     protected $php_parse_location;
     protected $hits;
     protected $protect_javascript;
-    protected $disable_frontedit;
+    protected $enable_frontedit;
 
     /**
      * Returns the path to this template i.e. "site/index"
