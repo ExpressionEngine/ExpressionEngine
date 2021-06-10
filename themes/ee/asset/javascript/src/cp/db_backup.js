@@ -9,7 +9,7 @@
 
 EE.cp.DbBackup = {
 
-	buttons: $('.form-btns input.button:visible'),
+	buttons: $('.form-btns .button:visible'),
 
 	init: function() {
 		EE.cp.DbBackup._init();

@@ -10,7 +10,7 @@ class TemplateManager extends ControlPanel {
             "export_icon": '.section-header__options a.icon--export',
             "phrase_search": '.main-nav__toolbar .main-nav__toolbar-input',
 
-            "search_submit_button": '.section-header__controls input[type="submit"]',
+            "search_submit_button": '.section-header__controls [type="submit"]',
             "create_new_template_button": 'fieldset.right a.button.action',
             "perpage_filter": '.filters ul li:first-child a',
             "template_groups": '.sidebar .scroll-wrap .folder-list[data-name="template-group"] > div',

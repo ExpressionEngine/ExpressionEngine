@@ -61,7 +61,7 @@ context('Messaging Settings', () => {
   it('should validate the form', () => {
     page.get('prv_msg_max_chars').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     //page.hasErrors()
@@ -160,7 +160,7 @@ context('Messaging Settings', () => {
   it('should reject XSS', () => {
     page.get('prv_msg_upload_path').clear().type(page.messages.xss_vector)
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.hasError(page.get('prv_msg_upload_path'), page.messages.xss_error)
     //page.hasErrors()
@@ -178,7 +178,7 @@ context('Messaging Settings', () => {
     page.get('prv_msg_attach_maxsize').clear().type('102')
     page.get('prv_msg_attach_total').clear().type('103')
    // page.submit()
-   cy.get('input').contains('Save Settings').first().click()
+   cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('prv_msg_max_chars').invoke('val').then((val) => { expect(val).to.be.equal('100')})

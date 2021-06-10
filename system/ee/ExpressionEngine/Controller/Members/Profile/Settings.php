@@ -206,11 +206,11 @@ class Settings extends Profile
     {
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-            $this->member->avatar_filename = ee()->input->post('avatar_filename');
+            $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
 
             return true;
         }
-        
+
         $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
 
         // Remove the member's existing avatar
