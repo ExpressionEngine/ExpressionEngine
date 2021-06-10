@@ -65,11 +65,16 @@ $(document).ready(function () {
 		}
 	});
 
-	window.addEventListener('beforeunload', function(e) {
+	//prevent navigating away using browser buttons
+	function preventNavigateAway(e) {
 		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
 			e.returnValue = EE.lang.confirm_exit;
 			return EE.lang.confirm_exit;
 		}
+	}
+	window.addEventListener('beforeunload', preventNavigateAway);
+	publishForm.on('submit', function(){
+		window.removeEventListener('beforeunload', preventNavigateAway);
 	});
 	
 
