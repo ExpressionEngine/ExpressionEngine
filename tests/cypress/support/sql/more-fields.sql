@@ -1,3 +1,6 @@
+INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
+  (3, 1, 'Complex fields');
+
 INSERT INTO `exp_channels_channel_field_groups` (`channel_id`, `group_id`) VALUES
   (2, 3);
 

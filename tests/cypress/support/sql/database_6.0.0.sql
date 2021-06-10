@@ -1193,8 +1193,7 @@ DELETE FROM `exp_field_groups`;
 /*!40000 ALTER TABLE `exp_field_groups` DISABLE KEYS */;
 INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
 	(1, 1, 'News'),
-	(2, 1, 'About'),
-  (3, 1, 'Complex fields');
+	(2, 1, 'About');
 /*!40000 ALTER TABLE `exp_field_groups` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_files
