@@ -31,16 +31,18 @@ class Comment
     public function __construct()
     {
         $fields = array('name', 'email', 'url', 'location', 'comment');
+        
+            foreach ($fields as $val) {
+                if (isset($_POST[$val])) {
+                    $_POST[$val] = ee()->functions->encode_ee_tags($_POST[$val], true);
 
-        foreach ($fields as $val) {
-            if (isset($_POST[$val])) {
-                $_POST[$val] = ee()->functions->encode_ee_tags($_POST[$val], true);
-
-                if ($val == 'comment') {
-                    $_POST[$val] = ee('Security/XSS')->clean($_POST[$val]);
+                    if ($val == 'comment') {
+                    
+                        $_POST[$val] = ee('Security/XSS')->clean($_POST[$val]);
+                    }
                 }
             }
-        }
+        
     }
 
     /**
@@ -1267,6 +1269,8 @@ class Comment
             exit('Preview template not specified in your comment form tag');
         }
 
+        
+
         // Clean return value- segments only
         $clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
@@ -1887,6 +1891,9 @@ class Comment
      */
     public function comment_subscribe()
     {
+        if (ee()->input->get('token') != CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
         ee()->lang->loadfile('comment');
 
         $id = ee()->input->get('entry_id');
@@ -1978,8 +1985,15 @@ class Comment
      */
     public function edit_comment($ajax_request = true)
     {
-        @header("Content-type: text/html; charset=UTF-8");
+        /*
+        This check is needed because otherwise, links could be created to CSRF and edit comments.
+        */
+        if (ee()->input->get('token') != CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
 
+        @header("Content-type: text/html; charset=UTF-8");
+        
         $unauthorized = ee()->lang->line('not_authorized');
 
         if (ee()->input->get_post('comment_id') === false or ((ee()->input->get_post('comment') === false or ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close')) {
