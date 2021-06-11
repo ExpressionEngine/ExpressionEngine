@@ -62,7 +62,7 @@ context('Access Throttling Settings', () => {
 
     page.get('lockout_time').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
 
@@ -142,7 +142,7 @@ context('Access Throttling Settings', () => {
     page.get('banishment_url').clear().type('http://yahoo.com')
     page.get('banishment_message').clear().type('You are banned')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('enable_throttling').invoke('val').then((val) => { expect(val).to.be.equal('y')})
     page.get('banish_masked_ips').invoke('val').then((val) => { expect(val).to.be.equal('n')})

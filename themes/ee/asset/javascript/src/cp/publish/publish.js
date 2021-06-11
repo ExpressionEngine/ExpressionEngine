@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -12,6 +12,7 @@ $(document).ready(function () {
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
+	var isNavigatingAway = false;
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -48,6 +49,35 @@ $(document).ready(function () {
 		});
 	}
 
+	//prevent navigating away
+	$('body').on('click', 'a', function(e) {
+		if (
+			sessionStorage.getItem("preventNavigateAway") == 'true' &&
+			$(this).attr('href') != null && 
+			$(this).attr('href') != '' && 
+			$(this).attr('href').indexOf('#') != 0  && 
+			$(this).attr('href').indexOf('javascript:') != 0 &&
+			$(this).attr('target') != '_blank' && 
+			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
+		) {
+			isNavigatingAway = confirm(EE.lang.confirm_exit);
+			return isNavigatingAway;
+		}
+	});
+
+	//prevent navigating away using browser buttons
+	function preventNavigateAway(e) {
+		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+			e.returnValue = EE.lang.confirm_exit;
+			return EE.lang.confirm_exit;
+		}
+	}
+	window.addEventListener('beforeunload', preventNavigateAway);
+	publishForm.on('submit', function(){
+		window.removeEventListener('beforeunload', preventNavigateAway);
+	});
+	
+
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
@@ -67,7 +97,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('[data-publish] .form-btns-top h1');
+						var publishHeading = $('.main-nav__title h1');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
@@ -75,6 +105,7 @@ $(document).ready(function () {
 						}
 						else if (result.success) {
 							publishHeading.append(result.success);
+							sessionStorage.removeItem("preventNavigateAway");
 						}
 						else {
 							console.log('Autosave Failed');
@@ -104,22 +135,25 @@ $(document).ready(function () {
 		    preview_url    = $(iframe).data('url');
 
 		// Show that the preview is refreshing
-		$('.live-preview__preview-loader').addClass('open')
+		$('.live-preview__preview-loader').addClass('loaded');
 
 		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
 			url: preview_url,
+			crossDomain: true,
+			beforeSend: function(request) {
+				request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
+			},
 			data: publishForm.serialize(),
 			complete: function(xhr) {
 				if (xhr.responseText !== undefined) {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
-
-					// Hide the refreshing indicator
-					$('.live-preview__preview-loader').removeClass('open')
 				}
+				// Hide the refreshing indicator
+				$('.live-preview__preview-loader').removeClass('loaded');
 				ajaxRequest = null;
 			},
 		});

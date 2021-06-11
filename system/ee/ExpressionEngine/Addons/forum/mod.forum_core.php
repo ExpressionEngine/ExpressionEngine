@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -675,7 +675,7 @@ class Forum_Core extends Forum
                 return ee('Permission')->isSuperAdmin();
             }
 
-            $member = ee('Model')->get('Member', $member_id)->first();
+            $member = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
             if (! $member) {
                 return false;
@@ -2244,8 +2244,7 @@ class Forum_Core extends Forum
         $read_topics = $this->_fetch_read_topics($this->current_id);
 
         if (ee()->session->userdata('member_id') == 0) {
-            $expire = 60 * 60 * 24 * 365;
-            ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+            ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
         } else {
             if ($this->read_topics_exist === false) {
                 $d = array(
@@ -5355,8 +5354,7 @@ class Forum_Core extends Forum
             $read_topics = $this->_fetch_read_topics($data['topic_id']);
 
             if (ee()->session->userdata('member_id') == 0) {
-                $expire = 60 * 60 * 24 * 365;
-                ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+                ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
             }
         }
 
@@ -7036,7 +7034,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -7100,7 +7098,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -9509,6 +9507,7 @@ class Forum_Core extends Forum
         /**  Validate Username and Password
         /** ----------------------------------*/
         $member = ee('Model')->get('Member')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->filter('username', $username)
             ->first();
 

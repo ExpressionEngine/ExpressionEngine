@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@
  */
 class Channel_upd
 {
-    public $version = '2.1.0';
+    public $version = '2.1.1';
 
     /**
      * Module Installer
@@ -54,7 +54,8 @@ class Channel_upd
 
         $data = array(
             'class' => 'Channel',
-            'method' => 'live_preview'
+            'method' => 'live_preview',
+            'csrf_exempt' => 1
         );
 
         ee()->db->insert('actions', $data);

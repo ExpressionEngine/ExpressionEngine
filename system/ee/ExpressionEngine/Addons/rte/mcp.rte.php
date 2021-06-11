@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -319,11 +319,12 @@ class Rte_mcp
         //  Advanced Settings
         // -------------------------------------------
 
-        $fullToolbar = RteHelper::defaultToolbars()['Full'];
+        $fullToolbar = array_merge($config->settings['toolbar'], RteHelper::defaultToolbars()['Full']);
         $fullToolset = array();
         foreach ($fullToolbar as $i => $tool) {
             $fullToolset[$tool] = lang($tool . '_rte');
         }
+
 
         $toolbarInputHtml = ee('View')->make('rte:toolbar')->render(
             ['buttons' => $fullToolset, 'selection' => $config->settings['toolbar']]

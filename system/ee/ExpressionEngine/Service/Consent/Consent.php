@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -121,6 +121,7 @@ class Consent
         if ($this->isAnonymous()) {
             $this->cookie[$request->getId()] = ['has_granted' => true, 'timestamp' => $this->now];
             $this->saveConsentCookie($this->cookie);
+            $request->log(sprintf(lang('consent_granted_log_msg'), lang($via)));
             $this->updateConsentCache($request);
         } else {
             $consent = $this->getOrMakeConsent($request);
@@ -134,9 +135,9 @@ class Consent
             $consent->save();
 
             if ($this->memberIsActor()) {
-                $consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+                $consent->log(sprintf(lang('consent_granted_log_msg'), lang($via)));
             } else {
-                $consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
+                $consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), lang($via)));
             }
 
             $this->updateConsentCache($consent);
@@ -459,8 +460,8 @@ class Consent
     protected function saveConsentCookie(array $consented_to)
     {
         $payload = ee('Encrypt/Cookie')->signCookieData($consented_to);
-        // 60 * 60 * 24 * 365 = 31556952; A year of seconds
-        $this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31556952);
+        // 60 * 60 * 24 * 360 = 31104000; A (almost) year of seconds
+        $this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31104000);
         $this->session_delegate->set_cache(__CLASS__, 'cookie_data_' . $this->member_id, $consented_to);
     }
 

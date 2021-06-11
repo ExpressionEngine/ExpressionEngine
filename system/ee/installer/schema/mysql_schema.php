@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -537,6 +537,7 @@ class EE_Schema
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			preview_url varchar(100) NULL DEFAULT NULL,
+			allow_preview char(1) NOT NULL default 'y',
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`(191)),
@@ -1235,8 +1236,8 @@ class EE_Schema
 			`wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
 			`wm_name` varchar(80) DEFAULT NULL,
 			`wm_type` varchar(10) DEFAULT 'text',
-			`wm_image_path` varchar(100) DEFAULT NULL,
-			`wm_test_image_path` varchar(100) DEFAULT NULL,
+			`wm_image_path` varchar(255) DEFAULT NULL,
+			`wm_test_image_path` varchar(255) DEFAULT NULL,
 			`wm_use_font` char(1) DEFAULT 'y',
 			`wm_font` varchar(30) DEFAULT NULL,
 			`wm_font_size` int(3) unsigned DEFAULT NULL,
@@ -1363,6 +1364,17 @@ class EE_Schema
 			PRIMARY KEY (`widget_id`)
 	  	)";
 
+		$Q[] = "CREATE TABLE `exp_cookie_settings` (
+			`cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`cookie_provider` varchar(50) NOT NULL,
+			`cookie_name` varchar(50) NOT NULL,
+			`cookie_lifetime` int(10) unsigned DEFAULT NULL,
+			`cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+			`cookie_title` varchar(200) NOT NULL,
+			`cookie_description` text NULL,
+			PRIMARY KEY (`cookie_id`)
+		)";
+
         $Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
@@ -1385,6 +1397,12 @@ class EE_Schema
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
 
+        $Q[] = "CREATE TABLE `exp_consent_request_version_cookies` (
+			`consent_request_version_id` int(10) unsigned NOT NULL,
+			`cookie_id` int(10) unsigned NOT NULL,
+			KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
+		)";
+
         $Q[] = "CREATE TABLE `exp_consents` (
 			`consent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_id` int(10) unsigned NOT NULL,
@@ -1404,11 +1422,15 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_consent_audit_log` (
 			`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_id` int(10) unsigned NOT NULL,
+			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
 			`member_id` int(10) unsigned NOT NULL,
+			`ip_address` varchar(45) default '0' NOT NULL,
+			`user_agent` varchar(120) NOT NULL,
 			`action` text NOT NULL,
 			`log_date` int(10) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_audit_id`),
-			KEY `consent_request_id` (`consent_request_id`)
+			KEY `consent_request_id` (`consent_request_id`),
+			KEY `consent_request_version_id` (`consent_request_version_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_config` (

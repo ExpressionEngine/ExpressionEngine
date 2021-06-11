@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -38,7 +38,7 @@ class ViewType
         if (in_array(ee()->input->get('viewtype'), $views)) {
             if (!isset($viewtype_prefs[$destination]) || $viewtype != ee()->input->get('viewtype')) {
                 $viewtype_prefs[$destination] = ee()->input->get('viewtype');
-                ee()->input->set_cookie('viewtype', serialize($viewtype_prefs), 60 * 60 * 24 * 365);
+                ee()->input->set_cookie('viewtype', serialize($viewtype_prefs), 31104000);
             }
             $viewtype = ee()->input->get('viewtype');
         }

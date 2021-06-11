@@ -204,7 +204,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click({force:true})
 
     //bulk_edit.get('save_all_button').click()
-    cy.get('input').contains('Save All & Close').first().click()
+    cy.get('button').contains('Save All & Close').first().click()
 
     entry_manager.get('center_modal').should('not.be.visible')
     entry_manager.get_row_for_title('About the Label').should('contain', 'Closed')
@@ -279,7 +279,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]:visible').should('be.checked')
 
     //bulk_edit.get('save_all_button').click()
-    cy.get('input').contains('Save All & Close').first().click()
+    cy.get('button').contains('Save All & Close').first().click()
     entry_manager.get('alert_success').should('exist')
 
     const entries = ['Getting to Know ExpressionEngine', 'Welcome to the Example Site!']

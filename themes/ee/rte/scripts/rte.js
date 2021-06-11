@@ -123,7 +123,8 @@ window.Rte;
     Rte.loadEEFileBrowser = function(params, directory, content_type) {
         // Set up the temporary increase of z-indexes.
         var modalZIndex = $('.modal-file').css('z-index'),
-            overlayZindex = $('.overlay').css('z-index');
+            overlayZindex = $('.overlay').css('z-index'),
+            appOverlayZindex = $('.app-overlay').css('z-index');
 
         $('.modal-file').css('z-index', 10012);
         $('.overlay, .app-overlay').css('z-index', 10011);
@@ -136,6 +137,7 @@ window.Rte;
         var restoreZIndexes = function (){
             $('.modal-file').css({'z-index': modalZIndex});
             $('.overlay').css({'z-index': overlayZindex});
+            $('.app-overlay').css({'z-index': appOverlayZindex});
             $('body').css({ position:'initial', width:'initial' });
         };
 

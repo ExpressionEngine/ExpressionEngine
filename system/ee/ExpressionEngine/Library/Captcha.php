@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,6 +42,22 @@ class Captcha
      */
     public function create($old_word = '', $force_word = false)
     {
+        if (ee()->config->item('use_recaptcha') == 'y') {
+            $key = ee()->config->item('recaptcha_site_key');
+            $secret = ee()->config->item('recaptcha_site_secret');
+            $score_threshold = ee()->config->item('recaptcha_score_threshhold');
+            $action_id = ee()->functions->fetch_action_id('member', 'recaptcha_check');
+
+            $js = "<script> var csrf_token='".CSRF_TOKEN."'; var endpoint ='".ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id."'; var key ='".$key."'; </script>";
+            $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=".$key."\"></script>";
+            $js .= '<script type="text/javascript" src="' . URL_THEMES . 'member/scripts/recaptcha.js"></script>';
+            $js .= "<input type=\"hidden\" name=\"recaptcha_response\" id=\"recaptchaResponse\" value=\"\">";
+            $js .= "<input type=\"hidden\" name=\"captcha\" class=\"captcha\" id=\"captcha\" value=\"\">";
+            $js .= "<div class=\"reCaptchaMessage\"></div>";
+            return $js;
+        }
+
+        // If not using ReCAPTCHA, then
         if (ee()->config->item('captcha_require_members') == 'n' &&
             ee()->session->userdata['member_id'] != 0 &&
             $force_word == false) {

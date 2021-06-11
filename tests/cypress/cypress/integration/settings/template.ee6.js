@@ -41,7 +41,7 @@ context('Template Settings', () => {
   it('should validate the form', () => {
     page.get('max_tmpl_revisions').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
  
@@ -72,7 +72,7 @@ context('Template Settings', () => {
     page.get('save_tmpl_revisions_toggle').click()
     page.get('max_tmpl_revisions').clear().type('300')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences Updated')
     page.get('strict_urls').invoke('val').then((val) => { expect(val).to.be.equal('n') })

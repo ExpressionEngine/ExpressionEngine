@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -89,6 +89,7 @@ return array(
     'application/zip', // .zip
     'audio/flac', // .flac
     'audio/m4a', // .m4a
+    'audio/x-m4a', // m4a
     'audio/midi', // .mid, .midi
     'audio/mp4', // .mp4
     'audio/mpeg', // .mp2, .mp3, .mpga

@@ -60,7 +60,7 @@ context('Channel Fields', () => {
         cy.get('button[value="submit"]').first().click()
         cy.wait(400)// AJ
         //page.get('new_modal_submit_button').click()
-        cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+        cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
         page.hasAlert('success')
         page.get('fields').its('length').should('eq', 6)

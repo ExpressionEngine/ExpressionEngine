@@ -48,15 +48,41 @@
     padding-right: 15px;
     border-right: none;
   }
+  
 
   .file-field__dropzone {
     margin-top: 0px;
+
+	.dropdown__link, .file-field__buttons {
+		text-indent: 20px;
+	}
+	.dropdown__link--selected {
+		&::before {
+			margin-right: 20px;
+			margin-left: -20px;
+		}
+	}
   }
+
+	.file-field__buttons {
+		.dropdown__link {
+			text-indent: 20px;
+		}
+	}
 
   input[type=email], input[type=number], input[type=password], input[type=text], input[type=url], textarea {
     min-width: 150px;
   }
 }
+
+
+.grid-relate, .grid-multi-relate {
+	.dropdown__link {
+		display: inline-block;
+	}
+}
+
+
 
 #routes {
 	.grid-field__table {

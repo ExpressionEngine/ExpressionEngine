@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,7 @@ class Rte_ft extends EE_Fieldtype
 
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.0.0'
+        'version' => '2.0.1'
     ];
 
     /**

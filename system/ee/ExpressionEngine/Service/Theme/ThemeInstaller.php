@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -339,7 +339,7 @@ class ThemeInstaller
             $this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
 
             foreach (directory_map($path) as $filename) {
-                if (! is_array($filename) && is_file($path . '/' . $filename)) {
+                if (! is_array($filename) && is_file($path . '/' . $filename) && $filename != 'index.html') {
                     $filepath = $path . '/' . $filename;
                     $time = time();
                     $file = ee('Model')->make('File');

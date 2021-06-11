@@ -1,0 +1,43 @@
+.app-overlay{
+	background-color: color(modal-overlay-bg);
+}
+
+/*
+	use when modal action is destructive
+	example: deleting data
+*/
+.app-overlay--destruct{
+	background-color: color(brand-danger);
+}
+
+/*
+	use when modal action requires extra thought
+	example: editing data
+*/
+.app-overlay--warning{
+	background-color: color(brand-warning);
+}
+
+.app-modal-inner{
+	background-color: color(bg-0);
+}
+
+.app-modal--center{
+
+		.app-modal__content{
+			background-color: color(bg-0);
+		}
+}
+
+.app-modal--fullscreen{
+	background-color: color(bg-0);
+}
+
+/*
+	side panel modal
+
+	used for create and edit form modals
+*/
+.app-modal--side{
+	background-color: color(bg-0);
+}

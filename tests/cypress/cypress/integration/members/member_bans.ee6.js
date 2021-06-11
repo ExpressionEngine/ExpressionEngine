@@ -95,7 +95,7 @@ context('Ban Settings', () => {
     page.get('ban_destination').clear().type('Dummy Destination')
     
     //page.submit() AJ
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Ban Settings updated')
     // Ban settings adds a newline to queue admins for correct legible input
