@@ -2822,28 +2822,28 @@ GRID_FALLBACK;
         $this->fetch_settings();
 
         if (empty($this->option_fields)) {
-
-            $cache_key = '/Fieldtype/OptionFieldtypes';
-            $this->option_fields = ee()->cache->get($cache_key);
-
-            if (empty($this->option_fields)) {
+            if (! ee()->session->cache(__CLASS__, 'OptionFieldtypes')) {
                 $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
 
                 ee()->load->library('api');
                 ee()->legacy_api->instantiate('channel_fields');
 
                 // Get the list of Fieldtypes that extend OptionFieldtype
-                $this->option_fields = array_filter($fieldtypes, function($fieldtype) {
+                $option_fields = array_filter($fieldtypes, function($fieldtype) {
                     ee()->api_channel_fields->include_handler($fieldtype);
                     $class = ucfirst($fieldtype) . '_ft';
 
                     return is_subclass_of($class, 'OptionFieldtype');
                 });
 
-                $this->option_fields = array_values($this->option_fields);
-
-                ee()->cache->save($cache_key, $this->option_fields);
+                ee()->session->set_cache(
+                    __CLASS__,
+                    'OptionFieldtype',
+                    array_values($option_fields)
+                );
             }
+
+            $this->option_fields = ee()->session->cache(__CLASS__, 'OptionFieldtypes');
         }
 
         /*
