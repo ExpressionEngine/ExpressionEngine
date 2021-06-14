@@ -2898,6 +2898,10 @@ class EE_Template
             return $str;
         }
 
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
+        }
+
         return preg_replace("/\{!--.*?--\}/s", '', $str);
     }
 
