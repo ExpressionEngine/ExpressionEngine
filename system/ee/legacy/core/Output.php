@@ -357,7 +357,7 @@ class EE_Output
         }
         if (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) {
             if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
-                $output = preg_replace("/\{front_edit_link\s+(.*)\}/sU", '', $output);
+                $output = preg_replace("/\{frontedit_link\s+(.*)\}/sU", '', $output);
                 $output = preg_replace("/\<\!--\s*(\/\/\s*)*disable\s*frontedit\s*--\>/sU", '', $output);
             }
         }

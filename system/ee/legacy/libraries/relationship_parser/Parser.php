@@ -238,7 +238,7 @@ class EE_Relationship_data_parser
 
         // frontend edit link
         if (IS_PRO) {
-            if ($node->data['shortcut'] == 'pro_edit') {
+            if ($node->data['shortcut'] == 'frontedit') {
                 foreach ($channel->cfields as $field_site_id => $cfields) {
                     if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
                         continue;
@@ -251,7 +251,7 @@ class EE_Relationship_data_parser
                         $channel_id = $entryQuery->row('channel_id');
                         $site_id = $entryQuery->row('site_id');
                         $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
-                        $result = str_replace(LD . $field_name . ':pro_edit' . RD, $frontEditLink, $result);
+                        $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
                         break;
                     }
                 }
@@ -269,7 +269,7 @@ class EE_Relationship_data_parser
                     //$result = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id) . $result;
                     $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
                     if ($frontEditLink) {
-                        $result = str_replace(LD . $field_name . ':pro_edit' . RD, $frontEditLink, $result);
+                        $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
                     }
                     break;
                 }
