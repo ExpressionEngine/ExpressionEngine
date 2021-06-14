@@ -134,15 +134,21 @@ class CommandMakeAddon extends Cli
 
     private function getTypeSpecificData()
     {
+        // Extension specific options
         if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
             // No hooks were passed, so we're giving info on the hooks
             if (! $this->option('--hooks')) {
                 $this->info('command_make_addon_what_hooks_to_use');
             }
 
-            $this->data['hooks'] = $this->getOptionOrAsk('--hooks', 'command_make_addon_ext_hooks');
+            // Set or ask for what hooks to use
+            $this->data['hooks'] = $this->getOptionOrAsk(
+                '--hooks',
+                'command_make_addon_ext_hooks',
+            );
         }
 
+        // Fieldtype specific options
         if ($this->type['slug'] == 'fieldtype') {
             $this->data['compatibility'] = $this->ask('command_make_addon_ft_compatibility');
         }

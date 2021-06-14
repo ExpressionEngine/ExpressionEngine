@@ -274,6 +274,8 @@ class Cli
         if ($required && empty(trim($answer))) {
             $this->fail($option . lang('cli_error_is_required'));
         }
+
+        return $answer;
     }
 
     /**

@@ -11,7 +11,7 @@ class {{slug_uc}}_ext extends Installer
     public $settings = [];
     public $version = "{{version}}";
 
-    public function __construct($settings = '')
+    public function __construct($settings = [])
     {
         $this->settings = $settings;
     }
@@ -39,5 +39,6 @@ class {{slug_uc}}_ext extends Installer
     {
         return true;
     }
+{{extension_settings}}
 {{hook_methods}}
 }

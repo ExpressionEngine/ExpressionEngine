@@ -61,7 +61,7 @@ class AddonGenerator
         $this->models = isset($data['models']) ? $data['models'] : null;
 
         // Make sure we've got an array of hooks
-        if (!is_array($this->hooks)) {
+        if (!is_array($this->hooks) && !is_null($this->hooks)) {
             $this->hooks = array_unique(explode(',', $this->hooks));
         }
     }
@@ -119,12 +119,17 @@ class AddonGenerator
 
     protected function buildExtension()
     {
+        if (!is_array($this->hooks)) {
+            throw new \Exception("Hooks are required to generate extension", 1);
+        }
+
         $stub = $this->filesystem->read($this->stub('ext.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('version', $this->version, $stub);
 
         $hook_array = '';
         $hook_method = '';
+        $extension_settings = '';
 
         foreach ($this->hooks as $hook) {
             $hookData = Hooks::getByKey(strtoupper($hook));
@@ -139,10 +144,16 @@ class AddonGenerator
             $hook_method .= "{$hookMethodStub}\n";
         }
 
+        if ($this->has_settings) {
+            $extension_settings = $this->filesystem->read($this->stub('extension_settings.php'));
+        }
+
+        $stub = $this->write('extension_settings', $extension_settings, $stub);
         $stub = $this->write('hook_array', $hook_array, $stub);
         $stub = $this->write('hook_methods', $hook_method, $stub);
 
         $this->putFile('ext.' . $this->slug . '.php', $stub);
+        $this->createLangFile();
     }
 
     protected function buildModule()
@@ -195,14 +206,7 @@ class AddonGenerator
         $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile('mcp.' . $this->slug . '.php', $stub);
 
-        // Create lang file
-        $this->filesystem->mkDir($this->addonPath . 'language');
-        $this->filesystem->mkDir($this->addonPath . 'language/english');
-        $stub = $this->filesystem->read($this->stub('slug_lang.php'));
-        $stub = $this->write('name', $this->name, $stub);
-        $stub = $this->write('description', $this->description, $stub);
-        $stub = $this->write('slug', $this->slug, $stub);
-        $this->putFile($this->slug . '_lang.php', $stub, '/language/english');
+        $this->createLangFile();
     }
 
     protected function buildPlugin()
@@ -363,6 +367,18 @@ class AddonGenerator
         ];
 
         $this->putFile('composer.json', json_encode($data, JSON_PRETTY_PRINT));
+    }
+
+    private function createLangFile()
+    {
+        // Create lang file
+        $this->filesystem->mkDir($this->addonPath . 'language');
+        $this->filesystem->mkDir($this->addonPath . 'language/english');
+        $stub = $this->filesystem->read($this->stub('slug_lang.php'));
+        $stub = $this->write('name', $this->name, $stub);
+        $stub = $this->write('description', $this->description, $stub);
+        $stub = $this->write('slug', $this->slug, $stub);
+        $this->putFile($this->slug . '_lang.php', $stub, '/language/english');
     }
 
     private function stub($file)
