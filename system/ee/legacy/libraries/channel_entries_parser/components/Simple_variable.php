@@ -76,6 +76,10 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         // @todo remove
         $key = $tag;
         $val = $tag_options;
+        if (strpos($key, 'disable') !== false && strpos($key, 'frontedit') !== false ) {
+            $key = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $key));
+            $tagdata = str_replace($tag, $key, $tagdata);
+        }
 
         if ($key == $prefix . 'title:pro_edit') {
             if (IS_PRO) {
