@@ -65,6 +65,9 @@ class CommandClearCaches extends Cli
             $this->fail('command_cache_clear_cache_does_not_exist');
         }
 
+        ee()->load->driver('cache');
+        ee()->load->library('functions');
+
         ee()->functions->clear_caching($type);
 
         $this->info(ucfirst($type) . lang('command_cache_clear_caches_cleared'));
