@@ -131,10 +131,17 @@ class Login extends CP_Controller
 
         $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
+        $view = 'account/login';
         if ($this->input->get('BK')) {
             $this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
         } elseif ($this->input->get('return')) {
             $this->view->return_path = $this->input->get('return');
+            $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
+            if (IS_PRO && isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
+                $view = 'pro:account/login';
+                $this->view->hide_topbar = true;
+                $this->view->pro_class = 'pro-frontend-modal';
+            }
         }
 
         $this->view->cp_page_title = lang('login');
@@ -143,7 +150,7 @@ class Login extends CP_Controller
 
         ee()->output->enable_profiler(false);
 
-        $this->view->render('account/login');
+        $this->view->render($view);
     }
 
     /**
@@ -217,7 +224,7 @@ class Login extends CP_Controller
         }
 
         if ($this->input->post('return_path')) {
-            $return_path = ee('Encrypt')->decode($this->input->post('return_path'));
+            $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $this->input->post('return_path')));
 
             if (strpos($return_path, '{') === 0) {
                 $uri_elements = json_decode($return_path, true);
@@ -774,7 +781,7 @@ class Login extends CP_Controller
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
-            $redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->post('return_path'));
+            $redirect .= AMP . 'return=' . ee()->input->post('return_path');
         } elseif (ee()->input->get('return')) {
             $redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->get('return'));
         }
