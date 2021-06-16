@@ -39,6 +39,7 @@ jobs:
             [ -f __pro/tests/cypress/cypress/integration/pro ] && mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
             [ -f __pro/tests/cypress/support/templates ] && cp __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
             rm -rf __pro
+            ls -lar tests/cypress/cypress/integration
 
         - name: Move build to subfolder
           run: |
@@ -56,6 +57,7 @@ jobs:
           if: always()
           run: |
             ls -lar build-tools/builds/ExpressionEngine
+            ls -lar build-tools/builds/ExpressionEngine/tests/cypress/cypress/integration
 
     php-tests:
         if: github.event.pull_request.draft == false
@@ -138,6 +140,7 @@ jobs:
             - name: Directory Listing
               run: |
                 ls -lar ./
+                ls -lar tests/cypress/cypress/integration
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
