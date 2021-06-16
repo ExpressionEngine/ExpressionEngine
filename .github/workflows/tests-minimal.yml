@@ -39,6 +39,7 @@ jobs:
             mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
             cp -r __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
             rm -rf __pro
+            ls -lar tests/cypress/support/templates
 
         - name: Move build to subfolder
           run: |
