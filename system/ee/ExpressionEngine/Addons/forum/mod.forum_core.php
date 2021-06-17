@@ -3305,7 +3305,7 @@ class Forum_Core extends Forum
                         $temp,
                         array(
                             'lang:change_status' => ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
-                            'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
+                            'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger .  '&amp;csrf_token=' . CSRF_TOKEN,
                             'css:status_button' => ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
                         )
                     );
@@ -5910,6 +5910,7 @@ class Forum_Core extends Forum
         exit;
     }
 
+
     /**
      * Change Post Status
      */
@@ -5930,9 +5931,10 @@ class Forum_Core extends Forum
         $viewpath = ($query->row('announcement') == 'n') ? 'viewthread/' : 'viewannounce/';
         $viewpath .= ($query->row('announcement') == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
 
-        if (! $this->_mod_permission('can_change_status', $query->row('forum_id'))) {
+        if (!array_key_exists('csrf_token',$_GET) ||  ! $this->_mod_permission('can_change_status', $query->row('forum_id')) || $_GET['csrf_token'] != CSRF_TOKEN) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
+
 
         // Update the status
         $status = ($query->row('status') == 'o') ? 'c' : 'o';
