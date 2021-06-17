@@ -235,10 +235,11 @@ class EE_Relationship_data_parser
 
         $result = $parser->parse($channel, $data, $config);
         
-
         // frontend edit link
         if (IS_PRO) {
-            if ($node->data['shortcut'] == 'frontedit') {
+            if (!empty($node->param('disable')) && strpos($node->param('disable'), 'frontedit') !== false) {
+                $result = str_replace(LD . $node->data['field_name'] . ':frontedit' . RD, '', $result);
+            } elseif ($node->data['shortcut'] == 'frontedit') {
                 foreach ($channel->cfields as $field_site_id => $cfields) {
                     if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
                         continue;
@@ -256,24 +257,6 @@ class EE_Relationship_data_parser
                     }
                 }
             }
-            /*foreach ($channel->cfields as $field_site_id => $cfields) {
-                if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
-                    continue;
-                }
-                if (!empty($node->data['parser']) && isset($cfields[$node->data['field_name']])) {
-                    $field_name = $node->data['field_name'];
-                    $field_id = $cfields[$field_name];
-                    $entry_id = key($node->data['entry_ids']);
-                    $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
-                    $site_id = $node->data['parser']->entry($entry_id)['entry_site_id'];
-                    //$result = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id) . $result;
-                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
-                    if ($frontEditLink) {
-                        $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
-                    }
-                    break;
-                }
-            }*/
         }
 
 
