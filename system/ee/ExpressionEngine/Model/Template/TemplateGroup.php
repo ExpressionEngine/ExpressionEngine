@@ -162,13 +162,15 @@ class TemplateGroup extends Model
         }
 
         // Cache the sites as we query
-        if (! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
+        if (!isset(ee()->session) || ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
             $site = $this->getModelFacade()->get('Site')
                 ->fields('site_name')
                 ->filter('site_id', $this->site_id)
                 ->first();
 
-            ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+            if (isset(ee()->session)) {
+                ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+            }
         }
 
         return $basepath . $site->site_name . '/' . $this->group_name . '.group';

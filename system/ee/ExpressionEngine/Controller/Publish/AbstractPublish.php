@@ -231,6 +231,18 @@ abstract class AbstractPublish extends CP_Controller
             )
         );
 
+        $urlParams = [];
+        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+            $urlParams = [
+                'entry_ids' => ee('Request')->get('entry_ids'),
+                'field_id' => ee('Request')->get('field_id'),
+                'site_id' => ee('Request')->get('site_id'),
+                'modal_form' => ee('Request')->get('modal_form'),
+                'hide_closer' => ee('Request')->get('hide_closer'),
+                'return' => ee('Request')->get('return')
+            ];
+        }
+
         $data = array();
         $authors = array();
         $i = $entry->getAutosaves()->count();
@@ -254,7 +266,7 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     $edit_date,
                     $authors[$entry->author_id],
-                    '<span class="st-open">' . lang('current') . '</span>'
+                    '<span class="st-open"><a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $urlParams) . '">' . lang('current') . '</a></span>'
                 )
             );
             $i--;
@@ -270,7 +282,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => $entry->entry_id
-                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)
+                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id, $urlParams)
                                 : ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id),
                             'title' => lang('view'),
                             'content' => lang('view')
@@ -446,7 +458,7 @@ abstract class AbstractPublish extends CP_Controller
     protected function pruneAutosaves()
     {
         $prune = ee()->config->item('autosave_prune_hours') ?: 6;
-        $prune = $prune * 120; // From hours to seconds
+        $prune = $prune * 3600; // From hours to seconds
 
         $cutoff = ee()->localize->now - $prune;
 

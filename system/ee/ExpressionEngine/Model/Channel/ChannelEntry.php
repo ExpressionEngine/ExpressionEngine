@@ -383,7 +383,11 @@ class ChannelEntry extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        $this->Autosaves->delete();
+        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+            //only delete some of autosaves
+        } else {
+            $this->Autosaves->delete();
+        }
 
         $this->updateEntryStats();
         $this->saveTabData();
