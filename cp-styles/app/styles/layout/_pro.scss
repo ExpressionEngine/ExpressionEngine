@@ -7,4 +7,21 @@
     .panel-body {
         padding: 8px 8px;
     }
+
+    .idle-modal {
+      p {
+        margin-bottom: 20px;
+      }
+    }
+}
+
+.pro-frontend-modal > .panel {
+  border: none;
+  margin-bottom: 0;
+  background-color: none;
+  border-radius: 0;
+}
+
+.pro-frontend-modal > .panel > .panel-body {
+  padding: 0px;
 }
