@@ -384,7 +384,27 @@ class ChannelEntry extends ContentModel
     {
         parent::onAfterSave();
         if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
-            //only delete some of autosaves
+            foreach ($this->Autosaves as $autosave) {
+                $deleteThisAutosave = true;
+                $autosavedEntryData = $autosave->entry_data;
+                foreach ($autosavedEntryData as $key => $val) {
+                    if (isset($_POST[$key])) {
+                        unset($autosavedEntryData[$key]);
+                    }
+                }
+                foreach ($autosavedEntryData as $key => $val) {
+                    if ($key == 'title' || strpos($key, 'field_id_') === 0) {
+                        $deleteThisAutosave = false;
+                        break;
+                    }
+                }
+                if ($deleteThisAutosave) {
+                    $autosave->delete();
+                } else {
+                    $autosave->entry_data = $autosavedEntryData;
+                    $autosave->save();
+                }
+            }
         } else {
             $this->Autosaves->delete();
         }

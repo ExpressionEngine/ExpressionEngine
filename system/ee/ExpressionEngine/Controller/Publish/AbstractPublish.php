@@ -266,7 +266,7 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     $edit_date,
                     $authors[$entry->author_id],
-                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
+                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $urlParams) . '"><span class="st-open">' . lang('current') . '</span></a>'
                 )
             );
             $i--;
