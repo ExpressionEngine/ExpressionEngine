@@ -154,6 +154,12 @@ class Cp
             'many_jump_results' => lang('many_jump_results'),
         );
 
+        $lastUpdateCheck = false;
+        $statusCache = ee()->cache->get_metadata('/addons-status');
+        if (!empty($statusCache) && !empty($statusCache['mtime'])) {
+            $lastUpdateCheck = time() - $statusCache['mtime'];
+        }
+
         ee()->javascript->set_global(array(
             'BASE' => str_replace(AMP, '&', BASE),
             'XID' => CSRF_TOKEN,
@@ -167,6 +173,7 @@ class Cp
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
             'cp.accessResponseURL' => $this->fetch_action_id('Pro', 'handleAccessResponse') ? ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $this->fetch_action_id('Pro', 'handleAccessResponse') : false,
+            'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
