@@ -13,6 +13,9 @@ $(document).ready(function () {
 	var ajaxRequest;
 	var debounceTimeout;
 	var isNavigatingAway = false;
+	try {
+		sessionStorage.removeItem("preventNavigateAway");
+	} catch (e) {}
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -83,6 +86,9 @@ $(document).ready(function () {
 		var autosaving = false;
 
 		publishForm.on("entry:startAutosave", function() {
+			try {
+				sessionStorage.setItem("preventNavigateAway", true);
+			} catch (e) {}
 			publishForm.trigger("entry:autosave");
 
 			if (autosaving) {
