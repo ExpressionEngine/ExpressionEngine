@@ -5931,7 +5931,8 @@ class Forum_Core extends Forum
         $viewpath = ($query->row('announcement') == 'n') ? 'viewthread/' : 'viewannounce/';
         $viewpath .= ($query->row('announcement') == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
 
-        if (!array_key_exists('csrf_token',$_GET) ||  ! $this->_mod_permission('can_change_status', $query->row('forum_id')) || $_GET['csrf_token'] != CSRF_TOKEN) {
+        $token = ee('Request')->get('csrf_token');
+        if ( (! bool_config_item('disable_csrf_protection') &&  !array_key_exists('csrf_token',$_GET)  )  ||  ! $this->_mod_permission('can_change_status', $query->row('forum_id')) ||  (! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
 
