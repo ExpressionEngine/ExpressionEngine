@@ -301,7 +301,6 @@ EE.cp.validateLicense = function() {
 				}
 			}
 
-			console.log(EE.cp.accessResponseURL, validLicense, validAddons)
 			if (EE.cp.accessResponseURL) {
 				// Post the response to the backend.
 				$.ajax({
