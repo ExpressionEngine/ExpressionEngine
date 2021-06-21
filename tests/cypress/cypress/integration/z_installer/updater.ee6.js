@@ -393,6 +393,8 @@ context('Updater', () => {
 
       cy.log('Update Complete!');
 
+      cy.screenshot({capture: 'fullPage'})
+
       page.get('error').should('not.exist')
 
       if (mailinglist == true) {
