@@ -3,7 +3,7 @@ name: Minimal feature Cypress tests
 on:
   push:
     branches:
-      - feature/cache-license-checks
+      - NO_TEST
 
 jobs:
     cypress-tests:

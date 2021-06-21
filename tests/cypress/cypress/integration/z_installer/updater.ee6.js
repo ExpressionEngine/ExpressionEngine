@@ -17,12 +17,6 @@ let expect_login = false;
 
 context('Updater', () => {
 
-  before(function() {
-    Cypress.Screenshot.defaults({
-      capture: 'fullPage',
-    })
-  })
-  
   beforeEach(function(){
 
     cy.task('db:clear')
@@ -235,7 +229,7 @@ context('Updater', () => {
     // })
   })
 
-  it.only('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
+  it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
     cy.task('db:load', '../../support/sql/database_2.10.1-mailinglist.sql').then(()=>{
       test_update(true)
     })
@@ -379,8 +373,6 @@ context('Updater', () => {
       } else {
         cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
       }
-
-      cy.screenshot({capture: 'fullPage'})
 
       cy.hasNoErrors()
 
