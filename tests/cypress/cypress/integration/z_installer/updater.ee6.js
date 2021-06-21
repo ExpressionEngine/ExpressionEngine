@@ -17,6 +17,12 @@ let expect_login = false;
 
 context('Updater', () => {
 
+  before(function() {
+    Cypress.Screenshot.defaults({
+      capture: 'fullPage',
+    })
+  })
+  
   beforeEach(function(){
 
     cy.task('db:clear')
@@ -392,10 +398,6 @@ context('Updater', () => {
       })
 
       cy.log('Update Complete!');
-      cy.wait(1000)
-
-      cy.screenshot({capture: 'fullPage'})
-      cy.wait(1000)
 
       page.get('error').should('not.exist')
 
