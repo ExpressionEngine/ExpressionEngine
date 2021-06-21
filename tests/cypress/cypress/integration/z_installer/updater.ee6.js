@@ -229,7 +229,7 @@ context('Updater', () => {
     // })
   })
 
-  it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
+  it.only('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
     cy.task('db:load', '../../support/sql/database_2.10.1-mailinglist.sql').then(()=>{
       test_update(true)
     })
