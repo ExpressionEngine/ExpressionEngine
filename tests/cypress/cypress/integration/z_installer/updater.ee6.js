@@ -380,6 +380,8 @@ context('Updater', () => {
         cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
       }
 
+      cy.screenshot({capture: 'fullPage'})
+
       cy.hasNoErrors()
 
       cy.get('body').then(($body) => {
