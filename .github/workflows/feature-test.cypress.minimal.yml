@@ -34,8 +34,8 @@ jobs:
                 mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
                 mv __pro/themes/ee/pro themes/ee/pro
                 mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-                cp -r __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-                cp -r __pro/tests/cypress/support/templates/* system/user/templates/default_site/
+                mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+                mv __pro/tests/cypress/support/templates/* system/user/templates/default_site/
                 rm -rf __pro
 
             - name: Setup PHP
