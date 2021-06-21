@@ -40,7 +40,6 @@ jobs:
             mv __pro/themes/ee/pro themes/ee/pro
             mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
             mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-            mv __pro/tests/cypress/support/templates/* system/user/templates/default_site/
             rm -rf __pro
 
         - name: Move build to subfolder
