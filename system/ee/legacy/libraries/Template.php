@@ -4226,6 +4226,9 @@ class EE_Template
 
                     // do it!
                     try {
+                        echo '<pre>';
+                        var_dump($data);
+                        echo '</pre>';
                         $template_model = ee('Model')->make('Template', $data)->save();
                         $template_model->saveNewTemplateRevision($template_model);
                     } catch (Exception $e) {
