@@ -8,6 +8,7 @@ on:
 
 jobs:
     cancel-running-tests:
+      if: github.event.pull_request.draft == false
       runs-on: ubuntu-latest
       timeout-minutes: 3
       steps:
@@ -20,6 +21,7 @@ jobs:
       name: Build EE for testing
 
       needs: cancel-running-tests
+      if: github.event.pull_request.draft == false
       runs-on: ubuntu-latest
       steps:
         - name: Checkout code
@@ -37,8 +39,7 @@ jobs:
             mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
             mv __pro/themes/ee/pro themes/ee/pro
             mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-            cp -r __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-            cp -r __pro/tests/cypress/support/templates/* system/user/templates/
+            mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
             rm -rf __pro
 
         - name: Move build to subfolder
