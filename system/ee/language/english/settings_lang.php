@@ -90,6 +90,10 @@ $lang = array(
 
     'site_default' => 'Use site default',
 
+    'site_license_key' => 'Site License Key',
+
+    'site_license_key_desc' => 'Your license key from ExpressionEngine.com that corresponds to this site.',
+
     'site_name' => 'Name',
 
     'site_online' => 'Website online?',
