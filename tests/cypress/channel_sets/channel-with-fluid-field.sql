@@ -603,7 +603,7 @@ CREATE TABLE `exp_relationships` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `field_id`, `grid_field_id`, `grid_col_id`, `grid_row_id`, `order`, `fluid_field_data_id`) VALUES
-	(3, 1, 3, 17, 0, 0, 0, 1, 0);
+	(3, 1, 11, 17, 0, 0, 0, 1, 0);
 
 
 # Dump of table exp_upload_prefs
