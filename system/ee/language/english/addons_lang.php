@@ -182,6 +182,19 @@ $lang = array(
 
     'version' => 'Version',
 
+     /*Messages To User*/
+
+     'confirm' => 'Are you sure you want to delete',
+     'multi_updates' => 'installed add-ons with updates available.',
+     'name' => 'Name',
+     'single_update' => 'installed add-on with updates available.',
+     'there_are' => 'There Are',
+     'there_is' => 'There Is',
+     
+     'show' => 'Show me ...',
+     'update_available' => 'Update',
+     'manage' => 'Manage'
+
 );
 
 // EOF
