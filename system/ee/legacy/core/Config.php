@@ -827,7 +827,6 @@ class EE_Config
                 $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
             }
         }
-        
 
         // Add the CI pref items to the new values array if needed
         if (count($ci_config) > 0) {
@@ -1291,6 +1290,7 @@ class EE_Config
                 'multiple_sites_enabled' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'is_system_on' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'is_site_on' => array('r', array('y' => 'yes', 'n' => 'no')),
+                'site_license_key' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'site_name' => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
                 'site_index' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'site_url' => array('i', '', 'required|strip_tags|trim|valid_xss_check'),

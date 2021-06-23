@@ -47,6 +47,7 @@ class EE_Template
     public $template_group_id = 0;
     public $template_name = '';			// Name of template being parsed
     public $template_id = 0;
+    public $enable_frontedit = 'y';
 
     public $tag_data = array();		// Data contained in tags
     public $tagparams = array();
@@ -2664,6 +2665,7 @@ class EE_Template
         $this->template_group_id = $row['group_id'];
         $this->template_name = $row['template_name'];
         $this->template_id = $row['template_id'];
+        $this->enable_frontedit = $row['enable_frontedit'];
 
         return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
     }
