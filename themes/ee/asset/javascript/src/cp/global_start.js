@@ -236,7 +236,8 @@ $(document).ready(function () {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	if (! EE.cp.lvUrl) {
+	// Verify we have a license validation URL and the last update check was more than an hour ago.
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
 		return;
 	}
 
@@ -258,7 +259,7 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			var validLicense = true;
+			var validLicense = false;
 
 			switch (result.messageType) {
 				case 'success':
@@ -301,7 +302,7 @@ EE.cp.validateLicense = function() {
 				}
 			}
 
-			if (!validLicense && !validAddons) {
+			if (EE.cp.accessResponseURL) {
 				// Post the response to the backend.
 				$.ajax({
 					type: 'POST',
