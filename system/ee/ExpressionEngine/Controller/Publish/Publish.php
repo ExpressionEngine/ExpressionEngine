@@ -45,6 +45,9 @@ class Publish extends AbstractPublishController
      */
     public function field($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         if (is_numeric($entry_id) && $entry_id != 0) {
             $entry = ee('Model')->get('ChannelEntry', $entry_id)
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -95,6 +98,9 @@ class Publish extends AbstractPublishController
      */
     public function autosave($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         $site_id = ee()->config->item('site_id');
 
         $autosave = ee('Model')->get('ChannelEntryAutosave')
@@ -151,6 +157,12 @@ class Publish extends AbstractPublishController
     {
         if (! $channel_id) {
             show_404();
+        }
+
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($autosave_id)) {
+            $autosave_id = (int) $autosave_id;
         }
 
         if (! ee('Permission')->can('create_entries_channel_id_' . $channel_id) or
@@ -272,14 +284,13 @@ class Publish extends AbstractPublishController
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
 
-
             if (!$entry->livePreviewAllowed()) {
                 $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                ->asIssue()
-                ->canClose()
-                ->withTitle(lang('preview_not_allowed'))
-                ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
-            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+                    ->asIssue()
+                    ->canClose()
+                    ->withTitle(lang('preview_not_allowed'))
+                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
+                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
             }
         }
 
@@ -377,6 +388,12 @@ class Publish extends AbstractPublishController
 
     public function preview($channel_id, $entry_id = null)
     {
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($entry_id)) {
+            $entry_id = (int) $entry_id;
+        }
+
         return ee('LivePreview')->preview($channel_id, $entry_id);
     }
 }
