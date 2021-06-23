@@ -9,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_6_1_0_rc_1;
+namespace ExpressionEngine\Updater\Version_6_1_0_a_1;
 
 /**
  * Update
