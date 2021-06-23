@@ -3,7 +3,10 @@
 
 		<?=form_open($form_url, '', (isset($hidden)) ? $hidden : array())?>
 		<div class="dialog__header">
-			<div class="dialog__icon"><i class="fas fa-trash-alt"></i></div>
+		   
+			<?php if (!isset($noTrash)) : ?>
+				<div class="dialog__icon"><i class="fas fa-trash-alt"></i></div>
+			<?php endif; ?>
 			<h2 class="dialog__title"><?=isset($title) ? $title : lang('confirm_removal') ?></h2>
 			<div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
 		</div>

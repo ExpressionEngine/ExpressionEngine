@@ -193,7 +193,16 @@ $lang = array(
      
      'show' => 'Show me ...',
      'update_available' => 'Update',
-     'manage' => 'Manage'
+     'manage' => 'Manage',
+
+     'bulk_update' => 'Update the Following? ...',
+     'bulk_update_title' => 'Bulk Updater',
+     'bulk_update_button' => 'Update Now!',
+
+
+     'bulk_install' => 'Install the Following? ...',
+     'bulk_install_title' => 'Bulk Installer',
+     'bulk_install_button' => 'Install Now!'
 
 );
 

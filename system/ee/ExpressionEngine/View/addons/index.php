@@ -1,5 +1,4 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
-
 <div class="panel panel__no-main-title">
 	<div class="tbl-ctrls">
 		<div class="panel-heading">
@@ -178,8 +177,12 @@
 								</td>
 
 								<td class="app-listing__cell app-listing__cell--input text--center">
-									<p> -- </p>
+									<div class="list-item__checkbox">
+										<input name="selection[]" type="checkbox" value="<?= $addon["package"] ?>" data-confirm="<?= $addon["name"] ?>">
+									</div>
 								</td>
+
+
 							</tr>
 
 						<?php endforeach; ?>
@@ -201,6 +204,18 @@
 						'value' => "remove",
 						'text' => lang('delete'),
 						'attrs' => 'data-confirm-trigger="selected" rel="modal-confirm-remove"'
+					],
+					[
+						'value' => "update",
+						'text' => lang('update'),
+						'attrs' => 'data-confirm-trigger="selected" rel="modal-confirm-update"'
+
+					],
+					[
+						'value' => "install",
+						'text' => lang('install'),
+						'attrs' => 'data-confirm-trigger="selected" rel="modal-confirm-install"'
+
 					]
 				],
 				'modal' => true
@@ -209,6 +224,49 @@
 	</div>
 
 </div>
+
+<?php
+
+$modal_vars_install = array(
+	'name' => 'modal-confirm-install',
+	'form_url' => $form_url,
+	'title' => lang('bulk_install_title'),
+	'alert' => lang('bulk_install'),
+	'noTrash' => true,
+	'button' => [
+		'text' => lang('bulk_install_button'),
+		'working' => lang('bulk_install_button')
+	],
+	'hidden' => array(
+		'bulk_action' => 'install'
+	)
+);
+
+$modal_in = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars_install);
+ee('CP/Modal')->addModal('install', $modal_in);
+?>
+
+
+<?php
+
+$modal_vars_update = array(
+	'name' => 'modal-confirm-update',
+	'form_url' => $form_url,
+	'title' => lang('bulk_update_title'),
+	'alert' => lang('bulk_update'),
+	'noTrash' => true,
+	'button' => [
+		'text' => lang('bulk_update_button'),
+		'working' => lang('bulk_update_button')
+	],
+	'hidden' => array(
+		'bulk_action' => 'update'
+	)
+);
+
+$modal_up = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars_update);
+ee('CP/Modal')->addModal('update', $modal_up);
+?>
 
 
 <?php
