@@ -75,7 +75,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -152,7 +152,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -229,7 +229,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -306,7 +306,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -383,7 +383,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Utilities, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -460,7 +460,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -537,7 +537,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
