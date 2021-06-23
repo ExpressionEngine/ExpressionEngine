@@ -4,10 +4,9 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
 	<div class="tab-wrap">
-		<div class="tab-bar tab-bar--sticky<?php /*if (isset($pro_class)) : ?> hidden<?php endif;*/ ?>">
-			
-			<div class="tab-bar__tabs">
+		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
 			<?php if (!isset($pro_class)) : ?>
+			<div class="tab-bar__tabs">
 			<?php
 			foreach ($layout->getTabs() as $index => $tab):
 				if (! $tab->isVisible()) {
@@ -25,14 +24,11 @@
             ?>
 			<button type="button" class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></button>
 			<?php endforeach; ?>
-			<?php else: ?>
-				<button type="button" class="tab-bar__tab js-tab-button active" rel="t-0">Edit</button>
-			<?php endif; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
 			<?php endif; ?>
 			</div>
-			
+			<?php endif; ?>
 
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
@@ -113,12 +109,11 @@
 			</div>
 			<?php else: ?>
 			</fieldset>
-			<a href="http://expressionengine.com">External link</a>
 			<?php endif; ?>
 		<?php endforeach; ?>
 		</div>
 		<?php endforeach; ?>
-		<?php //if (!isset($pro_class)) : ?>
+		<?php if (!isset($pro_class)) : ?>
 		<div class="tab t-autosaves">
 			<fieldset>
 				<div class="field-instruct<?=$field_class?>">
@@ -130,7 +125,7 @@
 				</div>
 			</fieldset>
 		</div>
-		<?php //endif; ?>
+		<?php endif; ?>
   </div>
 
 	</form>
