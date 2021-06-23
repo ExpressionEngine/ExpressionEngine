@@ -889,6 +889,7 @@ class Members extends CP_Controller
             ->all();
 
         $data = array();
+        $memberClass = ee('Member');
 
         $member_id = ee()->session->flashdata('highlight_id');
 
@@ -904,12 +905,12 @@ class Members extends CP_Controller
             $attrs = array();
 
             switch ($member->PrimaryRole->getId()) {
-                case ee('Member')::BANNED:
+                case $memberClass::BANNED:
                     $group = "<span class='st-banned'>" . lang('banned') . "</span>";
                     $attrs['class'] = 'banned';
 
                     break;
-                case ee('Member')::PENDING:
+                case $memberClass::PENDING:
                     $group = "<span class='st-pending'>" . lang('pending') . "</span>";
                     $attrs['class'] = 'pending';
 
