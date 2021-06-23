@@ -14,6 +14,7 @@ use CP_Controller;
 use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Model\Query\Builder;
+use ExpressionEngine\Service\Member\Member;
 
 /**
  * Members Controller
@@ -889,7 +890,6 @@ class Members extends CP_Controller
             ->all();
 
         $data = array();
-        $memberClass = ee('Member');
 
         $member_id = ee()->session->flashdata('highlight_id');
 
@@ -905,12 +905,12 @@ class Members extends CP_Controller
             $attrs = array();
 
             switch ($member->PrimaryRole->getId()) {
-                case $memberClass::BANNED:
+                case Member::BANNED:
                     $group = "<span class='st-banned'>" . lang('banned') . "</span>";
                     $attrs['class'] = 'banned';
 
                     break;
-                case $memberClass::PENDING:
+                case Member::PENDING:
                     $group = "<span class='st-pending'>" . lang('pending') . "</span>";
                     $attrs['class'] = 'pending';
 
