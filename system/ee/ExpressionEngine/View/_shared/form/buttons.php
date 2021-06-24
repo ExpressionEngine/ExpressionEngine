@@ -9,6 +9,9 @@
                 $buttons[$i]['attrs'] .= ' data-shortcut="' . (string) $button['shortcut'] . '"';
             } 
             if (isset($button['value']) && strpos($button['value'], 'save') === 0) {
+                if ($i == 0 && !isset($buttons[$i]['attrs'])) {
+                    $buttons[$i]['attrs'] = ' data-shortcut="s"';
+                }
                 $submits[] = $buttons[$i];
                 unset($buttons[$i]);
             }
