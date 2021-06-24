@@ -167,9 +167,12 @@ td {
 
 	i {
 		color: color(text-tertiary);
+
+		&.fas {
+			color: inherit;
+		}
 	}
 }
-
 
 // LEGACY 6.0
 tr {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -246,6 +246,10 @@ class GlobalVariable extends FileSyncedModel
      */
     private function getNewVariablesFromFiles($path, $site_id, $existing)
     {
+        if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y') {
+            return [];
+        }
+        
         $fs = new Filesystem();
         $variables = [];
 
@@ -287,6 +291,12 @@ class GlobalVariable extends FileSyncedModel
     public function onAfterSave()
     {
         parent::onAfterSave();
+        ee()->functions->clear_caching('all');
+    }
+
+    public function onAfterDelete()
+    {
+        parent::onAfterDelete();
         ee()->functions->clear_caching('all');
     }
 }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -196,9 +196,9 @@ class MenuManager extends Settings
 
             $assigned = (array) ee('Request')->post('roles');
             $set->RoleSettings = ee('Model')
-                ->get('RoleSetting', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
+                ->get('RoleSetting')
+                ->filter('role_id', 'IN', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
                 ->all();
-
             $sort = (array) ee('Request')->post('sort', array());
             $kids = ee('Model')->get('MenuItem', $sort)->all();
 
@@ -357,7 +357,7 @@ class MenuManager extends Settings
     {
         $disabled_choices = array();
         $roles = ee('Model')->get('Role')
-            ->filter('role_id', 'IN', ee('Permission')->rolesThatCan('access_cp', 1))
+            ->filter('role_id', 'IN', array_merge(ee('Permission')->rolesThatCan('access_cp'), [1]))
             ->all()
             ->getDictionary('role_id', 'name');
 

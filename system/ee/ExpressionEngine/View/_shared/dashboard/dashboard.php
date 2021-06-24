@@ -181,7 +181,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<ul class="simple-list">
 		<?php foreach ($trapped_spam as $trapped): ?>
 			<li><a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => $trapped->content_type))?>">
-				<b><?=$trapped->total_trapped?></b> <?=lang($trapped->content_type)?> <?=lang('spam')?>
+			<b class="ml-s"><?=$trapped->total_trapped?></b>&nbsp; <?php if ($trapped->total_trapped > 1): ?><?=lang("$trapped->content_type"."s")?><?php else: ?><?=lang($trapped->content_type)?><?php endif ?> <?=lang('marked_as')?> <?=lang('spam')?>
 				</a>
 			</li>
 		<?php endforeach;?>

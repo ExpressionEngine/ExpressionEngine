@@ -33,7 +33,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Relationship =
@@ -102,6 +102,7 @@ function (_React$Component) {
           thisRef.setState({
             selected: selected
           });
+          $(document).trigger('entry:preview');
         }
       });
     });

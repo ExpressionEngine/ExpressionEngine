@@ -46,7 +46,7 @@ context('Comment Settings', () => {
 
     page.get('comment_edit_time_limit').clear().type('sdfsdfsd')
     //page.submit()AJ
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
 
@@ -84,7 +84,7 @@ context('Comment Settings', () => {
     page.get('comment_moderation_override_toggle').click()
     page.get('comment_edit_time_limit').clear().type('300')
     //page.submit()//AJ
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('enable_comments').invoke('val').then((val) => {

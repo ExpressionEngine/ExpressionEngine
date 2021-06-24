@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -93,6 +93,29 @@ class Permission
     {
         foreach ($roles as $role) {
             if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Can they use Pro?
+     *
+     * @return boolean
+     */
+    public function canUsePro()
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        
+        //currently. anyone with CP access 
+        //if the future, inject into Permissions service
+        if ($this->has('can_access_cp')) {
+            $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
+            if (in_array('Pro', $assigned_modules)) {
                 return true;
             }
         }

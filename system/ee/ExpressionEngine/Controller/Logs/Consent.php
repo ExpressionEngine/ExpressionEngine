@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,36 +32,10 @@ class Consent extends Logs
         $this->base_url->path = 'logs/consent';
         ee()->view->cp_page_title = lang('view_consent_log');
 
-        $logs = ee('Model')->get('ConsentAuditLog')->with('Member', 'ConsentRequest');
-
-        if ($search = ee()->input->get_post('filter_by_keyword')) {
-            $logs->search(['action', 'Member.username', 'ConsentRequest.title'], $search);
-        }
-
-        $filters = ee('CP/Filter')
-            ->add('Username')
-            ->add('Date')
-            ->add('Keyword')
-            ->add('Perpage', $logs->count(), 'all_consent_logs');
-        ee()->view->filters = $filters->render($this->base_url);
-        $this->params = $filters->values();
-        $this->base_url->addQueryStringVariables($this->params);
+        $logs = $this->_get_logs();
 
         $page = ((int) ee()->input->get('page')) ?: 1;
         $offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
-        if (! empty($this->params['filter_by_username'])) {
-            $logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
-        }
-
-        if (! empty($this->params['filter_by_date'])) {
-            if (is_array($this->params['filter_by_date'])) {
-                $logs = $logs->filter('log_date', '>=', $this->params['filter_by_date'][0]);
-                $logs = $logs->filter('log_date', '<', $this->params['filter_by_date'][1]);
-            } else {
-                $logs = $logs->filter('log_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
-            }
-        }
 
         $count = $logs->count();
 
@@ -74,10 +48,22 @@ class Consent extends Logs
             );
         }
 
-        ee()->view->header = array(
+        $header = [
             'title' => lang('system_logs'),
-            'form_url' => $this->base_url->compile(),
-        );
+            'form_url' => $this->base_url->compile()
+        ];
+
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $header['toolbar_items'] = [
+                'export' => [
+                    'href' => ee('CP/URL', 'logs/pro/consent/export')->addQueryStringVariables($this->params),
+                    'title' => lang('export_consent_log')
+                ]
+            ];
+        }
+
+        ee()->view->header = $header;
 
         $logs = $logs->order('log_date', 'desc')
             ->limit($this->params['perpage'])
@@ -100,6 +86,46 @@ class Consent extends Logs
         );
 
         ee()->cp->render('logs/consent', $vars);
+    }
+
+    /**
+     * Get logs based on submitted parameters
+     *
+     * @return Collection
+     */
+    protected function _get_logs()
+    {
+        $logs = ee('Model')->get('ConsentAuditLog')->with('Member', 'ConsentRequest');
+
+        if ($search = ee()->input->get_post('filter_by_keyword')) {
+            $logs->search(['action', 'ip_address', 'user_agent', 'Member.username', 'ConsentRequest.title'], $search);
+        }
+
+        $filters = ee('CP/Filter')
+            ->add('Username')
+            ->add('Date')
+            ->add('Keyword')
+            ->add('Perpage', $logs->count(), 'all_consent_logs');
+        $this->params = $filters->values();
+        if (!empty($this->base_url)) {
+            ee()->view->filters = $filters->render($this->base_url);
+            $this->base_url->addQueryStringVariables($this->params);
+        }
+
+        if (! empty($this->params['filter_by_username'])) {
+            $logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
+        }
+
+        if (! empty($this->params['filter_by_date'])) {
+            if (is_array($this->params['filter_by_date'])) {
+                $logs = $logs->filter('log_date', '>=', $this->params['filter_by_date'][0]);
+                $logs = $logs->filter('log_date', '<', $this->params['filter_by_date'][1]);
+            } else {
+                $logs = $logs->filter('log_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+            }
+        }
+
+        return $logs;
     }
 }
 // END CLASS

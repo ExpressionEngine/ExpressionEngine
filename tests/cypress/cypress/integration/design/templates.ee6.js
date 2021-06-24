@@ -205,6 +205,7 @@ context('Templates', () => {
 
         it('returns to the template manager with the "save & close" button', function() {
             //editPage.get('save_and_close_button').first().click()
+            cy.get('.title-bar__extra-tools .saving-options').click()
             cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -181,7 +181,7 @@ class Consent extends Settings
     protected function optIn(array $request_ids)
     {
         foreach ($request_ids as $request_id) {
-            ee('Consent', $this->member->getId())->grant($request_id);
+            ee('Consent', $this->member->getId())->grant($request_id, 'control_panel');
         }
 
         $request_titles = ee('Model')->get('ConsentRequest', $request_ids)

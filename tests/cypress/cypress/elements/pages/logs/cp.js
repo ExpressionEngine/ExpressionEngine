@@ -19,7 +19,7 @@ class CpLogs extends ControlPanel {
      'list' : 'div[class="list-group"]',
 
      'empty' : 'p[class="no-results"]',
-     'confirm' : 'input[type="submit"]',
+     'confirm' : '[type="submit"]',
 
 
     //for creating member

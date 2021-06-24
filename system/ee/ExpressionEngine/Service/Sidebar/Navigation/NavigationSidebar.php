@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,7 +44,9 @@ class NavigationSidebar extends AbstractSidebar
                 $list = $section->addList(lang('menu_entries'));
                 $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
 
-                $channels = ee('Model')->get('Channel')
+                $allowed_channel_ids = (ee('Permission')->isSuperAdmin()) ? null : array_keys(ee()->session->userdata['assigned_channels']);
+
+                $channels = ee('Model')->get('Channel', $allowed_channel_ids)
                     ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
                     ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title', 'ASC');

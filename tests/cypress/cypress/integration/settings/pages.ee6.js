@@ -51,7 +51,7 @@ context('Pages Settings', () => {
     page.get('channel_default_template').eq(0).select('about/404')
     page.get('channel_default_template').eq(1).select('news/index')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     page.get('wrap').contains('Preferences updated')

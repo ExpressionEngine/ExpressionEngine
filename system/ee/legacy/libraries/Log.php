@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -51,7 +51,7 @@ class EE_Log
      * @param	bool	whether the error is a native PHP error
      * @return	bool
      */
-    public function write_log($level = 'error', $msg, $php_error = false)
+    public function write_log($level = 'error', $msg = '', $php_error = false)
     {
         if ($this->_enabled === false) {
             return false;

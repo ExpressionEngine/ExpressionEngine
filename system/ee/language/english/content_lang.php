@@ -120,6 +120,8 @@ $lang = array(
 
     'entries_deleted_desc' => 'The following entries were deleted',
 
+    'entries_not_deleted_desc' => 'The following entries could not be deleted. Please verify you have sufficient permissions.',
+
     'entry' => 'Entry',
 
     'entry_date' => 'Entry date',
@@ -621,11 +623,17 @@ $lang = array(
 
     'preview_url_not_set_desc' => "Please <a href='%s' target='_blank'>add Preview URL</a> setting to your channel preferences.",
 
+    'preview_not_allowed' => 'Preview not allowed',
+
+    'preview_not_allowed_desc' => "Change your channel settings to allow Preview.",
+
     'preview_cannot_display' => 'Live Preview cannot be displayed',
 
     'preview_domain_mismatch_desc' => "Your Site URL is set to use <code>%1\$s</code> but you are accessing Control Panel from <code>%2\$s</code>.",
 
     'preview_protocol_mismatch_desc' => "Your Site URL is set to use <code>%1\$s</code> but you are accessing Control Panel with <code>%2\$s</code>.",
+
+    'preview_domain_error_instructions' => "You can only invoke Live Preview from domains that are configured as <code>Base URL</code>, <code>CP URL</code>, <code>Site URL</code> or added as <code>allowed_preview_domains</code> config override.",
 
     'publish' => 'Publish',
 

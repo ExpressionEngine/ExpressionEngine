@@ -183,10 +183,8 @@ context('Import File Converter', () => {
     	cy.hasNoErrors()
 
     	cy.get('body').contains('XML Code')
-    	cy.get('input[value="Download File"]').should('exist')
+    	cy.get('[value="Download File"]').should('exist')
 
 	})
 
 })
-
-

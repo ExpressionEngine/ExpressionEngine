@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -86,7 +86,10 @@ class RteHelper
         return array(
             'toolbar' => $toolbars['Basic'],
             'height' => '200',
-            'upload_dir' => 'all'
+            'upload_dir' => 'all',
+            'mediaEmbed' => [
+                'previewsInData' => true
+            ]
         );
     }
 
@@ -127,6 +130,7 @@ class RteHelper
                 "filemanager",
                 "insertTable",
                 "mediaEmbed",
+                "htmlEmbed",
                 "alignment:left",
                 "alignment:right",
                 "alignment:center",
@@ -216,6 +220,7 @@ class RteHelper
         if (is_array($config['toolbar'])) {
             $toolbarObject = new \stdClass();
             $toolbarObject->items = $config['toolbar'];
+            $toolbarObject->viewportTopOffset = 59;
             $config['toolbar'] = $toolbarObject;
             $config['image'] = new \stdClass();
             $config['image']->toolbar = [

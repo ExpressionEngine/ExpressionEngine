@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -330,7 +330,7 @@ $setup = [
             }
 
             if (! $member_id) {
-                $member_id = $actor_userdata['member_id'];
+                $member_id = ee()->session->userdata('member_id');
             }
 
             return new Consent\Consent(
@@ -601,6 +601,9 @@ $setup = [
         'ConsentRequest' => 'Model\Consent\ConsentRequest',
         'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
 
+        // ..\Cookie
+        'CookieSetting' => 'Model\Cookie\CookieSetting',
+
         // ..\Permission
         'Permission' => 'Model\Permission\Permission',
 
@@ -619,28 +622,19 @@ $setup = [
     ),
 
     'cookies.necessary' => [
-        'cp_last_site_id',
         'csrf_token',
         'flash',
-        'last_activity',
-        'last_visit',
         'remember',
         'sessionid',
         'visitor_consents',
     ],
     'cookies.functionality' => [
+        'last_activity',
+        'last_visit',
         'anon',
-        'expiration',
-        'forum_theme',
-        'forum_topics',
-        'my_email',
-        'my_location',
-        'my_name',
-        'my_url',
-        'notify_me',
-        'save_info',
         'tracker',
         'viewtype',
+        'cp_last_site_id',
         'ee_cp_viewmode',
         'collapsed_nav'
     ],

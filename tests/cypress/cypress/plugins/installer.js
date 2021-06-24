@@ -14,16 +14,20 @@ const current_templates = system + 'user/templates/default_site'
 
 class Installer {
 	enable_installer() {
-		let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-		dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
-		fs.writeFileSync(path.resolve(env), dotenv)
+		if (fs.existsSync(path.resolve(env))) {
+			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
+			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
+			fs.writeFileSync(path.resolve(env), dotenv)
+		}
 		return true
 	}
 
 	disable_installer() {
-		let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-		dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
-		fs.writeFileSync(path.resolve(env), dotenv)
+		if (fs.existsSync(path.resolve(env))) {
+			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
+			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
+			fs.writeFileSync(path.resolve(env), dotenv)
+		}
 		return true
 	}
 
@@ -43,7 +47,7 @@ class Installer {
 	//
 	// @param [Type] file The path to the config file you want to use, set to blank to only move existing file
 	// @return [void]
-	replace_config(file = '', options = { attempt: 0 }) {
+	replace_config(file = 'support/config/config.php', options = { attempt: 0 }) {
 		if (typeof(options.attempt)==='undefined') {
 			options.attempt = 0;
 		}

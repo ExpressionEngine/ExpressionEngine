@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,6 +25,19 @@ class Consent
     public function __construct()
     {
         ee()->lang->loadfile('consent');
+    }
+
+    /**
+     * Lists registered cookies
+     *
+     * @return string
+     */
+    public function cookies()
+    {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            return ee('pro:Cookie')->cookiesTag();
+        }
+        return ee()->TMPL->no_results();
     }
 
     /**

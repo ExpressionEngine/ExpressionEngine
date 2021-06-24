@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ function toggleFields(fields, show, key) {
 		var fieldset = $(field).closest('fieldset');
 
 		if (fieldset.hasClass('fieldset-invalid')) {
-			if (fieldset.find('input:visible').not('input.button').size() == 0) {
+			if (fieldset.find('input:visible').not('.button').size() == 0) {
 				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
