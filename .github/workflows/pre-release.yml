@@ -73,7 +73,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: ExpressionEngine/ExpressionEngine
+          repository: EllisLab/ExpressionEngine-Private
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version
