@@ -1,7 +1,7 @@
 <div id="rte-toolbar">
     <div class="form-standard">
         <div class="redactor-toolbar">
-            <h2>Toolbar Buttons</h2>
+            <h2><?=lang('rte_toolbar_buttons')?></h2>
             <?php foreach ($buttons as $btnHandle => $btn) :?>
                 <p>
                     <label><?=$btn['label']?></label>
@@ -11,7 +11,7 @@
         </div>
         
         <div class="redactor-toolbar">
-            <h2>Plugins</h2>
+            <h2><?=lang('rte_plugins')?></h2>
             <?php foreach ($plugins as $pluginHandle => $plugin) :?>
                 <p>
                     <label>

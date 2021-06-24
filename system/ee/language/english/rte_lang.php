@@ -351,6 +351,7 @@ $lang = array(
     'redactor_advanced_toolbarFixedTopOffset_desc'   => 'This setting allows to set how far from the top of the page the fixed toolbar will be placed. In pixels.',
     'redactor_advanced_toolbarFixedTarget_desc'      => "This setting allows to set a specific element on a page in relation to which fixed toolbar will be displayed. By default, toolbarFixedTarget is set to 'document'.",
     'redactor_advanced_toolbarOverflow_desc'         => "When set to 'yes', this setting will place all toolbar buttons on mobile devices in a single line regardless of how many buttons are there. If there's more buttons then can fit on a screen, horizontal scroll will appear.",
-
+    'rte_plugins' => 'Plugins',
+    'rte_toolbar_buttons' => 'Toolbar Buttons',
     '' => ''
 );
