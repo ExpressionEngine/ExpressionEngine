@@ -56,30 +56,15 @@ class CommandMakeModel extends Cli
     {
         $this->info('command_make_model_lets_build_model');
 
-        $this->data['name'] = $this->getName();
-        $this->data['addon'] = $this->getAddon();
+        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_model_ask_model_name");
+        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_model_ask_addon");
 
         $this->info('command_make_model_lets_build');
 
-        $this->build();
-
-        $this->info('command_make_model_created_successfully');
-    }
-
-    protected function build()
-    {
         $service = ee('ModelGenerator', $this->data);
 
-        return $service->build();
-    }
+        $service->build();
 
-    private function getName()
-    {
-        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("command_make_model_ask_model_name");
-    }
-
-    private function getAddon()
-    {
-        return $this->option('--addon') ? $this->option('--addon') : $this->ask("command_make_model_ask_addon");
+        $this->info('command_make_model_created_successfully');
     }
 }
