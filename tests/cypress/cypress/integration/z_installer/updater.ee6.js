@@ -229,7 +229,7 @@ context('Updater', () => {
     // })
   })
 
-  it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
+  it.only('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
     cy.task('db:load', '../../support/sql/database_2.10.1-mailinglist.sql').then(()=>{
       test_update(true)
     })
@@ -393,8 +393,6 @@ context('Updater', () => {
 
       cy.log('Update Complete!');
 
-      cy.screenshot({capture: 'fullPage'})
-
       page.get('error').should('not.exist')
 
       if (mailinglist == true) {
@@ -407,36 +405,18 @@ context('Updater', () => {
         })
       }
 
-      cy.task('filesystem:read', '../../system/user/config/config.php').then((config) => {
-        let config_version = config.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
-        cy.task('filesystem:read', '../../system/ee/installer/controllers/wizard.php').then((wizard) => {
-          let wizard_version = wizard.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
-  
-          // @TODO UD files don't account for -dp.#, so just compare the first three segs
-          let conf = config_version.split(/[\.\-]/)
-          let wiz = wizard_version.split(/[\.\-]/)
-  
-          cy.log(config_version)
-          cy.log(wizard_version)
-  
-          expect(conf[0]).to.eq(wiz[0])
-          expect(conf[1]).to.eq(wiz[1])
-          expect(conf[2]).to.eq(wiz[2])
-
-          let installer_folder = '../../system/ee/installer';
-          cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
-            for (const item in files) {
-              if (files[item].indexOf('system/ee/installer') >= 0) {
-                installer_folder = files[item];
-                cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
-              }
-            }
-          })
-
-        })
+      let installer_folder = '../../system/ee/installer';
+      cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+        for (const item in files) {
+          if (files[item].indexOf('system/ee/installer') >= 0) {
+            installer_folder = files[item];
+            cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+          }
+        }
       })
+      cy.log(installer_folder)
 
-      
+      test_version()
     })
   }
 
@@ -452,6 +432,7 @@ context('Updater', () => {
 
         cy.log(config_version)
         cy.log(wizard_version)
+        cy.screenshot({capture: 'runner'})
 
         expect(conf[0]).to.eq(wiz[0])
         expect(conf[1]).to.eq(wiz[1])
