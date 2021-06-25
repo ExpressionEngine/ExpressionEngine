@@ -1,6 +1,6 @@
 <?php
 
-namespace ExpressionEngine\Cli\Commands;
+namespace {{namespace}};
 
 use ExpressionEngine\Cli\Cli;
 
