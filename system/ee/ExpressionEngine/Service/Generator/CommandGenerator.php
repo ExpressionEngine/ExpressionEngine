@@ -12,22 +12,22 @@ class CommandGenerator
     protected $className;
     protected $signature;
     protected $addon;
-    protected $addonClass;
+    protected $addonSetup;
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
 
     public function __construct(Filesystem $filesystem, array $data)
     {
-        $studlyAddon = $this->studly($data['addon']);
-        $studlyName = $this->studly($data['addon']);
+        $studlyName = $this->studly($data['name']);
 
         $this->filesystem  = $filesystem;
         $this->name = $data['name'];
         $this->addon = $data['addon'];
-        $this->addonClass = $studlyAddon;
+        $this->addonPath = PATH_THIRD . $this->addon;
+        $this->addonSetup = $this->getAddonSetup();
         $this->className = $studlyName;
-        $this->fullClass = $this->addonClass . '\\Commands\\Command' . $studlyName;
+        $this->fullClass = $this->addonSetup['namespace'] . '\\Commands\\Command' . $studlyName;
         $this->signature = $data['signature'];
         $this->description = $data['description'];
 
@@ -37,15 +37,22 @@ class CommandGenerator
     private function init()
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->commandsPath = SYSPATH . 'user/addons/' . $this->addon . '/Commands/';
+        $this->addonPath = $this->addonPath . '/';
+        $this->commandsPath = $this->addonPath . '/Commands/';
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs' . '/';
+        $this->stubPath = $this->generatorPath . '/stubs/';
 
         if (! $this->filesystem->isDir($this->commandsPath)) {
             $this->filesystem->mkDir($this->commandsPath);
         }
+    }
+
+    public function getAddonSetup()
+    {
+        $addonSetup = include $this->addonPath . '/addon.setup.php';
+
+        return $addonSetup;
     }
 
     public function build()
