@@ -432,11 +432,12 @@ context('Updater', () => {
         let wiz = wizard_version.split(/[\.\-]/)
 
         cy.log(wizard_version)
-        cy.screenshot({capture: 'runner'})
+        cy.screenshot('before compare', {capture: 'runner'})
 
-        //expect(conf[0]).to.eq(wiz[0])
-        //expect(conf[1]).to.eq(wiz[1])
-        //expect(conf[2]).to.eq(wiz[2])
+        expect(conf[0]).to.eq(wiz[0])
+        expect(conf[1]).to.eq(wiz[1])
+        expect(conf[2]).to.eq(wiz[2])
+        cy.screenshot('after compare', {capture: 'runner'})
       })
     })
   }
