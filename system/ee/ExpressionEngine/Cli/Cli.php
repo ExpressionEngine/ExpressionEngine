@@ -249,13 +249,22 @@ class Cli
         return $result ? $result : $default;
     }
 
-    public function getFirstUnnamedArgument()
+    public function getFirstUnnamedArgument($question = null, $default = null, $required = false)
     {
         $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
 
         // If the first argument is an option, we have nothing so return null
         if (substr($argument, 0, 1) === '-') {
             $argument = null;
+        }
+
+        if (empty(trim($argument)) && !is_null($question)) {
+            $argument = $this->ask($question, $default);
+        }
+
+        // Name is a required field
+        if ($required && empty(trim($argument))) {
+            $this->fail("This" . lang('cli_error_is_required'));
         }
 
         return $argument;
