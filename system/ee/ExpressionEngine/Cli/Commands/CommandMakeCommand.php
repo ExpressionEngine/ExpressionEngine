@@ -34,6 +34,8 @@ class CommandMakeCommand extends Cli
      */
     public $commandOptions = [
         'addon,a:' => 'Folder for third-party add-on you want to add command to',
+        'description,d:' => 'Description of command',
+        'signature,s:' => 'Signature for command (i.e. make:magic)',
     ];
 
     /**
@@ -57,10 +59,11 @@ class CommandMakeCommand extends Cli
     {
         $this->info('command_make_command_lets_build_command');
 
-        $this->data['name'] = $this->getName();
-        $this->data['addon'] = $this->getAddon();
-        $this->data['description'] = $this->ask('command_make_command_ask_description');
-        $this->data['signature'] = $this->ask('command_make_command_ask_signature');
+        // Gather alll the command information
+        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_command_ask_addon", null, true);
+        $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_command_ask_description");
+        $this->data['signature'] = $this->getOptionOrAsk('--signature', "command_make_command_ask_signature", null, true);
 
         $this->info('command_make_command_lets_build');
 
