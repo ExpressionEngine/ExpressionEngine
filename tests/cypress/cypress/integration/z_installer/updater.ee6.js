@@ -305,7 +305,7 @@ context('Updater', () => {
     })
   })
 
-  it.only('shows post-upgrade notice', () => {
+  it('shows post-upgrade notice', () => {
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-5.3.0.php', options: {
@@ -414,33 +414,24 @@ context('Updater', () => {
           }
         }
       })
-      cy.log(installer_folder)
 
       test_version()
     })
   }
 
   function test_version() {
-    let conf = '';
-    let wiz = '';
     cy.task('filesystem:read', '../../system/user/config/config.php').then((config) => {
       let config_version = config.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
-      cy.log(config_version)
       cy.task('filesystem:read', '../../system/ee/installer/controllers/wizard.php').then((wizard) => {
         let wizard_version = wizard.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
 
         // @TODO UD files don't account for -dp.#, so just compare the first three segs
-        conf = config_version.split(/[\.\-]/)
-        wiz = wizard_version.split(/[\.\-]/)
+        let conf = config_version.split(/[\.\-]/)
+        let wiz = wizard_version.split(/[\.\-]/)
 
-        cy.log(wizard_version)
-        cy.screenshot('before compare', {capture: 'runner'})
-      }).then(() => {
-        cy.screenshot('after compare', {capture: 'runner'})
         expect(conf[0]).to.eq(wiz[0])
         expect(conf[1]).to.eq(wiz[1])
         expect(conf[2]).to.eq(wiz[2])
-        
       })
     })
   }
