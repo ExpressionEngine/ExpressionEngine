@@ -73,25 +73,14 @@ class CommandMakeCommand extends Cli
 
         $this->info('command_make_command_lets_build');
 
-        $this->build();
+        try {
+            // Build the command
+            $service = ee('CommandGenerator', $this->data);
+            $service->build();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->info('command_make_command_created_successfully');
-    }
-
-    protected function build()
-    {
-        $service = ee('CommandGenerator', $this->data);
-
-        return $service->build();
-    }
-
-    private function getName()
-    {
-        return isset($this->arguments[0]) ? $this->arguments[0] : $this->ask("command_make_command_ask_command_name");
-    }
-
-    private function getAddon()
-    {
-        return $this->option('--addon') ? $this->option('--addon') : $this->ask("command_make_command_ask_addon");
     }
 }
