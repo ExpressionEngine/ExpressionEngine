@@ -87,9 +87,10 @@ class Cli
 
     public function __construct()
     {
-        // Load the language helper
+        // Load the language helper and the DB
         ee()->load->helper('language_helper');
         ee()->lang->loadfile('cli');
+        ee()->load->database();
 
         // Initialize the object
         $factory = new CliFactory();
@@ -250,14 +251,14 @@ class Cli
 
     public function getFirstUnnamedArgument()
     {
-        $name = isset($this->arguments[0]) ? $this->arguments[0] : null;
+        $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
 
         // If the first argument is an option, we have nothing so return null
-        if (substr($name, 0, 1) === '-') {
-            $name = null;
+        if (substr($argument, 0, 1) === '-') {
+            $argument = null;
         }
 
-        return $name;
+        return $argument;
     }
 
     public function getOptionOrAsk($option, $askText, $default=null, $required=false)
