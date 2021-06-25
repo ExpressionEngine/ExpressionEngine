@@ -25,9 +25,14 @@ class CommandGenerator
         $this->name = $data['name'];
         $this->addon = $data['addon'];
         $this->addonPath = PATH_THIRD . $this->addon;
+
+        // Make sure the addon exists before we load the addon setup
+        $this->verifyAddonExists();
+
         $this->addonSetup = $this->getAddonSetup();
         $this->className = $studlyName;
-        $this->fullClass = $this->addonSetup['namespace'] . '\\Commands\\Command' . $studlyName;
+        $this->commandNamespace = $this->addonSetup['namespace'] . '\\Commands';
+        $this->fullClass = $this->commandNamespace . '\\Command' . $studlyName;
         $this->signature = $data['signature'];
         $this->description = $data['description'];
 
@@ -48,6 +53,13 @@ class CommandGenerator
         }
     }
 
+    private function verifyAddonExists()
+    {
+        if (is_null(ee('Addon')->get($this->addon))) {
+            throw new \Exception("Addon does not exists: " . $this->addon, 1);
+        }
+    }
+
     public function getAddonSetup()
     {
         $addonSetup = include $this->addonPath . '/addon.setup.php';
@@ -59,6 +71,7 @@ class CommandGenerator
     {
         $commandStub = $this->filesystem->read($this->stub('command.php'));
         $commandStub = $this->write('name', $this->name, $commandStub);
+        $commandStub = $this->write('namespace', $this->commandNamespace, $commandStub);
         $commandStub = $this->write('class', $this->className, $commandStub);
         $commandStub = $this->write('signature', $this->signature, $commandStub);
         $commandStub = $this->write('description', $this->description, $commandStub);
