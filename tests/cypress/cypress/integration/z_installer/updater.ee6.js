@@ -407,6 +407,8 @@ context('Updater', () => {
         })
       }
 
+      test_version()
+
       let installer_folder = '../../system/ee/installer';
       cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
         for (const item in files) {
@@ -417,7 +419,6 @@ context('Updater', () => {
         }
       })
 
-      test_version()
     })
   }
 
@@ -430,6 +431,9 @@ context('Updater', () => {
         // @TODO UD files don't account for -dp.#, so just compare the first three segs
         let conf = config_version.split(/[\.\-]/)
         let wiz = wizard_version.split(/[\.\-]/)
+
+        cy.log(config_version)
+        cy.log(wizard_version)
 
         expect(conf[0]).to.eq(wiz[0])
         expect(conf[1]).to.eq(wiz[1])
