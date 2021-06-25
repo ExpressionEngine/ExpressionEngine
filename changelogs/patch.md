@@ -33,6 +33,7 @@ Bullet list below, e.g.
    - Fix bug with member import error
    - Fixed a bug in the channel title filtering in the control panel
    - Fix a bug with avatar filename in controller profile settings
+   - Fixed a bug with the error message when importing invalid channel sets
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
