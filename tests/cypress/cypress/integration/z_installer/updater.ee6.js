@@ -421,6 +421,8 @@ context('Updater', () => {
   }
 
   function test_version() {
+    let conf = '';
+    let wiz = '';
     cy.task('filesystem:read', '../../system/user/config/config.php').then((config) => {
       let config_version = config.match(/\$config\['app_version'\]\s+=\s+["'](.*?)["'];/)[1]
       cy.log(config_version)
@@ -428,16 +430,17 @@ context('Updater', () => {
         let wizard_version = wizard.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
 
         // @TODO UD files don't account for -dp.#, so just compare the first three segs
-        let conf = config_version.split(/[\.\-]/)
-        let wiz = wizard_version.split(/[\.\-]/)
+        conf = config_version.split(/[\.\-]/)
+        wiz = wizard_version.split(/[\.\-]/)
 
         cy.log(wizard_version)
         cy.screenshot('before compare', {capture: 'runner'})
-
+      }).then(() => {
+        cy.screenshot('after compare', {capture: 'runner'})
         expect(conf[0]).to.eq(wiz[0])
         expect(conf[1]).to.eq(wiz[1])
         expect(conf[2]).to.eq(wiz[2])
-        cy.screenshot('after compare', {capture: 'runner'})
+        
       })
     })
   }
