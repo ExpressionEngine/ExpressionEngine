@@ -19,6 +19,8 @@ class RoleGroup extends Model
     protected static $_primary_key = 'group_id';
     protected static $_table_name = 'role_groups';
 
+    protected static $_hook_id = 'role_group';
+
     protected static $_typed_columns = [
         'group_id' => 'int',
     ];

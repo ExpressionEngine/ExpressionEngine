@@ -254,12 +254,13 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     $edit_date,
                     $authors[$entry->author_id],
-                    '<span class="st-open">' . lang('current') . '</span>'
+                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                 )
             );
             $i--;
         }
 
+        $currentAutosaveId = null;
         foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave) {
             if (! isset($authors[$autosave->author_id]) && $autosave->Author) {
                 $authors[$autosave->author_id] = $autosave->Author->getMemberName();
@@ -280,6 +281,9 @@ abstract class AbstractPublish extends CP_Controller
             );
 
             $attrs = ($autosave->getId() == $autosave_id) ? array('class' => 'selected') : array();
+            if ($autosave->getId() == $autosave_id) {
+                $currentAutosaveId = $autosave->getId();
+            }
 
             $data[] = array(
                 'attrs' => $attrs,
@@ -291,6 +295,10 @@ abstract class AbstractPublish extends CP_Controller
                 )
             );
             $i--;
+        }
+
+        if ($autosave_id && empty($currentAutosaveId)) {
+            $data[0]['attrs'] = ['class' => 'selected'];
         }
 
         $table->setData($data);
