@@ -216,9 +216,7 @@ class EE_Input
         $data['secure_cookie'] = bool_config_item('cookie_secure');
 
         if ($data['secure_cookie']) {
-            $req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false;
-
-            if (!$req || $req === 'off') {
+            if (!ee('Request')->isEncrypted()) {
                 return false;
             }
         }
