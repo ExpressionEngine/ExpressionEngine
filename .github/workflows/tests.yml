@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 6.dev
+      - feature/6.x/testing-tests
 
 jobs:
 
@@ -39,7 +40,7 @@ jobs:
                 sudo locale-gen ru
 
             - name: Checkout code
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -115,7 +116,7 @@ jobs:
             uses: actions/cache@v2
             with:
               path: build-tools/builds/ExpressionEngine
-              key: cache-ee-build
+              key: cache-ee-build-${{ github.sha }}
           
           - name: Directory Listing on Failure
             if: failure()
@@ -145,7 +146,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -239,7 +240,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -333,7 +334,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -427,7 +428,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -521,7 +522,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -615,7 +616,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -709,7 +710,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-build
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
