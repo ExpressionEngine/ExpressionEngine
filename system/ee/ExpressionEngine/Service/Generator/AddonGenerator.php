@@ -57,12 +57,17 @@ class AddonGenerator
         $this->has_cp_backend = $data['has_settings'] ? 'y' : 'n';
         $this->has_publish_fields = $data['has_settings'] ? 'y' : 'n';
         $this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
+        $this->services = isset($data['services']) ? $data['services'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
         $this->models = isset($data['models']) ? $data['models'] : null;
 
         // Make sure we've got an array of hooks
         if (!is_array($this->hooks) && !is_null($this->hooks)) {
             $this->hooks = array_unique(explode(',', $this->hooks));
+        }
+        // Make sure we've got an array of services
+        if (!is_array($this->services) && !is_null($this->services)) {
+            $this->services = array_unique(explode(',', $this->services));
         }
     }
 
@@ -189,8 +194,8 @@ class AddonGenerator
 
             $this->buildExtension();
         } else {
-            $stub = $this->erase('        {{conditional_hooks}}', $stub);
-            $stub = $this->erase('        {{conditional_hooks_uninstall}}', $stub);
+            $stub = $this->erase('{{conditional_hooks}}', $stub);
+            $stub = $this->erase('{{conditional_hooks_uninstall}}', $stub);
         }
 
         $this->putFile('upd.' . $this->slug . '.php', $stub);
@@ -249,12 +254,12 @@ class AddonGenerator
         }
 
         // Services
-        if (array_key_exists('services', $this->data) && ($services = $this->data['services'])) {
+        if (!is_null($this->services)) {
             $servicesWriteData = '';
 
             $this->filesystem->mkDir($this->addonPath . 'Services');
 
-            foreach (explode(',', $services) as $service) {
+            foreach ($this->services as $service) {
                 if (!$service || $service == '') {
                     continue;
                 }
