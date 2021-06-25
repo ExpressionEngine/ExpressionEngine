@@ -65,7 +65,7 @@ window.onload = function () {
         tr = table.getElementsByTagName("tr");
 
         for (i = 0; i < tr.length; i++) {
-            if(tr[i].className == "app-listing__row_update"){
+            if(tr[i].className == "app-listing__row_update"||tr[i].className == "app-listing__row_h app-listing__row--head"){
             tr[i].style.display = "";
             }else {
                 tr[i].style.display = "none";
@@ -80,7 +80,7 @@ window.onload = function () {
         tr = table.getElementsByTagName("tr");
 
         for (i = 0; i < tr.length; i++) {
-            if(tr[i].className == "app-listing__row"){
+            if(tr[i].className == "app-listing__row" ||tr[i].className == "app-listing__row_h app-listing__row--head"){
             tr[i].style.display = "";
             }else {
                 tr[i].style.display = "none";
@@ -95,7 +95,7 @@ window.onload = function () {
         tr = table.getElementsByTagName("tr");
 
         for (i = 0; i < tr.length; i++) {
-            if(tr[i].className == "app-listing__row_uninstalled"){
+            if(tr[i].className == "app-listing__row_uninstalled"||tr[i].className == "app-listing__row_h app-listing__row--head"){
             tr[i].style.display = "";
             }else {
                 tr[i].style.display = "none";

@@ -5,85 +5,83 @@ const page = new AddonManager;
 
 context('Add-On Manager', () => {
 
-    before(function() {
+    before(function () {
         cy.task('db:seed')
         cy.task('filesystem:copy', { from: 'support/add-on-manager/test_*', to: '../../system/user/addons/' })
     })
 
-    after(function() {
+    after(function () {
         cy.task('filesystem:delete', '../../system/user/addons/test_*')
     })
 
-    beforeEach(function() {
+    beforeEach(function () {
         cy.authVisit(page.url);
 
         page.get('title').contains('Add-Ons')
     })
 
-    it('shows the Add-On Manager', function() {
-        page.get('first_party_section').should('exist')
+    it('shows the Add-On Manager', function () {
+        page.get('head').should('exist')
+
 
     })
 
-    it('can install a single add-on', function() {
+    it('can install a single add-on', function () {
+        page.get('uninstalled').should('exist')
+        var name = ""
+        page.get('uninstalled').first().find("strong").then(($name) => {
 
-
-        page.get('uninstalled_addons').first().then(function(el) {
-            const addon_name = el.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
-            cy.log(addon_name);
-
-            el.find('.add-on-card__button a').first().click()
+            // store the addons's text name
+            name = $name.text()
+            cy.log(name)
+            page.get('uninstalled').first().find("td").find("a.button").click()
             cy.hasNoErrors()
-
             page.hasAlert()
             page.get('alert').first().invoke('text').should('include', 'Add-Ons Installed')
-            page.get('alert').first().invoke('text').should('include', addon_name)
-
-            page.get('uninstalled_addons').find('.add-on-card__title').should('not.contain', addon_name)
+            page.get('alert').first().invoke('text').should('include', name)
         })
     })
 
     // The settings buttons "work"(200 response)
-    it('can navigate to a settings page', function() {
-        const btn = page.get('first_party_section').find('.add-on-card:contains("Rich Text Editor")').find('.js-dropdown-toggle')
-        btn.click()
-        btn.next('.dropdown').find('a:contains("Settings")').click()
+    it('can navigate to a settings page', function () {
+        cy.get('.settings').first().click()
         cy.hasNoErrors()
     })
 
-    // The guide buttons "work"(200 response)
-    it('can navigate to a manual page', function() {
-        let btn = page.get('first_party_section').find('.add-on-card:contains("Rich Text Editor")').find('.js-dropdown-toggle')
-        btn.click()
-        btn.next('.dropdown').find('a:contains("Settings")').click()
+
+    it('can bulk install add-ons and can navigate to a manual page', function(){
+        cy.get('#tbl_6092f7c1be4f4-select-all').click()
+        cy.get('.select-popup').select("Install")
+        cy.get('.bulk-action-bar > .button').click()
+
+        cy.wait(100)
+
+        
+        cy.get('.modal-confirm-install > .modal > form > .dialog__actions > .dialog__buttons > .form-btns > .button').click()
+        
+        page.get('alert').first().invoke('text').should('include', 'Add-Ons Installed')
+
+        cy.get('.manual').first().click()
         cy.hasNoErrors()
 
-        /*cy.visit(page.url);
 
-        btn = page.get('first_party_section').find('.add-on-card').first().find('.js-dropdown-toggle')
-        btn.click()
-        btn.next('.dropdown').find('a:contains("Manual")').click()
-        cy.hasNoErrors()*/
     })
 
-    it('can uninstall add-ons', function() {
+    it('can uninstall add-ons', function () {
 
-        page.get('addons').first().then((addon_card) => {
-            const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
-            cy.log(addon_name);
-            let btn = addon_card.find('.js-dropdown-toggle')
-            btn.click()
-            btn.next('.dropdown').find('a:contains("Uninstall")').click()
+        cy.get('td.app-listing__cell').first().find("a").contains('Uninstall').first().click()
+        page.get('alert').first().invoke('text').should('include', 'Add-Ons Uninstalled')
+    })
 
-            page.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
-            cy.hasNoErrors();
+    it('can bulk uninstall add-ons', function(){
+        cy.get('#tbl_6092f7c1be4f4-select-all').click()
+        cy.get('.select-popup').select("Delete")
+        cy.get('.bulk-action-bar > .button').click()
 
-            // The filter should not change
-            page.hasAlert()
+        cy.wait(100)
 
-            page.get('alert').contains("Add-Ons Uninstalled")
-            page.get('alert').contains(addon_name);
-        })
+        cy.get('.modal-confirm-remove > .modal > form > .dialog__actions > .dialog__buttons > .form-btns > .button').click()       
+        page.get('alert').first().invoke('text').should('include', 'Add-Ons Uninstalled')
 
     })
 

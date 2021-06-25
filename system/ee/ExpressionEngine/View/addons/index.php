@@ -68,7 +68,7 @@
 			<div class="js-list-group-wrap">
 				<table id="main_Table" cellspacing="0">
 					<thead>
-						<tr class="app-listing__row app-listing__row--head">
+						<tr class="app-listing__row_h app-listing__row--head">
 							<th class="column-sort-header">
 								<a href="" class="column-sort column-sort--desc"><?php echo lang('name'); ?></a>
 							</th>
@@ -103,7 +103,7 @@
 								<a href="">
 									<div class="addon-name-table d-flex align-items-center">
 										<img src="<?= $addon["icon_url"] ?>" alt="Add-On Name" class="addon-icon-table">
-										<div>
+										<div class = "name_of_addon">
 											<strong><?= $addon["name"] ?></strong><br><span class="meta-info text-muted"> <?= $addon["description"] ?> </span>
 										</div>
 									</div>
@@ -113,7 +113,7 @@
 								<span class="collapsed-label"><?php echo lang('version'); ?></span>
 								<?= $addon["version"] ?>
 							</td>
-							<td>
+							<td class="manage">
 								<span class="collapsed-label"><?php echo lang('manage'); ?></span>
 								<div class="button-toolbar toolbar">
 									<div class="button-group button-group-xsmall">
@@ -158,7 +158,7 @@
 
 									<div class="addon-name-table d-flex align-items-center">
 										<img src="<?= $addon["icon_url"] ?>" alt="Add-On Name" class="addon-icon-table">
-										<div>
+										<div class = "name_of_addon">
 											<strong><?= $addon["name"] ?></strong><br><span class="meta-info text-muted"><?= $addon["description"] ?></span>
 										</div>
 									</div>
