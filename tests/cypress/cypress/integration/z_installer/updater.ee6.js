@@ -305,7 +305,7 @@ context('Updater', () => {
     })
   })
 
-  it('shows post-upgrade notice', () => {
+  it.only('shows post-upgrade notice', () => {
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-5.3.0.php', options: {

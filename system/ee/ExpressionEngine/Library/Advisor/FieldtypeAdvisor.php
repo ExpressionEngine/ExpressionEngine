@@ -29,6 +29,7 @@ class FieldtypeAdvisor
 
     public function getMissingFieldtypeCount()
     {
+        var_dump($this->getMissingFieldtypes());
         return count($this->getMissingFieldtypes());
     }
 
