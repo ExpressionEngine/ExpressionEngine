@@ -335,7 +335,13 @@ class EE_Output
         // --------------------------------------------------------------------
         // Include PRO stuff
         $frontEditLoaded = false;
-        if (IS_PRO && REQ == 'PAGE' && (ee()->config->item('enable_dock') == 'y' || ee()->config->item('enable_dock') === false)) {
+        if (
+            IS_PRO &&
+            ee()->session->userdata('member_id') != 0 &&
+            ee()->session->userdata('admin_sess') == 1 &&
+            REQ == 'PAGE' && 
+            (ee()->config->item('enable_dock') == 'y' || ee()->config->item('enable_dock') === false)
+        ) {
             if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
                 /*
                     At the minimum, we check following:
