@@ -265,6 +265,8 @@ $lang = array(
 
     'mediaEmbed_rte' => 'Media',
 
+    'htmlEmbed_rte' => 'HTML',
+
     'alignment:left_rte' => 'Align left',
 
     'alignment:right_rte' => 'Align right',

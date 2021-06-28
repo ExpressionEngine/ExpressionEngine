@@ -286,7 +286,6 @@ class Rte_mcp
                 $headingTitle = lang('rte_edit_config') . ' - ' . $config->toolset_name;
             }
         } elseif (!isset($config) || empty($config)) {
-
             $config = ee('Model')->make('rte:Toolset', array(
                 'toolset_id' => '',
                 'toolset_type' => 'ckeditor',

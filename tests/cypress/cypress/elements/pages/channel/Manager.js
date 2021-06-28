@@ -10,7 +10,7 @@ class ChannelManager extends ControlPanel {
             "channels_checkboxes": '.list-group > li input[type="checkbox"]',
             "select_all": '.ctrl-all input',
             "import": 'a[rel=import-channel]',
-            "delete": 'input[value="Confirm and Delete"]'
+            "delete": '[value="Confirm and Delete"]'
         })
     }
 

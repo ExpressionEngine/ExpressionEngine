@@ -5,6 +5,10 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Added <new feature>
+   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+
+   - Added RoleSetting, RoleGroup, and Permission model event hooks
    - Fix #917, allows for attributes, rows, and cols to be set for textarea in shared form view
    - Fixed a bug in the control panel menu where channel names showed for members who did not have access to them.
    - Fixed a PHP 7.3+ warning that occurred when non-members triggered email notifications.
@@ -24,6 +28,12 @@ Bullet list below, e.g.
    - Fixed issue with super admins seeing unauthorized message when accessing empty entry manager
    - Changed how permission check for members with CP access is handled
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
+   - Added a filter to the category group name field
+   - Added type hinting to the channel publish controller
+   - Fixed a bug with the javascript loader filter
+   - Fix bug with member import error
+   - Fixed a bug in the channel title filtering in the control panel
+   - Fix a bug with avatar filename in controller profile settings
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

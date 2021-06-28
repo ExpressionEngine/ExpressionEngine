@@ -36,7 +36,7 @@ class FileManager extends FileManagerSection {
 					'view_modal_header': 'div.modal-view-file h1',
 
 					'remove_directory_modal': 'div.modal-confirm-directory',
-					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls input.button'
+					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls .button'
         })
 		}
 		load() {

@@ -45,6 +45,9 @@ class Publish extends AbstractPublishController
      */
     public function field($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         if (is_numeric($entry_id) && $entry_id != 0) {
             $entry = ee('Model')->get('ChannelEntry', $entry_id)
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -95,6 +98,9 @@ class Publish extends AbstractPublishController
      */
     public function autosave($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         $site_id = ee()->config->item('site_id');
 
         $autosave = ee('Model')->get('ChannelEntryAutosave')
@@ -151,6 +157,12 @@ class Publish extends AbstractPublishController
     {
         if (! $channel_id) {
             show_404();
+        }
+
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($autosave_id)) {
+            $autosave_id = (int) $autosave_id;
         }
 
         if (! ee('Permission')->can('create_entries_channel_id_' . $channel_id) or
@@ -210,13 +222,15 @@ class Publish extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
+        $livePreviewReady = $this->createLivePreviewModal($entry);
+
         $vars = array(
             'form_url' => ee('CP/URL')->getCurrentUrl(),
             'form_attributes' => $form_attributes,
             'form_title' => lang('new_entry'),
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
-            'buttons' => $this->getPublishFormButtons($entry),
+            'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
             'header' => [
                 'title' => lang('new_entry'),
             ],
@@ -230,55 +244,6 @@ class Publish extends AbstractPublishController
                 'text' => 'save_and_close',
                 'working' => 'btn_saving'
             ]];
-        }
-
-        if ($entry->isLivePreviewable()) {
-            $lp_domain_mismatch = false;
-            $configured_site_url = explode('//', ee()->config->item('site_url'));
-            $configured_domain = explode('/', $configured_site_url[1]);
-
-            if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
-                $lp_domain_mismatch = true;
-                $lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
-            } elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
-                $lp_domain_mismatch = true;
-                $lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
-            }
-
-            if ($lp_domain_mismatch) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_cannot_display'))
-                    ->addToBody($lp_message);
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            } else {
-                $action_id = ee()->db->select('action_id')
-                    ->where('class', 'Channel')
-                    ->where('method', 'live_preview')
-                    ->get('actions');
-                $modal = ee('View')->make('publish/live-preview-modal')->render([
-                    'preview_url' => ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id
-                ]);
-                ee('CP/Modal')->addModal('live-preview', $modal);
-            }
-        } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
-            $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                ->asIssue()
-                ->canClose()
-                ->withTitle(lang('preview_url_not_set'))
-                ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
-            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-
-            if (!$entry->livePreviewAllowed()) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                ->asIssue()
-                ->canClose()
-                ->withTitle(lang('preview_not_allowed'))
-                ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
-            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            }
         }
 
         if ($autosave_id) {
@@ -375,6 +340,12 @@ class Publish extends AbstractPublishController
 
     public function preview($channel_id, $entry_id = null)
     {
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($entry_id)) {
+            $entry_id = (int) $entry_id;
+        }
+
         return ee('LivePreview')->preview($channel_id, $entry_id);
     }
 }

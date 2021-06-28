@@ -17,6 +17,8 @@ $lang = array(
 
     'debugging_output' => 'Debugging & Output',
 
+    'logging' => 'Logging',
+
     'general' => 'General',
 
     'general_settings' => 'General Settings',
@@ -841,7 +843,13 @@ $lang = array(
 
     'cookie_consent_disabled' => 'Cookie Consent Disabled',
 
-    'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
+    'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.',
+
+    /* Logging */
+
+    'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
+
+    'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
 
 );
 

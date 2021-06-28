@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  </head>
+  <body>
+    {exp:consent:form
+      consent='ee:cookies_functionality|ee:cookies_performance|ee:cookies_targeting'
+      form_id='cookieConsentForm'
+    }
+    <p>This website uses a variety of cookies, which you consent to if you continue to use this site. You can read our <a href="{path='privacy'}">Privacy Policy</a> for details about how these cookies are used, and to grant or withdraw your consent for certain types of cookies.</p>
+
+    {consents}
+    <div class="consent">
+        {consent_request}
+    
+      <p><label>
+        <input type="checkbox" name="{consent_short_name}" value="y" {if consent_granted}checked{if:elseif ! consent_response_date}checked{/if}>
+        {consent_title}
+      </label></p>
+    </div>
+    {/consents}
+
+    <input type="submit" name="submit" value="Ok">
+    {/exp:consent:form}
+
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!--using the jQuery Form plugin http://jquery.malsup.com/form/-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#cookieConsentForm').ajaxForm({
+          dataType: 'json',
+          success: function(data) {
+            if (data.success) {
+              alert(data.success);
+            } else {
+              alert('Failed with the following errors: '+data.errors.join(', '));
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

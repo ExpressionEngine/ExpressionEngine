@@ -34,7 +34,7 @@ context('Test Member roles Web access ', () => {
 
 
 		cy.get('.on > .slider').click();
-		cy.get('input').contains('Save Settings').click()
+		cy.get('button').contains('Save Settings').click()
 
 		cy.visit('/')
 
@@ -101,7 +101,7 @@ context('Test Member roles Web access ', () => {
 
 
 		cy.get('#fieldset-is_system_on > .field-control > .toggle-btn').click()
-		cy.get('input').contains('Save Settings').click()
+		cy.get('button').contains('Save Settings').click()
 
 		cy.visit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('Test').click()

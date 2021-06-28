@@ -20,7 +20,7 @@ class MemberFieldLayout extends DefaultLayout
     public function transform(array $fields)
     {
         usort($fields, function ($a, $b) {
-            return $a->get('m_field_order') > $b->get('m_field_order');
+            return ($a->get('m_field_order') > $b->get('m_field_order')) ? 1 : -1;
         });
 
         return parent::transform($fields);

@@ -214,7 +214,7 @@ context('Member Group List', () => {
 
       cy.wait(1000)
 
-      page.get('modal').find('form[action$="cp/members/groups/delete"] input[type="submit"]').click()
+      page.get('modal').find('form[action$="cp/members/groups/delete"] [type="submit"]').click()
 
       page.get('list.groups_table').should('exist')
       page.get('list.groups').should('exist')

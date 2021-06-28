@@ -64,7 +64,7 @@ context('Outgoing Email Settings', () => {
     it('validates SMTP server when that is the selected protocol', () => {
       page.get('mail_protocol').filter('[value=smtp]').check()
       //page.submit()AJ
-      cy.get('input').contains('Save Settings').first().click()
+      cy.get('button').contains('Save Settings').first().click()
       cy.hasNoErrors()
      
 //should_have_form_errors(page)
@@ -83,7 +83,7 @@ context('Outgoing Email Settings', () => {
       page.get('smtp_password').clear().type('password')
       page.get('mail_format').filter('[value=html]').check()
       page.get('word_wrap_toggle').click()
-      cy.get('input').contains('Save Settings').first().click()
+      cy.get('button').contains('Save Settings').first().click()
       //page.submit()Aj
 
       page.get('wrap').contains('Preferences updated')
