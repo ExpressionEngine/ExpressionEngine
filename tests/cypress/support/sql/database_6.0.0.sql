@@ -2217,6 +2217,7 @@ DROP TABLE IF EXISTS `exp_rte_toolsets`;
 CREATE TABLE IF NOT EXISTS `exp_rte_toolsets` (
   `toolset_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `toolset_name` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `toolset_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `settings` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`toolset_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
