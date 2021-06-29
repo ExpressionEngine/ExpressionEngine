@@ -34,6 +34,7 @@ Bullet list below, e.g.
    - Fix bug with member import error
    - Fixed a bug in the channel title filtering in the control panel
    - Fix a bug with avatar filename in controller profile settings
+   - Fixed a bug with the error message when importing invalid channel sets
    - Fix a bug with debug variables not being filtered
    - Fix a bug with the importer converter filter
 
