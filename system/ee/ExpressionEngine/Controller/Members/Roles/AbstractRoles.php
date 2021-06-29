@@ -43,7 +43,7 @@ abstract class AbstractRoles extends CP_Controller
         if (ee('Permission')->can('create_roles')) {
             $header['action_button'] = [
                 'text' => lang('new_role'),
-                'href' => ee('CP/URL')->make('members/roles/create/' . ee('Request')->get('group_id') ?: '')
+                'href' => ee('CP/URL')->make('members/roles/create/' . (int) ee('Request')->get('group_id') ?: '')
             ];
         }
 
