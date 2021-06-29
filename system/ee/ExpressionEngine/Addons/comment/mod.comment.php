@@ -31,18 +31,16 @@ class Comment
     public function __construct()
     {
         $fields = array('name', 'email', 'url', 'location', 'comment');
-        
-            foreach ($fields as $val) {
-                if (isset($_POST[$val])) {
-                    $_POST[$val] = ee()->functions->encode_ee_tags($_POST[$val], true);
 
-                    if ($val == 'comment') {
-                    
-                        $_POST[$val] = ee('Security/XSS')->clean($_POST[$val]);
-                    }
+        foreach ($fields as $val) {
+            if (isset($_POST[$val])) {
+                $_POST[$val] = ee()->functions->encode_ee_tags($_POST[$val], true);
+
+                if ($val == 'comment') {
+                    $_POST[$val] = ee('Security/XSS')->clean($_POST[$val]);
                 }
             }
-        
+        }
     }
 
     /**
@@ -1268,9 +1266,6 @@ class Comment
         if (! isset($_POST['PRV']) or $_POST['PRV'] == '') {
             exit('Preview template not specified in your comment form tag');
         }
-
-        
-
         // Clean return value- segments only
         $clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
@@ -1993,7 +1988,6 @@ class Comment
         }
 
         @header("Content-type: text/html; charset=UTF-8");
-        
         $unauthorized = ee()->lang->line('not_authorized');
 
         if (ee()->input->get_post('comment_id') === false or ((ee()->input->get_post('comment') === false or ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close')) {
