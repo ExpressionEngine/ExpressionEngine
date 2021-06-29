@@ -917,7 +917,7 @@ $(document).ready(function(){
 	// filters custom input submission
 	// ===============================
 
-		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"]').keypress(function(e) {
+		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"], .form-standard .search-input input[type="text"]').keypress(function(e) {
 			if (e.which == 10 || e.which == 13) {
 				$(this).closest('form').submit();
 			}
