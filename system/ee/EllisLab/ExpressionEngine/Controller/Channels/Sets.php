@@ -67,6 +67,14 @@ class Sets extends AbstractChannelsController {
 
 				$vars['errors'] = $errors;
 			}
+			elseif (strtolower(pathinfo($set_file['name'], PATHINFO_EXTENSION)) !== 'zip')
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('channel_set_filetype_error'))
+					->addToBody(lang('channel_set_filetype_error_desc'))
+					->now();
+			}
 			else
 			{
 				$set = ee('ChannelSet')->importUpload($set_file);
