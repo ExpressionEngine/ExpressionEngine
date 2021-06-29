@@ -30,10 +30,13 @@ Bullet list below, e.g.
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
    - Added a filter to the category group name field
    - Added type hinting to the channel publish controller
+   - Fixed a bug with the javascript loader filter
    - Fix bug with member import error
    - Fixed a bug in the channel title filtering in the control panel
    - Fix a bug with avatar filename in controller profile settings
    - Fixed a bug with the error message when importing invalid channel sets
+   - Fix a bug with debug variables not being filtered
+   - Fix a bug with the importer converter filter
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
