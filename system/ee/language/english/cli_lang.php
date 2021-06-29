@@ -39,6 +39,8 @@ $lang = array(
     'command_make_addon_ft_compatibility'       => 'Fieldtype compatibility?',
     'command_make_addon_what_type_of_addon'     => 'What type of addon would you like to create?',
     'command_make_addon_select_proper_addon'    => 'Please select a proper add-on type.',
+    'command_make_addon_what_is_name'           => 'What is the name of your add-on?',
+    'command_make_addon_does_your'              => 'Does your ',
     'command_make_addon_addon_name_required'    => 'Addon name is required.',
     // make:addon options
     'command_make_addon_option_extension'       => 'Create an extension',

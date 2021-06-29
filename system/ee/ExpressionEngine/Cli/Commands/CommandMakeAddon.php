@@ -119,7 +119,7 @@ class CommandMakeAddon extends Cli
             $this->data['has_settings'] = 'no';
         } else {
             // Ask if not passed and not a plugin
-            $this->data['has_settings']  = $this->confirm("Does your {$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
+            $this->data['has_settings']  = $this->confirm(lang('command_make_addon_does_your') . "{$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
         }
 
         $this->getTypeSpecificData();
@@ -212,7 +212,7 @@ class CommandMakeAddon extends Cli
         $name = $this->getFirstUnnamedArgument();
 
         if (is_null($name)) {
-            $name = $this->ask("What is the name of your add-on?");
+            $name = $this->ask('command_make_addon_what_is_name');
         }
 
         if (empty(trim($name))) {
