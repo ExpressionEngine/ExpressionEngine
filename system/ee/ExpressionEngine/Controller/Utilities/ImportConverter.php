@@ -142,7 +142,6 @@ class ImportConverter extends Utilities
         );
 
         ee()->cp->render('settings/form', $vars);
-       
     }
 
     /**
@@ -341,9 +340,6 @@ class ImportConverter extends Utilities
                 $fields[] = $matches[1];
             }
         }
-
-       
-
         return $fields;
     }
 
