@@ -32,7 +32,7 @@ class CommandMakeModel extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:' => 'Folder for third-party add-on you want to add model to',
+        'addon,a:' => 'command_make_model_option_addon',
     ];
 
     /**

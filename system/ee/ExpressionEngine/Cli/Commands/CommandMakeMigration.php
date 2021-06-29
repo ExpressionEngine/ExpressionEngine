@@ -33,12 +33,12 @@ class CommandMakeMigration extends Cli
      * @var array
      */
     public $commandOptions = [
-        'name,n:' => 'Name of migration',
-        'table,t:' => 'Table name',
-        'status,s:' => 'Status name',
-        'location,l:' => 'Migration location. Current options are ExpressionEngine or shortname of an add-on that is currently installed. Defaults to ExpressionEngine.',
-        'create,c' => 'Specify command is a create command',
-        'update,u' => 'Specify command is an update command',
+        'name,n:'     => 'command_make_migration_option_name',
+        'table,t:'    => 'command_make_migration_option_table',
+        'status,s:'   => 'command_make_migration_option_status',
+        'location,l:' => 'command_make_migration_option_location',
+        'create,c'    => 'command_make_migration_option_create',
+        'update,u'    => 'command_make_migration_option_update',
     ];
 
     /**

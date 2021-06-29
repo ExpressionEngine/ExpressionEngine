@@ -387,6 +387,17 @@ class Cli
     }
 
     /**
+     * Parses command options to use lang files
+     * @return null
+     */
+    protected function parseCommandOptions()
+    {
+        foreach ($this->commandOptions as $k => $commandOption) {
+            $this->commandOptions[$k] = lang($commandOption);
+        }
+    }
+
+    /**
      * loads specific command options
      * @return null
      */
@@ -396,10 +407,13 @@ class Cli
             return [];
         }
 
+        // This parses the command options through the lang file
+        $this->parseCommandOptions();
+
         $commandOptions = array_merge(
             $this->commandOptions,
             [
-                'help,h' => 'See help'
+                'help,h' => 'cli_option_help'
             ]
         );
 

@@ -34,7 +34,7 @@ class CommandMigrateAll extends Cli
      * @var array
      */
     public $commandOptions = [
-        'steps,s:' => 'Specify the number of migrations to run',
+        'steps,s:' => 'command_migrate_all_option_steps',
     ];
 
     /**

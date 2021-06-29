@@ -34,13 +34,13 @@ class CommandUpdate extends Cli
      * @var array
      */
     public $commandOptions = [
-        'rollback' => 'Rollback last update',
-        'verbose,v' => 'Verbose output',
-        'microapp' => 'Run as microapp',
-        'step:' => 'Step in process (param required)',
-        'no-bootstrap' => 'Runs with no bootstrap',
-        'force-addon-upgrades' => 'Automatically runs all addon updaters at end of update (advanced)',
-        'y' => 'Skip all confirmations. Don\'t do this.'
+        'rollback'             => 'command_update_option_rollback',
+        'verbose,v'            => 'command_update_option_verbose',
+        'microapp'             => 'command_update_option_microapp',
+        'step:'                => 'command_update_option_step:',
+        'no-bootstrap'         => 'command_update_option_no_bootstrap',
+        'force-addon-upgrades' => 'command_update_option_force_addon_upgrades',
+        'y'                    => 'command_update_option_y',
     ];
 
     protected $verbose;

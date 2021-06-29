@@ -33,7 +33,7 @@ class CommandMigrateRollback extends Cli
      * @var array
      */
     public $commandOptions = [
-        'steps,s:' => 'Specify the number of migrations to roll back',
+        'steps,s:' => 'command_migrate_rollback_option_steps',
     ];
 
     /**

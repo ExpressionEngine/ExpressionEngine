@@ -32,10 +32,10 @@ class CommandMigrateAddon extends Cli
      * @var array
      */
     public $commandOptions = [
-        'steps,s:' => 'Specify the number of migrations to run',
-        'everything,e' => 'Run all migrations. Core runs first, all add-on migrations, one at a time.',
-        'all' => 'Run all migrations. Alias for --everything',
-        'addon,a:' => 'Run migration only for specified addon.',
+        'steps,s:'     => 'command_migrate_addon_option_steps',
+        'everything,e' => 'command_migrate_addon_option_everything',
+        'all'          => 'command_migrate_addon_option_all',
+        'addon,a:'     => 'command_migrate_addon_option_addon',
     ];
 
     /**

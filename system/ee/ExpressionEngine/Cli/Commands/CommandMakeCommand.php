@@ -33,9 +33,9 @@ class CommandMakeCommand extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:' => 'Folder for third-party add-on you want to add command to',
-        'description,d:' => 'Description of command',
-        'signature,s:' => 'Signature for command (i.e. make:magic)',
+        'addon,a:'       => 'command_make_command_option_addon',
+        'description,d:' => 'command_make_command_option_description',
+        'signature,s:'   => 'command_make_command_option_signature',
     ];
 
     /**

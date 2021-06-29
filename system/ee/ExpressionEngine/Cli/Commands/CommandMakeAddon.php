@@ -33,28 +33,28 @@ class CommandMakeAddon extends Cli
      */
     public $commandOptions = [
         // Addon types
-        'extension,ext' => 'Create an extension',
-        'plugin,pi' => 'Create a plugin',
-        'fieldtype,ft' => 'Create a fieldtype',
-        'module,mod' => 'Create a module',
+        'extension,ext'   => 'command_make_addon_option_extension',
+        'plugin,pi'       => 'command_make_addon_option_plugin',
+        'fieldtype,ft'    => 'command_make_addon_option_fieldtype',
+        'module,mod'      => 'command_make_addon_option_module',
 
         // Addon setup toggles
-        'typography,t' => 'Should use plugin typography',
-        'has-settings,e:' => 'Add-on has settings (yes/no)',
+        'typography,t'    => 'command_make_addon_option_typography',
+        'has-settings,e:' => 'command_make_addon_option_has',
 
         // Addon values
-        'version,v:' => 'Version of the add-on',
-        'description,d:' => 'Description of the add-on',
-        'author,a:' => 'Author of the add-on',
-        'author-url,u:' => 'Author url of the add-on',
+        'version,v:'      => 'command_make_addon_option_version',
+        'description,d:'  => 'command_make_addon_option_description',
+        'author,a:'       => 'command_make_addon_option_author',
+        'author-url,u:'   => 'command_make_addon_option_author_url',
 
         // Generate things for the addon
-        'services,s*:' => 'Services to create. Multi-pass option.',
-        'models,m*:' => 'Models to create. Multi-pass option.',
-        'commands,c*:' => 'Commands to create. Multi-pass option.',
-        'consents,n*:' => 'Consents. Multi-pass option.',
-        'cookies,k*:' => 'Cookies to create, with a colon separating name and value (i.e. name:value). Multi-pass option.',
-        'hooks,o*:' => 'Hooks in use. Multi-pass option.',
+        'services,s*:'    => 'command_make_addon_option_services',
+        'models,m*:'      => 'command_make_addon_option_models',
+        'commands,c*:'    => 'command_make_addon_option_commands',
+        'consents,n*:'    => 'command_make_addon_option_consents',
+        'cookies,k*:'     => 'command_make_addon_option_cookies',
+        'hooks,o*:'       => 'command_make_addon_option_hooks',
     ];
 
     /**
