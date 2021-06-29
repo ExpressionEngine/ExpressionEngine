@@ -54,6 +54,10 @@ $lang = array(
 
 'channel_set_upload_error_desc' => 'We were unable to import the channel, please make sure your cache folder is writable.',
 
+'channel_set_filetype_error' => 'Cannot Import Channel',
+
+'channel_set_filetype_error_desc' => 'We were unable to import the channel; only zip files are supported.',
+
 'channel_set_invalid' => 'Not a valid channel set. Missing channel_set.json file.',
 
 'channel_set_incompatible' => 'Incompatible channel set. This channel set requires ExpressionEngine %d.0.0 or newer.',
