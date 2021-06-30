@@ -26,7 +26,7 @@
         foreach ($fields[0] as $field): ?>
 			<fieldset class="col-group">
 				<div class="setting-txt col w-8">
-					<h3><?=$field?></h3>
+					<h3><?=ee('Security/XSS')->clean($field)?></h3>
 				</div>
 				<div class="setting-field col w-8 last">
 					<?=form_dropdown('field_' . $i, $select_options, set_value('field_' . $i, ''))?>
