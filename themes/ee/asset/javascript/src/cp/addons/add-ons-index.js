@@ -32,6 +32,30 @@ window.onload = function () {
     if(Update){
         Update.addEventListener('click', FilterUpdate);
     }
+
+    var All = document.getElementById("show_all");
+    if(All){
+        All.addEventListener('click', ShowAll);
+    }
+
+
+    function ShowAll(){
+        var table, name;
+        table = document.getElementById("main_Table");
+        tr = table.getElementsByTagName("tr");
+        name = document.getElementById("current_status");
+
+        for (i = 0; i < tr.length; i++) {
+            if(tr[i].className == "app-listing__row" ||tr[i].className == "app-listing__row_h app-listing__row--head"){
+            tr[i].style.display = "";
+            }else {
+                tr[i].style.display = "";
+            }
+        }
+        name.innerText = All.innerText;
+
+        return false;
+    }
     
 
     function hide() { 
@@ -60,9 +84,10 @@ window.onload = function () {
 
 
     function FilterUpdate(){
-        var table, vr;
+        var table, name;
         table = document.getElementById("main_Table");
         tr = table.getElementsByTagName("tr");
+        name = document.getElementById("current_status");
 
         for (i = 0; i < tr.length; i++) {
             if(tr[i].className == "app-listing__row_update"||tr[i].className == "app-listing__row_h app-listing__row--head"){
@@ -71,13 +96,15 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
+        name.innerText = Update.innerText;
         return false;
     }
 
     function FilterInstalled(){
-        var table, vr;
+        var table, name;
         table = document.getElementById("main_Table");
         tr = table.getElementsByTagName("tr");
+        name = document.getElementById("current_status");
 
         for (i = 0; i < tr.length; i++) {
             if(tr[i].className == "app-listing__row" ||tr[i].className == "app-listing__row_h app-listing__row--head"){
@@ -86,13 +113,15 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
+        name.innerText = Installed.innerText;
         return false;
     }
 
     function FilterUninstalled(){
-        var table, vr;
+        var table, name;
         table = document.getElementById("main_Table");
         tr = table.getElementsByTagName("tr");
+        name = document.getElementById("current_status");
 
         for (i = 0; i < tr.length; i++) {
             if(tr[i].className == "app-listing__row_uninstalled"||tr[i].className == "app-listing__row_h app-listing__row--head"){
@@ -101,6 +130,7 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
+        name.innerText = Uninstalled.innerText;
         return false;
     }
 }

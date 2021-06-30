@@ -185,11 +185,10 @@ $lang = array(
      /*Messages To User*/
 
      'confirm' => 'Are you sure you want to delete',
-     'multi_updates' => 'installed add-ons with updates available.',
+     'multi_updates' => 'There are %s installed add-ons with updates available.',
      'name' => 'Name',
-     'single_update' => 'installed add-on with updates available.',
-     'there_are' => 'There Are %d %s',
-     'there_is' => 'There Is %d %s',
+     'single_update' => 'There is %s installed add-on with updates available.',
+
      
      'show' => 'Show me ...',
      'update_available' => 'Update',
