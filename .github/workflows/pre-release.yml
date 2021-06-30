@@ -59,7 +59,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
         run: |
-          ls -latr system/ee/ExpressionEngine/Addons/pro
+          ls -latr ${{ github.workspace }}/system/ee/ExpressionEngine/Addons/pro
           gulp app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
