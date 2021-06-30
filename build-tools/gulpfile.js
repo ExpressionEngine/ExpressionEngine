@@ -143,7 +143,11 @@ gulp.task('_clone_app', ['_build_directories'], function (cb) {
  * Archive the application and build from that instead of pulling files from the server
  */
 gulp.task('_archive_app', ['_build_directories'], function (cb) {
-	archive_repo('app', cb);
+	if (properties.skip_git) {
+		console.log('Git archive skipped, using what we have');
+	} else {
+		archive_repo('app', cb);
+	}
 });
 
 /**
@@ -424,6 +428,8 @@ gulp.task('fill_updater_dependencies', function () {
  */
 gulp.task('_properties', function () {
 	properties.use_local = process.argv.indexOf('--local') > -1;
+
+	properties.skip_git = process.argv.indexOf('--nogit') > -1;
 
 	// Define identifier
 	if (typeof properties.identifier == 'undefined') {

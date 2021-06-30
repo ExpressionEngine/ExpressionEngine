@@ -58,7 +58,9 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-        run: gulp app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+        run: |
+          ls -latr system/ee/ExpressionEngine/Addons/pro
+          gulp app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
