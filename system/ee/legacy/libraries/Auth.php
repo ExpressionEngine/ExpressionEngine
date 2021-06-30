@@ -176,6 +176,21 @@ class Auth
      */
     public function verify()
     {
+        // If this is being called from the CP, use the hook
+        if (REQ == 'CP') {
+            /* -------------------------------------------
+            /* 'login_authenticate_start' hook.
+            /*  - Take control of CP authentication routine
+            /*  - Added EE 1.4.2
+            */
+            ee()->extensions->call('login_authenticate_start');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+            /*
+            /* -------------------------------------------*/
+        }
+        
         $username = (string) ee()->input->post('username');
 
         // No username/password?  Bounce them...
@@ -191,21 +206,6 @@ class Auth
             $this->errors[] = 'no_password';
 
             return false;
-        }
-
-        // If this is being called from the CP, use the hook
-        if (REQ == 'CP') {
-            /* -------------------------------------------
-            /* 'login_authenticate_start' hook.
-            /*  - Take control of CP authentication routine
-            /*  - Added EE 1.4.2
-            */
-            ee()->extensions->call('login_authenticate_start');
-            if (ee()->extensions->end_script === true) {
-                return;
-            }
-            /*
-            /* -------------------------------------------*/
         }
 
         // Is IP and User Agent required for login?
