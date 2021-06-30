@@ -61,7 +61,7 @@ class Javascript_loader
                         $package = $file;
                     }
 
-                    $file = ee()->security->sanitize_filename($package . '/javascript/' . $file);
+                    $file = ee()->security->sanitize_filename($package . '/javascript/' . $file, true);
                 } elseif ($type == 'file' or $type == 'pro_file') {
                     $parts = explode('/', $file);
                     $file = array();
