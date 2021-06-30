@@ -145,6 +145,14 @@ trait ModifiableTrait
     }
 
     /**
+     * :trim modifier
+     */
+    public function replace_trim($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->trim($params);
+    }
+
+    /**
      * :url modifier
      */
     public function replace_url($data, $params = array(), $tagdata = false)
