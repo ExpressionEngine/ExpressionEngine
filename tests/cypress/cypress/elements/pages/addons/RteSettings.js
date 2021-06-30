@@ -11,7 +11,7 @@ class RteSettings extends ControlPanel {
 
             // Settings View
             "default_tool_set": 'input[type!=hidden][name="rte_default_toolset"]',
-            "save_settings_button": 'input[value="Save Settings"]',
+            "save_settings_button": '[value="Save Settings"]',
 
             "create_new_button": 'a:contains("Create New")',
             "tool_sets": '.table-responsive table tr',

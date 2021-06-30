@@ -70,7 +70,7 @@ context('Site Manager', () => {
 
       //page.get('modal_submit_button').should('be.visible')
       //page.get('modal_submit_button').click()
-      cy.get('input').contains('Confirm and Delete').first().click()
+      cy.get('button').contains('Confirm and Delete').first().click()
 
       cy.hasNoErrors()
 

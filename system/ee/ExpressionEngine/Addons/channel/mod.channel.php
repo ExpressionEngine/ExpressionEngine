@@ -2917,14 +2917,11 @@ class Channel
             foreach ($this->cat_array as $key => $val) {
                 $chunk = ee()->TMPL->tagdata;
 
-                ee()->load->library('file_field');
-                $cat_image = ee()->file_field->parse_string($val[5]);
-
                 $cat_vars = array(
                     'category_name' => ee()->typography->format_characters($val[3]),
                     'category_url_title' => $val[6],
                     'category_description' => $val[4],
-                    'category_image' => $cat_image,
+                    'category_image' => (string) $val[5],
                     'category_id' => $val[0],
                     'parent_id' => $val[1],
                     'active' => ($active_cat == $val[0] || $active_cat == $val[6])
@@ -2954,7 +2951,7 @@ class Channel
                         ee()->functions->encode_ee_tags($cat_vars['category_name']),
                         $cat_vars['category_url_title'],
                         ee()->functions->encode_ee_tags($cat_vars['category_description']),
-                        $cat_image,
+                        $cat_vars['category_image'],
                         $cat_vars['category_id'],
                         $cat_vars['parent_id']
                     ),
@@ -3296,14 +3293,11 @@ class Channel
                     if (! isset($used[$row['cat_name']])) {
                         $chunk = $cat_chunk;
 
-                        ee()->load->library('file_field');
-                        $cat_image = ee()->file_field->parse_string($row['cat_image']);
-
                         $cat_vars = array(
                             'category_name' => ee()->typography->format_characters($row['cat_name']),
                             'category_url_title' => $row['cat_url_title'],
                             'category_description' => $row['cat_description'],
-                            'category_image' => $cat_image,
+                            'category_image' => (string) $row['cat_image'],
                             'category_id' => $row['cat_id'],
                             'parent_id' => $row['parent_id'],
                             'active' => ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
@@ -3328,7 +3322,7 @@ class Channel
                                 $cat_vars['category_id'],
                                 ee()->functions->encode_ee_tags($cat_vars['category_name']),
                                 $cat_vars['category_url_title'],
-                                $cat_image,
+                                $cat_vars['category_image'],
                                 ee()->functions->encode_ee_tags($cat_vars['category_description']),
                                 $cat_vars['parent_id']
                             ),
@@ -3662,16 +3656,13 @@ class Channel
 
                 $chunk = $template;
 
-                ee()->load->library('file_field');
-                $cat_image = ee()->file_field->parse_string($val[2]);
-
                 ee()->load->library('typography');
 
                 $cat_vars = array(
                     'category_name' => ee()->typography->format_characters($val[1]),
                     'category_url_title' => $val[4],
                     'category_description' => $val[3],
-                    'category_image' => $cat_image,
+                    'category_image' => (string) $val[2],
                     'category_id' => $key,
                     'parent_id' => $val[0],
                     'active' => ($active_cat == $key || $active_cat == $val[4])
@@ -3700,7 +3691,7 @@ class Channel
                         $cat_vars['category_id'],
                         ee()->functions->encode_ee_tags($cat_vars['category_name']),
                         $cat_vars['category_url_title'],
-                        $cat_image,
+                        $cat_vars['category_image'],
                         ee()->functions->encode_ee_tags($cat_vars['category_description']),
                         $cat_vars['parent_id']
                     ),
@@ -3818,11 +3809,13 @@ class Channel
         ee()->api_channel_fields->include_handler('text');
         $fieldtype = ee()->api_channel_fields->setup_handler('text', true);
         ee()->api_channel_fields->field_types['text'] = $fieldtype;
+        //category image should be treated as file though
+        $file_fieldtype = ee()->api_channel_fields->setup_handler('file', true);
+        ee()->api_channel_fields->field_types['file'] = $file_fieldtype;
 
         foreach ($variables as $tag) {
             $var_props = ee('Variables/Parser')->parseVariableProperties($tag);
             $field_name = $var_props['field_name'];
-
             // only deal with variables we own
             if (! isset($data[$field_name])) {
                 continue;
@@ -3851,12 +3844,28 @@ class Channel
 
                 if (! empty($var_props['modifier'])) {
                     $parse_fnc = 'replace_' . $var_props['modifier'];
+                    
+                    if ($field_name == 'category_image') {
+                        $class = $file_fieldtype;
+                        ee()->load->library('file_field');
+                        ee()->api_channel_fields->field_type = 'file';
+                        $content = ee()->file_field->parse_field($content);
+                    } else {
+                        $class = $fieldtype;
+                    }
 
-                    if (method_exists($fieldtype, $parse_fnc)) {
+                    if (method_exists($class, $parse_fnc)) {
                         $content = ee()->api_channel_fields->apply($parse_fnc, array(
                             $content,
                             $var_props['params'],
                             false
+                        ));
+                    } elseif (method_exists($class, 'replace_tag_catchall')) {
+                        $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                            $content,
+                            $var_props['params'],
+                            false,
+                            $var_props['modifier']
                         ));
                     }
                 }
@@ -4078,16 +4087,13 @@ class Channel
 
         $row = $query->row_array();
 
-        ee()->load->library('file_field');
-        $cat_image = ee()->file_field->parse_string($query->row('cat_image'));
-
         ee()->load->library('typography');
 
         $cat_vars = array(
             'category_name' => ee()->typography->format_characters($query->row('cat_name')),
             'category_url_title' => $query->row('cat_url_title'),
             'category_description' => $query->row('cat_description'),
-            'category_image' => $cat_image,
+            'category_image' => (string) $query->row('cat_image'),
             'category_id' => $match[2],
             'parent_id' => $query->row('parent_id')
         );
@@ -4112,20 +4118,20 @@ class Channel
                 $cat_vars['category_id'],
                 ee()->functions->encode_ee_tags($cat_vars['category_name']),
                 $cat_vars['category_url_title'],
-                $cat_image,
+                $cat_vars['category_image'],
                 ee()->functions->encode_ee_tags($cat_vars['category_description']),
                 $cat_vars['parent_id']
             ),
             ee()->TMPL->tagdata
         );
 
+        ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), ee()->TMPL->tagdata);
+
         // Check to see if we need to parse {filedir_n}
         if (strpos(ee()->TMPL->tagdata, '{filedir_') !== false) {
             ee()->load->library('file_field');
             ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
         }
-
-        ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), ee()->TMPL->tagdata);
 
         return ee()->TMPL->tagdata;
     }
@@ -5023,10 +5029,73 @@ class Channel
     {
         $entry_id = ee()->input->get_post('entry_id');
         $channel_id = ee()->input->get_post('channel_id');
-        $return = urldecode(ee()->input->get('return'));
+        $return = ee()->input->get('return') ? base64_decode(rawurldecode(ee()->input->get('return'))) : null;
+        $allowedOrigin = null;
+
+        $allowedOrigin = base64_decode(rawurldecode(ee('Request')->get('from')));
+        if (empty($allowedOrigin)) {
+            if (!empty($return)) {
+                $allowedOrigin = substr($return, 0, strpos($return, '/', 8));
+            }
+            if (empty($allowedOrigin)) {
+                $configured_cp_url = explode('//', ee()->config->item('cp_url'));
+                $configured_cp_domain = explode('/', $configured_cp_url[1]);
+                $allowedOrigin = strtolower($configured_cp_domain[0]);
+                if (strpos('http', $allowedOrigin) === false) {
+                    $allowedOrigin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . $allowedOrigin;
+                }
+            }
+        }
+
+        $allAllowedOrigins = [];
+        $configuredUrls = ee('Model')->get('Config')
+                ->filter('key', 'IN', ['base_url', 'site_url', 'cp_url'])
+                ->all()
+                ->pluck('parsed_value');
+        $extraDomains = ee('Config')->getFile()->get('allowed_preview_domains');
+        if (!empty($extraDomains)) {
+            if (!is_array($extraDomains)) {
+                $extraDomains = explode(',', $extraDomains);
+            }
+            $configuredUrls = array_merge($configuredUrls, $extraDomains);
+        }
+
+        foreach ($configuredUrls as $configuredUrl) {
+            $configuredUrl = trim($configuredUrl);
+            foreach (['https://', 'http://', '//'] as $protocol) {
+                if (strpos($configuredUrl, $protocol) === 0) {
+                    $len = strlen($protocol);
+                    $domain = substr($configuredUrl, $len, (strpos($configuredUrl, '/', $len) - $len));
+                } else {
+                    $domain = $configuredUrl;
+                }
+                $allAllowedOrigins[] = 'https://' . $domain;
+                $allAllowedOrigins[] = 'http://' . $domain;
+            }
+        }
+        $allAllowedOrigins = array_unique($allAllowedOrigins);
+
+        @header('Access-Control-Allow-Origin: ' . $allowedOrigin);
+        @header('Access-Control-Allow-Methods: POST, OPTIONS');
+        @header('Access-Control-Max-Age: 3600');
+        if(array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER)) {
+            @header('Access-Control-Allow-Headers: ' . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+        } else {
+            @header('Access-Control-Allow-Headers: *');
+        }
+
+        if (ee('Request')->method() == 'OPTIONS') {
+            exit();
+        }
+
+        if (!in_array($allowedOrigin, $allAllowedOrigins)) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
+        }
 
         return ee('LivePreview')->preview($channel_id, $entry_id, $return);
     }
+
 }
 // END CLASS
 

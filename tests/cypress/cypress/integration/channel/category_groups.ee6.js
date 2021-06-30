@@ -35,7 +35,7 @@ context('Category Groups', () => {
 
 
             //page.get('modal_submit_button').click()
-            cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+            cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
             cy.wait(500)
             cy.hasNoErrors()
 

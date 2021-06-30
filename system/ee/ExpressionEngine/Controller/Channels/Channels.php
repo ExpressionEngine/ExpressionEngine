@@ -172,7 +172,7 @@ class Channels extends AbstractChannelsController
     /**
      * Channel creation/edit form
      *
-     * @param	int	$channel_id	ID of Channel to edit
+     * @param   int $channel_id ID of Channel to edit
      */
     private function form($channel_id = null)
     {
@@ -185,10 +185,10 @@ class Channels extends AbstractChannelsController
             ]);
 
             ee()->javascript->output('
-				$("input[name=channel_title]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=channel_name]");
-				});
-			');
+                $("input[name=channel_title]").bind("keyup keydown", function() {
+                    $(this).ee_url_title("input[name=channel_name]");
+                });
+            ');
 
             $alert_key = 'created';
             ee()->view->cp_page_title = lang('create_new_channel');
@@ -301,7 +301,7 @@ class Channels extends AbstractChannelsController
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         ee()->view->header = array(
-            'title' => is_null($channel_id) ? lang('channels') : $channel->channel_title,
+            'title' => is_null($channel_id) ? lang('channels') : htmlspecialchars($channel->channel_title),
             'toolbar_items' => array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('settings/content-design'),
@@ -887,7 +887,18 @@ class Channels extends AbstractChannelsController
                             'value' => $channel->getRawProperty('preview_url')
                         )
                     )
+                ),
+                array(
+                    'title' => 'allow_preview',
+                    'desc' => 'allow_preview_desc',
+                    'fields' => array(
+                        'allow_preview' => array(
+                            'type' => 'yes_no',
+                            'value' => $channel->allow_preview
+                        )
+                    )
                 )
+
             ),
             'channel_defaults' => array(
                 array(
@@ -1371,7 +1382,6 @@ class Channels extends AbstractChannelsController
         if (! ee('Request')->post('comment_expiration')) {
             $_POST['comment_expiration'] = 0;
         }
-
         $channel->set($_POST);
 
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();

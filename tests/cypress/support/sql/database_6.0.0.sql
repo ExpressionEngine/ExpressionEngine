@@ -26,29 +26,36 @@ DELETE FROM `exp_actions`;
 /*!40000 ALTER TABLE `exp_actions` DISABLE KEYS */;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(1, 'Channel', 'submit_entry', 0),
-	(3, 'Channel', 'smiley_pop', 0),
-	(4, 'Channel', 'combo_loader', 0),
-	(5, 'Member', 'registration_form', 0),
-	(6, 'Member', 'register_member', 0),
-	(7, 'Member', 'activate_member', 0),
-	(8, 'Member', 'member_login', 0),
-	(9, 'Member', 'member_logout', 0),
-	(10, 'Member', 'send_reset_token', 0),
-	(11, 'Member', 'process_reset_password', 0),
-	(12, 'Member', 'send_member_email', 0),
-	(13, 'Member', 'update_un_pw', 0),
-	(14, 'Member', 'member_search', 0),
-	(15, 'Member', 'member_delete', 0),
-	(16, 'Rte', 'get_js', 0),
-	(17, 'Email', 'send_email', 0),
-	(18, 'Comment', 'insert_new_comment', 0),
-	(19, 'Comment_mcp', 'delete_comment_notification', 0),
-	(20, 'Comment', 'comment_subscribe', 0),
-	(21, 'Comment', 'edit_comment', 0),
-	(22, 'Search', 'do_search', 1),
-	(23, 'Channel', 'live_preview', 0),
-	(24, 'File', 'addonIcon', 1),
-  (25, 'Rte', 'pages_autocomplete', 0);
+	(2, 'Channel', 'smiley_pop', 0),
+	(3, 'Channel', 'combo_loader', 0),
+	(4, 'Channel', 'live_preview', 0),
+	(5, 'Comment', 'insert_new_comment', 0),
+	(6, 'Comment_mcp', 'delete_comment_notification', 0),
+	(7, 'Comment', 'comment_subscribe', 0),
+	(8, 'Comment', 'edit_comment', 0),
+	(9, 'Consent', 'grantConsent', 0),
+	(10, 'Consent', 'submitConsent', 0),
+	(11, 'Consent', 'withdrawConsent', 0),
+	(12, 'Member', 'registration_form', 0),
+	(13, 'Member', 'register_member', 0),
+	(14, 'Member', 'activate_member', 0),
+	(15, 'Member', 'member_login', 0),
+	(16, 'Member', 'member_logout', 0),
+	(17, 'Member', 'send_reset_token', 0),
+	(18, 'Member', 'process_reset_password', 0),
+	(19, 'Member', 'send_member_email', 0),
+	(20, 'Member', 'update_un_pw', 0),
+	(21, 'Member', 'do_member_search', 0),
+	(22, 'Member', 'member_delete', 0),
+	(23, 'Member', 'send_username', 0),
+	(24, 'Member', 'update_profile', 0),
+	(25, 'Member', 'upload_avatar', 0),
+  (26, 'Member', 'recaptcha_check', 0),
+	(27, 'Rte', 'pages_autocomplete', 0),
+	(28, 'File', 'addonIcon', 1),
+	(29, 'Relationship', 'entryList', 0),
+	(30, 'Search', 'do_search', 1),
+	(31, 'Email', 'send_email', 0);
 /*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_captcha
@@ -243,6 +250,7 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `preview_url` varchar(100) DEFAULT NULL,
+  `allow_preview` char(1) NOT NULL DEFAULT 'y',
   `max_entries` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
@@ -253,9 +261,9 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
 -- Dumping data for table ee-test.exp_channels: ~2 rows (approximately)
 DELETE FROM `exp_channels`;
 /*!40000 ALTER TABLE `exp_channels` DISABLE KEYS */;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`) VALUES
-	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 0, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 0),
-	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `allow_preview`, `max_entries`) VALUES
+	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 0, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0),
+	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0);
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channels_channel_fields
@@ -807,11 +815,15 @@ DROP TABLE IF EXISTS `exp_consent_audit_log`;
 CREATE TABLE IF NOT EXISTS `exp_consent_audit_log` (
   `consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `consent_request_id` int(10) unsigned NOT NULL,
+  `consent_request_version_id` int(10) unsigned DEFAULT NULL,
   `member_id` int(10) unsigned NOT NULL,
+  `ip_address` varchar(45) default '0' NOT NULL,
+  `user_agent` varchar(120) NOT NULL,
   `action` text NOT NULL,
   `log_date` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`consent_audit_id`),
-  KEY `consent_request_id` (`consent_request_id`)
+  KEY `consent_request_id` (`consent_request_id`),
+  KEY `consent_request_version_id` (`consent_request_version_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table ee-test.exp_consent_audit_log: ~0 rows (approximately)
@@ -835,6 +847,10 @@ CREATE TABLE IF NOT EXISTS `exp_consent_requests` (
 -- Dumping data for table ee-test.exp_consent_requests: ~0 rows (approximately)
 DELETE FROM `exp_consent_requests`;
 /*!40000 ALTER TABLE `exp_consent_requests` DISABLE KEYS */;
+INSERT INTO `exp_consent_requests` (`consent_request_id`, `consent_request_version_id`, `user_created`, `title`, `consent_name`, `double_opt_in`, `retention_period`) VALUES
+	(1, 1, 'n', 'Functionality Cookies', 'ee:cookies_functionality', 'n', NULL),
+	(2, 2, 'n', 'Performance Cookies', 'ee:cookies_performance', 'n', NULL),
+	(3, 3, 'n', 'Targeting Cookies', 'ee:cookies_targeting', 'n', NULL);
 /*!40000 ALTER TABLE `exp_consent_requests` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_consent_request_versions
@@ -853,7 +869,18 @@ CREATE TABLE IF NOT EXISTS `exp_consent_request_versions` (
 -- Dumping data for table ee-test.exp_consent_request_versions: ~0 rows (approximately)
 DELETE FROM `exp_consent_request_versions`;
 /*!40000 ALTER TABLE `exp_consent_request_versions` DISABLE KEYS */;
+INSERT INTO `exp_consent_request_versions` (`consent_request_version_id`, `consent_request_id`, `request`, `request_format`, `create_date`, `author_id`) VALUES
+	(1, 1, 'These cookies help us personalize content and functionality for you, including remembering changes you have made to parts of the website that you can customize, or selections for services made on previous visits. If you do not allow these cookies, some portions of our website may be less friendly and easy to use, forcing you to enter content or set your preferences on each visit.', 'none', 1615821718, 0),
+	(2, 2, 'These cookies allow us measure how visitors use our website, which pages are popular, and what our traffic sources are. This helps us improve how our website works and make it easier for all visitors to find what they are looking for. The information is aggregated and anonymous, and cannot be used to identify you. If you do not allow these cookies, we will be unable to use your visits to our website to help make improvements.', 'none', 1615821718, 0),
+	(3, 3, 'These cookies are usually placed by third-party advertising networks, which may use information about your website visits to develop a profile of your interests. This information may be shared with other advertisers and/or websites to deliver more relevant advertising to you across multiple websites. If you do not allow these cookies, visits to this website will not be shared with advertising partners and will not contribute to targeted advertising on other websites.', 'none', 1615821718, 0);
 /*!40000 ALTER TABLE `exp_consent_request_versions` ENABLE KEYS */;
+
+DROP TABLE IF EXISTS `exp_consent_request_version_cookies`;
+CREATE TABLE IF NOT EXISTS `exp_consent_request_version_cookies` (
+  `consent_request_version_id` int(10) unsigned NOT NULL,
+  `cookie_id` int(10) unsigned NOT NULL,
+  KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping structure for table ee-test.exp_content_types
 DROP TABLE IF EXISTS `exp_content_types`;
@@ -894,6 +921,20 @@ INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`
 	(2, 1, 1, 'admin', '127.0.0.1', 1588591743, 'Logged in'),
 	(3, 1, 1, 'admin', '127.0.0.1', 1588591844, 'Logged in');
 /*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
+
+-- Dumping structure for table ee6pro.exp_cookie_settings
+DROP TABLE IF EXISTS `exp_cookie_settings`;
+CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
+  `cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cookie_provider` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`cookie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- Dumping structure for table ee-test.exp_dashboard_layouts
 DROP TABLE IF EXISTS `exp_dashboard_layouts`;
@@ -1235,8 +1276,8 @@ CREATE TABLE IF NOT EXISTS `exp_file_watermarks` (
   `wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
   `wm_name` varchar(80) DEFAULT NULL,
   `wm_type` varchar(10) DEFAULT 'text',
-  `wm_image_path` varchar(100) DEFAULT NULL,
-  `wm_test_image_path` varchar(100) DEFAULT NULL,
+  `wm_image_path` varchar(255) DEFAULT NULL,
+  `wm_test_image_path` varchar(255) DEFAULT NULL,
   `wm_use_font` char(1) DEFAULT 'y',
   `wm_font` varchar(30) DEFAULT NULL,
   `wm_font_size` int(3) unsigned DEFAULT NULL,
@@ -1814,6 +1855,8 @@ CREATE TABLE IF NOT EXISTS `exp_modules` (
 DELETE FROM `exp_modules`;
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
+	(1, 'Consent', '1.0.0', 'n', 'n'),
+	(2, 'Relationship', '1.0.0', 'n', 'n'),
 	(3, 'Channel', '2.0.1', 'n', 'n'),
 	(4, 'Member', '2.1.0', 'n', 'n'),
 	(5, 'Stats', '2.0.0', 'n', 'n'),

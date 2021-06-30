@@ -84,7 +84,7 @@ class Communicate extends Utilities
             foreach ($roles as $role) {
                 $member_roles[$role->role_id] = $role->name;
 
-                if ($role->getAllMembers()->count() == 0) {
+                if ($role->PrimaryMembers->count() == 0 && $role->Members->count() == 0) {
                     $disabled_roles[] = $role->role_id;
                 }
             }

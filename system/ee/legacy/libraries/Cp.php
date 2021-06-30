@@ -217,16 +217,11 @@ class Cp
             'plugin' => array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
             'file' => array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
                 'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
-                'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+                'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters', 'cp/jump_menu',
                 'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
                 'components/filterable', 'components/toggle', 'components/select_list',
                 'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
         );
-
-        ee()->javascript->set_global(array(
-            'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
-            'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
-        ));
 
         $installed_modules = ee()->db->select('module_name,module_version')->get('modules');
 
@@ -246,8 +241,6 @@ class Cp
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
-
-        $js_scripts['file'][] = 'cp/jump_menu';
 
         $modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
             'name' => 'modal-default-confirm-remove',
@@ -407,6 +400,18 @@ class Cp
                 DOC_URL . 'installation/updating.html#if-updating-from-expressionengine-3-or-higher'
             );
         }
+
+        //do they need to accept consent?
+        if (bool_config_item('require_cookie_consent')) {
+            $consentRequest = ee('Model')->get('ConsentRequest')->filter('consent_name', 'ee:cookies_functionality')->first();
+            if (!empty($consentRequest)) {
+                $consent = ee()->session->getMember()->Consents->filter('consent_request_id', $consentRequest->getId())->first();
+                if (empty($consent) || !$consent->isGranted()) {
+                    $notices[] = sprintf(lang('cookies_functionality_consent_required'), ee('CP/URL', 'members/profile/consent'));
+                }
+            }
+        }
+        
 
         if (! empty($notices)) {
             if (! $alert) {

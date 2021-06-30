@@ -54,6 +54,10 @@ $lang = array(
 
     'channel_set_upload_error_desc' => 'We were unable to import the channel, please make sure your cache folder is writable.',
 
+    'channel_set_filetype_error' => 'Cannot Import Channel',
+
+    'channel_set_filetype_error_desc' => 'We were unable to import the channel; only zip files are supported.',
+
     'channel_set_invalid' => 'Not a valid channel set. Missing channel_set.json file.',
 
     'channel_set_incompatible' => 'Incompatible channel set. This channel set requires ExpressionEngine %d.0.0 or newer.',
@@ -331,6 +335,10 @@ $lang = array(
     'preview_url' => 'Preview <abbr title="Unified Resource Locator">URL</abbr>',
 
     'preview_url_desc' => 'Template path or route to use for previewing. Use <code>{url_title}</code> or <code>{entry_id}</code> for single-entry templates. i.e. <b><code>blog/entry/{url_title}</code></b>',
+
+    'allow_preview' => 'Allow Preview?',
+
+    'allow_preview_desc' => 'When enabled, users will be able to preview entries if the Preview <abbr title="Unified Resource Locator">URL</abbr> is set>',
 
     'max_characters' => 'Maximum characters allowed?',
 

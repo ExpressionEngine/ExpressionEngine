@@ -15,7 +15,7 @@ $(window).bind("onload", function() {
 
 	// Reset button state in case user presses the back button
 	// after a form submission
-	$('input.button.button--primary').removeClass('work');
+	$('.button.button--primary').removeClass('work');
 });
 
 $(document).ready(function() {
@@ -23,7 +23,7 @@ $(document).ready(function() {
 	// Bind form submission to update button text
 	$('form').submit(function(event) {
 
-		var $button = $('input.button.button--primary', this);
+		var $button = $('.button.button--primary', this);
 
 		// Add "work" class to make the buttons pulsate
 		$button.addClass('work');

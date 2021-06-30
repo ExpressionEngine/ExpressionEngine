@@ -30,9 +30,16 @@
 				<td>
 					<a data-id="<?=$file->file_id ?: $file->file_name ?>" data-url="<?=ee('CP/URL')->make($data_url_base, array('file' => $file->file_id))?>" class="filepicker-item" href="#">
 						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
-						<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>" style="max-height: 125px; max-width: 125px">
+							<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
-						<span class="file-thumb"><b><?=$file->file_name?></b></span>
+							<?php if ($file->mime_type == 'text/plain'): ?>
+								<i class="fas fa-file-alt fa-5x"></i>
+							<?php elseif ($file->mime_type == 'application/zip'): ?>
+								<i class="fas fa-file-archive fa-5x"></i>
+							<?php else: ?>
+								<i class="fas fa-file fa-5x"></i>
+							<?php endif; ?>
+							<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>
 					</a>
 				</td>

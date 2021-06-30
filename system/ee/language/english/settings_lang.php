@@ -17,6 +17,8 @@ $lang = array(
 
     'debugging_output' => 'Debugging & Output',
 
+    'logging' => 'Logging',
+
     'general' => 'General',
 
     'general_settings' => 'General Settings',
@@ -647,6 +649,24 @@ $lang = array(
 
     'require_captcha_desc' => 'When enabled, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
+    'recaptcha_settings_title' => 'reCAPTCHA v3 Settings',
+
+    'use_recaptcha' => 'Use reCAPTCHA  v3?',
+
+    'use_recaptcha_desc' => 'When enabled, system will use reCAPTCHA  v3 - Please make sure to sign up for a key / account ( https://www.google.com/recaptcha/admin/create )',
+
+    'recaptcha_site_key' => 'reCAPTCHA  site key',
+
+    'recaptcha_site_key_desc' => 'Enter the site key',
+
+    'recaptcha_site_secret' => 'reCAPTCHA  site secret?',
+
+    'recaptcha_site_secret_desc' => 'Enter the secret',
+
+    'recaptcha_score_threshold' => 'Threshold score',
+
+    'recaptcha_score_threshold_desc' => 'Enter the score to pass, 0.5 is the default setting',
+
     /* Security & Privacy */
     'allow_dictionary_pw' => 'Allow dictionary words in passwords?',
 
@@ -823,7 +843,13 @@ $lang = array(
 
     'cookie_consent_disabled' => 'Cookie Consent Disabled',
 
-    'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
+    'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.',
+
+    /* Logging */
+
+    'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
+
+    'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
 
 );
 
