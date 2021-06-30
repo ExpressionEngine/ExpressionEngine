@@ -123,10 +123,8 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 	console.log('Mode:', (properties.use_local ? 'Archive' : 'Clone'));
 
 	if (properties.skip_git) {
-		console.log('Git archive skipped, using what we have');
-		clone_or_archive = '_build_directories';
+		clone_or_archive = '_copy_app';
 	}
-	
 	runSequence(
 		clone_or_archive,
 		'_version_bump',
@@ -149,6 +147,16 @@ gulp.task('_clone_app', ['_build_directories'], function (cb) {
  */
 gulp.task('_archive_app', ['_build_directories'], function (cb) {
 	archive_repo('app', cb);
+});
+
+/**
+ * Just copy over application folder
+ */
+ gulp.task('_copy_app', ['_build_directories'], function (cb) {
+	gulp.src(properties.local_repositories.app)
+		.pipe(gulp.dest(paths.app));
+
+	cb();
 });
 
 /**
