@@ -1,16 +1,16 @@
 window.onload = function () {
-    var Search_Term = document.getElementById("Search_Term");
+    var Search_Term = document.getElementById("search_term");
     if(Search_Term){
         Search_Term.addEventListener('input', SearchFilter);
     }
     
-    var Installed = document.getElementById("Installed_Sort");
+    var Installed = document.getElementById("installed_sort");
     if(Installed){
         Installed.addEventListener('click', FilterInstalled);
     }
     
 
-    var Uninstalled = document.getElementById("Uninstalled_Sort");
+    var Uninstalled = document.getElementById("uninstalled_sort");
     if(Uninstalled){
         Uninstalled.addEventListener('click', FilterUninstalled);
     }
@@ -22,13 +22,13 @@ window.onload = function () {
     }
    
 
-    var see_updates = document.getElementById("ShowMe");
+    var see_updates = document.getElementById("show_me");
     if(see_updates){
         see_updates.addEventListener('click', FilterUpdate);
     }
     
 
-    var Update = document.getElementById("Update_Sort");
+    var Update = document.getElementById("update_sort");
     if(Update){
         Update.addEventListener('click', FilterUpdate);
     }
@@ -41,7 +41,7 @@ window.onload = function () {
 
     function SearchFilter() {
         var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("Search_Term");
+        input = document.getElementById("search_term");
         filter = input.value.toUpperCase();
         table = document.getElementById("main_Table");
         tr = table.getElementsByTagName("tr");

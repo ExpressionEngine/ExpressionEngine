@@ -188,8 +188,8 @@ $lang = array(
      'multi_updates' => 'installed add-ons with updates available.',
      'name' => 'Name',
      'single_update' => 'installed add-on with updates available.',
-     'there_are' => 'There Are',
-     'there_is' => 'There Is',
+     'there_are' => 'There Are %d %s',
+     'there_is' => 'There Is %d %s',
      
      'show' => 'Show me ...',
      'update_available' => 'Update',
@@ -202,7 +202,9 @@ $lang = array(
 
      'bulk_install' => 'Install the Following? ...',
      'bulk_install_title' => 'Bulk Installer',
-     'bulk_install_button' => 'Install Now!'
+     'bulk_install_button' => 'Install Now!',
+     'settings' => 'Settings',
+     'select_all' => 'Select All'
 
 );
 

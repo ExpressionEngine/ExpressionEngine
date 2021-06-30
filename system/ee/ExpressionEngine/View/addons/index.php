@@ -6,25 +6,38 @@
 			<?php if (!empty($updates) && count($updates) == 1) : ?>
 				<div id="alert_banner" class="alert">
 					<div class="alert__icon"><i class="fas fa-info-circle fa-fw"></i></div>
-					<div id="alert" href="" class="alert__close">
+					<div id="alert" class="alert__close">
 						<a id="alert_close" class="fas fa-times alert__close-icon"></a>
 					</div>
 					<p class="alert__title"> <br>
 					<p class="alert__title"><?php echo lang('update'); ?><br>
-						<?php echo lang('there_is'); ?> <strong><?= count($updates) ?></strong> <?php echo lang('single_update'); ?> <a id="ShowMe"><?php echo lang('show'); ?></a></p>
+						<?php
+						$there = lang('there_is');
+						$single = lang('single_update');
+						$count = count($updates);
+						echo sprintf($there, $count , $single);
+						?>
+						<a id="show_me"><?php echo lang('show'); ?></a>
+					</p>
+						
 				</div>
 			<?php endif; ?>
 
 			<?php if (!empty($updates) && count($updates) > 1) : ?>
 				<div id="alert_banner" class="alert">
 					<div class="alert__icon"><i class="fas fa-info-circle fa-fw"></i></div>
-					<div id="alert" href="" class="alert__close">
+					<div id="alert" class="alert__close">
 						<a id="alert_close" class="fas fa-times alert__close-icon"></a>
 					</div>
 					<p class="alert__title"><?php echo lang('updates'); ?><br>
-
-						<?php echo lang('there_are'); ?> <strong><?= count($updates) ?></strong> <?php echo lang('multi_updates'); ?> <a id="ShowMe"><?php echo lang('show'); ?></a></p>
-					<p></p>
+						<?php
+						$there = lang('there_are');
+						$multi = lang('multi_updates');
+						$count = count($updates);
+						echo sprintf($there, $count , $multi);
+						?>
+						<a id="show_me"><?php echo lang('show'); ?></a>
+					</p>
 				</div>
 			<?php endif; ?>
 
@@ -34,12 +47,12 @@
 					<div class="filter-bar">
 						<div class="filter-bar__item ">
 							<div class="filter-search-bar__item ">
-								<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="status" title="status">status</button>
+								<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="status" title="status"><?php echo lang('filter_by_status'); ?></button>
 								<div class="dropdown">
 									<div class="dropdown__scroll">
-										<a class="dropdown__link" id="Installed_Sort"><?php echo lang('installed'); ?></a>
-										<a class="dropdown__link" id="Uninstalled_Sort"><?php echo lang('uninstalled'); ?></a>
-										<a class="dropdown__link" id="Update_Sort"><?php echo lang('update_available'); ?></a>
+										<a class="dropdown__link" id="installed_sort"><?php echo lang('installed'); ?></a>
+										<a class="dropdown__link" id="uninstalled_sort"><?php echo lang('uninstalled'); ?></a>
+										<a class="dropdown__link" id="update_sort"><?php echo lang('update_available'); ?></a>
 									</div>
 								</div>
 							</div>
@@ -47,17 +60,13 @@
 						<div class="filter-bar__item filter-search-form">
 							<div class="filter-search-bar__item">
 								<div class="search-input">
-									<input id="Search_Term" class="search-input__input input--small" type="text" name="filter_by_keyword" value="" placeholder="Search">
+									<input id="search_term" class="search-input__input input--small" type="text" name="filter_by_keyword" value="" placeholder="Search">
 								</div>
 							</div>
 						</div>
 
-						<script src="themes\ee\cp\js\src\cp\add-ons-index.js">
+						<?php ee()->cp->add_js_script(array('file' => array('cp/addons/add-ons-index'),)); ?>
 
-						</script>
-						<div class="filter-bar__item ">
-
-						</div>
 					</div>
 				</div>
 			</div>
@@ -83,8 +92,8 @@
 							</th>
 
 							<th class="app-listing__header text--center">
-								<label for="tbl_6092f7c1be4f4-select-all">Select All</label>
-								<input id="tbl_6092f7c1be4f4-select-all" class="input--no-mrg" type="checkbox" title="Select All">
+								<label ><?php echo lang('select_all'); ?></label>
+								<input  class="input--no-mrg" type="checkbox" title="Select All">
 							</th>
 						</tr>
 					</thead>
@@ -100,9 +109,9 @@
 							} ?>
 							<td>
 								<span class="collapsed-label"><?php echo lang('name'); ?></span>
-								<a href="">
+								<a>
 									<div class="addon-name-table d-flex align-items-center">
-										<img src="<?= $addon["icon_url"] ?>" alt="Add-On Name" class="addon-icon-table">
+										<img src="<?= $addon["icon_url"] ?>" class="addon-icon-table">
 										<div class = "name_of_addon">
 											<strong><?= $addon["name"] ?></strong><br><span class="meta-info text-muted"> <?= $addon["description"] ?> </span>
 										</div>
@@ -124,7 +133,7 @@
 																														} ?>></a>
 										<?php endif; ?>
 
-										<?php if (isset($addon['settings_url'])) : ?><a class="settings button button--default" href="<?= $addon['settings_url'] ?>" title="Settings"><span class="hidden">Settings</span></a> <?php endif; ?>
+										<?php if (isset($addon['settings_url'])) : ?><a class="settings button button--default" href="<?= $addon['settings_url'] ?>" title="Settings"><span class="hidden"><?= lang('settings') ?></span></a> <?php endif; ?>
 
 										<?php if (isset($addon['update'])) : ?> <a href="" data-post-url="<?= $addon['update_url'] ?>" class="button button--primary button--small">
 												<?php echo sprintf(lang('update_to_version'), '<br />' . $addon['update']); ?>
@@ -157,7 +166,7 @@
 									<span class="collapsed-label"><?php echo lang('name'); ?></span>
 
 									<div class="addon-name-table d-flex align-items-center">
-										<img src="<?= $addon["icon_url"] ?>" alt="Add-On Name" class="addon-icon-table">
+										<img src="<?= $addon["icon_url"] ?>" class="addon-icon-table">
 										<div class = "name_of_addon">
 											<strong><?= $addon["name"] ?></strong><br><span class="meta-info text-muted"><?= $addon["description"] ?></span>
 										</div>
