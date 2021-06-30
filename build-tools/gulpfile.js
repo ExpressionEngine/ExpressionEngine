@@ -122,6 +122,11 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 
 	console.log('Mode:', (properties.use_local ? 'Archive' : 'Clone'));
 
+	if (properties.skip_git) {
+		console.log('Git archive skipped, using what we have');
+		clone_or_archive = '_build_directories';
+	}
+	
 	runSequence(
 		clone_or_archive,
 		'_version_bump',
@@ -143,11 +148,7 @@ gulp.task('_clone_app', ['_build_directories'], function (cb) {
  * Archive the application and build from that instead of pulling files from the server
  */
 gulp.task('_archive_app', ['_build_directories'], function (cb) {
-	if (properties.skip_git) {
-		console.log('Git archive skipped, using what we have');
-	} else {
-		archive_repo('app', cb);
-	}
+	archive_repo('app', cb);
 });
 
 /**
