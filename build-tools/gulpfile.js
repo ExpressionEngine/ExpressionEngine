@@ -601,11 +601,11 @@ var deleteFiles = function(path, filesToDelete) {
  * @return {void}
  */
  var versionBump = function (path) {
-	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app;
+	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
 
 	var fns = [
 		function() {
-			var file = path + '/system/ee/legacy/libraries/Core.php';
+			var file = path + 'system/ee/legacy/libraries/Core.php';
 
 			fs.open(file, 'r', function (err, fd) {
 				if (err) throw err;
