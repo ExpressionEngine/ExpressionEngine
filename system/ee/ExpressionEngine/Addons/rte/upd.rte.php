@@ -98,6 +98,31 @@ class Rte_upd extends Installer
      */
     public function update($current = '')
     {
+        if (version_compare($current, '2.1.0', '<')) {
+            if (! ee()->db->field_exists('toolset_type', 'rte_toolsets')) {
+                $fields = [
+                    'toolset_type' => array(
+                        'type' => 'varchar',
+                        'constraint' => 32,
+                    ),
+                ];
+                ee()->load->dbforge();
+                ee()->dbforge->add_column('rte_toolsets', $fields);
+                
+                // Then we'll update each of the models with the setting
+                $configs = ee('Model')->get('rte:Toolset')->all();
+
+                foreach ($configs as &$config) {
+                    $config->toolset_type = 'ckeditor';
+                    $config->save();
+                }
+            }
+        }
+
+        if (version_compare($current, '2.0.1', '<')) {
+            ee()->db->where('class', 'Rte_ext')->delete('extensions');
+        }
+
         if (version_compare($current, '2.0.0', '<')) {
             $data = array(
                 'class' => 'Rte',
@@ -107,27 +132,6 @@ class Rte_upd extends Installer
             ee()->db->insert('actions', $data);
 
             $this->install_rte_toolsets_table();
-        } elseif (version_compare($current, '2.1.0', '<')) {
-            $fields = [
-                'toolset_type' => array(
-                    'type' => 'varchar',
-                    'constraint' => 32,
-                ),
-            ];
-            ee()->load->dbforge();
-            ee()->dbforge->add_column('rte_toolsets', $fields);
-
-            // Then we'll update each of the models with the setting
-            $configs = ee('Model')->get('rte:Toolset')->all();
-
-            foreach ($configs as &$config) {
-                $config->toolset_type = 'ckeditor';
-                $config->save();
-            }
-        }
-
-        if (version_compare($current, '2.0.1', '<')) {
-            ee()->db->where('class', 'Rte_ext')->delete('extensions');
         }
 
         // -------------

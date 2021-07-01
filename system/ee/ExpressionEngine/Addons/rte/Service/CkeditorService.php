@@ -3,6 +3,7 @@
 namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Addons\Rte\RteHelper;
+use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class CkeditorService {
 
@@ -11,8 +12,8 @@ class CkeditorService {
 	public $class = 'rte-textarea';
 	protected $settings;
 	protected $toolset;
-	private $_includedFieldResources = false;
-	private $_includedConfigs;
+	private static $_includedFieldResources = false;
+	private static $_includedConfigs;
 	private $_fileTags;
 	private $_pageTags;
 	private $_extraTags;
@@ -30,7 +31,7 @@ class CkeditorService {
 
 	protected function includeFieldResources()
 	{
-		if (! $this->_includedFieldResources) {
+		if (! static::$_includedFieldResources) {
 			ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/ckeditor.js"></script>');
 			ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js"></script>');
 			ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor/rte.css' . '" />');
@@ -47,7 +48,7 @@ class CkeditorService {
 				'Rte.filedirUrls' => $filedir_urls
 			]);
 
-			$this->_includedFieldResources = true;
+			static::$_includedFieldResources = true;
 		}
 	}
 
@@ -79,12 +80,12 @@ class CkeditorService {
 			if (!empty($configId)) {
 				$toolsetQuery->filter('toolset_id', $configId);
 			}
-			$toolset = $toolsetQuery->first();
+			$this->toolset = $toolsetQuery->first();
 		}
 
-		if (!empty($toolset)) {
-			$configHandle = preg_replace('/[^a-z0-9]/i', '_', $toolset->toolset_name) . $toolset->toolset_id;
-			$config = array_merge($baseConfig, $toolset->settings);
+		if (!empty($this->toolset)) {
+			$configHandle = preg_replace('/[^a-z0-9]/i', '_', $this->toolset->toolset_name) . $this->toolset->toolset_id;
+			$config = array_merge($baseConfig, $this->toolset->settings);
 		} else {
 			$config = $baseConfig;
 			$configHandle = 'default0';
@@ -93,7 +94,7 @@ class CkeditorService {
 		$this->handle = $configHandle;
 
 		// skip if already included
-		if (isset($this->_includedConfigs) && in_array($configHandle, $this->_includedConfigs)) {
+		if (isset(static::$_includedConfigs) && in_array($configHandle, static::$_includedConfigs)) {
 			return $configHandle;
 		}
 
@@ -106,6 +107,7 @@ class CkeditorService {
 		if (is_array($config['toolbar'])) {
 			$toolbarObject = new \stdClass();
 			$toolbarObject->items = $config['toolbar'];
+			$toolbarObject->viewportTopOffset = 59;
 			$config['toolbar'] = $toolbarObject;
 			$config['image'] = new \stdClass();
 			$config['image']->toolbar = [
@@ -197,11 +199,12 @@ class CkeditorService {
 		// -------------------------------------------
 		//  JSONify Config and Return
 		// -------------------------------------------
+
 		ee()->javascript->set_global([
-			'Rte.configs.' . $configHandle => ((array) $config)
+			'Rte.configs.' . $configHandle => $config
 		]);
 
-		$this->_includedConfigs[] = $configHandle;
+		static::$_includedConfigs[] = $configHandle;
 
 		ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
 

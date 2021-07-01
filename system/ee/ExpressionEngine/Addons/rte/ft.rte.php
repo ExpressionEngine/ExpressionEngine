@@ -162,9 +162,12 @@ class Rte_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
-        $toolset = ee('Model')->get('rte:Toolset')
-                            ->filter('toolset_id', $this->settings['toolset_id'])
-                            ->first();
+        $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
+        if (!empty($toolsetId)) {
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $this->settings['toolset_id'])->first();
+        } else {
+            $toolset = ee('Model')->get('rte:Toolset')->first();
+        }
 
         // Load proper toolset
         $serviceName = ucfirst($toolset->toolset_type) . 'Service';

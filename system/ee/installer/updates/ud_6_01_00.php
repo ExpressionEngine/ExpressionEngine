@@ -28,7 +28,7 @@ class Updater
         $steps = new \ProgressIterator([
             'addConsentLogColumns',
             'addCookieSettingsTable',
-            'removeRteExtension',
+            'updateRte',
             'livePreviewCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
@@ -145,17 +145,36 @@ class Updater
     }
 
 
-    private function removeRteExtension()
+    private function updateRte()
     {
-        ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.1']);
+        ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.1.0']);
 
-        ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.1']);
+        ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.1.0']);
 
         ee()->db->where('class', 'Rte')
             ->where('method', 'get_js')
             ->delete('actions');
 
         ee()->db->where('class', 'Rte_ext')->delete('extensions');
+
+        if (ee()->db->table_exists('rte_toolsets') && ! ee()->db->field_exists('toolset_type', 'rte_toolsets')) {
+            $fields = [
+                'toolset_type' => array(
+                    'type' => 'varchar',
+                    'constraint' => 32,
+                ),
+            ];
+            ee()->load->dbforge();
+            ee()->dbforge->add_column('rte_toolsets', $fields);
+            
+            // Then we'll update each of the models with the setting
+            $configs = ee('Model')->get('rte:Toolset')->all();
+
+            foreach ($configs as &$config) {
+                $config->toolset_type = 'ckeditor';
+                $config->save();
+            }
+        }
     }
 
     private function livePreviewCsrfExcempt()
