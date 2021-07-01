@@ -2,7 +2,7 @@
     <div class="tbl-ctrls">
         <?=form_open($form_url)?>
 
-        <div class="panel-heading">
+        <div class="panel-heading"<?php if (ee()->input->get('hide_closer') === 'y') : ?> style="padding: 5px 5px;"<?php endif; ?>>
           <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
           <?php if (isset($cp_heading)) : ?>
           <div class="title-bar">
