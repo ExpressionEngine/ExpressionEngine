@@ -4,10 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-Bullet list below, e.g.
-   - Added Google reCAPTCHA as an option for system wide CAPTCHA
-   - Added ability to disable Live Preview on a per channel basis
-   - Added extension hooks for Fluid Fields
+   - Added `category_id` and `category_url_title` to `exp:category_heading`
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are

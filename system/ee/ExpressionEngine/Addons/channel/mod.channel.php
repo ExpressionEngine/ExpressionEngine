@@ -3844,7 +3844,7 @@ class Channel
 
                 if (! empty($var_props['modifier'])) {
                     $parse_fnc = 'replace_' . $var_props['modifier'];
-                    
+
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
                         ee()->load->library('file_field');
@@ -3986,7 +3986,14 @@ class Channel
 
         // Is the category being specified by name?
 
-        if ($qstring != '' and $this->reserved_cat_segment != '' and in_array($this->reserved_cat_segment, explode("/", $qstring)) and ee()->TMPL->fetch_param('channel')) {
+        if (
+            (
+                ($this->reserved_cat_segment != '' and in_array($this->reserved_cat_segment, explode("/", $qstring)))
+                OR ee()->TMPL->fetch_param('category_url_title')
+            )
+            and ee()->TMPL->fetch_param('channel')
+        ) {
+
             $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
             $sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
@@ -4035,6 +4042,10 @@ class Channel
                 $temp = explode('/', $qstring);
                 $cut_qstring = array_shift($temp);
 
+                if (ee()->TMPL->fetch_param('category_url_title')) {
+                    $cut_qstring = ee()->TMPL->fetch_param('category_url_title');
+                }
+
                 $result = ee()->db->query("SELECT cat_id FROM exp_categories
 									  WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
 									  AND group_id IN ('" . implode("','", $valid_cats) . "')");
@@ -4056,15 +4067,17 @@ class Channel
 
         // Is the category being specified by ID?
 
-        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match)) {
+        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match) AND !ee()->TMPL->fetch_param('category_id')) {
             return ee()->TMPL->no_results();
         }
+
+        $cat_id = ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
 
         // fetch category field names and id's
 
         if ($this->enable['category_fields'] === true) {
             // limit to correct category group
-            $gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '" . ee()->db->escape_str($match[2]) . "'");
+            $gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
             if ($gquery->num_rows() == 0) {
                 return ee()->TMPL->no_results();
@@ -4079,7 +4092,7 @@ class Channel
         $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
 							FROM exp_categories AS c
 							{$field_sqlb}
-							WHERE c.cat_id = '" . ee()->db->escape_str($match[2]) . "'");
+							WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();
@@ -4094,7 +4107,7 @@ class Channel
             'category_url_title' => $query->row('cat_url_title'),
             'category_description' => $query->row('cat_description'),
             'category_image' => (string) $query->row('cat_image'),
-            'category_id' => $match[2],
+            'category_id' => $cat_id,
             'parent_id' => $query->row('parent_id')
         );
 
