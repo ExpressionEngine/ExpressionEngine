@@ -1,11 +1,15 @@
 .pro-frontend-modal {
     &.app-modal-inner {
-        padding: 15px 20px;
+        padding: 15px;
         background-color: #fff;
     }
 
     .panel-body {
         padding: 8px 8px;
+
+        fieldset:first-of-type {
+          margin-top: -5px;
+        }
     }
 
     #idle-modal {
