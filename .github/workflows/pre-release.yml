@@ -58,7 +58,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}__pro
+          PRO_REPO_PATH: ${{ github.workspace }}/fifi__pro
         run: |
           gulp app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
