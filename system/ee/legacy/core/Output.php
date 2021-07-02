@@ -334,38 +334,8 @@ class EE_Output
 
         // --------------------------------------------------------------------
         // Include PRO stuff
-        $frontEditLoaded = false;
-        if (
-            IS_PRO &&
-            REQ == 'PAGE' && 
-            ee()->session->userdata('member_id') != 0 &&
-            ee()->session->userdata('admin_sess') == 1 &&
-            (ee()->config->item('enable_dock') == 'y' || ee()->config->item('enable_dock') === false)
-        ) {
-            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
-                /*
-                    At the minimum, we check following:
-                    - License is valid
-                    - Member has access to the dock
-                    - Member has access to frontedit feature
-                */
-                $proAccess = ee('pro:Access');
-                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission()) {
-                    // enable frontedit and load required assets
-                    ee('pro:FrontEdit')->ensureEntryId();
-                    if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
-                        $output = ee('pro:FrontEdit')->loadFrontEditAssets($output);
-                        $frontEditLoaded = true;
-                    }
-                    $output = ee('pro:Dock')->build($output);
-                }
-            }
-        }
-        if (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) {
-            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
-                $output = preg_replace("/\{frontedit_link\s+(.*)\}/sU", '', $output);
-                $output = preg_replace("/\<\!--\s*(\/\/\s*)*disable\s*frontedit\s*--\>/sU", '', $output);
-            }
+        if (IS_PRO) {
+            $output = ee('pro:Dock')->buildOutput($output);
         }
         // --------------------------------------------------------------------
 
