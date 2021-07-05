@@ -3884,7 +3884,7 @@ class EE_Template
     {
         if (is_array($dates) && ! empty($dates)) {
             $tags = implode('|', array_keys($dates));
-            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/i", $tagdata, $matches)) {
+            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/si", $tagdata, $matches)) {
                 foreach ($matches[2] as $key => $val) {
                     $timestamp = $dates[$matches[1][$key]];
                     $dt = $timestamp;
