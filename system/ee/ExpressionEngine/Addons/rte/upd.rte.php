@@ -52,9 +52,23 @@ class Rte_upd extends Installer
         }
 
         ee()->dbforge->add_field(array(
-            'toolset_id' => array('type' => 'int', 'constraint' => 6, 'unsigned' => true, 'auto_increment' => true),
-            'toolset_name' => array('type' => 'varchar', 'constraint' => 32),
-            'settings' => array('type' => 'text')
+            'toolset_id' => array(
+                'type' => 'int',
+                'constraint' => 6,
+                'unsigned' => true,
+                'auto_increment' => true,
+            ),
+            'toolset_name' => array(
+                'type' => 'varchar',
+                'constraint' => 32,
+            ),
+            'toolset_type' => array(
+                'type' => 'varchar',
+                'constraint' => 32,
+            ),
+            'settings' => array(
+                'type' => 'text',
+            )
         ));
         ee()->dbforge->add_key('toolset_id', true);
         ee()->dbforge->create_table('rte_toolsets');
@@ -69,6 +83,7 @@ class Rte_upd extends Installer
 
             $config = ee('Model')->make('rte:Toolset');
             $config->toolset_name = $name;
+            $config->toolset_type = 'ckeditor';
             $config->settings = $config_settings;
             $config->save();
         }
@@ -83,6 +98,31 @@ class Rte_upd extends Installer
      */
     public function update($current = '')
     {
+        if (version_compare($current, '2.1.0', '<')) {
+            if (! ee()->db->field_exists('toolset_type', 'rte_toolsets')) {
+                $fields = [
+                    'toolset_type' => array(
+                        'type' => 'varchar',
+                        'constraint' => 32,
+                    ),
+                ];
+                ee()->load->dbforge();
+                ee()->dbforge->add_column('rte_toolsets', $fields);
+                
+                // Then we'll update each of the models with the setting
+                $configs = ee('Model')->get('rte:Toolset')->all();
+
+                foreach ($configs as &$config) {
+                    $config->toolset_type = 'ckeditor';
+                    $config->save();
+                }
+            }
+        }
+
+        if (version_compare($current, '2.0.1', '<')) {
+            ee()->db->where('class', 'Rte_ext')->delete('extensions');
+        }
+
         if (version_compare($current, '2.0.0', '<')) {
             $data = array(
                 'class' => 'Rte',
@@ -92,10 +132,6 @@ class Rte_upd extends Installer
             ee()->db->insert('actions', $data);
 
             $this->install_rte_toolsets_table();
-        }
-
-        if (version_compare($current, '2.0.1', '<')) {
-            ee()->db->where('class', 'Rte_ext')->delete('extensions');
         }
 
         // -------------

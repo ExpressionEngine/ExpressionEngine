@@ -1166,7 +1166,7 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(9, 'checkboxes', '1.0.0', 'YTowOnt9', 'n'),
 	(10, 'radio', '1.0.0', 'YTowOnt9', 'n'),
 	(11, 'relationship', '1.0.0', 'YTowOnt9', 'n'),
-	(12, 'rte', '2.0.0', 'YTowOnt9', 'n'),
+	(12, 'rte', '2.1.0', 'YTowOnt9', 'n'),
 	(13, 'url', '1.0.0', 'YTowOnt9', 'n'),
 	(14, 'email_address', '1.0.0', 'YTowOnt9', 'n'),
 	(15, 'toggle', '1.0.0', 'YTowOnt9', 'n'),
@@ -1860,7 +1860,7 @@ INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp
 	(3, 'Channel', '2.0.1', 'n', 'n'),
 	(4, 'Member', '2.1.0', 'n', 'n'),
 	(5, 'Stats', '2.0.0', 'n', 'n'),
-	(6, 'Rte', '2.0.0', 'y', 'n'),
+	(6, 'Rte', '2.1.0', 'y', 'n'),
 	(7, 'Email', '2.0.0', 'n', 'n'),
 	(8, 'Rss', '2.0.0', 'n', 'n'),
 	(9, 'Comment', '2.3.2', 'y', 'n'),
@@ -2217,14 +2217,15 @@ DROP TABLE IF EXISTS `exp_rte_toolsets`;
 CREATE TABLE IF NOT EXISTS `exp_rte_toolsets` (
   `toolset_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `toolset_name` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `toolset_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `settings` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`toolset_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
-INSERT INTO `exp_rte_toolsets` (`toolset_id`, `toolset_name`, `settings`) VALUES
-	(1, 'Basic', 'YTozOntzOjc6InRvb2xiYXIiO2E6Njp7aTowO3M6NDoiYm9sZCI7aToxO3M6NjoiaXRhbGljIjtpOjI7czo5OiJ1bmRlcmxpbmUiO2k6MztzOjEyOiJudW1iZXJlZExpc3QiO2k6NDtzOjEyOiJidWxsZXRlZExpc3QiO2k6NTtzOjQ6ImxpbmsiO31zOjY6ImhlaWdodCI7czozOiIyMDAiO3M6MTA6InVwbG9hZF9kaXIiO3M6MzoiYWxsIjt9'),
-	(2, 'Full', 'YTozOntzOjc6InRvb2xiYXIiO2E6MjY6e2k6MDtzOjQ6ImJvbGQiO2k6MTtzOjY6Iml0YWxpYyI7aToyO3M6MTM6InN0cmlrZXRocm91Z2giO2k6MztzOjk6InVuZGVybGluZSI7aTo0O3M6MTA6ImJsb2NrcXVvdGUiO2k6NTtzOjc6ImhlYWRpbmciO2k6NjtzOjEyOiJyZW1vdmVGb3JtYXQiO2k6NztzOjQ6InVuZG8iO2k6ODtzOjQ6InJlZG8iO2k6OTtzOjEyOiJudW1iZXJlZExpc3QiO2k6MTA7czoxMjoiYnVsbGV0ZWRMaXN0IjtpOjExO3M6Nzoib3V0ZGVudCI7aToxMjtzOjY6ImluZGVudCI7aToxMztzOjQ6ImxpbmsiO2k6MTQ7czoxMToiZmlsZW1hbmFnZXIiO2k6MTU7czoxMToiaW5zZXJ0VGFibGUiO2k6MTY7czoxMDoibWVkaWFFbWJlZCI7aToxNztzOjE0OiJhbGlnbm1lbnQ6bGVmdCI7aToxODtzOjE1OiJhbGlnbm1lbnQ6cmlnaHQiO2k6MTk7czoxNjoiYWxpZ25tZW50OmNlbnRlciI7aToyMDtzOjE3OiJhbGlnbm1lbnQ6anVzdGlmeSI7aToyMTtzOjE0OiJob3Jpem9udGFsTGluZSI7aToyMjtzOjE3OiJzcGVjaWFsQ2hhcmFjdGVycyI7aToyMztzOjg6InJlYWRNb3JlIjtpOjI0O3M6OToiZm9udENvbG9yIjtpOjI1O3M6MTk6ImZvbnRCYWNrZ3JvdW5kQ29sb3IiO31zOjY6ImhlaWdodCI7czozOiIyMDAiO3M6MTA6InVwbG9hZF9kaXIiO3M6MzoiYWxsIjt9');
+INSERT INTO `exp_rte_toolsets` (`toolset_id`, `toolset_name`, `toolset_type`, `settings`) VALUES
+	(1, 'Basic', 'ckeditor', 'YTozOntzOjc6InRvb2xiYXIiO2E6Njp7aTowO3M6NDoiYm9sZCI7aToxO3M6NjoiaXRhbGljIjtpOjI7czo5OiJ1bmRlcmxpbmUiO2k6MztzOjEyOiJudW1iZXJlZExpc3QiO2k6NDtzOjEyOiJidWxsZXRlZExpc3QiO2k6NTtzOjQ6ImxpbmsiO31zOjY6ImhlaWdodCI7czozOiIyMDAiO3M6MTA6InVwbG9hZF9kaXIiO3M6MzoiYWxsIjt9'),
+	(2, 'Full', 'ckeditor', 'YTozOntzOjc6InRvb2xiYXIiO2E6MjY6e2k6MDtzOjQ6ImJvbGQiO2k6MTtzOjY6Iml0YWxpYyI7aToyO3M6MTM6InN0cmlrZXRocm91Z2giO2k6MztzOjk6InVuZGVybGluZSI7aTo0O3M6MTA6ImJsb2NrcXVvdGUiO2k6NTtzOjc6ImhlYWRpbmciO2k6NjtzOjEyOiJyZW1vdmVGb3JtYXQiO2k6NztzOjQ6InVuZG8iO2k6ODtzOjQ6InJlZG8iO2k6OTtzOjEyOiJudW1iZXJlZExpc3QiO2k6MTA7czoxMjoiYnVsbGV0ZWRMaXN0IjtpOjExO3M6Nzoib3V0ZGVudCI7aToxMjtzOjY6ImluZGVudCI7aToxMztzOjQ6ImxpbmsiO2k6MTQ7czoxMToiZmlsZW1hbmFnZXIiO2k6MTU7czoxMToiaW5zZXJ0VGFibGUiO2k6MTY7czoxMDoibWVkaWFFbWJlZCI7aToxNztzOjE0OiJhbGlnbm1lbnQ6bGVmdCI7aToxODtzOjE1OiJhbGlnbm1lbnQ6cmlnaHQiO2k6MTk7czoxNjoiYWxpZ25tZW50OmNlbnRlciI7aToyMDtzOjE3OiJhbGlnbm1lbnQ6anVzdGlmeSI7aToyMTtzOjE0OiJob3Jpem9udGFsTGluZSI7aToyMjtzOjE3OiJzcGVjaWFsQ2hhcmFjdGVycyI7aToyMztzOjg6InJlYWRNb3JlIjtpOjI0O3M6OToiZm9udENvbG9yIjtpOjI1O3M6MTk6ImZvbnRCYWNrZ3JvdW5kQ29sb3IiO31zOjY6ImhlaWdodCI7czozOiIyMDAiO3M6MTA6InVwbG9hZF9kaXIiO3M6MzoiYWxsIjt9');
 
 
 

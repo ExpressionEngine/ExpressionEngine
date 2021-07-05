@@ -1,0 +1,17 @@
+.grid-input-form td[data-fieldtype="editor"] {
+    padding: 0;
+}
+
+.redactor-editor h1,
+.redactor-editor h2,
+.redactor-editor h3,
+.redactor-editor h4,
+.redactor-editor h5,
+.redactor-editor h6 {
+    border-width: 0;
+    background: none;
+}
+
+.redactor-box .redactor-toolbar {
+    z-index: 2;
+}

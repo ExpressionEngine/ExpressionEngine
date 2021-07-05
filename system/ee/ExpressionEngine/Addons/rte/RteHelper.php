@@ -74,74 +74,125 @@ class RteHelper
 
     // --------------------------------------------------------------------
 
-    /**
-     * Returns the default config settings.
-     *
-     * @return array $configSettings
-     */
-    public static function defaultConfigSettings()
-    {
-        $toolbars = static::defaultToolbars();
 
-        return array(
-            'toolbar' => $toolbars['Basic'],
-            'height' => '200',
-            'upload_dir' => 'all',
-            'mediaEmbed' => [
-                'previewsInData' => true
-            ]
-        );
-    }
 
-    /**
-     * Returns the default toolbars.
-     *
-     * @return array $toolbars
-     */
-    public static function defaultToolbars()
+
+    public static function defaultReactorAdvancedSettings()
     {
-        return array(
-            'Basic' => array(
-                "bold",
-                "italic",
-                "underline",
-                "numberedList",
-                "bulletedList",
-                "link"
-            ),
-            'Full' => array(
-                "bold",
-                "italic",
-                "strikethrough",
-                "underline",
-                "subscript",
-                "superscript",
-                "blockquote",
-                "code",
-                "heading",
-                "removeFormat",
-                "undo",
-                "redo",
-                "numberedList",
-                "bulletedList",
-                "outdent",
-                "indent",
-                "link",
-                "filemanager",
-                "insertTable",
-                "mediaEmbed",
-                "htmlEmbed",
-                "alignment:left",
-                "alignment:right",
-                "alignment:center",
-                "alignment:justify",
-                "horizontalLine",
-                "specialCharacters",
-                "readMore",
-                "fontColor",
-                "fontBackgroundColor"
-            )
-        );
+        return [
+            'air' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'airWidth' => [
+                'type' => 'number',
+                'value' => '',
+            ],
+            'buttonsHide' => [
+                'type' => 'text-array',
+                'value' => '',
+            ],
+            'buttonsHideOnMobile' => [
+                'type' => 'text-array',
+                'value' => '',
+            ],
+            'focus' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'focusEnd' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'formatting' => [
+                'type' => 'text-array',
+                'value' => 'p,blockquote,pre,h1,h2,h3,h4,h5,h6',
+            ],
+            'minHeight' => [
+                'type' => 'number',
+                'value' => '300px',
+            ],
+            'axHeight' => [
+                'type' => 'number',
+                'value' => '800px',
+            ],
+            'direction' => [
+                'type' => 'radio',
+                'value' => 'ltr',
+                'options' => [
+                    'ltr' => 'left-to-right',
+                    'rtl' => 'right-to-left',
+                ],
+            ],
+            'tabKey' => [
+                'type' => 'bool',
+                'value' => 'yes',
+            ],
+            'tabAsSpaces' => [
+                'type' => 'number-bool',
+                'value' => '0',
+            ],
+            'preSpaces' => [
+                'type' => 'number-bool',
+                'value' => '4',
+            ],
+            'linkNofollow' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'linkSize' => [
+                'type' => 'number',
+                'value' => '50',
+            ],
+            'linkTooltip' => [
+                'type' => 'bool',
+                'value' => 'yes',
+            ],
+            'linkify' => [
+                'type' => 'bool',
+                'value' => 'yes',
+            ],
+            'placeholder' => [
+                'type' => 'text',
+                'value' => '',
+            ],
+            'shortcuts' => [
+                'type' => 'bool',
+                'value' => 'yes',
+            ],
+            'script' => [
+                'type' => 'bool',
+                'value' => 'yes',
+            ],
+            'structure' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'preClass' => [
+                'type' => 'text',
+                'value' => '',
+            ],
+            'animation' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'toolbarFixed' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+            'toolbarFixedTopOffset' => [
+                'type' => 'number',
+                'value' => '0',
+            ],
+            'toolbarFixedTarget' => [
+                'type' => 'text',
+                'value' => '',
+            ],
+            'toolbarOverflow' => [
+                'type' => 'bool',
+                'value' => 'no',
+            ],
+        ];
     }
 
     // --------------------------------------------------------------------
