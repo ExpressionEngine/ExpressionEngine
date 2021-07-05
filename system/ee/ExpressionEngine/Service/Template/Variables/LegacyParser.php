@@ -156,9 +156,9 @@ class LegacyParser
         }
 
         if ($target) {
-            preg_match_all('/' . LD . '(' . preg_quote($target, '/') . '.*?)' . RD . '/', $tagdata, $matches);
+            preg_match_all('/' . LD . '(' . preg_quote($target, '/') . '.*?)' . RD . '/s', $tagdata, $matches);
         } else {
-            preg_match_all('/' . LD . '(.+?)' . RD . '/', $tagdata, $matches);
+            preg_match_all('/' . LD . '(.+?)' . RD . '/s', $tagdata, $matches);
         }
 
         $temp_close = [];
