@@ -77,7 +77,7 @@ window.Rte;
             var config = typeof this.config === 'string'
                             ? JSON.parse(this.config)
                             : this.config
-            $('#' + this.id).redactor(config);
+            $('#' + this.id).redactor(config.toolbar);
         }
     }
 

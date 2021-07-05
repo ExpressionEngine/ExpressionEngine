@@ -206,6 +206,8 @@ class Rte_mcp
      */
     public function edit_toolset()
     {
+        $toolsetType = ee('Request')->post('toolset_type') ?: 'ckeditor';
+        
         if (ee('Request')->isPost()) {
             $settings = ee('Request')->post('settings');
 
@@ -215,7 +217,6 @@ class Rte_mcp
 
             $toolset_id = ee('Request')->post('toolset_id');
             $configName = ee('Request')->post('toolset_name');
-            $toolsetType = ee('Request')->post('toolset_type');
 
             if (!$configName) {
                 $configName = 'Untitled';
@@ -233,6 +234,9 @@ class Rte_mcp
 
             $config->toolset_name = $configName;
             $config->toolset_type = $toolsetType;
+            $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            unset($settings['ckeditor_toolbar']);
+            unset($settings['redactor_toolbar']);
             $config->settings = $settings;
 
             $validate = $config->validate();
@@ -265,20 +269,16 @@ class Rte_mcp
             'fp_module' => 'rte'
         ));
 
-        $request = ee('Request');
-
         $headingTitle = lang('rte_create_config');
 
         if (
-            ($toolset_id = $request->get('toolset_id'))
+            ($toolset_id = ee('Request')->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-            $serviceName = ucfirst($config->toolset_type) . 'Service';
-            $defaultConfigSettings = ee('rte:' . $serviceName)->defaultConfigSettings();
-            $config->settings = array_merge($defaultConfigSettings, $config->settings);
+            $config->settings = array_merge(ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
 
             // Clone a config?
-            if ($request->get('clone') == 'y') {
+            if (ee('Request')->get('clone') == 'y') {
                 $config->toolset_id = '';
                 $config->toolset_name .= ' ' . lang('rte_clone');
                 $headingTitle = lang('rte_create_config');
@@ -288,9 +288,9 @@ class Rte_mcp
         } elseif (!isset($config) || empty($config)) {
             $config = ee('Model')->make('rte:Toolset', array(
                 'toolset_id' => '',
-                'toolset_type' => 'ckeditor',
+                'toolset_type' => $toolsetType,
                 'toolset_name' => '',
-                'settings' => ee('rte:CkeditorService')->defaultConfigSettings(),
+                'settings' => ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(),
             ));
         }
 
@@ -326,8 +326,8 @@ class Rte_mcp
         //  Advanced Settings
         // -------------------------------------------
 
-        $serviceName = ucfirst($config->toolset_type) . 'Service';
-        $toolbarInputHtml = ee('rte:' . $serviceName)->toolbarInputHtml($config);
+        $toolbarInputHtml['ckeditor'] = ee('rte:CkeditorService')->toolbarInputHtml($config);
+        $toolbarInputHtml['redactor'] = ee('rte:RedactorService')->toolbarInputHtml($config);
 
         $sections = array(
             'rte_basic_settings' => array(
@@ -356,6 +356,10 @@ class Rte_mcp
                                 'ckeditor'  => 'CKEditor',
                                 'redactor'  => 'Redactor',
                             ],
+                            'group_toggle' => [
+                                'ckeditor' => 'ckeditor_toolbar',
+                                'redactor' => 'redactor_toolbar',
+                            ],
                             'value' => $config->toolset_type
                         )
                     )
@@ -372,11 +376,23 @@ class Rte_mcp
                 ),
                 array(
                     'title' => lang('rte_toolbar'),
+                    'group' => 'ckeditor_toolbar',
                     'wide' => true,
                     'fields' => array(
-                        'settings[toolbar]' => array(
+                        'settings[ckeditor_toolbar]' => array(
                             'type' => 'html',
-                            'content' => $toolbarInputHtml
+                            'content' => $toolbarInputHtml['ckeditor']
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('rte_toolbar'),
+                    'group' => 'redactor_toolbar',
+                    'wide' => true,
+                    'fields' => array(
+                        'settings[redactor_toolbar]' => array(
+                            'type' => 'html',
+                            'content' => $toolbarInputHtml['redactor']
                         )
                     )
                 ),
