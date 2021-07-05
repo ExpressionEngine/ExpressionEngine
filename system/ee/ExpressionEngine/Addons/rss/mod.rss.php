@@ -354,7 +354,6 @@ class Rss
 	<link>{$link}</link>
 	<description></description>
 	<docs>http://www.rssboard.org/rss-specification</docs>
-	<generator>ExpressionEngine v{$version} https://expressionengine.com/expressionengine</generator>
 
 	<item>
 		<title>{$content}</title>
