@@ -116,6 +116,12 @@ context('Categories', () => {
         cy.get('h4').contains('currency, two lines').next('span').invoke('text').should('eq', '€2.00')
     })
 
+    it('limit modifier in templates', function() {
+        cy.visit('index.php/modifiers/limit')
 
+        cy.get('h4').contains('hard limit').next('span').invoke('text').should('eq', 'Welcome to the Examp…')
+
+        cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
+    })
 
 })
