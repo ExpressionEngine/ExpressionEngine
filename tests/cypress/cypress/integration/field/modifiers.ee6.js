@@ -105,7 +105,7 @@ context('Categories', () => {
 
         cy.get('h4').contains('spellout, no params').next('span').invoke('text').should('eq', 'eighty-four')
 
-        cy.get('h4').contains('spellout, no params').next('span').invoke('text').should('eq', 'Vierunachtzig')
+        cy.get('h4').contains('spellout, localized').next('span').invoke('text').should('eq', 'Vierunachtzig')
     })
 
     it('currency modifier in templates', function() {
