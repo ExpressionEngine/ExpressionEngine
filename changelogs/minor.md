@@ -4,11 +4,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-Bullet list below, e.g.
-   - Added Google reCAPTCHA as an option for system wide CAPTCHA
-   - Added ability to disable Live Preview on a per channel basis
-   - Added extension hooks for Fluid Fields
-
+   - Fixed Files sorting reset by the perpage filter
+   - Fixed ViewType class name and removed unused class properties
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
