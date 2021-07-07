@@ -39,6 +39,6 @@ class Author extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        return ee('Format')->make('Text', $entry->getAuthorName())->convertToEntities();
+        return ee('Format')->make('Text', $entry->getAuthorName());
     }
 }

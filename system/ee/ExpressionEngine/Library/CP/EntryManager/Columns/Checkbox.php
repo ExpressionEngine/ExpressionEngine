@@ -32,7 +32,7 @@ class Checkbox extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
+        $title = ee('Format')->make('Text', $entry->title)->attributeSafe();
 
         return [
             'name' => 'selection[]',
