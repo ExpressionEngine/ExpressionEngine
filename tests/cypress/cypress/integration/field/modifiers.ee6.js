@@ -7,7 +7,7 @@ const { _, $ } = Cypress
 context('Categories', () => {
 
     before(function() {
-        //cy.task('db:seed')
+        cy.task('db:seed')
 
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
@@ -122,6 +122,20 @@ context('Categories', () => {
         cy.get('h4').contains('hard limit').next('span').invoke('text').should('eq', 'Welcome to the Examp…')
 
         cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
+    })
+
+    it.only('modifiers inside relationships', function() {
+        cy.visit('index.php/modifiers/relation')
+
+        cy.get('h4').contains('original entry with all params').next('span').invoke('text').should('contain', 'EUR')
+
+        cy.get('h4').contains('related entry, no params').next('span').invoke('text').should('eq', '$1.00')
+
+        cy.get('h4').contains('related entry, single param').next('span').invoke('text').should('eq', '€1.00')
+
+        cy.get('h4').contains('related entry, localized').next('span').invoke('text').should('contain', '1,00').should('contain', 'EUR')
+
+
     })
 
 })
