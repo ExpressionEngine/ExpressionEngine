@@ -7,7 +7,7 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Update or upgrade EE
  */
-class CommandRunUpdateHook extends Cli
+class CommandUpdateRunHook extends Cli
 {
     /**
      * name of command
@@ -19,25 +19,13 @@ class CommandRunUpdateHook extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'run-update-hook';
-
-    /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Runs specific update hooks from your upgrade.config file (advanced)';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This will run one of the preflight or postflight hooks as defined in the upgrade.config file. This can be a destructive action, so use with caution.';
+    public $signature = 'update:run-hook';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli run-update-hook functionName';
+    public $usage = 'php eecli.php run-update-hook functionName';
 
     /**
      * options available for use in command
@@ -69,15 +57,15 @@ class CommandRunUpdateHook extends Cli
 
         foreach ($this->arguments as $hook) {
             if (array_key_exists($hook, $this->hooks)) {
-                $this->info("Running {$hook}");
+                $this->info(lang('command_update_run_hook_running') . $hook);
 
                 call_user_func($this->hooks[$hook]);
             } else {
-                $this->error("Hook {$hook} not found.");
+                $this->error(lang('command_update_run_hook_hook_not_found') . $hook);
             }
         }
 
-        $this->complete('Success!');
+        $this->complete('command_update_run_hook_success');
     }
 
     private function getConfigFile()
@@ -86,10 +74,10 @@ class CommandRunUpdateHook extends Cli
             return;
         }
 
-        $path = $this->ask('What is the path to your upgrade.config.php? (defaults to SYSPATH)');
+        $path = $this->ask('command_update_run_hook_what_is_path_to_upgrade_config');
 
         if (! ($customConfig = $this->getConfigPath($path))) {
-            $this->fail('Custom config not found.');
+            $this->fail('command_update_run_hook_custom_config_not_found');
         }
 
         $this->upgradeConfigFile = include $customConfig;

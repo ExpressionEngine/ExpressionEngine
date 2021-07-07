@@ -24,6 +24,12 @@ class EE_Logger
     private function logger_db()
     {
         if (! isset($this->db)) {
+
+             // do we have the db loaded?
+            if (! isset(ee()->db)) {
+                ee()->load->database();
+            }
+
             $db = clone ee()->db;
             $db->_reset_select();
             $db->_reset_write();

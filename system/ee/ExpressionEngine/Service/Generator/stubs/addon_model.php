@@ -1,0 +1,1 @@
+        '{{class}}'    => '{{namespace}}\Models\{{class}}',
