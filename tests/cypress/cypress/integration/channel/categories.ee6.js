@@ -176,14 +176,16 @@ context('Categories', () => {
         check_category_one()
 
         cy.visit('admin.php?/cp/settings/urls');
-
         cy.get('input[name=use_category_name][value=y]').check()
-
         cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         cy.visit('index.php/cats/heading/category/category-one')
 
         check_category_one()
+
+        cy.visit('admin.php?/cp/settings/urls');
+        cy.get('input[name=use_category_name][value=y]').check()
+        cy.get('.title-bar__extra-tools .button--primary').first().click()
     })
 
     it('check category archive on frontend', function() {
@@ -193,6 +195,60 @@ context('Categories', () => {
         check_category_one()
         check_category_two()
 
+    })
+
+    describe('static usage of category heading tag', function() {
+        it('category heading is correct when using category_id', function() {
+
+            cy.log('... when no category indicator present')
+            cy.visit('index.php/cats/manual-heading-2')
+            check_category_two()
+
+            cy.log('... when using category ID in URL')
+            cy.visit('index.php/cats/manual-heading-2/category/C5')
+            check_category_two()
+            
+            cy.log('switch the setting')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+    
+            cy.log('... when using category slug in URL')
+            cy.visit('index.php/cats/manual-heading-2/category/category-one')    
+            check_category_two()
+
+            cy.log('switch the setting back')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+
+        })
+
+        it('category heading is correct when using category_url_title', function() {
+
+            cy.log('... when no category indicator present')
+            cy.visit('index.php/cats/manual-heading')
+            check_category_two()
+
+            cy.log('... when using category ID in URL')
+            cy.visit('index.php/cats/manual-heading/category/C5')
+            check_category_two()
+            
+            cy.log('switch the setting')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+    
+            cy.log('... when using category slug in URL')
+            cy.visit('index.php/cats/manual-heading/category/category-one')    
+            check_category_two()
+
+            cy.log('switch the setting back')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+
+        })
     })
 
     function check_category_one() {

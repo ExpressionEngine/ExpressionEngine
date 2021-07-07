@@ -124,3 +124,4 @@ themes/ee/pro
 
 #
 phpcs.ruleset.xml
+*.code-workspace
