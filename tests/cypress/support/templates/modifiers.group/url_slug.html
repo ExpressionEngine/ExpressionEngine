@@ -1,0 +1,26 @@
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>url_slug, no params</h4>
+    <span>{title:url_slug}</span>
+    <hr />
+</div>
+<div>
+    <h4>url_slug, brace next line</h4>
+    <span>{title:url_slug
+}</span>
+    <hr />
+</div>
+
+<div>
+    <h4>url_slug with stopwords</h4>
+    <span>{title:url_slug remove_stopwords='yes'}</span>
+    <hr />
+</div>
+<div>
+    <h4>url_slug, stopwords next line</h4>
+    <span>{title:url_slug
+remove_stopwords='yes'}</span>
+    <hr />
+</div>
+
+{/exp:channel:entries}

@@ -142,6 +142,14 @@ jobs:
 
         steps:
 
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
             - name: Use cached EE build
               uses: actions/cache@v2
               with:
@@ -235,6 +243,14 @@ jobs:
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
 
             - name: Use cached EE build
               uses: actions/cache@v2
@@ -330,6 +346,14 @@ jobs:
 
         steps:
 
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
             - name: Use cached EE build
               uses: actions/cache@v2
               with:
@@ -423,6 +447,14 @@ jobs:
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
 
             - name: Use cached EE build
               uses: actions/cache@v2
@@ -518,6 +550,14 @@ jobs:
 
         steps:
 
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
             - name: Use cached EE build
               uses: actions/cache@v2
               with:
@@ -612,6 +652,14 @@ jobs:
 
         steps:
 
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
             - name: Use cached EE build
               uses: actions/cache@v2
               with:
@@ -705,6 +753,14 @@ jobs:
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+
+            - name: Install locales
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
 
             - name: Use cached EE build
               uses: actions/cache@v2
