@@ -106,7 +106,7 @@ class Cp
             'cp_pad_table_template' => $cp_pad_table_template,
             'cp_theme_url' => $this->cp_theme_url,
             'cp_current_site_label' => ee()->config->item('site_name'),
-            'cp_screen_name' => $member->screen_name,
+            'cp_screen_name' => ee('Format')->make('Text', $member->screen_name)->attributeSafe(),
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
             'cp_avatar_path' => ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
             'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
