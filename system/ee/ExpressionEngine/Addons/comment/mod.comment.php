@@ -1886,7 +1886,7 @@ class Comment
      */
     public function comment_subscribe()
     {
-        if (ee()->input->get('token') != CSRF_TOKEN) {
+        if (ee()->input->get('csrf_token') != CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
         ee()->lang->loadfile('comment');
@@ -1983,7 +1983,7 @@ class Comment
         /*
         This check is needed because otherwise, links could be created to CSRF and edit comments.
         */
-        if (ee()->input->get('token') != CSRF_TOKEN) {
+        if (ee()->input->get('csrf_token') != CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
 
@@ -2181,7 +2181,7 @@ CMT_EDIT_SCR;
      */
     public function ajax_edit_url()
     {
-        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment');
+        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment') . '&csrf_token=' . CSRF_TOKEN;
 
         return $url;
     }
