@@ -47,13 +47,13 @@
 					<div class="filter-bar">
 						<div class="filter-bar__item ">
 							<div class="filter-search-bar__item ">
-								<button id = "current_status" type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="status" title="status"><?php echo lang('filter_by_status'); ?></button>
-								<div class="dropdown">
+								<button id = "current_status" type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="status" title="status"><?php echo lang('all_addons'); ?></button>
+								<div id = "drop_down" class="dropdown">
 									<div class="dropdown__scroll">
+										<a class="dropdown__link" id="show_all"><?php echo lang('all_addons'); ?></a>
 										<a class="dropdown__link" id="installed_sort"><?php echo lang('installed'); ?></a>
 										<a class="dropdown__link" id="uninstalled_sort"><?php echo lang('uninstalled'); ?></a>
 										<a class="dropdown__link" id="update_sort"><?php echo lang('update_available'); ?></a>
-										<a class="dropdown__link" id="show_all"><?php echo lang('all_addons'); ?></a>
 									</div>
 								</div>
 							</div>

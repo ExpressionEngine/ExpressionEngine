@@ -53,6 +53,8 @@ window.onload = function () {
             }
         }
         name.innerText = All.innerText;
+        document.getElementById('drop_down').className = "dropdown";
+        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
 
         return false;
     }
@@ -97,6 +99,8 @@ window.onload = function () {
             }
         }
         name.innerText = Update.innerText;
+        document.getElementById('drop_down').className = "dropdown";
+        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
         return false;
     }
 
@@ -114,6 +118,8 @@ window.onload = function () {
             }
         }
         name.innerText = Installed.innerText;
+        document.getElementById('drop_down').className = "dropdown";
+        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
         return false;
     }
 
@@ -131,6 +137,8 @@ window.onload = function () {
             }
         }
         name.innerText = Uninstalled.innerText;
+        document.getElementById('drop_down').className = "dropdown";
+        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
         return false;
     }
 }
