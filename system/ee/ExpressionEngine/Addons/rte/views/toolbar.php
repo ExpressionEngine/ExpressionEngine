@@ -1,4 +1,4 @@
-<div id="rte-toolbar">
+<div class="rte-toolbar" id="ckeditor-toolbar">
     <div id="tb-selections" class="cke cke_reset cke_chrome cke_ltr cke_browser_webkit">
         <div class="cke_inner cke_reset">
             <div class="cke_top cke_reset_all">

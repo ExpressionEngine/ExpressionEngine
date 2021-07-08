@@ -235,6 +235,14 @@ class Rte_mcp
             $config->toolset_name = $configName;
             $config->toolset_type = $toolsetType;
             $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            if ($toolsetType == 'redactor') {
+                if (!isset($settings['toolbar']['buttons'])) {
+                    $settings['toolbar']['buttons'] = [];
+                }
+                if (!isset($settings['toolbar']['plugins'])) {
+                    $settings['toolbar']['plugins'] = [];
+                }
+            }
             unset($settings['ckeditor_toolbar']);
             unset($settings['redactor_toolbar']);
             $config->settings = $settings;
@@ -397,11 +405,33 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title' => lang('rte_height'),
+                    'title' => lang('rte_plugins'),
+                    'group' => 'redactor_toolbar',
+                    'wide' => true,
+                    'fields' => array(
+                        'settings[redactor_toolbar]' => array(
+                            'type' => 'html',
+                            'content' => ee('rte:RedactorService')->pluginsInputHtml($config)
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('rte_min_height'),
                     'fields' => array(
                         'settings[height]' => array(
                             'type' => 'short-text',
-                            'value' => $config->settings['height'],
+                            'value' => isset($config->settings['max_height']) ? $config->settings['max_height'] : '',
+                            'label' => ''
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('rte_max_height'),
+                    'group' => 'redactor_toolbar',
+                    'fields' => array(
+                        'settings[max_height]' => array(
+                            'type' => 'short-text',
+                            'value' => isset($config->settings['max_height']) ? $config->settings['max_height'] : '',
                             'label' => ''
                         )
                     )

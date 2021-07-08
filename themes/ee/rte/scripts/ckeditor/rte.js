@@ -1,11 +1,11 @@
-window.Rte;
+window.RteCkeditor;
 
 (function($) {
 
     /**
-     * Rte
+     * RteCkeditor
      */
-    Rte = function(id, config, defer) {
+     RteCkeditor = function(id, config, defer) {
         // Allow initializing by a jQuery object that matched something
         if (typeof id == "object" && typeof id.is == "function" && id.is('textarea')) {
             this.$element = id;
@@ -39,7 +39,7 @@ window.Rte;
         }
     };
 
-    Rte.prototype = {
+    RteCkeditor.prototype = {
         /**
          * Show Iframe
          */
@@ -107,20 +107,21 @@ window.Rte;
 
     if (typeof FluidField !== 'undefined') {
         FluidField.on('rte', 'add', function(row) {
-            var field_id = row.find('.rte-textarea').attr('id');
+            console.log('rte add');
+            var field_id = row.find('.rte-textarea.rte-ckeditor').attr('id');
             var config_handle = $('#'+field_id).data('config');
             var defer = $('#'+field_id).data('defer');
 
             if(defer === 'n') defer = false;
 
-            new Rte(field_id, config_handle, defer);
+            new RteCkeditor(field_id, config_handle, defer);
         });
     }
 
     /**
      * Load EE File Browser
      */
-    Rte.loadEEFileBrowser = function(params, directory, content_type) {
+     RteCkeditor.loadEEFileBrowser = function(params, directory, content_type) {
         // Set up the temporary increase of z-indexes.
         var modalZIndex = $('.modal-file').css('z-index'),
             overlayZindex = $('.overlay').css('z-index'),

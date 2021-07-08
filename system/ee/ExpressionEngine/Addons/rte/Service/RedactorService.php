@@ -34,14 +34,13 @@ class RedactorService implements RteService {
         if (! static::$_includedFieldResources) {
             $version = ee('Addon')->get('rte')->getVersion();
             // Styles
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/redactor/redactor.css?v=' . $version . '" type="text/css" media="print, projection, screen" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css?v=' . $version . '" type="text/css" media="print, projection, screen" />');
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/styles/redactor/addon_pbf.css?v=' . $version . '" type="text/css" media="print, projection, screen" />');
 
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/rte.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor/redactor.min.js?v=' . $version . '"></script>');
-            $allPlugins = static::getPluginList();
-            foreach ($allPlugins as $plugin => $desc) {
-                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor/plugins/' . $plugin . '.js?v=' . $version . '"></script>');
+            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
+            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor.js?v=' . $version . '"></script>');
+            foreach (static::defaultToolbars()['Redactor Full']['plugins'] as $plugin) {
+                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/plugins/' . $plugin . '/' . $plugin . '.js?v=' . $version . '"></script>');
             }
 
             $action_id = ee()->db->select('action_id')
@@ -107,24 +106,6 @@ class RedactorService implements RteService {
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/redactor/languages/' . $langScript . '"></script>');
         }
 
-
-        $allPlugins = static::getPluginList();
-
-        if (isset($config['plugins'])) {
-            foreach ($config['plugins'] as $plugin) {
-                if (!isset($allPlugins[$plugin])) {
-                    continue;
-                }
-
-                if (
-                    !isset($allPlugins[$plugin]['included'])
-                    || $allPlugins[$plugin]['included'] == true
-                ) {
-                    ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/redactor/plugins/' . $plugin . '.js"></script>');
-                }
-            }
-        }
-
         if (!empty(ee()->config->item('site_pages'))) {
             ee()->cp->add_to_foot('<script type="text/javascript">
                 EE.Rte.configs.' . $configHandle . '.mention = {"feeds": [{"marker": "@", "feed": getPages, "itemRenderer": formatPageLinks, "minimumCharacters": 3}]};
@@ -134,58 +115,64 @@ class RedactorService implements RteService {
         // -------------------------------------------
         //  File Browser Config
         // -------------------------------------------
+        if (in_array('image', $config['toolbar']['buttons']) || in_array('file', $config['toolbar']['buttons'])) {
+            $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
+            unset($config['upload_dir']);
 
-        $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
-        unset($config['upload_dir']);
+            $fileBrowserOptions = ['filepicker'];
+            if (!empty(ee()->config->item('rte_file_browser'))) {
+                array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
+            }
+            $fileBrowserOptions = array_unique($fileBrowserOptions);
+            foreach ($fileBrowserOptions as $fileBrowserName) {
+                $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
+                if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
+                    $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
+                    $fileBrowser = new $fqcn();
+                    if ($fileBrowser instanceof RteFilebrowserInterface) {
+                        $fileBrowser->addJs($uploadDir);
 
-        $fileBrowserOptions = ['filepicker'];
-        if (!empty(ee()->config->item('rte_file_browser'))) {
-            array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
-        }
-        $fileBrowserOptions = array_unique($fileBrowserOptions);
-        foreach ($fileBrowserOptions as $fileBrowserName) {
-            $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
-            if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
-                $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
-                $fileBrowser = new $fqcn();
-                if ($fileBrowser instanceof RteFilebrowserInterface) {
-                    $fileBrowser->addJs($uploadDir);
-
-                    break;
+                        break;
+                    }
                 }
             }
+
+            $config['toolbar']['fileUpload'] = 'admin.php?/cp/addons/settings/filepicker/ajax-upload';
+            $config['toolbar']['fileData'] = [
+                'csrf_token' => CSRF_TOKEN,
+                'directory' => 1,
+                'fileUploadParam' => 'file'
+            ];
         }
 
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        /*if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             unset($config['image']);
+            $config['toolbar']['fileUpload'] = 'admin.php?/cp/addons/settings/filepicker/upload&directory=1';
+            $config['toolbar']['fileData'] = ['csrf_token' => CSRF_TOKEN];
             $filemanager_key = array_search('filemanager', $config['toolbar']->items);
             if ($filemanager_key) {
                 $items = $config['toolbar']->items;
                 unset($items[$filemanager_key]);
                 $config['toolbar']->items = array_values($items);
             }
+        }*/
+        
+        if (isset($config['height']) && !empty($config['rheight'])) {
+            $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
         }
-        $config['toolbar']['fileUpload'] = 'admin.php?/cp/addons/settings/filepicker/upload&directory=1';
+        if (isset($config['max_height']) && !empty($config['max_height'])) {
+            $config['toolbar']['maxHeight'] = (int) $config['max_height'] . 'px';
+        }
 
         //link
-        $config['link'] = (object) [
-            'decorators' => [
-                'openInNewTab' => [
-                    'mode' => 'manual',
-                    'label' => lang('open_in_new_tab'),
-                    'attributes' => [
-                        'target' => '_blank',
-                        'rel' => 'noopener noreferrer'
-                    ]
-                ]
-            ]
-        ];
+        $config['linkValidation'] = false;
+        $config['linkTarget'] = false;
 
         // -------------------------------------------
         //  JSONify Config and Return
         // -------------------------------------------
         ee()->javascript->set_global([
-            'Rte.configs.' . $configHandle => $config,
+            'Rte.configs.' . $configHandle => $config['toolbar'],
         ]);
 
         static::$_includedConfigs[] = $configHandle;
@@ -203,430 +190,111 @@ class RedactorService implements RteService {
 
         return array(
             'type' => 'redactor',
-            'toolbar' => static::defaultToolbars(),
+            'toolbar' => static::defaultToolbars()['Redactor Basic'],
             'height' => '200',
             'upload_dir' => 'all'
         );
     }
 
-    private function parseConfig($settings)
-    {
-        $output = [];
-
-        if (isset($settings['config']) && $settings['config'] > 0) {
-            $config = ee('Model')->get('editor:Config', $settings['config'])->first();
-
-            if (!$config) {
-                return $output;
-            }
-
-            $config->settings = array_merge(ee('App')->get('editor')->get('redactor_default'), $config->settings);
-
-            if (isset($config->settings['config']) && !empty($config->settings['config'])) {
-                $output = $config->settings['config'];
-            }
-
-            $output['buttons'] = $config->settings['buttons'];
-            $output['plugins'] = $config->settings['plugins'];
-        } else {
-            return $output;
-        }
-
-        foreach ($this->getDefaultAdvancedSettings() as $key => $adv) {
-            if (isset($output[$key]) === false) {
-                unset($output[$key]);
-
-                continue;
-            }
-
-            if ($adv['type'] == 'text-array') {
-                $output[$key] = array_map('trim', explode(',', $output[$key]));
-            }
-
-            if ($adv['type'] == 'bool') {
-                $output[$key] = ($output[$key] == 'yes') ? true : false;
-            }
-
-            if ($adv['type'] == 'number-bool') {
-                $output[$key] = ($output[$key] > 0) ? $output[$key] : false;
-            }
-        }
-
-        if ($config->settings['upload_service'] == 'local') {
-            if ($config->settings['files_upload_location'] > 0) {
-                $uploadUrl  = ee('editor:Helper')->getRouterUrl('url', 'actionFileUpload');
-                $uploadUrl .= '&action=file&upload_location=' . $config->settings['files_upload_location'];
-                $output['fileUpload'] = $uploadUrl;
-
-                if ($config->settings['files_browse'] == 'yes') {
-                    $browse  = ee('editor:Helper')->getRouterUrl('url', 'actionGeneralRouter');
-                    $browse .= '&method=browseFiles&upload_location=' . $config->settings['files_upload_location'];
-
-                    $output['fileManagerJson'] = $browse;
-                    $output['plugins'][] = 'filemanager';
-                }
-            }
-
-            if ($config->settings['images_upload_location'] > 0) {
-                $uploadUrl  = ee('editor:Helper')->getRouterUrl('url', 'actionFileUpload');
-                $uploadUrl .= '&action=image&upload_location=' . $config->settings['images_upload_location'];
-                $output['imageUpload'] = $uploadUrl;
-
-                if ($config->settings['images_browse'] == 'yes') {
-                    $browse  = ee('editor:Helper')->getRouterUrl('url', 'actionGeneralRouter');
-                    $browse .= '&method=browseImages&upload_location=' . $config->settings['images_upload_location'];
-
-                    $output['imageManagerJson'] = $browse;
-                    $output['plugins'][] = 'imagemanager';
-                }
-            }
-        } elseif ($config->settings['upload_service'] == 's3') {
-            $uploadUrl  = ee('editor:Helper')->getRouterUrl('url', 'actionFileUpload');
-            $string = base64_encode(ee('editor:Helper')->encryptString(json_encode($config->settings['s3'])));
-            $output['s3'] = "{$uploadUrl}&action=s3_info&s3={$string}";
-            $output['fileUpload'] = true;
-            $output['imageUpload'] = true;
-        }
-
-        return $output;
-    }
-
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/redactor/redactor.css" type="text/css" media="print, projection, screen" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css" type="text/css" media="print, projection, screen" />');
 
             ee()->cp->add_js_script([
                 'file' => ['cp/form_group'],
             ]);
 
-            if(!isset($config->settings['toolbar']['buttons'])) {
-                $settings = $config->settings;
-                $settings['toolbar'] = static::defaultToolbars();
-                $config->settings = $settings;
-            }
+            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
 
-            $fullToolset = [
-                'buttons' => [],
-                'plugins' => [],
-                'advanced_settings' => [],
-            ];
-
-            $buttons = $this->getButtons();
-            $allPlugins = static::getPluginList();
-
-            foreach ($buttons as $key => $button) {
-                $button['label'] = lang($key . '_rte');
-                $fullToolset['buttons'][$key] = $button;
-            }
-
-            foreach ($allPlugins as $key => $plugin) {
-                $plugin['label'] = lang($key . '_rte');
-                $fullToolset['plugins'][$key] = $plugin;
-            }
-
-            $allAdvancedSettings = RteHelper::defaultReactorAdvancedSettings();
-
-            foreach ($allAdvancedSettings as $key => $setting) {
-                $setting['label'] = lang('redactor_advanced_' . $key);
-                $setting['desc'] = lang('redactor_advanced_' . $key . '_desc');
-                $fullToolset['advanced_settings'][] = $setting;
+            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);
+            $fullToolset = [];
+            foreach ($fullToolbar as $i => $tool) {
+                $fullToolset[$tool] = lang($tool . '_rte');
             }
 
             return ee('View')->make('rte:redactor-toolbar')->render(
                 [
-                    'buttons' => $fullToolset['buttons'],
-                    'settings' => $config->settings,
-                    'advanced_settings' => $fullToolset['advanced_settings'],
-                    'plugins' => $fullToolset['plugins'],
+                    'buttons' => $fullToolset,
+                    'selection' => $selection,
+                    'type' => 'buttons'
                 ]
             );
     }
 
-    protected function getDefaultAdvancedSettings()
+    public function pluginsInputHtml($config)
     {
-        $settings = [];
-        $settings['air'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-        
-        $settings['airWidth'] = [
-            'type' => 'number',
-            'value' => '',
-        ];
-        
-        $settings['buttonsHide'] = [
-            'type' => 'text-array',
-            'value' => '',
-        ];
-        
-        $settings['buttonsHideOnMobile'] = [
-            'type' => 'text-array',
-            'value' => '',
-        ];
-        
-        $settings['focus'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-        
-        $settings['focusEnd'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-        
-        $settings['formatting'] = [
-            'type' => 'text-array',
-            'value' => 'p,blockquote,pre,h1,h2,h3,h4,h5,h6',
-        ];
+            $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
 
-        $settings['minHeight'] = [
-            'type' => 'number',
-            'value' => '300px',
-        ];
-        $settings['maxHeight'] = [
-            'type' => 'number',
-            'value' => '800px',
-        ];
+            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
+            $fullToolset = [];
+            foreach ($fullToolbar as $i => $tool) {
+                $fullToolset[$tool] = lang($tool . '_rte');
+            }
 
-        $settings['direction'] = [
-            'type' => 'radio',
-            'value' => 'ltr',
-            'options' => [
-                'ltr' => 'left-to-right',
-                'rtl' => 'right-to-left',
-            ],
-        ];
-
-        $settings['tabKey'] = [
-            'type' => 'bool',
-            'value' => 'yes',
-        ];
-
-        $settings['tabAsSpaces'] = [
-            'type' => 'number-bool',
-            'value' => '0',
-        ];
-
-        $settings['preSpaces'] = [
-            'type' => 'number-bool',
-            'value' => '4',
-        ];
-
-        $settings['linkNofollow'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-
-        $settings['linkSize'] = [
-            'type' => 'number',
-            'value' => '50',
-        ];
-
-        $settings['linkTooltip'] = [
-            'type' => 'bool',
-            'value' => 'yes',
-        ];
-
-        $settings['linkify'] = [
-            'type' => 'bool',
-            'value' => 'yes',
-        ];
-
-        $settings['placeholder'] = [
-            'type' => 'text',
-            'value' => '',
-        ];
-
-        $settings['shortcuts'] = [
-            'type' => 'bool',
-            'value' => 'yes',
-        ];
-
-        $settings['script'] = [
-            'type' => 'bool',
-            'value' => 'yes',
-        ];
-
-        $settings['structure'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-
-        $settings['preClass'] = [
-            'type' => 'text',
-            'value' => '',
-        ];
-
-        $settings['animation'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-
-        $settings['toolbarFixed'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-
-        $settings['toolbarFixedTopOffset'] = [
-            'type' => 'number',
-            'value' => '0',
-        ];
-
-        $settings['toolbarFixedTarget'] = [
-            'type' => 'text',
-            'value' => '',
-        ];
-
-        $settings['toolbarOverflow'] = [
-            'type' => 'bool',
-            'value' => 'no',
-        ];
-
-        $settings['lang'] = [
-            'type' => 'select',
-            'value' => 'en',
-            'options' => [
-                'ar'    => 'Arabic',
-                'de'    => 'German',
-                'en'    => 'English',
-                'es'    => 'Spanish',
-                'fi'    => 'Finnish',
-                'fr'    => 'French',
-                'ja'    => 'Japanese',
-                'ko'    => 'Korean',
-                'nl'    => 'Dutch',
-                'pl'    => 'Polish',
-                'pt_br' => 'Brazilian Portuguese',
-                'ru'    => 'Russian',
-                'sv'    => 'Swedish',
-                'tr'    => 'Turkish',
-                'zh_cn' => 'Chinese Simplified',
-                'zh_tw' => 'Chinese Traditional',
-            ],
-        ];
-
-        return $settings;
-    }
-
-    protected static function getPluginList()
-    {
-        $plugins = [];
-        $plugins['source'] = [
-            'author' => 'Redactor',
-            'desc' => "This plugin allows users to look through and edit text's HTML source code.",
-        ];
-
-        $plugins['table'] = [
-            'author' => 'Redactor',
-            'desc' => "Insert and format tables with ease.",
-        ];
-
-        $plugins['video'] = [
-            'author' => 'Redactor',
-            'desc' => "Enrich text with embedded video.",
-        ];
-
-        $plugins['fullscreen'] = [
-            'author' => 'Redactor',
-            'desc' => "Expand Redactor to fill the whole screen. Also known as 'distraction free' mode.",
-        ];
-
-        $plugins['properties'] = [
-            'author' => 'Redactor',
-            'desc' => "This plugin allows you to assign any id or class to any block tag (selected or containing cursor).",
-        ];
-
-        $plugins['textdirection'] = [
-            'author' => 'Redactor',
-            'desc' => "Easily change the direction of the text in a block element (paragraph, header, blockquote etc.).",
-        ];
-
-        return $plugins;
-    }
-
-    protected function getButtons()
-    {
-        return [
-            'format'         => [
-                'plugin' => null
-            ],
-            'bold'           => [
-                'plugin' => null
-            ],
-            'italic'         => [
-                'plugin' => null
-            ],
-            'underline'      => [
-                'plugin' => null
-            ],
-            'deleted' => [
-                'plugin' => null
-            ],
-            'lists'          => [
-                'plugin' => null
-            ],
-            'file'    => [
-                'plugin' => null
-            ],
-            'link'           => [
-                'plugin' => null
-            ],
-            'horizontalrule' => [
-                'plugin' => null
-            ],
-        ];
+            return ee('View')->make('rte:redactor-toolbar')->render(
+                [
+                    'buttons' => $fullToolset,
+                    'selection' => $selection,
+                    'type' => 'plugins'
+                ]
+            );
     }
 
     public static function defaultToolbars()
     {
-        $settings = [];
+        return [
+            'Redactor Basic' => [
+                'buttons' => [
+                    'bold',
+                    'italic',
+                    'underline',
+                    'ol',
+                    'ul',
+                    'link',
+                ],
+                'plugins' => [
 
-        $settings['buttons'] = [
-            'format',
-            'bold',
-            'italic',
-            'underline',
-            'strikethrough',
-            'lists' ,
-            'filemanager',
-            'link',
-            'horizontalrule',
-        ];
-
-        $settings['plugins'] = [
-            'source',
-        ];
-
-        $settings['advanced_settings'] = [];
-
-        $settings['lang'] = [
-            'type' => 'select',
-            'value' => 'en',
-            'options' => [
-                'ar'    => 'Arabic',
-                'de'    => 'German',
-                'en'    => 'English',
-                'es'    => 'Spanish',
-                'fi'    => 'Finnish',
-                'fr'    => 'French',
-                'ja'    => 'Japanese',
-                'ko'    => 'Korean',
-                'nl'    => 'Dutch',
-                'pl'    => 'Polish',
-                'pt_br' => 'Brazilian Portuguese',
-                'ru'    => 'Russian',
-                'sv'    => 'Swedish',
-                'tr'    => 'Turkish',
-                'zh_cn' => 'Chinese Simplified',
-                'zh_tw' => 'Chinese Traditional',
+                ],
             ],
+            'Redactor Full' => [
+                'buttons' => [
+                    'html',
+                    'format',
+                    'bold',
+                    'italic',
+                    'deleted',
+                    'underline',
+                    'redo',
+                    'undo',
+                    'ol',
+                    'ul',
+                    'indent',
+                    'outdent',
+                    'sup',
+                    'sub',
+                    //'image',
+                    //'file',
+                    'link',
+                    'line'
+                ],
+                'plugins' => [
+                    'alignment',
+                    //'definedlinks',
+                    //'filemanager',
+                    //'handle',
+                    //'imagemanager',
+                    'inlinestyle',
+                    //'limiter',
+                    //'counter',
+                    'properties',
+                    'specialchars',
+                    'table',
+                    'video',
+                    'widget',
+                    'fullscreen',
+                ]
+            ]
         ];
-
-        $settings['upload_dir'] = null;
-        $settings['height'] = 200;
-
-        return $settings;
     }
 
 }

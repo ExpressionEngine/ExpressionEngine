@@ -1,51 +1,51 @@
 /* toolbar label & desc */
-#rte-toolbar #tb-label { margin: 4px 0 20px; }
-#rte-toolbar #tb-label table { margin: -4px auto 0; }
-#rte-toolbar #tb-label table td { border: none !important; padding: 0 0 0 90px; height: 77px; white-space: nowrap; background: no-repeat 0 50%; }
+.rte-toolbar #tb-label { margin: 4px 0 20px; }
+.rte-toolbar #tb-label table { margin: -4px auto 0; }
+.rte-toolbar #tb-label table td { border: none !important; padding: 0 0 0 90px; height: 77px; white-space: nowrap; background: no-repeat 0 50%; }
 
 /* CKEditor skin overrides */
-#rte-toolbar .cke { visibility: visible; }
-#rte-toolbar .cke_chrome *,
-#rte-toolbar .cke_chrome a:hover,
-#rte-toolbar .cke_chrome a:link,
-#rte-toolbar .cke_chrome a:visited,
-#rte-toolbar .cke_chrome a:active { white-space: normal; }
+.rte-toolbar .cke { visibility: visible; }
+.rte-toolbar .cke_chrome *,
+.rte-toolbar .cke_chrome a:hover,
+.rte-toolbar .cke_chrome a:link,
+.rte-toolbar .cke_chrome a:visited,
+.rte-toolbar .cke_chrome a:active { white-space: normal; }
 
-#rte-toolbar .cke_top { border-bottom: none; overflow: visible; }
-#rte-toolbar .cke_top:after { content: '.'; display: block; height: 0; clear: both; visibility: hidden; }
-#rte-toolbar .cke_toolbox { min-height: 33px; _height: 28px; }
-#rte-toolbar .cke_toolbox { position: relative; z-index: 1; }
+.rte-toolbar .cke_top { border-bottom: none; overflow: visible; }
+.rte-toolbar .cke_top:after { content: '.'; display: block; height: 0; clear: both; visibility: hidden; }
+.rte-toolbar .cke_toolbox { min-height: 33px; _height: 28px; }
+.rte-toolbar .cke_toolbox { position: relative; z-index: 1; }
 
-#rte-toolbar .cke_chrome .cke_button:hover,
-#rte-toolbar .cke_chrome .cke_button:focus,
-#rte-toolbar .cke_chrome .cke_button:active { border-color: transparent !important; background-color: transparent; }
+.rte-toolbar .cke_chrome .cke_button:hover,
+.rte-toolbar .cke_chrome .cke_button:focus,
+.rte-toolbar .cke_chrome .cke_button:active { border-color: transparent !important; background-color: transparent; }
 
-#rte-toolbar .cke_chrome .cke_button:hover.cke_on,
-#rte-toolbar .cke_chrome .cke_button:focus.cke_on,
-#rte-toolbar .cke_chrome .cke_button:active.cke_on,
-#rte-toolbar .cke_chrome .cke_button:hover.cke_off,
-#rte-toolbar .cke_chrome .cke_button:focus.cke_off,
-#rte-toolbar .cke_chrome .cke_button:active.cke_off,
-#rte-toolbar .cke_chrome .cke_rcombo .cke_off a:hover .cke_text,
-#rte-toolbar .cke_chrome .cke_rcombo .cke_off a:focus .cke_text,
-#rte-toolbar .cke_chrome .cke_rcombo .cke_off a:active .cke_text,
-#rte-toolbar .cke_chrome .cke_rcombo .cke_on .cke_text { opacity: 0.7; }
+.rte-toolbar .cke_chrome .cke_button:hover.cke_on,
+.rte-toolbar .cke_chrome .cke_button:focus.cke_on,
+.rte-toolbar .cke_chrome .cke_button:active.cke_on,
+.rte-toolbar .cke_chrome .cke_button:hover.cke_off,
+.rte-toolbar .cke_chrome .cke_button:focus.cke_off,
+.rte-toolbar .cke_chrome .cke_button:active.cke_off,
+.rte-toolbar .cke_chrome .cke_rcombo .cke_off a:hover .cke_text,
+.rte-toolbar .cke_chrome .cke_rcombo .cke_off a:focus .cke_text,
+.rte-toolbar .cke_chrome .cke_rcombo .cke_off a:active .cke_text,
+.rte-toolbar .cke_chrome .cke_rcombo .cke_on .cke_text { opacity: 0.7; }
 
 /* grab cursors */
-#rte-toolbar .cke_chrome .cke_toolgroup,
-#rte-toolbar .cke_chrome .cke_toolgroup *,
-#rte-toolbar .cke_chrome .cke_rcombo a,
-#rte-toolbar .cke_chrome .cke_rcombo a * { cursor: move; cursor: -webkit-grab; cursor: -moz-grab; }
+.rte-toolbar .cke_chrome .cke_toolgroup,
+.rte-toolbar .cke_chrome .cke_toolgroup *,
+.rte-toolbar .cke_chrome .cke_rcombo a,
+.rte-toolbar .cke_chrome .cke_rcombo a * { cursor: move; cursor: -webkit-grab; cursor: -moz-grab; }
 
-#rte-toolbar .cke_chrome .cke_button a { margin: -2px 0; padding: 4px; }
+.rte-toolbar .cke_chrome .cke_button a { margin: -2px 0; padding: 4px; }
 
 body.tb-dragging * { cursor: -webkit-grabbing !important; }
 
 /* selections */
-#rte-toolbar #tb-selections { margin: 15px 5px 0; }
+.rte-toolbar #tb-selections { margin: 15px 5px 0; }
 
-#rte-toolbar #tb-selections .disabled { background: url(../images/disabled.png) no-repeat 50% 50%; }
-#rte-toolbar #tb-selections .disabled .cke_button_icon { opacity: 0.2; }
+.rte-toolbar #tb-selections .disabled { background: url(../images/disabled.png) no-repeat 50% 50%; }
+.rte-toolbar #tb-selections .disabled .cke_button_icon { opacity: 0.2; }
 
 
 

@@ -8,7 +8,7 @@ class CkeditorService implements RteService {
 
     public $output;
     public $handle;
-    public $class = 'rte-textarea';
+    public $class = 'rte-textarea rte-ckeditor';
     protected $settings;
     protected $toolset;
     private static $_includedFieldResources = false;
@@ -33,7 +33,7 @@ class CkeditorService implements RteService {
         if (! static::$_includedFieldResources) {
             $version = ee('Addon')->get('rte')->getVersion();
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/ckeditor.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/rte.js?v=' . $version . '"></script>');
+            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
             ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor/rte.css?v=' . $version . '" />');
 
             $action_id = ee()->db->select('action_id')
@@ -166,6 +166,7 @@ class CkeditorService implements RteService {
             }
         }
 
+        // EE FilePicker is not available on frontend channel forms
         if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             unset($config['image']);
             $filemanager_key = array_search('filemanager', $config['toolbar']->items);
@@ -201,14 +202,17 @@ class CkeditorService implements RteService {
 
         static::$_includedConfigs[] = $configHandle;
 
-        ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
+        if (isset($config['height']) && !empty($config['height'])) {
+            ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
+        }
 
         return $configHandle;
     }
 
     public function toolbarInputHtml($config)
     {
-        $fullToolbar = static::defaultToolbars()['Full'];
+        $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);
         $fullToolset = [];
         foreach ($fullToolbar as $i => $tool) {
             $fullToolset[$tool] = lang($tool . '_rte');
@@ -217,7 +221,7 @@ class CkeditorService implements RteService {
         return ee('View')->make('rte:toolbar')->render(
             [
                 'buttons' => $fullToolset,
-                'selection' => $config->settings['toolbar']
+                'selection' => $selection
             ]
         );
     }
@@ -233,7 +237,7 @@ class CkeditorService implements RteService {
 
         return array(
             'type' => 'ckeditor',
-            'toolbar' => $toolbars['Basic'],
+            'toolbar' => $toolbars['CKEditor Basic'],
             'height' => '200',
             'upload_dir' => 'all',
             'mediaEmbed' => [
@@ -250,7 +254,7 @@ class CkeditorService implements RteService {
     public static function defaultToolbars()
     {
         return [
-            'Basic' => [
+            'CKEditor Basic' => [
                 "bold",
                 "italic",
                 "underline",
@@ -258,7 +262,7 @@ class CkeditorService implements RteService {
                 "bulletedList",
                 "link"
             ],
-            'Full' => [
+            'CKEditor Full' => [
                 "bold",
                 "italic",
                 "strikethrough",

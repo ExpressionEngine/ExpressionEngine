@@ -76,16 +76,16 @@ class Rte_upd extends Installer
         // -------------------------------------------
         //  Populate it
         // -------------------------------------------
-        $toolbars = RteHelper::defaultToolbars();
-
-        foreach ($toolbars as $name => &$toolbar) {
-            $config_settings = array_merge(RteHelper::defaultConfigSettings(), array('toolbar' => $toolbar));
-
-            $config = ee('Model')->make('rte:Toolset');
-            $config->toolset_name = $name;
-            $config->toolset_type = 'ckeditor';
-            $config->settings = $config_settings;
-            $config->save();
+        foreach (['ckeditor', 'redactor'] as $toolset_type) {
+            $toolbars = ee('rte:' . ucfirst($toolset_type) . 'Service')->defaultToolbars();
+            foreach ($toolbars as $name => $toolbar) {
+                $config_settings = array_merge(ee('rte:CkeditorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                $config = ee('Model')->make('rte:Toolset');
+                $config->toolset_name = $name;
+                $config->toolset_type = $toolset_type;
+                $config->settings = $config_settings;
+                $config->save();
+            }
         }
 
         return true;
