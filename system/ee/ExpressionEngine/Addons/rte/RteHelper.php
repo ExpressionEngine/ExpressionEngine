@@ -276,6 +276,7 @@ class RteHelper
             $config['image'] = new \stdClass();
             $config['image']->toolbar = [
                 'imageTextAlternative',
+                'linkImage',
                 'imageStyle:full',
                 'imageStyle:side',
                 'imageStyle:alignLeft',
