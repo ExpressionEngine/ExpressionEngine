@@ -2,7 +2,6 @@
 
 namespace ExpressionEngine\Addons\Rte\Service;
 
-use ExpressionEngine\Addons\Rte\RteHelper;
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class RedactorService implements RteService {
@@ -41,6 +40,11 @@ class RedactorService implements RteService {
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor.js?v=' . $version . '"></script>');
             foreach (static::defaultToolbars()['Redactor Full']['plugins'] as $plugin) {
                 ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/plugins/' . $plugin . '/' . $plugin . '.js?v=' . $version . '"></script>');
+            }
+            $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
+            $lang_code = ee()->lang->code($language);
+            if ($lang_code != 'en') {
+                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/langs/' . $lang_code . '.js?v=' . $version . '"></script>');
             }
 
             $action_id = ee()->db->select('action_id')
@@ -98,13 +102,7 @@ class RedactorService implements RteService {
 
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $langMap = RteHelper::languageMap();
-        $config['lang'] = isset($langMap[$language]) ? $langMap[$language] : 'en';
-
-        if (isset($config['lang']) && $config['lang'] != 'en') {
-            $langScript = $config['lang'] . '.js';
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/redactor/languages/' . $langScript . '"></script>');
-        }
+        $config['toolbar']['lang'] = ee()->lang->code($language);
 
         if (!empty(ee()->config->item('site_pages'))) {
             ee()->cp->add_to_foot('<script type="text/javascript">

@@ -87,7 +87,15 @@ window.Rte;
         initRedactor: function() {
             var config = typeof this.config === 'string'
                             ? JSON.parse(this.config)
-                            : this.config
+                            : this.config;
+            config.callbacks = {
+                blur: function(e) {
+                    $('#' + this.id).trigger('change');
+                },
+                keyup: function(e) {
+                    $("[data-publish] > form").trigger("entry:startAutosave")
+                }
+            };
             $R('#' + this.id, config);
 
             if (this.$iframe) {
@@ -102,24 +110,14 @@ window.Rte;
             var textareaId = this.id;
             ClassicEditor.create(document.querySelector('#'+this.id), this.config)
             .then( editor => {
-                //console.log( Array.from( editor.ui.componentFactory.names() ) );
-
                 // When CKEditor is updated, update the textarea so EE will trigger it's auto-save or remove error messages.
-                var editor_changed = false;
-                editor.model.document.on('change:data', () => {
-                    editor_changed = true;
+                editor.model.document.on('change:data', (evt, data) => {
+                    editor.updateSourceElement();
+                    $("[data-publish] > form").trigger("entry:startAutosave");
                 });
                 editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
-                    if(!isFocused && editor_changed) {
-                        editor_changed = false;
-                        // Update the textarea's content.
-                        document.querySelector('#' + this.id).innerHTML = editor.getData();
-
-                        // Trigger the `onchange` handlers for the textarea so EE will catch the update.
-                        $('#' + this.id).change();
-
-                        // We have to focus and blur the real textarea otherwise EE5 won't pick up the change.
-                        $('#' + this.id).focus().blur();
+                    if(!isFocused) {
+                        $('#' + this.id).trigger('change').trigger('focus').trigger('blur');
                     }
                 });
             } );

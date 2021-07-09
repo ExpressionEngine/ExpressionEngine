@@ -36,6 +36,12 @@ class CkeditorService implements RteService {
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
             ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor/rte.css?v=' . $version . '" />');
 
+            $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
+            $lang_code = ee()->lang->code($language);
+            if ($lang_code != 'en') {
+                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/translations/' . $lang_code . '.js?v=' . $version . '"></script>');
+            }
+
             $action_id = ee()->db->select('action_id')
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
@@ -95,8 +101,7 @@ class CkeditorService implements RteService {
 
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $langMap = static::languageMap();
-        $config['language'] = isset($langMap[$language]) ? $langMap[$language] : 'en';
+        $config['language'] = ee()->lang->code($language);
 
         // toolbar
         if (is_array($config['toolbar'])) {
@@ -295,53 +300,6 @@ class CkeditorService implements RteService {
                 "fontBackgroundColor"
             ],
         ];
-    }
-
-    /**
-     * Returns a map of common EE language folder names to CKEditor language codes.
-     *
-     * @return array $languageMap
-     */
-    public static function languageMap()
-    {
-        return array(
-            'arabic' => 'ar',
-            'arabic-utf8' => 'ar',
-            'arabic-windows-1256' => 'ar',
-            'czech' => 'cs',
-            'cesky' => 'cs',
-            'danish' => 'da',
-            'german' => 'de',
-            'deutsch' => 'de',
-            'english' => 'en',
-            'spanish' => 'es',
-            'spanish_ee201pb' => 'es',
-            'finnish' => 'fi',
-            'french' => 'fr',
-            'hungarian' => 'hu',
-            'croatian' => 'hr',
-            'italian' => 'it',
-            'japanese' => 'ja',
-            'korean' => 'ko',
-            'dutch' => 'nl',
-            'norwegian' => 'no',
-            'polish' => 'pl',
-            'brazilian' => 'pt',
-            'portuguese' => 'pt',
-            'brasileiro' => 'pt',
-            'brasileiro_160' => 'pt',
-            'russian' => 'ru',
-            'russian_utf8' => 'ru',
-            'russian_win1251' => 'ru',
-            'slovak' => 'sk',
-            'swedish' => 'sv',
-            'swedish_ee20pb' => 'sv',
-            'turkish' => 'tr',
-            'ukrainian' => 'uk',
-            'chinese' => 'zh',
-            'chinese_traditional' => 'zh',
-            'chinese_simplified' => 'zh'
-        );
     }
 
 }
