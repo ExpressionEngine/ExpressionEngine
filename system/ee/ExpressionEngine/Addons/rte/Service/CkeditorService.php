@@ -4,20 +4,14 @@ namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class CkeditorService implements RteService {
-
-    public $output;
-    public $handle;
+class CkeditorService implements RteService
+{
     public $class = 'rte-textarea rte-ckeditor';
+    public $handle;
     protected $settings;
     protected $toolset;
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
-    private $_fileTags;
-    private $_pageTags;
-    private $_extraTags;
-    private $_sitePages;
-    private $_pageData;
 
     public function init($settings, $toolset = null)
     {
@@ -34,7 +28,7 @@ class CkeditorService implements RteService {
             $version = ee('Addon')->get('rte')->getVersion();
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/ckeditor.js?v=' . $version . '"></script>');
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor/rte.css?v=' . $version . '" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor.css?v=' . $version . '" />');
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);
@@ -112,6 +106,7 @@ class CkeditorService implements RteService {
             $config['image'] = new \stdClass();
             $config['image']->toolbar = [
                 'imageTextAlternative',
+                'linkImage',
                 'imageStyle:full',
                 'imageStyle:side',
                 'imageStyle:alignLeft',

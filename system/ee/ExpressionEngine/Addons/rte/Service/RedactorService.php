@@ -6,18 +6,12 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class RedactorService implements RteService {
 
-    public $output;
     public $class = 'rte-textarea redactor-box';
     public $handle;
     protected $settings;
     protected $toolset;
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
-    private $_fileTags;
-    private $_pageTags;
-    private $_extraTags;
-    private $_sitePages;
-    private $_pageData;
 
     public function init($settings, $toolset = null)
     {
@@ -33,8 +27,8 @@ class RedactorService implements RteService {
         if (! static::$_includedFieldResources) {
             $version = ee('Addon')->get('rte')->getVersion();
             // Styles
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css?v=' . $version . '" type="text/css" media="print, projection, screen" />');
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/styles/redactor/addon_pbf.css?v=' . $version . '" type="text/css" media="print, projection, screen" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css?v=' . $version . '" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/styles/redactor.css?v=' . $version . '" type="text/css" />');
 
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
             ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor.js?v=' . $version . '"></script>');
@@ -196,7 +190,7 @@ class RedactorService implements RteService {
 
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css" type="text/css" media="print, projection, screen" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css" type="text/css" />');
 
             ee()->cp->add_js_script([
                 'file' => ['cp/form_group'],
