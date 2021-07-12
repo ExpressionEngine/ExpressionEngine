@@ -1,8 +1,8 @@
-<div class="panel">
+<div class="panel" <?php if (ee()->input->get('hide_closer') === 'y') : ?> style="overflow: hidden; margin-bottom: 0px; margin-top: -16px; margin-left: -16px; margin-right: -16px; border-radius: 0;"<?php endif; ?>>
     <div class="tbl-ctrls">
         <?=form_open($form_url)?>
 
-        <div class="panel-heading"<?php if (ee()->input->get('hide_closer') === 'y') : ?> style="padding: 5px 5px;"<?php endif; ?>>
+        <div class="panel-heading"<?php if (ee()->input->get('hide_closer') === 'y') : ?> style="display: none;"<?php endif; ?>>
           <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
           <?php if (isset($cp_heading)) : ?>
           <div class="title-bar">
@@ -11,7 +11,7 @@
           <?php endif; ?>
         </div>
 
-        <div class="filter-search-bar">
+        <div class="filter-search-bar" <?php if (ee()->input->get('hide_closer') === 'y') : ?> style="padding: 10px 10px;"<?php endif; ?>>
 
             <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
             <div class="filter-search-bar__filter-row">
