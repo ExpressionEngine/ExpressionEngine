@@ -13621,7 +13621,7 @@ $R.add('module', 'modal', {
     // private
     _isOpened: function()
     {
-        return (this.$modal && this.$modal.hasClass('open'));
+        return (this.$modal && this.$modal.hasClass('redactor-modal-open'));
     },
     _open: function(data)
     {
@@ -13684,7 +13684,7 @@ $R.add('module', 'modal', {
     },
     _opened: function()
     {
-        this.$modal.addClass('open');
+        this.$modal.addClass('open').addClass('redactor-modal-open');
         this.$box.on('mousedown.redactor.modal', this._close.bind(this));
         this.$doc.on('keyup.redactor.modal', this._handleEscape.bind(this));
         this.$win.on('resize.redactor.modal', this.resize.bind(this));
@@ -13723,7 +13723,7 @@ $R.add('module', 'modal', {
     },
     _closed: function()
     {
-        this.$modal.removeClass('open');
+        this.$modal.removeClass('open').removeClass('redactor-modal-open');
         this.$box.off('.redactor.modal');
         this.$doc.off('.redactor.modal');
         this.$win.off('.redactor.modal');
@@ -16191,8 +16191,6 @@ $R.add('module', 'upload', {
     {
         this._clear();
         this.progress.hide();
-
-        console.log(response);
 
         if (response && response.error)
         {

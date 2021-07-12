@@ -278,6 +278,8 @@ $lang = array(
 
     'htmlEmbed_rte' => 'HTML',
 
+    'html_rte' => 'HTML',
+
     'alignment_rte' => 'Align',
 
     'alignment:left_rte' => 'Align left',
@@ -320,5 +322,10 @@ $lang = array(
 
     'rte_plugins' => 'Plugins',
     'rte_toolbar_buttons' => 'Toolbar Buttons',
+
+    'rte_definedlinks_rte' => 'Pages links',
+
+    'filebrowser_rte' => 'File Browser',
+
     '' => ''
 );

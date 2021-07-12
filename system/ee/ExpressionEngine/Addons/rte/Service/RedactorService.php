@@ -41,15 +41,11 @@ class RedactorService implements RteService {
                 ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/langs/' . $lang_code . '.js?v=' . $version . '"></script>');
             }
 
-            $action_id = ee()->db->select('action_id')
-                ->where('class', 'Rte')
-                ->where('method', 'pages_autocomplete')
-                ->get('actions');
+            
 
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
 
             ee()->javascript->set_global([
-                'Rte.pages_autocomplete' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now,
                 'Rte.filedirUrls' => $filedir_urls
             ]);
 
@@ -98,10 +94,12 @@ class RedactorService implements RteService {
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
         $config['toolbar']['lang'] = ee()->lang->code($language);
 
-        if (!empty(ee()->config->item('site_pages'))) {
-            ee()->cp->add_to_foot('<script type="text/javascript">
-                EE.Rte.configs.' . $configHandle . '.mention = {"feeds": [{"marker": "@", "feed": getPages, "itemRenderer": formatPageLinks, "minimumCharacters": 3}]};
-            </script>');
+        if (!empty(ee()->config->item('site_pages')) && in_array('rte_definedlinks', $config['toolbar']['plugins'])) {
+            $action_id = ee()->db->select('action_id')
+                ->where('class', 'Rte')
+                ->where('method', 'pages_autocomplete')
+                ->get('actions');
+            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
         }
 
         // -------------------------------------------
@@ -128,26 +126,7 @@ class RedactorService implements RteService {
                     }
                 }
             }
-
-            $config['toolbar']['fileUpload'] = 'admin.php?/cp/addons/settings/filepicker/ajax-upload';
-            $config['toolbar']['fileData'] = [
-                'csrf_token' => CSRF_TOKEN,
-                'directory' => 1,
-                'fileUploadParam' => 'file'
-            ];
         }
-
-        /*if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
-            unset($config['image']);
-            $config['toolbar']['fileUpload'] = 'admin.php?/cp/addons/settings/filepicker/upload&directory=1';
-            $config['toolbar']['fileData'] = ['csrf_token' => CSRF_TOKEN];
-            $filemanager_key = array_search('filemanager', $config['toolbar']->items);
-            if ($filemanager_key) {
-                $items = $config['toolbar']->items;
-                unset($items[$filemanager_key]);
-                $config['toolbar']->items = array_values($items);
-            }
-        }*/
         
         if (isset($config['height']) && !empty($config['rheight'])) {
             $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
@@ -157,8 +136,9 @@ class RedactorService implements RteService {
         }
 
         //link
-        $config['linkValidation'] = false;
-        $config['linkTarget'] = false;
+        $config['toolbar']['linkValidation'] = false;
+        $config['toolbar']['linkTarget'] = false;
+        $config['toolbar']['linkNewTab'] = false;
 
         // -------------------------------------------
         //  JSONify Config and Return
@@ -264,17 +244,14 @@ class RedactorService implements RteService {
                     'outdent',
                     'sup',
                     'sub',
-                    //'image',
-                    //'file',
                     'link',
                     'line'
                 ],
                 'plugins' => [
                     'alignment',
-                    //'definedlinks',
-                    //'filemanager',
+                    'rte_definedlinks',
+                    'filebrowser',
                     //'handle',
-                    //'imagemanager',
                     'inlinestyle',
                     //'limiter',
                     //'counter',
