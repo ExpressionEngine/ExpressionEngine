@@ -26,6 +26,8 @@ class Duration_Ft extends EE_Fieldtype
      */
     public $has_array_data = false;
 
+    public $size = 'small';
+
     /**
      * Validate Field
      *
