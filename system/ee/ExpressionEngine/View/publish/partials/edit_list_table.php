@@ -11,7 +11,7 @@
           <?php endif; ?>
         </div>
 
-        <div class="filter-search-bar" <?php if (ee()->input->get('hide_closer') === 'y') : ?> style="padding: 10px 10px;"<?php endif; ?>>
+        <div class="filter-search-bar" <?php if (ee()->uri->segment(3) == 'prolet') : ?> style="padding: 10px 10px;"<?php endif; ?>>
 
             <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
             <div class="filter-search-bar__filter-row">
