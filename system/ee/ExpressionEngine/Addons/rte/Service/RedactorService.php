@@ -46,7 +46,7 @@ class RedactorService implements RteService {
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
 
             ee()->javascript->set_global([
-                'Rte.filedirUrls' => $filedir_urls
+                'Rte.filedirUrls' => (object) $filedir_urls
             ]);
 
             static::$_includedFieldResources = true;
@@ -94,12 +94,13 @@ class RedactorService implements RteService {
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
         $config['toolbar']['lang'] = ee()->lang->code($language);
 
-        if (!empty(ee()->config->item('site_pages')) && in_array('rte_definedlinks', $config['toolbar']['plugins'])) {
+        if (!empty(ee()->config->item('site_pages')) && !empty(array_intersect(['rte_definedlinks', 'pages'], $config['toolbar']['plugins']))) {
             $action_id = ee()->db->select('action_id')
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
                 ->get('actions');
             $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
+            $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
         // -------------------------------------------
@@ -128,17 +129,22 @@ class RedactorService implements RteService {
             }
         }
         
-        if (isset($config['height']) && !empty($config['rheight'])) {
+        if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
             $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
         }
-        if (isset($config['max_height']) && !empty($config['max_height'])) {
+        if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
             $config['toolbar']['maxHeight'] = (int) $config['max_height'] . 'px';
+        }
+
+        if (isset($config['limiter']) && !empty($config['limiter']) && is_numeric($config['limiter'])) {
+            $config['toolbar']['plugins'][] = 'limiter';
+            $config['toolbar']['limiter'] = (int) $config['limiter'];
         }
 
         //link
         $config['toolbar']['linkValidation'] = false;
-        $config['toolbar']['linkTarget'] = false;
-        $config['toolbar']['linkNewTab'] = false;
+        $config['toolbar']['linkTarget'] = true;
+        $config['toolbar']['linkNewTab'] = true;
 
         // -------------------------------------------
         //  JSONify Config and Return
@@ -200,6 +206,9 @@ class RedactorService implements RteService {
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
             $fullToolset = [];
             foreach ($fullToolbar as $i => $tool) {
+                if ($tool == 'limiter') {
+                    continue;
+                }
                 $fullToolset[$tool] = lang($tool . '_rte');
             }
 
@@ -251,10 +260,10 @@ class RedactorService implements RteService {
                     'alignment',
                     'rte_definedlinks',
                     'filebrowser',
-                    //'handle',
+                    'pages',
                     'inlinestyle',
-                    //'limiter',
-                    //'counter',
+                    'limiter',
+                    'counter',
                     'properties',
                     'specialchars',
                     'table',

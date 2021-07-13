@@ -767,7 +767,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box; }
-  .redactor-modal input,
+  .redactor-modal input:not([type='checkbox']),
   .redactor-modal select,
   .redactor-modal textarea {
     box-sizing: border-box;
@@ -806,8 +806,7 @@
     background: none;
     box-shadow: none;
     display: inline-block; }
-  .redactor-modal input[type="radio"],
-  .redactor-modal input[type="checkbox"] {
+  .redactor-modal input[type="radio"] {
     display: inline-block;
     width: auto;
     height: auto;
@@ -847,14 +846,14 @@
   .redactor-modal .form-checkboxes label.checkbox {
     display: inline-block;
     margin-right: 1em; }
-  .redactor-modal input:hover,
+  .redactor-modal input:not([type='checkbox']):hover,
   .redactor-modal textarea:hover,
   .redactor-modal select:hover {
     outline: none;
     background-color: #fff;
     border-color: #969fa9;
     box-shadow: none; }
-  .redactor-modal input:focus,
+  .redactor-modal input:not([type='checkbox']):focus,
   .redactor-modal textarea:focus,
   .redactor-modal select:focus {
     transition: all linear .2s;

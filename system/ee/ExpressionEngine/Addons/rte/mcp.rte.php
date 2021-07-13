@@ -417,21 +417,35 @@ class Rte_mcp
                 ),
                 array(
                     'title' => lang('rte_min_height'),
+                    'desc' => lang('rte_min_height_desc'),
                     'fields' => array(
                         'settings[height]' => array(
                             'type' => 'short-text',
-                            'value' => isset($config->settings['max_height']) ? $config->settings['max_height'] : '',
+                            'value' => isset($config->settings['height']) && !empty($config->settings['height']) ? (int) $config->settings['height'] : '',
                             'label' => ''
                         )
                     )
                 ),
                 array(
                     'title' => lang('rte_max_height'),
+                    'desc' => lang('rte_max_height_desc'),
                     'group' => 'redactor_toolbar',
                     'fields' => array(
                         'settings[max_height]' => array(
                             'type' => 'short-text',
-                            'value' => isset($config->settings['max_height']) ? $config->settings['max_height'] : '',
+                            'value' => isset($config->settings['max_height']) && !empty($config->settings['max_height']) ? (int) $config->settings['max_height'] : '',
+                            'label' => ''
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('rte_limiter'),
+                    'desc' => lang('rte_limiter_desc'),
+                    'group' => 'redactor_toolbar',
+                    'fields' => array(
+                        'settings[limiter]' => array(
+                            'type' => 'short-text',
+                            'value' => isset($config->settings['limiter']) && !empty($config->settings['limiter']) ? (int) $config->settings['limiter'] : '',
                             'label' => ''
                         )
                     )

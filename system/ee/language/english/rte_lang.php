@@ -18,7 +18,11 @@ $lang = array(
     'rte_config_name' => 'Configuration Name',
     'rte_toolbar' => 'Customize the Toolbar',
     'rte_min_height' => 'Minimal height',
+    'rte_min_height_desc' => 'Enter the number of pixels, or leave empty',
     'rte_max_height' => 'Maximal height',
+    'rte_max_height_desc' => 'Enter the number of pixels, or leave empty',
+    'rte_limiter' => 'Limit characters',
+    'rte_limiter_desc' => 'Limit the number of characters a user can enter.',
     'rte_upload_dir' => 'Upload Directory',
     'rte_advanced_settings' => 'Advanced Settings',
     'rte_config_saved' => 'Configuration Saved!',
@@ -326,6 +330,10 @@ $lang = array(
     'rte_definedlinks_rte' => 'Pages links',
 
     'filebrowser_rte' => 'File Browser',
+
+    'counter_rte' => 'Counter',
+
+    'pages_rte' => 'Pages',
 
     '' => ''
 );

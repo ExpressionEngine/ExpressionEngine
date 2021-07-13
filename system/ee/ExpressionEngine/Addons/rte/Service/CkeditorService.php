@@ -45,7 +45,7 @@ class CkeditorService implements RteService
 
             ee()->javascript->set_global([
                 'Rte.pages_autocomplete' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now,
-                'Rte.filedirUrls' => $filedir_urls
+                'Rte.filedirUrls' => (object) $filedir_urls
             ]);
 
             static::$_includedFieldResources = true;

@@ -1,6 +1,6 @@
 (function($R)
 {
-    $R.add('plugin', 'handle', {
+    $R.add('plugin', 'pages', {
         init: function(app)
         {
             this.app = app;
@@ -15,7 +15,7 @@
 
             // local
             this.handleTrigger = (typeof this.opts.handleTrigger !== 'undefined') ? this.opts.handleTrigger : '@';
-            this.handleStart = (typeof this.opts.handleStart !== 'undefined') ? this.opts.handleStart : 0;
+            this.handleStart = (typeof this.opts.handleStart !== 'undefined') ? this.opts.handleStart : 1;
             this.handleStr = '';
             this.handleLen = this.handleStart;
         },
@@ -176,9 +176,9 @@
         },
 		_load: function()
 		{
-    		$R.ajax.post({
+    		$R.ajax.get({
         		url: this.opts.handle,
-        		data: 'handle=' + this.handleStr,
+        		data: 'search=' + this.handleStr,
         		success: this._parse.bind(this)
     		});
 		},
@@ -214,11 +214,13 @@
             for (var key in this.data)
             {
                 var $item = $R.dom('<a href="#">');
-                $item.html(this.data[key].item);
-                $item.attr('data-key', key);
+                $item.html(this.data[key].text);
+                $item.attr('data-href', this.data[key].href);
+                $item.attr('data-text', this.data[key].text);
                 $item.on('click', this._replace.bind(this));
 
                 this.$list.append($item);
+                
             }
 
             // position
@@ -271,8 +273,9 @@
     		e.preventDefault();
 
     		var $item = ($el) ? $el : $R.dom(e.target);
-    		var key = $item.attr('data-key');
-    		var replacement = this.data[key].replacement;
+            var replacement = document.createElement('a');
+            replacement.setAttribute('href', $item.attr('data-href'));
+            replacement.innerHTML = $item.attr('data-text');
 
     		var marker = this.marker.insert('start');
     		var $marker = $R.dom(marker);

@@ -247,10 +247,12 @@ class RteHelper
                         ->all()
                         ->getDictionary('channel_id', 'channel_title');
                     $entries = ee('Model')->get('ChannelEntry', $entry_ids)
-                        ->fields('entry_id', 'title', 'url_title', 'channel_id')
-                        ->all();
-                    $titles = $entries->getDictionary('entry_id', 'title');
-                    $channel_ids = $entries->getDictionary('entry_id', 'channel_id');
+                        ->fields('entry_id', 'title', 'url_title', 'channel_id');
+                    if (!empty($search)) {
+                        $entries->filter('title', 'LIKE', '%' . $search . '%');
+                    }
+                    $titles = $entries->all()->getDictionary('entry_id', 'title');
+                    $channel_ids = $entries->all()->getDictionary('entry_id', 'channel_id');
                     foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
                         if (isset($titles[$entry_id])) {
                             $pages[] = (object) [

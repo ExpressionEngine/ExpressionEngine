@@ -10,3 +10,91 @@
 .redactor-toolbar a.redactor-button-active .re-icon-filebrowser {
     opacity: 0.4;
 }
+
+/* clips */
+.redactor-clips-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.redactor-clips-list li {
+    display: inline-block;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+.redactor-clips-list span {
+    white-space: nowrap;
+    background: rgba(0,125,255, .75);
+    color: #fff;
+    display: inline-block;
+    padding: 3px 6px;
+    line-height: 1;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* pages (handle) */
+#redactor-handle-list {
+    font-family: "Trebuchet MS", 'Helvetica Neue', Helvetica, Tahoma, sans-serif;
+    display: none;
+    position: absolute;
+    z-index: 1053;
+    background-color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
+    border-radius: 2px;
+    width: 264px;
+    max-height: 250px;
+    margin: 0;
+    overflow: auto;
+    font-size: 14px;
+    padding: 0;
+}
+#redactor-handle-list a {
+    display: block;
+    text-decoration: none;
+    padding: 10px 8px;
+    white-space: nowrap;
+    color: #000;
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+#redactor-handle-list a.active,
+#redactor-handle-list a:hover {
+    color: #fff !important;
+    background-color: #449aef !important;
+}
+
+/* inlinestyle */
+.redactor-dropdown-inline .redactor-dropdown-item-marked span {
+	font-size: 14px;
+	background-color: #fdb833;
+	color: #000;
+	text-decoration: none;
+}
+.redactor-dropdown-inline .redactor-dropdown-item-code span {
+	font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+	font-size: 13px;
+	background: rgba(0, 0, 0, .05);
+}
+.redactor-dropdown-inline .redactor-dropdown-item-variable span {
+	font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+	font-size: 13px;
+	color: rgba(0, 0, 0, .5);
+}
+.redactor-dropdown-inline .redactor-dropdown-item-shortcut span {
+	font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+	font-size: 12px;
+	padding: 0.25em;
+	white-space: nowrap;
+	border: 1px solid #e5e7e9;
+}
+.redactor-dropdown-inline .redactor-dropdown-item-sup span,
+.redactor-dropdown-inline .redactor-dropdown-item-sub span {
+	position: relative;
+	font-size: 12px;
+}
+.redactor-dropdown-inline .redactor-dropdown-item-sup span {
+	top: -3px;
+}
+.redactor-dropdown-inline .redactor-dropdown-item-sub span {
+	top: 3px;
+}
