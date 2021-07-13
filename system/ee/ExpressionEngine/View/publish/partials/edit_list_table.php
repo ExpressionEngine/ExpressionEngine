@@ -1,8 +1,8 @@
-<div class="panel" <?php if (ee()->input->get('hide_closer') === 'y') : ?> style="overflow: hidden; margin-bottom: 0px; margin-top: -16px; margin-left: -16px; margin-right: -16px; border-radius: 0;"<?php endif; ?>>
+<div class="panel" <?php if (ee()->uri->segment(3) == 'prolet') : ?> style="overflow: hidden; margin-bottom: 0px; margin-top: -16px; margin-left: -16px; margin-right: -16px; border-radius: 0;"<?php endif; ?>>
     <div class="tbl-ctrls">
         <?=form_open($form_url)?>
 
-        <div class="panel-heading"<?php if (ee()->input->get('hide_closer') === 'y') : ?> style="display: none;"<?php endif; ?>>
+        <div class="panel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
           <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
           <?php if (isset($cp_heading)) : ?>
           <div class="title-bar">
