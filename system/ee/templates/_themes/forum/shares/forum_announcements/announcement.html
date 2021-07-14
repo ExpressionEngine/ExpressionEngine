@@ -25,7 +25,12 @@ function showimage(loc, width, height)
 <td>{lang:posted_on} {post_date format="%d %F %Y %h:%i %A"}</td>
 <td align="right">&nbsp;
 {if can_view_ip}<i>{lang:ip_address} {ip_address}</i>{/if}
-{if can_change_status}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:change_status}">{lang:change_status}</a> ]</span>{/if}
+{if can_change_status}&nbsp;&nbsp;
+	<form action="{path:change_status}" method="POST">
+		<input type="hidden" name="csrf_token" value = {csrf_token}>
+		<input type="submit" name="submit" value = "{lang:change_status}">
+	</form>			
+{/if}
 </td>
 </tr>
 </table>

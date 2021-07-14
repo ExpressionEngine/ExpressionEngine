@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -3305,8 +3306,9 @@ class Forum_Core extends Forum
                         $temp,
                         array(
                             'lang:change_status' => ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
-                            'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger .  '&amp;csrf_token=' . CSRF_TOKEN,
+                            'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
                             'css:status_button' => ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
+                            
                         )
                     );
                 }
@@ -5910,7 +5912,6 @@ class Forum_Core extends Forum
         exit;
     }
 
-
     /**
      * Change Post Status
      */
@@ -5931,11 +5932,10 @@ class Forum_Core extends Forum
         $viewpath = ($query->row('announcement') == 'n') ? 'viewthread/' : 'viewannounce/';
         $viewpath .= ($query->row('announcement') == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
 
-        $token = ee('Request')->get('csrf_token');
+        $token = ee('Request')->post('csrf_token');
         if (! $this->_mod_permission('can_change_status', $query->row('forum_id')) || (! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
-
 
         // Update the status
         $status = ($query->row('status') == 'o') ? 'c' : 'o';
