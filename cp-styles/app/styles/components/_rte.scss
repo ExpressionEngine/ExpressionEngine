@@ -459,6 +459,12 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
     opacity: 0.4;
 }
 
+.field-control .redactor-in em {
+    display: inline;
+    margin-top: inherit;
+    font-size: inherit;
+}
+
 /* clips */
 .redactor-clips-list {
     list-style: none;

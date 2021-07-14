@@ -177,8 +177,7 @@
 		_load: function()
 		{
     		$R.ajax.get({
-        		url: this.opts.handle,
-        		data: 'search=' + this.handleStr,
+        		url: this.opts.handle + '&search=' + this.handleStr,
         		success: this._parse.bind(this)
     		});
 		},
