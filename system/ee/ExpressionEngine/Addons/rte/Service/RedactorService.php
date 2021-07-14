@@ -259,6 +259,7 @@ class RedactorService implements RteService {
                     'filebrowser',
                     'pages',
                     'inlinestyle',
+                    'fontcolor',
                     'limiter',
                     'counter',
                     'properties',
