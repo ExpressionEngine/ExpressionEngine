@@ -278,7 +278,6 @@
 				if (buttons.length > 0) {
 					buttons.sglclickable().bind('sglclick', function() {
 						var button = $(this);
-						console.log(button);
 						if (button.hasClass(disabled_button_class)) {
 							button.removeClass(disabled_button_class);
 							$('*[name]', button).removeAttr('disabled');
