@@ -270,8 +270,6 @@ class Rte_mcp
             }
         }
 
-        ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/settings.css' . '" />');
-
         ee()->cp->add_js_script(array(
             'ui' => 'draggable',
             'fp_module' => 'rte'

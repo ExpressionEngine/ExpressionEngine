@@ -224,9 +224,16 @@ class Rte_ft extends EE_Fieldtype
      */
     public function grid_display_field($data)
     {
-        // @TODO: Repeat this code
-        RteHelper::includeFieldResources();
-        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+        $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
+        if (!empty($toolsetId)) {
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $this->settings['toolset_id'])->first();
+        } else {
+            $toolset = ee('Model')->get('rte:Toolset')->first();
+        }
+
+        // Load proper toolset
+        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         // get the cache
         if (! isset(ee()->session->cache['rte'])) {
@@ -235,7 +242,6 @@ class Rte_ft extends EE_Fieldtype
         $cache = & ee()->session->cache['rte'];
 
         if (! isset($cache['displayed_grid_cols'])) {
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/grid.js"></script>');
             $cache['displayed_grid_cols'] = array();
         }
 

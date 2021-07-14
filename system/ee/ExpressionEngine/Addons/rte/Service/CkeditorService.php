@@ -25,24 +25,21 @@ class CkeditorService implements RteService
     protected function includeFieldResources()
     {
         if (! static::$_includedFieldResources) {
-            $version = ee('Addon')->get('rte')->getVersion();
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/ckeditor.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . URL_THEMES . 'rte/styles/ckeditor.css?v=' . $version . '" />');
+            //would rather prefer this in combo loader, but that's for CP only
+            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/ckeditor/ckeditor.js'));
+            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/rte.js'));
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);
             if ($lang_code != 'en') {
-                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/ckeditor/translations/' . $lang_code . '.js?v=' . $version . '"></script>');
+                ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/ckeditor/translations/' . $lang_code . '.js'));
             }
 
             $action_id = ee()->db->select('action_id')
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
                 ->get('actions');
-
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
-
             ee()->javascript->set_global([
                 'Rte.pages_autocomplete' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now,
                 'Rte.filedirUrls' => (object) $filedir_urls
@@ -212,10 +209,12 @@ class CkeditorService implements RteService
     public function toolbarInputHtml($config)
     {
         $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
-        $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);
+        $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);//merge to get the right order
         $fullToolset = [];
         foreach ($fullToolbar as $i => $tool) {
-            $fullToolset[$tool] = lang($tool . '_rte');
+            if (in_array($tool, static::defaultToolbars()['CKEditor Full'])) {
+                $fullToolset[$tool] = lang($tool . '_rte');
+            }
         }
 
         return ee('View')->make('rte:toolbar')->render(

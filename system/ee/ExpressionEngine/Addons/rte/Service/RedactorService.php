@@ -25,26 +25,19 @@ class RedactorService implements RteService {
     protected function includeFieldResources()
     {
         if (! static::$_includedFieldResources) {
-            $version = ee('Addon')->get('rte')->getVersion();
-            // Styles
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css?v=' . $version . '" type="text/css" />');
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/styles/redactor.css?v=' . $version . '" type="text/css" />');
 
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/rte.js?v=' . $version . '"></script>');
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/redactor.js?v=' . $version . '"></script>');
-            foreach (static::defaultToolbars()['Redactor Full']['plugins'] as $plugin) {
-                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/plugins/' . $plugin . '/' . $plugin . '.js?v=' . $version . '"></script>');
-            }
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
+            
+            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/redactor/redactor.min.js'));
+            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/rte.js'));
+
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);
             if ($lang_code != 'en') {
-                ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/redactor/langs/' . $lang_code . '.js?v=' . $version . '"></script>');
+                ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/redactor/langs/' . $lang_code . '.js'));
             }
 
-            
-
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
-
             ee()->javascript->set_global([
                 'Rte.filedirUrls' => (object) $filedir_urls
             ]);
@@ -176,7 +169,7 @@ class RedactorService implements RteService {
 
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES . 'rte/scripts/redactor/redactor.css" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
 
             ee()->cp->add_js_script([
                 'file' => ['cp/form_group'],
@@ -184,10 +177,12 @@ class RedactorService implements RteService {
 
             $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
 
-            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);
+            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
             $fullToolset = [];
             foreach ($fullToolbar as $i => $tool) {
-                $fullToolset[$tool] = lang($tool . '_rte');
+                if (in_array($tool, static::defaultToolbars()['Redactor Full']['buttons'])) {
+                    $fullToolset[$tool] = lang($tool . '_rte');
+                }
             }
 
             return ee('View')->make('rte:redactor-toolbar')->render(
@@ -207,9 +202,11 @@ class RedactorService implements RteService {
             $fullToolset = [];
             foreach ($fullToolbar as $i => $tool) {
                 if ($tool == 'limiter') {
-                    continue;
+                    continue;//this one one is included based on whether setting is provided
                 }
-                $fullToolset[$tool] = lang($tool . '_rte');
+                if (in_array($tool, static::defaultToolbars()['Redactor Full']['plugins'])) {
+                    $fullToolset[$tool] = lang($tool . '_rte');
+                }
             }
 
             return ee('View')->make('rte:redactor-toolbar')->render(
