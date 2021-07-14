@@ -296,7 +296,7 @@ class Rte_mcp
                 'toolset_id' => '',
                 'toolset_type' => $toolsetType,
                 'toolset_name' => '',
-                'settings' => ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(),
+                'settings' => ee('rte:' . ucfirst($toolsetType) . 'Service')->defaultConfigSettings(),
             ));
         }
 
