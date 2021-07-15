@@ -288,7 +288,8 @@ a.cke_button {
 .redactor-toolbar a.redactor-button-active .re-icon-rte_definedlinks, 
 .redactor-toolbar a.redactor-button-active .re-icon-filebrowser,
 .redactor-toolbar a.redactor-button-active .re-icon-counter,
-.redactor-toolbar a.redactor-button-active .re-icon-pages {
+.redactor-toolbar a.redactor-button-active .re-icon-pages,
+.redactor-toolbar a.redactor-button-active .re-icon-readmore {
     opacity: 0.4;
 }
 
@@ -455,6 +456,11 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
     opacity: 0.75;
 }
 
+.re-icon-readmore { background-image:
+	url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M3.598.687h1.5v5h-1.5zm14.5 0h1.5v5h-1.5z"></path><path d="M19.598 4.187v1.5h-16v-1.5zm-16 14.569h1.5v-5h-1.5zm14.5 0h1.5v-5h-1.5z"></path><path d="M19.598 15.256v-1.5h-16v1.5zM5.081 9h6v2h-6zm8 0h6v2h-6zm-9.483 1L0 12.5v-5z"></path></svg>');
+    opacity: 0.75;
+}
+
 .redactor-toolbar a.redactor-button-active .re-icon-filebrowser {
     opacity: 0.4;
 }
@@ -551,4 +557,54 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
 }
 .redactor-dropdown-inline .redactor-dropdown-item-sub span {
 	top: 3px;
+}
+
+/* readmore */
+.redactor-in .readmore {
+	position: relative;
+	clear: both;
+	padding: 5px 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&::after {
+		content: '';
+		position: absolute;
+		border-bottom: 2px dashed hsl(0, 0%, 77%);
+		width: 100%;
+	}
+}
+
+.redactor-in .readmore__label {
+	position: relative;
+	z-index: 1;
+	padding: .3em .6em;
+	display: block;
+	text-transform: uppercase;
+	border: 1px solid hsl(0, 0%, 77%);
+	border-radius: 2px;
+	font-family: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
+	font-size: 0.75em;
+	font-weight: bold;
+	color: hsl(0, 0%, 20%);
+	background: hsl(0, 0%, 100%);
+	box-shadow: 2px 2px 1px hsla(0, 0%, 0%, 0.15);
+
+	/* Disable the possibility to select the label text by the user. */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* Do not show the page break element inside the print preview window. */
+@media print {
+	.redactor-in .readmore {
+		padding: 0;
+
+		&::after {
+			display: none;
+		}
+	}
 }

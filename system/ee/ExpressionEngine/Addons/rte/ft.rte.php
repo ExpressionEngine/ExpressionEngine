@@ -419,6 +419,9 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
+        //strip "read more" separator
+        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', $data);
+        
         // return images only?
         if (isset($params['images_only']) && $params['images_only'] == 'yes') {
             $data = $this->_parseImages($data, $params, $tagdata);

@@ -27,6 +27,7 @@
     "gulp-rename": "^2.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-typescript": "^5.0.1",
+    "gulp-sourcemaps": "^3.0.0",
     "typescript": "^3.7.3",
     "auto-reload-brunch": "^2",
     "babel-brunch": "^7",

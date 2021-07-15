@@ -267,6 +267,7 @@ class RedactorService implements RteService {
                     'table',
                     'video',
                     'widget',
+                    'readmore',
                     'fullscreen',
                 ]
             ]

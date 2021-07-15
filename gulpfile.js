@@ -7,6 +7,7 @@ const concat = require('gulp-concat')
 const uglify = require('gulp-uglify')
 const rename = require('gulp-rename')
 const cleanCSS = require('gulp-clean-css');
+const sourcemaps = require('gulp-sourcemaps');
 
 const jsSourceFolder = 'themes/ee/cp/js/src/'
 const jsVendorFolder = 'themes/ee/cp/js/src/vendor/'
@@ -55,8 +56,10 @@ function buildRteRedactorCss() {
 
 function buildRteRedactorJs() {
 	return src([rteRedactorFolder + 'redactor.js', rteRedactorFolder + 'plugins/**/*.js'])
+		.pipe(sourcemaps.init())	
 		.pipe(concat('redactor.min.js'))
 		.pipe(uglify())
+		.pipe(sourcemaps.write('./'))
 		.pipe(dest(rteRedactorFolder));
 }
 

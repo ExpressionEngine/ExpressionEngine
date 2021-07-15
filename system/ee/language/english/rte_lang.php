@@ -335,5 +335,7 @@ $lang = array(
 
     'pages_rte' => 'Pages',
 
+    'fontcolor_rte' => 'Text color',
+
     '' => ''
 );

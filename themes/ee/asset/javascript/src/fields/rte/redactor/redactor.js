@@ -1242,6 +1242,9 @@ Dom.prototype = {
     },
     _getOffset: function(node)
     {
+        if (typeof(node) === 'undefined' || node === false) {
+            return;
+        }
         var rect = node.getBoundingClientRect();
         var doc = node.ownerDocument;
 		var docElem = doc.documentElement;
