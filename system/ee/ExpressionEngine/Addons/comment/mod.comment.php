@@ -1801,8 +1801,8 @@ class Comment
 
         // Bleh- really need a conditional for if they are subscribed
 
-        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string();
-        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string();
+        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() .'&csrf_token=' . CSRF_TOKEN;
+        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
 
         $data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 
