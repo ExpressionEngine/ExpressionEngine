@@ -6,13 +6,24 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
+var isNavigatingAway = false;
+function preventNavigateAway(e) {
+	if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+		e.returnValue = EE.lang.confirm_exit;
+		return EE.lang.confirm_exit;
+	}
+}
 $(document).ready(function () {
+
+	if(typeof isNavigatingAway === 'undefined') {
+		var isNavigatingAway
+	}
+
+	isNavigatingAway = false;
 
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
-	var isNavigatingAway = false;
 	try {
 		sessionStorage.removeItem("preventNavigateAway");
 	} catch (e) {}
@@ -69,12 +80,7 @@ $(document).ready(function () {
 	});
 
 	//prevent navigating away using browser buttons
-	function preventNavigateAway(e) {
-		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
-			e.returnValue = EE.lang.confirm_exit;
-			return EE.lang.confirm_exit;
-		}
-	}
+	
 	window.addEventListener('beforeunload', preventNavigateAway);
 	publishForm.on('submit', function(){
 		window.removeEventListener('beforeunload', preventNavigateAway);
