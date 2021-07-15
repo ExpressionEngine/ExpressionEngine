@@ -255,6 +255,7 @@ class Publish extends AbstractPublishController
         if (ee('Request')->get('load_autosave') == 'y') {
             $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
                 ->fields('entry_id')
+                ->filter('original_entry_id', 0)
                 ->filter('channel_id', $channel_id)
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->first();
