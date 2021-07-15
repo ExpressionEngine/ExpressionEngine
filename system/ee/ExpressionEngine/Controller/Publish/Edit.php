@@ -431,7 +431,7 @@ class Edit extends AbstractPublishController
                 'value' => 'save_and_next',
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
-                ]];
+            ]];
         }
 
         $version_id = ee()->input->get('version');
