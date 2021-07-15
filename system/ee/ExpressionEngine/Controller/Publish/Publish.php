@@ -263,8 +263,7 @@ class Publish extends AbstractPublishController
             }
         }
 
-        if ($autosave_id || ee('Request')->get('load_autosave') == 'y') {
-            
+        if ($autosave_id) {
             $autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
                 ->filter('channel_id', $channel_id)
                 ->filter('site_id', ee()->config->item('site_id'))

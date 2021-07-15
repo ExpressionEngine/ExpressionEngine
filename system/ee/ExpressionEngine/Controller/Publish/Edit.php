@@ -446,6 +446,17 @@ class Edit extends AbstractPublishController
             $entry->set($version_data);
         }
 
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('channel_id', $channel_id)
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
+            }
+        }
+
         if ($autosave_id) {
             $autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
                 ->filter('site_id', ee()->config->item('site_id'))
