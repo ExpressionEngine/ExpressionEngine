@@ -118,6 +118,11 @@ $(document).ready(function () {
 						else if (result.success) {
 							publishHeading.append(result.success);
 							sessionStorage.removeItem("preventNavigateAway");
+
+							// Check if we're in an iframe, and emit appropriate events
+							if(window.self !== window.top) {
+								document.dispatchEvent(new CustomEvent('ee-pro-object-has-autosaved'));
+							}
 						}
 						else {
 							console.log('Autosave Failed');
