@@ -679,6 +679,9 @@ class MemberImport extends Utilities
         //  Update Statistics
         $this->stats->update_member_stats();
 
+        //Clear out the cache.
+        ee('Filesystem')->deleteDir($this->cache, true);
+
         return $counter;
     }
 

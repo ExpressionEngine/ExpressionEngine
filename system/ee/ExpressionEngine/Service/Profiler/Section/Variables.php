@@ -80,7 +80,7 @@ class Variables extends ProfilerSection
                 continue;
             }
 
-            $prepped_data[$key] = htmlspecialchars(stripslashes(print_r($val, true)));
+            $prepped_data[ee('Security/XSS')->clean($key)] = htmlspecialchars(stripslashes(print_r($val, true)));
         }
 
         return $prepped_data;
