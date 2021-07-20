@@ -232,40 +232,34 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
+
             // Populate the $currentTemplateInfo array
             $currentTemplateInfo = array();
-            if ($this->templates_loaded) // don't do this if we don't have any template info!
-            {
+            if (count($this->templates_loaded)) { // don't do this if we don't have any template info! 
                 $currentTemplateInfo = array(
                     'template_name' => $template,
                     'template_group' => $template_group,
                 );
             }
-            // Add a conditional to adjust what is returned by function depending on what kind of template we are dealing with
-            if ($this->final_template)
-            {
-                $this->final_template = ee()->extensions->call(
-                    'template_post_parse',
-                    $this->final_template,
-                    ($is_embed || $is_layout), // $is_partial
-                    $site_id,
-                    $currentTemplateInfo
-                );
+
+            // Build a return packet since we don't know at this stage where we are returning it
+            $return = ee()->extensions->call(
+                'template_post_parse',
+                $is_embed || $is_layout ? $this->layout : $this->final_template,
+                ($is_embed || $is_layout), // $is_partial
+                $site_id,
+                $currentTemplateInfo
+            );
+            // Add a conditional to adjust what is updated by function depending on whether this is final template or not
+            if ($is_embed || $is_layout) {
+                $this->final_template = $return;
             }
-            else
-            {
-                $this->template = ee()->extensions->call(
-                    'template_post_parse',
-                    $this->template,
-                    ($is_embed || $is_layout), // $is_partial
-                    $site_id,
-                    $currentTemplateInfo
-                );
+            else {
+                $this->template = $return;
             }
         }
         //
         // -------------------------------------------
-    return;
     }
 
     /**
@@ -1914,7 +1908,7 @@ class EE_Template
         $status = & $this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (! isset($args['cache']) or $args['cache'] != 'yes') {
+        if (ee('LivePreview')->hasEntryData() or ! isset($args['cache']) or $args['cache'] != 'yes') {
             $status = 'NO_CACHE';
 
             return false;
