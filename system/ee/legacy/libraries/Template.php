@@ -252,10 +252,10 @@ class EE_Template
             );
             // Add a conditional to adjust what is updated by function depending on whether this is final template or not
             if ($is_embed || $is_layout) {
-                $this->final_template = $return;
+                $this->template = $return;
             }
             else {
-                $this->template = $return;
+                $this->final_template = $return;
             }
         }
         //
