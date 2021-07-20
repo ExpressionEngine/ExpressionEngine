@@ -41,5 +41,7 @@ Bullet list below, e.g.
    - Fix a bug with debug variables not being filtered
    - Fix a bug with the importer converter filter
 
+   - Fix a bug ([#1086](https://github.com/ExpressionEngine/ExpressionEngine/issues/1086) where `{exp:` tags within EE comments would be found / reported by the tag debugger.
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
