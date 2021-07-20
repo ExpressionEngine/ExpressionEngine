@@ -7,6 +7,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Bullet list below, e.g.
 
    - Added <new feature>
+   - Changed how the Toggle field renders in a column in the Entry Manager
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
    - Fixed a PHP 7.3+ warning that occurred when non-members triggered email notifications.
    - Fixed a bug where the initial sorting of content when populating a custom field based on other fields was incorrect.
