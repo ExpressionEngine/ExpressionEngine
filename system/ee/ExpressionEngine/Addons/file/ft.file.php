@@ -539,10 +539,19 @@ JSC;
             }
             if (isset($params['width'])) {
                 $imageLibConfig['width'] = (int) $params['width'];
+                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
+                    $imageLibConfig['master_dim'] = 'width';
+                    $imageLibConfig['height'] = 100;
+                }
             }
             if (isset($params['height'])) {
                 $imageLibConfig['height'] = (int) $params['height'];
+                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
+                    $imageLibConfig['master_dim'] = 'height';
+                    $imageLibConfig['width'] = 100;
+                }
             }
+
             ee()->image_lib->clear();
             ee()->image_lib->initialize($imageLibConfig);
 
