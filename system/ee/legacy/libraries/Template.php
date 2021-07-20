@@ -236,8 +236,6 @@ class EE_Template
             $currentTemplateInfo = array();
             if ($this->templates_loaded) // don't do this if we don't have any template info!
             {
-                // Use count of $this->templates_loaded to give index of current template being processed
-                $currentTemplateIndex = count($this->templates_loaded)-1;
                 $currentTemplateInfo = array(
                     'template_name' => $template,
                     'template_group' => $template_group,
