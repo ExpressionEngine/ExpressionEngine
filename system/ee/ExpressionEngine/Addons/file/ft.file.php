@@ -532,6 +532,11 @@ JSC;
                 'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
                 'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
             );
+            //techically, both dimentions are always required, so we'll set defaults
+            if ($imageLibConfig['master_dim'] != 'auto') {
+                $imageLibConfig['width'] = 100;
+                $imageLibConfig['height'] = 100;
+            }
             if (isset($params['width'])) {
                 $imageLibConfig['width'] = (int) $params['width'];
             }
