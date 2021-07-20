@@ -553,6 +553,12 @@ JSC;
             }
 
             ee()->image_lib->clear();
+            if (!isset($imageLibConfig['width'])) {
+                ee()->image_lib->width = '';
+            }
+            if (!isset($imageLibConfig['height'])) {
+                ee()->image_lib->height = '';
+            }
             ee()->image_lib->initialize($imageLibConfig);
 
             if (!ee()->image_lib->$function()) {
