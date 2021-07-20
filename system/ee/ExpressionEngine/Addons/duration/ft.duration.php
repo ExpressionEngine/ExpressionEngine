@@ -40,6 +40,14 @@ class Duration_Ft extends EE_Fieldtype
             return true;
         }
 
+        if (!preg_match('/^[0-9:]+$/', $data)) {
+            return sprintf(
+                lang('valid_duration'),
+                lang('duration_ft_' . $this->settings['units']),
+                $this->getColonNotationFormat()
+            );
+        }
+
         if (strpos($data, ':')) {
             $data = $this->convertFromColonNotation($data);
         }
