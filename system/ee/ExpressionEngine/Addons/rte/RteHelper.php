@@ -208,11 +208,11 @@ class RteHelper
             $site_id = ee()->config->item('site_id');
         }
 
-        $cache_key = '/site_pages/rte_' . $site_id;
+        $cache_key = 'rte_' . $site_id;
         if (!empty($search)) {
             $cache_key .= '_' . urlencode($search);
         }
-        $pages = ee()->cache->get($cache_key, \Cache::GLOBAL_SCOPE);
+        $pages = ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
 
         if ($pages === false) {
             $pages = [];
@@ -267,7 +267,7 @@ class RteHelper
                     }
                 }
             }
-            ee()->cache->save($cache_key, $pages, 0, \Cache::GLOBAL_SCOPE);
+            ee()->cache->save('/site_pages/' . md5($cache_key), $pages, 0, \Cache::GLOBAL_SCOPE);
         }
 
         return $pages;
