@@ -30,7 +30,9 @@ class Factory
         $this->migration = $migration;
 
         // Load the logger
-        ee()->load->library('logger');
+        if (! ee()->logger) {
+            ee()->load->library('logger');
+        }
 
         // Checks for exp_migrations table and creates it if it does not exist
         $this->ensureMigrationTableExists();
