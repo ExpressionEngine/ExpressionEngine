@@ -18,133 +18,133 @@ use PHPUnit\Framework\TestCase;
 
 class SanitizeFilenameTest extends TestCase
 {
-	private $security;
+    private $security;
 
-	private $goodNames = [
-		'image.png',
-		'index.html',
-		'my-pdf-file-name.pdf',
-	];
+    private $goodNames = [
+        'image.png',
+        'index.html',
+        'my-pdf-file-name.pdf',
+    ];
 
-	private $badNames = [
-		"/some/uri/path/\r" => 'someuripath',
-		"/some/uri/path/\n" => 'someuripath',
-		"/some/uri/path/\r\nn" => 'someuripathn',
-		'F&A Costs.html' => 'FA Costs.html',
-		'badfilename#name.pdf' => 'badfilenamename.pdf',
-		// "badfilename../" => "badfilename",
-		"badfilename<!--" => "badfilename",
-		"badfilename-->" => "badfilename",
-		"badfilename<" => "badfilename",
-		"badfilename>" => "badfilename",
-		"badfilename'" => "badfilename",
-		'badfilename"' => "badfilename",
-		'badfilename&' => "badfilename",
-		'badfilename$' => "badfilename",
-		'badfilename#' => "badfilename",
-		'badfilename{' => "badfilename",
-		'badfilename}' => "badfilename",
-		'badfilename[' => "badfilename",
-		'badfilename]' => "badfilename",
-		'badfilename=' => "badfilename",
-		'badfilename:' => "badfilename",
-		'badfilename;' => "badfilename",
-		'badfilename?' => "badfilename",
-		"badfilename%20" => "badfilename",
-		"badfilename%22" => "badfilename",
-		"badfilename%3c" => "badfilename",
-		"badfilename%253c" => "badfilename",
-		"badfilename%3e" => "badfilename",
-		"badfilename%0e" => "badfilename",
-		"badfilename%28" => "badfilename",
-		"badfilename%29" => "badfilename",
-		"badfilename%2528" => "badfilename",
-		"badfilename%26" => "badfilename",
-		"badfilename%24" => "badfilename",
-		"badfilename%3f" => "badfilename",
-		"badfilename%3b" => "badfilename",
-		"badfilename%3d" => "badfilename",
-	];
+    private $badNames = [
+        "/some/uri/path/\r" => '_some_uri_path__',
+        "/some/uri/path/\n" => '_some_uri_path__',
+        "/some/uri/path/\r\nn" => '_some_uri_path___n',
+        'F&A Costs.html' => 'F_A Costs.html',
+        'badfilename#name.pdf' => 'badfilename_name.pdf',
+        // "badfilename../" => "badfilename",
+        "badfilename<!--" => "badfilename_",
+        "badfilename-->" => "badfilename_",
+        "badfilename<" => "badfilename_",
+        "badfilename>" => "badfilename_",
+        "badfilename'" => "badfilename_",
+        'badfilename"' => "badfilename_",
+        'badfilename&' => "badfilename_",
+        'badfilename$' => "badfilename_",
+        'badfilename#' => "badfilename_",
+        'badfilename{' => "badfilename_",
+        'badfilename}' => "badfilename_",
+        'badfilename[' => "badfilename_",
+        'badfilename]' => "badfilename_",
+        'badfilename=' => "badfilename_",
+        'badfilename:' => "badfilename_",
+        'badfilename;' => "badfilename_",
+        'badfilename?' => "badfilename_",
+        "badfilename%20" => "badfilename_",
+        "badfilename%22" => "badfilename_",
+        "badfilename%3c" => "badfilename_",
+        "badfilename%253c" => "badfilename_",
+        "badfilename%3e" => "badfilename_",
+        "badfilename%0e" => "badfilename_",
+        "badfilename%28" => "badfilename_",
+        "badfilename%29" => "badfilename_",
+        "badfilename%2528" => "badfilename_",
+        "badfilename%26" => "badfilename_",
+        "badfilename%24" => "badfilename_",
+        "badfilename%3f" => "badfilename_",
+        "badfilename%3b" => "badfilename_",
+        "badfilename%3d" => "badfilename_",
+    ];
 
-	private $badRelativeNames = [
-		"/some/uri/path/\r" => '/some/uri/path/',
-		"/some/uri/path/\n" => '/some/uri/path/',
-		"/some/uri/path/\r\nn" => '/some/uri/path/n',
-		'F&A Costs.html' => 'FA Costs.html',
-		'badfilename#name.pdf' => 'badfilenamename.pdf',
-		// "badfilename../" => "badfilename",
-		"badfilename<!--" => "badfilename",
-		"badfilename-->" => "badfilename",
-		"badfilename<" => "badfilename",
-		"badfilename>" => "badfilename",
-		"badfilename'" => "badfilename",
-		'badfilename"' => "badfilename",
-		'badfilename&' => "badfilename",
-		'badfilename$' => "badfilename",
-		'badfilename#' => "badfilename",
-		'badfilename{' => "badfilename",
-		'badfilename}' => "badfilename",
-		'badfilename[' => "badfilename",
-		'badfilename]' => "badfilename",
-		'badfilename=' => "badfilename",
-		'badfilename:' => "badfilename",
-		'badfilename;' => "badfilename",
-		'badfilename?' => "badfilename",
-		"badfilename%20" => "badfilename",
-		"badfilename%22" => "badfilename",
-		"badfilename%3c" => "badfilename",
-		"badfilename%253c" => "badfilename",
-		"badfilename%3e" => "badfilename",
-		"badfilename%0e" => "badfilename",
-		"badfilename%28" => "badfilename",
-		"badfilename%29" => "badfilename",
-		"badfilename%2528" => "badfilename",
-		"badfilename%26" => "badfilename",
-		"badfilename%24" => "badfilename",
-		"badfilename%3f" => "badfilename",
-		"badfilename%3b" => "badfilename",
-		"badfilename%3d" => "badfilename",
-	];
+    private $badRelativeNames = [
+        "/some/uri/path/\r" => '/some/uri/path/_',
+        "/some/uri/path/\n" => '/some/uri/path/_',
+        "/some/uri/path/\r\nn" => '/some/uri/path/__n',
+        'F&A Costs.html' => 'F_A Costs.html',
+        'badfilename#name.pdf' => 'badfilename_name.pdf',
+        // "badfilename../" => "badfilename",
+        "badfilename<!--" => "badfilename_",
+        "badfilename-->" => "badfilename_",
+        "badfilename<" => "badfilename_",
+        "badfilename>" => "badfilename_",
+        "badfilename'" => "badfilename_",
+        'badfilename"' => "badfilename_",
+        'badfilename&' => "badfilename_",
+        'badfilename$' => "badfilename_",
+        'badfilename#' => "badfilename_",
+        'badfilename{' => "badfilename_",
+        'badfilename}' => "badfilename_",
+        'badfilename[' => "badfilename_",
+        'badfilename]' => "badfilename_",
+        'badfilename=' => "badfilename_",
+        'badfilename:' => "badfilename_",
+        'badfilename;' => "badfilename_",
+        'badfilename?' => "badfilename_",
+        "badfilename%20" => "badfilename_",
+        "badfilename%22" => "badfilename_",
+        "badfilename%3c" => "badfilename_",
+        "badfilename%253c" => "badfilename_",
+        "badfilename%3e" => "badfilename_",
+        "badfilename%0e" => "badfilename_",
+        "badfilename%28" => "badfilename_",
+        "badfilename%29" => "badfilename_",
+        "badfilename%2528" => "badfilename_",
+        "badfilename%26" => "badfilename_",
+        "badfilename%24" => "badfilename_",
+        "badfilename%3f" => "badfilename_",
+        "badfilename%3b" => "badfilename_",
+        "badfilename%3d" => "badfilename_",
+    ];
 
-	public function setUp(): void
-	{
-		$this->security = new EE_Security();
-	}
+    public function setUp(): void
+    {
+        $this->security = new EE_Security();
+    }
 
-	public function tearDown(): void
-	{
-		$this->security = null;
-	}
+    public function tearDown(): void
+    {
+        $this->security = null;
+    }
 
-	public function testGoodNames()
-	{
-		foreach ($this->goodNames as $goodName) {
-			$test = $this->security->sanitize_filename($goodName);
-			$this->assertEquals($test, $goodName);
-		}
-	}
+    public function testGoodNames()
+    {
+        foreach ($this->goodNames as $goodName) {
+            $test = $this->security->sanitize_filename($goodName);
+            $this->assertEquals($test, $goodName);
+        }
+    }
 
-	public function testBadNames()
-	{
-		foreach ($this->badNames as $badName => $result) {
-			$test = $this->security->sanitize_filename($badName);
-			$this->assertEquals($test, $result);
-		}
-	}
+    public function testBadNames()
+    {
+        foreach ($this->badNames as $badName => $result) {
+            $test = $this->security->sanitize_filename($badName);
+            $this->assertEquals($test, $result);
+        }
+    }
 
-	public function testGoodNamesWithRelativePath()
-	{
-		foreach ($this->goodNames as $goodName) {
-			$test = $this->security->sanitize_filename($goodName, true);
-			$this->assertEquals($test, $goodName);
-		}
-	}
+    public function testGoodNamesWithRelativePath()
+    {
+        foreach ($this->goodNames as $goodName) {
+            $test = $this->security->sanitize_filename($goodName, true);
+            $this->assertEquals($test, $goodName);
+        }
+    }
 
-	public function testBadNamesWithRelativePath()
-	{
-		foreach ($this->badRelativeNames as $badName => $result) {
-			$test = $this->security->sanitize_filename($badName, true);
-			$this->assertEquals($test, $result);
-		}
-	}
+    public function testBadNamesWithRelativePath()
+    {
+        foreach ($this->badRelativeNames as $badName => $result) {
+            $test = $this->security->sanitize_filename($badName, true);
+            $this->assertEquals($test, $result);
+        }
+    }
 }

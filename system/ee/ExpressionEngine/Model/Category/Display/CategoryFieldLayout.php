@@ -20,7 +20,7 @@ class CategoryFieldLayout extends DefaultLayout
     public function transform(array $fields)
     {
         usort($fields, function ($a, $b) {
-            return $a->get('field_order') > $b->get('field_order');
+            return ($a->get('field_order') > $b->get('field_order')) ? 1 : -1;
         });
 
         return parent::transform($fields);
