@@ -70,6 +70,12 @@ class TemplateAdvisor
                 ];
             }
 
+            // remove any EE comments in template first (to prevent tags within comments being flagged as problems)
+            // this can be destructive as we don't make any persistent changes to templates and getAllTags does not
+            // return line numbers of found tags
+            $regex_comments = '/(\{!--\s(?:.|\R)*?\s--\})/';
+            $template_data = preg_replace($regex_comments, '', $template_data);
+
             $tags_found = preg_match_all($regexp, $template_data, $keys, PREG_PATTERN_ORDER);
 
             $tmpl_info['details'][] = $keys;
