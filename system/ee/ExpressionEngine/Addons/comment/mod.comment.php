@@ -1886,7 +1886,7 @@ class Comment
      */
     public function comment_subscribe()
     {
-        if (ee()->input->get('csrf_token') != CSRF_TOKEN) {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!=CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
         ee()->lang->loadfile('comment');
@@ -1983,7 +1983,7 @@ class Comment
         /*
         This check is needed because otherwise, links could be created to CSRF and edit comments.
         */
-        if (ee()->input->get('csrf_token') != CSRF_TOKEN) {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token') != CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
 
