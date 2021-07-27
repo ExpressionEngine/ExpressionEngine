@@ -40,6 +40,7 @@ Bullet list below, e.g.
    - Fixed a bug with the error message when importing invalid channel sets
    - Fix a bug with debug variables not being filtered
    - Fix a bug with the importer converter filter
+   - Fix a bug with Typography parse_url function
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
