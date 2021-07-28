@@ -2112,8 +2112,8 @@ class Comment {
 
 		// Bleh- really need a conditional for if they are subscribed
 
-		$sub_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&ret='.ee()->uri->uri_string();
-		$unsub_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&type=unsubscribe'.'&ret='. ee()->uri->uri_string();
+		$sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() .'&csrf_token=' . CSRF_TOKEN;
+        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
 
 		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 
@@ -2204,6 +2204,9 @@ class Comment {
 	 */
 	function comment_subscribe()
 	{
+		if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!=CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
 		ee()->lang->loadfile('comment');
 
 		$id		= ee()->input->get('entry_id');
@@ -2306,6 +2309,9 @@ class Comment {
 	 */
 	function edit_comment($ajax_request = TRUE)
 	{
+		if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token') != CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
 		@header("Content-type: text/html; charset=UTF-8");
 
 		$unauthorized = ee()->lang->line('not_authorized');
@@ -2509,7 +2515,7 @@ CMT_EDIT_SCR;
 	 */
 	function ajax_edit_url()
 	{
-		$url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Comment', 'edit_comment');
+		$url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment') . '&csrf_token=' . CSRF_TOKEN;
 
 		return $url;
 	}
