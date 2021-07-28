@@ -15,7 +15,7 @@
 
             // local
             this.handleTrigger = (typeof this.opts.handleTrigger !== 'undefined') ? this.opts.handleTrigger : '@';
-            this.handleStart = (typeof this.opts.handleStart !== 'undefined') ? this.opts.handleStart : 1;
+            this.handleStart = (typeof this.opts.handleStart !== 'undefined') ? this.opts.handleStart : 3;
             this.handleStr = '';
             this.handleLen = this.handleStart;
         },

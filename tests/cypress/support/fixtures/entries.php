@@ -48,6 +48,9 @@ $fields = $channel->getAllCustomFields();
 
 $allowed_fields = ['textarea', 'text', 'rte', 'date'];
 
+//$site_id = ee()->config->item('site_id');
+//$site_pages = ee()->config->item('site_pages');
+
 $faker = Faker\Factory::create();
 
 # Alright, let's add the entries
@@ -121,6 +124,9 @@ for ($i=0; $i < $number; $i++) {
   # Now save the data
   $entry->save();
 
+  //$site_pages[$site_id]['uris'][$entry->getId()] = $entry->url_title;
+  //$site_pages[$site_id]['templates'][$entry->getId()] = 'home/404';
+
   # Increment entry count and change last_entry_date
   $channel->total_records = $channel->total_records + 1;
   $channel->total_entries = $channel->total_entries + 1;
@@ -129,3 +135,8 @@ for ($i=0; $i < $number; $i++) {
   $member->last_entry_date = $time;
   $member->save();
 }
+
+/*ee()->config->set_item('site_pages', $site_pages);
+$site = ee('Model')->get('Site', $site_id)->first();
+$site->site_pages = $site_pages;
+$site->save();*/
