@@ -5,7 +5,13 @@
 	<?=form_open($form_url, 'class="ajax-validate"')?>
   <div class="panel-heading">
     <div class="form-btns form-btns-top">
-  		<?php $this->embed('ee:_shared/form/buttons'); ?>
+		<div class="title-bar title-bar--large">
+    		<h3 class="title-bar__title"><?=ee('Format')->make('Text', (isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title)->attributeSafe()->compile()?></h3>
+
+    		<div class="title-bar__extra-tools">
+  				<?php $this->embed('ee:_shared/form/buttons'); ?>
+			</div>
+		</div>
   	</div>
   </div>
   <div class="panel-body">
