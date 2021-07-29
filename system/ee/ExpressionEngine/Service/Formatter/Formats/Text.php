@@ -485,7 +485,7 @@ class Text extends Formatter
     /**
      * Returns a string with whitespace stripped from its beginning and end.
      *
-     * @param string $pattern Regex pattern
+     * @param  array $options Options: (string) characters
      * @return string Regex pattern sans eval modifier
      */
     public function trim($options = [])

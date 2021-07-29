@@ -24,13 +24,13 @@ context('Categories', () => {
     })
 
     it('trim modifier in templates', function() {
-        cy.visit('index.php/modifiers/limit')
+        cy.visit('index.php/modifiers/trim')
 
         cy.get('.no-trim').invoke('text').should('eq', '		Hello, world!	')
 
         cy.get('.on-trim').invoke('text').should('eq', 'Hello, world!');
 
-		cy.get('.on-trim--characters').invoke('text').should('eq', 'o Wor');
+        cy.get('.on-trim--characters').invoke('text').should('eq', 'o, wor');
     })
 
 })
