@@ -30,7 +30,7 @@ class Factory
         $this->migration = $migration;
 
         // Load the logger
-        if (! ee()->logger) {
+        if (! isset(ee()->logger)) {
             ee()->load->library('logger');
         }
 
@@ -446,7 +446,13 @@ class Factory
             'table' => $tablename,
         ];
         $template = new $templateClass($vars);
-        $filecontents = $template->getParsedTemplate();
+
+        try {
+            // Get the parsed template. This will throw an error
+            $filecontents = $template->getParsedTemplate();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), 1);
+        }
 
         $this->filesystem->write($this->getFilepath(), $filecontents);
 

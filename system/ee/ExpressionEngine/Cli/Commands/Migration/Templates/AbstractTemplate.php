@@ -2,6 +2,7 @@
 
 namespace ExpressionEngine\Cli\Commands\Migration\Templates;
 
+use Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 abstract class AbstractTemplate
@@ -35,12 +36,9 @@ abstract class AbstractTemplate
             }
         }
 
-        // If we found a required variable that is missing, let the user know
+        // If we found a required variable that is missing, throw and error and let the user know
         if (!empty($missing)) {
-            echo "Missing required variable for parsing migration template:\n";
-            echo implode("\n", $missing);
-            echo "\n";
-            exit();
+            throw new Exception(lang('command_make_migration_missing_required_template_variable') . implode(",", $missing), 1);
         }
     }
 
