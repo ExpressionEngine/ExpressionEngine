@@ -32,14 +32,9 @@ window.Rte;
             this.defer = defer;
         }
 
-        var type = 'ckeditor';
-        if (!this.$element.hasClass('rte-ckeditor')) {
-            type = 'redactor';
-        }
-
         if (this.defer) {
             this.showIframe(type);
-        } else if (type == 'redactor') {
+        } else if (this.config.type == 'redactor') {
             this.initRedactor();
         } else {
             this.initCKEditor();

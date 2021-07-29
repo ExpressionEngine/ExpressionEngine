@@ -143,7 +143,7 @@ class RedactorService implements RteService {
         //  JSONify Config and Return
         // -------------------------------------------
         ee()->javascript->set_global([
-            'Rte.configs.' . $configHandle => $config['toolbar'],
+            'Rte.configs.' . $configHandle => array_merge(['type' => 'redactor'], $config['toolbar'])
         ]);
 
         static::$_includedConfigs[] = $configHandle;
