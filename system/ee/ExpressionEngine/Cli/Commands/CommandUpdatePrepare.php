@@ -6,63 +6,51 @@ use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeMap;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
-class CommandPrepareUpgrade extends Cli
+class CommandUpdatePrepare extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Prepare Upgrade';
+    public $name = 'Prepare Update';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'prepare-upgrade';
-
-    /**
-     * Public description of command
-     * @var string
-     */
-    public $description = 'Prepare a different site to be upgraded using these files';
-
-    /**
-     * Summary of command functionality
-     * @var [type]
-     */
-    public $summary = 'This command copies all files necessary for upgrading into a different ExpressionEngine site and restructures it';
+    public $signature = 'update:prepare';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli prepare-upgrade';
+    public $usage = 'php eecli.php update:prepare';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'upgrade-ee' => 'Start the upgrade after moving files',
-        'force-add-on-upgrade' => 'After upgrading EE, runs addon upgrades',
-        'old-base-path:' => 'Absolute path of old site',
-        'new-base-path:' => 'Absolute path of new site',
-        'old-public-path:' => 'Absolute path of old site public path',
-        'new-public-path:' => 'Absolute path of new site public path',
-        'no-config-file' => 'Ignores the config file and doesn\'t check for it',
-        'ee-version' => 'The current site ',
-        'should-move-system-path' => 'Whether the upgrade process should move the old system folder to the new site',
-        'old-system-path:' => 'Absolute path of old site system folder',
-        'new-system-path:' => 'Absolute path of new site system folder',
-        'should-move-template-path' => 'Whether the upgrade process should move the old template folder to the new site',
-        'old-template-path:' => 'Absolute path of old site template folder',
-        'new-template-path:' => 'Absolute path of new site template folder',
-        'should-move-theme-path' => 'Whether the upgrade process should move the old theme folder to the new site',
-        'old-theme-path:' => 'Absolute path of old site user theme folder',
-        'new-theme-path:' => 'Absolute path of new site user theme folder',
-        'run-preflight-hooks' => 'Whether the upgrade process should run defined preflight hooks',
-        'run-postflight-hooks' => 'Whether the upgrade process should run defined postflight hooks',
-        'temp-directory' => 'The directory we work magic in',
+        'upgrade-ee'                => 'command_update_prepare_option_upgrade_ee',
+        'force-add-on-upgrade'      => 'command_update_prepare_option_force_add_on_upgrade',
+        'old-base-path:'            => 'command_update_prepare_option_old_base_path',
+        'new-base-path:'            => 'command_update_prepare_option_new_base_path',
+        'old-public-path:'          => 'command_update_prepare_option_old_public_path',
+        'new-public-path:'          => 'command_update_prepare_option_new_public_path',
+        'no-config-file'            => 'command_update_prepare_option_no_config_file',
+        'ee-version'                => 'command_update_prepare_option_ee_version',
+        'should-move-system-path'   => 'command_update_prepare_option_should_move_system_path',
+        'old-system-path:'          => 'command_update_prepare_option_old_system_path',
+        'new-system-path:'          => 'command_update_prepare_option_new_system_path',
+        'should-move-template-path' => 'command_update_prepare_option_should_move_template_path',
+        'old-template-path:'        => 'command_update_prepare_option_old_template_path',
+        'new-template-path:'        => 'command_update_prepare_option_new_template_path',
+        'should-move-theme-path'    => 'command_update_prepare_option_should_move_theme_path',
+        'old-theme-path:'           => 'command_update_prepare_option_old_theme_path',
+        'new-theme-path:'           => 'command_update_prepare_option_new_theme_path',
+        'run-preflight-hooks'       => 'command_update_prepare_option_run_preflight_hooks',
+        'run-postflight-hooks'      => 'command_update_prepare_option_run_postflight_hooks',
+        'temp-directory'            => 'command_update_prepare_option_temp_directory',
     ];
 
     protected $upgradeConfigFile = [];
@@ -70,26 +58,26 @@ class CommandPrepareUpgrade extends Cli
     protected $upgradeConfig = [];
 
     protected $configKeys = [
-        'upgrade_ee' => 'bool',
-        'ee_version' => 'string',
-        'old_base_path' => 'string',
-        'new_base_path' => 'string',
-        'should_move_system_path' => 'bool',
-        'old_system_path' => 'string',
-        'new_system_path' => 'string',
+        'upgrade_ee'                => 'bool',
+        'ee_version'                => 'string',
+        'old_base_path'             => 'string',
+        'new_base_path'             => 'string',
+        'should_move_system_path'   => 'bool',
+        'old_system_path'           => 'string',
+        'new_system_path'           => 'string',
         'should_move_template_path' => 'bool',
-        'old_template_path' => 'string',
-        'new_template_path' => 'string',
-        'should_move_theme_path' => 'bool',
-        'old_theme_path' => 'string',
-        'new_theme_path' => 'string',
-        'run_preflight_hooks' => 'bool',
-        'run_postflight_hooks' => 'bool',
-        'preflight_hooks' => 'array',
-        'postflight_hooks' => 'array',
-        'old_public_path' => 'string',
-        'new_public_path' => 'string',
-        'temp_directory' => 'string',
+        'old_template_path'         => 'string',
+        'new_template_path'         => 'string',
+        'should_move_theme_path'    => 'bool',
+        'old_theme_path'            => 'string',
+        'new_theme_path'            => 'string',
+        'run_preflight_hooks'       => 'bool',
+        'run_postflight_hooks'      => 'bool',
+        'preflight_hooks'           => 'array',
+        'postflight_hooks'          => 'array',
+        'old_public_path'           => 'string',
+        'new_public_path'           => 'string',
+        'temp_directory'            => 'string',
     ];
 
     protected $filemap;
@@ -106,7 +94,8 @@ class CommandPrepareUpgrade extends Cli
      */
     public function handle()
     {
-        $this->info('Preparing the upgrade for a site.');
+        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
+        $this->info('command_update_prepare_preparing_upgrade_for_site');
 
         // Collect all the info we need before we can start
         // pull in the config
@@ -128,13 +117,13 @@ class CommandPrepareUpgrade extends Cli
 
         // Done preparing - if they wanted the upgrade to be run after, run it here
         if ($upgrade = ($this->option('upgrade-ee') || $this->upgradeConfig['upgrade_ee'])) {
-            $this->info('Running EE upgrade');
+            $this->info('command_update_prepare_running_ee_upgrade');
             $this->runUpgrade();
         }
 
         $this->runPostflightHooks();
 
-        $this->complete('Process complete!');
+        $this->complete('command_update_prepare_process_complete');
     }
 
     private function runPreflightHooks()
@@ -143,7 +132,7 @@ class CommandPrepareUpgrade extends Cli
             return;
         }
 
-        $this->info('Running preflight hooks');
+        $this->info('command_update_prepare_running_preflight_hooks');
 
         foreach ($this->upgradeConfig['preflight_hooks'] as $hook) {
             call_user_func_array($hook, func_get_args());
@@ -156,7 +145,7 @@ class CommandPrepareUpgrade extends Cli
             return;
         }
 
-        $this->info('Running postflight hooks');
+        $this->info('command_update_prepare_running_postflight_hooks');
 
         foreach ($this->upgradeConfig['postflight_hooks'] as $hook) {
             call_user_func_array($hook, func_get_args());
@@ -165,7 +154,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function preChecks()
     {
-        $this->info("Here's how things are configured:");
+        $this->info('command_update_prepare_how_things_are_configured');
 
         foreach ($this->upgradeConfig as $upgradeKey => $upgradeValue) {
             if (is_bool($upgradeValue)) {
@@ -177,26 +166,26 @@ class CommandPrepareUpgrade extends Cli
             }
         }
 
-        $this->info("We are about to move X file to tmp/X and Y to system/Y");
-        $this->info("Make sure you have backups!");
+        $this->info('command_update_prepare_notify_moving_files_to_tmp');
+        $this->info('command_update_prepare_make_sure_you_have_backups');
 
-        $continue = $this->confirm('Are you sure you want to proceed?');
+        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
 
         // User does not want to continue - abort!
         if (! $continue) {
-            $this->error('Upgrade aborted');
+            $this->error('command_update_prepare_upgrade_aborted');
             exit;
         }
 
         // Check if upgrade too
         if ($this->option('upgrade-ee')) {
-            $this->info("You also said you want to upgrade EE after moving these files around.");
+            $this->info('command_update_prepare_notify_also_upgrade_ee_after');
 
-            $continue = $this->confirm('Are you sure you want to proceed?');
+            $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
 
             // User does not want to continue - abort!
             if (! $continue) {
-                $this->error('Upgrade aborted');
+                $this->error('command_update_prepare_upgrade_aborted');
                 exit;
             }
         }
@@ -222,10 +211,10 @@ class CommandPrepareUpgrade extends Cli
         $customConfig = $this->getConfigPath();
 
         if (! $customConfig) {
-            $path = $this->ask('What is the path to your upgrade.config.php? (defaults to SYSPATH, currently ' . SYSPATH . ')');
+            $path = $this->ask(lang('command_update_prepare_what_is_path_to_upgrade_config') . SYSPATH . ')');
 
             if (! ($customConfig = $this->getConfigPath($path))) {
-                $this->error('Custom config not found.');
+                $this->error('command_update_prepare_custom_config_not_found');
 
                 return;
             }
@@ -236,7 +225,7 @@ class CommandPrepareUpgrade extends Cli
 
     private function runUpgrade()
     {
-        $command = "php {$this->upgradeConfig['new_base_path']}/eecli update -y";
+        $command = "php {$this->upgradeConfig['new_base_path']}/eecli.php update -y";
 
         if ($this->option('--force-add-on-upgrade')) {
             $command .= ' --force-addon-upgrades';
@@ -387,7 +376,7 @@ class CommandPrepareUpgrade extends Cli
                     rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
                 );
 
-                $this->info('We found a database file. Please move this information in to config.php');
+                $this->info('command_update_prepare_database_file_found_move_to_config');
             }
         } else {
             // It's EE3+!

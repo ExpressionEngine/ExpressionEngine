@@ -3,7 +3,7 @@
 define('EE_START', microtime(true));
 
 // Set the system path
-$system_path = '';
+$system_path = dirname(__DIR__);
 
 if (PHP_SAPI !== 'cli') {
     header('HTTP/1.1 404 Not Found.', true, '404');
@@ -36,8 +36,6 @@ $routing['function'] = 'index';
  * --------------------------------------------------------------------
  */
 
-$system_path = $system_path ?: __DIR__;
-
 if (realpath($system_path) !== false) {
     $system_path = realpath($system_path);
 }
@@ -66,6 +64,15 @@ defined('DEBUG') || define('DEBUG', $debug);
 
 // If EE is not installed, we will not boot the core, but CLI commands are more limited as well.
 defined('EE_INSTALLED') || define('EE_INSTALLED', file_exists(SYSPATH . 'user/config/config.php'));
+defined('INSTALL_MODE') || define('INSTALL_MODE', ! EE_INSTALLED);
+
+define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
+
+defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH . 'user/cache/');
+defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
+defined('PATH_THEMES') || define('PATH_THEMES', SYSPATH . '../themes/');
+defined('IS_CORE') || define('IS_CORE', false);
+defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/latest/');
 
 /*
  * --------------------------------------------------------------------
@@ -99,7 +106,8 @@ if (! file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
 
 // Bootstrap the standalone CLI if EE isn't installed
 if (! EE_INSTALLED) {
-    include SYSPATH . 'ee/ExpressionEngine/Cli/StandaloneCli/StandaloneCli.php';
+    exit("\033[31mExpressionEngine does not appear to be installed. Please install ExpressionEngine to use the CLI component.\n");
+    // include SYSPATH . 'ee/ExpressionEngine/Cli/StandaloneCli/StandaloneCli.php';
     die();
 }
 
