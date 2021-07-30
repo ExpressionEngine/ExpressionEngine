@@ -88,8 +88,10 @@ class Date_ft extends EE_Fieldtype
      *
      * @param 	array
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
+        $field_data = $data;
+        
         ee()->lang->loadfile('content');
 
         $special = array('entry_date', 'expiration_date', 'comment_expiration_date');
