@@ -294,6 +294,17 @@ class EE_Exceptions
             exit;
         }
 
+        // If the request came from the cli, show an appropriate message
+        if (REQ === 'CLI') {
+            echo "$error_type caught:\n";
+            echo html_entity_decode($message) . "\n";
+            echo html_entity_decode($location) . "\n";
+            foreach ($trace as $stackItem) {
+                echo html_entity_decode($stackItem) . "\n";
+            }
+            exit;
+        }
+
         if (ob_get_level() > $this->ob_level + 1) {
             ob_end_flush();
         }

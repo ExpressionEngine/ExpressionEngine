@@ -26,6 +26,9 @@ Bullet list below, e.g.
    - Fix bug in the Template Profiler when it attempts to parse an empty array
    - Fixed issue with super admins seeing unauthorized message when accessing empty entry manager
    - Changed how permission check for members with CP access is handled
+   - Added Addon generator via CLI
+   - Added Model generator via CLI
+   - Added Command generator via CLI
    - Fixed a bug (#910) where date picker wasn't following the last day of the month when switching.
    - Fixed implementation of usort in system/ee/ExpressionEngine/Model/Member/Display/MemberFieldLayout.php
 
