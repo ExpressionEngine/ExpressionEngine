@@ -12,6 +12,33 @@
         </div>
     {/categories}
     {entry_titles}
-        <a href="{path='SITE_INDEX'}">{title}</a><br />
+		<details>
+			<summary>
+				{title}
+			</summary>
+
+			<dl id="{channel_id}">
+				<dt class="{channel_name}">
+					<a href="{channel_url}" class="{channel_name}">{channel_title}</a>
+				</dt>
+				<dd class="channel_description">{channel_description}</dd>
+			</dl>
+
+			<p>
+				<a href="{path='SITE_INDEX'}">{title}</a>
+			</p>
+		</details>
     {/entry_titles}
 {/exp:channel:category_archive}
+
+<nav class="header-menu">
+    {exp:channel:category_archive channel="news" style="nested"}
+        {categories}
+            {category_name}
+        {/categories}
+
+        {entry_titles}
+            <a href="{channel_url}/{url_title}">{title}</a>
+        {/entry_titles}
+    {/exp:channel:category_archive}
+</nav>
