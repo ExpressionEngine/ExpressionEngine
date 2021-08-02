@@ -14,6 +14,7 @@ use ExpressionEngine\Library\Curl;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
+use ExpressionEngine\Service\Channel;
 use ExpressionEngine\Service\ChannelSet;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
@@ -379,6 +380,10 @@ $setup = [
 
         'Captcha' => function ($ee) {
             return new Library\Captcha();
+        },
+
+        'Channel/ChannelEntry' => function ($ee) {
+            return new Channel\ChannelEntry();
         },
 
         'ChannelSet' => function ($ee) {

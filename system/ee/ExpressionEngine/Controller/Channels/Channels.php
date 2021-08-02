@@ -1056,7 +1056,11 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'enable_versioning' => array(
                             'type' => 'yes_no',
-                            'value' => $channel->enable_versioning
+                            'value' => $channel->enable_versioning,
+                            'note' => form_label(
+                                form_checkbox('update_versioning', 'y')
+                                . lang('update_versioning')
+                            )
                         )
                     )
                 ),
@@ -1492,6 +1496,10 @@ class Channels extends AbstractChannelsController
             ee()->logger->log_action($success_msg . NBS . NBS . $_POST['channel_title']);
         } else {
             $channel->save();
+        }
+
+        if (ee('Request')->post('update_versioning')) {
+            ee('Channel/ChannelEntry')->updateVersioning($channel->getId(), ee('Request')->post('enable_versioning'));
         }
 
         $perms = [];
