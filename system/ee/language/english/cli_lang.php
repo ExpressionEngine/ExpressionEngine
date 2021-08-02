@@ -102,6 +102,14 @@ $lang = array(
     // make:migration Error message
     'command_make_migration_missing_required_template_variable' => 'Missing required variable(s) for parsing migration template: ',
 
+    // Lang entries for command make:prolet
+    'command_make_prolet_description'        => 'Creates a new prolet for an add-on',
+    'command_make_prolet_summary'            => 'This interactively generates an EE Prolet for an existing third-party addon',
+
+    // make:prolet options
+    'command_make_prolet_option_addon'       => 'Folder for third-party add-on you want to add prolet to',
+    'command_make_prolet_option_description' => 'Description of prolet',
+
     // Lang entries for command make:model
     'command_make_model_description'                            => 'Creates a new model for an add-on',
     'command_make_model_summary'                                => 'This interactively generates an EE model for an existing third-party addon',
