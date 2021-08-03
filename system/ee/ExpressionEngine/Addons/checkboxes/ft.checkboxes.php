@@ -162,7 +162,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $disabled = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         foreach ($fields as $id => $option) {
-            $checked = (in_array(form_prep($option), $values)) ? true : false;
+            $checked = (in_array(form_prep($id), $values)) ? true : false;
 
             if (is_array($option)) {
                 $out .= '<label>' . form_checkbox($this->field_name . '[]', $id, $checked, $disabled) . NBS . $option['name'] . '</label>';
