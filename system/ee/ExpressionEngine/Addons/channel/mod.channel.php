@@ -3951,7 +3951,7 @@ class Channel
       */
     public function category_heading()
     {
-        if ($this->query_string === '' && !ee()->TMPL->fetch_param('category_url_title') && !ee()->TMPL->fetch_param('category_id')) {
+        if ($this->query_string == '' && !ee()->TMPL->fetch_param('category_url_title') && !ee()->TMPL->fetch_param('category_id')) {
             return ee()->TMPL->no_results();
         }
 
@@ -4072,8 +4072,7 @@ class Channel
 
         // Is the category being specified by ID?
 
-        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match) AND ! ee()->TMPL->fetch_param('category_id'))
-        {
+        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match) AND ! ee()->TMPL->fetch_param('category_id')) {
             return ee()->TMPL->no_results();
         }
 
@@ -4081,8 +4080,7 @@ class Channel
 
         // fetch category field names and id's
 
-        if ($this->enable['category_fields'] === true)
-        {
+        if ($this->enable['category_fields'] === true) {
             // limit to correct category group
             $gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
@@ -4101,8 +4099,7 @@ class Channel
 							{$field_sqlb}
 							WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
-        if ($query->num_rows() == 0)
-        {
+        if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();
         }
 
