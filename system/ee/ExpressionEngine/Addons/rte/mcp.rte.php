@@ -87,18 +87,17 @@ class Rte_mcp
         $toolset_id = ee()->session->flashdata('toolset_id');
 
         foreach ($toolsets as $t) {
-            $toolset_name = htmlentities($t->toolset_name, ENT_QUOTES, 'UTF-8');
-            $toolset_opts[$t->toolset_id] = $toolset_name;
+            $toolset_opts[$t->toolset_id] = $t->toolset_name;
             $url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $t->toolset_id));
             $checkbox = array(
                 'name' => 'selection[]',
                 'value' => $t->toolset_id,
                 'data' => array(
-                    'confirm' => lang('toolset') . ': <b>' . $toolset_name . '</b>'
+                    'confirm' => lang('toolset') . ': <b>' . $t->toolset_name . '</b>'
                 )
             );
 
-            $toolset_name = '<a href="' . $url->compile() . '">' . $toolset_name . '</a>';
+            $toolset_name = '<a href="' . $url->compile() . '">' . $t->toolset_name . '</a>';
             if ($prefs['rte_default_toolset'] == $t->toolset_id) {
                 $toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
                 $checkbox['disabled'] = 'disabled';
