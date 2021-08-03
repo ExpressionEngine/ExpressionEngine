@@ -3192,33 +3192,27 @@ class Channel
                     $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
 
                     foreach (ee()->TMPL->var_single as $key => $val) {
-                        if ($key == 'entry_id')
-                        {
+                        if ($key == 'entry_id') {
                             $chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);
                         }
 
-                        if ($key == 'url_title')
-                        {
+                        if ($key == 'url_title') {
                             $chunk = ee()->TMPL->swap_var_single($key, $row['url_title'], $chunk);
                         }
 
-                        if ($key == 'channel_id')
-                        {
+                        if ($key == 'channel_id') {
                             $chunk = ee()->TMPL->swap_var_single($key, $row['channel_id'], $chunk);
                         }
 
-                        if ($key == 'channel_short_name')
-                        {
+                        if ($key == 'channel_short_name') {
                             $chunk = ee()->TMPL->swap_var_single($key, $row['channel_short_name'], $chunk);
                         }
 
-                        if ($key == 'channel')
-                        {
+                        if ($key == 'channel') {
                             $chunk = ee()->TMPL->swap_var_single($key, $row['channel'], $chunk);
                         }
 
-                        if ($key == 'channel_url')
-                        {
+                        if ($key == 'channel_url') {
                             $chunk = ee()->TMPL->swap_var_single($key, parse_config_variables($row['channel_url']), $chunk);
                         }
                     }
@@ -3390,33 +3384,27 @@ class Channel
                             $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
 
                             foreach (ee()->TMPL->var_single as $key => $val) {
-                                if ($key == 'entry_id')
-                                {
+                                if ($key == 'entry_id') {
                                     $chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);
                                 }
 
-                                if ($key == 'url_title')
-                                {
+                                if ($key == 'url_title') {
                                     $chunk = ee()->TMPL->swap_var_single($key, $trow['url_title'], $chunk);
                                 }
 
-                                if ($key == 'channel_id')
-                                {
+                                if ($key == 'channel_id') {
                                     $chunk = ee()->TMPL->swap_var_single($key, $trow['channel_id'], $chunk);
                                 }
 
-                                if ($key == 'channel_short_name')
-                                {
+                                if ($key == 'channel_short_name') {
                                     $chunk = ee()->TMPL->swap_var_single($key, $trow['channel_short_name'], $chunk);
                                 }
 
-                                if ($key == 'channel')
-                                {
+                                if ($key == 'channel') {
                                     $chunk = ee()->TMPL->swap_var_single($key, $trow['channel'], $chunk);
                                 }
 
-                                if ($key == 'channel_url')
-                                {
+                                if ($key == 'channel_url') {
                                     $chunk = ee()->TMPL->swap_var_single($key, parse_config_variables($trow['channel_url']), $chunk);
                                 }
                             }
