@@ -23,6 +23,15 @@ class Required extends ValidationRule
             $value = trim($value);
         }
 
+        if (is_array($value)) {
+            $value = array_filter($value, function($val) { 
+                return $val !== '';
+            });
+            if (empty($value)) {
+                return $this->stop();
+            }
+        }
+
         if ($value === '' or is_null($value)) {
             return $this->stop();
         }
