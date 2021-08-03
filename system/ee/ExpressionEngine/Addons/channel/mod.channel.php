@@ -3995,8 +3995,7 @@ class Channel
                 OR ee()->TMPL->fetch_param('category_url_title')
             )
             && ee()->TMPL->fetch_param('channel')
-        )
-        {
+        ) {
             $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
             $sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
