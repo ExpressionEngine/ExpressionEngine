@@ -15,70 +15,39 @@ class ProletGenerator
 
     public function __construct(Filesystem $filesystem, array $data)
     {
-        $this->name = $data['name'];
+        // Set FS
         $this->filesystem = $filesystem;
-        $this->className = $this->studly($data['name']);
+
+        // Set required data for generator to use
+        $this->name = $data['name'];
         $this->addon = $data['addon'];
 
+        // Set up addon path, generator path, and stub path
         $this->init();
-
-        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
-        $this->namespace = $addonSetupArray['namespace'];
     }
 
     private function init()
     {
+        // Make sure the addon exists
+        if (!ee('Addon')->get($this->addon)) {
+            throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
+        }
+
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        // $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Models/';
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs' . '/';
-
-        // if (! $this->filesystem->isDir($this->modelPath)) {
-        //     $this->filesystem->mkDir($this->modelPath);
-        // }
+        $this->stubPath = $this->generatorPath . '/stubs/';
     }
 
     public function build()
     {
-        $modelStub = $this->filesystem->read($this->stub('model.php'));
-        $modelStub = $this->write('namespace', $this->namespace, $modelStub);
-        $modelStub = $this->write('class', $this->className, $modelStub);
+        $proletStub = $this->filesystem->read($this->stub('prolet.php'));
+        $proletStub = $this->write('addon', ucfirst($this->addon), $proletStub);
+        $proletStub = $this->write('name', $this->name, $proletStub);
 
-        $this->putFile($this->className . '.php', $modelStub);
-
-        $this->addModelToAddonSetup();
+        $this->putFile('pro.' . $this->addon . '.php', $proletStub);
     }
-
-    // private function addModelToAddonSetup()
-    // {
-    //     try {
-    //         $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
-    //     } catch (FilesystemException $e) {
-    //         return false;
-    //     } catch (\Exception $e) {
-    //         return false;
-    //     }
-    //     $addonSetupArray = require $this->addonPath . 'addon.setup.php';
-
-    //     $modelStub = $this->filesystem->read($this->stub('addon_model.php'));
-    //     $modelStub = $this->write('namespace', $this->namespace, $modelStub);
-    //     $modelStub = $this->write('class', $this->className, $modelStub);
-
-    //     // The addon setup has the models array
-    //     if (array_key_exists('models', $addonSetupArray)) {
-    //         $pattern = "/(models)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
-    //         $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$modelStub$5$6$7", $addonSetupFile);
-    //         $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
-    //     } else { // The addon setup does not have the models array
-    //         $modelsStub = $this->filesystem->read($this->stub('model.addon.php'));
-    //         $modelsStub = $this->write('model_data', $modelStub, $modelsStub);
-    //         $pattern = '/(,)([^,]+)$/';
-    //         $addonSetupFile = preg_replace($pattern, ",\n    $modelsStub $2", $addonSetupFile);
-    //         $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
-    //     }
-    // }
 
     private function stub($file)
     {
@@ -98,8 +67,8 @@ class ProletGenerator
             $path = '';
         }
 
-        if (!$this->filesystem->exists($this->modelPath . $path . $name)) {
-            $this->filesystem->write($this->modelPath . $path . $name, $contents);
+        if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
+            $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
     }
 

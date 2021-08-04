@@ -37,7 +37,7 @@ class WidgetGenerator
     {
         // Make sure the addon exists
         if (!ee('Addon')->get($this->addon)) {
-            throw new \Exception(lang('error_the_specified_addon_does_not_exist'), 1);
+            throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
         }
 
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';

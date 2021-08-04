@@ -35,6 +35,8 @@ class CommandMakeProlet extends Cli
     public $commandOptions = [
         'addon,a:'       => 'command_make_prolet_option_addon',
         'description,d:' => 'command_make_prolet_option_description',
+        'has-widget,w' => 'command_make_prolet_option_has_widget',
+        'widget-name,n:' => 'command_make_prolet_option_widget_name',
     ];
 
     /**
@@ -56,32 +58,46 @@ class CommandMakeProlet extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_command_lets_build_command');
-        echo "<pre>";
-        var_dump('');
-        exit;
-        // Gather alll the command information
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_command_ask_addon", null, true);
-        $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_command_ask_description");
-        $this->data['signature'] = $this->getOptionOrAsk('--signature', "command_make_command_ask_signature", null, true);
+        $this->info('command_make_prolet_lets_build_prolet');
 
-        if (substr($this->data['signature'], 0, strlen($this->data['addon'] . ":")) == $this->data['addon'] . ":") {
-            $this->data['signature'] = substr($this->data['signature'], strlen($this->data['addon'] . ":"));
+        // Gather alll the prolet information
+        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_prolet_ask_prolet_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_prolet_ask_addon", null, true);
+        $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_prolet_ask_description");
+
+        // Has widget? We wont ask this one. If the flag isn't there, they can use the widget generator to generate a widget
+        $this->data['has-widget'] = $this->option('--has-widget', false);
+
+        // If it has a widget, we'll also collect widget options
+        if ($this->data['has-widget']) {
+            $widgetData['name'] = $this->getOptionOrAsk('--widget-name', "command_make_prolet_ask_widget_name");
+            $widgetData['addon'] = $this->data['addon'];
         }
-        // Lets prefix with the addon name
-        $this->data['signature'] = $this->data['addon'] . ":" . $this->data['signature'];
 
-        $this->info('command_make_command_lets_build');
+        $this->info('command_make_prolet_building_prolet');
 
         try {
-            // Build the command
-            $service = ee('CommandGenerator', $this->data);
+            // Build the prolet
+            $service = ee('ProletGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->info('command_make_command_created_successfully');
+        $this->info('command_make_prolet_created_successfully');
+
+        // If it has a widget, lets generate it now
+        if ($this->data['has-widget']) {
+            $this->info('command_make_prolet_generating_widget');
+
+            try {
+                // Build the widget
+                $service = ee('WidgetGenerator', $widgetData);
+                $service->build();
+            } catch (\Exception $e) {
+                $this->fail($e->getMessage());
+            }
+            $this->info('command_make_prolet_widget_created_successfully');
+        }
     }
 }
