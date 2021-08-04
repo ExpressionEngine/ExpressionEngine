@@ -51,6 +51,7 @@
 							</svg>
 							<span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
 						</a>
+            <a class="ee-pro__indicator-badge">Pro</a>
 					</div>
 
 				</div>
