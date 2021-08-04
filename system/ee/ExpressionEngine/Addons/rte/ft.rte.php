@@ -175,11 +175,11 @@ class Rte_ft extends EE_Fieldtype
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
         $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
-                    ? 'true'
-                    : 'false';
+                    ? true
+                    : false;
 
         if (strpos($id, '_new_') === false) {
-            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
+            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
         // pass the data through form_prep() if this is Channel Form
