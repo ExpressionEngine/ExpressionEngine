@@ -272,4 +272,36 @@ class RteHelper
 
         return $pages;
     }
+
+    /**
+     * Just a placeholder
+     *
+     * @return void
+     */
+    public static function includeFieldResources()
+    {
+
+    }
+
+    /**
+     * Backwards compatibility for third-party fieldtypes
+     *
+     * @param [type] $toolset_id
+     * @return void
+     */
+    public static function insertConfigJsById($toolset_id = null)
+    {
+        $toolsetId = (!empty($toolset_id)) ? (int) $toolset_id : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
+        if (!empty($toolsetId)) {
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
+        } else {
+            $toolset = ee('Model')->get('rte:Toolset')->first();
+        }
+
+        // Load proper toolset
+        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $configHandle = ee('rte:' . $serviceName)->init([], $toolset);
+
+        return $configHandle;
+    }
 }
