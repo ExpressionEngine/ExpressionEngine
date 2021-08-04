@@ -110,6 +110,15 @@ $lang = array(
     'command_make_prolet_option_addon'       => 'Folder for third-party add-on you want to add prolet to',
     'command_make_prolet_option_description' => 'Description of prolet',
 
+    // Lang entries for command make:widget
+    'command_make_widget_description' => 'Generates widgets for existing add-ons.',
+    'command_make_widget_lets_build_widget' => 'Let\'s build a widget!',
+    'command_make_widget_ask_widget_name' => 'What is the widget name?',
+    'command_make_widget_ask_addon' => 'What add-on is this for?',
+    'command_make_widget_building_widget' => 'Building Widget!',
+    'command_make_widget_created_successfully' => 'Widget created successfully!',
+    'command_make_widget_option_addon' => 'Name of addon',
+
     // Lang entries for command make:model
     'command_make_model_description'                            => 'Creates a new model for an add-on',
     'command_make_model_summary'                                => 'This interactively generates an EE model for an existing third-party addon',

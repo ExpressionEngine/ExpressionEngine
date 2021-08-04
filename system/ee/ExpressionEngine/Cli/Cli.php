@@ -53,6 +53,7 @@ class Cli
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:all' => Commands\CommandMigrateAll::class,
         'migrate:addon' => Commands\CommandMigrateAddon::class,

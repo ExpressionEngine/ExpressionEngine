@@ -59,7 +59,7 @@ class CommandMakeCommand extends Cli
     {
         $this->info('command_make_command_lets_build_command');
 
-        // Gather alll the command information
+        // Gather all the command information
         $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
         $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_command_ask_addon", null, true);
         $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_command_ask_description");
