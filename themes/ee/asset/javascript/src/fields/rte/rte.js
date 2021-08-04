@@ -33,7 +33,7 @@ window.Rte;
         }
 
         if (this.defer) {
-            this.showIframe(type);
+            this.showIframe(this.config.type);
         } else if (this.config.type == 'redactor') {
             this.initRedactor();
         } else {
