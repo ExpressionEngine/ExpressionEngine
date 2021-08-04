@@ -28,13 +28,15 @@ class RedactorService implements RteService {
 
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
             
-            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/redactor/redactor.min.js'));
-            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/rte.js'));
+            ee()->cp->add_js_script(['file' => [
+                'fields/rte/redactor/redactor.min',
+                'fields/rte/rte']
+            ]);
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);
             if ($lang_code != 'en') {
-                ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/redactor/langs/' . $lang_code . '.js'));
+                ee()->cp->add_js_script(['file' => ['fields/rte/redactor/langs/' . $lang_code]]);
             }
 
             $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
@@ -170,10 +172,6 @@ class RedactorService implements RteService {
     public function toolbarInputHtml($config)
     {
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
-
-            ee()->cp->add_js_script([
-                'file' => ['cp/form_group'],
-            ]);
 
             $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
 

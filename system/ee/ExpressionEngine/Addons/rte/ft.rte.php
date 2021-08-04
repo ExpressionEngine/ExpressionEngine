@@ -164,7 +164,7 @@ class Rte_ft extends EE_Fieldtype
     {
         $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
         if (!empty($toolsetId)) {
-            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $this->settings['toolset_id'])->first();
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
         } else {
             $toolset = ee('Model')->get('rte:Toolset')->first();
         }
@@ -175,8 +175,8 @@ class Rte_ft extends EE_Fieldtype
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
         $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
-                    ? true
-                    : false;
+                    ? 'true'
+                    : 'false';
 
         if (strpos($id, '_new_') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
@@ -226,7 +226,7 @@ class Rte_ft extends EE_Fieldtype
     {
         $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
         if (!empty($toolsetId)) {
-            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $this->settings['toolset_id'])->first();
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
         } else {
             $toolset = ee('Model')->get('rte:Toolset')->first();
         }

@@ -26,13 +26,15 @@ class CkeditorService implements RteService
     {
         if (! static::$_includedFieldResources) {
             //would rather prefer this in combo loader, but that's for CP only
-            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/ckeditor/ckeditor.js'));
-            ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/rte.js'));
+            ee()->cp->add_js_script(['file' => [
+                'fields/rte/ckeditor/ckeditor',
+                'fields/rte/rte']
+            ]);
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);
             if ($lang_code != 'en') {
-                ee()->cp->add_to_foot(ee()->view->script_tag('fields/rte/ckeditor/translations/' . $lang_code . '.js'));
+                ee()->cp->add_js_script(['file' => ['fields/rte/ckeditor/translations/' . $lang_code]]);
             }
 
             $action_id = ee()->db->select('action_id')
