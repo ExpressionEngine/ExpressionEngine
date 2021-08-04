@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/wrapper'); ?>
 
-<a href="ee-pro-link" class="promo-banner-wrapper" style="background-image: url('themes/ee/asset/img/ee-pro-promo-banner-bg@2x.png'); background-color: #fff;">
+<a href="https://expressionengine.com/pro" class="promo-banner-wrapper" style="background-image: url('themes/ee/asset/img/ee-pro-promo-banner-bg@2x.png'); background-color: #fff;">
   <img src="themes/ee/asset/img/ee-pro-promo-banner@2x.png" alt="ExpressionEngine Pro" style="max-height: 250px;">
   <span class="banner-dismiss"></span>
 </a>
