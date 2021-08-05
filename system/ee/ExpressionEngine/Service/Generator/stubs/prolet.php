@@ -1,9 +1,9 @@
 <?php
 
 use ExpressionEngine\Addons\Pro\Service\Prolet\AbstractProlet;
-use ExpressionEngine\Addons\Pro\Service\Prolet\InitializableProletInterface;
+use ExpressionEngine\Addons\Pro\Service\Prolet\ProletInterface;
 
-class {{addon}}_pro extends AbstractProlet implements InitializableProletInterface
+class {{addon}}_pro extends AbstractProlet implements ProletInterface
 {
     protected $name = '{{name}}';
 
