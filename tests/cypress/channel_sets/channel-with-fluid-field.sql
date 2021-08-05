@@ -532,7 +532,7 @@ VALUES
 	(8,'checkboxes','1.0.0','YTowOnt9','n'),
 	(9,'radio','1.0.0','YTowOnt9','n'),
 	(10,'relationship','1.0.0','YTowOnt9','n'),
-	(11,'rte','1.0.0','YTowOnt9','n'),
+	(11,'rte','2.1.0','YTowOnt9','n'),
 	(12,'url','1.0.0','YTowOnt9','n'),
 	(13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n'),
