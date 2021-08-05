@@ -604,6 +604,15 @@ class Filemanager
         }
 
         $member = ee()->session->getMember();
+        if (!$member && isset(ee()->channel_form)) {
+            ee()->load->add_package_path(PATH_ADDONS . 'channel');
+            ee()->load->library('channel_form/channel_form_lib');
+            ee()->channel_form_lib->fetch_logged_out_member();
+            if (!empty(ee()->channel_form_lib->logged_out_member_id)) {
+                $member = ee('Model')->get('Member', ee()->channel_form_lib->logged_out_member_id)->first();
+            }
+            ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+        }
         $assigned_upload_destinations = $member ? $member->getAssignedUploadDestinations()->indexBy('id') : [];
 
         return isset($assigned_upload_destinations[$dir_id]);
