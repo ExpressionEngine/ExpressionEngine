@@ -260,7 +260,7 @@ context('Channel Settings', () => {
         page.get('comment_auto_link_urls').should('have.class', "off")
     })
 
-    contexts('enabling versions', function() {
+    context('enabling versions', function() {
         it('saves the versioning setting', function() {
             cy.visit('admin.php?/cp/channels/edit/2')
             cy.hasNoErrors()
