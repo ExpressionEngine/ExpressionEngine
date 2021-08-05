@@ -110,6 +110,14 @@ class Factory
             }
         }
 
+        // In this case, location is an add-on, so we need the addon folder to exist
+        if ($location !== 'ExpressionEngine') {
+            // Make sure the addon exists
+            if (!ee('Addon')->get($location)) {
+                throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
+            }
+        }
+
         $migrationPath = $this->getMigrationPath($location);
 
         if (! $this->filesystem->isDir($migrationPath)) {
