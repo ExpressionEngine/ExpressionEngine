@@ -1,24 +1,6 @@
-.promo-banner-wrapper {
-  // Set background-image URL and background-color inline
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  text-align: center;
+.promo-banner-outer {
   position: relative;
-  cursor: pointer;
-  display: block;
   margin: 0 40px 30px;
-  border-radius: 6px;
-  border: 1px solid #dfe0ef;
-  overflow: hidden;
-
-  img {
-    // Set max-height inline to natural height of image
-    max-width: 100%;
-    max-height: 250px;
-    display: block;
-    margin: auto;
-  }
 
   .banner-dismiss {
     color: var(--ee-text-secondary);
@@ -41,8 +23,30 @@
   }
 }
 
+.promo-banner-wrapper {
+  // Set background-image URL and background-color inline
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  display: block;
+  border-radius: 6px;
+  border: 1px solid #dfe0ef;
+  overflow: hidden;
+
+  img {
+    // Set max-height inline to natural height of image
+    max-width: 100%;
+    max-height: 250px;
+    display: block;
+    margin: auto;
+  }
+}
+
 @media (max-width: 900px) {
-  .promo-banner-wrapper .banner-dismiss {
+  .promo-banner-outer .banner-dismiss {
     right: 20px;
     top: 15px;
 
@@ -53,7 +57,7 @@
 }
 
 @media (max-width: 700px) {
-  .promo-banner-wrapper .banner-dismiss {
+  .promo-banner-outer .banner-dismiss {
     right: 10px;
     top: 5px;
   }
