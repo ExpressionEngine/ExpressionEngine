@@ -33,6 +33,7 @@ class Updater
             '_addAllowPreview',
             'longerWatermarkImagePath',
             'addProTemplateSettings',
+            'addDismissedProBannerToMember',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -162,7 +163,6 @@ class Updater
         }
     }
 
-
     private function removeRteExtension()
     {
         ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.1']);
@@ -185,7 +185,7 @@ class Updater
             ]
         );
     }
-    
+
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {
@@ -197,7 +197,7 @@ class Updater
                         'type' => 'CHAR',
                         'constraint' => 1,
                         'default' => 'y',
-                        'null' => FALSE,
+                        'null' => false,
                     )
                 )
             );
@@ -226,6 +226,23 @@ class Updater
         );
 
         ee()->smartforge->modify_column('file_watermarks', $fields);
+    }
+
+    private function addDismissedProBannerToMember()
+    {
+        if (!ee()->db->field_exists('dismissed_pro_banner', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'dismissed_pro_banner' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n ',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 }
 
