@@ -1,14 +1,12 @@
         <div class="ee-sidebar__items">
 					<?=$sidebar?>
 
-
-
-
           <div class="ee-sidebar__items-bottom">
             <?php
                             $version_class = '';
                             $update_available = isset(ee()->view->new_version);
                             $vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
+                            $is_pro = (defined('IS_PRO') && IS_PRO);
 
                             if ($update_available) {
                                 if ($vital_update) {
@@ -51,6 +49,8 @@
 							</svg>
 							<span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
 						</a>
+                        <?php if ($is_pro): ?>
+                            <a class="ee-pro__indicator-badge">Pro</a>
+                        <?php endif; ?>
 					</div>
-
 				</div>
