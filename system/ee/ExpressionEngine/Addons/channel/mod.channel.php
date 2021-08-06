@@ -3063,6 +3063,10 @@ class Channel
 
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
+        if (ee()->TMPL->fetch_param('sticky') === 'only') {
+            $sql .= "AND exp_channel_titles.sticky = 'y'";
+        }
+
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
             $sql .= "AND exp_channel_titles.entry_date < " . $timestamp . " ";
         }
@@ -3070,8 +3074,6 @@ class Channel
         if (ee()->TMPL->fetch_param('show_expired') != 'yes') {
             $sql .= "AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > " . $timestamp . ") ";
         }
-
-        $sql .= "AND exp_channel_titles.status != 'closed' ";
 
         if ($status = ee()->TMPL->fetch_param('status')) {
             $status = str_replace('Open', 'open', $status);
@@ -3088,29 +3090,43 @@ class Channel
 
         $orderby = ee()->TMPL->fetch_param('orderby');
 
+        $sql .= " ORDER BY ";
+
+        if(ee()->TMPL->fetch_param('sticky') === 'yes') {
+            $sql .= "exp_channel_titles.sticky desc, ";
+        }
+
         switch ($orderby) {
             case 'date':
-                $sql .= "ORDER BY exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.entry_date";
+
+                break;
+            case 'edit_date':
+                $sql .= "exp_channel_titles.edit_date";
 
                 break;
             case 'expiration_date':
-                $sql .= "ORDER BY exp_channel_titles.expiration_date";
+                $sql .= "exp_channel_titles.expiration_date";
 
                 break;
             case 'title':
-                $sql .= "ORDER BY exp_channel_titles.title";
+                $sql .= "exp_channel_titles.title";
 
                 break;
             case 'comment_total':
-                $sql .= "ORDER BY exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.entry_date";
 
                 break;
             case 'most_recent_comment':
-                $sql .= "ORDER BY exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
+
+                break;
+            case 'most_used_categories':
+                $sql .= "COUNT(exp_category_posts.entry_id) DESC, exp_channel_titles.entry_date";
 
                 break;
             default:
-                $sql .= "ORDER BY exp_channel_titles.title";
+                $sql .= "exp_channel_titles.title";
 
                 break;
         }
