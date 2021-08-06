@@ -1456,11 +1456,11 @@ class Channels extends AbstractChannelsController
 
         // Create Channel
         if ($channel->isNew()) {
-            $channel->default_entry_title = '';
-            $channel->url_title_prefix = '';
-            $channel->channel_url = ee()->functions->fetch_site_index();
-            $channel->channel_lang = ee()->config->item('xml_lang');
-            $channel->site_id = ee()->config->item('site_id');
+            $channel->default_entry_title = $channel->default_entry_title ?: '';
+            $channel->url_title_prefix = $channel->url_title_prefix ?: '';
+            $channel->channel_url = $channel->channel_url ?: ee()->functions->fetch_site_index();
+            $channel->channel_lang = $channel->channel_lang ?: ee()->config->item('xml_lang');
+            $channel->site_id = $channel->site_id ?: ee()->config->item('site_id');
 
             $dupe_id = ee()->input->post('duplicate_channel_prefs');
             unset($_POST['duplicate_channel_prefs']);
