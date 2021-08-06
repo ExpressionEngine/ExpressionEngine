@@ -4,13 +4,18 @@ $this->extend('_templates/wrapper');
 $member = ee()->session->getMember();
 $is_pro = (defined('IS_PRO') && IS_PRO);
 $dismissed_banner = get_bool_from_string($member->dismissed_pro_banner);
+
+
+$is_pro = false;
+$dismissed_banner = false;
+
 ?>
 
 <?php if (!$is_pro && ! $dismissed_banner): ?>
 <a href="https://expressionengine.com/pro" class="promo-banner-wrapper" style="background-image: url('themes/ee/asset/img/ee-pro-promo-banner-bg@2x.png'); background-color: #fff;">
   <img src="themes/ee/asset/img/ee-pro-promo-banner@2x.png" alt="ExpressionEngine Pro" style="max-height: 250px;">
 </a>
-  <a href="<?=ee('CP/URL')->make('pro/dashboard/dismissBanner')->compile();?>"><span class="banner-dismiss"></span>Dismiss Banner</a>
+  <a href="<?=ee('CP/URL')->make('homepage/dismissBanner')->compile();?>"><span class="banner-dismiss"></span>Dismiss Banner</a>
 <?php endif; ?>
 
 <?php if (isset($header)): ?>
