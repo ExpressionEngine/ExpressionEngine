@@ -687,7 +687,7 @@ var compressJs = function (path) {
 	console.log('Compress Path:', path + 'themes/ee/asset/javascript/src/**/*.js');
 	// process.exit();
 	return gulp.src([path + 'themes/ee/asset/javascript/src/**/*.js', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/plugins/', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/redactor.css', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/redactor.js'])
-		.pipe(plugin.uglify({preserveComments: 'some'}))
+		//.pipe(plugin.uglify({preserveComments: 'some'}))
 		.pipe(gulp.dest(path + 'themes/ee/asset/javascript/compressed/'));
 };
 
