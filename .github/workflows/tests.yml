@@ -85,13 +85,13 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __pro
 
-          - name: Move Pro into core
-            run: |
-              mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-              mv __pro/themes/ee/pro themes/ee/pro
-              mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-              mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-              rm -rf __pro
+        #  - name: Move Pro into core
+        #    run: |
+        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+        #      mv __pro/themes/ee/pro themes/ee/pro
+        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+        #      rm -rf __pro
 
           - name: Setup asdf
             uses: asdf-vm/actions/setup@v1
@@ -120,7 +120,8 @@ jobs:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-            run: gulp build-app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
