@@ -72,7 +72,7 @@ $(document).ready(function () {
 			$(this).attr('href').indexOf('#') != 0  && 
 			$(this).attr('href').indexOf('javascript:') != 0 &&
 			$(this).attr('target') != '_blank' && 
-			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
+			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
 		) {
 			isNavigatingAway = confirm(EE.lang.confirm_exit);
 			return isNavigatingAway;

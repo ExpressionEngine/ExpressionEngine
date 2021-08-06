@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.x
+      - release/6.0.0
 
 jobs:
   build:
@@ -24,11 +25,11 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
 
-      - name: Move Pro into core
-        run: |
-          mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-          mv __pro/themes/ee/pro themes/ee/pro
-          rm -rf __pro
+      #- name: Move Pro into core
+      #  run: |
+      #    mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+      #    mv __pro/themes/ee/pro themes/ee/pro
+      #    rm -rf __pro
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -57,7 +58,9 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-        run: gulp app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
+        run: |
+          gulp app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
@@ -73,7 +76,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: ExpressionEngine/ExpressionEngine
+          repository: EllisLab/ExpressionEngine-Private
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version

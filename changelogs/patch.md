@@ -44,6 +44,7 @@ Bullet list below, e.g.
    - Fix a bug with debug variables not being filtered
    - Fix a bug with the importer converter filter
    - Fix a bug with Typography parse_url function
+   - Added CLI commands for generating Prolets and Widgets
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
