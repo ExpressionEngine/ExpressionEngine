@@ -4,7 +4,7 @@ document.addEventListener('submit', function(event) {
     event.preventDefault();
 	grecaptcha.ready(function () {
 		grecaptcha.execute(key, { action: 'register' }).then(function (token) {
-			var sendData = "rec=" + token + "&csrf_token=csrf_token"
+			var sendData = "rec=" + token
 			const response = fetch(endpoint, {
 				method: 'POST',
 				credentials: 'same-origin',
