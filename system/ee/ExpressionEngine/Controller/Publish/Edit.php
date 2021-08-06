@@ -431,7 +431,7 @@ class Edit extends AbstractPublishController
                 'value' => 'save_and_next',
                 'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
                 'working' => 'btn_saving'
-                ]];
+            ]];
         }
 
         $version_id = ee()->input->get('version');
@@ -444,6 +444,16 @@ class Edit extends AbstractPublishController
             $version = $entry->Versions->filter('version_id', $version_id)->first();
             $version_data = $version->version_data;
             $entry->set($version_data);
+        }
+
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('original_entry_id', $entry->entry_id)
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
+            }
         }
 
         if ($autosave_id) {

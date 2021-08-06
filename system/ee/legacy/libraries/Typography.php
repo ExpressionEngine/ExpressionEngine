@@ -740,6 +740,9 @@ class EE_Typography
         // Encode EE Tags
         $str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
+        // XSS Filter after parsing into html
+        $str = ee('Security/XSS')->clean($str);
+
         return $str;
     }
 

@@ -114,7 +114,7 @@ class Channel extends StructureModel
         'preview_url' => 'xss|validatePreviewURL',
         'allow_preview' => 'enum[y,n]',
         'comment_url' => 'xss',
-        'channel_description' => 'xss',
+        'channel_description' => 'xss|maxLength[255]',
         'deft_comments' => 'enum[y,n]',
         'channel_require_membership' => 'enum[y,n]',
         'channel_allow_img_urls' => 'enum[y,n]',

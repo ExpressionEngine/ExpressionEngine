@@ -43,8 +43,11 @@ class Publish extends AbstractPublishController
      * @param int $entry_id The Entry ID
      * @return array An associative array (for JSON) containing the rendered HTML
      */
-    public function field(int $channel_id, int $entry_id)
+    public function field($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         if (is_numeric($entry_id) && $entry_id != 0) {
             $entry = ee('Model')->get('ChannelEntry', $entry_id)
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -93,8 +96,11 @@ class Publish extends AbstractPublishController
      * @param int $entry_id The Entry ID
      * @return void
      */
-    public function autosave(int $channel_id, int $entry_id)
+    public function autosave($channel_id, $entry_id)
     {
+        $channel_id = (int) $channel_id;
+        $entry_id = (int) $entry_id;
+
         $site_id = ee()->config->item('site_id');
 
         $autosave = ee('Model')->get('ChannelEntryAutosave')
@@ -108,10 +114,16 @@ class Publish extends AbstractPublishController
             $autosave->original_entry_id = $entry_id;
             $autosave->site_id = $site_id;
             $autosave->channel_id = $channel_id;
+            $autosave->entry_data = $_POST;
+        } else {
+            $entry_data = $autosave->entry_data;
+            foreach ($_POST as $key => $val) {
+                $entry_data[$key] = $val;
+            }
+            $autosave->entry_data = $entry_data;
         }
 
         $autosave->edit_date = ee()->localize->now;
-        $autosave->entry_data = $_POST;
 
         // This is currently unused, but might be useful for display purposes
         $autosave->author_id = ee()->input->post('author_id', ee()->session->userdata('member_id'));
@@ -147,10 +159,16 @@ class Publish extends AbstractPublishController
      *   the form
      * @return string Rendered HTML
      */
-    public function create(int $channel_id = null, int $autosave_id = null)
+    public function create($channel_id = null, $autosave_id = null)
     {
         if (! $channel_id) {
             show_404();
+        }
+
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($autosave_id)) {
+            $autosave_id = (int) $autosave_id;
         }
 
         if (! ee('Permission')->can('create_entries_channel_id_' . $channel_id) or
@@ -232,6 +250,18 @@ class Publish extends AbstractPublishController
                 'text' => 'save_and_close',
                 'working' => 'btn_saving'
             ]];
+        }
+
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('original_entry_id', 0)
+                ->filter('channel_id', $channel_id)
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
+            }
         }
 
         if ($autosave_id) {
@@ -326,8 +356,14 @@ class Publish extends AbstractPublishController
         $entry->set($data);
     }
 
-    public function preview(int $channel_id, int $entry_id = null)
+    public function preview($channel_id, $entry_id = null)
     {
+        $channel_id = (int) $channel_id;
+
+        if (!is_null($entry_id)) {
+            $entry_id = (int) $entry_id;
+        }
+
         return ee('LivePreview')->preview($channel_id, $entry_id);
     }
 }

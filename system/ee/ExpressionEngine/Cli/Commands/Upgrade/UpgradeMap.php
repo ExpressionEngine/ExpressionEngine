@@ -7,7 +7,7 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 class UpgradeMap
 {
     public static $versionsSupported = [
-        '6.1.0_a_1',
+        '6.1.0_rc_1',
         '6.0.6',
         '6.0.5',
         '6.0.4',
@@ -157,7 +157,7 @@ class UpgradeMap
     ];
 
     public static $versionNaming = [
-        '6.1.0_a_1' => '6.1.0_a.1',
+        '6.1.0_rc_1' => '6.1.0_rc.1',
         '6.0.0_rc_1' => '6.0.0_rc.1',
         '6.0.0_b_4' => '6.0.0_b.4',
         '6.0.0_b_3' => '6.0.0_b.3',

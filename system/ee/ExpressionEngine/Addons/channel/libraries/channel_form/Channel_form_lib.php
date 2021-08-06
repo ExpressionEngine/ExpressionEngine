@@ -24,7 +24,6 @@ class Channel_form_lib
     public $checkboxes;
     public $custom_field_conditional_names;
     public $custom_fields;
-    public $custom_option_fields;
     public $date_fields;
     public $datepicker;
     public $default_fields;
@@ -2685,7 +2684,7 @@ GRID_FALLBACK;
         );
 
         $this->custom_fields = array();
-        $this->custom_option_fields = array();
+
         $this->date_fields = array(
             'comment_expiration_date',
             'expiration_date',
@@ -2761,7 +2760,6 @@ GRID_FALLBACK;
             'title' => 'text'
         );
 
-        $this->option_fields = array();
         $this->parse_variables = array();
 
         $this->post_error_callbacks = array();
@@ -2806,37 +2804,48 @@ GRID_FALLBACK;
 
         $this->fetch_settings();
 
-        $this->option_fields = $this->native_option_fields;
+        // Get the list of Fieldtypes that extend OptionFieldtype
+        $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        $this->option_fields = array_filter($fieldtypes, function($fieldtype) {
+            ee()->api_channel_fields->include_handler($fieldtype);
+            $class = ucfirst($fieldtype) . '_ft';
+
+            return is_subclass_of($class, 'OptionFieldtype');
+        });
+
         /*
-                ee()->config->load('config');
+            TODO: I think the following code can be removed
+            ee()->config->load('config');
 
-                if (is_array(ee()->config->item('safecracker_option_fields')))
-                {
-                    $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
+            if (is_array(ee()->config->item('safecracker_option_fields')))
+            {
+                $this->custom_option_fields = ee()->config->item('safecracker_option_fields');
 
-                    $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
-                }
+                $this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
+            }
 
-                if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
-                {
-                    $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
-                }
+            if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
+            {
+                $this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
+            }
 
-                if (is_array(ee()->config->item('safecracker_file_fields')))
-                {
-                    $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
-                }
+            if (is_array(ee()->config->item('safecracker_file_fields')))
+            {
+                $this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
+            }
 
-                if (is_array(ee()->config->item('safecracker_require_save_call')))
-                {
-                    $this->require_save_call = ee()->config->item('safecracker_require_save_call');
-                }
+            if (is_array(ee()->config->item('safecracker_require_save_call')))
+            {
+                $this->require_save_call = ee()->config->item('safecracker_require_save_call');
+            }
 
-                if (is_array(ee()->config->item('safecracker_field_extra_js')))
-                {
-                    $this->extra_js = ee()->config->item('safecracker_field_extra_js');
-                }
-            */
+            if (is_array(ee()->config->item('safecracker_field_extra_js')))
+            {
+                $this->extra_js = ee()->config->item('safecracker_field_extra_js');
+            }
+        */
     }
 
     /**

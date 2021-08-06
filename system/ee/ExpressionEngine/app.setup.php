@@ -33,6 +33,7 @@ use ExpressionEngine\Service\LivePreview;
 use ExpressionEngine\Service\Logger;
 use ExpressionEngine\Service\Member;
 use ExpressionEngine\Service\Memory;
+use ExpressionEngine\Service\Migration;
 use ExpressionEngine\Service\Modal;
 use ExpressionEngine\Service\Model;
 use ExpressionEngine\Service\Permission;
@@ -48,6 +49,11 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\AddonGenerator;
+use ExpressionEngine\Service\Generator\CommandGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
+use ExpressionEngine\Service\Generator\ModelGenerator;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -218,6 +224,10 @@ $setup = [
             return $facade;
         },
 
+        'Migration' => function ($ee, $migration=null) {
+            return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
+        },
+
         'Spam' => function ($ee) {
             return new Spam();
         },
@@ -320,6 +330,36 @@ $setup = [
 
         'Variables/Parser' => function ($ee) {
             return new Template\Variables\LegacyParser();
+        },
+
+        'AddonGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new AddonGenerator($filesystem, $data);
+        },
+
+        'CommandGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new CommandGenerator($filesystem, $data);
+        },
+
+        'ProletGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ProletGenerator($filesystem, $data);
+        },
+
+        'WidgetGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new WidgetGenerator($filesystem, $data);
+        },
+
+        'ModelGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ModelGenerator($filesystem, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {
@@ -580,6 +620,9 @@ $setup = [
         // ..\Menu
         'MenuSet' => 'Model\Menu\MenuSet',
         'MenuItem' => 'Model\Menu\MenuItem',
+
+        // ..\Migration
+        'Migration' => 'Model\Migration\Migration',
 
         // ..\Dashboard
         'DashboardLayout' => 'Model\Dashboard\DashboardLayout',

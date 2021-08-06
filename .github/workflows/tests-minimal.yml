@@ -101,7 +101,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1
@@ -210,7 +210,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -301,7 +301,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -391,7 +391,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -481,7 +481,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -571,7 +571,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Utilities, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -661,7 +661,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -751,7 +751,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}

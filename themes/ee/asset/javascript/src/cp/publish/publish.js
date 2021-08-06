@@ -6,13 +6,27 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
+var isNavigatingAway = false;
+function preventNavigateAway(e) {
+	if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+		e.returnValue = EE.lang.confirm_exit;
+		return EE.lang.confirm_exit;
+	}
+}
 $(document).ready(function () {
+
+	if(typeof isNavigatingAway === 'undefined') {
+		var isNavigatingAway
+	}
+
+	isNavigatingAway = false;
 
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
-	var isNavigatingAway = false;
+	try {
+		sessionStorage.removeItem("preventNavigateAway");
+	} catch (e) {}
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -58,7 +72,7 @@ $(document).ready(function () {
 			$(this).attr('href').indexOf('#') != 0  && 
 			$(this).attr('href').indexOf('javascript:') != 0 &&
 			$(this).attr('target') != '_blank' && 
-			(!e.target.closest('[data-publish]') || !e.target.closest('[data-publish]').length)
+			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
 		) {
 			isNavigatingAway = confirm(EE.lang.confirm_exit);
 			return isNavigatingAway;
@@ -66,12 +80,7 @@ $(document).ready(function () {
 	});
 
 	//prevent navigating away using browser buttons
-	function preventNavigateAway(e) {
-		if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
-			e.returnValue = EE.lang.confirm_exit;
-			return EE.lang.confirm_exit;
-		}
-	}
+	
 	window.addEventListener('beforeunload', preventNavigateAway);
 	publishForm.on('submit', function(){
 		window.removeEventListener('beforeunload', preventNavigateAway);
@@ -83,6 +92,9 @@ $(document).ready(function () {
 		var autosaving = false;
 
 		publishForm.on("entry:startAutosave", function() {
+			try {
+				sessionStorage.setItem("preventNavigateAway", true);
+			} catch (e) {}
 			publishForm.trigger("entry:autosave");
 
 			if (autosaving) {
@@ -106,6 +118,11 @@ $(document).ready(function () {
 						else if (result.success) {
 							publishHeading.append(result.success);
 							sessionStorage.removeItem("preventNavigateAway");
+
+							// Check if we're in an iframe, and emit appropriate events
+							if(window.self !== window.top) {
+								document.dispatchEvent(new CustomEvent('ee-pro-object-has-autosaved'));
+							}
 						}
 						else {
 							console.log('Autosave Failed');

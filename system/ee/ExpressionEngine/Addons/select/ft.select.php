@@ -21,6 +21,8 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $size = 'small';
+
     public function validate($data)
     {
         $valid = false;
