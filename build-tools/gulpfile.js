@@ -581,7 +581,7 @@ var archive_repo = function(type, cb) {
 		console.log('cwd: ' + path);
 		console.log('unzip -o ' + zip_file + ' -d ' + paths[type]);
 
-        exec('unzip -o ' + zip_file + ' -d ' + paths[type], { cwd: path, maxBuffer: 1000 * 1024 }, (err, stdout, stderr) => { // cwd: path, maxBuffer: 500 * 1024
+        exec('unzip -o ' + zip_file + ' -d ' + paths[type], { cwd: path, maxBuffer: 2000 * 1024 }, (err, stdout, stderr) => { // cwd: path, maxBuffer: 500 * 1024
 			if (err) throw err;
 
 			console.log('deleting zip file');
