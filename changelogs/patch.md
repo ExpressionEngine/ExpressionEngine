@@ -45,6 +45,7 @@ Bullet list below, e.g.
    - Fix a bug with the importer converter filter
    - Fix a bug with Typography parse_url function
    - Added CLI commands for generating Prolets and Widgets
+   - Fixed a CLI bug where it didnt ask for the migration location if not specified
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are

@@ -88,8 +88,7 @@ class CommandMakeMigration extends Cli
 
         $this->info(lang('command_make_migration_using_migration_name') . $this->migration_name);
 
-        // Set location
-        $this->migration_location = $this->option('--location', 'ExpressionEngine');
+        $this->migration_location  = $this->getOptionOrAsk("--location", lang('command_make_migration_where_to_generate_migration'), 'ExpressionEngine');
 
         // Set migration type based on create/update flags
         if ($this->option('--create')) {
