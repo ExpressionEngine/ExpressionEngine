@@ -92,6 +92,8 @@ $lang = array(
     'command_make_migration_what_table_is_migration_for'        => 'What table is this migration for?',
     'command_make_migration_ask_migration_action'               => 'What is the migration action',
     'command_make_migration_ask_migration_category'             => 'What is the migration category',
+    'command_make_migration_where_to_generate_migration'        => 'Where should we generate this migration? (ExpressionEngine or existing add-on)',
+
     // make:migration options
     'command_make_migration_option_name'                        => 'Name of migration',
     'command_make_migration_option_table'                       => 'Table name',
