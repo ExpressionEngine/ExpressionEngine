@@ -2,18 +2,19 @@
 
 $lang = array(
     // All generic CLI lang entries
-    'cli_error_no_command_given'                                => 'No command given. Try `php eecli.php list` for full list of commands.',
-    'cli_error_command_not_found'                               => 'Command not found. Try `php eecli.php list` for full list of commands.',
-    'cli_error_ee_not_installed'                                => 'EE is not currently installed.',
-    'cli_error_is_required'                                     => ' is a required field.',
-    'cli_option_help'                                     => 'See help menu for given command',
+    'cli_error_no_command_given'                   => 'No command given. Try `php eecli.php list` for full list of commands.',
+    'cli_error_command_not_found'                  => 'Command not found. Try `php eecli.php list` for full list of commands.',
+    'cli_error_ee_not_installed'                   => 'EE is not currently installed.',
+    'cli_error_is_required'                        => ' is a required field.',
+    'cli_option_help'                              => 'See help menu for given command',
+    'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
 
     // Lang entries for command cache:clear
-    'command_cache_clear_description'                           => 'Clears all ExpressionEngine caches',
-    'command_cache_clear_summary'                               => '',
-    'command_cache_clear_option_type'                           => 'Type of cache to clear (default: all)',
-    'command_cache_clear_cache_does_not_exist'                  => 'Cache does not exist. Use --help to see available caches.',
-    'command_cache_clear_caches_cleared'                        => ' caches are cleared!',
+    'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',
+    'command_cache_clear_summary'                  => '',
+    'command_cache_clear_option_type'              => 'Type of cache to clear (default: all)',
+    'command_cache_clear_cache_does_not_exist'     => 'Cache does not exist. Use --help to see available caches.',
+    'command_cache_clear_caches_cleared'           => ' caches are cleared!',
 
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',
@@ -101,6 +102,34 @@ $lang = array(
 
     // make:migration Error message
     'command_make_migration_missing_required_template_variable' => 'Missing required variable(s) for parsing migration template: ',
+
+    // Lang entries for command make:prolet
+    'command_make_prolet_description'                 => 'Creates a new prolet for an add-on',
+    'command_make_prolet_summary'                     => 'This interactively generates an EE Prolet for an existing third-party addon',
+    'command_make_prolet_lets_build_prolet'           => 'Let\'s build a new prolet!',
+    'command_make_prolet_ask_prolet_name'             => 'What is the prolet name?',
+    'command_make_prolet_ask_addon'                   => 'What addon is the prolet being added to?',
+    'command_make_prolet_ask_description'             => 'What is the Prolet description?',
+    'command_make_prolet_building_prolet'             => 'Building Prolet.',
+    'command_make_prolet_created_successfully'        => 'Prolet created successfully!',
+    'command_make_prolet_ask_widget_name'             => 'What is the name of the widget?',
+    'command_make_prolet_generating_widget'           => 'Generating widget.',
+    'command_make_prolet_widget_created_successfully' => 'Widget created successfully!',
+
+    // make:prolet options
+    'command_make_prolet_option_addon'                => 'Folder for third-party add-on you want to add prolet to',
+    'command_make_prolet_option_description'          => 'Description of prolet',
+    'command_make_prolet_option_has_widget'           => 'Create a widget for the add-on after generating the prolet (optional)',
+    'command_make_prolet_option_widget_name'          => 'Name of widget',
+
+    // Lang entries for command make:widget
+    'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
+    'command_make_widget_lets_build_widget'           => 'Let\'s build a widget!',
+    'command_make_widget_ask_widget_name'             => 'What is the widget name?',
+    'command_make_widget_ask_addon'                   => 'What add-on is this for?',
+    'command_make_widget_building_widget'             => 'Building Widget.',
+    'command_make_widget_created_successfully'        => 'Widget created successfully!',
+    'command_make_widget_option_addon'                => 'Name of addon',
 
     // Lang entries for command make:model
     'command_make_model_description'                            => 'Creates a new model for an add-on',

@@ -1266,7 +1266,6 @@ class Comment
         if (! isset($_POST['PRV']) or $_POST['PRV'] == '') {
             exit('Preview template not specified in your comment form tag');
         }
-
         // Clean return value- segments only
         $clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
@@ -1802,8 +1801,8 @@ class Comment
 
         // Bleh- really need a conditional for if they are subscribed
 
-        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string();
-        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string();
+        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() .'&csrf_token=' . CSRF_TOKEN;
+        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
 
         $data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 
@@ -1887,6 +1886,9 @@ class Comment
      */
     public function comment_subscribe()
     {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
         ee()->lang->loadfile('comment');
 
         $id = ee()->input->get('entry_id');
@@ -1978,8 +1980,14 @@ class Comment
      */
     public function edit_comment($ajax_request = true)
     {
-        @header("Content-type: text/html; charset=UTF-8");
+        /*
+        This check is needed because otherwise, links could be created to CSRF and edit comments.
+        */
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
 
+        @header("Content-type: text/html; charset=UTF-8");
         $unauthorized = ee()->lang->line('not_authorized');
 
         if (ee()->input->get_post('comment_id') === false or ((ee()->input->get_post('comment') === false or ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close')) {
@@ -2173,7 +2181,7 @@ CMT_EDIT_SCR;
      */
     public function ajax_edit_url()
     {
-        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment');
+        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment') . '&csrf_token=' . CSRF_TOKEN;
 
         return $url;
     }
