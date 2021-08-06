@@ -191,7 +191,7 @@ class Homepage extends CP_Controller
         $member->set(['dismissed_pro_banner' => 'y']);
         $member->save();
 
-        ee()->functions->redirect(ee('CP/URL')->make('cp/homepage')->compile());
+        ee()->output->send_ajax_response(['success']);
     }
 }
 
