@@ -169,7 +169,12 @@ class EE_Asset {
             @header('Content-Length: ' . strlen($asset));
         }
 
-        header("Content-type: text/" . $this->type);
+        if($this->type === 'js') {
+            header("Content-type: text/javascript");
+        } else {
+            header("Content-type: text/css");
+        }
+
         exit($asset);
     }
 }
