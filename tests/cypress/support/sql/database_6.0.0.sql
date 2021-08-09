@@ -439,6 +439,8 @@ INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_la
 	(5, 1, 'about_image', 'Image', 'URL Only', 'file', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'none', 'n', 5, 'any', 'YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ==', 'y'),
 	(6, 1, 'about_staff_title', 'Staff Member\'s Title', 'This is the Title that the staff member has within the company.  Example: CEO', 'text', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'n', 'none', 'n', 6, 'any', 'YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30=', 'y'),
 	(7, 1, 'about_extended', 'Extended', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y');
+
+
 /*!40000 ALTER TABLE `exp_channel_fields` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channel_field_groups_fields
@@ -549,6 +551,7 @@ INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_i
 	(9, 1, 2, 1, NULL, '127.0.0.1', 'Jason', 'jason', 'open', 1, 'n', 0, 0, 0, 0, 'y', 'n', 1409242030, '2014', '08', '28', 0, 0, 20140828160710, NULL, 0),
 	(10, 1, 1, 1, NULL, '127.0.0.1', 'Band Title', 'band_title', 'Featured', 3, 'n', 0, 0, 0, 0, 'y', 'n', 1409242030, '2014', '08', '28', 0, 0, 20140828160710, NULL, 0);
 /*!40000 ALTER TABLE `exp_channel_titles` ENABLE KEYS */;
+
 
 -- Dumping structure for table ee-test.exp_comments
 DROP TABLE IF EXISTS `exp_comments`;
@@ -1372,11 +1375,6 @@ CREATE TABLE IF NOT EXISTS `exp_grid_columns` (
   PRIMARY KEY (`col_id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Dumping data for table ee-test.exp_grid_columns: ~0 rows (approximately)
-DELETE FROM `exp_grid_columns`;
-/*!40000 ALTER TABLE `exp_grid_columns` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_grid_columns` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_html_buttons
 DROP TABLE IF EXISTS `exp_html_buttons`;
@@ -2494,6 +2492,7 @@ CREATE TABLE IF NOT EXISTS `exp_templates` (
   `php_parse_location` char(1) NOT NULL DEFAULT 'o',
   `hits` int(10) unsigned NOT NULL DEFAULT 0,
   `protect_javascript` char(1) NOT NULL DEFAULT 'n',
+  `enable_frontedit` char(1) NOT NULL default 'y',
   PRIMARY KEY (`template_id`),
   KEY `group_id` (`group_id`),
   KEY `template_name` (`template_name`),

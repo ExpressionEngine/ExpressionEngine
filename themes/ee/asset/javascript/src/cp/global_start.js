@@ -236,7 +236,8 @@ $(document).ready(function () {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	if (! EE.cp.lvUrl) {
+	// Verify we have a license validation URL and the last update check was more than an hour ago.
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
 		return;
 	}
 
@@ -258,7 +259,7 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			var validLicense = true;
+			var validLicense = false;
 
 			switch (result.messageType) {
 				case 'success':
@@ -301,13 +302,35 @@ EE.cp.validateLicense = function() {
 				}
 			}
 
-			if (!validLicense && !validAddons) {
-				// console.log('Invalid License and Invalid Add-ons');
+			if (EE.cp.accessResponseURL) {
+				// Post the response to the backend.
+				$.ajax({
+					type: 'POST',
+					url: EE.cp.accessResponseURL,
+					dataType: 'json',
+					data: {
+						appVer: EE.cp.appVer,
+						license: EE.cp.licenseKey,
+						validLicense: validLicense,
+						validAddons: validAddons,
+						addons: JSON.parse(EE.cp.installedAddons),
+						site_name: EE.site_name,
+						site_id: EE.site_id,
+						site_url: EE.site_url
+					},
+
+					success: function (result) {
+
+					},
+					error: function (data, textStatus, errorThrown) {
+						console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+					}
+				});
 			}
 		},
 
 		error: function(data, textStatus, errorThrown) {
-			console.log('Error Data:', data, data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
 		}
 	});
 }

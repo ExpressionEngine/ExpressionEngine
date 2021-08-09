@@ -187,7 +187,30 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                         ));
                     }
 
+                    //frontend edit link
+                    if (IS_PRO) {
+                        $frontedit_disabled = false;
+                        $frontEditLink = '';
+                        if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
+                            $frontedit_disabled = true;
+                        } elseif (isset($params['disable'])) {
+                            $disable = explode("|", $params['disable']);
+                            if (in_array('frontedit', $disable)) {
+                                $frontedit_disabled = true;
+                            }
+                        }
+                        if (!$frontedit_disabled) {
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
+                        }
+                        $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                    }
+
                     $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+
+                    // additional round of replacements in edit link is outside of chunk
+                    if (IS_PRO) {
+                        $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
+                    }
                 }
 
                 ee()->load->remove_package_path($_ft_path);

@@ -20,6 +20,8 @@ class Toggle_ft extends EE_Fieldtype
 
     public $has_array_data = false;
 
+    public $size = 'small';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(

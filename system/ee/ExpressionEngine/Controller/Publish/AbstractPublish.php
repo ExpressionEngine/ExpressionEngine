@@ -231,6 +231,18 @@ abstract class AbstractPublish extends CP_Controller
             )
         );
 
+        $urlParams = [];
+        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+            $urlParams = [
+                'entry_ids' => ee('Request')->get('entry_ids'),
+                'field_id' => ee('Request')->get('field_id'),
+                'site_id' => ee('Request')->get('site_id'),
+                'modal_form' => ee('Request')->get('modal_form'),
+                'hide_closer' => ee('Request')->get('hide_closer'),
+                'return' => ee('Request')->get('return')
+            ];
+        }
+
         $data = array();
         $authors = array();
         $i = $entry->getAutosaves()->count();
@@ -254,7 +266,7 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     $edit_date,
                     $authors[$entry->author_id],
-                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
+                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $urlParams) . '"><span class="st-open">' . lang('current') . '</span></a>'
                 )
             );
             $i--;
@@ -271,7 +283,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => $entry->entry_id
-                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)
+                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id, $urlParams)
                                 : ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id),
                             'title' => lang('view'),
                             'content' => lang('view')
@@ -454,7 +466,7 @@ abstract class AbstractPublish extends CP_Controller
     protected function pruneAutosaves()
     {
         $prune = ee()->config->item('autosave_prune_hours') ?: 6;
-        $prune = $prune * 120; // From hours to seconds
+        $prune = $prune * 3600; // From hours to seconds
 
         $cutoff = ee()->localize->now - $prune;
 
@@ -509,7 +521,7 @@ abstract class AbstractPublish extends CP_Controller
             unset($buttons[1]);
         }
 
-        if ($livePreviewSetup === true && $entry->hasLivePreview()) {
+        if ($livePreviewSetup === true) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -576,7 +588,7 @@ abstract class AbstractPublish extends CP_Controller
                     $preview_url .= AMP . 'entry_id=' . $entry->entry_id;
                 }
                 if (ee()->input->get('return') != '') {
-                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(ee()->input->get('return')));
+                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
                 }
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
@@ -597,6 +609,15 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
+            if (!$entry->livePreviewAllowed()) {
+                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
+                    ->asIssue()
+                    ->canClose()
+                    ->withTitle(lang('preview_not_allowed'))
+                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-allow_preview'));
+                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+            }
             return false;
         }
 

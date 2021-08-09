@@ -32,8 +32,14 @@ if (fs.existsSync('./local_config.json')) {
 	properties = Object.assign(properties, localProps)
 }
 
+properties.local_repositories.app = 'C:/OSPanel/domains/ExpressionEngine-Private/'
 if (process.env.APP_REPO_PATH) {
     properties.local_repositories.app = process.env.APP_REPO_PATH;
+}
+
+properties.local_repositories.pro = 'C:/OSPanel/domains/ExpressionEngine-Pro/'
+if (process.env.PRO_REPO_PATH) {
+    properties.local_repositories.pro = process.env.PRO_REPO_PATH;
 }
 
 if (process.env.DOCS_REPO_PATH) {
@@ -75,6 +81,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'!images/smileys/*',
 		'!images/avatars/*',
 	];
+	console.log(paths.app, filesToDelete)
 
 	deleteFiles(paths.app, filesToDelete)
 		.then(() => createHashManifest(paths.app))
@@ -124,6 +131,7 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 
 	runSequence(
 		clone_or_archive,
+		'_archive_pro',
 		'_version_bump',
 		['_update_exists', '_set_debug', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies'],
 		['_phplint', '_compress_js'],
@@ -144,6 +152,36 @@ gulp.task('_clone_app', ['_build_directories'], function (cb) {
  */
 gulp.task('_archive_app', ['_build_directories'], function (cb) {
 	archive_repo('app', cb);
+});
+
+gulp.task('_archive_pro', function (cb) {
+	archive_repo('pro', cb);
+});
+
+/**
+ * Just copy over application folder
+ */
+ gulp.task('_copy_app', ['_build_directories'], function (cb) {
+	//copy_app(cb)
+	mkdirp.sync(paths.builds + 'ExpressionEngine' + properties.version);
+	console.log(paths.app);
+
+	var files = [
+		properties.local_repositories.app + 'images/**/*', 
+		properties.local_repositories.app + 'system/**/*', 
+		properties.local_repositories.app + 'themes/**/*', 
+		properties.local_repositories.app + 'admin.php', 
+		properties.local_repositories.app + 'index.php', 
+		properties.local_repositories.app + 'favicon.ico', 
+		properties.local_repositories.app + 'LICENSE.txt'
+	];
+
+	for (var i = 0; i < files.length; i++) {
+		gulp.src(files[i], { base: properties.local_repositories.app })
+			.pipe(gulp.dest(paths.app));
+	}
+
+	//cb();
 });
 
 /**
@@ -284,6 +322,12 @@ gulp.task('_delete_files', function (cb) {
 
 		'system/ee/EllisLab/Tests/',
 		'system/ee/ExpressionEngine/Tests/',
+
+		'src',
+		'vue.config.js',
+		'npm-shrinkwrap.json',
+		'jest.config.js',
+		'babel.config.js',
 	];
 
 	//if (properties.dp !== true) {
@@ -505,14 +549,18 @@ var clone_repo = function (type, cb) {
 var archive_repo = function(type, cb) {
 	console.log('ARCHIVE_REPO');
 	console.log('Path Type:', type);
-	console.log('Deleting:', paths[type]);
+	if (type=='pro') {
+		paths[type] = paths['app']
+	} else {
+		console.log('Deleting:', paths[type]);
 
-	del.sync(paths[type], {force: true});
+		del.sync(paths[type], {force: true});
+	}
 	var head = process.argv.indexOf('--head') > -1;
 	var dirty = process.argv.indexOf('--dirty') > -1;
 	var non_tag_reference = dirty ? '$(git stash create)' : 'HEAD';
 	var reference = head || dirty ? non_tag_reference : properties.tag;
-	var zip_file = ((type == 'docs') ? 'EEDocs' : 'ExpressionEngine') + properties.version + '.zip';
+	var zip_file = ((type == 'docs') ? 'EEDocs' : 'ExpressionEngine') + properties.version + type + '.zip';
 	var path = properties.local_repositories[type];
 
 	console.log('Head:', head);
@@ -529,12 +577,15 @@ var archive_repo = function(type, cb) {
 
 	exec('git archive -o ' + zip_file + ' ' + reference, { cwd: path }, (err, stdout, stderr) => {
 		if (err) throw err;
+		console.log('archived ' + zip_file);
+		console.log('cwd: ' + path);
+		console.log('unzip -o ' + zip_file + ' -d ' + paths[type]);
 
-        exec('unzip ' + zip_file + ' -d ' + paths[type], { cwd: path, maxBuffer: 1000 * 1024 }, (err, stdout, stderr) => { // cwd: path, maxBuffer: 500 * 1024
+        exec('unzip -o ' + zip_file + ' -d ' + paths[type], { cwd: path, maxBuffer: 2000 * 1024 }, (err, stdout, stderr) => { // cwd: path, maxBuffer: 500 * 1024
 			if (err) throw err;
 
 			console.log('deleting zip file');
-			del(zip_file, { cwd: '.' }, cb);
+			del(zip_file, { cwd: path }, cb);
 		});
 	});
 }
@@ -586,11 +637,11 @@ var deleteFiles = function(path, filesToDelete) {
  * @return {void}
  */
  var versionBump = function (path) {
-	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app;
+	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
 
 	var fns = [
 		function() {
-			var file = path + '/system/ee/legacy/libraries/Core.php';
+			var file = path + 'system/ee/legacy/libraries/Core.php';
 
 			fs.open(file, 'r', function (err, fd) {
 				if (err) throw err;
@@ -611,7 +662,7 @@ var deleteFiles = function(path, filesToDelete) {
 				))
 				.pipe(gulp.dest('system/ee/legacy/libraries/', {cwd: path}));
 		},
-		function () {
+		/*function () {
 			var file = path + '/tests/cypress/support/config/config.php';
 
 			fs.open(file, 'r', function (err, fd) {
@@ -624,7 +675,7 @@ var deleteFiles = function(path, filesToDelete) {
 					"$config['app_version'] = '" + properties.version + "';"
 				))
 				.pipe(gulp.dest('tests/cypress/support/config/', { cwd: path }));
-		},
+		},*/
 		function() {
 			var file = path + '/system/ee/installer/controllers/wizard.php';
 
@@ -685,9 +736,9 @@ var compressJs = function (path) {
 	path = (typeof path !== 'undefined') ? path : './';
 
 	console.log('Compress Path:', path + 'themes/ee/asset/javascript/src/**/*.js');
-	// process.exit();
-	return gulp.src([path + 'themes/ee/asset/javascript/src/**/*.js', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/plugins/', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/redactor.css', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/redactor.js'])
-		.pipe(plugin.uglify({preserveComments: 'some'}))
+
+	return gulp.src([path + 'themes/ee/asset/javascript/src/**/*.js', path + 'themes/ee/asset/javascript/src/**/redactor.min.css', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/plugins/**/*', '!' + path + 'themes/ee/asset/javascript/src/**/redactor.js'])
+		//.pipe(plugin.uglify({preserveComments: 'some'}))
 		.pipe(gulp.dest(path + 'themes/ee/asset/javascript/compressed/'));
 };
 

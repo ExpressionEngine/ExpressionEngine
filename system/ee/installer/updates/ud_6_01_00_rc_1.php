@@ -9,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_6_1_0;
+namespace ExpressionEngine\Updater\Version_6_1_0_rc_1;
 
 /**
  * Update
@@ -30,8 +30,10 @@ class Updater
             'addCookieSettingsTable',
             'updateRte',
             'livePreviewCsrfExcempt',
+            'recaptchaCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
+            'addProTemplateSettings',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -39,6 +41,23 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addProTemplateSettings()
+    {
+        if (!ee()->db->field_exists('enable_frontedit', 'templates')) {
+            ee()->smartforge->add_column(
+                'templates',
+                [
+                    'enable_frontedit' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 
     private function addConsentLogColumns()
@@ -180,6 +199,16 @@ class Updater
     private function livePreviewCsrfExcempt()
     {
         ee()->db->where(['class' => 'Channel', 'method' => 'live_preview'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+
+    private function recaptchaCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Member', 'method' => 'recaptcha_check'])->update(
             'actions',
             [
                 'csrf_exempt' => '1'

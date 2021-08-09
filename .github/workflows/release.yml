@@ -3,7 +3,10 @@ name: Release
 on:
   push:
     tags:
+      - '6.1.0-rc.1'
       - '6.1.0'
+      - '6.1.1'
+      - '6.2.0'
 
 jobs:
   build:
@@ -16,6 +19,19 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Checkout Pro
+        uses: actions/checkout@v2
+        with:
+          repository: EllisLab/ExpressionEngine-Pro
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __pro
+
+      - name: Move Pro into core
+        run: |
+          mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+          mv __pro/themes/ee/pro themes/ee/pro
+          rm -rf __pro
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1

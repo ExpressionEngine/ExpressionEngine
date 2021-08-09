@@ -47,5 +47,6 @@ Bullet list below, e.g.
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
 
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
