@@ -76,14 +76,14 @@ class ProletGenerator
     {
         $word = strtolower($word);
 
-        return str_replace(['-', ' '], '_', $word);
+        return str_replace(['-', ' ', '.'], '_', $word);
     }
 
     public function studly($word)
     {
         $word = mb_convert_case($word, MB_CASE_TITLE);
 
-        return  str_replace(['-', '_', ' '], '', $word);
+        return  str_replace(['-', '_', ' ', '.'], '', $word);
     }
 
     public function string_contains($textToSearch, $word)
