@@ -137,7 +137,16 @@ class AddonGenerator
         $extension_settings = '';
 
         foreach ($this->hooks as $hook) {
-            $hookData = Hooks::getByKey(strtoupper($hook));
+            $hookData = Hooks::getByKey(trim(strtoupper($hook)));
+
+            // If we didnt get a real hook, set up a default
+            if ($hookData === false) {
+                $hookData = [
+                    'name' => $hook,
+                    'params' => '',
+                    'library' => ''
+                ];
+            }
 
             $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
             $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
