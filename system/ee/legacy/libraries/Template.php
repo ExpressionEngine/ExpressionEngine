@@ -2366,7 +2366,7 @@ class EE_Template
             }
         }
 
-        if ($template_group == '' && $show_default == false && ee()->config->item('site_404') != '') {
+        if (($template_group == '' || in_array($template_group, ['system_messages', 'pro-dashboard-widgets'])) && $show_default == false && ee()->config->item('site_404') != '') {
             $treq = ee()->config->item('site_404');
 
             $x = explode("/", $treq);
