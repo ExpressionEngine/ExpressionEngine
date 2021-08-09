@@ -145,6 +145,7 @@ class CommandMakeAddon extends Cli
             $this->data['hooks'] = $this->getOptionOrAsk(
                 '--hooks',
                 'command_make_addon_ext_hooks',
+                'example_hook'
             );
         }
 
