@@ -192,6 +192,17 @@ class Updater
                 $config->toolset_type = 'ckeditor';
                 $config->save();
             }
+
+            //install Redactor toolsets
+            $toolbars = ee('rte:RedactorService')->defaultToolbars();
+            foreach ($toolbars as $name => $toolbar) {
+                $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                $config = ee('Model')->make('rte:Toolset');
+                $config->toolset_name = $name;
+                $config->toolset_type = 'redactor';
+                $config->settings = $config_settings;
+                $config->save();
+            }
         }
     }
 
