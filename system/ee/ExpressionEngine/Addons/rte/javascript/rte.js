@@ -35,7 +35,7 @@
 	/**
 	 * Drop Panes
 	 */
-	$.fn.ptDropPanes = function(settings){
+	$.fn.ptDropPanes = function(selectionsContainer, settings){
 
 		// merge default settings with overrides
 		var settings = $.extend({}, $.fn.ptDropPanes.defaults, settings);
@@ -70,7 +70,7 @@
 		return this.each( function(){
 
 			var $this = $(this),
-				$selectionsContainer = $('#tb-selections');
+				$selectionsContainer = $('#' + selectionsContainer);
 
 			var originalMargin,
 				$selections,
@@ -271,29 +271,34 @@
 
 	// --------------------------------------------------------------------
 
-	// initialize droppanes
-	$('#rte-toolbar').ptDropPanes({
-		onSelect: function(toolgroup) {
-			var buttons = $('.cke_button', toolgroup);
-			if (buttons.length > 0) {
-				buttons.sglclickable().bind('sglclick', function() {
-					var button = $(this);
-					if (button.hasClass('disabled')) {
-						button.removeClass('disabled')
-						$('*[name]', button).removeAttr('disabled');
-					} else {
-						button.addClass('disabled')
-						$('*[name]', button).attr('disabled', true);
-					}
-					redrawSettingsIfSafari();
-				});
+	function initToolbarSelector(outer_selector, selector, button_selector, disabled_button_class) {
+		$(selector).ptDropPanes(outer_selector, {
+			onSelect: function(toolgroup) {
+				var buttons = $(button_selector, toolgroup);
+				if (buttons.length > 0) {
+					buttons.sglclickable().bind('sglclick', function() {
+						var button = $(this);
+						if (button.hasClass(disabled_button_class)) {
+							button.removeClass(disabled_button_class);
+							$('*[name]', button).removeAttr('disabled');
+						} else {
+							button.addClass(disabled_button_class)
+							$('*[name]', button).attr('disabled', true);
+						}
+						redrawSettingsIfSafari();
+					});
+				}
+			},
+			onDeselect: function(toolgroup) {
+				$(button_selector, toolgroup).unbind('.sglclickable sglclick').filter('.' + disabled_button_class).removeClass(disabled_button_class);
 			}
-		},
-		onDeselect: function(toolgroup) {
-			$('.cke_button', toolgroup).unbind('.sglclickable sglclick').filter('.disabled').removeClass('disabled');
-		}
-	});
+		});
+	}
 
+	// initialize droppanes
+	initToolbarSelector('tb-selections', '#ckeditor-toolbar', '.cke_button', 'disabled');
+	initToolbarSelector('tb-selections-redactor-buttons', '#redactor-toolbar-buttons', '.re-button', 'redactor-button-active');
+	initToolbarSelector('tb-selections-redactor-plugins', '#redactor-toolbar-plugins', '.re-button', 'redactor-button-active');
 
 
 	})(jQuery);

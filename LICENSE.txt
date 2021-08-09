@@ -399,5 +399,33 @@ For the FontAwesome fonts component:
     This Font Software is licensed under the SIL Open Font License, Version 1.1.
     For a copy of this license, see licenses/LICENSE-fontawesome.txt
 
-For CKEditor WYSIWYG fieldtype:
+For CKEditor WYSIWYG in the RTE fieldtype:
   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL CKSOURCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For Redactor in the RTE fieldtype:
+    Unless you have been granted prior, written explicit consent from Imperavi LLC, you may not:
+
+    Reproduce, distribute, or transfer the Software as a sole product, or portions thereof, to any third party.
+    Sell, rent, lease, assign, or sublet the Software as a sole product or portions thereof.
+    Grant rights to any other person.
+    Use the software in violation of any European Union or international laws or regulations.
+
+    Display of Copyright Notices
+
+    All copyright and proprietary notices and logos (if any) of Redactor and/or Imperavi LLC within the Software files must remain intact.
+
+    Making copies
+
+    You may make copies of the Software for backup purposes, provided that you reproduce the Software in its original form and with all proprietary notices on the back-up copy. You may include copies of the Software as an integral part of your product (according to the purchased License tier and Permitted Use stated above).
+
+    Software Modification
+
+    You may alter, modify, or extend the Software for use as an integral part of your product or service according to the License tier, or commission a third-party to perform modifications for you, but you may not resell, redistribute or transfer the modified or derivative version of the Software as a sole product without prior written consent from Imperavi LLC. Components from the Software may not be extracted and used in other programs without prior written consent from Imperavi LLC.
+
+    Indemnity
+
+    You agree to indemnify and hold harmless Imperavi LLC for any expenses, liabilities, damages, settlements or fees from third-party claims, actions or suits arising from your misuse of the Software.
+
+    Disclaimer Of Warranty
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF QUALITY, PERFORMANCE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. FURTHER, IMPERAVI LLC DOES NOT WARRANT THAT THE SOFTWARE OR ANY RELATED SERVICE WILL ALWAYS BE AVAILABLE.

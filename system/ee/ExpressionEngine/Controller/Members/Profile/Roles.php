@@ -38,7 +38,7 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role')->order('name', 'asc');
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', false);
+            $roles = $roles->filter('is_locked', 'n');
         }
 
         $roles = $roles->all()
@@ -56,7 +56,7 @@ class Roles extends Profile
                 'fields' => [
                     'role_groups' => [
                         'type' => 'checkbox',
-                        'choices' => ee('Model')->get('RoleGroup')->order('name', 'asc')->all()->getDictionary('group_id', 'name'),
+                        'choices' => $roles,
                         'value' => $this->member->RoleGroups->pluck('group_id'),
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('role_groups'))
@@ -116,6 +116,11 @@ class Roles extends Profile
                 'field' => 'role_id',
                 'label' => 'lang:role',
                 'rules' => 'callback__valid_role'
+            ],
+            [
+                'field' => 'roles',
+                'label' => 'lang:roles',
+                'rules' => 'callback__valid_roles'
             ],
         ];
 
@@ -186,15 +191,28 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role', $role);
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', false);
+            $roles = $roles->filter('is_locked', 'n');
         }
 
         $num_roles = $roles->count();
 
         if ($num_roles == 0) {
+            ee()->form_validation->set_message('_valid_role', lang('invalid_role_id'));
             return false;
         }
 
+        return true;
+    }
+
+    public function _valid_roles($roles)
+    {
+        foreach ($roles as $role_id) {
+            $valid = $this->_valid_role($role_id);
+            if (!$valid) {
+                ee()->form_validation->set_message('_valid_roles', lang('invalid_role_id'));
+                return false;
+            }
+        }
         return true;
     }
 }

@@ -101,7 +101,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1
@@ -118,7 +118,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
