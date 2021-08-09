@@ -94,7 +94,7 @@ class EE_Asset {
                 $basepath = PATH_TMPL . (
                     isset($site) ? $site : ee()->config->item('site_short_name')
                 ) . '/';
-                $basepath .= $ex['0'] . '.group/' . $row['template_name'] . '.' . $this->type;
+                $basepath .= $group . '.group/' . $row['template_name'] . '.' . $this->type;
 
                 $str = read_file($basepath);
                 $row['template_data'] = ($str !== false) ? $str : $row['template_data'];
