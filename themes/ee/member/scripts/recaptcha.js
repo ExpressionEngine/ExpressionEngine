@@ -5,7 +5,7 @@ document.addEventListener('submit', function(event) {
 	grecaptcha.ready(function () {
 		grecaptcha.execute(key, { action: 'register' }).then(function (token) {
 			var sendData = "rec=" + token
-			const response = fetch(endpoint, {
+			const response = fetch(eeRecaptchaEndpoint, {
 				method: 'POST',
 				credentials: 'same-origin',
 				headers: {
