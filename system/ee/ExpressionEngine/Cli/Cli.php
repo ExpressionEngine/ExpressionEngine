@@ -371,7 +371,6 @@ class Cli
         if (!isset(ee()->addons)) {
             ee()->load->library('addons');
             ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
-            ee('App')->setupAddons(PATH_THIRD);
         }
 
         $providers = ee('App')->getProviders();
