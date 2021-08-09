@@ -48,7 +48,7 @@ class Captcha
             $score_threshold = ee()->config->item('recaptcha_score_threshhold');
             $action_id = ee()->functions->fetch_action_id('member', 'recaptcha_check');
 
-            $js = "var eeRecaptchaEndpoint ='".ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id."'; var key ='".$key."'; </script>";
+            $js = "var eeRecaptchaEndpoint ='".ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id."'; var eeRecaptchaKey ='".$key."'; </script>";
             $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=".$key."\"></script>";
             $js .= '<script type="text/javascript" src="' . URL_THEMES . 'member/scripts/recaptcha.js"></script>';
             $js .= "<input type=\"hidden\" name=\"recaptcha_response\" id=\"recaptchaResponse\" value=\"\">";

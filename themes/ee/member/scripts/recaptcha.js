@@ -3,7 +3,7 @@ document.addEventListener('submit', function(event) {
     const form = event.target;
     event.preventDefault();
 	grecaptcha.ready(function () {
-		grecaptcha.execute(key, { action: 'register' }).then(function (token) {
+		grecaptcha.execute(eeRecaptchaKey, { action: 'register' }).then(function (token) {
 			var sendData = "rec=" + token
 			const response = fetch(eeRecaptchaEndpoint, {
 				method: 'POST',
