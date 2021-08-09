@@ -178,6 +178,7 @@ class Cp
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
+            'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
         ));
 
         if (ee()->session->flashdata('update:completed')) {
