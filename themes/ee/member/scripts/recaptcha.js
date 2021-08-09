@@ -3,9 +3,9 @@ document.addEventListener('submit', function(event) {
     const form = event.target;
     event.preventDefault();
 	grecaptcha.ready(function () {
-		grecaptcha.execute(key, { action: 'register' }).then(function (token) {
-			var sendData = "rec=" + token + "&csrf_token=csrf_token"
-			const response = fetch(endpoint, {
+		grecaptcha.execute(eeRecaptchaKey, { action: 'register' }).then(function (token) {
+			var sendData = "rec=" + token
+			const response = fetch(eeRecaptchaEndpoint, {
 				method: 'POST',
 				credentials: 'same-origin',
 				headers: {
