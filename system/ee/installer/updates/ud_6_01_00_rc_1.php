@@ -30,6 +30,7 @@ class Updater
             'addCookieSettingsTable',
             'updateRte',
             'livePreviewCsrfExcempt',
+            'recaptchaCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
             'addProTemplateSettings',
@@ -193,6 +194,17 @@ class Updater
                 $config->toolset_type = 'ckeditor';
                 $config->save();
             }
+
+            //install Redactor toolsets
+            $toolbars = ee('rte:RedactorService')->defaultToolbars();
+            foreach ($toolbars as $name => $toolbar) {
+                $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                $config = ee('Model')->make('rte:Toolset');
+                $config->toolset_name = $name;
+                $config->toolset_type = 'redactor';
+                $config->settings = $config_settings;
+                $config->save();
+            }
         }
     }
 
@@ -206,6 +218,16 @@ class Updater
         );
     }
 
+    private function recaptchaCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Member', 'method' => 'recaptcha_check'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+    
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {
