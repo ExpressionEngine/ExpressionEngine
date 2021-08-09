@@ -30,6 +30,7 @@ class Updater
             'addCookieSettingsTable',
             'updateRte',
             'livePreviewCsrfExcempt',
+            'recaptchaCsrfExcempt',
             '_addAllowPreview',
             'longerWatermarkImagePath',
             'addProTemplateSettings',
@@ -198,6 +199,16 @@ class Updater
     private function livePreviewCsrfExcempt()
     {
         ee()->db->where(['class' => 'Channel', 'method' => 'live_preview'])->update(
+            'actions',
+            [
+                'csrf_exempt' => '1'
+            ]
+        );
+    }
+
+    private function recaptchaCsrfExcempt()
+    {
+        ee()->db->where(['class' => 'Member', 'method' => 'recaptcha_check'])->update(
             'actions',
             [
                 'csrf_exempt' => '1'
