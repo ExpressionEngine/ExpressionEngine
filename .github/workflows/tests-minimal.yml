@@ -150,7 +150,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -242,7 +244,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -333,7 +337,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -423,7 +429,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -513,7 +521,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -603,7 +613,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
@@ -693,7 +705,9 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
             - name: Setup Permissions
               run: |
