@@ -55,7 +55,7 @@ class AddonGenerator
         $this->author_url = $data['author_url'];
         $this->has_settings = get_bool_from_string($data['has_settings']);
         $this->has_cp_backend = $data['has_settings'] ? 'y' : 'n';
-        $this->has_publish_fields = $data['has_settings'] ? 'y' : 'n';
+        $this->has_publish_fields = 'n';
         $this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
         $this->services = isset($data['services']) ? $data['services'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
@@ -137,7 +137,16 @@ class AddonGenerator
         $extension_settings = '';
 
         foreach ($this->hooks as $hook) {
-            $hookData = Hooks::getByKey(strtoupper($hook));
+            $hookData = Hooks::getByKey(trim(strtoupper($hook)));
+
+            // If we didnt get a real hook, set up a default
+            if ($hookData === false) {
+                $hookData = [
+                    'name' => $hook,
+                    'params' => '',
+                    'library' => ''
+                ];
+            }
 
             $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
             $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);

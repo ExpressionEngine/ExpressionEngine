@@ -121,6 +121,10 @@ abstract class Core
     {
         $this->legacy->includeBaseController();
 
+        // We need to load the core bootstrap globals here
+        ee()->load->library('core');
+        ee()->core->bootstrap();
+
         $cli = new Cli();
 
         $cli->process();
