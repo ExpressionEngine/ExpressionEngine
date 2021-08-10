@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Service\Generator;
 
@@ -402,7 +410,7 @@ class AddonGenerator
 
     private function write($key, $value, $file)
     {
-        return str_replace('{{' . $key . '}}', addslashes($value), $file);
+        return str_replace('{{' . $key . '}}', $value, $file);
     }
 
     private function putFile($name, $contents, $path = null)
@@ -425,7 +433,7 @@ class AddonGenerator
 
     private function clearLine($string, $contents)
     {
-        return str_replace($string . "\n", '', $contents);
+        return str_replace($string . PHP_EOL, '', $contents);
     }
 
     public function slug($word)
