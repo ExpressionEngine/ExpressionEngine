@@ -145,6 +145,7 @@ class CommandMakeAddon extends Cli
             $this->data['hooks'] = $this->getOptionOrAsk(
                 '--hooks',
                 'command_make_addon_ext_hooks',
+                'example_hook'
             );
         }
 
@@ -186,9 +187,14 @@ class CommandMakeAddon extends Cli
 
     private function build()
     {
-        $service = ee('AddonGenerator', $this->data);
+        try {
+            // Build the addon
+            $service = ee('AddonGenerator', $this->data);
 
-        return $service->build();
+            return $service->build();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
     }
 
     private function getType()
