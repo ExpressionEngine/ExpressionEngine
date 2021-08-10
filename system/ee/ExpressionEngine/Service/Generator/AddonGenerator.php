@@ -425,7 +425,7 @@ class AddonGenerator
 
     private function clearLine($string, $contents)
     {
-        return str_replace($string . "\n", '', $contents);
+        return str_replace($string . PHP_EOL, '', $contents);
     }
 
     public function slug($word)
