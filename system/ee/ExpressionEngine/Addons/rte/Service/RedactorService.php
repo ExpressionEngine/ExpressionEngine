@@ -101,7 +101,7 @@ class RedactorService implements RteService {
         // -------------------------------------------
         //  File Browser Config
         // -------------------------------------------
-        if (in_array('image', $config['toolbar']['buttons']) || in_array('file', $config['toolbar']['buttons'])) {
+        if (in_array('filebrowser', $config['toolbar']['plugins'])) {
             $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
             unset($config['upload_dir']);
 
