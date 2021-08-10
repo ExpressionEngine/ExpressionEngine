@@ -184,6 +184,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
             - name: Setup Permissions
               run: |
                 cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
@@ -278,6 +282,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
             - name: Setup Permissions
               run: |
                 cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
@@ -371,6 +379,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
             - name: Setup Permissions
               run: |
                 cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
@@ -462,6 +474,10 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -555,6 +571,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
             - name: Setup Permissions
               run: |
                 cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
@@ -647,6 +667,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
 
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
             - name: Setup Permissions
               run: |
                 cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
@@ -738,6 +762,10 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
