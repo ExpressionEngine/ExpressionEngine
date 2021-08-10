@@ -94,14 +94,14 @@ class RedactorService implements RteService {
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
                 ->get('actions');
-            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
+            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
         // -------------------------------------------
         //  File Browser Config
         // -------------------------------------------
-        if (in_array('image', $config['toolbar']['buttons']) || in_array('file', $config['toolbar']['buttons'])) {
+        if (in_array('filebrowser', $config['toolbar']['plugins'])) {
             $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
             unset($config['upload_dir']);
 
