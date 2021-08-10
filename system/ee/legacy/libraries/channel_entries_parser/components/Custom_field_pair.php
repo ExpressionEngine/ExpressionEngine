@@ -190,6 +190,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     //frontend edit link
                     if (IS_PRO) {
                         $frontedit_disabled = false;
+                        $frontedit_disabled_with_param = false;
                         $frontEditLink = '';
                         if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
                             $frontedit_disabled = true;
@@ -197,6 +198,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                             $disable = explode("|", $params['disable']);
                             if (in_array('frontedit', $disable)) {
                                 $frontedit_disabled = true;
+                                $frontedit_disabled_with_param = true;
                             }
                         }
                         if (!$frontedit_disabled) {
@@ -207,8 +209,11 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
                     $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 
-                    // additional round of replacements in edit link is outside of chunk
+                    // additional round of replacements if edit link is outside of chunk
                     if (IS_PRO) {
+                        if ($frontedit_disabled && $frontedit_disabled_with_param) {
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
+                        }
                         $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
                     }
                 }
