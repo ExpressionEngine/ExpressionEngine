@@ -187,9 +187,14 @@ class CommandMakeAddon extends Cli
 
     private function build()
     {
-        $service = ee('AddonGenerator', $this->data);
+        try {
+            // Build the addon
+            $service = ee('AddonGenerator', $this->data);
 
-        return $service->build();
+            return $service->build();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
     }
 
     private function getType()

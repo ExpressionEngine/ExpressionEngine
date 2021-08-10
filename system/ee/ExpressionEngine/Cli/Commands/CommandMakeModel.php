@@ -61,9 +61,14 @@ class CommandMakeModel extends Cli
 
         $this->info('command_make_model_lets_build');
 
-        $service = ee('ModelGenerator', $this->data);
+        try {
+            // Build the model
+            $service = ee('ModelGenerator', $this->data);
 
-        $service->build();
+            $service->build();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->info('command_make_model_created_successfully');
     }
