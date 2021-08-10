@@ -87,7 +87,7 @@ class ModelGenerator
 
     private function write($key, $value, $file)
     {
-        return str_replace('{{' . $key . '}}', addslashes($value), $file);
+        return str_replace('{{' . $key . '}}', $value, $file);
     }
 
     private function putFile($name, $contents, $path = null)

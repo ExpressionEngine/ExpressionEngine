@@ -248,7 +248,7 @@ class Cli
 
         $result = $this->input->in();
 
-        return $result ? $result : $default;
+        return $result ? addslashes($result) : $default;
     }
 
     public function getFirstUnnamedArgument($question = null, $default = null, $required = false)
