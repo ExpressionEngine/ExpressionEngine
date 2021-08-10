@@ -55,7 +55,7 @@ class AddonGenerator
         $this->author_url = $data['author_url'];
         $this->has_settings = get_bool_from_string($data['has_settings']);
         $this->has_cp_backend = $data['has_settings'] ? 'y' : 'n';
-        $this->has_publish_fields = $data['has_settings'] ? 'y' : 'n';
+        $this->has_publish_fields = 'n';
         $this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
         $this->services = isset($data['services']) ? $data['services'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
