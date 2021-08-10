@@ -1,6 +1,6 @@
 {
     "baseUrl": "http://localhost:8888/",
-    "video": false,
+    "video": true,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
