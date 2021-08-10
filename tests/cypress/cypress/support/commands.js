@@ -169,6 +169,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
     ].join('');
 
     cy.exec(command).then((harvest) => {
+        cy.wait(1000);
         return harvest.stdout;
     })
 })
