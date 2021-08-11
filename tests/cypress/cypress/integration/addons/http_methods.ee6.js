@@ -7,7 +7,7 @@ const addon_manager = new AddonManager;
 context('HTTP Methods', () => {
 
   before(function(){
-    //cy.task('db:seed')
+    cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
     cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
     cy.auth();
@@ -37,7 +37,7 @@ context('HTTP Methods', () => {
       cy.get('#cookie span').invoke('text').should('contain', "http_methods")
     })
     it('ip', function(){
-      cy.get('#ip span').invoke('text').should('eq', "127.0.0.1")
+      cy.get('#ip span').invoke('text').should('be.oneOf', ["127.0.0.1", "::1"])
     })
     it('user_agent', function(){
       cy.get('#user_agent span').invoke('text').should('contain', "Mozilla")
