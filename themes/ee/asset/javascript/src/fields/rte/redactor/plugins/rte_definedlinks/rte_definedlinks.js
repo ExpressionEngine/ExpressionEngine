@@ -1,6 +1,11 @@
 (function($R)
 {
     $R.add('plugin', 'rte_definedlinks', {
+        translations: {
+            en: {
+                "pages": "Pages"
+            }
+        },
         init: function(app)
         {
             this.app = app;
@@ -48,8 +53,10 @@
             {
                 var $body = this.$modal.getBody();
                 var $item = $R.dom('<div class="form-item" />');
+                var $label = $R.dom('<label for="redactor-defined-links">' + $R.lang[$R.opts.lang]['pages'] + '</label>');
                 var $selector = $R.dom('<select id="redactor-defined-links" />');
 
+                $item.append($label);
                 $item.append($selector);
                 $body.prepend($item);
             }
