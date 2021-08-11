@@ -123,6 +123,16 @@ class RedactorService implements RteService {
                 }
             }
         }
+
+        // EE FilePicker is not available on frontend channel forms
+        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+            $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
+            if ($filemanager_key) {
+                $items = $config['toolbar']['plugins'];
+                unset($items[$filemanager_key]);
+                $config['toolbar']['plugins'] = array_values($items);
+            }
+        }
         
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
             $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
