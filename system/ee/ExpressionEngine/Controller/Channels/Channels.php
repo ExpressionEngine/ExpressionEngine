@@ -879,22 +879,26 @@ class Channels extends AbstractChannelsController
                     )
                 ),
                 array(
-                    'title' => 'preview_url',
-                    'desc' => 'preview_url_desc',
-                    'fields' => array(
-                        'preview_url' => array(
-                            'type' => 'text',
-                            'value' => $channel->getRawProperty('preview_url')
-                        )
-                    )
-                ),
-                array(
                     'title' => 'allow_preview',
                     'desc' => 'allow_preview_desc',
                     'fields' => array(
                         'allow_preview' => array(
                             'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'allow_preview'
+                            ),
                             'value' => $channel->allow_preview
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'preview_url',
+                    'desc' => 'preview_url_desc',
+                    'group' => 'allow_preview',
+                    'fields' => array(
+                        'preview_url' => array(
+                            'type' => 'text',
+                            'value' => $channel->getRawProperty('preview_url')
                         )
                     )
                 )

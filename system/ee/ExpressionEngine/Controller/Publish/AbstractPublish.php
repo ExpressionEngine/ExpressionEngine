@@ -232,12 +232,13 @@ abstract class AbstractPublish extends CP_Controller
         );
 
         $urlParams = [];
-        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+        if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
             $urlParams = [
                 'entry_ids' => ee('Request')->get('entry_ids'),
                 'field_id' => ee('Request')->get('field_id'),
                 'site_id' => ee('Request')->get('site_id'),
                 'modal_form' => ee('Request')->get('modal_form'),
+                'preview' => ee('Request')->get('preview'),
                 'hide_closer' => ee('Request')->get('hide_closer'),
                 'return' => ee('Request')->get('return')
             ];
