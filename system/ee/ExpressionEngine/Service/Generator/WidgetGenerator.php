@@ -71,6 +71,12 @@ class WidgetGenerator
         $widgetStub = $this->write('addon_name', $this->addonName, $widgetStub);
 
         $this->putFile($this->widgetName . '.php', $widgetStub, 'widgets');
+
+        if (IS_PRO && ee('Addon')->get($this->addon)->isInstalled()) {
+            // Update the dashboard widgets and prolets
+            $addon = ee('pro:Addon')->get($this->addon);
+            $addon->updateDashboardWidgets();
+        }
     }
 
     private function stub($file)

@@ -67,6 +67,12 @@ class ProletGenerator
         $proletStub = $this->write('name', $this->name, $proletStub);
 
         $this->putFile('pro.' . $this->addon . '.php', $proletStub);
+
+        if (IS_PRO && ee('Addon')->get($this->addon)->isInstalled()) {
+            // Update prolets in EE
+            $addon = ee('pro:Addon')->get($this->addon);
+            $addon->updateProlets();
+        }
     }
 
     private function addonHasIcon()
