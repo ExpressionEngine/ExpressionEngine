@@ -1298,7 +1298,7 @@ class Member
     public function recaptcha_check()
     {
         $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
-        $recaptcha_threshold = ee()->config->item('recaptcha_score_threshhold');
+        $recaptcha_threshold = ee()->config->item('recaptcha_score_threshhold', 0.5);
 
         // Make the POST request
         $data = [

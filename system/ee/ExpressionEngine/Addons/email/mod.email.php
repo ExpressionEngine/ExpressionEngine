@@ -63,6 +63,10 @@ class Email
             'captcha' => ($this->use_captchas == 'y'),
         );
 
+        if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
+        }
+
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
         // Load the form helper
@@ -346,6 +350,10 @@ class Email
         $cond = array();
         $cond['captcha'] = ($this->use_captchas == 'y') ? true : false;
 
+        if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
+        }
+
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
         ee()->load->helper('form');
@@ -603,7 +611,8 @@ class Email
         // Check CAPTCHA
         if ($this->use_captchas == 'y') {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                return ee()->output->show_user_error('general', array(lang('captcha_required')));
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+                return ee()->output->show_user_error('general', $captcha_error);
             }
 
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha
@@ -612,7 +621,8 @@ class Email
 				AND date > UNIX_TIMESTAMP()-7200");
 
             if ($query->row('count') == 0) {
-                return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
+                return ee()->output->show_user_error('submission', $captcha_error);
             }
 
             ee()->db->query("DELETE FROM exp_captcha
