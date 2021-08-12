@@ -433,7 +433,7 @@ class AddonGenerator
 
     private function clearLine($string, $contents)
     {
-        return str_replace($string . PHP_EOL, '', $contents);
+        return preg_replace("/" . preg_quote($string) . "\R/", '', $contents);
     }
 
     public function slug($word)
