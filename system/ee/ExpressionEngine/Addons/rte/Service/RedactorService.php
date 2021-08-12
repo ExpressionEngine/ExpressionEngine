@@ -101,25 +101,23 @@ class RedactorService implements RteService {
         // -------------------------------------------
         //  File Browser Config
         // -------------------------------------------
-        if (in_array('filebrowser', $config['toolbar']['plugins'])) {
-            $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
-            unset($config['upload_dir']);
+        $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
+        unset($config['upload_dir']);
 
-            $fileBrowserOptions = ['filepicker'];
-            if (!empty(ee()->config->item('rte_file_browser'))) {
-                array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
-            }
-            $fileBrowserOptions = array_unique($fileBrowserOptions);
-            foreach ($fileBrowserOptions as $fileBrowserName) {
-                $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
-                if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
-                    $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
-                    $fileBrowser = new $fqcn();
-                    if ($fileBrowser instanceof RteFilebrowserInterface) {
-                        $fileBrowser->addJs($uploadDir);
+        $fileBrowserOptions = ['filepicker'];
+        if (!empty(ee()->config->item('rte_file_browser'))) {
+            array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
+        }
+        $fileBrowserOptions = array_unique($fileBrowserOptions);
+        foreach ($fileBrowserOptions as $fileBrowserName) {
+            $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
+                $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
+                $fileBrowser = new $fqcn();
+                if ($fileBrowser instanceof RteFilebrowserInterface) {
+                    $fileBrowser->addJs($uploadDir);
 
-                        break;
-                    }
+                    break;
                 }
             }
         }
