@@ -125,7 +125,7 @@ class RedactorService implements RteService {
         // EE FilePicker is not available on frontend channel forms
         if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
-            if ($filemanager_key) {
+            if ($filemanager_key !== false) {
                 $items = $config['toolbar']['plugins'];
                 unset($items[$filemanager_key]);
                 $config['toolbar']['plugins'] = array_values($items);
