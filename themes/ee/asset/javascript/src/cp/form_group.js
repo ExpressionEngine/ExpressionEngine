@@ -56,7 +56,10 @@ $(document).ready(function() {
 			return;
 		}
 
-		EE.cp.form_group_toggle(this);
+		//only respect the state of toggles that are not currently hidden
+		if ($(this).parents('fieldset').is(':visible')) {
+			EE.cp.form_group_toggle(this);
+		}
 
 		var config = $(this).data('groupToggle');
 
