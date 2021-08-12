@@ -432,7 +432,9 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save') {
-            if (ee()->input->post('return') != '') {
+            if (ee()->input->get('return') != '') {
+                $redirect_url = urldecode(ee()->input->get('return'));
+            } elseif (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
                 $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
