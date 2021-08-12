@@ -54,7 +54,7 @@ class WidgetGenerator
 
         // If the addon doesn't have a
         if (! $this->filesystem->isDir($this->widgetsPath)) {
-            $this->filesystem->mkDir($this->widgetsPath);
+            $this->filesystem->mkDir($this->widgetsPath, false);
         }
 
         // Get stub path
