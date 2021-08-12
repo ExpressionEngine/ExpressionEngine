@@ -657,7 +657,7 @@ $lang = array(
 
     'use_recaptcha' => 'Use reCAPTCHA  v3?',
 
-    'use_recaptcha_desc' => 'When enabled, system will use reCAPTCHA  v3 - Please make sure to sign up for a key / account ( https://www.google.com/recaptcha/admin/create )',
+    'use_recaptcha_desc' => 'When enabled, system will use reCAPTCHA  v3 - Please make sure to <a href="https://www.google.com/recaptcha/admin/create" target="_blank">sign up for a key / account</a>',
 
     'recaptcha_site_key' => 'reCAPTCHA  site key',
 

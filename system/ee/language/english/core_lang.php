@@ -86,6 +86,8 @@ $lang = array(
 
     'captcha_required' => 'You must submit the word that appears in the image',
 
+    'recaptcha_required' => 'reCAPTCHA check did not pass',
+
     'checksum_changed_accept' => 'Accept Changes',
 
     'checksum_changed_warning' => 'One or more core files have been altered:',
