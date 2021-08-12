@@ -169,7 +169,7 @@ class CkeditorService implements RteService
         if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             unset($config['image']);
             $filemanager_key = array_search('filemanager', $config['toolbar']->items);
-            if ($filemanager_key) {
+            if ($filemanager_key !== false) {
                 $items = $config['toolbar']->items;
                 unset($items[$filemanager_key]);
                 $config['toolbar']->items = array_values($items);
