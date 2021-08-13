@@ -45,12 +45,11 @@ class Captcha
         if (ee()->config->item('use_recaptcha') == 'y') {
             $key = ee()->config->item('recaptcha_site_key');
             $secret = ee()->config->item('recaptcha_site_secret');
-            $score_threshold = ee()->config->item('recaptcha_score_threshhold', 0.5);
             $action_id = ee()->functions->fetch_action_id('member', 'recaptcha_check');
 
-            $js = "<script>var eeRecaptchaEndpoint ='".ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id."'; var eeRecaptchaKey ='".$key."'; </script>";
-            $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=".$key."\"></script>";
-            $js .= '<script type="text/javascript" src="' . URL_THEMES . 'member/scripts/recaptcha.js"></script>';
+            $js = "<script>var eeRecaptchaEndpoint ='" . ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . "'; var eeRecaptchaKey ='" . $key . "'; </script>";
+            $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=" . $key . "\"></script>";
+            $js .= '<script type="text/javascript" src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/recaptcha.js"></script>';
             $js .= "<input type=\"hidden\" name=\"captcha\" style=\"display: none\" id=\"eeReCaptcha\" value=\"\">";
             return $js;
         }
