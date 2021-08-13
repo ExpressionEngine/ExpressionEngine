@@ -527,6 +527,10 @@ class EE_Config
             'captcha_rand',
             'captcha_require_members',
             'require_captcha',
+            'use_recaptcha',
+            'recaptcha_site_key',
+            'recaptcha_site_secret',
+            'recaptcha_score_threshold',
             'enable_sql_caching',
             'force_query_string',
             'show_profiler',
@@ -1403,10 +1407,14 @@ class EE_Config
             ),
 
             'captcha_cfg' => array(
+                'use_recaptcha' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'captcha_path' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'captcha_url' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'captcha_font' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'captcha_rand' => array('r', array('y' => 'yes', 'n' => 'no')),
+                'recaptcha_site_key' => array('i', ''),
+                'recaptcha_site_secret' => array('i', ''),
+                'recaptcha_score_threshold' => array('i', ''),
                 'captcha_require_members' => array('r', array('y' => 'yes', 'n' => 'no'))
             ),
 

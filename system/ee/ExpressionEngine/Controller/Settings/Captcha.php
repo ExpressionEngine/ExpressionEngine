@@ -112,7 +112,7 @@ class Captcha extends Settings
                         'title' => 'recaptcha_score_threshold',
                         'desc' => 'recaptcha_score_threshold_desc',
                         'fields' => array(
-                            'recaptcha_score_threshold' => array('type' => 'text', 'value' => '0.5')
+                            'recaptcha_score_threshold' => array('type' => 'text', 'placeholder' => '0.5')
                         )
                     ),
                 )
