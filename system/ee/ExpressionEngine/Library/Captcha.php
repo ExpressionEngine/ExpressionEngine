@@ -49,7 +49,7 @@ class Captcha
 
             $js = "<script>var eeRecaptchaEndpoint ='" . ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . "'; var eeRecaptchaKey ='" . $key . "'; </script>";
             $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=" . $key . "\"></script>";
-            $js .= '<script type="text/javascript" src="' . URL_THEMES . 'member/scripts/recaptcha.js"></script>';
+            $js .= '<script type="text/javascript" src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/recaptcha.js"></script>';
             $js .= "<input type=\"hidden\" name=\"captcha\" style=\"display: none\" id=\"eeReCaptcha\" value=\"\">";
             return $js;
         }
