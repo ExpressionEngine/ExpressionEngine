@@ -182,6 +182,31 @@ $lang = array(
 
     'version' => 'Version',
 
+     /*Messages To User*/
+
+     'confirm' => 'Are you sure you want to delete',
+     'multi_updates' => 'There are %s installed add-ons with updates available.',
+     'name' => 'Name',
+     'single_update' => 'There is %s installed add-on with updates available.',
+
+     
+     'show' => 'Show me ...',
+     'update_available' => 'Update',
+     'manage' => 'Manage',
+
+     'bulk_update' => 'Update the Following? ...',
+     'bulk_update_title' => 'Bulk Updater',
+     'bulk_update_button' => 'Update Now!',
+
+
+     'bulk_install' => 'Install the Following? ...',
+     'bulk_install_title' => 'Bulk Installer',
+     'bulk_install_button' => 'Install Now!',
+     'settings' => 'Settings',
+     'select_all' => 'Select All',
+
+     'sidebar_sort' => 'Sort By Status:'
+
 );
 
 // EOF

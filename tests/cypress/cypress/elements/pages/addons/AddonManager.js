@@ -49,6 +49,15 @@ class AddonManager extends ControlPanel {
             "third_party_pages": third_party_prefix + 'div.paginate ul li a',
             "third_party_bulk_action": third_party_prefix + 'form fieldset.bulk-action-bar select[name="bulk_action"]',
             "third_party_action_submit_button": third_party_prefix + 'form fieldset.bulk-action-bar button',
+
+            // New Addon Table Based Layout
+            "head" : '.app-listing__row_h',
+            "uninstalled" : 'tr.app-listing__row_uninstalled',
+            "name" : 'div.name_of_addon strong',
+            'installed' : 'tr.app-listing__row'
+
+
+
         })
     }
 

@@ -17,6 +17,7 @@ use ExpressionEngine\Library\CP\Table;
 /**
  * Addons Controller
  */
+
 class Addons extends CP_Controller
 {
     public $perpage = 25;
@@ -31,7 +32,7 @@ class Addons extends CP_Controller
     public function __construct()
     {
         parent::__construct();
-
+        
         ee('CP/Alert')->makeDeprecationNotice()->now();
 
         if (! ee('Permission')->can('access_addons')) {
@@ -221,8 +222,9 @@ class Addons extends CP_Controller
 
         ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
         ee()->cp->add_js_script(array(
-            'file' => ['cp/confirm_remove', 'cp/add-ons'],
+            'file' => ['cp/addons/add-ons-index', 'cp/confirm_remove', 'cp/add-ons'],
         ));
+        
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('addons')
