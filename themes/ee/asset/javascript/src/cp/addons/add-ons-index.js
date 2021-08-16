@@ -52,10 +52,12 @@ window.onload = function () {
                 tr[i].style.display = "";
             }
         }
-        name.innerText = All.innerText;
-        document.getElementById('drop_down').className = "dropdown";
-        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
+        document.getElementById('installed_sort').className="sidebar__link";
+        document.getElementById('update_sort').className="sidebar__link";
+        document.getElementById('uninstalled_sort').className="sidebar__link";
 
+        document.getElementById('show_all').className="sidebar__link  active";
+       
         return false;
     }
     
@@ -98,9 +100,11 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
-        name.innerText = Update.innerText;
-        document.getElementById('drop_down').className = "dropdown";
-        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
+        document.getElementById('installed_sort').className="sidebar__link";
+        document.getElementById('show_all').className="sidebar__link";
+        document.getElementById('uninstalled_sort').className="sidebar__link";
+
+        document.getElementById('update_sort').className="sidebar__link  active";
         return false;
     }
 
@@ -117,9 +121,11 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
-        name.innerText = Installed.innerText;
-        document.getElementById('drop_down').className = "dropdown";
-        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
+        document.getElementById('uninstalled_sort').className="sidebar__link";
+        document.getElementById('show_all').className="sidebar__link";
+        document.getElementById('update_sort').className="sidebar__link";
+        
+        document.getElementById('installed_sort').className="sidebar__link  active";
         return false;
     }
 
@@ -136,9 +142,11 @@ window.onload = function () {
                 tr[i].style.display = "none";
             }
         }
-        name.innerText = Uninstalled.innerText;
-        document.getElementById('drop_down').className = "dropdown";
-        document.getElementById('current_status').className = "has-sub filter-bar__button js-dropdown-toggle button button--default button--small";
+        document.getElementById('installed_sort').className="sidebar__link";
+        document.getElementById('show_all').className="sidebar__link";
+        document.getElementById('update_sort').className="sidebar__link";
+
+        document.getElementById('uninstalled_sort').className="sidebar__link  active";
         return false;
     }
 }

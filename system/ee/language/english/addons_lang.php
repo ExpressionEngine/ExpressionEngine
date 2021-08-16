@@ -203,7 +203,9 @@ $lang = array(
      'bulk_install_title' => 'Bulk Installer',
      'bulk_install_button' => 'Install Now!',
      'settings' => 'Settings',
-     'select_all' => 'Select All'
+     'select_all' => 'Select All',
+
+     'sidebar_sort' => 'Sort By Status:'
 
 );
 
