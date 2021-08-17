@@ -103,6 +103,13 @@ class CommandUpdatePrepare extends Cli
     public function handle()
     {
         $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
+
+        // User does not want to continue - abort!
+        if (! $continue) {
+            $this->error('command_update_prepare_upgrade_aborted');
+            exit;
+        }
+
         $this->info('command_update_prepare_preparing_upgrade_for_site');
 
         // Collect all the info we need before we can start
