@@ -3504,7 +3504,13 @@ class EE_Template
         }
 
         // same with modified, sometimes devs run this method themselves instead of a full parse_variables()
-        if ($this->modified_vars === false) {
+        /*
+        Reason for if condtion change:
+        mod.comment switched to using this function instead of parse_variables function and now no Variable Modifiers work in comments
+        i.e. {comment:limit characters="20"} will not parse correctly. The getModifiedVariables() is never run here and is run without any checks
+        in parse_variables().  Keep the $this->modified_vars === false condition because of comment above.
+        */
+        if (empty($this->modified_vars) || $this->modified_vars === false) {
             $this->modified_vars = $this->getModifiedVariables();
         }
 
