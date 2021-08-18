@@ -134,8 +134,10 @@ class RteHelper
 
             if (!empty($pageData)) {
                 foreach ($pageData as $page) {
-                    $tags[] = LD . 'page_' . $page->entry_id . RD;
-                    $urls[] = $page->uri;
+                    if (isset($page->entry_id)) {
+                        $tags[] = LD . 'page_' . $page->entry_id . RD;
+                        $urls[] = $page->uri;
+                    }
                 }
             }
 
@@ -233,7 +235,7 @@ class RteHelper
             if (ee()->extensions->active_hook('rte_autocomplete_pages') === true) {
                 $pages = ee()->extensions->call('rte_autocomplete_pages', $pages, $search, $site_id);
                 if (ee()->extensions->end_script === true) {
-                    $break = true;
+                    //$break = true;
                 }
             }
 
