@@ -232,12 +232,12 @@ class RteHelper
              *          'uri' => page URI
              *      ];
              */
-            if (ee()->extensions->active_hook('rte_autocomplete_pages') === true) {
+            /*if (ee()->extensions->active_hook('rte_autocomplete_pages') === true) {
                 $pages = ee()->extensions->call('rte_autocomplete_pages', $pages, $search, $site_id);
                 if (ee()->extensions->end_script === true) {
-                    //$break = true;
+                    $break = true;
                 }
-            }
+            }*/
 
             if (!$break) {
                 $site = ee('Model')->get('Site', $site_id)->first();
