@@ -245,26 +245,36 @@
       position: relative;
 
       &.in-use {
-		  .filter-clear {
-			// content: "\f00d";
-			width: 17px;
-			height: 17px;
-			color: color(bg-blank);
-			background-color: color(text-secondary);
-			text-align: center;
-			font-size: 10px;
-			line-height: 16px;
-			font-family: 'Font Awesome 5 Free';
-			font-style: normal;
-			font-weight: 900;
-			border-radius: $border-radius-full;
-			position: absolute;
-			top: -7px;
-			right: -7px;
-			display: block;
-			cursor: pointer;
-      padding-left: 1px;
-		  }
+			  .filter-clear {
+					// content: "\f00d";
+					width: 17px;
+					height: 17px;
+					color: color(bg-blank);
+					background-color: color(text-secondary);
+					text-align: center;
+					font-size: 10px;
+					line-height: 16px;
+					font-family: 'Font Awesome 5 Free';
+					font-style: normal;
+					font-weight: 900;
+					border-radius: $border-radius-full;
+					position: absolute;
+					top: -7px;
+					right: -7px;
+					display: block;
+					cursor: pointer;
+		      // padding-left: 1px;
+
+		      @-moz-document url-prefix() {
+
+		      	i {
+		      		position: absolute;
+		      		top: 50%;
+		      		left: 50%;
+		      		transform: translate(-50%, -50%);
+		      	}
+		      }
+			  }
       }
 
       .button {
