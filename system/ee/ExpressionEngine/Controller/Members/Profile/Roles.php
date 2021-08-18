@@ -157,14 +157,17 @@ class Roles extends Profile
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
-            $this->member->role_id = ee('Request')->post('role_id');
+            $this->member->role_id = (int) ee('Request')->post('role_id');
 
             if (ee('Permission')->isSuperAdmin()) {
                 $groups = ee('Request')->post('role_groups');
                 $this->member->RoleGroups = ($groups) ? ee('Model')->get('RoleGroup', $groups)->all() : null;
             }
 
-            $roles = ee('Request')->post('roles');
+            $roles = array_filter(ee('Request')->post('roles'));
+            if (empty($roles)) {
+                $roles = [(int) ee('Request')->post('role_id')];
+            }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
 
             $this->member->save();
@@ -211,6 +214,7 @@ class Roles extends Profile
 
     public function _valid_roles($roles)
     {
+        $roles = array_filter($roles);
         foreach ($roles as $role_id) {
             $valid = $this->_valid_role($role_id);
             if (!$valid) {
