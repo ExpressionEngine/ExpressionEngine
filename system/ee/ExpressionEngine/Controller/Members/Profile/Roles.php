@@ -50,13 +50,18 @@ class Roles extends Profile
 
         $additional_roles_section = [];
         if (ee('Permission')->isSuperAdmin()) {
+            $role_groups = ee('Model')->get('RoleGroup')
+                ->fields('group_id', 'name')
+                ->order('name')
+                ->all()
+                ->getDictionary('group_id', 'name');
             $additional_roles_section[] = [
                 'title' => 'role_groups',
                 'desc' => 'role_groups_desc',
                 'fields' => [
                     'role_groups' => [
                         'type' => 'checkbox',
-                        'choices' => $roles,
+                        'choices' => $role_groups,
                         'value' => $this->member->RoleGroups->pluck('group_id'),
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('role_groups'))
