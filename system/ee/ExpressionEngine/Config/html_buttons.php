@@ -71,7 +71,7 @@ return array(
             'tag_name' => lang('html_btn_anchor'),
             'tag_open' => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
             'tag_close' => '</a>',
-            'accesskey' => 'a',
+            'accesskey' => 'k',
             'classname' => 'html-link'
         ),
         'picture' => array(
