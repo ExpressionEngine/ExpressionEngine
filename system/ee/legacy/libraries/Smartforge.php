@@ -138,6 +138,36 @@ class Smartforge
     }
 
     /**
+     * Column Drop Batch
+     *
+     * Drop multiple columns in the given database table if it already exists.
+     *
+     * @access	public
+     * @param	string	the table name
+     * @param	array	the column names
+     * @return	bool
+     */
+    public function drop_column_batch($table, $column_names)
+    {
+        // Check to make sure table exists
+        if (! ee()->db->table_exists($table)) {
+            ee()->logger->updater(__METHOD__ . " failed. Table '" . ee()->db->dbprefix . "$table' does not exist.", true);
+
+            return false;
+        }
+
+		$valid_columns = array_intersect($column_names, ee()->db->list_fields($table));
+
+        if ( ! empty($valid_columns)) {
+            return ee()->dbforge->drop_column_batch($table, $column_names);
+        }
+
+        ee()->logger->updater("Could not drop columns '" . ee()->db->dbprefix . "$table'. Columns do not exist.", true);
+
+        return false;
+    }
+
+    /**
      * Table Drop
      *
      * Drop a table from the database
