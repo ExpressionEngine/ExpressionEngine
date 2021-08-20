@@ -49,8 +49,16 @@
 							</svg>
 							<span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
 						</a>
-                        <?php if ($is_pro): ?>
-                            <a class="ee-pro__indicator-badge">Pro</a>
-                        <?php endif; ?>
+            <?php if ($is_pro): ?>
+              <div class="ee-pro__indicator-badge-wrapper">
+
+                <!-- Display only if Pro license is VALID -->
+                <a href="" class="ee-pro__indicator-badge">Pro</a>
+
+                <!-- Display only if Pro license is INVALID -->
+                <a href="" data-dropdown-use-root="true" data-dropdown-pos="top" data-toggle-dropdown="app-pro-validation-dropdown" class="ee-pro__indicator-badge ee-pro__indicator-badge-invalid js-dropdown-toggle js-about"><i class="fas fa-exclamation-circle ee-sidebar__collapsed-hidden"></i> Pro</a>
+
+              </div>
+            <?php endif; ?>
 					</div>
 				</div>

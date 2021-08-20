@@ -244,3 +244,45 @@
 .dropdown__search-input {
 	min-width: 100%;
 }
+
+// Custom styles for Pro validation dropup
+.app-pro-validation {
+  padding: 12px 20px 20px;
+  text-align: center;
+  background-color: color(bg-0);
+  overflow: hidden;
+
+  h5 {
+    font-size: 16px;
+  }
+
+  .pro-message {
+    color: color(text-secondary);
+    font-size: 12px;
+    margin-bottom: 10px;
+
+    em {
+      color: color(brand-warning);
+      font-style: normal;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  .app-pro-validation-actions {
+    background-color: color(gray-blank);
+    border-top: 1px solid color(border);
+    margin: 0 -20px -20px -20px;
+    padding: 12px 12px 12px 12px;
+  }
+
+  .button {
+    display: block;
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
+  }
+}

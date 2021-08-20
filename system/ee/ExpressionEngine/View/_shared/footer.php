@@ -3,6 +3,20 @@
 		</section>
 	</div>
 
+    <div class="dropdown app-pro-validation" data-dropdown="app-pro-validation-dropdown">
+      <h5>ExpressionEngine Pro</h5>
+      <p class="pro-message"> Your license is: <em>Invalid</em></p>
+
+      <div class="app-pro-validation-actions">
+
+        <!-- Only display button IF site license is empty: -->
+        <a class="button button--default button--small" href="">Enter Site License</a>
+
+        <a class="button button--primary button--small" href="">Purchase Pro License</a>
+
+      </div>
+    </div>
+
 		<div class="dropdown app-about" data-dropdown="app-about-dropdown">
 			<div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>
 			<div class="app-about__subtitle">
