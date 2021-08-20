@@ -418,7 +418,7 @@ class Member extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        ee()->cache->file->delete('jumpmenu/' . $this->member_id);
+        ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
     }
 
     /**
