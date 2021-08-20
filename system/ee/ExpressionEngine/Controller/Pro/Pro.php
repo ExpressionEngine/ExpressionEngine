@@ -25,7 +25,7 @@ class Pro extends CP_Controller
     {
         parent::__construct();
 
-        if (!IS_PRO) {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense()) {
             show_error(lang('unauthorized_access'), 403);
         }
     }
