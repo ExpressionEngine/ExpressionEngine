@@ -1202,7 +1202,7 @@ class EE_Template
 
                 $tag = trim(substr($raw_tag, 1, -1));
                 if (IS_PRO) {
-                    $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\']\s?\}/sU", '', $tag);
+                    $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $tag);
                 }
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
@@ -1347,8 +1347,8 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
                 if (IS_PRO && $tag != 'exp:channel:entries') {
-                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{frontedit_link\s+(.*)[\"\']\s?\}/sU", '', $chunk);
-                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{frontedit_link\s+(.*)[\"\']\s?\}/sU", '', $block);
+                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $chunk);
+                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $block);
                 }
             } // END IF
 
