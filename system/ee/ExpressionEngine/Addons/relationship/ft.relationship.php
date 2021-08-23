@@ -25,6 +25,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
     private $_table = 'relationships';
 
+    private $errors;
+
     /**
      * Validate Field
      *
@@ -53,7 +55,33 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             }
         }
 
+        if ((bool) $this->settings['allow_multiple']) {
+            if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
+                return sprintf(lang('rel_ft_min_error'), $this->settings['rel_min']);
+            }
+            if (isset($this->settings['rel_max']) && (count($set) > (int) $this->settings['rel_max'])) {
+                return sprintf(lang('rel_ft_max_error'), $this->settings['rel_max']);
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Called by FieldModel to validate the fieldtype's settings
+     */
+    public function validate_settings($data)
+    {
+        $rules = [
+            'rel_min' => 'isNatural',
+            'rel_max' => 'isNaturalNoZero'
+        ];
+
+        $validator = ee('Validation')->make($rules);
+
+        $this->errors = $validator->validate($data);
+
+        return $this->errors;
     }
 
     /**
@@ -676,10 +704,35 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 'fields' => array(
                     'relationship_allow_multiple' => array(
                         'type' => 'yes_no',
+                        'group_toggle' => array(
+                            'y' => 'rel_min_max',
+                        ),
                         'value' => ($values['allow_multiple']) ? 'y' : 'n'
                     )
                 )
-            )
+            ),
+            array(
+                'title' => 'rel_ft_min',
+                'desc' => 'rel_ft_min_desc',
+                'group' => 'rel_min_max',
+                'fields' => array(
+                    'rel_min' => array(
+                        'type' => 'text',
+                        'value' => isset($values['rel_min']) ? $values['rel_min'] : 0
+                    )
+                )
+            ),
+            array(
+                'title' => 'rel_ft_max',
+                'group' => 'rel_min_max',
+                'desc' => 'rel_ft_max_desc',
+                'fields' => array(
+                    'rel_max' => array(
+                        'type' => 'text',
+                        'value' => isset($values['rel_max']) ? $values['rel_max'] : ''
+                    )
+                )
+            ),
         );
 
         if ($this->content_type() == 'grid') {
@@ -745,7 +798,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'limit' => 100,
             'order_field' => 'title',
             'order_dir' => 'asc',
-            'allow_multiple' => 'n'
+            'allow_multiple' => 'n',
+            'rel_min' => 0,
+            'rel_max' => ''
         );
 
         $field_options = array(

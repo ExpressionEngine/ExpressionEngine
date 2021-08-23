@@ -71,6 +71,18 @@ $lang = array(
 
     'rel_ft_unrelated_only' => 'Unrelated only',
 
+    'rel_ft_max' => 'Maximum selection',
+
+    'rel_ft_max_desc' => 'Sets the maximum number of entries this field can be used to relate.',
+
+    'rel_ft_max_error' => 'You can select no more than %d entries.',
+
+    'rel_ft_min' => 'Minimum selection',
+
+    'rel_ft_min_desc' => 'Sets the minimum number of entries this field can be used to relate',
+
+    'rel_ft_min_error' => 'You need to select at least %d entries.',
+
     /* Duration */
     'duration_ft_hh' => 'hh',
 
