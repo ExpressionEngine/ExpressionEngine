@@ -10,9 +10,11 @@
       <div class="app-pro-validation-actions">
 
         <!-- Only display button IF site license is empty: -->
-        <a class="button button--default button--small" href="">Enter Site License</a>
+        <?php if (empty(ee()->config->item('pro_license_number'))):?>
+            <a class="button button--default button--small" href="<?= ee('CP/URL')->make('addons/settings/pro/license') ?>">Enter Site License</a>
+        <?php endif;?>
 
-        <a class="button button--primary button--small" href="">Purchase Pro License</a>
+        <a class="button button--primary button--small" href="<?php /* TODO: Purchase pro link goes here */?>">Purchase Pro License</a>
 
       </div>
     </div>
