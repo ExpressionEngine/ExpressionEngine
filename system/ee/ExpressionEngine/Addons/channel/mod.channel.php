@@ -4355,7 +4355,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 0) {
-            return;
+            return ee()->TMPL->no_results();
         }
 
         /** ---------------------------------------
