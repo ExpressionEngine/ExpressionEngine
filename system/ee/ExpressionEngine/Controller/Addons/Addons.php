@@ -199,6 +199,14 @@ class Addons extends CP_Controller
 
         // Sort the add-ons alphabetically
         ksort($addons);
+        // Ensure Pro is listed first
+        if (isset($addons['pro'])) {
+            $pro = $addons['pro'];
+            unset($addons['pro']);
+            $addons = array_reverse($addons, true);
+            $addons['pro'] = $pro;
+            $addons = array_reverse($addons, true);
+        }
 
         $vars['uninstalled'] = array_filter($addons, function ($addon) {
             return ! $addon['installed'];
