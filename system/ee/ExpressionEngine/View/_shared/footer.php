@@ -14,7 +14,7 @@
             <a class="button button--default button--small" href="<?= ee('CP/URL')->make('addons/settings/pro/license') ?>">Enter Site License</a>
         <?php endif;?>
 
-        <a class="button button--primary button--small" href="<?php /* TODO: Purchase pro link goes here */?>">Purchase Pro License</a>
+        <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro">Purchase Pro License</a>
 
       </div>
     </div>
