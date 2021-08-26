@@ -285,6 +285,7 @@ EE.cp.validateLicense = function() {
 
 			// @todo Clean all this up and extract the styles to the proper location.
 			for (var addon of result.addons) {
+				if ($('div[data-addon="' + addon.slug + '"]').length) {
 				if (addon.status == 'update_available') {
 					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left blue shadow" style="font-size:9px;">Update Available</div>');
 					if (window.location.href.indexOf(addon.slug) !== -1) {
@@ -298,7 +299,8 @@ EE.cp.validateLicense = function() {
 				} else if (addon.status == 'invalid') {
 					validAddons = false;
 					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left red shadow">Unlicensed</div>'); // "Invalid" status
-					$('.global-alerts').append('<div class="app-notice-license app-notice app-notice--banner app-notice---error" style="display: flex;"><div class="app-notice__tag"><span class="app-notice__icon"></span></div><div class="app-notice__content"><p>Unlicensed Add-on: <b>' + addon.name + '</b> does not have a valid license. <a href="https://expressionengine.com/licenses" target="_blank">More Info</a></p></div><a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a></div>');
+					$('.global-alerts').append('<div class="app-notice-license app-notice app-notice--banner app-notice---error" style="display: flex;"><div class="app-notice__tag"><span class="app-notice__icon"></span></div><div class="app-notice__content"><p>Unlicensed Add-on: <b>' + $('div[data-addon="' + addon.slug + '"] .add-on-card__title').first().contents().get(0).nodeValue + '</b> does not have a valid license. <a href="https://expressionengine.com/licenses" target="_blank">More Info</a></p></div><a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a></div>');
+				}
 				}
 			}
 
@@ -313,7 +315,7 @@ EE.cp.validateLicense = function() {
 						license: EE.cp.licenseKey,
 						validLicense: validLicense,
 						validAddons: validAddons,
-						addons: JSON.parse(EE.cp.installedAddons),
+						addons: result.addons,
 						site_name: EE.site_name,
 						site_id: EE.site_id,
 						site_url: EE.site_url

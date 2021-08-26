@@ -234,6 +234,17 @@ class EE_Cache_file extends CI_Driver
     }
 
     /**
+     * Checks whether cache file is writable
+     *
+     * @return	bool
+     */
+    public function is_writable($key, $scope = Cache::LOCAL_SCOPE)
+    {
+        $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
+        return is_really_writable($path);
+    }
+
+    /**
      * If a namespace was specified, prefixes the key with it
      *
      * For the file driver, namespaces will be actual folders
