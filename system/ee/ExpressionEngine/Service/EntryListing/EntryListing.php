@@ -239,7 +239,7 @@ class EntryListing
     {
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Autosaves', 'Channel')
-            ->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status')
+            ->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status', 'sticky')
             ->filter('site_id', $this->site_id);
 
         if (in_array('Columns', $this->extra_filters)) {

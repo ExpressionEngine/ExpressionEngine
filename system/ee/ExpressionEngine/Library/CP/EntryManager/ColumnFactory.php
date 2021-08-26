@@ -21,6 +21,7 @@ class ColumnFactory
         'url_title' => Columns\UrlTitle::class,
         'author' => Columns\Author::class,
         'status' => Columns\Status::class,
+        'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,

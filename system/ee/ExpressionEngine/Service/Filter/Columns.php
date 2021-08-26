@@ -32,7 +32,7 @@ class Columns extends Filter
             $this->channel_id = $channel->channel_id;
         }
 
-        $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status'];
+        $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status', 'sticky'];
     }
 
     // get columns from view
