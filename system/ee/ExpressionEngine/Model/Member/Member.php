@@ -222,6 +222,7 @@ class Member extends ContentModel
         'date_format' => 'validateDateFormat',
         'time_format' => 'enum[12,24]',
         'include_seconds' => 'enum[y,n]',
+        'enable_2fa' => 'boolString',
         'roles' => 'validateRoles'
     );
 
@@ -301,6 +302,7 @@ class Member extends ContentModel
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_2fa;
 
     /**
      * Getter for legacy group_id property

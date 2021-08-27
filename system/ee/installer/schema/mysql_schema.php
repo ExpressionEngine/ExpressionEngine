@@ -70,6 +70,7 @@ class EE_Schema
 			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
+			valid_2fa char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)
@@ -343,6 +344,7 @@ class EE_Schema
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
+			enable_2fa char(1) NOT NULL default 'n',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
@@ -408,6 +410,7 @@ class EE_Schema
 			`cp_homepage` varchar(20) DEFAULT NULL,
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
+			`require_2fa` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";

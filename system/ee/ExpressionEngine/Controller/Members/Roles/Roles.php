@@ -932,6 +932,30 @@ class Roles extends AbstractRolesController
                         'can_access_cp' => $permissions['fields']['can_access_cp']
                     ]
                 ],
+            ]
+        ];
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            $sections = array_merge($sections, [
+                [
+                    [
+                        'title' => 'require_2fa',
+                        'desc' => 'require_2fa_desc',
+                        'group' => 'can_access_cp',
+                        'caution' => true,
+                        'fields' => [
+                            'require_2fa' => [
+                                'type' => 'yes_no',
+                                'value' => $settings->require_2fa,
+                            ]
+                        ]
+                    ],
+                ]
+            ]);
+        }
+
+        $sections = array_merge($sections, [
+            [
                 [
                     'title' => 'default_cp_homepage',
                     'desc' => 'default_cp_homepage_desc',
@@ -1325,7 +1349,7 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]
-        ];
+        ]);
 
         $html = '';
 
