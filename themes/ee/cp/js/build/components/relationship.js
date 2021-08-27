@@ -90,6 +90,11 @@ function (_React$Component) {
           // Save the start index for later
           $(_assertThisInitialized(_this)).attr('data-start-index', ui.item.index());
         },
+        helper: function(event, row)  // Fixed an issue where the helper was the same as the current item.
+        {
+          var $helper = row.clone();
+          return $helper;
+        },
         stop: function stop(event, ui) {
           var newIndex = ui.item.index();
           var oldIndex = $(_assertThisInitialized(_this)).attr('data-start-index'); // Cancel the sort so jQeury doesn't move the items
