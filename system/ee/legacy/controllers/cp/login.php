@@ -70,12 +70,14 @@ class Login extends CP_Controller
         if (!empty($_POST['2fa_code'])) {
             $validated = ee('pro:TwoFactorAuth')->validateOtp(ee('Request')->post('2fa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_2fa_code);
             if (!$validated) {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('2fa_wrong_code'))
                     ->addToBody(lang('2fa_wrong_code_desc'))
                     ->now();
             } else {
+                ee()->session->delete_password_lockout();
                 $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
                 $session->skip_2fa = 'y';
                 $session->save();
@@ -99,6 +101,22 @@ class Login extends CP_Controller
         $this->view->btn_class = 'button button--primary button--large button--wide';
         $this->view->btn_label = lang('confirm');
         $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
 
         // Show the site label
         $site_label = ee('Model')->get('Site')
@@ -135,6 +153,7 @@ class Login extends CP_Controller
 
         if (!empty($_POST)) {
             if (ee('Security/XSS')->clean(ee('Request')->post('backup_2fa_code')) == $member->backup_2fa_code) {
+                ee()->session->delete_password_lockout();
                 $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
                 $session->skip_2fa = 'y';
                 $session->save();
@@ -147,6 +166,7 @@ class Login extends CP_Controller
                     ->defer();
                 $this->functions->redirect(ee('CP/URL', 'members/profile/pro/two-factor-auth')->compile());
             } else {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('2fa_wrong_backup_code'))
@@ -169,6 +189,22 @@ class Login extends CP_Controller
         $this->view->btn_class = 'button button--primary button--large button--wide';
         $this->view->btn_label = lang('reset');
         $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
 
         // Show the site label
         $site_label = ee('Model')->get('Site')
