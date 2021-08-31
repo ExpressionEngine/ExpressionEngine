@@ -245,6 +245,7 @@ class Member extends ContentModel
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_2fa_code;
     protected $authcode;
     protected $email;
     protected $signature;

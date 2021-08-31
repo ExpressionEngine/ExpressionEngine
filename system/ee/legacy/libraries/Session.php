@@ -382,6 +382,7 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
+        $this->sdata['skip_2fa'] = ($this->member_model->enable_2fa == 'y') ? 'n' : 'y';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
@@ -735,6 +736,8 @@ class EE_Session
 
         // Assign masquerader ID to session array
         $this->sdata['can_debug'] = $session->can_debug;
+
+        $this->sdata['skip_2fa'] = $session->skip_2fa;
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1201,6 +1204,7 @@ class EE_Session
             'fingerprint' => 0,
             'member_id' => 0,
             'admin_sess' => 0,
+            'skip_2fa' => 'y',
             'ip_address' => ee()->input->ip_address(),
             'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,

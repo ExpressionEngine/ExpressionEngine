@@ -70,7 +70,7 @@ class EE_Schema
 			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
-			valid_2fa char(1) NOT NULL DEFAULT 'n',
+			skip_2fa char(1) NOT NULL DEFAULT 'y',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)
@@ -287,6 +287,7 @@ class EE_Schema
 			salt varchar(128) NOT NULL DEFAULT '',
 			unique_id varchar(40) NOT NULL,
 			crypt_key varchar(40) NULL DEFAULT NULL,
+			backup_2fa_code varchar(16) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
 			email varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			signature text NULL,

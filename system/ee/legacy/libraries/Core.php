@@ -440,6 +440,13 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
+        if (ee()->session->userdata('skip_2fa') == 'n' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            //only allow 2FA code page
+            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['otp', 'otp_reset']))) {
+                ee()->functions->redirect(ee('CP/URL')->make('/login/otp', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
+            }
+        }
+
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
@@ -447,6 +454,21 @@ class EE_Core
             (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
+
+        //is member role forced to use 2FA?
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_2fa == 'y' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            if (!(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'two-factor-auth')) {
+                ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                ee('CP/Alert')->makeInline('shared-form')
+                        ->asIssue()
+                        ->withTitle(lang('2fa_required'))
+                        ->addToBody(lang('2fa_required_desc'))
+                        ->defer();
+                ee()->functions->redirect(ee('CP/URL')->make('members/profile/pro/two-factor-auth'));
+            }
+            
+        }
+
 
         // Load common helper files
         ee()->load->helper(array('url', 'form', 'quicktab', 'file'));

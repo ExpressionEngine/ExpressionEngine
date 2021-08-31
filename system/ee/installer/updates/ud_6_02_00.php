@@ -51,6 +51,19 @@ class Updater
                 ]
             );
         }
+        if (!ee()->db->field_exists('backup_2fa_code', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'backup_2fa_code' => [
+                        'type' => 'varchar',
+                        'constraint' => 16,
+                        'default' => null,
+                        'null' => true
+                    ]
+                ]
+            );
+        }
         if (!ee()->db->field_exists('require_2fa', 'role_settings')) {
             ee()->smartforge->add_column(
                 'role_settings',
@@ -64,14 +77,14 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('valid_2fa', 'sessions')) {
+        if (!ee()->db->field_exists('skip_2fa', 'sessions')) {
             ee()->smartforge->add_column(
                 'sessions',
                 [
-                    'valid_2fa' => [
+                    'skip_2fa' => [
                         'type' => 'char',
                         'constraint' => 1,
-                        'default' => 'n',
+                        'default' => 'y',
                         'null' => false
                     ]
                 ]

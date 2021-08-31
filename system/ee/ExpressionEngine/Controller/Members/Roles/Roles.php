@@ -12,6 +12,7 @@ namespace ExpressionEngine\Controller\Members\Roles;
 
 use ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
 use ExpressionEngine\Model\Role\Role;
+use ExpressionEngine\Service\Member\Member;
 
 /**
  * Members\Roles\Roles Controller
@@ -413,26 +414,6 @@ class Roles extends AbstractRolesController
         $role->short_name = ee('Request')->post('short_name');
         $role->description = ee('Request')->post('description');
 
-        //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
-        if ($role->getId() == 1) {
-            $role->is_locked = 'y';
-            return $role;
-        }
-        $role->is_locked = ee('Request')->post('is_locked');
-        $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
-        $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
-
-        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
-        $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
-        if (!empty($assignedUploadDestinations)) {
-            foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
-                if ($dest_site_id != $site_id) {
-                    $uploadDestinationIds[] = $dest_id;
-                }
-            }
-        }
-        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
-
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
@@ -464,6 +445,26 @@ class Roles extends AbstractRolesController
 
             $role_settings->set($settings);
         }
+
+        //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
+        if ($role->getId() == 1) {
+            $role->is_locked = 'y';
+            return $role;
+        }
+        $role->is_locked = ee('Request')->post('is_locked');
+        $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
+        $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
+
+        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
+        $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
+        if (!empty($assignedUploadDestinations)) {
+            foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
+                if ($dest_site_id != $site_id) {
+                    $uploadDestinationIds[] = $dest_id;
+                }
+            }
+        }
+        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
 
         $allowed_perms = [];
 
@@ -653,7 +654,25 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if ($role->getId() != 1) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && $role->getId() == Member::SUPERADMIN) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $section = array_merge($section, [
+                [
+                    'title' => 'require_2fa',
+                    'desc' => 'require_2fa_desc',
+                    'group' => 'can_access_cp',
+                    'caution' => true,
+                    'fields' => [
+                        'require_2fa' => [
+                            'type' => 'yes_no',
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_2fa,
+                        ]
+                    ]
+                ],
+            ]);
+        }
+
+        if ($role->getId() != Member::SUPERADMIN) {
             $section = array_merge($section, [
                 [
                     'title' => 'security_lock',
@@ -936,6 +955,7 @@ class Roles extends AbstractRolesController
         ];
 
         if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $sections = array_merge($sections, [
                 [
                     [

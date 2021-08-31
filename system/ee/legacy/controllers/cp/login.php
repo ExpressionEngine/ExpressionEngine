@@ -26,6 +26,170 @@ class Login extends CP_Controller
         $this->lang->loadfile('login');
     }
 
+    public function otp()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+        $redirect = '';
+        if ($this->input->post('return_path')) {
+            $redirect = $this->input->post('return_path');
+        } elseif ($this->input->get('return')) {
+            $redirect = urldecode($this->input->get('return'));
+        }
+
+        if (!empty($redirect)) {
+            $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $redirect));
+
+            if (strpos($return_path, '{') === 0) {
+                $uri_elements = json_decode($return_path, true);
+                $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments'])->compile();
+                if (IS_PRO && isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
+                    $this->view->hide_topbar = true;
+                    $this->view->pro_class = 'pro-frontend-modal';
+                }
+            }
+        } else {
+            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+            $return_path = $member->getCPHomepageURL();
+        }
+
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || ee()->session->userdata('skip_2fa') == 'y') {
+            $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
+
+            // If there is a URL= parameter in the return URL folks could end up anywhere
+            // so if we see that we'll ditch everything we were told and just go to `/`
+            if (strpos($return_path, '&URL=') !== false
+                || strpos($return_path, '?URL=') !== false) {
+                $return_path = ee('CP/URL')->make('/')->compile();
+            }
+
+            $this->functions->redirect($return_path);
+        }
+
+        if (!empty($_POST['2fa_code'])) {
+            $validated = ee('pro:TwoFactorAuth')->validateOtp(ee('Request')->post('2fa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_2fa_code);
+            if (!$validated) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('2fa_wrong_code'))
+                    ->addToBody(lang('2fa_wrong_code_desc'))
+                    ->now();
+            } else {
+                $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
+                $session->skip_2fa = 'y';
+                $session->save();
+                $this->functions->redirect($return_path);
+            }
+        }
+
+        $this->view->return_path = ee('Encrypt')->encode($return_path);
+
+        $this->view->focus_field = '2fa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('confirm');
+        $this->view->btn_disabled = '';
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/otp';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
+    public function otp_reset()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+
+        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $return_path = $member->getCPHomepageURL();
+
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || ee()->session->userdata('skip_2fa') == 'y') {
+            $this->functions->redirect($return_path);
+        }
+
+        if (!empty($_POST)) {
+            if (ee('Security/XSS')->clean(ee('Request')->post('backup_2fa_code')) == $member->backup_2fa_code) {
+                $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
+                $session->skip_2fa = 'y';
+                $session->save();
+                $member->set(['backup_2fa_code' => '', 'enable_2fa' => 'n']);
+                $member->save();
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('2fa_reset_success'))
+                    ->addToBody(lang('2fa_reset_success_message'))
+                    ->defer();
+                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/two-factor-auth')->compile());
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('2fa_wrong_backup_code'))
+                    ->addToBody(lang('2fa_wrong_backup_code_desc'))
+                    ->now();
+            }
+        }
+
+        $this->view->focus_field = 'backup_2fa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('reset');
+        $this->view->btn_disabled = '';
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/otp-reset';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
     /**
      * Main login form
      *
