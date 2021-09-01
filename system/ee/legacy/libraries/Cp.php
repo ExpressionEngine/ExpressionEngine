@@ -247,7 +247,7 @@ class Cp
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
             'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
-            'cp.lvUrl' => 'https://pagingupdates.expressionengine.com/check',
+            'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
 
