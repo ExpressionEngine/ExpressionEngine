@@ -216,3 +216,9 @@
     border: none;
   }
 }
+// Special styling for Pro add-on card
+[data-addon="pro"],
+[data-addon="pro"]:hover {
+    background-color: color(accent-light);
+    border-color: color(accent);
+}
