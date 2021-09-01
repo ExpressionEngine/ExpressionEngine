@@ -237,9 +237,11 @@ $(document).ready(function () {
  */
 EE.cp.validateLicense = function() {
 	// Verify we have a license validation URL and the last update check was more than an hour ago.
-	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
-		return;
-	}
+	// if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
+	// 	return;
+	// }
+
+	var installedAddons = JSON.parse(EE.cp.installedAddons);
 
 	$.ajax({
 		type: 'POST',
@@ -248,7 +250,7 @@ EE.cp.validateLicense = function() {
 		data: {
 			appVer: EE.cp.appVer,
 			license: EE.cp.licenseKey,
-			addons: JSON.parse(EE.cp.installedAddons),
+			addons: installedAddons,
 			meta: [
 				{
 					site_name: EE.site_name,
@@ -284,6 +286,12 @@ EE.cp.validateLicense = function() {
 			var validAddons = true;
 
 			if (EE.cp.accessResponseURL) {
+				// Fill in some missing data between the request and response.
+				for (var addon of result.addons) {
+					installedAddons[addon.slug].status = addon.status;
+					installedAddons[addon.slug].update = addon.update;
+				}
+
 				// Post the response to the backend.
 				$.ajax({
 					type: 'POST',
@@ -294,7 +302,7 @@ EE.cp.validateLicense = function() {
 						license: EE.cp.licenseKey,
 						validLicense: validLicense,
 						validAddons: validAddons,
-						addons: result.addons,
+						addons: installedAddons,
 						site_name: EE.site_name,
 						site_id: EE.site_id,
 						site_url: EE.site_url
