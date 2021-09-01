@@ -273,6 +273,7 @@ class Addons extends CP_Controller
                 }
 
                 $addon['icon_url'] = $info->getIconUrl();
+                $addon['license_status'] = $info->checkCachedLicenseResponse();
 
                 $addons[$name] = $addon;
             }
@@ -712,13 +713,42 @@ class Addons extends CP_Controller
             $method = (ee()->input->get_post('method') !== false) ? ee()->input->get_post('method') : 'index';
         }
 
+        $info = ee('Addon')->get($addon);
+        $licenseResponse = $info->checkCachedLicenseResponse();
+        $licenseStatusBadge = '';
+        switch ($licenseResponse) {
+            case 'trial':
+                $licenseStatusBadge = '<a class="license-status-badge" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_trial') . '</a>';
+                break;
+            case 'update_available':
+                $licenseStatusBadge = '<a class="license-status-badge" href="https://expressionengine.com/licenses#update-available" target="_blank">' . lang('license_update_available') . '</a>';
+                break;
+            case 'invalid':
+                $licenseStatusBadge = '<a class="license-status-badge" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_invalid') . '</a>';
+                //Pro got it's own message
+                if ($addon !== 'pro') {
+                    ee('CP/Alert')->makeBanner('license-error')
+                        ->asIssue()
+                        ->canClose()
+                        ->withTitle(lang('unlicensed_addon'))
+                        ->addToBody(sprintf(lang('unlicensed_addon_message'), $info->getName()))
+                        ->now();
+                }
+                break;
+            case 'expired':
+                $licenseStatusBadge = '<a class="license-status-badge license-status-expired" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_license_expired') . '</a>';
+                break;
+            default:
+                break;
+        }
+
         // Module
         $module = $this->getModule($addon);
         if (! empty($module) && $module['installed'] === true) {
             $data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
             $addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : ee()->view->header;
-            $header = array('title' => $module['name']);
+            $header = array('title' => $module['name'] . ' ' . $licenseStatusBadge);
 
             if (isset($addon_header['toolbar_items'])) {
                 $header['toolbar_items'] = $addon_header['toolbar_items'];
@@ -774,7 +804,7 @@ class Addons extends CP_Controller
 
                     $vars['_module_cp_body'] = $this->getExtensionSettings($addon);
                     $breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $extension['name'];
-                    ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
+                    ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration') . ' ' . $licenseStatusBadge;
                 }
             }
         }

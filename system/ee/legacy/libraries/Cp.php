@@ -172,7 +172,7 @@ class Cp
             'THEME_URL' => $this->cp_theme_url,
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
-            'cp.accessResponseURL' => $this->fetch_action_id('Pro', 'handleAccessResponse') ? ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $this->fetch_action_id('Pro', 'handleAccessResponse') : false,
+            'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
             'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
@@ -247,7 +247,7 @@ class Cp
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
             'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
-            'cp.lvUrl' => 'https://updates.expressionengine.com/check',
+            'cp.lvUrl' => 'https://pagingupdates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
 
