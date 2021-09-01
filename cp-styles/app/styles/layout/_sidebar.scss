@@ -335,10 +335,14 @@
   background-color: color(sidebar-title-bg);
   box-shadow: 0 -2px 3px rgba(0,0,0,.10);
 
-  .ee-pro__indicator-badge {
+  .ee-pro__indicator-badge-wrapper {
     position: absolute;
+    display: flex;
     top: -10px;
     right: 10px;
+  }
+
+  .ee-pro__indicator-badge {
     color: #fff;
     background-color: var(--ee-brand-primary);
     font-size: 10px;
@@ -347,7 +351,14 @@
     letter-spacing: 1px;
     padding: 2px 8px 1px;
     border-radius: 1000px;
-    cursor: default;
+
+    &.ee-pro__indicator-badge-invalid {
+      background-color: var(--ee-brand-warning);
+    }
+
+    i, .fas {
+      opacity: 0.5;
+    }
   }
 }
 

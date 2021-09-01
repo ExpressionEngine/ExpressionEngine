@@ -246,7 +246,7 @@ class Cp
         // add-ons to send to the license validation service.
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
-            'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+            'cp.licenseKey' => ee()->config->item('site_license_key'),
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
