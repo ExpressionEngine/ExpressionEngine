@@ -313,7 +313,7 @@ EE.cp.validateLicense = function() {
 						license: EE.cp.licenseKey,
 						validLicense: validLicense,
 						validAddons: validAddons,
-						addons: JSON.parse(EE.cp.installedAddons),
+						addons: result.addons,
 						site_name: EE.site_name,
 						site_id: EE.site_id,
 						site_url: EE.site_url
