@@ -48,6 +48,8 @@
 
 	<?php endif; ?>
 	<?php if ($addon['installed'] && !empty($addon['license_status']) && $addon['license_status'] != 'na') : ?>
-	<div class="corner-ribbon top-left <?=$addon['license_status']?> shadow"<?php if ($addon['license_status'] == 'update_available') : ?> style="font-size: 62%;"<?php endif ;?>><?=lang('license_' . $addon['license_status'])?></div>
+		<div class="corner-ribbon-wrap">
+			<p class="corner-ribbon top-left <?=$addon['license_status']?> shadow"<?php if ($addon['license_status'] == 'update_available') : ?> style="font-size: 62%;"<?php endif ;?>><?=lang('license_' . $addon['license_status'])?></p>
+		</div>
 	<?php endif; ?>
 </div>

@@ -127,6 +127,18 @@
   max-height: 50px;
 }
 
+.corner-ribbon-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100px;
+  background: transparent;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  overflow: hidden;
+}
+
 .corner-ribbon {
   width: 200px;
   background: #e43;
