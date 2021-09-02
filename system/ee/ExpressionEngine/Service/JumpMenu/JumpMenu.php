@@ -404,6 +404,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'site_short_name',
                         'command_title' => 'site_short_name'
                     ),
+                    // Short name
+                    'fieldset-site_license_key' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site_license_key',
+                        'command_title' => 'site_license_key'
+                    ),
                     // System on off
                     'fieldset-is_system_on' => array(
                         'trail' => [

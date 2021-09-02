@@ -813,7 +813,7 @@ class Addon
         ee()->load->library('logger');
         ee()->logger->developer(lang($message), true);
         if (REQ == 'CP') {
-            ee('CP/Alert')->makeBanner('pro-license-error')
+            ee('CP/Alert')->makeBanner('license-error')
                 ->asWarning()
                 ->canClose()
                 ->withTitle(lang('license_error'))

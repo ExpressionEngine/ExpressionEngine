@@ -227,6 +227,12 @@
     color: #fff;
     border: none;
   }
+
+  &.license-status-invalid {
+    background-color: color(danger);
+    color: #fff;
+    border: none;
+  }
 }
 // Special styling for Pro add-on card
 [data-addon="pro"],

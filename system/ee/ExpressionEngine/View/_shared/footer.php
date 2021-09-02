@@ -5,16 +5,16 @@
 
     <div class="dropdown app-pro-validation" data-dropdown="app-pro-validation-dropdown">
       <h5>ExpressionEngine Pro</h5>
-      <p class="pro-message"> Your license is: <em>Invalid</em></p>
+      <p class="pro-message"> <?=lang('your_license_is')?> <em>Invalid</em></p>
 
       <div class="app-pro-validation-actions">
 
         <!-- Only display button IF site license is empty: -->
         <?php if (empty(ee()->config->item('pro_license_number'))):?>
-            <a class="button button--default button--small" href="<?= ee('CP/URL')->make('addons/settings/pro/license') ?>">Enter Site License</a>
+            <a class="button button--default button--small" href="<?= ee('CP/URL')->make('settings/general')->compile() ?>#fieldset-site_license_key"><?=lang('enter_site_license')?></a>
         <?php endif;?>
 
-        <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro">Purchase Pro License</a>
+        <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro"><?=lang('purchase_pro_license')?></a>
 
       </div>
     </div>
