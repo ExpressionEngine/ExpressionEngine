@@ -287,7 +287,7 @@ class EE_Schema
 			salt varchar(128) NOT NULL DEFAULT '',
 			unique_id varchar(40) NOT NULL,
 			crypt_key varchar(40) NULL DEFAULT NULL,
-			backup_2fa_code varchar(16) NULL DEFAULT NULL,
+			backup_2fa_code varchar(128) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
 			email varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			signature text NULL,

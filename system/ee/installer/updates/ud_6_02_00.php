@@ -57,7 +57,7 @@ class Updater
                 [
                     'backup_2fa_code' => [
                         'type' => 'varchar',
-                        'constraint' => 16,
+                        'constraint' => 128,
                         'default' => null,
                         'null' => true
                     ]
