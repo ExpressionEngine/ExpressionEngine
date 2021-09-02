@@ -34,7 +34,7 @@
 	background-color: color(bg-0);
 	margin-bottom: 40px;
 	padding: $sq-inset-m;
-	overflow: hidden;
+	// overflow: hidden;
 	position: relative;
 	border-radius: $corners;
 	@include shadow-modal;
