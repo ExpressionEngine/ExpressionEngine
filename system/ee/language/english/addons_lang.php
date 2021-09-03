@@ -191,9 +191,9 @@ $lang = array(
     'license_license_expired' => 'License Expired',
     'license_update_available' => 'Update Available',
     'unlicensed_addon' => 'Unlicensed Add-on',
-    'unlicensed_addon_message' => '<b>%s</b> does not have a valid license. <a href="https://expressionengine.com/licenses" target="_blank">More Info</a>',
-    
-    
+    'unlicensed_addon_message' => '<b>%s</b> does not have a valid license. <a href="https://expressionengine.com/store/licenses" target="_blank">More Info</a>',
+
+
 
 );
 

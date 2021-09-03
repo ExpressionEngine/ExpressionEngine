@@ -2,7 +2,7 @@
             </div>
         </section>
     </div>
-    
+
     <?php if (IS_PRO) : ?>
     <div class="dropdown app-pro-validation" data-dropdown="app-pro-validation-dropdown">
       <h5>ExpressionEngine Pro</h5>
@@ -14,9 +14,9 @@
         <?php if (empty(ee()->config->item('site_license_key'))):?>
             <a class="button button--default button--small" href="<?= ee('CP/URL')->make('settings/general')->compile() ?>#fieldset-site_license_key"><?=lang('enter_site_license')?></a>
         <?php endif;?>
-        
+
         <?php if (ee()->view->pro_license_status == 'expired'): ?>
-            <a class="button button--primary button--small" href="https://expressionengine.com/licenses" target="_blank"><?=lang('renew_pro_license')?></a>
+            <a class="button button--primary button--small" href="https://expressionengine.com/store/licenses" target="_blank"><?=lang('renew_pro_license')?></a>
         <?php else: ?>
             <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro" target="_blank"><?=lang('purchase_pro_license')?></a>
         <?php endif; ?>
