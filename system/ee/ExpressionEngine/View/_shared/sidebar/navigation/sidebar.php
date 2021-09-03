@@ -6,8 +6,6 @@
                             $version_class = '';
                             $update_available = isset(ee()->view->new_version);
                             $vital_update = $update_available && ee()->view->new_version && ee()->view->new_version['security'];
-                            $is_pro = (defined('IS_PRO') && IS_PRO);
-                            $is_valid = $is_pro && ee('pro:Access')->hasValidLicense();
 
                             if ($update_available) {
                                 if ($vital_update) {
@@ -50,17 +48,15 @@
                             </svg>
                             <span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
                         </a>
-            <?php if ($is_pro): ?>
+            <?php if (IS_PRO): ?>
               <div class="ee-pro__indicator-badge-wrapper">
-                <?php if ($is_valid): ?>
+                <?php if (ee()->view->pro_license_status == 'valid'): ?>
 
-                    <!-- Display only if Pro license is VALID -->
                     <a href="<?= ee('CP/URL')->make('addons/settings/pro/general') ?>" class="ee-pro__indicator-badge">Pro</a>
 
                 <?php else: ?>
 
-                    <!-- Display only if Pro license is INVALID -->
-                    <a href="" data-dropdown-use-root="true" data-dropdown-pos="top" data-toggle-dropdown="app-pro-validation-dropdown" class="ee-pro__indicator-badge ee-pro__indicator-badge-invalid js-dropdown-toggle js-about"><i class="fas fa-exclamation-circle ee-sidebar__collapsed-hidden"></i> Pro</a>
+                    <a href="" data-dropdown-use-root="true" data-dropdown-pos="top" data-toggle-dropdown="app-pro-validation-dropdown" class="ee-pro__indicator-badge ee-pro__indicator-badge-<?=ee()->view->pro_license_status?> js-dropdown-toggle js-about"><i class="fas fa-exclamation-circle ee-sidebar__collapsed-hidden"></i> Pro</a>
                 <?php endif; ?>
 
               </div>

@@ -297,6 +297,24 @@ class Cp
             }
         }
 
+        ee()->view->pro_license_status = '';
+        if (IS_PRO) {
+            $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+            switch ($pro_status) {
+                case 'update_available':
+                    ee()->view->pro_license_status = 'valid';
+                    break;
+
+                case '':
+                    ee()->view->pro_license_status = 'na';
+                    break;
+
+                default:
+                    ee()->view->pro_license_status = $pro_status;
+                    break;
+            }
+        }
+
         $this->_notices();
 
         ee()->view->formatted_version = formatted_version(APP_VER);
