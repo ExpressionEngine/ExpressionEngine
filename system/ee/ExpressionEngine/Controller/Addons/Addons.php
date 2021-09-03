@@ -719,13 +719,13 @@ class Addons extends CP_Controller
         $licenseStatusBadge = '';
         switch ($licenseResponse) {
             case 'trial':
-                $licenseStatusBadge = '<a class="license-status-badge license-status-trial" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_trial') . '</a>';
+                $licenseStatusBadge = '<a class="license-status-badge license-status-trial" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_trial') . '</a>';
                 break;
             case 'update_available':
-                $licenseStatusBadge = '<a class="license-status-badge license-status-update_available" href="https://expressionengine.com/licenses#update-available" target="_blank">' . lang('license_update_available') . '</a>';
+                $licenseStatusBadge = '<a class="license-status-badge license-status-update_available" href="https://expressionengine.com/store/licenses#update-available" target="_blank">' . lang('license_update_available') . '</a>';
                 break;
             case 'invalid':
-                $licenseStatusBadge = '<a class="license-status-badge license-status-invalid" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_invalid') . '</a>';
+                $licenseStatusBadge = '<a class="license-status-badge license-status-invalid" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_invalid') . '</a>';
                 //Pro got it's own message
                 if ($addon !== 'pro') {
                     ee('CP/Alert')->makeBanner('license-error')
@@ -737,7 +737,7 @@ class Addons extends CP_Controller
                 }
                 break;
             case 'expired':
-                $licenseStatusBadge = '<a class="license-status-badge license-status-expired" href="https://expressionengine.com/licenses" target="_blank">' . lang('license_license_expired') . '</a>';
+                $licenseStatusBadge = '<a class="license-status-badge license-status-expired" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_license_expired') . '</a>';
                 break;
             default:
                 break;
