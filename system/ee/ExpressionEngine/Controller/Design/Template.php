@@ -902,7 +902,7 @@ class Template extends AbstractDesignController
             )
         );
 
-        if (IS_PRO) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $sections['pro_settings'][] = array(
                 'title' => 'enable_frontedit',

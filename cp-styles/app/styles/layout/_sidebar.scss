@@ -353,6 +353,10 @@
     border-radius: 1000px;
 
     &.ee-pro__indicator-badge-invalid {
+      background-color: var(--ee-brand-danger);
+    }
+
+    &.ee-pro__indicator-badge-expired {
       background-color: var(--ee-brand-warning);
     }
 
