@@ -165,6 +165,21 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'categories/edit',
                 'permission' => 'can_edit_categories'
             ),
+            //comments
+            'viewComments' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'publish/comments'
+            ),
+            'viewCommentsFor' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'comments/list'
+            ),
             //files
             'viewFiles' => array(
                 'icon' => 'fa-eye',
@@ -1843,6 +1858,18 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'member_segment_trigger',
                 'command_title' => 'member_segment_trigger'
             );
+        }
+
+        //check permissions for comment links
+        if (! ee('Permission')->hasAny(
+            'can_moderate_comments',
+            'can_edit_own_comments',
+            'can_delete_own_comments',
+            'can_edit_all_comments',
+            'can_delete_all_comments'
+        )) {
+            unset($items[1]['viewComments']);
+            unset($items[1]['viewCommentsFor']);
         }
 
         //if this is multi-site install, add links

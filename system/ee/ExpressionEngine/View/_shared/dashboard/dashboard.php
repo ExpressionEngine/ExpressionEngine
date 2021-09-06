@@ -90,9 +90,10 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('comments'); ?></h2>
 
-			<div>
+			<div class="button-group button-group-xsmall">
 				<?php if ($can_edit_comments): ?>
-					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL')->make('publish/comments', ['filter_by_date' => ee()->localize->now - ee()->session->userdata['last_visit']])?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=lang('view_all')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
