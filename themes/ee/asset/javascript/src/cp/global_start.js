@@ -448,7 +448,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 	// url to avoid that issue. You still cannot use the back button after
 	// logging back in, but how likely are you to remember what page you
 	// were on before leaving this one open for 20 minutes anyways?
-	if (typeof window.history.pushState == 'function') {
+	if (typeof window.history.pushState == 'function' && oldBaseS[1] != '') {
 		window.history.replaceState(
 			null,
 			document.title,
