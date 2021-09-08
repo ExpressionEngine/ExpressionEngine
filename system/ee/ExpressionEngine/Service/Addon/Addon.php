@@ -760,7 +760,6 @@ class Addon
      */
     public function checkCachedLicenseResponse()
     {
-        return 'expired';
         // See if we have a cached check.
         $cached = ee()->cache->file->get('/addons-status');
 
