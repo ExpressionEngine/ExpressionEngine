@@ -292,7 +292,7 @@ class Cli
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
-            $this->fail(lang('cli_error_is_required') . ': ' . $option);
+            $this->fail(lang('cli_error_is_required') . ' Field: ' . $option);
         }
 
         return $answer;
@@ -301,6 +301,8 @@ class Cli
     /**
      * Ask question and get boolean answer
      * @param  string $question
+     * @param  bool $default
+     * @param  array $required array('required' => <true/false>, 'error_message' => 'cli error message - accepts lang key')
      * @return bool
      */
     public function confirm($question, $default = false, array $required = ['required' => false, 'error_message' => 'cli_error_is_required'])
