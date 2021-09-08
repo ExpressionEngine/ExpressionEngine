@@ -99,7 +99,13 @@ class Rte_upd extends Installer
     public function update($current = '')
     {
         if (version_compare($current, '2.1.0', '<')) {
-            if (! ee()->db->field_exists('toolset_type', 'rte_toolsets')) {
+            ee()->db->where('class', 'Rte')
+                ->where('method', 'get_js')
+                ->delete('actions');
+
+            ee()->db->where('class', 'Rte_ext')->delete('extensions');
+
+            if (ee()->db->table_exists('rte_toolsets') && ! ee()->db->field_exists('toolset_type', 'rte_toolsets')) {
                 $fields = [
                     'toolset_type' => array(
                         'type' => 'varchar',
@@ -114,6 +120,17 @@ class Rte_upd extends Installer
 
                 foreach ($configs as &$config) {
                     $config->toolset_type = 'ckeditor';
+                    $config->save();
+                }
+
+                //install Redactor toolsets
+                $toolbars = ee('rte:RedactorService')->defaultToolbars();
+                foreach ($toolbars as $name => $toolbar) {
+                    $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                    $config = ee('Model')->make('rte:Toolset');
+                    $config->toolset_name = $name;
+                    $config->toolset_type = 'redactor';
+                    $config->settings = $config_settings;
                     $config->save();
                 }
             }

@@ -47,80 +47,9 @@
 	</div>
 
 	<?php endif; ?>
+	<?php if ($addon['installed'] && !empty($addon['license_status']) && $addon['license_status'] != 'na') : ?>
+		<div class="corner-ribbon-wrap">
+			<p class="corner-ribbon top-left <?=$addon['license_status']?> shadow"<?php if ($addon['license_status'] == 'update_available') : ?> style="font-size: 62%;"<?php endif ;?>><?=lang('license_' . $addon['license_status'])?></p>
+		</div>
+	<?php endif; ?>
 </div>
-
-<!-- Very temporary styles -->
-<style>
-.corner-ribbon{
-  width: 200px;
-  background: #e43;
-  position: absolute;
-  top: 15px;
-  left: -25px;
-  text-align: center;
-  line-height: 25px;
-  font-size: 12px;
-  letter-spacing: 1px;
-  color: #f0f0f0;
-  font-weight: bold;
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-
-/* Custom styles */
-
-.corner-ribbon.sticky{
-  position: fixed;
-}
-
-.corner-ribbon.shadow{
-  box-shadow: 0 0 3px rgba(0,0,0,.3);
-}
-
-/* Different positions */
-
-.corner-ribbon.top-left{
-  top: 20px;
-  left: -65px;
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-
-.corner-ribbon.top-right{
-  top: 25px;
-  right: -50px;
-  left: auto;
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
-
-.corner-ribbon.bottom-left{
-  top: auto;
-  bottom: 25px;
-  left: -50px;
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
-
-.corner-ribbon.bottom-right{
-  top: auto;
-  right: -50px;
-  bottom: 25px;
-  left: auto;
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-
-/* Colors */
-
-.corner-ribbon.white{background: #f0f0f0; color: #555;}
-.corner-ribbon.black{background: #333;}
-.corner-ribbon.grey{background: #999;}
-.corner-ribbon.blue{background: #39d;}
-.corner-ribbon.green{background: #2c7;}
-.corner-ribbon.turquoise{background: #1b9;}
-.corner-ribbon.purple{background: #95b;}
-.corner-ribbon.red{background: #e43;}
-.corner-ribbon.orange{background: #e82;}
-.corner-ribbon.yellow{background: #ec0;}
-</style>

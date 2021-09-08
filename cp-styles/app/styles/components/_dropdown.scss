@@ -262,11 +262,19 @@
     margin-bottom: 10px;
 
     em {
-      color: color(brand-warning);
+      color: color(brand-primary);
       font-style: normal;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 1px;
+
+	  &.license-status-text-expired {
+		color: color(brand-warning);
+	  }
+
+	  &.license-status-text-invalid {
+		color: color(brand-danger);
+	  }
     }
   }
 

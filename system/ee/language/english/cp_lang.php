@@ -682,6 +682,18 @@ $lang = array(
 
     'version' => 'Version',
 
+    'enter_site_license' => 'Enter Site License',
+
+    'your_license_is' => 'Your license is:',
+
+    'license_trial' => 'Trial',
+    'license_expired' => 'Expired',
+    'license_invalid' => 'Unlicensed',
+    'license_na' => 'Unknown',
+
+    'purchase_pro_license' => 'Purchase Pro License',
+    'renew_pro_license' => 'Renew Pro License',
+
     /* confirm removal modal */
     'btn_confirm_and_remove' => 'Confirm, and Remove',
 

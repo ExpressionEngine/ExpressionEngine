@@ -754,6 +754,76 @@ class Addon
     }
 
     /**
+     * Check cached license response
+     *
+     * @return bool
+     */
+    public function checkCachedLicenseResponse()
+    {
+        return 'expired';
+        // See if we have a cached check.
+        $cached = ee()->cache->file->get('/addons-status');
+
+        if (empty($cached)) {
+            return false;
+        }
+
+        if (!ee()->cache->file->is_writable('/addons-status')) {
+            $this->logLicenseError('license_error_file_not_writable');
+            return false;
+        }
+
+        list($cache, $integrity) = explode('||s=', $cached);
+
+        // Make sure the cache exists and has the proper integrity to use.
+        if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
+
+        if (empty($json) || ! $data = json_decode($json, true)) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        $sha = $data['sha'];
+        unset($data['sha']);
+
+        if ($sha !== hash('sha256', json_encode($data))) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        if (isset($data['addons'][$this->shortname]) && isset($data['addons'][$this->shortname]['status'])) {
+            return $data['addons'][$this->shortname]['status'];
+        }
+
+        return false;
+    }
+
+    /**
+     * Log license error to developer log and display alert in CP
+     *
+     * @param [type] $message
+     * @return void
+     */
+    private function logLicenseError($message)
+    {
+        ee()->load->library('logger');
+        ee()->logger->developer(lang($message), true);
+        if (REQ == 'CP') {
+            ee('CP/Alert')->makeBanner('license-error')
+                ->asWarning()
+                ->canClose()
+                ->withTitle(lang('license_error'))
+                ->addToBody(lang($message))
+                ->now();
+        }
+    }
+
+    /**
      * Get the fully qualified class name
      *
      * Checks the namespace and if that doesn't exists falls back to the
