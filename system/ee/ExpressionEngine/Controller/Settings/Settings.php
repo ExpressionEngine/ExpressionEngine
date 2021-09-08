@@ -102,6 +102,7 @@ class Settings extends CP_Controller
             $list->addItem(lang('member_settings'), ee('CP/URL')->make('settings/members'));
             $list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
             $list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
+            $list->addItem(lang('signature'), ee('CP/URL')->make('settings/signature'));
         }
 
         if (ee('Permission')->can('access_security_settings')) {

@@ -43,6 +43,8 @@ $lang = array(
 
     'security_privacy' => 'Security & Privacy',
 
+    'signature' => 'Signatures',
+
     'system_settings' => 'System Settings',
 
     'template_settings' => 'Template Settings',
@@ -850,6 +852,26 @@ $lang = array(
     'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
+
+    /* Signature */
+
+    'signature_file_restrictions' => 'Signature File Restrictions',
+
+    'signature_max_height' => 'Maximum height',
+   
+    'signature_max_kb' => 'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
+   
+    'signature_max_width' => 'Maximum width',
+   
+    'signature_path' => 'Signature path',
+   
+    'signature_path_desc' => 'Full path location of your <code>signature</code> directory.',
+   
+    'signature_settings' => 'Signature Settings',
+   
+    'signature_url' => 'Signature directory',
+   
+    'signature_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>signature</code> directory.',
 
 );
 

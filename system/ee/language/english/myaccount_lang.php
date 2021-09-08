@@ -88,6 +88,10 @@ $lang = array(
 
     'change_avatar_desc' => 'Add an avatar to your profile — .gif, .jpg, .png (max %skb)',
 
+    'change_signature' => 'Change signature',
+
+    'change_signature_desc' => 'Add a signature to your profile — .jpg, .png (max %skb)',
+
     'change_password' => 'Change Password',
 
     'channel_name' => 'Post entries to channel',
@@ -133,8 +137,12 @@ $lang = array(
     'create_the_bookmarklet' => 'Create the Bookmarklet',
 
     'current_avatar' => 'Current avatar',
+    
+    'current_signature' => 'Current Signature',
 
     'current_avatar_desc' => 'This is your avatar currently in use.',
+
+    'current_signature_desc' => 'This is your signature image currently in use.',
 
     'current_member' => 'Member:',
 
@@ -458,6 +466,10 @@ $lang = array(
 
     'sidebar_updated' => 'Sidebar State Updated',
 
+    'signature_settings' => 'Image Signature',
+
+    'signature_settings_text' => 'Text Signature',
+
     'single_word_no_spaces' => 'single word, no spaces',
 
     'site_default' => 'Use site default',
@@ -520,6 +532,10 @@ $lang = array(
 
     'avatar_path_does_not_exist' => 'You avatar upload directory does not exist. Please check your <a href="%s">avatar</a> upload settings.',
     'avatars_disabled' => 'Avatars are disabled. Please update your <a href="%s">avatar</a> upload settings.',
+
+    'update_sig_text_desc' => 'Update Signature Text. <br> Your current Signature is: %s',
+
+    'update_sig_text_desc_null' => 'You currently do not have a text signature',
 
     'upload_avatar' => 'Upload — .gif, .jpg, .png (max %skb)',
 
