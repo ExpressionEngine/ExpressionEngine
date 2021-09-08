@@ -26,7 +26,8 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'add2faToMembers',
+            'add2faColumns',
+            'add2FAMessageTemplate',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -36,7 +37,7 @@ class Updater
         return true;
     }
 
-    private function add2faToMembers()
+    private function add2faColumns()
     {
         if (!ee()->db->field_exists('enable_2fa', 'members')) {
             ee()->smartforge->add_column(
@@ -89,6 +90,37 @@ class Updater
                     ]
                 ]
             );
+        }
+        if (!ee()->db->field_exists('require_2fa', 'templates')) {
+            ee()->smartforge->add_column(
+                'templates',
+                [
+                    'require_2fa' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
+    }
+
+    protected function add2FAMessageTemplate()
+    {
+        $sites = ee('Model')->get('Site')->all();
+        require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
+
+        foreach ($sites as $site) {
+            ee('Model')->make('SpecialtyTemplate')
+                ->set([
+                    'template_name' => 'two-fa',
+                    'template_type' => 'system',
+                    'template_subtype' => null,
+                    'data_title' => '',
+                    'template_data' => two_fa_message_template(),
+                    'site_id' => $site->site_id,
+                ])->save();
         }
     }
 

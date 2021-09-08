@@ -232,8 +232,6 @@ $lang = array(
 
     'save_changes' => 'Save changes',
 
-    'confirm' => 'Confirm',
-
     'submit' => 'Submit',
 
     'sync' => 'Synchronize',

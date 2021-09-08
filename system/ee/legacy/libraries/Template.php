@@ -2531,6 +2531,11 @@ class EE_Template
 
         $row = $query->row_array();
 
+        // Is 2FA required to access this template?
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee('pro:TwoFactorAuth')->checkTemplatePermissions($row);
+        }
+
         // Is PHP allowed in this template?
         if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y') {
             $this->parse_php = true;

@@ -507,11 +507,13 @@ class EE_Output
      * accessible pages.
      *
      * @access	public
-     * @param	mixed
-     * @param	bool
-     * @return	void
+     * @param array $data
+     * @param boolean $xhtml
+     * @param boolean $redirect_url
+     * @param mixed $template_name
+     * @return void
      */
-    public function show_message($data, $xhtml = true, $redirect_url = false)
+    public function show_message($data, $xhtml = true, $redirect_url = false, $template_name = 'generic')
     {
         // If we have a redirect URL, use that instead of outputting the standard page.
         if (! empty($redirect_url)) {
@@ -573,7 +575,7 @@ class EE_Output
             $template = ee('Model')->get('Template')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('group_id', $template_group->group_id)
-                ->filter('template_name', 'generic')->first();
+                ->filter('template_name', $template_name)->first();
 
             if (!empty($template) && !empty($template->template_data)) {
                 $template_data = $template->template_data;
@@ -587,9 +589,10 @@ class EE_Output
         }
 
         if (empty($template_data)) {
+            $template_name = ($template_name == 'generic') ? 'message_template' : $template_name;
             ee()->db->select('template_data');
             ee()->db->where('site_id', ee()->config->item('site_id'));
-            ee()->db->where('template_name', 'message_template');
+            ee()->db->where('template_name', $template_name);
             $query = ee()->db->get('specialty_templates');
 
             $row = $query->row_array();

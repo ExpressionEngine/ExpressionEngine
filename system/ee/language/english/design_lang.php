@@ -309,6 +309,8 @@ $lang = array(
 
     'post_install_message_template' => 'Post-install Message',
 
+    'two-fa' => 'Two-Factor Authentication Template',
+
     /* System Templates -> Email */
     'comments' => 'Comments',
 
