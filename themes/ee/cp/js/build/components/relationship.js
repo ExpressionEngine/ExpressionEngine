@@ -103,6 +103,7 @@ function (_React$Component) {
             selected: selected
           });
           $(document).trigger('entry:preview');
+          $("[data-publish] > form").trigger("entry:startAutosave");
         }
       });
     });

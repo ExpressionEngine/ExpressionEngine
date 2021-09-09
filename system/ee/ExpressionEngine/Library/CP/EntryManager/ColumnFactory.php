@@ -90,35 +90,30 @@ class ColumnFactory
     private static function getChannelFieldColumns($channel = false)
     {
         // Grab all the applicable fields based on the channel if there is one.
-        $cache_key = '/EntryManager/ChannelFieldColumns/' . (!empty($channel) ? $channel->getId() : 0);
-        $columns = ee()->cache->get($cache_key);
-        if (empty($columns)) {
-            if (! empty($channel)) {
-                $customFields = $channel->getAllCustomFields();
+        if (! empty($channel)) {
+            $customFields = $channel->getAllCustomFields();
 
-                $columns = $customFields->filter(function ($field) {
+            $columns = $customFields->filter(function ($field) {
+                return in_array(
+                    $field->field_type,
+                    self::getCompatibleFieldtypes()
+                );
+            })
+                ->map(function ($field) {
+                    return self::getColumn('field_id_' . $field->getId(), $field);
+                });
+        } else {
+            $columns = ee('Model')->get('ChannelField')
+                ->all()
+                ->filter(function ($field) {
                     return in_array(
                         $field->field_type,
                         self::getCompatibleFieldtypes()
                     );
                 })
-                    ->map(function ($field) {
-                        return self::getColumn('field_id_' . $field->getId(), $field);
-                    });
-            } else {
-                $columns = ee('Model')->get('ChannelField')
-                    ->all()
-                    ->filter(function ($field) {
-                        return in_array(
-                            $field->field_type,
-                            self::getCompatibleFieldtypes()
-                        );
-                    })
-                    ->map(function ($field) {
-                        return self::getColumn('field_id_' . $field->getId(), $field);
-                    });
-            }
-            ee()->cache->save($cache_key, $columns);
+                ->map(function ($field) {
+                    return self::getColumn('field_id_' . $field->getId(), $field);
+                });
         }
 
         return $columns;

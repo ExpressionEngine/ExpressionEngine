@@ -2760,7 +2760,6 @@ GRID_FALLBACK;
             'title' => 'text'
         );
 
-        $this->option_fields = array();
         $this->parse_variables = array();
 
         $this->post_error_callbacks = array();
@@ -2805,30 +2804,16 @@ GRID_FALLBACK;
 
         $this->fetch_settings();
 
-        if (empty($this->option_fields)) {
-            if (! ee()->session->cache(__CLASS__, 'OptionFieldtypes')) {
-                $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+        // Get the list of Fieldtypes that extend OptionFieldtype
+        $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        $this->option_fields = array_filter($fieldtypes, function($fieldtype) {
+            ee()->api_channel_fields->include_handler($fieldtype);
+            $class = ucfirst($fieldtype) . '_ft';
 
-                ee()->load->library('api');
-                ee()->legacy_api->instantiate('channel_fields');
-
-                // Get the list of Fieldtypes that extend OptionFieldtype
-                $option_fields = array_filter($fieldtypes, function($fieldtype) {
-                    ee()->api_channel_fields->include_handler($fieldtype);
-                    $class = ucfirst($fieldtype) . '_ft';
-
-                    return is_subclass_of($class, 'OptionFieldtype');
-                });
-
-                ee()->session->set_cache(
-                    __CLASS__,
-                    'OptionFieldtype',
-                    array_values($option_fields)
-                );
-            }
-
-            $this->option_fields = ee()->session->cache(__CLASS__, 'OptionFieldtypes');
-        }
+            return is_subclass_of($class, 'OptionFieldtype');
+        });
 
         /*
             TODO: I think the following code can be removed

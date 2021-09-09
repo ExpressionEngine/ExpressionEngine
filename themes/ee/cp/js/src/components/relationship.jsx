@@ -144,6 +144,8 @@ class Relationship extends React.Component {
 				thisRef.setState({ selected: selected })
 
 				$(document).trigger('entry:preview');
+
+				$("[data-publish] > form").trigger("entry:startAutosave");
 			}
 		})
 	}
