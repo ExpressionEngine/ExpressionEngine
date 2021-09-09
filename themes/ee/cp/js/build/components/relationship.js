@@ -77,6 +77,56 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "itemsChanged", function (items) {
+      _this.setState({
+        items: items
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initialItemsChanged", function (items) {
+      _this.initialItems = items;
+
+      if (!_this.ajaxFilter && _this.state.filterValues.search) {
+        items = _this.filterItems(items, _this.state.filterValues.search);
+      }
+
+      _this.setState({
+        items: items
+      });
+
+      if (_this.props.itemsChanged) {
+        _this.props.itemsChanged(items);
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "filterChange", function (name, value) {
+      var filterState = _this.state.filterValues;
+      filterState[name] = value;
+
+      _this.setState({
+        filterValues: filterState
+      }); // DOM filter
+
+      if (!_this.ajaxFilter && name == 'search') {
+        _this.itemsChanged(_this.filterItems(_this.initialItems, value));
+
+        return;
+      } // Debounce AJAX filter
+
+      clearTimeout(_this.ajaxTimer);
+      if (_this.ajaxRequest) _this.ajaxRequest.abort();
+      var params = filterState;
+      params.selected = _this.getSelectedValues(_this.props.selected);
+
+      _this.setState({
+        loading: true
+      });
+
+      _this.ajaxTimer = setTimeout(function () {
+        _this.ajaxRequest = _this.forceAjaxRefresh(params);
+      }, 300);
+    });
+
     _defineProperty(_assertThisInitialized(_this), "bindSortable", function () {
       var thisRef = _assertThisInitialized(_this);
 
@@ -108,12 +158,20 @@ function (_React$Component) {
       });
     });
 
+    _this.initialItems = SelectList.formatItems(props.items);
+
     _this.state = {
       selected: props.selected,
       items: props.items,
       channelFilter: false,
-      filterTerm: false
+      filterTerm: false,
+      filterValues: {}
     };
+
+    _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filter_url;
+    _this.ajaxTimer = null;
+    _this.ajaxRequest = null;
+
     return _this;
   }
 
@@ -161,7 +219,6 @@ function (_React$Component) {
         })
       });
     } // Opens a modal to create a new entry
-
   }, {
     key: "openPublishFormForChannel",
     value: function openPublishFormForChannel(channel) {
@@ -187,7 +244,63 @@ function (_React$Component) {
         }
       });
     } // Event when a new entry was created by the channel modal
+  },{
+    key: "filterItems",
+    value: function filterItems(items, searchTerm) {
+      var _this2 = this;
 
+      items = items.map(function (item) {
+        // Clone item so we don't modify reference types
+        item = Object.assign({}, item); // If any children contain the search term, we'll keep the parent
+
+        if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
+        var itemFoundInChildren = item.children && item.children.length > 0;
+        var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+        return itemFound || itemFoundInChildren ? item : false;
+      });
+      return items.filter(function (item) {
+        return item;
+      });
+    }
+  }, {
+    key: "getSelectedValues",
+    value: function getSelectedValues(selected) {
+      var values = [];
+
+      if (selected instanceof Array) {
+        values = selected.map(function (item) {
+          return item.value;
+        });
+      } else if (selected.value) {
+        values = [selected.value];
+      }
+
+      return values.join('|');
+    }
+  }, {
+    key: "forceAjaxRefresh",
+    value: function forceAjaxRefresh(params) {
+      var _this3 = this;
+
+      if (!params) {
+        params = this.state.filterValues;
+        params.selected = this.getSelectedValues(this.props.selected);
+      }
+
+      return $.ajax({
+        url: this.props.filter_url,
+        data: $.param(params),
+        dataType: 'json',
+        success: function success(data) {
+          _this3.setState({
+            loading: false
+          });
+
+          _this3.initialItemsChanged(SelectList.formatItems(data));
+        },
+        error: function error() {} // Defined to prevent error on .abort above
+      });
+    }
   }, {
     key: "render",
     value: function render() {
@@ -291,7 +404,10 @@ function (_React$Component) {
       }, React.createElement("input", {
         type: "text",
         "class": "search-input__input input--small",
-        onChange: this.handleSearch,
+        item: this.handleSearch,
+        onChange: function onChange(item) {
+          return _this3.filterChange('search', item.target.value);
+        },
         placeholder: EE.relationship.lang.search
       }))), props.channels.length > 1 && React.createElement("div", {
         className: "filter-bar__item"
@@ -300,7 +416,7 @@ function (_React$Component) {
         title: EE.relationship.lang.channel,
         items: channelFilterItems,
         onSelect: function onSelect(value) {
-          return _this3.channelFilterChange(value);
+          return _this3.filterChange('channel_id', value);
         },
         buttonClass: "filter-bar__button"
       })), this.props.can_add_items && React.createElement("div", {
