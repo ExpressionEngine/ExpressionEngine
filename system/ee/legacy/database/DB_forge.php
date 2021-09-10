@@ -269,10 +269,10 @@ class CI_DB_forge
     }
 
     /**
-     * Column Drop
+     * Batched Column Drop
      *
      * @access	public
-     * @param	string $table The table that contains the column to drop
+     * @param	string $table The table that contains the columns to drop
      * @param	array $array An array of column names to drop
      * @return	CI_DB_result The query result object
      */
@@ -282,9 +282,9 @@ class CI_DB_forge
             show_error('A table name is required for that operation.');
         }
 
-		if ( ! is_array($column_names)) {
-			$column_name = array($column_names);
-		}
+        if ( ! is_array($column_names)) {
+            $column_name = array($column_names);
+        }
 
         if (empty($column_names)) {
             show_error('A column name is required for that operation.');
