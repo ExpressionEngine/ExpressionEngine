@@ -81,9 +81,15 @@ class Login extends CP_Controller
                     ->now();
             } else {
                 ee()->session->delete_password_lockout();
-                $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
-                $session->skip_2fa = 'y';
-                $session->save();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->skip_2fa = 'y';
+                    $session->save();
+                }
                 $this->functions->redirect($return_path);
             }
         }
@@ -159,9 +165,15 @@ class Login extends CP_Controller
         if (!empty($_POST)) {
             if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_2fa_code'))) == $member->backup_2fa_code) {
                 ee()->session->delete_password_lockout();
-                $session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
-                $session->skip_2fa = 'y';
-                $session->save();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->skip_2fa = 'y';
+                    $session->save();
+                }
                 $member->set(['backup_2fa_code' => '', 'enable_2fa' => 'n']);
                 $member->save();
                 ee('CP/Alert')->makeInline('shared-form')
