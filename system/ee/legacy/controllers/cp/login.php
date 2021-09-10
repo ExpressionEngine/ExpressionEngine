@@ -131,14 +131,17 @@ class Login extends CP_Controller
 
         $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
+        // Return and after should be strings
+        $return = !is_array($this->input->get('return')) ? $this->input->get('return') : '';
+        $after = !is_array($this->input->get('after')) ? $this->input->get('after') : '';
+
         $view = 'account/login';
         if ($this->input->get('BK')) {
             $this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
-        } elseif ($this->input->get('return')) {
-            $this->view->return_path = filter_var($this->input->get('return'), FILTER_VALIDATE_URL);
+        } elseif ($return) {
+            $this->view->return_path = ee('Security/XSS')->clean($return);
 
             $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
-
             if (IS_PRO && isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
                 $view = 'pro:account/login';
                 $this->view->hide_topbar = true;
@@ -146,7 +149,7 @@ class Login extends CP_Controller
             }
         }
 
-        $this->view->after = $this->input->get('after') ? filter_var($this->input->get('after'), FILTER_VALIDATE_URL) : '';
+        $this->view->after = ee('Security/XSS')->clean($after);
 
         $this->view->cp_page_title = lang('login');
 
