@@ -421,7 +421,7 @@ class ThemeInstaller
                 $entry->month = date('m');
                 $entry->day = date('d');
                 $entry->entry_date = ee()->localize->now;
-
+                $entry->edit_date = ee()->localize->now;
                 $post_mock = array();
 
                 foreach ($entry_data->custom_fields as $key => $val) {
