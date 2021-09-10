@@ -236,6 +236,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	form	jQuery object of form
 	 */
 	_errorsExist: function(form) {
+
 		return ($('.fieldset-invalid:visible, td.invalid:visible', form).size() != 0);
 	},
 
@@ -307,7 +308,6 @@ EE.cp.formValidation = {
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
 
-
 		// Tabs
 		var tab_container = field.parents('.tab'),
 			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
@@ -326,7 +326,7 @@ EE.cp.formValidation = {
 			grid = true;
 		}
 
-		if (fieldset.find('.fluid').size()>0)
+		if (fieldset.find('.fluid').size() > 0)
 		{
 			container = field.parents('td');
 			grid = true;
@@ -380,7 +380,6 @@ EE.cp.formValidation = {
 
 		// Validation error
 		} else {
-			console.log("fieldset", fieldset);
 			// Bind timer for text fields to validate field while typing
 			this._bindTextFieldTimer(container);
 
@@ -444,8 +443,6 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	container	jQuery object of field's container
 	 */
 	_bindTextFieldTimer: function(container) {
-
-		console.log('container', container);
 
 		var that = this,
 			timer,
