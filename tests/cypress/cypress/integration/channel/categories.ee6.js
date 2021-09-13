@@ -28,9 +28,9 @@ context('Categories', () => {
         cy.get('p').contains('has been created')*/
 
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
-
-        cy.authVisit('admin.php?/cp/design')
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+            cy.authVisit('admin.php?/cp/design')
+        })
     })
 
     after(function() {

@@ -10,13 +10,12 @@ let counter = 1;
 context('Site Manager', () => {
 
   before(function(){
+    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
     cy.task('db:seed')
   })
 
   beforeEach(function() {
-    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
-    cy.auth();
-    page.load();
+    cy.authVisit('admin.php?/cp/msm');
     cy.hasNoErrors()
   })
 
