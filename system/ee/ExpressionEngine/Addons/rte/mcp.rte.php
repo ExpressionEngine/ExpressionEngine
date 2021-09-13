@@ -215,7 +215,7 @@ class Rte_mcp
             // -------------------------------------------
 
             $toolset_id = ee('Security/XSS')->clean(ee('Request')->post('toolset_id'));
-            $configName = ee('Security/XSS')->clean(ee('Request')->post('toolset_name'));
+            $configName = ee('Request')->post('toolset_name');
 
             if (!$configName) {
                 $configName = 'Untitled';
