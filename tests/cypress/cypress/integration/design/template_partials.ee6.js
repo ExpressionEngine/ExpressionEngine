@@ -84,7 +84,7 @@ context('Template Partials', () => {
 
     it('can remove a partial', function() {
         page.get('partials').its('length').then((length) => {
-            page.get('partials').eq(1).find('td:nth-child(4) input').click()
+            page.get('partials').eq(1).find('td:last-child input').click()
 
 
             page.get('bulk_action').should('exist')

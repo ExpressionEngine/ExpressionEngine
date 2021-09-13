@@ -30,7 +30,7 @@ context('Categories', () => {
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
 
-        cy.visit('admin.php?/cp/design')
+        cy.authVisit('admin.php?/cp/design')
     })
 
     after(function() {
