@@ -438,13 +438,9 @@ class Set
      */
     private function loadUploadDestinations($destinations)
     {
-        // $site_name = ee()->config->item('site_name');
-
         foreach ($destinations as $upload_data) {
             $destination = ee('Model')->make('UploadDestination');
             $destination->site_id = $this->site_id;
-            // $destination->server_path = sprintf($destination->server_path, $site_name);
-            // $destination->url = sprintf($destination->url, $site_name);
             $destination->name = $upload_data->name;
 
             $this->applyOverrides($destination, $upload_data->name);
