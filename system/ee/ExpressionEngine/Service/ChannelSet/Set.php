@@ -270,16 +270,15 @@ class Set
     private function assignFieldGroupsToChannels()
     {
         foreach ($this->assignments['previously_created_field_groups'] as $channel_title => $field_groups) {
-            $channel = $this->channels[$channel_title];
+          $channel = $this->channels[$channel_title];
 
-            $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup')
-                ->filter('group_name', 'IN', $field_groups)
-                ->all();
+          $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup')
+              ->filter('group_name', 'IN', $field_groups)
+              ->all();
 
-            $channel->save();
-            unset($channel_title);
-            unset($field_group_ids);
+          $channel->save();
         }
+        unset($channel_title, $field_group_ids);
 
         foreach ($this->assignments['channel_field_groups'] as $channel_title => $field_groups) {
             $channel = $this->channels[$channel_title];
@@ -439,9 +438,13 @@ class Set
      */
     private function loadUploadDestinations($destinations)
     {
+        // $site_name = ee()->config->item('site_name');
+
         foreach ($destinations as $upload_data) {
             $destination = ee('Model')->make('UploadDestination');
             $destination->site_id = $this->site_id;
+            // $destination->server_path = sprintf($destination->server_path, $site_name);
+            // $destination->url = sprintf($destination->url, $site_name);
             $destination->name = $upload_data->name;
 
             $this->applyOverrides($destination, $upload_data->name);
