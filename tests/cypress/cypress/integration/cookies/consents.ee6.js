@@ -16,6 +16,7 @@ context('Cookie Consents', () => {
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
+            cy.screenshot({capture: 'fullPage'});
             cy.clearCookies()
         })
     })
