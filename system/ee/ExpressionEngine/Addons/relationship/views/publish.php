@@ -14,7 +14,9 @@ $component = [
     'button_label' => isset($button_label) ? $button_label : null,
     'select_filters' => $select_filters,
     'can_add_items' => (REQ != 'CP') ? false : !$in_modal,
-    'channels' => $channels
+    'channels' => $channels,
+    'rel_min' => $rel_min,
+    'rel_max' => $rel_max
 ];
 ?>
 <div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">

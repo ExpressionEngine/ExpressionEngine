@@ -531,7 +531,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'no_related' => ['text' => lang('no_entries_related')],
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
-            'in_modal' => $this->get_setting('in_modal_context')
+            'in_modal' => $this->get_setting('in_modal_context'),
+            'rel_min' =>  $this->settings['rel_min'],
+            'rel_max' =>  $this->settings['rel_max']
         ]);
     }
 
