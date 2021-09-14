@@ -12,6 +12,9 @@ context('Site Manager', () => {
   before(function(){
     cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
     cy.task('db:seed')
+    cy.eeConfig({item: 'multiple_sites_enabled'}) .then((config) => {
+      expect(config.trim()).to.be.equal('y')
+    })
   })
 
   beforeEach(function() {

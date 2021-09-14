@@ -15,6 +15,9 @@ context('Cookie Consents', () => {
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+            cy.eeConfig({item: 'save_tmpl_files'}) .then((config) => {
+                expect(config.trim()).to.be.equal('y')
+            })
             cy.authVisit('admin.php?/cp/design')
             cy.screenshot({capture: 'fullPage'});
             cy.clearCookies()
