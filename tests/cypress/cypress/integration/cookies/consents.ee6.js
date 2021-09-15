@@ -11,12 +11,17 @@ context('Cookie Consents', () => {
 
     before(function() {
         cy.task('db:seed')
-        cy.clearCookies()
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' })
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
-        cy.authVisit('admin.php?/cp/design')
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+            cy.eeConfig({item: 'save_tmpl_files'}) .then((config) => {
+                expect(config.trim()).to.be.equal('y')
+            })
+            cy.authVisit('admin.php?/cp/design')
+            cy.screenshot({capture: 'fullPage'});
+            cy.clearCookies()
+        })
     })
 
     after(function() {
