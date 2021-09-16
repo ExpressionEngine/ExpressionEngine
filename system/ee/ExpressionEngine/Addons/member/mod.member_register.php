@@ -659,9 +659,9 @@ class Member_register extends Member
         // Is there even a Pending (group 4) account for this particular user?
         $member = ee('Model')
             ->get('Member')
-            ->fields('member_id, role_id, pending_role_id, email')
-            ->filter('role_id', 4)
-            ->filter('authcode', Mbr::PENDING)
+            ->fields('member_id', 'role_id', 'pending_role_id', 'email')
+            ->filter('role_id', Mbr::PENDING)
+            ->filter('authcode', $id)
             ->first();
 
         if (empty($member)) {
@@ -677,7 +677,7 @@ class Member_register extends Member
         // Set the member group
         $role_id = null;
         if ($member->pending_role_id != 0) {
-            $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->fields('role_id')->first();
+            $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->fields('role_id', 'is_locked')->first();
             if (!empty($pendingRole)) {
                 $role_id = $pendingRole->role_id;
             } else {
@@ -698,7 +698,7 @@ class Member_register extends Member
         // If the member group hasn't been switched we'll do it.
 
         if ($member->role_id != $role_id) {
-            ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "' WHERE authcode = '" . ee()->db->escape_str($id) . "'");
+            ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "', pending_role_id = NULL WHERE authcode = '" . ee()->db->escape_str($id) . "'");
         }
 
         ee()->db->query("UPDATE exp_members SET authcode = '' WHERE authcode = '$id'");

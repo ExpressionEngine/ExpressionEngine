@@ -1728,21 +1728,21 @@ class Members extends CP_Controller
         foreach ($members as $member) {
             $role_id = ee()->config->item('default_primary_role');
             if ($member->pending_role_id != 0) {
-                $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->filter('is_locked', 'n')->fields('role_id')->first();
+                $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->fields('role_id', 'name')->first();
                 if (!empty($pendingRole)) {
                     $role_id = $pendingRole->role_id;
                 } else {
-                    $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username);
+                    $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $pendingRole->name);
                     continue;
                 }
             }
-            $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'is_locked')->first();
+            $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'name', 'is_locked')->first();
             if (empty($role)) {
-                $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username);
+                $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
                 continue;
             }
             if ($role->is_locked == 'y') {
-                $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username);
+                $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
                 continue;
             }
             $member->role_id = $role_id;
@@ -1785,7 +1785,7 @@ class Members extends CP_Controller
         }
 
         if (count($errors) > 0) {
-            $alert = ee('CP/Alert')->makeInline('members-error')
+            $alert = ee('CP/Alert')->makeBanner('members-error')
                 ->asWarning()
                 ->withTitle(lang('members_approve_error'));
             foreach ($errors as $error) {

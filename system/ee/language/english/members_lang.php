@@ -302,9 +302,9 @@ $lang = array(
 
     'members_approved_success_desc' => 'The following members have been approved:',
 
-    'cannot_activate_member_role_not_exists' => 'Unable to activate %d. The member role does not exist.',
+    'cannot_activate_member_role_not_exists' => 'Unable to activate %s. The member role %s does not exist.',
 
-    'cannot_activate_member_role_is_locked' => 'Unable to activate %d. The member role is locked.',
+    'cannot_activate_member_role_is_locked' => 'Unable to activate %s. The member role %s is locked.',
 
     'members_are_deleted' => 'Member(s) have been deleted',
 
