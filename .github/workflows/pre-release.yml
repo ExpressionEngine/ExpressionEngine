@@ -60,7 +60,7 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: |
-          gulp app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2

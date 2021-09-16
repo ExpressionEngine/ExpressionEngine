@@ -13,7 +13,7 @@
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 
-	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => ee()->input->get_post('after')))?>
+	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => $after))?>
 		<fieldset>
 			<div class="field-instruct">
 				<?=lang('username', 'username')?>

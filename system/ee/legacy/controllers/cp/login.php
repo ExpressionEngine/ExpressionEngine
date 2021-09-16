@@ -13,7 +13,7 @@
  */
 class Login extends CP_Controller
 {
-    public $username = '';		// stores username on login failure
+    public $username = '';      // stores username on login failure
 
     /**
      * Constructor
@@ -29,8 +29,8 @@ class Login extends CP_Controller
     /**
      * Main login form
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function index()
     {
@@ -131,11 +131,16 @@ class Login extends CP_Controller
 
         $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
+        // Return and after should be strings
+        $return = !is_array($this->input->get('return')) ? $this->input->get('return') : '';
+        $after = !is_array($this->input->get('after')) ? $this->input->get('after') : '';
+
         $view = 'account/login';
         if ($this->input->get('BK')) {
             $this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
-        } elseif ($this->input->get('return')) {
-            $this->view->return_path = $this->input->get('return');
+        } elseif ($return) {
+            $this->view->return_path = ee('Security/XSS')->clean($return);
+
             $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
             if (IS_PRO && isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
                 $view = 'pro:account/login';
@@ -143,6 +148,8 @@ class Login extends CP_Controller
                 $this->view->pro_class = 'pro-frontend-modal';
             }
         }
+
+        $this->view->after = ee('Security/XSS')->clean($after);
 
         $this->view->cp_page_title = lang('login');
 
@@ -156,7 +163,7 @@ class Login extends CP_Controller
     /**
      * Authenticate user
      *
-     * @return	mixed
+     * @return  mixed
      */
     public function authenticate()
     {
@@ -257,9 +264,9 @@ class Login extends CP_Controller
      * permits the user to update their un/pw so it conforms to the new
      * requirements
      *
-     * @access	private
-     * @param	string
-     * @return	mixed
+     * @access  private
+     * @param   string
+     * @return  mixed
      */
     public function _un_pw_update_form($message = '')
     {
@@ -321,8 +328,8 @@ class Login extends CP_Controller
      *
      * This function performs the update once the update form is submitted
      *
-     * @access	public
-     * @return	mixed
+     * @access  public
+     * @return  mixed
      */
     public function update_un_pw()
     {
@@ -430,8 +437,8 @@ class Login extends CP_Controller
     /**
      * Log-out
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function logout()
     {
@@ -476,8 +483,8 @@ class Login extends CP_Controller
      * is found in post, then the form will be populated with said e-mail.  Loads
      * the account/forgot_password view.
      *
-     * @access	public
-     * @return	null
+     * @access  public
+     * @return  null
      */
     public function forgotten_password_form()
     {
@@ -500,8 +507,8 @@ class Login extends CP_Controller
      * the email is found in the database and is attached to a valid
      * member with access to the CP.
      *
-     * @access	public
-     * @return	mixed
+     * @access  public
+     * @return  mixed
      */
     public function send_reset_token()
     {
@@ -603,14 +610,14 @@ class Login extends CP_Controller
      * in the email they are sent when they request a new password.  Needs
      * to have the resetcode in the $_GET array, otherwise it will redirect
      * the user to the login page.
-     * 	It presents the user with a form to enter and confirm a new password in.
+     *  It presents the user with a form to enter and confirm a new password in.
      * Submission of the form takes the user back here, where the $_POST data
      * is validated and, if valid, the user's password is reset.  They are then
      * presented with a success page and a link back to login.
      *
-     * @access	public
-     * @param	string
-     * @return	mixed
+     * @access  public
+     * @param   string
+     * @return  mixed
      */
     public function reset_password()
     {
@@ -734,7 +741,7 @@ class Login extends CP_Controller
     }
 
     /**
-     *	Refresh XID
+     *  Refresh XID
      *
      * If running with cookies only this method is hit periodically otherwise
      * it's hit before logging back in to ensure a valid anonymous csrf token
@@ -762,7 +769,7 @@ class Login extends CP_Controller
     }
 
     /**
-     *	Return to login
+     *  Return to login
      *
      * Helper function to send them to a login error screen
      */

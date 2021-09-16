@@ -583,6 +583,7 @@ class Addons extends CP_Controller
             }
         }
 
+        ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         $return = $this->base_url;

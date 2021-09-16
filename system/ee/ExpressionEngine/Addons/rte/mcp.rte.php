@@ -205,17 +205,17 @@ class Rte_mcp
      */
     public function edit_toolset()
     {
-        $toolsetType = ee('Request')->post('toolset_type', true) ?: 'ckeditor';
+        $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
         
         if (ee('Request')->isPost()) {
-            $settings = ee('Request')->post('settings', true);
+            $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
 
             // -------------------------------------------
             //  Save and redirect to Index
             // -------------------------------------------
 
-            $toolset_id = ee('Request')->post('toolset_id', true);
-            $configName = ee('Request')->post('toolset_name', true);
+            $toolset_id = ee('Security/XSS')->clean(ee('Request')->post('toolset_id'));
+            $configName = ee('Request')->post('toolset_name');
 
             if (!$configName) {
                 $configName = 'Untitled';
@@ -472,7 +472,7 @@ class Rte_mcp
      */
     public function delete_toolset()
     {
-        $toolset_id = ee('Request')->post('selection', true);
+        $toolset_id = ee('Security/XSS')->clean(ee('Request')->post('selection'));
 
         if (!empty($toolset_id)) {
             $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', 'IN', $toolset_id);
