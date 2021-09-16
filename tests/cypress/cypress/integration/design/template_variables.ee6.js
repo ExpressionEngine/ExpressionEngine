@@ -85,7 +85,7 @@ context('Template Variables', () => {
 
     it('can remove a variable', function() {
         page.get('variables').its('length').then((length) => {
-            page.get('variables').eq(0).find('td:nth-child(4) input').click()
+            page.get('variables').eq(0).find('td:last-child input').click()
 
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
