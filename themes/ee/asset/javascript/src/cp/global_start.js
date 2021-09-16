@@ -237,9 +237,9 @@ $(document).ready(function () {
  */
 EE.cp.validateLicense = function() {
 	// Verify we have a license validation URL and the last update check was more than an hour ago.
-	// if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
-	// 	return;
-	// }
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
+		return;
+	}
 
 	var installedAddons = JSON.parse(EE.cp.installedAddons);
 
