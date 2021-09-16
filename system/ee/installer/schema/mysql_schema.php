@@ -280,6 +280,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			role_id int(10) NOT NULL default '0',
+			pending_role_id int(10) NOT NULL default '0',
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			screen_name varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',

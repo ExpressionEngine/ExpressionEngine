@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\Member\Member as Mbr;
+
 /**
  * Member Management Register
  */
@@ -191,7 +193,9 @@ class Member_register extends Member
             'ACT' => ee()->functions->fetch_action_id('Member', 'register_member'),
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : ee()->functions->fetch_site_index(),
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
-            'P' => ee()->functions->get_protected_form_params(),
+            'P' => ee()->functions->get_protected_form_params([
+                'primary_role' => ee()->TMPL->fetch_param('primary_role'),
+            ]),
         );
 
         if(!empty(ee()->TMPL->form_class)) {
@@ -367,15 +371,34 @@ class Member_register extends Member
         $data = array_merge($data, $custom_data);
 
         // Set member group
+        $roleId = ee()->config->item('default_primary_role');
+        
+        if (!empty($protected['primary_role'])) {
+            $pendingRole = ee('Model')->get('Role', ee('Security/XSS')->clean($protected['primary_role']))->fields('role_id')->first();
+            if (!empty($pendingRole)) {
+                $roleId = $pendingRole->role_id;
+            } else {
+                ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+            }
+        }
+        $role = ee('Model')->get('Role', $roleId)->fields('role_id', 'is_locked')->first();
+        if (empty($role)) {
+            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+        }
+        if ($role->is_locked == 'y') {
+            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_is_locked'));
+        }
 
         if (ee()->config->item('req_mbr_activation') == 'manual' or
             ee()->config->item('req_mbr_activation') == 'email') {
-            $data['role_id'] = 4;  // Pending
+            $data['role_id'] = Mbr::PENDING;
+            $data['pending_role_id'] = $roleId;
         } else {
             if (ee()->config->item('default_primary_role') == '') {
-                $data['role_id'] = 4;  // Pending
+                $data['role_id'] = Mbr::PENDING;
+                $data['pending_role_id'] = $roleId;
             } else {
-                $data['role_id'] = ee()->config->item('default_primary_role');
+                $data['role_id'] = $roleId;
             }
         }
 
@@ -633,16 +656,15 @@ class Member_register extends Member
             ee()->output->show_message($data);
         }
 
-        // Set the member group
-        $role_id = ee()->config->item('default_primary_role');
-
         // Is there even a Pending (group 4) account for this particular user?
-        $query = ee()->db->select('member_id, role_id, email')
-            ->where('role_id', 4)
-            ->where('authcode', $id)
-            ->get('members');
+        $member = ee('Model')
+            ->get('Member')
+            ->fields('member_id, role_id, pending_role_id, email')
+            ->filter('role_id', 4)
+            ->filter('authcode', Mbr::PENDING)
+            ->first();
 
-        if ($query->num_rows() == 0) {
+        if (empty($member)) {
             $data = array('title' => lang('mbr_activation'),
                 'heading' => lang('error'),
                 'content' => lang('mbr_problem_activating'),
@@ -652,11 +674,30 @@ class Member_register extends Member
             ee()->output->show_message($data);
         }
 
-        $member_id = $query->row('member_id');
+        // Set the member group
+        $role_id = null;
+        if ($member->pending_role_id != 0) {
+            $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->fields('role_id')->first();
+            if (!empty($pendingRole)) {
+                $role_id = $pendingRole->role_id;
+            } else {
+                ee()->output->show_user_error('submission', lang('mbr_cannot_activate_role_not_exists'));
+            }
+        }
+        if (empty($role_id)) {
+            $role_id = ee()->config->item('default_primary_role');
+        }
+        $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'is_locked')->first();
+        if (empty($role)) {
+            ee()->output->show_user_error('submission', lang('mbr_cannot_activate_role_not_exists'));
+        }
+        if ($role->is_locked == 'y') {
+            ee()->output->show_user_error('submission', lang('mbr_cannot_activate_role_is_locked'));
+        }
 
         // If the member group hasn't been switched we'll do it.
 
-        if ($query->row('role_id') != $role_id) {
+        if ($member->role_id != $role_id) {
             ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "' WHERE authcode = '" . ee()->db->escape_str($id) . "'");
         }
 
@@ -668,7 +709,7 @@ class Member_register extends Member
         //  - Added 1.5.2, 2006-12-28
         //  - $member_id added 1.6.1
         //
-        ee()->extensions->call('member_register_validate_members', $member_id);
+        ee()->extensions->call('member_register_validate_members', $member->getId());
         if (ee()->extensions->end_script === true) {
             return;
         }

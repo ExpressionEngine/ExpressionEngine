@@ -1,0 +1,17 @@
+<p>Testing Fluid</p>
+{exp:channel:entries dynamic="no" entry_id="11" limit="1"}
+{corpse}
+    {corpse:a_date}
+        {content format="%F %d %Y"}
+    {/corpse:a_date}
+
+    {corpse:stupid_grid}
+    {content}
+      <div class="card">
+        {content:text_one} ///
+        {content:text_two}
+      </div>
+    {/content}
+  {/corpse:stupid_grid}
+{/corpse}
+{/exp:channel:entries}

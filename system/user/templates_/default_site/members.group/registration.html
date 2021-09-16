@@ -1,0 +1,93 @@
+{layout="members/_layout"}
+
+<h1>Member Registration</h1>
+
+{if logged_in}
+    <h2>You are already registered.</h2>
+{/if}
+
+<div class="result">
+{if last_segment == "success"}
+    <h4>Account Created!</h4>
+
+    {if logged_in}
+        <p>We took the liberty of logging you in already!</p>
+
+        <h4>Go forth and do stuff!</h4>
+    {if:else}
+        <p>You can now <a href="{path=members/login}">login</a>.</p>
+        <p>Depending on your member activation settings you will receive an email to confirm your registration.</p>
+    {/if}
+{if:elseif logged_in}
+    <p>You are already registered and logged in.</p>
+
+    <p><a class="btn btn-primary" href="{path=members/profile}">Go to Profile</a> &nbsp;&nbsp;&nbsp; <a class="btn btn-sm btn-warning" href="{path=logout}">Logout</a></p>
+{if:else}
+    {exp:member:registration_form
+        return="members/registration/success"
+        inline_errors="yes"
+         form_class="login" form_id="login_id"
+        }
+
+        {if errors}
+            <fieldset class="error">
+                <legend>Errors</legend>
+            {errors}
+                {error}<br />
+            {/errors}
+            </fieldset>
+        {/if}
+
+            <p>* Required fields</p>
+        <fieldset>
+            <h4>Login details</h4>
+
+            <p>
+                <label for="username">Username*:</label><br />
+                <input type="text" name="username" id="username" value="{if username}{username}{/if}"/><br />
+            </p>
+
+            <p>
+                <label for="email">Email*:</label><br />
+                <input type="text" name="email" id="email" value="{if email}{email}{/if}"/><br />
+            </p>
+
+            <p>
+                <label for="something">Something*:</label><br />
+                <input type="text" name="m_field_id_1" id="something" value="{if mbr}{mbr}{/if}"/><br />
+            </p>
+
+            <p>
+                <label for="password">Password*:</label><br />
+                <input type="password" name="password" id="password" value="{if password}{password}{/if}"/>
+            </p>
+
+            <p>
+                <label for="password_confirm">Confirm password*:</label><br />
+                <input type="password" name="password_confirm" id="password_confirm" value="{if password_confirm}{password_confirm}{/if}"/>
+            </p>
+
+            <p>
+                <label for="terms_of_service">Terms of service:</label><br />
+                <div>All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators
+                    of this site.By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws. We will
+                    permanently ban all users who do so.We reserve the right to remove, edit, or move any messages for any reason.</div>
+            </p>
+
+            <p>
+                <label><input type="checkbox" name="accept_terms" value="y" {if accept_terms == 'y'}checked="checked"{/if} /> I accept these terms</label>
+            </p>
+
+            {if captcha}
+            <p>
+                <label for="captcha">{lang:captcha}*</label>
+                {captcha}<br/>
+                <input type="text" id="captcha" name="captcha" value="" size="20" maxlength="20" style="width:140px;"/>
+            </p>
+            {/if}
+        </fieldset>
+
+        <input type="submit" value="Register" class="btn btn-primary" />
+    {/exp:member:registration_form}
+{/if}
+</div>

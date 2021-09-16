@@ -165,6 +165,7 @@ class UpgradeMap
     ];
 
     public static $versionNaming = [
+        '6.1.0_rc_2' => '6.1.0_rc.2',
         '6.1.0_rc_1' => '6.1.0_rc.1',
         '6.0.0_rc_1' => '6.0.0_rc.1',
         '6.0.0_b_4' => '6.0.0_b.4',

@@ -1,0 +1,66 @@
+<p>Testing Relationships</p>
+{exp:channel:entries dynamic="no" entry_id="1" limit="1"}
+<div id="with-tag">
+<p>With tag</p>
+{rel_item} 
+    <h3>{rel_item:title}</h3>
+	{rel_item:corpse}
+    {rel_item:corpse:a_date}
+        {content format="%F %d %Y"}
+    {/rel_item:corpse:a_date}
+    {rel_item:corpse:electronic_mail_address}
+    	{content}
+    {/rel_item:corpse:electronic_mail_address}
+	{/rel_item:corpse}
+{/rel_item}
+</div>
+
+
+<div id="no-tag">
+<p>No Tag</p>
+{rel_item} 
+    {rel_item:title}
+	{rel_item:corpse}
+    {rel_item:corpse:a_date}
+        {content format="%F %d %Y"}
+    {/rel_item:corpse:a_date}
+    {rel_item:corpse:electronic_mail_address}
+    	{content}
+    {/rel_item:corpse:electronic_mail_address}
+	{/rel_item:corpse}
+{/rel_item}
+
+</div>
+<div id="disabled-with-comment">
+<p>Disabled with comment</p>
+{!-- disable frontedit --}
+{rel_item} 
+    {rel_item:title}
+	{rel_item:corpse}
+    {rel_item:corpse:a_date}
+        {content format="%F %d %Y"}
+    {/rel_item:corpse:a_date}
+    {rel_item:corpse:electronic_mail_address}
+    	{content}
+    {/rel_item:corpse:electronic_mail_address}
+	{/rel_item:corpse}
+{/rel_item}
+{!--//disable frontedit--}
+</div>
+<div id="disabled-with-param">
+<p>Disabled with param</p>
+{rel_item disable="frontedit"} 
+    <p>{rel_item:title}</p>
+	{rel_item:corpse}
+    {rel_item:corpse:a_date}
+        {content format="%F %d %Y"}
+    {/rel_item:corpse:a_date}
+    {rel_item:corpse:electronic_mail_address}
+    	{content}
+    {/rel_item:corpse:electronic_mail_address}
+	{/rel_item:corpse}
+{/rel_item}
+
+</div>
+
+{/exp:channel:entries}

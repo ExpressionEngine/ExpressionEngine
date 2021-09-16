@@ -1,0 +1,40 @@
+{layout="members/_layout"}
+
+<h1>Member Profile</h1>
+
+mbr/profile
+{if !logged_in}
+    <h2>You need to be logged in.</h2>
+{/if}
+
+	{exp:member:custom_profile_data member_id="{segment_3}"}
+
+    <fieldset>
+
+
+        <p>
+            <label for="username">Username:</label><br />
+            {username}
+        </p>
+
+        <p>
+            <label for="username">Screen name:</label><br />
+            {screen_name}
+        </p>
+
+
+        <p>
+            <label for="username">Email Address:</label><br />
+            {email}
+        </p>
+
+        <p>
+            <label for="username">Mbr:</label><br />
+            {mbr}
+        </p>
+    </fieldset>
+
+
+    {/exp:member:custom_profile_data}
+
+</div>
