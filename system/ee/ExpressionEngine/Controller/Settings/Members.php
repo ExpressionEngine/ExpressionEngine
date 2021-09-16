@@ -32,7 +32,6 @@ class Members extends Settings
     public function index()
     {
         $roles = ee('Model')->get('Role')
-            ->filter('is_locked', 'n')
             ->order('name', 'asc')
             ->all()
             ->getDictionary('role_id', 'name');

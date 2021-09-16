@@ -238,7 +238,6 @@ class Member extends ContentModel
     protected $member_id;
     protected $group_id;
     protected $role_id;
-    protected $pending_role_id;
     protected $username;
     protected $screen_name;
     protected $password;
