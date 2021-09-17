@@ -292,7 +292,7 @@ class Cli
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
-            $this->fail(lang('cli_error_is_required') . ' Field: ' . $option);
+            $this->fail(lang('cli_error_is_required_field') . $option);
         }
 
         return $answer;
