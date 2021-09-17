@@ -78,18 +78,6 @@ class Cli
     public $availableCommands;
 
     /**
-     * Run CLI as standalone
-     * @var [type]
-     */
-    public $isStandalone;
-
-    /**
-     * list of commands available for standalone-mode only
-     * @var array
-     */
-    public $standaloneCommands = [];
-
-    /**
      * command called on CLI
      * @var string
      */
@@ -129,8 +117,6 @@ class Cli
      */
     public function process()
     {
-        $this->standalone = defined('EE_INSTALLED') && EE_INSTALLED == false;
-
         $this->availableCommands = $this->availableCommands();
 
         // Check if command exists
@@ -342,9 +328,7 @@ class Cli
         if (EE_INSTALLED) {
             return array_key_exists($commandToParse, $this->availableCommands);
         } else {
-            $this->error('cli_error_ee_not_installed');
-
-            return array_key_exists($commandToParse, $this->standaloneCommands);
+            $this->fail('cli_error_ee_not_installed');
         }
     }
 
@@ -366,13 +350,7 @@ class Cli
      */
     protected function availableCommands()
     {
-        // If EE isn't installed, we will just pull use the standalone commands list
-
         $this->loadInternalCommands();
-
-        if (! EE_INSTALLED) {
-            return $this->standaloneCommands;
-        }
 
         $commands = $this->internalCommands;
 
@@ -460,10 +438,6 @@ class Cli
     {
         foreach ($this->internalCommands as $key => $value) {
             $obj = new $value();
-
-            if (isset($obj->standalone) && $obj->standalone) {
-                $this->standaloneCommands[$key] = $value;
-            }
         }
     }
 

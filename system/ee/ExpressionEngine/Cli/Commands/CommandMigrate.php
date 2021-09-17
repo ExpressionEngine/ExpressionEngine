@@ -51,12 +51,6 @@ class CommandMigrate extends Cli
     ];
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = false;
-
-    /**
      * Run the command
      * @return mixed
      */
