@@ -78,7 +78,7 @@
                 if ($field->isRequired()) {
                     $field_class .= ' fieldset-required';
                 }
-                if ($field->isCollapsed()) {
+                if ($field->isCollapsed() && !isset($pro_class)) {
                     $field_class .= ' fieldset---closed';
                 }
             ?>
