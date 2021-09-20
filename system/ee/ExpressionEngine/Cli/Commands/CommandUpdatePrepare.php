@@ -91,18 +91,13 @@ class CommandUpdatePrepare extends Cli
     protected $filemap;
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
-    /**
      * Run the command
      * @return mixed
      */
     public function handle()
     {
-        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
+        $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed', false, ['required' => true, 'error_message' => 'command_update_prepare_upgrade_aborted']);
+
         $this->info('command_update_prepare_preparing_upgrade_for_site');
 
         // Collect all the info we need before we can start
@@ -177,25 +172,13 @@ class CommandUpdatePrepare extends Cli
         $this->info('command_update_prepare_notify_moving_files_to_tmp');
         $this->info('command_update_prepare_make_sure_you_have_backups');
 
-        $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
-
-        // User does not want to continue - abort!
-        if (! $continue) {
-            $this->error('command_update_prepare_upgrade_aborted');
-            exit;
-        }
+        $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed', false, ['required' => true, 'error_message' => 'command_update_prepare_upgrade_aborted']);
 
         // Check if upgrade too
         if ($this->option('upgrade-ee')) {
             $this->info('command_update_prepare_notify_also_upgrade_ee_after');
 
-            $continue = $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed');
-
-            // User does not want to continue - abort!
-            if (! $continue) {
-                $this->error('command_update_prepare_upgrade_aborted');
-                exit;
-            }
+            $this->confirm('command_update_prepare_are_you_sure_you_want_to_proceed', false, ['required' => true, 'error_message' => 'command_update_prepare_upgrade_aborted']);
         }
 
         return true;

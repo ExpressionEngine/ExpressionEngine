@@ -48,12 +48,6 @@ class CommandMakeProlet extends Cli
         'widget-name,n:'  => 'command_make_prolet_option_widget_name',
     ];
 
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
     protected $data = [];
 
     public function __construct()

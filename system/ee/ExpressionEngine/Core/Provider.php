@@ -347,14 +347,17 @@ class Provider extends InjectionBindingDecorator
     {
         $cookieService = $this->make('ee:Cookie');
         $builtinCookieSettings = $this->get('cookie_settings');
-        $providerCookieSettings = ee('Model')
-            ->get('CookieSetting')
-            ->fields('cookie_name', 'cookie_provider')
-            ->filter('cookie_provider', $this->getPrefix())
-            ->all()
-            ->getDictionary('cookie_name', 'cookie_provider');
+        $providerCookieSettings = null;
         foreach (['Necessary', 'Functionality', 'Performance', 'Targeting'] as $type) {
             foreach ($this->get('cookies.' . strtolower($type), []) as $cookie_name) {
+                if (is_null($providerCookieSettings)) {
+                    $providerCookieSettings = ee('Model')
+                        ->get('CookieSetting')
+                        ->fields('cookie_name', 'cookie_provider')
+                        ->filter('cookie_provider', $this->getPrefix())
+                        ->all()
+                        ->getDictionary('cookie_name', 'cookie_provider');
+                }
                 $cookieParams = [
                     'cookie_provider' => $this->getPrefix(),
                     'cookie_name' => $cookie_name

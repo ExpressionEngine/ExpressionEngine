@@ -50,12 +50,6 @@ class CommandMakeMigration extends Cli
     ];
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = false;
-
-    /**
      * Passed in migration name
      * @var string
      */
@@ -150,7 +144,7 @@ class CommandMakeMigration extends Cli
 
     public function askTablename()
     {
-        $this->tableName = $this->ask(lang('command_make_migration_what_table_is_migration_for') . ' [' . $this->tableName . ']', $this->tableName);
+        $this->tableName = $this->ask(lang('command_make_migration_what_table_is_migration_for'), $this->tableName);
     }
 
     public function guessTablename()
@@ -185,7 +179,7 @@ class CommandMakeMigration extends Cli
 
     public function askMigrationAction()
     {
-        $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)? [' . $this->migrationAction . ']', $this->migrationAction);
+        $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)?', $this->migrationAction);
 
         $action = trim(strtolower($action));
 
@@ -212,7 +206,7 @@ class CommandMakeMigration extends Cli
 
     public function askMigrationCategory()
     {
-        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)? [' . $this->migrationCategory . ']', $this->migrationCategory);
+        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)?', $this->migrationCategory);
 
         $category = trim(strtolower($category));
 

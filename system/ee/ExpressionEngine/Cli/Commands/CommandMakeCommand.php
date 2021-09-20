@@ -46,12 +46,6 @@ class CommandMakeCommand extends Cli
         'signature,s:'   => 'command_make_command_option_signature',
     ];
 
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
     protected $data = [];
 
     public function __construct()

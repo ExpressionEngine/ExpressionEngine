@@ -43,12 +43,6 @@ class CommandMakeModel extends Cli
         'addon,a:' => 'command_make_model_option_addon',
     ];
 
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
     protected $data = [];
 
     public function __construct()

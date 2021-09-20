@@ -42,12 +42,6 @@ class CommandListCommands extends Cli
     public $commandOptions = [];
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
-    /**
      * Sets the tablemask for the list table
      * @var boolean
      */
