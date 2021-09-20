@@ -260,7 +260,7 @@ class Cli
 
         // Name is a required field
         if ($required && empty(trim($argument))) {
-            $this->fail("This" . lang('cli_error_is_required'));
+            $this->fail(lang('cli_error_is_required'));
         }
 
         return $argument;
@@ -278,7 +278,7 @@ class Cli
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
-            $this->fail($option . lang('cli_error_is_required'));
+            $this->fail(lang('cli_error_is_required_field') . $option);
         }
 
         return $answer;
@@ -287,10 +287,15 @@ class Cli
     /**
      * Ask question and get boolean answer
      * @param  string $question
+     * @param  bool $default
+     * @param  array $required array('required' => <true/false>, 'error_message' => 'cli error message - accepts lang key')
      * @return bool
      */
-    public function confirm($question, $default = false)
+    public function confirm($question, $default = false, array $required = ['required' => false, 'error_message' => 'cli_error_is_required'])
     {
+        // Set required defaults if not passed
+        $required = array_merge(['required' => false, 'error_message' => 'cli_error_is_required'], $required);
+
         $choices = '(yes/no)';
 
         $defaultText = $default ? 'yes' : 'no';
@@ -301,19 +306,27 @@ class Cli
 
         $answer = $this->input->in();
 
-        if (is_bool($answer)) {
-            return $answer;
+        // If they didnt answer, set answer to the default
+        if (empty($answer)) {
+            $answer = $default;
         }
 
-        $confirmationRegex = '/^y/i';
-
-        $answerIsTrue = (bool) preg_match($confirmationRegex, $answer);
-
-        if ($default === false) {
-            return $answer && $answerIsTrue;
+        // If not bool, lets convert string to bool
+        if (! is_bool($answer)) {
+            $answer = get_bool_from_string($answer);
         }
 
-        return '' === $answer || $answerIsTrue;
+        // If the string didnt convert to bool, it will be null so set to default value
+        if (is_null($answer)) {
+            $answer = $default;
+        }
+
+        // If the field is set to required and the answer is false, fail with message
+        if ($required['required'] && !$answer) {
+            $this->fail($required['error_message']);
+        }
+
+        return $answer;
     }
 
     /**

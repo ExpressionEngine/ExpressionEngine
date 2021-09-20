@@ -81,9 +81,7 @@ class CommandUpdate extends Cli
         $this->info(lang('command_update_new_version_available') . " {$this->updateVersion}\n");
 
         if (! $this->defaultToYes) {
-            if (! $this->confirm("command_update_confirm_upgrade")) {
-                $this->complete("command_update_not_run");
-            }
+            $this->confirm('command_update_confirm_upgrade', false, ['required' => true, 'error_message' => 'command_update_not_run']);
         }
 
         $this->runUpgrade();
