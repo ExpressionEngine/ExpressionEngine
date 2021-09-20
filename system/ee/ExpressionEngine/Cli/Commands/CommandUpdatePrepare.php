@@ -91,12 +91,6 @@ class CommandUpdatePrepare extends Cli
     protected $filemap;
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
-    /**
      * Run the command
      * @return mixed
      */

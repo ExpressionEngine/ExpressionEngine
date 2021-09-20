@@ -50,12 +50,6 @@ class CommandMakeMigration extends Cli
     ];
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = false;
-
-    /**
      * Passed in migration name
      * @var string
      */
