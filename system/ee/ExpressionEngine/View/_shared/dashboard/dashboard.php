@@ -112,10 +112,14 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<div class="d-flex">
 					<div>
 						<p class="meta-info">
-							<a href="<?=ee('CP/URL')->make('cp/members')?>"><?=$comment->name?></a>
+							<?php if ($comment->author_id) : ?>
+							<a href="<?=ee('CP/URL')->make('cp/members/profile&id=' . $comment->author_id)?>"><?=$comment->name?></a>
+							<?php else: ?>
+							<?=$comment->name?>
+							<?php endif; ?>
 							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
 						</p>
-						<p><?=ellipsize($comment->comment, 150)?></p>
+						<p><a href="<?=ee('CP/URL')->make('cp/publish/comments/entry/' . $comment->entry_id)?>" class="normal-link"><?=ellipsize($comment->comment, 150)?></a></p>
 					</div>
 				</div>
 			</li>
