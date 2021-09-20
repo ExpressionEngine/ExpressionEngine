@@ -111,6 +111,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
 	    'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
 	    'encode' => isset($field['encode']) ? $field['encode'] : true,
 	    'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
+		'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
 	    'class' => $class,
 	    'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
 	]); ?>
