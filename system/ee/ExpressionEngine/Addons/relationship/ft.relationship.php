@@ -59,7 +59,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
                 return sprintf(lang('rel_ft_min_error'), $this->settings['rel_min']);
             }
-            if (isset($this->settings['rel_max']) && (count($set) > (int) $this->settings['rel_max'])) {
+            if (isset($this->settings['rel_max']) && $this->settings['rel_max'] !== '' && (count($set) > (int) $this->settings['rel_max'])) {
                 return sprintf(lang('rel_ft_max_error'), $this->settings['rel_max']);
             }
         }
@@ -73,11 +73,19 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     public function validate_settings($data)
     {
         $rules = [
-            'rel_min' => 'isNatural',
+            'rel_min' => 'isNatural|gtLimit',
             'rel_max' => 'isNaturalNoZero'
         ];
 
         $validator = ee('Validation')->make($rules);
+
+        $validator->defineRule('gtLimit', function ($key, $value, $parameters, $rule) use ($data) {
+            if ($data['allow_multiple'] && $data['limit'] < $data['rel_min']) {
+                $rule->stop();
+                return lang('rel_ft_min_settings_error');
+            }
+            return true;
+        });
 
         $this->errors = $validator->validate($data);
 
@@ -532,8 +540,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
             'in_modal' => $this->get_setting('in_modal_context'),
-            'rel_min' =>  $this->settings['rel_min'],
-            'rel_max' =>  $this->settings['rel_max']
+            'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
+            'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
         ]);
     }
 

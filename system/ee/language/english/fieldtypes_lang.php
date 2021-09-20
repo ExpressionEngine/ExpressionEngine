@@ -83,6 +83,8 @@ $lang = array(
 
     'rel_ft_min_error' => 'You need to select at least %d entries.',
 
+    'rel_ft_min_settings_error' => 'The minimum selection cannot be set to number less than maximum entries to be shown',
+
     /* Duration */
     'duration_ft_hh' => 'hh',
 
