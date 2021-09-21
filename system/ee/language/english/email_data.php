@@ -938,7 +938,7 @@ if (! function_exists('two_fa_message_template')) {
     function two_fa_message_template()
     {
         return <<<EOF
-        <!doctype html>
+<!doctype html>
         <html dir="ltr">
             <head>
                 <title>{title}</title>
@@ -1130,7 +1130,7 @@ if (! function_exists('two_fa_message_template')) {
             margin: 0;
         }
         
-        input[type=text] {
+        input[type=text], input[type=password] {
             display: block;
             width: 100%;
             padding: 8px 15px;
@@ -1145,7 +1145,7 @@ if (! function_exists('two_fa_message_template')) {
             border-radius: 5px;
         }
         
-        input[type=text]:focus {
+        input[type=text]:focus, input[type=password]:focus {
             border-color: var(--ee-input-focus-border);
         }
         
@@ -1243,10 +1243,7 @@ if (! function_exists('two_fa_message_template')) {
         .app-notice__icon::before {
             font-family: 'Font Awesome 5 Free';
             font-weight: 900;
-        }
-        
-        .app-notice__icon::before {
-            content: "\\f06a";
+            content: "\\\\f06a";
             position: relative;
             z-index: 2;
         }
