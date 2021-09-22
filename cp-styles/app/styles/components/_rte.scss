@@ -14,7 +14,7 @@
 .rte-toolbar .cke_top { border-bottom: none; overflow: visible; }
 .rte-toolbar .cke_top:after { content: '.'; display: block; height: 0; clear: both; visibility: hidden; }
 .rte-toolbar .cke_toolbox { min-height: 33px; _height: 28px; }
-.rte-toolbar .cke_toolbox { position: relative; z-index: 1; }
+.rte-toolbar .cke_toolbox { position: relative; z-index: 1; display: flex; flex-wrap: wrap;}
 
 .rte-toolbar .cke_chrome .cke_button:hover,
 .rte-toolbar .cke_chrome .cke_button:focus,
