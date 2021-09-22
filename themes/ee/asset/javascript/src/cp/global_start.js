@@ -236,8 +236,8 @@ $(document).ready(function () {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	// Verify we have a license validation URL and the last update check was more than an hour ago.
-	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
+	// Verify we have a license validation URL and the last update check was more than a minute ago.
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 60)) {
 		return;
 	}
 
