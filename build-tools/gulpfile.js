@@ -321,6 +321,7 @@ gulp.task('_delete_files', function (cb) {
 		'brunch-config.js',
 		'AUTHORS.md',
 		'build.json',
+		'phpcs.ruleset.xml',
 		'changelogs/',
 		'CONTRIBUTING.md',
 		'docker-compose.yml',
