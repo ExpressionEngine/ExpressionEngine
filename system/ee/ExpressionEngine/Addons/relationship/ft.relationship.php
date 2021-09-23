@@ -444,7 +444,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 'value' => $child->getId(),
                 'label' => $child->title,
                 'instructions' => $child->Channel->channel_title,
-                'channel_id' => $entry->Channel->getId()
+                'channel_id' => $child->Channel->getId()
             ];
         }
 
