@@ -10,6 +10,7 @@
 
 					<?php
                     if (!empty($sites)) :
+                    asort($sites);
                     foreach ($sites as $site_id => $site_name):
                         if ($site_id != ee()->config->item('site_id')) :
                     ?>
