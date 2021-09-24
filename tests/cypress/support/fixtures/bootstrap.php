@@ -6,6 +6,7 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 // Path constants
 define('SYSPATH', $project_base);
+define('SYSDIR', basename($project_base));
 define('DEBUG', 1);
 define('FIXTURE', TRUE);
 define('SELF', 'index.php');

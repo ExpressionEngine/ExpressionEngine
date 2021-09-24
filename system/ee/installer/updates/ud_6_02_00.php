@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator([
             'add2faColumns',
             'add2FAMessageTemplate',
+            'dropUnusedMemberColumns',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -121,6 +122,17 @@ class Updater
                     'template_data' => two_fa_message_template(),
                     'site_id' => $site->site_id,
                 ])->save();
+        }
+    }
+
+    private function dropUnusedMemberColumns()
+    {
+        if (ee()->db->field_exists('rte_enabled', 'members')) {
+            ee()->smartforge->drop_column('members', 'rte_enabled');
+        }
+
+        if (ee()->db->field_exists('rte_toolset_id', 'members')) {
+            ee()->smartforge->drop_column('members', 'rte_toolset_id');
         }
     }
 
