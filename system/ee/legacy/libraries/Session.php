@@ -389,6 +389,8 @@ class EE_Session
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
+        $this->userdata['2fa_enabled'] = get_bool_from_string($this->member_model->enable_2fa);
+        $this->userdata['2fa_authorized'] = false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {

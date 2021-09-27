@@ -2532,8 +2532,8 @@ class EE_Template
         $row = $query->row_array();
 
         // Is 2FA required to access this template?
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee('pro:TwoFactorAuth')->checkTemplatePermissions($row);
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && $row['require_2fa'] == 'y') {
+            ee('pro:TwoFactorAuth')->invoke2FAdialog();
         }
 
         // Is PHP allowed in this template?

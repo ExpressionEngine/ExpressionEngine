@@ -524,6 +524,39 @@ class Member
     }
 
     /**
+     * 2FA links, directly available
+     *
+     * @return string
+     */
+    public function two_fa_links()
+    {
+        $data = [
+            'enable_2fa_link' => '',
+            'disable_2fa_link' => '',
+            'reset_2fa_link' => '',
+            'invoke_2fa_link' => '',
+        ];
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
+            if (ee()->session->userdata('2fa_authorized') == false) {
+                $data['invoke_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'invoke2FA') . AMP . 'RET=' . $return;
+            }
+            if (ee()->session->userdata('2fa_enabled') == true) {
+                $data['reset_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'reset2FA') . AMP . 'RET=' . $return;
+            }
+            if (ee()->session->userdata('2fa_enabled') == true) {
+                $data['disable_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disable2FA') . AMP . 'RET=' . $return;
+            }
+            if (ee()->session->userdata('2fa_enabled') == false) {
+                $data['enable_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'enable2FA') . AMP . 'RET=' . $return;
+            }
+        }
+
+        return ee()->functions->insert_action_ids(ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data));
+    }
+
+    /**
      * Member Profile Edit Page
      */
     public function edit_profile()

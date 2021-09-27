@@ -89,6 +89,7 @@ class Login extends CP_Controller
                 foreach ($sessions as $session) {
                     $session->skip_2fa = 'y';
                     $session->save();
+                    ee()->session->userdata['2fa_authorized'] = true;
                 }
                 $this->functions->redirect($return_path);
             }
