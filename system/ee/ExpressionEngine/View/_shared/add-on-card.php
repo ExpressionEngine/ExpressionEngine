@@ -47,7 +47,7 @@
 	</div>
 
 	<?php endif; ?>
-	<?php if ($addon['installed'] && !empty($addon['license_status']) && $addon['license_status'] != 'na') : ?>
+	<?php if ($addon['installed'] && !empty($addon['license_status']) && !in_array($addon['license_status'], ['na', 'license_valid', 'valid'])) : ?>
 		<div class="corner-ribbon-wrap">
 			<p class="corner-ribbon top-left <?=$addon['license_status']?> shadow"<?php if ($addon['license_status'] == 'update_available') : ?> style="font-size: 62%;"<?php endif ;?>><?=lang('license_' . $addon['license_status'])?></p>
 		</div>
