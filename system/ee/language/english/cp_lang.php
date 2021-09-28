@@ -687,10 +687,12 @@ $lang = array(
     'license_trial' => 'Trial',
     'license_expired' => 'Expired',
     'license_invalid' => 'Unlicensed',
+    'license_invalid_domain' => 'Invalid Domain',
     'license_na' => 'Unknown',
 
     'purchase_pro_license' => 'Purchase Pro License',
     'renew_pro_license' => 'Renew Pro License',
+    'update_site_domain' => 'Update Site Domain',
 
     /* confirm removal modal */
     'btn_confirm_and_remove' => 'Confirm, and Remove',

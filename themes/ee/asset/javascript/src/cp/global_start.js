@@ -265,6 +265,7 @@ EE.cp.validateLicense = function() {
 
 			switch (result.messageType) {
 				case 'success':
+					validLicense = true;
 					break;
 
 				case 'missing_license_key':
@@ -301,6 +302,7 @@ EE.cp.validateLicense = function() {
 						appVer: EE.cp.appVer,
 						license: EE.cp.licenseKey,
 						validLicense: validLicense,
+						licenseStatus: result.messageType,
 						validAddons: validAddons,
 						addons: installedAddons,
 						site_name: EE.site_name,
