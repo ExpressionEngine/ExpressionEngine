@@ -530,6 +530,10 @@ class Member
      */
     public function two_fa_links()
     {
+        if (ee()->session->userdata('member_id') == 0) {
+            return ee()->TMPL->no_results();
+        }
+        
         $data = [
             'enable_2fa_link' => '',
             'disable_2fa_link' => '',

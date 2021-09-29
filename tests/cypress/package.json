@@ -25,7 +25,6 @@
         "del": "^5.1.0",
         "fs-extra": "^9.0.0",
         "glob": "^7.1.6",
-        "hash-wasm": "^4.9.0",
         "image-size": "^0.8.3",
         "lorem-ipsum": "^2.0.3",
         "mysql2": "^2.1.0"
