@@ -356,6 +356,10 @@
       background-color: var(--ee-brand-danger);
     }
 
+    &.ee-pro__indicator-badge-invalid_domain {
+      background-color: var(--ee-brand-danger);
+    }
+
     &.ee-pro__indicator-badge-expired {
       background-color: var(--ee-brand-warning);
     }

@@ -9,6 +9,7 @@ node_modules/
 cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache
+.tool-versions
 
 system/user/addons/*
 !system/user/addons/index.html
