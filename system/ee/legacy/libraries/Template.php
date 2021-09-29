@@ -131,7 +131,7 @@ class EE_Template
         $this->user_vars = array(
             'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
-            'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+            'total_forum_posts', 'total_forum_topics', 'total_forum_replies', '2fa_enabled', '2fa_authorized'
         );
 
         $this->marker = md5(ee()->config->site_url() . $this->marker);

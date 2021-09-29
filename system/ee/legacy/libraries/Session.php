@@ -627,6 +627,10 @@ class EE_Session
             return false;
         }
 
+        // Check 2FA state
+        $this->userdata['2fa_enabled'] = get_bool_from_string($this->member_model->enable_2fa);
+        $this->userdata['2fa_authorized'] = $this->userdata['2fa_enabled'] && $this->session_model->skip_2fa == 'y';
+
         // Create the array for the Ignore List
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
 
@@ -1235,6 +1239,8 @@ class EE_Session
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,
+            '2fa_enabled' => !empty($this->member_model) ? get_bool_from_string($this->member_model->enable_2fa) : false,
+            '2fa_authorized' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()
