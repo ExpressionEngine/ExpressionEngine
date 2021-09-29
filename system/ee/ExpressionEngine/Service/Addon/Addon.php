@@ -799,6 +799,14 @@ class Addon
 
         if (isset($data['addons'][$this->shortname]) && isset($data['addons'][$this->shortname]['status'])) {
             $addonStatus = $data['addons'][$this->shortname]['status'];
+
+            if ($addonStatus === 'valid' && $data['validLicense'] === false) {
+                if (!empty($data['licenseStatus'])) {
+                    return $data['licenseStatus'];
+                } else {
+                    return 'invalid';
+                }
+            }
         }
 
         return $addonStatus;
