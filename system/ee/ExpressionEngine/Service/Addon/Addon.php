@@ -795,20 +795,13 @@ class Addon
             return false;
         }
 
-        // If the site license is invalid, the individual add-on licenses are also invalid.
-        if ($data['validLicense'] === false) {
-            if (!empty($data['licenseStatus'])) {
-                return $data['licenseStatus'];
-            } else {
-                return 'invalid';
-            }
-        }
+        $addonStatus = 'na';
 
         if (isset($data['addons'][$this->shortname]) && isset($data['addons'][$this->shortname]['status'])) {
-            return $data['addons'][$this->shortname]['status'];
+            $addonStatus = $data['addons'][$this->shortname]['status'];
         }
 
-        return false;
+        return $addonStatus;
     }
 
     /**
