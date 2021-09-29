@@ -1,5 +1,5 @@
 {
-    "tag": "6.1.0-rc.1",
+    "tag": "6.1.0",
 
     "repositories": {
         "app": "git@github.com:ExpressionEngine/ExpressionEngine",
