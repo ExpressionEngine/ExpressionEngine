@@ -261,31 +261,6 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			var validLicense = false;
-
-			switch (result.messageType) {
-				case 'success':
-					validLicense = true;
-					break;
-
-				case 'missing_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_domain':
-					validLicense = false;
-					break;
-
-				default:
-					console.log('Unknown Status: ' + result.messageType);
-			}
-
-			var validAddons = true;
-
 			if (EE.cp.accessResponseURL) {
 				// Fill in some missing data between the request and response.
 				for (var addon of result.addons) {
@@ -301,9 +276,7 @@ EE.cp.validateLicense = function() {
 					data: {
 						appVer: EE.cp.appVer,
 						license: EE.cp.licenseKey,
-						validLicense: validLicense,
-						licenseStatus: result.messageType,
-						validAddons: validAddons,
+						licenseStatus: result,
 						addons: installedAddons,
 						site_name: EE.site_name,
 						site_id: EE.site_id,

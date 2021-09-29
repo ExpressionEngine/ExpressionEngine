@@ -37,13 +37,14 @@ class License extends CP_Controller
      */
     public function handleAccessResponse()
     {
+        $licenseResponse = ee()->input->post('licenseStatus');
+
         // Combine our info into a file we can cache.
         $data = [
             'appVer' => preg_replace('/[^\da-z\.-]/i', '', ee()->input->post('appVer')),
             'license' => preg_replace('/[^a-z0-9]/i', '', ee()->input->post('license')),
             'validLicense' => filter_var(ee()->input->post('validLicense'), FILTER_VALIDATE_BOOLEAN),
-            'licenseStatus' => preg_replace('/[^a-z0-9_]/i', '', ee()->input->post('licenseStatus')),
-            'validAddons' => filter_var(ee()->input->post('validAddons'), FILTER_VALIDATE_BOOLEAN),
+            'licenseStatus' => preg_replace('/[^a-z0-9_]/i', '', $licenseResponse['messageType']),
             'site_id' => filter_var(ee()->input->post('site_id'), FILTER_VALIDATE_INT),
             'site_url' => filter_var(ee()->input->post('site_url'), FILTER_VALIDATE_URL),
             'addons' => []
