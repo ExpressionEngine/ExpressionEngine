@@ -688,6 +688,8 @@ $lang = array(
     'license_expired' => 'Expired',
     'license_invalid' => 'Unlicensed',
     'license_invalid_domain' => 'Invalid Domain',
+    'license_invalid_license_key' => 'Invalid License Key',
+    'license_missing_license_key' => 'Missing License Key',
     'license_na' => 'Unknown',
 
     'purchase_pro_license' => 'Purchase Pro License',
