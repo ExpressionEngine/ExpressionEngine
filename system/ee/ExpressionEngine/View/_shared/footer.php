@@ -17,6 +17,8 @@
 
         <?php if (ee()->view->pro_license_status == 'expired'): ?>
             <a class="button button--primary button--small" href="https://expressionengine.com/store/licenses" target="_blank"><?=lang('renew_pro_license')?></a>
+        <?php elseif (ee()->view->pro_license_status == 'invalid_domain'): ?>
+            <a class="button button--primary button--small" href="https://expressionengine.com/store/licenses" target="_blank"><?=lang('update_site_domain')?></a>
         <?php else: ?>
             <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro" target="_blank"><?=lang('purchase_pro_license')?></a>
         <?php endif; ?>
@@ -146,7 +148,7 @@
         </div>
 
         <?=ee('CP/Alert')->getStandard()?>
-        <script type="text/javascript" src="https://packettide.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-e6zu8v/b/23/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=3804d578"></script>
+        <!-- <JIRA Collector> -->
 
         <?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
         <script type="text/javascript">

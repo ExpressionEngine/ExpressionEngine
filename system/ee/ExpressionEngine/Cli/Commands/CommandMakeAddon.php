@@ -65,12 +65,6 @@ class CommandMakeAddon extends Cli
         'hooks,o*:'       => 'command_make_addon_option_hooks',
     ];
 
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
     protected $data = [];
 
     protected $type = [];

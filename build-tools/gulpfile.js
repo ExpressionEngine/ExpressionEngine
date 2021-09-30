@@ -133,7 +133,7 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 		clone_or_archive,
 		'_archive_pro',
 		'_version_bump',
-		['_update_exists', '_set_debug', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies'],
+		['_update_exists', '_set_debug', '_replace_jira_collector', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies'],
 		['_phplint', '_compress_js'],
 		'_delete_files',
 		cb
@@ -208,6 +208,34 @@ gulp.task('_set_debug', function (cb) {
 			'    $debug = 0;'
 		))
 		.pipe(gulp.dest(paths.app));
+
+	cb();
+});
+
+/**
+ * Replace JIRA collector tag
+ */
+gulp.task('_replace_jira_collector', function (cb) {
+	var jiraCode = '';
+	if (process.argv.indexOf('--jira-collector') > -1) {
+		jiraCode = '<script type="text/javascript" src="https://packettide.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-e6zu8v/b/23/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=3804d578"></script>';
+	}
+
+	var files = [
+		paths.app + 'system/ee/ExpressionEngine/View/_shared/footer.php',
+		paths.app + 'system/ee/legacy/errors/error_exception.php',
+		paths.app + 'system/ee/legacy/errors/error_general.php'
+	];
+	
+	files.forEach(function(item, index) {
+		var dest = item.substring(0, item.lastIndexOf('/'));
+		gulp.src(item)
+			.pipe(plugin.replace(
+				'<!-- <JIRA Collector> -->',
+				jiraCode
+			))
+			.pipe(gulp.dest(dest));
+	});
 
 	cb();
 });
@@ -293,6 +321,7 @@ gulp.task('_delete_files', function (cb) {
 		'brunch-config.js',
 		'AUTHORS.md',
 		'build.json',
+		'phpcs.ruleset.xml',
 		'changelogs/',
 		'CONTRIBUTING.md',
 		'docker-compose.yml',
@@ -739,7 +768,7 @@ var compressJs = function (path) {
 	path = (typeof path !== 'undefined') ? path : './';
 
 	console.log('Compress Path:', path + 'themes/ee/asset/javascript/src/**/*.js');
-
+	// process.exit();
 	return gulp.src([path + 'themes/ee/asset/javascript/src/**/*.js', path + 'themes/ee/asset/javascript/src/**/redactor.min.css', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/plugins/**/*', '!' + path + 'themes/ee/asset/javascript/src/**/redactor.js'])
 		//.pipe(plugin.uglify({preserveComments: 'some'}))
 		.pipe(gulp.dest(path + 'themes/ee/asset/javascript/compressed/'));

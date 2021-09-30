@@ -189,6 +189,9 @@ $lang = array(
     'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
 
     'license_license_expired' => 'License Expired',
+    'license_invalid_domain' => 'Invalid Site Domain',
+    'license_invalid_license_key' => 'Invalid Key',
+    'license_missing_license_key' => 'Missing Key',
     'license_update_available' => 'Update Available',
     'unlicensed_addon' => 'Unlicensed Add-on',
     'unlicensed_addon_message' => '<b>%s</b> does not have a valid license. <a href="https://expressionengine.com/store/licenses" target="_blank">More Info</a>',

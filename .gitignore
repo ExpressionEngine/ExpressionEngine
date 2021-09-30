@@ -9,6 +9,7 @@ node_modules/
 cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache
+.tool-versions
 
 system/user/addons/*
 !system/user/addons/index.html
@@ -121,6 +122,3 @@ system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.ph
 # Pro files
 system/ee/ExpressionEngine/Addons/pro
 themes/ee/pro
-
-#
-phpcs.ruleset.xml
