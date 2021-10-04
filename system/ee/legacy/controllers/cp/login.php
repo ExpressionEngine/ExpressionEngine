@@ -89,9 +89,9 @@ class Login extends CP_Controller
                 foreach ($sessions as $session) {
                     $session->skip_2fa = 'y';
                     $session->save();
-                    //sync the session
-                    ee()->session->fetch_member_data();
                 }
+                //sync the session
+                ee()->session->fetch_member_data();
                 $this->functions->redirect($return_path);
             }
         }
