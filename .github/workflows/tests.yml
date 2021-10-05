@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 6.dev
+      - feature/6.x/testing-tests
 
 jobs:
 
@@ -58,7 +59,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1
@@ -84,13 +85,13 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __pro
 
-          - name: Move Pro into core
-            run: |
-              mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-              mv __pro/themes/ee/pro themes/ee/pro
-              mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-              mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-              rm -rf __pro
+        #  - name: Move Pro into core
+        #    run: |
+        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+        #      mv __pro/themes/ee/pro themes/ee/pro
+        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+        #      rm -rf __pro
 
           - name: Setup asdf
             uses: asdf-vm/actions/setup@v1
@@ -119,7 +120,8 @@ jobs:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-            run: gulp build-app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
@@ -146,7 +148,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [7.2, 7.1, 8.0]
                 os: [ubuntu-18.04]
                 include:
                   - php: 7.4

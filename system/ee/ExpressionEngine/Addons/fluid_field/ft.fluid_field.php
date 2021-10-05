@@ -17,6 +17,8 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
     public $size = 'large';
 
     private $errors;

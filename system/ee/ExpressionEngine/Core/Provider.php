@@ -347,21 +347,40 @@ class Provider extends InjectionBindingDecorator
     {
         $cookieService = $this->make('ee:Cookie');
         $builtinCookieSettings = $this->get('cookie_settings');
-        $providerCookieSettings = ee('Model')
-            ->get('CookieSetting')
-            ->fields('cookie_name', 'cookie_provider')
-            ->filter('cookie_provider', $this->getPrefix())
-            ->all()
-            ->getDictionary('cookie_name', 'cookie_provider');
+        $providerCookieSettings = null;
         foreach (['Necessary', 'Functionality', 'Performance', 'Targeting'] as $type) {
             foreach ($this->get('cookies.' . strtolower($type), []) as $cookie_name) {
+                if (is_null($providerCookieSettings)) {
+                    $providerCookieSettings = ee('Model')
+                        ->get('CookieSetting')
+                        ->fields('cookie_name', 'cookie_provider')
+                        ->filter('cookie_provider', $this->getPrefix())
+                        ->all()
+                        ->getDictionary('cookie_name', 'cookie_provider');
+                }
                 $cookieParams = [
                     'cookie_provider' => $this->getPrefix(),
                     'cookie_name' => $cookie_name
                 ];
                 if (!isset($providerCookieSettings[$cookie_name])) {
                     $cookieSettings = ee('Model')->make('CookieSetting', $cookieParams);
-                    $cookieSettings->cookie_title = lang($cookie_name);
+                    switch ($cookieParams['cookie_provider']) {
+                        case 'pro':
+                            ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
+                            break;
+                        case 'comment':
+                        case 'forum':
+                            ee()->lang->load($cookieParams['cookie_provider']);
+                            break;
+                        case 'ee':
+                            ee()->lang->load('core');
+                            break;
+                        default:
+                            ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
+                            break;
+                    }
+                    
+                    $cookieSettings->cookie_title = (lang('cookie_' . $cookie_name) != 'cookie_' . $cookie_name) ? lang('cookie_' . $cookie_name) : lang($cookie_name);
                     if (!empty($builtinCookieSettings) && isset($builtinCookieSettings[$cookie_name])) {
                         if (isset($builtinCookieSettings[$cookie_name]['description'])) {
                             if (strpos($builtinCookieSettings[$cookie_name]['description'], 'lang:') === 0) {

@@ -1297,9 +1297,6 @@ class Member
      */
     public function recaptcha_check()
     {
-        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
-        $recaptcha_threshold = ee()->config->item('recaptcha_score_threshhold');
-
         // Make the POST request
         $data = [
             'secret' => ee()->config->item('recaptcha_site_secret'),
@@ -1310,7 +1307,7 @@ class Member
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, $recaptcha_url);
+        curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         $response = curl_exec($curl);
         $result = json_decode($response, true);
@@ -1324,7 +1321,7 @@ class Member
         $captcha->word = $string;
         $captcha->save();
 
-        if ($result['success'] !== true || $result['score'] < $recaptcha_threshold) {
+        if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshhold')) {
             $string = "failed";
         }
         return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);

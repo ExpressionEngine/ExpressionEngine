@@ -263,7 +263,7 @@ class EE_Lang
      * Get the idiom for the current user/situation
      * @return string The idiom to load
      */
-    protected function getIdiom()
+    public function getIdiom()
     {
         if (isset(ee()->session)) {
             return ee()->security->sanitize_filename(ee()->session->get_language());

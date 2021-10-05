@@ -17,51 +17,9 @@ jobs:
             with:
               cancel_others: true
 
-    checkout-code:
-      name: Build EE for testing
-
-      needs: cancel-running-tests
-      if: github.event.pull_request.draft == false
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-
-        - name: Checkout Pro
-          uses: actions/checkout@v2
-          with:
-            repository: EllisLab/ExpressionEngine-Pro
-            token: ${{ secrets.ORG_ACCESS_TOKEN }}
-            path: __pro
-
-        - name: Move Pro into core
-          run: |
-            mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-            mv __pro/themes/ee/pro themes/ee/pro
-            mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-            mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-            rm -rf __pro
-
-        - name: Move build to subfolder
-          run: |
-            shopt -s extglob
-            shopt -s dotglob
-            mkdir -p build-tools/builds/ExpressionEngine && cp -R !(build-tools) build-tools/builds/ExpressionEngine
-
-        - name: Cache built EE version
-          uses: actions/cache@v2
-          with:
-            path: build-tools/builds/ExpressionEngine
-            key: cache-ee-${{ github.sha }}
-        
-        - name: Directory Listing
-          if: always()
-          run: |
-            ls -lar build-tools/builds/ExpressionEngine
-
     php-tests:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: cancel-running-tests
         runs-on: ${{ matrix.os }}
 
         strategy:
@@ -101,7 +59,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1
@@ -110,15 +68,87 @@ jobs:
               working-directory: system/ee/ExpressionEngine/Tests/
               run: vendor/bin/phpunit --teamcity --configuration=phpunit.xml
 
+    build-for-testing:
+        needs: cancel-running-tests
+
+        name: Build EE for testing
+
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v2
+
+          - name: Checkout Pro
+            uses: actions/checkout@v2
+            with:
+              repository: EllisLab/ExpressionEngine-Pro
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __pro
+
+        #  - name: Move Pro into core
+        #    run: |
+        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+        #      mv __pro/themes/ee/pro themes/ee/pro
+        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+        #      rm -rf __pro
+
+          - name: Setup asdf
+            uses: asdf-vm/actions/setup@v1
+
+          - name: Install asdf dependencies
+            working-directory: build-tools
+            run: |
+              asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+              bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
+              asdf install
+
+          - name: Install build tool dependencies
+            working-directory: build-tools
+            run: npm install
+
+          - name: Get version
+            id: build_json
+            working-directory: build-tools
+            run: |
+              content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
+              echo "::set-output name=BUILD_VERSION::$content"
+
+          - name: Run build process
+            working-directory: build-tools
+            env:
+              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+              APP_REPO_PATH: ${{ github.workspace }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+          - name: Rename build directory
+            working-directory: build-tools/builds
+            run: |
+              mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
+
+          - name: Cache built EE version
+            uses: actions/cache@v2
+            with:
+              path: build-tools/builds/ExpressionEngine
+              key: cache-ee-build-${{ github.sha }}
+          
+          - name: Directory Listing on Failure
+            if: failure()
+            run: |
+              ls -latr build-tools/builds
+              ls -latr build-tools/builds/ExpressionEngine
+
     cypress-minimal-pro:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -129,7 +159,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -150,7 +180,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -204,13 +240,13 @@ jobs:
 
     cypress-minimal-admin:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -221,7 +257,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -242,7 +278,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -295,13 +337,13 @@ jobs:
 
     cypress-minimal-files:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [5.6]
                 os: [ubuntu-18.04]
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -312,7 +354,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -333,7 +375,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -385,13 +433,13 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-members:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -402,7 +450,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -423,7 +471,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -475,13 +529,13 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-publish:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -492,7 +546,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -513,7 +567,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -565,13 +625,13 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-utils:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Utilities, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -582,7 +642,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -603,7 +663,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -655,13 +721,13 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-misc:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -672,7 +738,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |
@@ -693,7 +759,13 @@ jobs:
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
 
             - name: Setup Permissions
               run: |
@@ -745,13 +817,13 @@ jobs:
                 path: /home/runner/php_errors.log
     cypress-minimal-installer:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, checkout-code]
+        needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.0]
                 os: [ubuntu-18.04]
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -762,7 +834,7 @@ jobs:
               uses: actions/cache@v2
               with:
                 path: build-tools/builds/ExpressionEngine
-                key: cache-ee-${{ github.sha }}
+                key: cache-ee-build-${{ github.sha }}
 
             - name: Move files to webroot
               run: |

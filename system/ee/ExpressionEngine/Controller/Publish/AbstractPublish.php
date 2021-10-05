@@ -231,6 +231,19 @@ abstract class AbstractPublish extends CP_Controller
             )
         );
 
+        $urlParams = [];
+        if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
+            $urlParams = [
+                'entry_ids' => ee('Request')->get('entry_ids'),
+                'field_id' => ee('Request')->get('field_id'),
+                'site_id' => ee('Request')->get('site_id'),
+                'modal_form' => ee('Request')->get('modal_form'),
+                'preview' => ee('Request')->get('preview'),
+                'hide_closer' => ee('Request')->get('hide_closer'),
+                'return' => ee('Request')->get('return')
+            ];
+        }
+
         $data = array();
         $authors = array();
         $i = $entry->getAutosaves()->count();
@@ -254,12 +267,13 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     $edit_date,
                     $authors[$entry->author_id],
-                    '<span class="st-open">' . lang('current') . '</span>'
+                    '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $urlParams) . '"><span class="st-open">' . lang('current') . '</span></a>'
                 )
             );
             $i--;
         }
 
+        $currentAutosaveId = null;
         foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave) {
             if (! isset($authors[$autosave->author_id]) && $autosave->Author) {
                 $authors[$autosave->author_id] = $autosave->Author->getMemberName();
@@ -270,7 +284,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => $entry->entry_id
-                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)
+                                ? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id, $urlParams)
                                 : ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id),
                             'title' => lang('view'),
                             'content' => lang('view')
@@ -280,6 +294,9 @@ abstract class AbstractPublish extends CP_Controller
             );
 
             $attrs = ($autosave->getId() == $autosave_id) ? array('class' => 'selected') : array();
+            if ($autosave->getId() == $autosave_id) {
+                $currentAutosaveId = $autosave->getId();
+            }
 
             $data[] = array(
                 'attrs' => $attrs,
@@ -291,6 +308,10 @@ abstract class AbstractPublish extends CP_Controller
                 )
             );
             $i--;
+        }
+
+        if ($autosave_id && empty($currentAutosaveId)) {
+            $data[0]['attrs'] = ['class' => 'selected'];
         }
 
         $table->setData($data);
@@ -411,7 +432,9 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save') {
-            if (ee()->input->post('return') != '') {
+            if (ee()->input->get('return') != '') {
+                $redirect_url = urldecode(ee()->input->get('return'));
+            } elseif (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
                 $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
@@ -446,7 +469,7 @@ abstract class AbstractPublish extends CP_Controller
     protected function pruneAutosaves()
     {
         $prune = ee()->config->item('autosave_prune_hours') ?: 6;
-        $prune = $prune * 120; // From hours to seconds
+        $prune = $prune * 3600; // From hours to seconds
 
         $cutoff = ee()->localize->now - $prune;
 

@@ -172,12 +172,13 @@ class Cp
             'THEME_URL' => $this->cp_theme_url,
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
-            'cp.accessResponseURL' => $this->fetch_action_id('Pro', 'handleAccessResponse') ? ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $this->fetch_action_id('Pro', 'handleAccessResponse') : false,
+            'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
             'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
+            'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
         ));
 
         if (ee()->session->flashdata('update:completed')) {
@@ -235,8 +236,9 @@ class Cp
 
         $installed_modules_js = [];
         foreach ($installed_modules->result() as $installed_module) {
-            $installed_modules_js[] = [
+            $installed_modules_js[strtolower($installed_module->module_name)] = [
                 'slug' => strtolower($installed_module->module_name),
+                'name' => ucwords(str_replace('_', ' ', $installed_module->module_name)),
                 'version' => $installed_module->module_version,
             ];
         }
@@ -245,7 +247,7 @@ class Cp
         // add-ons to send to the license validation service.
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
-            'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+            'cp.licenseKey' => ee()->config->item('site_license_key'),
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
@@ -292,6 +294,24 @@ class Cp
 
             if (version_compare($version_major, $update_version_major, '<')) {
                 ee()->view->major_update = true;
+            }
+        }
+
+        ee()->view->pro_license_status = '';
+        if (IS_PRO) {
+            $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+            switch ($pro_status) {
+                case 'update_available':
+                    ee()->view->pro_license_status = 'valid';
+                    break;
+
+                case '':
+                    ee()->view->pro_license_status = 'na';
+                    break;
+
+                default:
+                    ee()->view->pro_license_status = $pro_status;
+                    break;
             }
         }
 

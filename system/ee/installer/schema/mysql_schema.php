@@ -342,6 +342,7 @@ class EE_Schema
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
+			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
