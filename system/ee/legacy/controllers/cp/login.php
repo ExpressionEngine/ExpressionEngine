@@ -52,11 +52,11 @@ class Login extends CP_Controller
                     $this->view->pro_class = 'pro-frontend-modal';
                 }
             }
-        } else {
+        }
+        if (empty($return_path)) {
             $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
             $return_path = $member->getCPHomepageURL();
         }
-
         if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || ee()->session->userdata('skip_2fa') == 'y') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
