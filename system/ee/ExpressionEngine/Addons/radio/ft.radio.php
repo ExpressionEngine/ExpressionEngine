@@ -21,6 +21,8 @@ class Radio_ft extends OptionFieldtype
 
     public $has_array_data = false;
 
+    public $size = 'small';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(

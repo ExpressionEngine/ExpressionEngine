@@ -200,6 +200,26 @@ $lang = array(
 
     'you_have_been_unsubscribed' => 'Your subscription to the following entry has been removed:',
 
+    /* Cookies */
+
+    'cookie_my_email' => 'My email',
+    'cookie_my_email_desc' => 'Email address specified when posting a comment.',
+
+    'cookie_my_location' => 'My location',
+    'cookie_my_location_desc' => 'Location specified when posting a comment.',
+
+    'cookie_my_name' => 'My name',
+    'cookie_my_name_desc' => 'Name specified when posting a comment.',
+
+    'cookie_my_url' => 'My URL',
+    'cookie_my_url_desc' => 'URL specified when posting a comment.',
+
+    'cookie_notify_me' => 'Notify me',
+    'cookie_notify_me_desc' => 'If set to ‘yes’, notifications will be sent to the saved email address when new comments are made.',
+
+    'cookie_save_info' => 'Save info',
+    'cookie_save_info_desc' => 'If set to ‘yes’, allows additional cookies (my_email, my_location, my_name, my_url) to store guest user information for use when filling out comment forms. This cookie is only set if you submit a comment.',
+
 );
 
 // EOF
