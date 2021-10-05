@@ -27,12 +27,6 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
 
-      - name: Move Pro into core
-        run: |
-          mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-          mv __pro/themes/ee/pro themes/ee/pro
-          rm -rf __pro
-
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
 
@@ -53,6 +47,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: gulp app --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
 
       - name: Archive Build files
