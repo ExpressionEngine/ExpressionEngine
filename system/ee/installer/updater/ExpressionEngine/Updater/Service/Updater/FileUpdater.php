@@ -79,14 +79,6 @@ class FileUpdater
             [SYSPATH . 'ee/updater']
         );
 
-        // backup eecli.php if it exists
-        if ($this->filesystem->exists(SYSPATH . 'eecli.php')) {
-            $this->move(
-                SYSPATH . 'eecli.php',
-                $this->getBackupsPath()
-            );
-        }
-
         // We'll only backup one theme folder, they _should_ all be the same
         // across sites
         $theme_path = array_values($this->configs['theme_paths'])[0];
@@ -106,9 +98,6 @@ class FileUpdater
         $new_system_dir = $this->configs['archive_path'] . '/system/ee/';
 
         $this->move($new_system_dir, SYSPATH . 'ee/');
-
-        //move CLI
-        $this->move($this->configs['archive_path'] . '/system/eecli.php', SYSPATH);
 
         // Now move new themes into place
         $new_themes_dir = $this->configs['archive_path'] . '/themes/ee/';
