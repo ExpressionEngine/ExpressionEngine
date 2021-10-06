@@ -423,6 +423,7 @@ CREATE TABLE IF NOT EXISTS `exp_channel_fields` (
   `field_content_type` varchar(20) NOT NULL DEFAULT 'any',
   `field_settings` text DEFAULT NULL,
   `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
+  `enable_frontedit` char(1) NOT NULL default 'y',
   PRIMARY KEY (`field_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
