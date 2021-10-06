@@ -169,6 +169,9 @@ class Settings extends CP_Controller
      */
     protected function saveSettings($sections)
     {
+        // Clear the add-on cache in case they've changed their site license key.
+        ee()->cache->file->delete('/addons-status');
+
         $fields = array();
 
         // Make sure we're getting only the fields we asked for

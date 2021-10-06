@@ -321,6 +321,7 @@ gulp.task('_delete_files', function (cb) {
 		'brunch-config.js',
 		'AUTHORS.md',
 		'build.json',
+		'phpcs.ruleset.xml',
 		'changelogs/',
 		'CONTRIBUTING.md',
 		'docker-compose.yml',
@@ -764,7 +765,7 @@ var compressJs = function (path) {
 	path = (typeof path !== 'undefined') ? path : './';
 
 	console.log('Compress Path:', path + 'themes/ee/asset/javascript/src/**/*.js');
-
+	// process.exit();
 	return gulp.src([path + 'themes/ee/asset/javascript/src/**/*.js', path + 'themes/ee/asset/javascript/src/**/redactor.min.css', '!' + path + 'themes/ee/asset/javascript/src/fields/rte/redactor/plugins/**/*', '!' + path + 'themes/ee/asset/javascript/src/**/redactor.js'])
 		//.pipe(plugin.uglify({preserveComments: 'some'}))
 		.pipe(gulp.dest(path + 'themes/ee/asset/javascript/compressed/'));

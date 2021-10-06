@@ -680,6 +680,44 @@ $setup = [
         'ee_cp_viewmode',
         'collapsed_nav'
     ],
+    'cookie_settings' => [
+        'csrf_token' => [
+            'description' => 'lang:cookie_csrf_token_desc',
+        ],
+        'flash' => [
+            'description' => 'lang:cookie_flash_desc',
+        ],
+        'remember' => [
+            'description' => 'lang:cookie_remember_desc',
+        ],
+        'sessionid' => [
+            'description' => 'lang:cookie_sessionid_desc',
+        ],
+        'visitor_consents' => [
+            'description' => 'lang:cookie_visitor_consents_desc',
+        ],
+        'last_activity' => [
+            'description' => 'lang:cookie_last_activity_desc',
+        ],
+        'last_visit' => [
+            'description' => 'lang:cookie_last_visit_desc',
+        ],
+        'anon' => [
+            'description' => 'lang:cookie_anon_desc',
+        ],
+        'tracker' => [
+            'description' => 'lang:cookie_tracker_desc',
+        ],
+        'viewtype' => [
+            'description' => 'lang:cookie_viewtype_desc',
+        ],
+        'cp_last_site_id' => [
+            'description' => 'lang:cookie_cp_last_site_id_desc',
+        ],
+        'collapsed_nav' => [
+            'description' => 'lang:cookie_collapsed_nav_desc',
+        ],
+    ],
 ];
 
 if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {

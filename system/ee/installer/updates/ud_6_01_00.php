@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,18 +9,23 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_6_1_0;
+
 /**
- * Installer Language
+ * Update
  */
-class Installer_Lang extends EE_Lang
+class Updater
 {
+    public $version_suffix = '';
+
     /**
-     * Forces the current language to English
-     * @return string The idiom to load
+     * Do Update
+     *
+     * @return TRUE
      */
-    public function getIdiom()
+    public function do_update()
     {
-        return 'english';
+        return true;
     }
 }
 

@@ -364,7 +364,23 @@ class Provider extends InjectionBindingDecorator
                 ];
                 if (!isset($providerCookieSettings[$cookie_name])) {
                     $cookieSettings = ee('Model')->make('CookieSetting', $cookieParams);
-                    $cookieSettings->cookie_title = lang($cookie_name);
+                    switch ($cookieParams['cookie_provider']) {
+                        case 'pro':
+                            ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
+                            break;
+                        case 'comment':
+                        case 'forum':
+                            ee()->lang->load($cookieParams['cookie_provider']);
+                            break;
+                        case 'ee':
+                            ee()->lang->load('core');
+                            break;
+                        default:
+                            ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
+                            break;
+                    }
+                    
+                    $cookieSettings->cookie_title = (lang('cookie_' . $cookie_name) != 'cookie_' . $cookie_name) ? lang('cookie_' . $cookie_name) : lang($cookie_name);
                     if (!empty($builtinCookieSettings) && isset($builtinCookieSettings[$cookie_name])) {
                         if (isset($builtinCookieSettings[$cookie_name]['description'])) {
                             if (strpos($builtinCookieSettings[$cookie_name]['description'], 'lang:') === 0) {

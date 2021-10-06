@@ -236,8 +236,8 @@ $(document).ready(function () {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	// Verify we have a license validation URL and the last update check was more than an hour ago.
-	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 3600)) {
+	// Verify we have a license validation URL and the last update check was more than a minute ago.
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 60)) {
 		return;
 	}
 
@@ -261,30 +261,6 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			var validLicense = false;
-
-			switch (result.messageType) {
-				case 'success':
-					break;
-
-				case 'missing_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_domain':
-					validLicense = false;
-					break;
-
-				default:
-					console.log('Unknown Status: ' + result.messageType);
-			}
-
-			var validAddons = true;
-
 			if (EE.cp.accessResponseURL) {
 				// Fill in some missing data between the request and response.
 				for (var addon of result.addons) {
@@ -300,8 +276,7 @@ EE.cp.validateLicense = function() {
 					data: {
 						appVer: EE.cp.appVer,
 						license: EE.cp.licenseKey,
-						validLicense: validLicense,
-						validAddons: validAddons,
+						licenseStatus: result,
 						addons: installedAddons,
 						site_name: EE.site_name,
 						site_id: EE.site_id,

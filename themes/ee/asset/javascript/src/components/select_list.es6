@@ -363,6 +363,7 @@ class SelectList extends React.Component {
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
+    var values = props.selected.length ? props.selected.map(item => item.value) : [];
 
     return (
       <div className={((props.tooMany) ? ' lots-of-checkboxes' : '')}
@@ -425,15 +426,20 @@ class SelectList extends React.Component {
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.selectable && props.selected.length == 0 &&
+        { ! props.jsonify && props.selectable && props.selected.length == 0 &&
           <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=''
             ref={(input) => { this.input = input }} />
         }
-        {props.selectable &&
+        { ! props.jsonify && props.selectable &&
           props.selected.map(item =>
             <input type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
               ref={(input) => { this.input = input }} />
           )
+        }
+        {/* JSONified fields are using joined input */}
+        { props.jsonify && props.selectable &&
+          <input type="hidden" name={props.name} value={JSON.stringify(values)}
+            ref={(input) => { this.input = input }} />
         }
       </div>
     )

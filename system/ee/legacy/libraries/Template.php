@@ -3524,7 +3524,7 @@ class EE_Template
         }
 
         // same with modified, sometimes devs run this method themselves instead of a full parse_variables()
-        if ($this->modified_vars === false) {
+        if (empty($this->modified_vars) || $this->modified_vars === false) {
             $this->modified_vars = $this->getModifiedVariables();
         }
 
