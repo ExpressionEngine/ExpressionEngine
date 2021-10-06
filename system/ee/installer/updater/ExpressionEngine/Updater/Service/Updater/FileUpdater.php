@@ -260,8 +260,8 @@ class FileUpdater
             $new_path = str_replace("//", "/", $new_path);
 
             // Try to catch permissions errors before PHP's file I/O functions do
-            if (! $this->filesystem->isWritable($new_path)) {
-                throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${new_path}", 19);
+            if (! $this->filesystem->isWritable($path)) {
+                throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
             }
 
             $this->logger->log('Moving ' . $path . ' to ' . $new_path);
