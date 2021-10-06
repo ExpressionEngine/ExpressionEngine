@@ -153,7 +153,7 @@ context('Content & Design Settings', () => {
     // Don't test this, we manually override this path in config.php for the tests
     //page.get('emoticon_url').clear().type('http://myemoticons/'
     //page.submit()AJ
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('new_posts_clear_caches').invoke('val').then((val) => {

@@ -33,6 +33,7 @@ use ExpressionEngine\Service\LivePreview;
 use ExpressionEngine\Service\Logger;
 use ExpressionEngine\Service\Member;
 use ExpressionEngine\Service\Memory;
+use ExpressionEngine\Service\Migration;
 use ExpressionEngine\Service\Modal;
 use ExpressionEngine\Service\Model;
 use ExpressionEngine\Service\Permission;
@@ -48,6 +49,11 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\AddonGenerator;
+use ExpressionEngine\Service\Generator\CommandGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
+use ExpressionEngine\Service\Generator\ModelGenerator;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -218,6 +224,10 @@ $setup = [
             return $facade;
         },
 
+        'Migration' => function ($ee, $migration=null) {
+            return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
+        },
+
         'Spam' => function ($ee) {
             return new Spam();
         },
@@ -322,6 +332,36 @@ $setup = [
             return new Template\Variables\LegacyParser();
         },
 
+        'AddonGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new AddonGenerator($filesystem, $data);
+        },
+
+        'CommandGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new CommandGenerator($filesystem, $data);
+        },
+
+        'ProletGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ProletGenerator($filesystem, $data);
+        },
+
+        'WidgetGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new WidgetGenerator($filesystem, $data);
+        },
+
+        'ModelGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ModelGenerator($filesystem, $data);
+        },
+
         'Consent' => function ($ee, $member_id = null) {
             $actor_userdata = ee()->session->userdata;
             if (! ee()->session->userdata('member_id')) {
@@ -330,7 +370,7 @@ $setup = [
             }
 
             if (! $member_id) {
-                $member_id = $actor_userdata['member_id'];
+                $member_id = ee()->session->userdata('member_id');
             }
 
             return new Consent\Consent(
@@ -581,9 +621,11 @@ $setup = [
         'MenuSet' => 'Model\Menu\MenuSet',
         'MenuItem' => 'Model\Menu\MenuItem',
 
+        // ..\Migration
+        'Migration' => 'Model\Migration\Migration',
+
         // ..\Dashboard
         'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
-        'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
 
         // ..\Search
         'SearchLog' => 'Model\Search\SearchLog',
@@ -600,6 +642,9 @@ $setup = [
         'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
         'ConsentRequest' => 'Model\Consent\ConsentRequest',
         'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+        // ..\Cookie
+        'CookieSetting' => 'Model\Cookie\CookieSetting',
 
         // ..\Permission
         'Permission' => 'Model\Permission\Permission',
@@ -619,38 +664,67 @@ $setup = [
     ),
 
     'cookies.necessary' => [
-        'cp_last_site_id',
         'csrf_token',
         'flash',
-        'last_activity',
-        'last_visit',
         'remember',
         'sessionid',
         'visitor_consents',
     ],
     'cookies.functionality' => [
+        'last_activity',
+        'last_visit',
         'anon',
-        'expiration',
-        'forum_theme',
-        'forum_topics',
-        'my_email',
-        'my_location',
-        'my_name',
-        'my_url',
-        'notify_me',
-        'save_info',
         'tracker',
         'viewtype',
+        'cp_last_site_id',
         'ee_cp_viewmode',
         'collapsed_nav'
+    ],
+    'cookie_settings' => [
+        'csrf_token' => [
+            'description' => 'lang:cookie_csrf_token_desc',
+        ],
+        'flash' => [
+            'description' => 'lang:cookie_flash_desc',
+        ],
+        'remember' => [
+            'description' => 'lang:cookie_remember_desc',
+        ],
+        'sessionid' => [
+            'description' => 'lang:cookie_sessionid_desc',
+        ],
+        'visitor_consents' => [
+            'description' => 'lang:cookie_visitor_consents_desc',
+        ],
+        'last_activity' => [
+            'description' => 'lang:cookie_last_activity_desc',
+        ],
+        'last_visit' => [
+            'description' => 'lang:cookie_last_visit_desc',
+        ],
+        'anon' => [
+            'description' => 'lang:cookie_anon_desc',
+        ],
+        'tracker' => [
+            'description' => 'lang:cookie_tracker_desc',
+        ],
+        'viewtype' => [
+            'description' => 'lang:cookie_viewtype_desc',
+        ],
+        'cp_last_site_id' => [
+            'description' => 'lang:cookie_cp_last_site_id_desc',
+        ],
+        'collapsed_nav' => [
+            'description' => 'lang:cookie_collapsed_nav_desc',
+        ],
     ],
 ];
 
 if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {
     foreach ($setup['models'] as $model => $namespace) {
-        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/pro/' . str_replace("\\", "/", $namespace) . '.php';
         if (file_exists($pro_file)) {
-            $setup['models'][$model] = "\ExpressionEngine\Addons\Pro\\" . $namespace;
+            $setup['models'][$model] = "\ExpressionEngine\Addons\pro\\" . $namespace;
         }
     }
 }

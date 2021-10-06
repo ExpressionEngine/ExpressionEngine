@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -18,7 +19,7 @@ class Cp
     protected $its_all_in_your_head = array();
     protected $footer_item = array();
 
-    public $cp_theme_url = '';	// base URL to the CP theme folder
+    public $cp_theme_url = ''; // base URL to the CP theme folder
     public $installed_modules = false;
     public $requests = array();
     public $loaded = array();
@@ -57,7 +58,7 @@ class Cp
     /**
      * Set Certain Default Control Panel View Variables
      *
-     * @return	void
+     * @return void
      */
     public function set_default_view_variables()
     {
@@ -114,7 +115,7 @@ class Cp
             'cp_quicklinks' => $this->_get_quicklinks($member->getQuicklinks()),
 
             'EE_view_disable' => false,
-            'is_super_admin' => (ee('Permission')->isSuperAdmin()) ? true : false,	// for conditional use in view files
+            'is_super_admin' => (ee('Permission')->isSuperAdmin()) ? true : false, // for conditional use in view files
         );
 
         // global table data
@@ -153,6 +154,12 @@ class Cp
             'many_jump_results' => lang('many_jump_results'),
         );
 
+        $lastUpdateCheck = false;
+        $statusCache = ee()->cache->get_metadata('/addons-status');
+        if (!empty($statusCache) && !empty($statusCache['mtime'])) {
+            $lastUpdateCheck = time() - $statusCache['mtime'];
+        }
+
         ee()->javascript->set_global(array(
             'BASE' => str_replace(AMP, '&', BASE),
             'XID' => CSRF_TOKEN,
@@ -165,14 +172,16 @@ class Cp
             'THEME_URL' => $this->cp_theme_url,
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+            'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
+            'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
+            'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
         ));
 
         if (ee()->session->flashdata('update:completed')) {
-
             $updateCompletedScript = "
                 $(document).ready(function() {
                     document.getElementsByClassName('js-about')[0].click();
@@ -194,7 +203,7 @@ class Cp
                     (ee()->config->item('is_system_on') == 'y') ? lang('online') : lang('offline'),
                     ee('CP/URL')->make('settings/general')
                 ));
-                
+
             $button = form_open(
                 ee('CP/URL')->make('settings/config'),
                 '',
@@ -217,23 +226,19 @@ class Cp
             'plugin' => array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
             'file' => array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
                 'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
-                'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+                'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters', 'cp/jump_menu',
                 'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
                 'components/filterable', 'components/toggle', 'components/select_list',
                 'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
         );
 
-        ee()->javascript->set_global(array(
-            'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
-            'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
-        ));
-
         $installed_modules = ee()->db->select('module_name,module_version')->get('modules');
 
         $installed_modules_js = [];
         foreach ($installed_modules->result() as $installed_module) {
-            $installed_modules_js[] = [
+            $installed_modules_js[strtolower($installed_module->module_name)] = [
                 'slug' => strtolower($installed_module->module_name),
+                'name' => ucwords(str_replace('_', ' ', $installed_module->module_name)),
                 'version' => $installed_module->module_version,
             ];
         }
@@ -242,12 +247,10 @@ class Cp
         // add-ons to send to the license validation service.
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
-            'cp.licenseKey' => ee('License')->getEELicense()->getData('uuid'),
+            'cp.licenseKey' => ee()->config->item('site_license_key'),
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
-
-        $js_scripts['file'][] = 'cp/jump_menu';
 
         $modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
             'name' => 'modal-default-confirm-remove',
@@ -284,14 +287,31 @@ class Cp
         ee()->load->helper('text');
         ee()->load->library('el_pings');
 
-        if (ee()->config->item('new_version_check') == 'y' &&
-            $new_version = ee()->el_pings->getUpgradeInfo()) {
+        if (ee()->config->item('new_version_check') == 'y' && $new_version = ee()->el_pings->getUpgradeInfo()) {
             ee()->view->new_version = $new_version;
             $version_major = explode('.', APP_VER, 2)[0];
             $update_version_major = explode('.', $new_version['version'], 2)[0];
 
             if (version_compare($version_major, $update_version_major, '<')) {
                 ee()->view->major_update = true;
+            }
+        }
+
+        ee()->view->pro_license_status = '';
+        if (IS_PRO) {
+            $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+            switch ($pro_status) {
+                case 'update_available':
+                    ee()->view->pro_license_status = 'valid';
+                    break;
+
+                case '':
+                    ee()->view->pro_license_status = 'na';
+                    break;
+
+                default:
+                    ee()->view->pro_license_status = $pro_status;
+                    break;
             }
         }
 
@@ -408,6 +428,17 @@ class Cp
             );
         }
 
+        //do they need to accept consent?
+        if (bool_config_item('require_cookie_consent')) {
+            $consentRequest = ee('Model')->get('ConsentRequest')->filter('consent_name', 'ee:cookies_functionality')->first();
+            if (!empty($consentRequest)) {
+                $consent = ee()->session->getMember()->Consents->filter('consent_request_id', $consentRequest->getId())->first();
+                if (empty($consent) || !$consent->isGranted()) {
+                    $notices[] = sprintf(lang('cookies_functionality_consent_required'), ee('CP/URL', 'members/profile/consent'));
+                }
+            }
+        }
+
         if (! empty($notices)) {
             if (! $alert) {
                 $alert = ee('CP/Alert')->makeBanner('notices')
@@ -484,7 +515,7 @@ class Cp
      * Requests a file from ExpressionEngine.com that informs us what the current available version
      * of ExpressionEngine.
      *
-     * @return	bool|string
+     * @return bool|string
      */
     protected function _version_check()
     {
@@ -509,8 +540,8 @@ class Cp
      * To be used to create url's that "mask" the real location of the
      * users control panel.  Eg:  http://example.com/index.php?URL=http://example2.com
      *
-     * @param string	URL
-     * @return string	Masked URL
+     * @param string   URL
+     * @return string  Masked URL
      */
     public function masked_url($url)
     {
@@ -581,8 +612,8 @@ class Cp
      * Seal the current combo loader and reopen a new one.
      *
      * @param bool Whether to include 'common.js' automatically
-     * @access	private
-     * @return	array
+     * @access private
+     * @return array
      */
     public function _seal_combo_loader($include_common = true)
     {
@@ -632,9 +663,9 @@ class Cp
      * Get last modification time of a js file.
      * Returns highest if passed an array.
      *
-     * @param	string
-     * @param	mixed
-     * @return	int
+     * @param string
+     * @param mixed
+     * @return int
      */
     public function _get_js_mtime($type, $name)
     {
@@ -649,18 +680,22 @@ class Cp
         }
 
         switch ($type) {
-            case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/ui/jquery.ui.' . $name . '.js';
-
+            case 'ui':
+                $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/ui/jquery.ui.' . $name . '.js';
                 break;
-            case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/plugins/' . $name . '.js';
 
+            case 'plugin':
+                $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/plugins/' . $name . '.js';
                 break;
-            case 'file':		$file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/' . $name . '.js';
 
+            case 'file':
+                $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/' . $name . '.js';
                 break;
-            case 'pro_file':		$file = PATH_PRO_THEMES . 'js/' . $name . '.js';
 
+            case 'pro_file':
+                $file = PATH_PRO_THEMES . 'js/' . $name . '.js';
                 break;
+
             case 'package':
                 if (strpos($name, ':') !== false) {
                     list($package, $name) = explode(':', $name);
@@ -669,11 +704,12 @@ class Cp
                 }
 
                 $file = PATH_THIRD . $package . '/javascript/' . $name . '.js';
-
                 break;
-            case 'fp_module':	$file = PATH_ADDONS . $name . '/javascript/' . $name . '.js';
 
+            case 'fp_module':
+                $file = PATH_ADDONS . $name . '/javascript/' . $name . '.js';
                 break;
+
             default:
                 return 0;
         }
@@ -684,9 +720,9 @@ class Cp
     /**
      * Set the right navigation
      *
-     * @param	array
-     * @param	string
-     * @return	int
+     * @param array
+     * @param string
+     * @return int
      */
     public function set_right_nav($nav = array())
     {
@@ -697,7 +733,7 @@ class Cp
      * URL to the current page unless POST data exists - in which case it
      * goes to the root controller.  To use the result, prefix it with BASE.AMP
      *
-     * @return	string
+     * @return string
      */
     public function get_safe_refresh()
     {
@@ -754,7 +790,7 @@ class Cp
      * the state of a view if you need to go away from it, POST requests for
      * example.
      *
-     * @return	array	GET array filtered of proprietary CP keys
+     * @return array GET array filtered of proprietary CP keys
      */
     public function get_url_state()
     {
@@ -766,11 +802,11 @@ class Cp
     }
 
     /**
-     * 	Get Quicklinks
+     * Get Quicklinks
      *
-     * 	Does a lookup for quick links.  Based on the URL we determine if it is external or not
+     * Does a lookup for quick links.  Based on the URL we determine if it is external or not
      *
-     * 	@return array
+     * @return array
      */
     private function _get_quicklinks($quick_links)
     {
@@ -796,7 +832,7 @@ class Cp
     /**
      * Abstracted Way to Add a Breadcrumb Links
      *
-     * @return	void
+     * @return void
      */
     public function set_breadcrumb($link, $title)
     {
@@ -815,8 +851,8 @@ class Cp
      *
      * Load a javascript file from a package
      *
-     * @param	string
-     * @return	void
+     * @param  string
+     * @return void
      */
     public function load_package_js($file)
     {
@@ -831,8 +867,8 @@ class Cp
      *
      * Load a stylesheet from a package
      *
-     * @param	string
-     * @return	void
+     * @param  string
+     * @return void
      */
     public function load_package_css($file)
     {
@@ -853,8 +889,8 @@ class Cp
      *
      * Add any string to the <head> tag
      *
-     * @param	string
-     * @return	string
+     * @param  string
+     * @return string
      */
     public function add_to_head($data)
     {
@@ -883,8 +919,8 @@ class Cp
      *
      * Add any string above the </body> tag
      *
-     * @param	string
-     * @return	string
+     * @param  string
+     * @return string
      */
     public function add_to_foot($data)
     {
@@ -907,8 +943,8 @@ class Cp
      * Member access validation
      *
      * @deprecated 5.0.0 Use ee('Permission')->hasAny() instead
-     * @param	string  any number of permission names
-     * @return	bool    TRUE if member has any permissions in the set
+     * @param  string  any number of permission names
+     * @return bool    TRUE if member has any permissions in the set
      */
     public function allowed_group_any()
     {
@@ -926,8 +962,8 @@ class Cp
      * Member access validation
      *
      * @deprecated 5.0.0 Use ee('Permission')->hasAll() instead
-     * @param	string  any number of permission names
-     * @return	bool    TRUE if member has all permissions
+     * @param  string  any number of permission names
+     * @return bool    TRUE if member has all permissions
      */
     public function allowed_group()
     {
@@ -970,7 +1006,7 @@ class Cp
      *
      * Tracks "reserved" words to avoid variable name collision
      *
-     * @return	array
+     * @return array
      */
     public function invalid_custom_field_names()
     {
@@ -1036,11 +1072,11 @@ class Cp
     }
 
     /**
-     * 	Fetch Action IDs
+     * Fetch Action IDs
      *
-     *	@param string
-     * 	@param string
-     *	@return mixed
+     *  @param string
+     *  @param string
+     *  @return mixed
      */
     public function fetch_action_id($class, $method)
     {
@@ -1059,10 +1095,9 @@ class Cp
     /**
      * Site Switching Logic
      *
-     * @param	int		$site_id	ID of site to switch to
-     * @param	string	$redirect	Optional URL to redirect to after site
-     * 								switching is successful
-     * @return	void
+     * @param  int     $site_id    ID of site to switch to
+     * @param  string  $redirect   Optional URL to redirect to after site switching is successful
+     * @return void
      */
     public function switch_site($site_id, $redirect = '')
     {

@@ -383,7 +383,31 @@ class ChannelEntry extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        $this->Autosaves->delete();
+        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+            foreach ($this->Autosaves as $autosave) {
+                $deleteThisAutosave = true;
+                $autosavedEntryData = $autosave->entry_data;
+                foreach ($autosavedEntryData as $key => $val) {
+                    if (isset($_POST[$key])) {
+                        unset($autosavedEntryData[$key]);
+                    }
+                }
+                foreach ($autosavedEntryData as $key => $val) {
+                    if ($key == 'title' || strpos($key, 'field_id_') === 0) {
+                        $deleteThisAutosave = false;
+                        break;
+                    }
+                }
+                if ($deleteThisAutosave) {
+                    $autosave->delete();
+                } else {
+                    $autosave->entry_data = $autosavedEntryData;
+                    $autosave->save();
+                }
+            }
+        } else {
+            $this->Autosaves->delete();
+        }
 
         $this->updateEntryStats();
         $this->saveTabData();
@@ -1192,7 +1216,7 @@ class ChannelEntry extends ContentModel
 
     public function isLivePreviewable()
     {
-        if ($this->Channel->preview_url) {
+        if ($this->Channel->preview_url && $this->Channel->allow_preview =='y') {
             return true;
         }
 
@@ -1208,14 +1232,13 @@ class ChannelEntry extends ContentModel
         return false;
     }
 
-    public function hasLivePreview()
-    {
-        if ($this->Channel->preview_url || $this->hasPageURI()) {
+    public function livePreviewAllowed() {
+        if ($this->Channel->allow_preview =='y') {
             return true;
         }
-
         return false;
     }
+
 }
 
 // EOF

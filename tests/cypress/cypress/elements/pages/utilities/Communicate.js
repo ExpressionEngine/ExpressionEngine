@@ -18,7 +18,7 @@ class Communicate extends ControlPanel {
 			  "cc" : 'input[type!=hidden][name="cc"]',
 			  "bcc" : 'input[type!=hidden][name="bcc"]',
 			  "member_groups" : 'div[data-input-value="member_groups"] input',
-			  "submit_button" : '.tab-bar__right-buttons .form-btns input[type="submit"]'
+			  "submit_button" : '.tab-bar__right-buttons .form-btns [type="submit"]'
         })
 
     }

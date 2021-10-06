@@ -51,7 +51,7 @@ class EE_Log
      * @param	bool	whether the error is a native PHP error
      * @return	bool
      */
-    public function write_log($level = 'error', $msg, $php_error = false)
+    public function write_log($level = 'error', $msg = '', $php_error = false)
     {
         if ($this->_enabled === false) {
             return false;

@@ -1292,6 +1292,42 @@ class Member
     }
 
     /**
+     * ReCaptcha Check
+     * Checks to see if the ReCaptcha Score was valid and strong enough.
+     */
+    public function recaptcha_check()
+    {
+        // Make the POST request
+        $data = [
+            'secret' => ee()->config->item('recaptcha_site_secret'),
+            'response' => ee()->input->get_post('rec'),
+        ];
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+        $response = curl_exec($curl);
+        $result = json_decode($response, true);
+
+        // Mostly random string
+        $string = bin2hex(openssl_random_pseudo_bytes(10));
+
+        $captcha = ee('Model')->make('Captcha');
+        $captcha->date = ee()->localize->now;
+        $captcha->ip_address = ee()->input->ip_address();
+        $captcha->word = $string;
+        $captcha->save();
+
+        if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshhold')) {
+            $string = "failed";
+        }
+        return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);
+    }
+
+    /**
      * Register Member
      */
     public function register_member()
@@ -1462,7 +1498,6 @@ class Member
             ->delete('sessions');
 
         ee()->input->delete_cookie(ee()->session->c_session);
-        ee()->input->delete_cookie(ee()->session->c_expire);
         ee()->input->delete_cookie(ee()->session->c_anon);
         ee()->input->delete_cookie('read_topics');
         ee()->input->delete_cookie('tracker');
@@ -2562,6 +2597,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {
@@ -2598,6 +2634,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {

@@ -18,8 +18,10 @@ class Javascript_loader
      */
     public function __construct()
     {
-        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
-        define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
+        if (!defined('PATH_JAVASCRIPT')) {
+            define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
+            define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
+        }
     }
 
     /**
@@ -59,7 +61,7 @@ class Javascript_loader
                         $package = $file;
                     }
 
-                    $file = $package . '/javascript/' . $file;
+                    $file = ee()->security->sanitize_filename($package . '/javascript/' . $file, true);
                 } elseif ($type == 'file' or $type == 'pro_file') {
                     $parts = explode('/', $file);
                     $file = array();

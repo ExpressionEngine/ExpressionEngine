@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -675,7 +676,7 @@ class Forum_Core extends Forum
                 return ee('Permission')->isSuperAdmin();
             }
 
-            $member = ee('Model')->get('Member', $member_id)->first();
+            $member = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
             if (! $member) {
                 return false;
@@ -2244,8 +2245,7 @@ class Forum_Core extends Forum
         $read_topics = $this->_fetch_read_topics($this->current_id);
 
         if (ee()->session->userdata('member_id') == 0) {
-            $expire = 60 * 60 * 24 * 365;
-            ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+            ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
         } else {
             if ($this->read_topics_exist === false) {
                 $d = array(
@@ -3308,6 +3308,7 @@ class Forum_Core extends Forum
                             'lang:change_status' => ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
                             'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
                             'css:status_button' => ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
+                            
                         )
                     );
                 }
@@ -5355,8 +5356,7 @@ class Forum_Core extends Forum
             $read_topics = $this->_fetch_read_topics($data['topic_id']);
 
             if (ee()->session->userdata('member_id') == 0) {
-                $expire = 60 * 60 * 24 * 365;
-                ee()->input->set_cookie('forum_topics', json_encode($read_topics), $expire);
+                ee()->input->set_cookie('forum_topics', json_encode($read_topics), 31104000);
             }
         }
 
@@ -5932,7 +5932,8 @@ class Forum_Core extends Forum
         $viewpath = ($query->row('announcement') == 'n') ? 'viewthread/' : 'viewannounce/';
         $viewpath .= ($query->row('announcement') == 'n') ? $_GET['topic_id'] : $_GET['topic_id'] . '_' . $query->row('forum_id') ;
 
-        if (! $this->_mod_permission('can_change_status', $query->row('forum_id'))) {
+        $token = ee('Request')->post('csrf_token');
+        if (! $this->_mod_permission('can_change_status', $query->row('forum_id')) || (! bool_config_item('disable_csrf_protection') && $token !== CSRF_TOKEN)) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
         }
 
@@ -7036,7 +7037,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -7100,7 +7101,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -9509,6 +9510,7 @@ class Forum_Core extends Forum
         /**  Validate Username and Password
         /** ----------------------------------*/
         $member = ee('Model')->get('Member')
+            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->filter('username', $username)
             ->first();
 

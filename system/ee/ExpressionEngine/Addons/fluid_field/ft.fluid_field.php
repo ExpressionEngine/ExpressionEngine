@@ -17,6 +17,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
+    public $size = 'large';
+
     private $errors;
 
     /**
@@ -142,9 +146,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 $id = str_replace('field_', '', $key);
                 $field = $fluid_field_data[$id]->getField();
                 $fluid_field_data_id = $fluid_field_data[$id]->getId();
-            }
             // New field
-            elseif (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);
@@ -195,9 +198,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 $id = str_replace('field_', '', $key);
                 $this->updateField($fluid_field_data[$id], $i, $value);
                 unset($fluid_field_data[$id]);
-            }
             // New field
-            elseif (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);
@@ -268,6 +270,15 @@ class Fluid_field_ft extends EE_Fieldtype
     {
         $values = $this->prepareData($fluid_field, $values);
 
+        if (ee()->extensions->active_hook('fluid_field_update_field') === true) {
+            $values = ee()->extensions->call(
+                'fluid_field_update_field',
+                $fluid_field,
+                $fluid_field->ChannelField->getTableName(),
+                $values
+            );
+        }
+
         $fluid_field->order = $order;
         $fluid_field->save();
 
@@ -293,6 +304,14 @@ class Fluid_field_ft extends EE_Fieldtype
             'entry_id' => 0,
         ));
 
+        if (ee()->extensions->active_hook('fluid_field_add_field') === true) {
+            $values = ee()->extensions->call(
+                'fluid_field_add_field',
+                $fluid_field->ChannelField->getTableName(),
+                $values
+            );
+        }
+
         $field = ee('Model')->get('ChannelField', $field_id)->first();
 
         $query = ee('db');
@@ -309,6 +328,10 @@ class Fluid_field_ft extends EE_Fieldtype
         $query = ee('db');
         $query->where('id', $fluid_field->field_data_id);
         $query->delete($fluid_field->ChannelField->getTableName());
+
+        if (ee()->extensions->active_hook('fluid_field_remove_field') === true) {
+            ee()->extensions->call('fluid_field_remove_field', $fluid_field);
+        }
 
         $fluid_field->delete();
     }
@@ -552,7 +575,7 @@ class Fluid_field_ft extends EE_Fieldtype
     /**
      * Called when entries are deleted
      *
-     * @param	array	Entry IDs to delete data for
+     * @param   array   Entry IDs to delete data for
      */
     public function delete($entry_ids)
     {
@@ -580,7 +603,7 @@ class Fluid_field_ft extends EE_Fieldtype
      * Update the fieldtype
      *
      * @param string $version The version being updated to
-     * @return boolean TRUE if successful, FALSE otherwise
+     * @return boolean true if successful, FALSE otherwise
      */
     public function update($version)
     {

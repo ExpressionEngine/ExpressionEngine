@@ -4,6 +4,9 @@
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('favicon')) : ?>
+		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
+		<?php endif; ?>
 		<?php if (isset($meta_refresh)): ?>
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
 		<?php endif;?>
@@ -47,7 +50,8 @@ $current_page = ee()->uri->segment(2);
                 $this->embed('ee:_shared/sidebar/navigation/navigation');
             endif; ?>
 			<div class="ee-main">
-
+		
+		<?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
         <div class="ee-main-header">
 
           <a href="" class="sidebar-toggle<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?> sidebar-toggle__collapsed<?php endif; ?>" title="Toggle Sidebar"><i class="fas fa-angle-<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?>right<?php else : ?>left<?php endif; ?>"></i></a>
@@ -59,7 +63,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>""><i class="fas fa-home"></i></a></li>
+					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><i class="fas fa-home"></i></a></li>
 						<?php
                         $i = 0;
                         foreach ($cp_breadcrumbs as $link => $title):
@@ -116,5 +120,8 @@ $current_page = ee()->uri->segment(2);
 
 
         </div>
+		<?php else: ?>
+		<br />
+		<?php endif; ?>
 
 <?php

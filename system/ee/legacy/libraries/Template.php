@@ -47,6 +47,7 @@ class EE_Template
     public $template_group_id = 0;
     public $template_name = '';			// Name of template being parsed
     public $template_id = 0;
+    public $enable_frontedit = 'y';
 
     public $tag_data = array();		// Data contained in tags
     public $tagparams = array();
@@ -1200,6 +1201,9 @@ class EE_Template
                 $data_start = $this->in_point + $tag_length;
 
                 $tag = trim(substr($raw_tag, 1, -1));
+                if (IS_PRO) {
+                    $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $tag);
+                }
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
 
@@ -1342,6 +1346,10 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
+                if (IS_PRO && $tag != 'exp:channel:entries') {
+                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $chunk);
+                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $block);
+                }
             } // END IF
 
             // Increment counter
@@ -1889,7 +1897,14 @@ class EE_Template
         $status = & $this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (! isset($args['cache']) or $args['cache'] != 'yes') {
+        if (! isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
+            $status = 'NO_CACHE';
+
+            return false;
+        }
+
+        // do not use cache with Pro editing
+        if (IS_PRO && ee('pro:Access')->hasDockPermission()) {
             $status = 'NO_CACHE';
 
             return false;
@@ -2351,7 +2366,7 @@ class EE_Template
             }
         }
 
-        if ($template_group == '' && $show_default == false && ee()->config->item('site_404') != '') {
+        if (($template_group == '' || in_array($template_group, ['system_messages', 'pro-dashboard-widgets'])) && $show_default == false && ee()->config->item('site_404') != '') {
             $treq = ee()->config->item('site_404');
 
             $x = explode("/", $treq);
@@ -2650,6 +2665,7 @@ class EE_Template
         $this->template_group_id = $row['group_id'];
         $this->template_name = $row['template_name'];
         $this->template_id = $row['template_id'];
+        $this->enable_frontedit = $row['enable_frontedit'];
 
         return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
     }
@@ -2882,6 +2898,10 @@ class EE_Template
     {
         if (strpos($str, '{!--') === false) {
             return $str;
+        }
+
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
         return preg_replace("/\{!--.*?--\}/s", '', $str);
@@ -3504,7 +3524,7 @@ class EE_Template
         }
 
         // same with modified, sometimes devs run this method themselves instead of a full parse_variables()
-        if ($this->modified_vars === false) {
+        if (empty($this->modified_vars) || $this->modified_vars === false) {
             $this->modified_vars = $this->getModifiedVariables();
         }
 

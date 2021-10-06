@@ -121,6 +121,8 @@ class Roles extends AbstractRolesController
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
+                'faded' => '(' . $role->PrimaryMembers->count() . ')',
+                'faded-href' => ee('CP/URL')->make('members', ['role_id' => $role->getId()]),
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => null,
@@ -509,18 +511,11 @@ class Roles extends AbstractRolesController
         // template_access
         $template_ids = [];
         if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
-                if (is_numeric($value)) {
-                    $template_ids[] = $value;
-                }
+            $posted_assigned_templates = ee('Request')->post('assigned_templates');
+            if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {
+                $posted_assigned_templates = json_decode($posted_assigned_templates);
             }
-        }
-        if (!empty($template_ids)) {
-            $role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
-        }
-
-        if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
+            foreach ($posted_assigned_templates as $value) {
                 if (is_numeric($value)) {
                     $template_ids[] = $value;
                 }
@@ -1398,6 +1393,7 @@ class Roles extends AbstractRolesController
                         'type' => 'checkbox',
                         'nested' => true,
                         'auto_select_parents' => true,
+                        'jsonify' => true,
                         'choices' => $template_access['choices'],
                         'value' => $template_access['values'],
                     ]

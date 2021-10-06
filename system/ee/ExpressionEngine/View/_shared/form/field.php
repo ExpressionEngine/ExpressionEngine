@@ -111,6 +111,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
 	    'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
 	    'encode' => isset($field['encode']) ? $field['encode'] : true,
 	    'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
+		'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
 	    'class' => $class,
 	    'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
 	]); ?>
@@ -151,9 +152,7 @@ case 'textarea':
     if ($class): ?>
 		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
 	<?php endif ?>
-
-			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
-
+			<textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
 	<?php if ($margin_top or $margin_left): ?>
 		</div>
 	<?php endif ?>

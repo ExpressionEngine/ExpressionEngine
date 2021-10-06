@@ -68,6 +68,18 @@ return array(
             'ee:Member'
         ),
     ),
+    'cookies.functionality' => [
+        'forum_theme',
+        'forum_topics'
+    ],
+    'cookie_settings' => [
+        'forum_theme' => [
+            'description' => 'lang:cookie_forum_theme_desc'
+        ],
+        'forum_topics' => [
+            'description' => 'lang:cookie_forum_topics_desc'
+        ]
+    ],
 );
 
 // EOF

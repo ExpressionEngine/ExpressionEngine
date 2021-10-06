@@ -105,9 +105,20 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                     $check_permissions = true;
                 }
 
-                if ($check_permissions &&
-                    $file->memberHasAccess(ee()->session->getMember()) == false) {
-                    return array('value' => '', 'error' => lang('directory_no_access'));
+                if ($check_permissions) {
+                    $member = ee()->session->getMember();
+                    if (!$member && isset(ee()->channel_form)) {
+                        ee()->load->add_package_path(PATH_ADDONS . 'channel');
+                        ee()->load->library('channel_form/channel_form_lib');
+                        ee()->channel_form_lib->fetch_logged_out_member();
+                        if (!empty(ee()->channel_form_lib->logged_out_member_id)) {
+                            $member = ee('Model')->get('Member', ee()->channel_form_lib->logged_out_member_id)->first();
+                        }
+                        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+                    }
+                    if (!$member || $file->memberHasAccess($member) == false) {
+                        return array('value' => '', 'error' => lang('directory_no_access'));
+                    }
                 }
 
                 return array('value' => $data);

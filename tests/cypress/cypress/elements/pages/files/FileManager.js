@@ -17,7 +17,7 @@ class FileManager extends FileManagerSection {
 
 					// Main box's table elements
 					'files': '.ee-main__content form .table-responsive table tr',
-					'selected_file': '.ee-main__content form .table-responsive table tr.selected',
+					
 
 					'title_name_header': '.ee-main__content form .table-responsive table tr th:first-child',
 					'file_type_header': '.ee-main__content form .table-responsive table tr th:nth-child(2)',
@@ -36,7 +36,7 @@ class FileManager extends FileManagerSection {
 					'view_modal_header': 'div.modal-view-file h1',
 
 					'remove_directory_modal': 'div.modal-confirm-directory',
-					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls input.button'
+					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls .button'
         })
 		}
 		load() {

@@ -25,8 +25,8 @@ interface Strict_XID
 class EE_Security
 {
     // Flags for have_valid_xid()
-    const CSRF_STRICT = 1;	// require single-use token for ajax requests
-    const CSRF_EXEMPT = 2;	// opt-out of xid checks
+    const CSRF_STRICT = 1;  // require single-use token for ajax requests
+    const CSRF_EXEMPT = 2;  // opt-out of xid checks
 
     /**
      * XSS Clean
@@ -42,8 +42,8 @@ class EE_Security
     /**
      * Filename Security
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function sanitize_filename($str, $relative_path = false)
     {
@@ -68,29 +68,33 @@ class EE_Security
             '?',
             "%20",
             "%22",
-            "%3c",		// <
-            "%253c",	// <
-            "%3e",		// >
-            "%0e",		// >
-            "%28",		// (
-            "%29",		// )
-            "%2528",	// (
-            "%26",		// &
-            "%24",		// $
-            "%3f",		// ?
-            "%3b",		// ;
-            "%3d"		// =
+            "%3c",      // <
+            "%253c",    // <
+            "%3e",      // >
+            "%0e",      // >
+            "%28",      // (
+            "%29",      // )
+            "%2528",    // (
+            "%26",      // &
+            "%24",      // $
+            "%3f",      // ?
+            "%3b",      // ;
+            "%3d"       // =
         );
 
         if (! $relative_path) {
             $bad[] = './';
             $bad[] = '/';
+            $str = str_replace(['./', '/'], '_', $str);
         }
 
         $str = remove_invisible_characters($str, false);
-        $str = preg_replace('/\.+[\/\\\]/', '', $str);
+        $str = str_replace($bad, '_', $str);
+        $str = preg_replace('/\.+[\/\\\]/i', '_', $str);
+        $str = preg_replace('/\r|\n/i', '_', $str);
+        $str = stripslashes($str);
 
-        return stripslashes(str_replace($bad, '', $str));
+        return $str;
     }
 
     /**

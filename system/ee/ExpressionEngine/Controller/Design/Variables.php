@@ -512,7 +512,8 @@ class Variables extends AbstractDesignController
             'hits',
             'total_queries',
             'XID_HASH',
-            'csrf_token'
+            'csrf_token',
+            'frontedit_link'
         );
 
         if (in_array($str, $reserved_vars)) {

@@ -74,13 +74,13 @@ context('RTE Settings', () => {
             page.get('action_submit_button').click()
 
             cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('input[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
+                cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
                     elem.val(val)
                 });
             });
 
             //page.get('modal_submit_button').click() // Submits a form AJ
-            cy.get('input').contains('Confirm, and Remove').first().click({force:true})
+            cy.get('button').contains('Confirm, and Remove').first().click({force:true})
             cy.hasNoErrors()
 
             page.hasAlert('error')
@@ -152,16 +152,16 @@ context('RTE Settings', () => {
 
 
             //page.get('modal_submit_button').click() // Submits a form new cp does not use this
-            cy.get('input[type="submit"][value="Confirm, and Remove"]').eq(1).click() //try this instead.
+            cy.get('[type="submit"][value="Confirm, and Remove"]').eq(1).click() //try this instead.
 
             cy.hasNoErrors()
 
             page.hasAlert('success')
             page.get('alert').contains("Tool sets removed")
             page.get('alert').contains("The following tool sets were removed")
-            page.get('alert').contains("Full")
-            page.get('alert').contains("Three")
-            page.get('alert').contains("Five")
+            page.get('alert').contains("CKEditor Full")
+            page.get('alert').contains("Redactor Basic")
+            page.get('alert').contains("Redactor Full")
             page.get('alert').contains("Six")
             page.get('alert').contains("Seven")
         })
