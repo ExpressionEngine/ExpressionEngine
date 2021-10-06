@@ -257,6 +257,7 @@ class FileUpdater
             }
 
             $new_path = str_replace($source, $destination, $path);
+            $new_path = str_replace("//", "/", $new_path);
 
             // Try to catch permissions errors before PHP's file I/O functions do
             if (! $this->filesystem->isWritable($path)) {
