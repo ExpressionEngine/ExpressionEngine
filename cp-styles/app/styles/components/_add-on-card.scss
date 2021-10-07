@@ -146,8 +146,9 @@
   top: 15px;
   left: -25px;
   text-align: center;
-  line-height: 25px;
+  line-height: 24px;
   font-size: 12px;
+  text-transform: uppercase;
   letter-spacing: 1px;
   color: #f0f0f0;
   font-weight: bold;
@@ -159,7 +160,7 @@
   }
 
   &.shadow{
-    box-shadow: 0 0 3px rgba(0,0,0,.3);
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
   }
 
   &.top-left{
@@ -167,6 +168,11 @@
     left: -65px;
     transform: rotate(-45deg);
     -webkit-transform: rotate(-45deg);
+  }
+
+  &.top-left.trial{
+    top: 12px;
+    left: -74px;
   }
 
   &.top-right{
@@ -195,7 +201,7 @@
   }
 
   &.trial {
-    background: color(accent-medium);
+    background: color(accent);
   }
   &.update_available {
     background: color(ee-update);
