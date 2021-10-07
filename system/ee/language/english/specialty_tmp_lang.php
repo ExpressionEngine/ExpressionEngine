@@ -166,6 +166,8 @@ $lang = array(
 
     'validated_member_notify_desc' => 'This template defines the notification that members receive when an admin has validated their membership account',
 
+    'mbr_tmpl_should_be_in' => 'Legacy member templates should be in folder',
+
 );
 
 // EOF

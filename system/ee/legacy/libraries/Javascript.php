@@ -685,19 +685,22 @@ class EE_Javascript
      */
     public function get_global()
     {
-        return $this->inline('
-			document.documentElement.className += "js";
+        $compiled = '';
+        if (REQ == 'CP') {
+            $compiled = '
+        document.documentElement.className += "js";';
+        }
+        $compiled .= '
+        if (typeof EE == "undefined" || ! EE) {
+            var EE = ' . json_encode($this->global_vars) . ';
+        } else {
+            EE = Object.assign(EE, ' . json_encode($this->global_vars) . ');
+        }
 
-			if (typeof EE == "undefined" || ! EE) {
-				var EE = ' . json_encode($this->global_vars) . ';
-			} else {
-				EE = Object.assign(EE, ' . json_encode($this->global_vars) . ');
-			}
-
-			if (typeof console === "undefined" || ! console.log) {
-				console = { log: function() { return false; }};
-			}
-		');
+        if (typeof console === "undefined" || ! console.log) {
+            console = { log: function() { return false; }};
+        }';
+        return $this->inline($compiled);
     }
 
     /**

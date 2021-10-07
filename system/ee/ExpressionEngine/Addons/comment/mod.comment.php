@@ -845,11 +845,10 @@ class Comment
         $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
         $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
 
-        if (! ee('Captcha')->shouldRequireCaptcha()) {
-            $cond['captcha'] = false;
-        } else {
-            $cond['captcha'] = (ee()->config->item('captcha_require_members') == 'y' or
-                                (ee()->config->item('captcha_require_members') == 'n' and ee()->session->userdata('member_id') == 0)) ? true : false;
+        $cond['captcha'] = ee('Captcha')->shouldRequireCaptcha();
+
+        if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
         }
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -1625,8 +1624,10 @@ class Comment
         /** ----------------------------------------*/
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+                return ee()->output->show_user_error('submission', $captcha_error);
             } else {
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
                 ee()->db->where('word', $_POST['captcha']);
                 ee()->db->where('ip_address', ee()->input->ip_address());
                 ee()->db->where('date > UNIX_TIMESTAMP()-7200', null, false);
@@ -1634,7 +1635,7 @@ class Comment
                 $result = ee()->db->count_all_results('captcha');
 
                 if ($result == 0) {
-                    return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
+                    return ee()->output->show_user_error('submission', $captcha_error);
                 }
 
                 // @TODO: AR

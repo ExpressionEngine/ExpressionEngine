@@ -267,9 +267,11 @@ $.widget("ui.draggable", $.ui.mouse, {
 			}
 			this.position = ui.position;
 		}
-
-		this.helper[ 0 ].style.left = this.position.left + "px";
-		this.helper[ 0 ].style.top = this.position.top + "px";
+		
+		if(this.helper) {
+			this.helper[ 0 ].style.left = this.position.left + "px";
+			this.helper[ 0 ].style.top = this.position.top + "px";
+		}
 
 		if ($.ui.ddmanager) {
 			$.ui.ddmanager.drag(this, event);

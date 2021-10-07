@@ -114,10 +114,16 @@ class Publish extends AbstractPublishController
             $autosave->original_entry_id = $entry_id;
             $autosave->site_id = $site_id;
             $autosave->channel_id = $channel_id;
+            $autosave->entry_data = $_POST;
+        } else {
+            $entry_data = $autosave->entry_data;
+            foreach ($_POST as $key => $val) {
+                $entry_data[$key] = $val;
+            }
+            $autosave->entry_data = $entry_data;
         }
 
         $autosave->edit_date = ee()->localize->now;
-        $autosave->entry_data = $_POST;
 
         // This is currently unused, but might be useful for display purposes
         $autosave->author_id = ee()->input->post('author_id', ee()->session->userdata('member_id'));
@@ -244,6 +250,18 @@ class Publish extends AbstractPublishController
                 'text' => 'save_and_close',
                 'working' => 'btn_saving'
             ]];
+        }
+
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('original_entry_id', 0)
+                ->filter('channel_id', $channel_id)
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
+            }
         }
 
         if ($autosave_id) {

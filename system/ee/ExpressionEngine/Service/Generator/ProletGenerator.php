@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Service\Generator;
 
@@ -59,6 +67,12 @@ class ProletGenerator
         $proletStub = $this->write('name', $this->name, $proletStub);
 
         $this->putFile('pro.' . $this->addon . '.php', $proletStub);
+
+        if (IS_PRO && ee('Addon')->get($this->addon)->isInstalled()) {
+            // Update prolets in EE
+            $addon = ee('pro:Addon')->get($this->addon);
+            $addon->updateProlets();
+        }
     }
 
     private function addonHasIcon()
@@ -75,7 +89,7 @@ class ProletGenerator
 
     private function write($key, $value, $file)
     {
-        return str_replace('{{' . $key . '}}', addslashes($value), $file);
+        return str_replace('{{' . $key . '}}', $value, $file);
     }
 
     private function putFile($name, $contents, $path = null)

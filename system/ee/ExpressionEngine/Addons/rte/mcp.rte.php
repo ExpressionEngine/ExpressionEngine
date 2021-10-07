@@ -52,8 +52,8 @@ class Rte_mcp
 
             if ($validationResult->passed()) {
                 $prefs = [
-                    'rte_default_toolset' => ee()->input->post('rte_default_toolset'),
-                    'rte_file_browser' => ee()->input->post('rte_file_browser')
+                    'rte_default_toolset' => ee()->input->post('rte_default_toolset', true),
+                    'rte_file_browser' => ee()->input->post('rte_file_browser', true)
                 ];
                 ee()->config->update_site_prefs($prefs);
 
@@ -205,16 +205,16 @@ class Rte_mcp
      */
     public function edit_toolset()
     {
-        $toolsetType = ee('Request')->post('toolset_type') ?: 'ckeditor';
+        $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
         
         if (ee('Request')->isPost()) {
-            $settings = ee('Request')->post('settings');
+            $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
 
             // -------------------------------------------
             //  Save and redirect to Index
             // -------------------------------------------
 
-            $toolset_id = ee('Request')->post('toolset_id');
+            $toolset_id = ee('Security/XSS')->clean(ee('Request')->post('toolset_id'));
             $configName = ee('Request')->post('toolset_name');
 
             if (!$configName) {
@@ -277,7 +277,7 @@ class Rte_mcp
         $headingTitle = lang('rte_create_config');
 
         if (
-            ($toolset_id = ee('Request')->get('toolset_id'))
+            ($toolset_id = (int) ee('Request')->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
             $config->settings = array_merge(ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
@@ -472,7 +472,7 @@ class Rte_mcp
      */
     public function delete_toolset()
     {
-        $toolset_id = ee('Request')->post('selection');
+        $toolset_id = ee('Security/XSS')->clean(ee('Request')->post('selection'));
 
         if (!empty($toolset_id)) {
             $config = ee('Model')->get('rte:Toolset')->filter('toolset_id', 'IN', $toolset_id);
