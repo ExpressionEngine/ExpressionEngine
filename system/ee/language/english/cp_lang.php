@@ -324,6 +324,8 @@ $lang = array(
 
     'recent_members' => 'Recent Members',
 
+    'recent_templates' => 'Recent Templates',
+
     'results' => 'results',
 
     'select_row' => 'Select Row',
@@ -470,6 +472,8 @@ $lang = array(
     'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
 
     'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
+
+    'provide_valid_license' => 'You need to provide valid license key in order to use this feature.',
 
     /* CP Errors */
     '404_does_not_exist' => '404: Item does not exist',
@@ -675,6 +679,22 @@ $lang = array(
     'up_to_date' => 'Up to date!',
 
     'version' => 'Version',
+
+    'enter_site_license' => 'Enter Site License',
+
+    'your_license_is' => 'Your license is:',
+
+    'license_trial' => 'Trial',
+    'license_expired' => 'Expired',
+    'license_invalid' => 'Unlicensed',
+    'license_invalid_domain' => 'Invalid Domain',
+    'license_invalid_license_key' => 'Invalid License Key',
+    'license_missing_license_key' => 'Missing License Key',
+    'license_na' => 'Unknown',
+
+    'purchase_pro_license' => 'Purchase Pro License',
+    'renew_pro_license' => 'Renew Pro License',
+    'update_site_domain' => 'Update Site Domain',
 
     /* confirm removal modal */
     'btn_confirm_and_remove' => 'Confirm, and Remove',

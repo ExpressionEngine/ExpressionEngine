@@ -96,10 +96,9 @@ if (! file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
     exit("\033[31mYour system folder path does not appear to be set correctly.\n");
 }
 
-// Bootstrap the standalone CLI if EE isn't installed
+// Fail if EE isn't installed
 if (! EE_INSTALLED) {
     exit("\033[31mExpressionEngine does not appear to be installed. Please install ExpressionEngine to use the CLI component.\n");
-    // include SYSPATH . 'ee/ExpressionEngine/Cli/StandaloneCli/StandaloneCli.php';
     die();
 }
 

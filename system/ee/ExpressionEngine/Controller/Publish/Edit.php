@@ -354,11 +354,21 @@ class Edit extends AbstractPublishController
 
         $entry = ee('Model')->get('ChannelEntry', $id)
             ->with('Channel')
-            ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
         if (! $entry) {
             show_error(lang('no_entries_matching_that_criteria'));
+        }
+
+        //if the entry-to-be-saved belongs to different site, switch to that site
+        if ($entry->site_id != ee()->config->item('site_id')) {
+            if (ee('Request')->isPost()) {
+                $orig_site_id = ee()->config->item('site_id');
+                ee()->cp->switch_site($entry->site_id, $base_url);
+            } else {
+                //but we only auto-switch if we're saving
+                show_error(lang('no_entries_matching_that_criteria'));
+            }
         }
 
         if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
@@ -402,9 +412,15 @@ class Edit extends AbstractPublishController
             'in_modal_context' => $sequence_editing
         );
 
-        if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('return') != '') {
-            $vars['form_hidden'] = ['return' => urldecode(ee()->input->get('return'))];
+        if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('modal_form') === 'y') {
+            if (ee()->input->get('return') != '') {
+                $vars['form_hidden'] = [
+                    'return' => urldecode(ee()->input->get('return', true))
+                ];
+            }
             $vars['hide_sidebar'] = true;
+            $vars['hide_topbar'] = true;
+            $vars['pro_class'] = 'pro-frontend-modal';
         }
 
         if ($sequence_editing) {
@@ -428,6 +444,16 @@ class Edit extends AbstractPublishController
             $version = $entry->Versions->filter('version_id', $version_id)->first();
             $version_data = $version->version_data;
             $entry->set($version_data);
+        }
+
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('original_entry_id', $entry->entry_id)
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
+            }
         }
 
         if ($autosave_id) {
@@ -478,9 +504,22 @@ class Edit extends AbstractPublishController
             '' => lang('edit_entry')
         );
 
+        //switch the site back if needed
+        if (ee('Request')->isPost() && isset($orig_site_id)) {
+            ee()->cp->switch_site($orig_site_id, $base_url);
+        }
+
         if (ee('Request')->get('modal_form') == 'y') {
             $vars['layout']->setIsInModalContext(true);
             ee()->output->enable_profiler(false);
+
+            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
+                ee()->cp->add_js_script(array(
+                    'pro_file' => array(
+                        'iframe-listener'
+                    )
+                ));
+            }
 
             return ee()->view->render('publish/modal-entry', $vars);
         }

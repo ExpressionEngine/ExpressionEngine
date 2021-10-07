@@ -302,6 +302,8 @@ $lang = array(
 
     'readMore_rte' => '"Read More" separator',
 
+    'readmore_rte' => '"Read More" separator',
+
     'fontColor_rte' => 'Font color',
 
     'fontBackgroundColor_rte' => 'Font background',
