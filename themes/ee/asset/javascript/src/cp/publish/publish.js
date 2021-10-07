@@ -135,7 +135,7 @@ $(document).ready(function () {
 		});
 
 		// Start autosave when something changes
-		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
+		var writeable = $('textarea, input, div.redactor-styles, div.ck-content').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
 
 		writeable.on('keypress change', function(){publishForm.trigger("entry:startAutosave")});
@@ -217,7 +217,7 @@ $(document).ready(function () {
 		// Move the publish form into the live preview container
 		container.append($(publishForm));
 
-		$(container).on('interact', 'input, textarea', function(e) {
+		$(container).on('interact', 'input, textarea, div.redactor-styles, div.ck-content', function(e) {
 			$('body').trigger('entry:preview', [225]);
 		});
 
