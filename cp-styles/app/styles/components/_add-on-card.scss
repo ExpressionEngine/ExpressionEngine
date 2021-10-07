@@ -7,9 +7,13 @@
 
   $add-on-card-size: 180px;
 
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax($add-on-card-size * 2, 1fr));
-  grid-gap: $s-m;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax($add-on-card-size * 2, 1fr));
+	grid-gap: $s-m;
+
+	@include m-mobile-down {
+		display: block;
+	}
 }
 
 
@@ -23,7 +27,12 @@
   display: flex;
   align-items: center;
     width: 100%;
-  padding: $s-m $s-m ($s-m - 2px) $s-m;
+	padding: $s-m $s-m ($s-m - 2px) $s-m;
+
+	@include m-mobile-down {
+		margin-bottom: 20px;
+		flex-wrap: wrap;
+	}
 }
 
 .add-on-card--clickable {
@@ -117,8 +126,15 @@
 }
 
 .add-on-card__button {
-  margin-left: $s-s;
-  white-space: nowrap;
+	margin-left: $s-s;
+	white-space: nowrap;
+
+	@include m-mobile-down {
+		width: 100%;
+		margin-left: 0;
+		margin-top: 10px;
+		display: block;
+	}
 }
 
 .add-on-card.first-party .first-party-svg {
