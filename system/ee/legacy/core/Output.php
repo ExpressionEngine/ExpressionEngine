@@ -333,6 +333,22 @@ class EE_Output
         }
 
         // --------------------------------------------------------------------
+        // Include PRO stuff
+        $installMode = false;
+        if (file_exists(FCPATH . '.env.php') && (require FCPATH . '.env.php') == true) {
+            $installMode = getenv('EE_INSTALL_MODE') === 'TRUE';
+        }
+        $inInstallMode = is_dir(SYSPATH . 'ee/installer/') && $installMode;
+        if (IS_PRO && !$inInstallMode) {
+            $output = ee('pro:Dock')->buildOutput($output);
+        }
+        if (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) {
+            if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
+                $output = preg_replace("/\{frontedit_link\s+(.*)\}/sU", '', $output);
+                $output = preg_replace("/\<\!--\s*(\/\/\s*)*disable\s*frontedit\s*--\>/sU", '', $output);
+            }
+        }
+        // --------------------------------------------------------------------
 
         // Do we need to generate profile data?
         // If so, load the Profile service and run it.

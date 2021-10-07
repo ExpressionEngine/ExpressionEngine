@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Service\Generator;
 
@@ -46,7 +54,7 @@ class WidgetGenerator
 
         // If the addon doesn't have a
         if (! $this->filesystem->isDir($this->widgetsPath)) {
-            $this->filesystem->mkDir($this->widgetsPath);
+            $this->filesystem->mkDir($this->widgetsPath, false);
         }
 
         // Get stub path
@@ -63,6 +71,12 @@ class WidgetGenerator
         $widgetStub = $this->write('addon_name', $this->addonName, $widgetStub);
 
         $this->putFile($this->widgetName . '.php', $widgetStub, 'widgets');
+
+        if (IS_PRO && ee('Addon')->get($this->addon)->isInstalled()) {
+            // Update the dashboard widgets and prolets
+            $addon = ee('pro:Addon')->get($this->addon);
+            $addon->updateDashboardWidgets();
+        }
     }
 
     private function stub($file)
@@ -72,7 +86,7 @@ class WidgetGenerator
 
     private function write($key, $value, $file)
     {
-        return str_replace('{{' . $key . '}}', addslashes($value), $file);
+        return str_replace('{{' . $key . '}}', $value, $file);
     }
 
     private function putFile($name, $contents, $path = null)
