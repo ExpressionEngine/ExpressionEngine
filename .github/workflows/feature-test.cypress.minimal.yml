@@ -3,7 +3,7 @@ name: Minimal feature Cypress tests
 on:
   push:
     branches:
-      - branch-name-to-be-tested
+      - NO_TEST
 
 jobs:
     cypress-tests:
@@ -12,7 +12,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                php: [5.6, 7.4, 8.0]
+                php: [7.4]
                 os: [ubuntu-18.04]
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -22,16 +22,31 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
+            - name: Checkout Pro
+              uses: actions/checkout@v2
+              with:
+                repository: EllisLab/ExpressionEngine-Pro
+                token: ${{ secrets.ORG_ACCESS_TOKEN }}
+                path: __pro
+
+            - name: Move Pro into core
+              run: |
+                mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+                mv __pro/themes/ee/pro themes/ee/pro
+                mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+                mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+                rm -rf __pro
+
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config.ee6.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
 
             - name: Setup Permissions
               run: |
@@ -60,13 +75,18 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
+            - name: Directory Listing
+              run: |
+                ls -lar tests/cypress/support/templates/
+                ls -lar tests/cypress/support/templates/pro.group/
+
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               with:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: addons.cypress.json
+                config-file: feature.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2

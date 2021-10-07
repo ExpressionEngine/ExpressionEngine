@@ -572,51 +572,6 @@ class Addon
         return $names;
     }
 
-    /**
-     * Install, update or remove dashboard widgets provided by add-on
-     */
-    public function updateDashboardWidgets($remove_all = false)
-    {
-        //build the widgets list out of present files
-        $widget_source = $this->getProvider()->getPrefix();
-        $widgets = [];
-        foreach ($this->getFilesMatching('widgets/*.*') as $path) {
-            if (preg_match('/widgets\/(.*).(html|php)/', $path, $matches)) {
-                $widgets[$matches[1] . '.' . $matches[2]] = [
-                    'widget_file' => $matches[1],
-                    'widget_type' => $matches[2],
-                    'widget_source' => $widget_source
-                ];
-            }
-        }
-
-        //is anything already installed?
-        //if something is not in the list, remove it
-        $widgets_q = ee()->db->select('widget_id, widget_type, widget_file')
-            ->from('dashboard_widgets')
-            ->where('widget_source', $widget_source)
-            ->get();
-        if ($widgets_q->num_rows() > 0) {
-            foreach ($widgets_q->result_array() as $row) {
-                $key = $row['widget_file'] . '.' . $row['widget_type'];
-                if (!isset($widgets[$key]) || $remove_all) {
-                    ee()->db->where('widget_id', $row['widget_id']);
-                    ee()->db->delete('dashboard_widgets');
-
-                    ee()->db->where('widget_id', $row['widget_id']);
-                    ee()->db->delete('dashboard_layout_widgets');
-                } else {
-                    unset($widgets[$key]);
-                }
-            }
-        }
-
-        //is still something in the list? install those
-        if (!$remove_all && !empty($widgets)) {
-            ee()->db->insert_batch('dashboard_widgets', $widgets);
-        }
-    }
-
     public function getInstalledConsentRequests()
     {
         $return = [];
@@ -796,6 +751,85 @@ class Addon
         }
 
         return $url;
+    }
+
+    /**
+     * Check cached license response
+     *
+     * @return bool
+     */
+    public function checkCachedLicenseResponse()
+    {
+        // See if we have a cached check.
+        $cached = ee()->cache->file->get('/addons-status');
+
+        if (empty($cached)) {
+            return false;
+        }
+
+        if (!ee()->cache->file->is_writable('/addons-status')) {
+            $this->logLicenseError('license_error_file_not_writable');
+            return false;
+        }
+
+        list($cache, $integrity) = explode('||s=', $cached);
+
+        // Make sure the cache exists and has the proper integrity to use.
+        if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
+
+        if (empty($json) || ! $data = json_decode($json, true)) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        $sha = $data['sha'];
+        unset($data['sha']);
+
+        if ($sha !== hash('sha256', json_encode($data))) {
+            $this->logLicenseError('license_error_file_broken');
+            return false;
+        }
+
+        $addonStatus = 'na';
+
+        if (isset($data['addons'][$this->shortname]) && isset($data['addons'][$this->shortname]['status'])) {
+            $addonStatus = $data['addons'][$this->shortname]['status'];
+
+            if ($addonStatus === 'valid' && $data['validLicense'] === false) {
+                if (!empty($data['licenseStatus'])) {
+                    return $data['licenseStatus'];
+                } else {
+                    return 'invalid';
+                }
+            }
+        }
+
+        return $addonStatus;
+    }
+
+    /**
+     * Log license error to developer log and display alert in CP
+     *
+     * @param [type] $message
+     * @return void
+     */
+    private function logLicenseError($message)
+    {
+        ee()->load->library('logger');
+        ee()->logger->developer(lang($message), true);
+        if (REQ == 'CP') {
+            ee('CP/Alert')->makeBanner('license-error')
+                ->asWarning()
+                ->canClose()
+                ->withTitle(lang('license_error'))
+                ->addToBody(lang($message))
+                ->now();
+        }
     }
 
     /**

@@ -624,6 +624,10 @@ class Channel_form_lib
             )
         );
 
+        if ($captcha_conditional['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
+            ee()->TMPL->tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), ee()->TMPL->tagdata);
+        }
+
         $conditionals = array_merge($conditional_errors, $captcha_conditional);
 
         // Parse conditionals
@@ -1249,14 +1253,14 @@ GRID_FALLBACK;
             $captcha_required = true;
 
             if (! ee()->input->post('captcha')) {
-                $this->field_errors['captcha_word'] = lang('captcha_required');
+                $this->field_errors['captcha_word'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
             } else {
                 ee()->db->where('word', ee()->input->post('captcha', true));
                 ee()->db->where('ip_address', ee()->input->ip_address());
                 ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', false);
 
                 if (! ee()->db->count_all_results('captcha')) {
-                    $this->field_errors['captcha_word'] = lang('captcha_incorrect');
+                    $this->field_errors['captcha_word'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
                 }
 
                 ee()->db->where('word', ee()->input->post('captcha', true));
@@ -1578,7 +1582,7 @@ GRID_FALLBACK;
         $this->fetch_entry($new_id);
 
         if ($captcha_required && $this->error_handling == 'inline') {
-            $this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
+            $this->field_errors = array_merge($this->field_errors, array('captcha_word' => (ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required'))));
         }
 
         foreach ($this->field_errors as $field => $error) {

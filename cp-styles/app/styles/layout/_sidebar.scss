@@ -334,6 +334,40 @@
   width: $ee-sidebar-width;
   background-color: color(sidebar-title-bg);
   box-shadow: 0 -2px 3px rgba(0,0,0,.10);
+
+  .ee-pro__indicator-badge-wrapper {
+    position: absolute;
+    display: flex;
+    top: -10px;
+    right: 10px;
+  }
+
+  .ee-pro__indicator-badge {
+    color: #fff;
+    background-color: var(--ee-brand-primary);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px 1px;
+    border-radius: 1000px;
+
+    &.ee-pro__indicator-badge-invalid {
+      background-color: var(--ee-brand-danger);
+    }
+
+    &.ee-pro__indicator-badge-invalid_domain {
+      background-color: var(--ee-brand-danger);
+    }
+
+    &.ee-pro__indicator-badge-expired {
+      background-color: var(--ee-brand-warning);
+    }
+
+    i, .fas {
+      opacity: 0.5;
+    }
+  }
 }
 
 .sidebar-toggle {
@@ -437,6 +471,10 @@
 
   .ee-sidebar__title--needs-name i {
     margin-right: 0;
+  }
+
+  .ee-pro__indicator-badge {
+    top: -12px;
   }
 
 }
