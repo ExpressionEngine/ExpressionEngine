@@ -9,12 +9,7 @@ context('Throttle Logging', () => {
       })
   
       beforeEach(function() {
-          cy.visit('admin.php?/cp/login');
-          cy.get('#username').type('admin');
-          cy.get('#password').type('password');
-          cy.get('.button').click();
-          cy.visit('/admin.php?/cp/logs/throttle')
-
+          cy.authVisit('/admin.php?/cp/logs/throttle')
       })
 
 

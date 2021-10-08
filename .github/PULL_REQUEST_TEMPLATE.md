@@ -34,14 +34,12 @@ Resolves [#NN](https://github.com/ExpressionEngine/ExpressionEngine/issues/NN).
 
 ## Documentation
 <!-- Required for new features -->
-User Guide Pull Request: https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/pulls/NNN
+User Guide Pull Request: https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/pull/NNN
 
 <!-- Don't forget to add a single line changelog for your change to the appropriate file!
 
 - changelogs/patch.rst (x.x.X)
 - changelogs/minor.rst (x.X.x)
 - changelogs/major.rst (X.x.x)
-
-If you have not already, please sign the Contributor License Agreement: https://www.clahub.com/agreements/ExpressionEngine/ExpressionEngine
 
 Thank you for contributing to ExpressionEngine! -->

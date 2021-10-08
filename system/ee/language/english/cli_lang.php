@@ -5,7 +5,8 @@ $lang = array(
     'cli_error_no_command_given'                   => 'No command given. Try `php eecli.php list` for full list of commands.',
     'cli_error_command_not_found'                  => 'Command not found. Try `php eecli.php list` for full list of commands.',
     'cli_error_ee_not_installed'                   => 'EE is not currently installed.',
-    'cli_error_is_required'                        => ' is a required field.',
+    'cli_error_is_required'                        => 'Field is required.',
+    'cli_error_is_required_field'                  => 'Field is required. Field: ',
     'cli_option_help'                              => 'See help menu for given command',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
 

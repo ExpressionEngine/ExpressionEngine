@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli;
 
@@ -70,18 +78,6 @@ class Cli
     public $availableCommands;
 
     /**
-     * Run CLI as standalone
-     * @var [type]
-     */
-    public $isStandalone;
-
-    /**
-     * list of commands available for standalone-mode only
-     * @var array
-     */
-    public $standaloneCommands = [];
-
-    /**
      * command called on CLI
      * @var string
      */
@@ -121,8 +117,6 @@ class Cli
      */
     public function process()
     {
-        $this->standalone = defined('EE_INSTALLED') && EE_INSTALLED == false;
-
         $this->availableCommands = $this->availableCommands();
 
         // Check if command exists
@@ -248,7 +242,7 @@ class Cli
 
         $result = $this->input->in();
 
-        return $result ? $result : $default;
+        return $result ? addslashes($result) : $default;
     }
 
     public function getFirstUnnamedArgument($question = null, $default = null, $required = false)
@@ -266,7 +260,7 @@ class Cli
 
         // Name is a required field
         if ($required && empty(trim($argument))) {
-            $this->fail("This" . lang('cli_error_is_required'));
+            $this->fail(lang('cli_error_is_required'));
         }
 
         return $argument;
@@ -284,7 +278,7 @@ class Cli
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
-            $this->fail($option . lang('cli_error_is_required'));
+            $this->fail(lang('cli_error_is_required_field') . $option);
         }
 
         return $answer;
@@ -293,10 +287,15 @@ class Cli
     /**
      * Ask question and get boolean answer
      * @param  string $question
+     * @param  bool $default
+     * @param  array $required array('required' => <true/false>, 'error_message' => 'cli error message - accepts lang key')
      * @return bool
      */
-    public function confirm($question, $default = false)
+    public function confirm($question, $default = false, array $required = ['required' => false, 'error_message' => 'cli_error_is_required'])
     {
+        // Set required defaults if not passed
+        $required = array_merge(['required' => false, 'error_message' => 'cli_error_is_required'], $required);
+
         $choices = '(yes/no)';
 
         $defaultText = $default ? 'yes' : 'no';
@@ -307,19 +306,27 @@ class Cli
 
         $answer = $this->input->in();
 
-        if (is_bool($answer)) {
-            return $answer;
+        // If they didnt answer, set answer to the default
+        if (empty($answer)) {
+            $answer = $default;
         }
 
-        $confirmationRegex = '/^y/i';
-
-        $answerIsTrue = (bool) preg_match($confirmationRegex, $answer);
-
-        if ($default === false) {
-            return $answer && $answerIsTrue;
+        // If not bool, lets convert string to bool
+        if (! is_bool($answer)) {
+            $answer = get_bool_from_string($answer);
         }
 
-        return '' === $answer || $answerIsTrue;
+        // If the string didnt convert to bool, it will be null so set to default value
+        if (is_null($answer)) {
+            $answer = $default;
+        }
+
+        // If the field is set to required and the answer is false, fail with message
+        if ($required['required'] && !$answer) {
+            $this->fail($required['error_message']);
+        }
+
+        return $answer;
     }
 
     /**
@@ -334,9 +341,7 @@ class Cli
         if (EE_INSTALLED) {
             return array_key_exists($commandToParse, $this->availableCommands);
         } else {
-            $this->error('cli_error_ee_not_installed');
-
-            return array_key_exists($commandToParse, $this->standaloneCommands);
+            $this->fail('cli_error_ee_not_installed');
         }
     }
 
@@ -358,13 +363,7 @@ class Cli
      */
     protected function availableCommands()
     {
-        // If EE isn't installed, we will just pull use the standalone commands list
-
         $this->loadInternalCommands();
-
-        if (! EE_INSTALLED) {
-            return $this->standaloneCommands;
-        }
 
         $commands = $this->internalCommands;
 
@@ -452,10 +451,6 @@ class Cli
     {
         foreach ($this->internalCommands as $key => $value) {
             $obj = new $value();
-
-            if (isset($obj->standalone) && $obj->standalone) {
-                $this->standaloneCommands[$key] = $value;
-            }
         }
     }
 

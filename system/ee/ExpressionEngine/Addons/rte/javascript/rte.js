@@ -158,29 +158,31 @@
 						// replace insertion with option
 						ui.helper.ptPositionRelativeTo($insertion);
 						$insertion.replaceWith(ui.helper);
-
-					} else {
-
-						if (!ui.helper.hasClass('tb-duplicate')) {
-							// previously selected?
-							if (ui.helper.hasClass('tb-selected')) {
-								ui.helper.removeClass('tb-selected');
-
-								// replace placeholder with option
-								var $placeholder = $('#'+ui.helper.attr('id')+'-placeholder');
-								ui.helper.ptPositionRelativeTo($placeholder);
-								$placeholder.replaceWith(ui.helper);
-
-								// disable inputs
-								$('*[name]', ui.helper).attr('disabled', true);
-
-								// callback
-								if (typeof settings.onDeselect == 'function') {
-									settings.onDeselect(ui.helper);
-								}
-							}
-						}
 					}
+
+					// } else {
+
+					// 	if (!ui.helper.hasClass('tb-duplicate')) {
+					// 		// previously selected?
+					// 		if (ui.helper.hasClass('tb-selected')) {
+					// 			// ui.helper.removeClass('tb-selected');
+
+					// 			// replace placeholder with option
+					// 			var $placeholder = $('#'+ui.helper.attr('id')+'-placeholder');
+					// 			console.log('$placeholder', $insertion);
+					// 			ui.helper.ptPositionRelativeTo($insertion);
+					// 			$insertion.replaceWith(ui.helper);
+
+					// 			// disable inputs
+					// 			$('*[name]', ui.helper).attr('disabled', true);
+
+					// 			// callback
+					// 			if (typeof settings.onDeselect == 'function') {
+					// 				settings.onDeselect(ui.helper);
+					// 			}
+					// 		}
+					// 	}
+					// }
 
 					// slide option into place
 					ui.helper.animate(animateOptions, animateCallback);
@@ -198,7 +200,7 @@
 
 					var ev = event.originalEvent;
 					ev.preventDefault();
-
+					
 					// cursor over selections?
 					var cursorOverSelections = isCursorOver(ev, $selectionsContainer);
 					if (cursorOverSelections && !$selectionsContainer.hasClass('tb-hover')) {
@@ -207,6 +209,7 @@
 					else if (!cursorOverSelections && $selectionsContainer.hasClass('tb-hover')) {
 						$selectionsContainer.removeClass('tb-hover');
 						onLeaveSelections();
+						$(document.body).trigger('mouseup');
 					}
 
 					if (cursorOverSelections) {
