@@ -609,7 +609,7 @@ DELETE FROM `exp_message_listed`;
 -- Dumping data for table ee-test.exp_modules: ~11 rows (approximately)
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(17, 'Email', '2.0.0', 'n', 'n'),
+	(17, 'Email', '2.1.0', 'n', 'n'),
 	(18, 'Rss', '2.0.0', 'n', 'n');
 /*!40000 ALTER TABLE `exp_modules` ENABLE KEYS */;
 
