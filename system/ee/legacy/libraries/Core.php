@@ -457,7 +457,7 @@ class EE_Core
 
         //is member role forced to use 2FA?
         if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_2fa == 'y' && ee()->session->getMember()->enable_2fa != 'y' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            if (!(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'two-factor-auth')) {
+            if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'two-factor-auth')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
