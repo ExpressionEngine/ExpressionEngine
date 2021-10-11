@@ -53,7 +53,7 @@ class Consent extends Logs
             'form_url' => $this->base_url->compile()
         ];
 
-        if (IS_PRO && ee('Permission')->canUsePro()) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('Permission')->canUsePro()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $header['toolbar_items'] = [
                 'export' => [

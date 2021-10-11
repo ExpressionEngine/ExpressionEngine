@@ -724,6 +724,14 @@ $lang = array(
 
     'your_subscription_cancelled' => 'Your subscription to the following topic has been removed:',
 
+    /* Cookies */
+
+    'cookie_forum_theme' => 'Forum Theme',
+    'cookie_forum_theme_desc' => 'If multiple forum themes exist, this cookie allows the user to save their theme preference.',
+
+    'cookie_forum_topics' => 'Forum Topics',
+    'cookie_forum_topics_desc' => 'Tracks the id number for read topics, allows setting the ‘read’ status. Saved in the cookie for guests, the database for members.',
+
 );
 
 // EOF

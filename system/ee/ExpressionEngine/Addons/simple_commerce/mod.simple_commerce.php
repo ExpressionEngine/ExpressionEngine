@@ -675,8 +675,8 @@ class Simple_commerce
         //  New Member Group
         if ($new_member_group != '' && $new_member_group != 0) {
             ee()->db->where('member_id', $this->post['custom']);
-            ee()->db->where('group_id !=', 1);
-            ee()->db->update('members', array('group_id' => $new_member_group));
+            ee()->db->where('role_id !=', 1);
+            ee()->db->update('members', array('role_id' => $new_member_group));
         }
 
         //  Send Emails!

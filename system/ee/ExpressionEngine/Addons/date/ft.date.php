@@ -20,6 +20,8 @@ class Date_ft extends EE_Fieldtype
 
     public $has_array_data = false;
 
+    public $size = 'small';
+
     /**
      * Parses the date input, first with the configured date format (as used
      * by the datepicker). If that fails it will try again with a fuzzier

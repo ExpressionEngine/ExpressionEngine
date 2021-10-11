@@ -17,6 +17,8 @@ class Rte_ft extends EE_Fieldtype
 
     public $entry_manager_compatible = true;
 
+    public $size = 'large';
+
     public $info = [
         'name' => 'Rich Text Editor',
         'version' => '2.1.0'

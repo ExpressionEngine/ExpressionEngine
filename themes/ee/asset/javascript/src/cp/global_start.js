@@ -236,9 +236,12 @@ $(document).ready(function () {
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
-	if (! EE.cp.lvUrl) {
+	// Verify we have a license validation URL and the last update check was more than a minute ago.
+	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 60)) {
 		return;
 	}
+
+	var installedAddons = JSON.parse(EE.cp.installedAddons);
 
 	$.ajax({
 		type: 'POST',
@@ -247,7 +250,7 @@ EE.cp.validateLicense = function() {
 		data: {
 			appVer: EE.cp.appVer,
 			license: EE.cp.licenseKey,
-			addons: JSON.parse(EE.cp.installedAddons),
+			addons: installedAddons,
 			meta: [
 				{
 					site_name: EE.site_name,
@@ -258,56 +261,40 @@ EE.cp.validateLicense = function() {
 		},
 
 		success: function(result) {
-			var validLicense = true;
-
-			switch (result.messageType) {
-				case 'success':
-					break;
-
-				case 'missing_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_license_key':
-					validLicense = false;
-					break;
-
-				case 'invalid_domain':
-					validLicense = false;
-					break;
-
-				default:
-					console.log('Unknown Status: ' + result.messageType);
-			}
-
-			var validAddons = true;
-
-			// @todo Clean all this up and extract the styles to the proper location.
-			for (var addon of result.addons) {
-				if (addon.status == 'update_available') {
-					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left blue shadow" style="font-size:9px;">Update Available</div>');
-					if (window.location.href.indexOf(addon.slug) !== -1) {
-						$('body.add-on-layout .main-nav__title').css('position', 'relative').append('<a style="display:inline-block;vertical-align:middle;margin-left:15px;border: 2px solid #39d;background-color:#fff;font-weight:bold;color: #39d;padding: 2px 10px 1px 10px;border-radius: 5px;font-size: 12px;vertical-align: middle;" href="https://expressionengine.com/licenses#update-available" target="_blank">Update Available</a>').children('h1').css({ 'display': 'inline-block', 'vertical-align': 'middle' });
-					}
-				} else if (addon.status == 'expired') {
-					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left orange shadow">Expired</div>');
-					if (window.location.href.indexOf(addon.slug) !== -1) {
-						$('body.add-on-layout .main-nav__title').css('position', 'relative').append('<a style="display:inline-block;vertical-align:middle;margin-left:15px;background-color:#e82;font-weight:bold;color: #fff;padding: 2px 10px 1px 10px;border-radius: 5px;font-size: 12px;vertical-align: middle;" href="https://expressionengine.com/licenses" target="_blank">License Expired</a>').children('h1').css({ 'display':'inline-block', 'vertical-align':'middle' });
-					}
-				} else if (addon.status == 'invalid') {
-					validAddons = false;
-					$('div[data-addon="' + addon.slug + '"]').css('overflow', 'hidden').append('<div class="corner-ribbon top-left red shadow">Unlicensed</div>'); // "Invalid" status
-					$('.global-alerts').append('<div class="app-notice-license app-notice app-notice--banner app-notice---error" style="display: flex;"><div class="app-notice__tag"><span class="app-notice__icon"></span></div><div class="app-notice__content"><p>Unlicensed Add-on: <b>' + addon.name + '</b> does not have a valid license. <a href="https://expressionengine.com/licenses" target="_blank">More Info</a></p></div><a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span><span class="hidden">close</span></a></div>');
+			if (EE.cp.accessResponseURL) {
+				// Fill in some missing data between the request and response.
+				for (var addon of result.addons) {
+					installedAddons[addon.slug].status = addon.status;
+					installedAddons[addon.slug].update = addon.update;
 				}
-			}
 
-			if (!validLicense && !validAddons) {
-				// console.log('Invalid License and Invalid Add-ons');
+				// Post the response to the backend.
+				$.ajax({
+					type: 'POST',
+					url: EE.cp.accessResponseURL,
+					dataType: 'json',
+					data: {
+						appVer: EE.cp.appVer,
+						license: EE.cp.licenseKey,
+						licenseStatus: result,
+						addons: installedAddons,
+						site_name: EE.site_name,
+						site_id: EE.site_id,
+						site_url: EE.site_url
+					},
+
+					success: function (result) {
+
+					},
+					error: function (data, textStatus, errorThrown) {
+						console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+					}
+				});
 			}
 		},
 
 		error: function(data, textStatus, errorThrown) {
-			console.log('Error Data:', data, data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
 		}
 	});
 }

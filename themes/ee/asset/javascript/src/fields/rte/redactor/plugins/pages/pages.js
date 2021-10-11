@@ -251,7 +251,7 @@
             var key = (e && e.which);
 
             if (!e) hidable = true;
-            else if (e.type === 'click' || key === this.keycodes.ESC || key === this.keycodes.SPACE) hidable = true;
+            else if (e.type === 'click' || key === this.keycodes.ESC) hidable = true;
 
             if (hidable) {
                this._hideForce();
