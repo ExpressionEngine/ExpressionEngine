@@ -549,7 +549,7 @@ class Member
             if (ee()->session->userdata('2fa_enabled') == true) {
                 $data['reset_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'reset2FA') . AMP . 'RET=' . $return;
             }
-            if (ee()->session->userdata('2fa_enabled') == true) {
+            if (ee()->session->userdata('2fa_enabled') == true && ee()->session->userdata('2fa_authorized') == true) {
                 $data['disable_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disable2FA') . AMP . 'RET=' . $return;
             }
             if (ee()->session->userdata('2fa_enabled') == false) {

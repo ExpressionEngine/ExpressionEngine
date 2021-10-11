@@ -12,43 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Dumping data for table ee-test.exp_actions: ~31 rows (approximately)
-DELETE FROM `exp_actions`;
-/*!40000 ALTER TABLE `exp_actions` DISABLE KEYS */;
-INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
-	(1, 'Channel', 'submit_entry', 0),
-	(2, 'Channel', 'smiley_pop', 0),
-	(3, 'Channel', 'combo_loader', 0),
-	(4, 'Channel', 'live_preview', 0),
-	(5, 'Comment', 'insert_new_comment', 0),
-	(6, 'Comment_mcp', 'delete_comment_notification', 0),
-	(7, 'Comment', 'comment_subscribe', 0),
-	(8, 'Comment', 'edit_comment', 0),
-	(9, 'Consent', 'grantConsent', 0),
-	(10, 'Consent', 'submitConsent', 0),
-	(11, 'Consent', 'withdrawConsent', 0),
-	(12, 'Member', 'registration_form', 0),
-	(13, 'Member', 'register_member', 0),
-	(14, 'Member', 'activate_member', 0),
-	(15, 'Member', 'member_login', 0),
-	(16, 'Member', 'member_logout', 0),
-	(17, 'Member', 'send_reset_token', 0),
-	(18, 'Member', 'process_reset_password', 0),
-	(19, 'Member', 'send_member_email', 0),
-	(20, 'Member', 'update_un_pw', 0),
-	(21, 'Member', 'do_member_search', 0),
-	(22, 'Member', 'member_delete', 0),
-	(23, 'Member', 'send_username', 0),
-	(24, 'Member', 'update_profile', 0),
-	(25, 'Member', 'upload_avatar', 0),
-	(26, 'Member', 'recaptcha_check', 0),
-	(27, 'Rte', 'pages_autocomplete', 0),
-	(28, 'File', 'addonIcon', 1),
-	(29, 'Relationship', 'entryList', 0),
-	(30, 'Search', 'do_search', 1),
-	(31, 'Email', 'send_email', 0);
-/*!40000 ALTER TABLE `exp_actions` ENABLE KEYS */;
-
 -- Dumping data for table ee-test.exp_captcha: ~0 rows (approximately)
 DELETE FROM `exp_captcha`;
 /*!40000 ALTER TABLE `exp_captcha` DISABLE KEYS */;
@@ -292,36 +255,12 @@ DELETE FROM `exp_consent_audit_log`;
 /*!40000 ALTER TABLE `exp_consent_audit_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_consent_audit_log` ENABLE KEYS */;
 
--- Dumping data for table ee-test.exp_consent_requests: ~3 rows (approximately)
-DELETE FROM `exp_consent_requests`;
-/*!40000 ALTER TABLE `exp_consent_requests` DISABLE KEYS */;
-INSERT INTO `exp_consent_requests` (`consent_request_id`, `consent_request_version_id`, `user_created`, `title`, `consent_name`, `double_opt_in`, `retention_period`) VALUES
-	(1, 1, 'n', 'Functionality Cookies', 'ee:cookies_functionality', 'n', NULL),
-	(2, 2, 'n', 'Performance Cookies', 'ee:cookies_performance', 'n', NULL),
-	(3, 3, 'n', 'Targeting Cookies', 'ee:cookies_targeting', 'n', NULL);
-/*!40000 ALTER TABLE `exp_consent_requests` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_consent_request_versions: ~3 rows (approximately)
-DELETE FROM `exp_consent_request_versions`;
-/*!40000 ALTER TABLE `exp_consent_request_versions` DISABLE KEYS */;
-INSERT INTO `exp_consent_request_versions` (`consent_request_version_id`, `consent_request_id`, `request`, `request_format`, `create_date`, `author_id`) VALUES
-	(1, 1, 'These cookies help us personalize content and functionality for you, including remembering changes you have made to parts of the website that you can customize, or selections for services made on previous visits. If you do not allow these cookies, some portions of our website may be less friendly and easy to use, forcing you to enter content or set your preferences on each visit.', 'none', 1615821718, 0),
-	(2, 2, 'These cookies allow us measure how visitors use our website, which pages are popular, and what our traffic sources are. This helps us improve how our website works and make it easier for all visitors to find what they are looking for. The information is aggregated and anonymous, and cannot be used to identify you. If you do not allow these cookies, we will be unable to use your visits to our website to help make improvements.', 'none', 1615821718, 0),
-	(3, 3, 'These cookies are usually placed by third-party advertising networks, which may use information about your website visits to develop a profile of your interests. This information may be shared with other advertisers and/or websites to deliver more relevant advertising to you across multiple websites. If you do not allow these cookies, visits to this website will not be shared with advertising partners and will not contribute to targeted advertising on other websites.', 'none', 1615821718, 0);
-/*!40000 ALTER TABLE `exp_consent_request_versions` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_consent_request_version_cookies: ~0 rows (approximately)
 DELETE FROM `exp_consent_request_version_cookies`;
 /*!40000 ALTER TABLE `exp_consent_request_version_cookies` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_consent_request_version_cookies` ENABLE KEYS */;
 
--- Dumping data for table ee-test.exp_content_types: ~2 rows (approximately)
-DELETE FROM `exp_content_types`;
-/*!40000 ALTER TABLE `exp_content_types` DISABLE KEYS */;
-INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES
-	(2, 'channel'),
-	(1, 'grid');
-/*!40000 ALTER TABLE `exp_content_types` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_cookie_settings: ~0 rows (approximately)
 DELETE FROM `exp_cookie_settings`;
@@ -426,14 +365,6 @@ DELETE FROM `exp_entry_manager_views`;
 DELETE FROM `exp_entry_versioning`;
 /*!40000 ALTER TABLE `exp_entry_versioning` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_entry_versioning` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_extensions: ~2 rows (approximately)
-DELETE FROM `exp_extensions`;
-/*!40000 ALTER TABLE `exp_extensions` DISABLE KEYS */;
-INSERT INTO `exp_extensions` (`extension_id`, `class`, `method`, `hook`, `settings`, `priority`, `version`, `enabled`) VALUES
-	(1, 'Rte_ext', 'myaccount_nav_setup', 'myaccount_nav_setup', '', 10, '1.0.1', 'y'),
-	(2, 'Rte_ext', 'cp_menu_array', 'cp_menu_array', '', 10, '1.0.1', 'y');
-/*!40000 ALTER TABLE `exp_extensions` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_fieldtypes: ~18 rows (approximately)
 DELETE FROM `exp_fieldtypes`;
@@ -676,20 +607,10 @@ DELETE FROM `exp_message_listed`;
 /*!40000 ALTER TABLE `exp_message_listed` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_modules: ~11 rows (approximately)
-DELETE FROM `exp_modules`;
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(1, 'Consent', '1.0.0', 'n', 'n'),
-	(2, 'Relationship', '1.0.0', 'n', 'n'),
-	(3, 'Channel', '2.0.1', 'n', 'n'),
-	(4, 'Member', '2.1.0', 'n', 'n'),
-	(5, 'Stats', '2.0.0', 'n', 'n'),
-	(6, 'Rte', '2.1.0', 'y', 'n'),
-	(7, 'Email', '2.0.0', 'n', 'n'),
-	(8, 'Rss', '2.0.0', 'n', 'n'),
-	(9, 'Comment', '2.3.2', 'y', 'n'),
-	(10, 'Search', '2.2.2', 'n', 'n'),
-	(11, 'FilePicker', '1.0.0', 'y', 'n');
+	(17, 'Email', '2.0.0', 'n', 'n'),
+	(18, 'Rss', '2.0.0', 'n', 'n');
 /*!40000 ALTER TABLE `exp_modules` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_module_member_roles: ~0 rows (approximately)
@@ -706,113 +627,6 @@ DELETE FROM `exp_online_users`;
 DELETE FROM `exp_password_lockout`;
 /*!40000 ALTER TABLE `exp_password_lockout` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_password_lockout` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_permissions: ~96 rows (approximately)
-DELETE FROM `exp_permissions`;
-/*!40000 ALTER TABLE `exp_permissions` DISABLE KEYS */;
-INSERT INTO `exp_permissions` (`permission_id`, `role_id`, `site_id`, `permission`) VALUES
-	(1, 1, 1, 'can_view_offline_system'),
-	(2, 1, 1, 'can_view_online_system'),
-	(3, 1, 1, 'can_access_cp'),
-	(4, 1, 1, 'can_access_footer_report_bug'),
-	(5, 1, 1, 'can_access_footer_new_ticket'),
-	(6, 1, 1, 'can_access_footer_user_guide'),
-	(7, 1, 1, 'can_view_homepage_news'),
-	(8, 1, 1, 'can_access_files'),
-	(9, 1, 1, 'can_access_design'),
-	(10, 1, 1, 'can_access_addons'),
-	(11, 1, 1, 'can_access_members'),
-	(12, 1, 1, 'can_access_sys_prefs'),
-	(13, 1, 1, 'can_access_comm'),
-	(14, 1, 1, 'can_access_utilities'),
-	(15, 1, 1, 'can_access_data'),
-	(16, 1, 1, 'can_access_logs'),
-	(17, 1, 1, 'can_admin_channels'),
-	(18, 1, 1, 'can_admin_design'),
-	(19, 1, 1, 'can_delete_members'),
-	(20, 1, 1, 'can_admin_roles'),
-	(21, 1, 1, 'can_admin_mbr_templates'),
-	(22, 1, 1, 'can_ban_users'),
-	(23, 1, 1, 'can_admin_addons'),
-	(24, 1, 1, 'can_edit_categories'),
-	(25, 1, 1, 'can_delete_categories'),
-	(26, 1, 1, 'can_view_other_entries'),
-	(27, 1, 1, 'can_edit_other_entries'),
-	(28, 1, 1, 'can_assign_post_authors'),
-	(29, 1, 1, 'can_delete_self_entries'),
-	(30, 1, 1, 'can_delete_all_entries'),
-	(31, 1, 1, 'can_view_other_comments'),
-	(32, 1, 1, 'can_edit_own_comments'),
-	(33, 1, 1, 'can_delete_own_comments'),
-	(34, 1, 1, 'can_edit_all_comments'),
-	(35, 1, 1, 'can_delete_all_comments'),
-	(36, 1, 1, 'can_moderate_comments'),
-	(37, 1, 1, 'can_send_cached_email'),
-	(38, 1, 1, 'can_email_roles'),
-	(39, 1, 1, 'can_email_from_profile'),
-	(40, 1, 1, 'can_view_profiles'),
-	(41, 1, 1, 'can_edit_html_buttons'),
-	(42, 1, 1, 'can_delete_self'),
-	(43, 1, 1, 'can_send_private_messages'),
-	(44, 1, 1, 'can_attach_in_private_messages'),
-	(45, 1, 1, 'can_send_bulletins'),
-	(46, 1, 1, 'can_upload_new_files'),
-	(47, 1, 1, 'can_edit_files'),
-	(48, 1, 1, 'can_delete_files'),
-	(49, 1, 1, 'can_upload_new_toolsets'),
-	(50, 1, 1, 'can_edit_toolsets'),
-	(51, 1, 1, 'can_delete_toolsets'),
-	(52, 1, 1, 'can_create_upload_directories'),
-	(53, 1, 1, 'can_edit_upload_directories'),
-	(54, 1, 1, 'can_delete_upload_directories'),
-	(55, 1, 1, 'can_create_channels'),
-	(56, 1, 1, 'can_edit_channels'),
-	(57, 1, 1, 'can_delete_channels'),
-	(58, 1, 1, 'can_create_channel_fields'),
-	(59, 1, 1, 'can_edit_channel_fields'),
-	(60, 1, 1, 'can_delete_channel_fields'),
-	(61, 1, 1, 'can_create_statuses'),
-	(62, 1, 1, 'can_delete_statuses'),
-	(63, 1, 1, 'can_edit_statuses'),
-	(64, 1, 1, 'can_create_categories'),
-	(65, 1, 1, 'can_create_roles'),
-	(66, 1, 1, 'can_delete_roles'),
-	(67, 1, 1, 'can_edit_roles'),
-	(68, 1, 1, 'can_create_members'),
-	(69, 1, 1, 'can_edit_members'),
-	(70, 1, 1, 'can_create_templates'),
-	(71, 1, 1, 'can_edit_templates'),
-	(72, 1, 1, 'can_delete_templates'),
-	(73, 1, 1, 'can_create_template_groups'),
-	(74, 1, 1, 'can_edit_template_groups'),
-	(75, 1, 1, 'can_delete_template_groups'),
-	(76, 1, 1, 'can_create_template_partials'),
-	(77, 1, 1, 'can_edit_template_partials'),
-	(78, 1, 1, 'can_delete_template_partials'),
-	(79, 1, 1, 'can_create_template_variables'),
-	(80, 1, 1, 'can_delete_template_variables'),
-	(81, 1, 1, 'can_edit_template_variables'),
-	(82, 1, 1, 'can_moderate_spam'),
-	(83, 1, 1, 'can_manage_consents'),
-	(84, 2, 1, 'can_view_homepage_news'),
-	(85, 3, 1, 'can_view_online_system'),
-	(86, 3, 1, 'can_view_homepage_news'),
-	(87, 4, 1, 'can_view_online_system'),
-	(88, 4, 1, 'can_view_homepage_news'),
-	(89, 5, 1, 'can_view_online_system'),
-	(90, 5, 1, 'can_view_homepage_news'),
-	(91, 5, 1, 'can_email_from_profile'),
-	(92, 5, 1, 'can_view_profiles'),
-	(93, 5, 1, 'can_edit_html_buttons'),
-	(94, 5, 1, 'can_delete_self'),
-	(95, 5, 1, 'can_send_private_messages'),
-	(96, 5, 1, 'can_attach_in_private_messages');
-/*!40000 ALTER TABLE `exp_permissions` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_plugins: ~0 rows (approximately)
-DELETE FROM `exp_plugins`;
-/*!40000 ALTER TABLE `exp_plugins` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_plugins` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_relationships: ~0 rows (approximately)
 DELETE FROM `exp_relationships`;
@@ -940,25 +754,6 @@ INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_co
 	(12, 1, 'news_month_archives', '<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: https://docs.expressionengine.com/latest/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>', 0),
 	(13, 1, 'news_popular', '<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at https://docs.expressionengine.com/latest/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}', 0);
 /*!40000 ALTER TABLE `exp_snippets` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_specialty_templates: ~13 rows (approximately)
-DELETE FROM `exp_specialty_templates`;
-/*!40000 ALTER TABLE `exp_specialty_templates` DISABLE KEYS */;
-INSERT INTO `exp_specialty_templates` (`template_id`, `site_id`, `enable_template`, `template_name`, `data_title`, `template_type`, `template_subtype`, `template_data`, `template_notes`, `edit_date`, `last_author_id`) VALUES
-	(1, 1, 'y', 'offline_template', '', 'system', NULL, '<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>', NULL, 0, 0),
-	(2, 1, 'y', 'message_template', '', 'system', NULL, '<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>', NULL, 0, 0),
-	(3, 1, 'y', 'admin_notify_reg', 'Notification of new member registration', 'email', 'members', 'New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}', NULL, 0, 0),
-	(4, 1, 'y', 'admin_notify_entry', 'A new channel entry has been posted', 'email', 'content', 'A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n', NULL, 0, 0),
-	(6, 1, 'y', 'admin_notify_comment', 'You have just received a comment', 'email', 'comments', 'You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}', NULL, 0, 0),
-	(7, 1, 'y', 'mbr_activation_instructions', 'Enclosed is your activation code', 'email', 'members', 'Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}', NULL, 0, 0),
-	(8, 1, 'y', 'forgot_password_instructions', 'Login information', 'email', 'members', '{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}', NULL, 0, 0),
-	(9, 1, 'y', 'validated_member_notify', 'Your membership account has been activated', 'email', 'members', '{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}', NULL, 0, 0),
-	(10, 1, 'y', 'decline_member_validation', 'Your membership account has been declined', 'email', 'members', '{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}', NULL, 0, 0),
-	(12, 1, 'y', 'comment_notification', 'Someone just responded to your comment', 'email', 'comments', '{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}', NULL, 0, 0),
-	(13, 1, 'y', 'comments_opened_notification', 'New comments have been added', 'email', 'comments', 'Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}', NULL, 0, 0),
-	(14, 1, 'y', 'private_message_notification', 'Someone has sent you a Private Message', 'email', 'private_messages', '\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}', NULL, 0, 0),
-	(15, 1, 'y', 'pm_inbox_full', 'Your private message mailbox is full', 'email', 'private_messages', '{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}', NULL, 0, 0);
-/*!40000 ALTER TABLE `exp_specialty_templates` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_stats: ~0 rows (approximately)
 DELETE FROM `exp_stats`;

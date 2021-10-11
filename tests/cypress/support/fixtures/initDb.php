@@ -136,6 +136,8 @@ $install = $schema->install_tables_and_data();
 
 write_config_data($schema);
 
+install_modules();
+
 exit(!(int)$install);
 
 /**
@@ -380,4 +382,28 @@ function write_config_data($schema)
         }
     }
     ee()->db->insert_batch('config', $inserts);
+}
+
+function install_modules()
+{
+    $required_modules = [
+        'channel',
+        'comment',
+        'consent',
+        'member',
+        'stats',
+        'rte',
+        'file',
+        'filepicker',
+        'relationship',
+        'search'
+    ];
+    
+    ee()->load->library('addons');
+    ee()->addons->install_modules($required_modules);
+
+    $consent = ee('Addon')->get('consent');
+    $consent->installConsentRequests();
+
+    return true;
 }
