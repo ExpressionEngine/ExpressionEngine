@@ -21,6 +21,8 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $size = 'small';
+
     public function validate($data)
     {
         $valid = false;
@@ -57,7 +59,8 @@ class Select_ft extends OptionFieldtype
             $extra .= ' disabled';
         }
 
-        if (REQ == 'CP' && $this->content_type() !== 'grid') {
+        // if (REQ == 'CP' && $this->content_type() !== 'grid') {
+        if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
                 'field_name' => $this->field_name,
                 'choices' => $this->_get_field_options($data),

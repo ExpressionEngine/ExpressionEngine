@@ -21,6 +21,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
                     $entries = ee('Model')->get('ChannelEntry')
                         ->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
                         ->filter('channel_id', 'IN', $assigned_channels)
+                        ->filter('site_id', ee()->config->item('site_id'))
                         ->order('entry_date', 'DESC')
                         ->limit(7)
                         ->all();

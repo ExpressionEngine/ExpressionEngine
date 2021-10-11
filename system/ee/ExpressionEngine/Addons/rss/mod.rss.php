@@ -49,8 +49,8 @@ class Rss
 
         $tmp = $this->_setup_meta_query($query);
         $query = $tmp[0];
-        $last_update = $tmp[1];
-        $edit_date = $tmp[2];
+        $last_update = empty($tmp[1]) ? $tmp[3] : $tmp[1] ;
+        $edit_date = empty($tmp[2]) ? $tmp[3] : $tmp[2] ;
         $entry_date = $tmp[3];
 
         if ($query->num_rows() === 0) {

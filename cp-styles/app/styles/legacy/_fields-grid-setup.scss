@@ -48,6 +48,16 @@
       border-top: 1px solid color(border);
 		}
 	}
+
+	.grid_col_settings_custom_field_select {
+		.fields-keyvalue {
+			.field-no-results {
+				display: block !important;
+
+				&.hidden { display: none !important;}
+			}
+		}
+	}
 }
 
 .toggle-content {

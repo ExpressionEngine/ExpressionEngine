@@ -59,7 +59,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1
@@ -77,6 +77,21 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v2
+
+          - name: Checkout Pro
+            uses: actions/checkout@v2
+            with:
+              repository: EllisLab/ExpressionEngine-Pro
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __pro
+
+        #  - name: Move Pro into core
+        #    run: |
+        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+        #      mv __pro/themes/ee/pro themes/ee/pro
+        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
+        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
+        #      rm -rf __pro
 
           - name: Setup asdf
             uses: asdf-vm/actions/setup@v1
@@ -105,7 +120,8 @@ jobs:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-            run: gulp build-app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
@@ -123,6 +139,101 @@ jobs:
             run: |
               ls -latr build-tools/builds
               ls -latr build-tools/builds/ExpressionEngine
+
+    cypress-pro:
+        needs: build-for-testing
+
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [7.2, 7.1, 8.0]
+                os: [ubuntu-18.04]
+                include:
+                  - php: 7.4
+                    os: ubuntu-20.04 #is using mysql8
+
+        name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+                rm -rf build-tools
+
+            - name: Copy config.php
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
+            - name: Setup Permissions
+              run: |
+                  cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
+                  sudo chmod 666 system/user/config/config.php
+                  sudo chmod 777 system/user/config
+                  sudo chmod -R 777 system/user/cache
+                  sudo chmod -R 777 system/user/templates
+                  sudo chmod -R 777 system/user/language
+                  sudo chmod -R 777 tests/cypress/support/tmp
+                  sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                  sudo chmod -R 777 images
+                  sudo chmod -R 777 themes/user
+                  sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: pro.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-pro-PHP${{ matrix.php }}
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: pro.error.PHP${{ matrix.php }}.log
+                path: /home/runner/php_errors.log
 
     cypress-admin:
         needs: build-for-testing

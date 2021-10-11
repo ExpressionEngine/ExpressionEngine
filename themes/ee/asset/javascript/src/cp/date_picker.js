@@ -458,6 +458,26 @@ $(document).ready(function () {
 	}
 
 	$(document).on('focus', 'input,select,button', function(e) {
+		EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
+
+		// Date fields inside a Grid need to be bound when a new row is added
+		if (typeof Grid !== 'undefined')
+		{
+			Grid.bind('date', 'display', function(cell)
+			{
+				EE.cp.datePicker.bind($('input[rel="date-picker"]', cell));
+			});
+		}
+
+		// Date fields inside a Fluid Field need to be bound when a new field is added
+		if (typeof FluidField === "object")
+		{
+			FluidField.on('date', 'add', function(field)
+			{
+				EE.cp.datePicker.bind($('input[rel="date-picker"]', field));
+			});
+		}
+
 		if ( ! ($(e.target).attr('rel') == 'date-picker')
 			&&  ! $(e.target).closest('.date-picker-wrap').length) {
 			$('.date-picker-wrap').hide();
