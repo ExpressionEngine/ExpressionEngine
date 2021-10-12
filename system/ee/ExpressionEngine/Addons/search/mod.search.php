@@ -360,15 +360,15 @@ class Search
                     : ee('Model')->get('Channel')
                         ->all();
 
-            if ($channels) {
-                $custom_fields = array();
-                foreach ($channels as $channel) {
-                    $channel_array[] = $channel->channel_id;
-                    $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                if ($channels) {
+                    $custom_fields = array();
+                    foreach ($channels as $channel) {
+                        $channel_array[] = $channel->channel_id;
+                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                    }
+                    $this->custom_fields = array_chunk($custom_fields, 50);
                 }
-                $this->custom_fields = array_chunk($custom_fields, 50);
             }
-        }
 
             foreach (array_shift($this->custom_fields) as $field) {
                 if ($field->field_search) {
