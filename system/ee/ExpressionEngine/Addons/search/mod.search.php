@@ -979,21 +979,6 @@ class Search
     {
         $query_parts = $this->build_standard_query();
 
-        if (! empty($this->custom_fields)) {
-            foreach (array_keys($this->custom_fields) as $i) {
-                $qp = $this->build_standard_query();
-
-                if ($query_parts === false) {
-                    $query_parts = $qp;
-                } else {
-                    if ($qp) {
-                        $query_parts['entries'] = array_merge($query_parts['entries'], $qp['entries']);
-                        $query_parts['channel_ids'] = array_merge($query_parts['channel_ids'], $qp['channel_ids']);
-                    }
-                }
-            }
-        }
-
         // Set absolute count
         $this->num_rows = $query_parts ? count(array_unique($query_parts['entries'])) : 0;
 
