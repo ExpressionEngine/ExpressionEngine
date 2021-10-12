@@ -344,6 +344,48 @@ class Search
         $channel_array = array();
 
         /** ---------------------------------------
+        /**  Fetch the searchable field names and MAYBE the channel_ids
+        /** ---------------------------------------*/
+        $fields = array();
+        $legacy_fields = array();
+        $joins = '';
+
+        // no need to do this unless there are keywords to search
+        if (trim($this->keywords) != '') {
+            if (empty($this->custom_fields)) {
+                $channels = ($this->_meta['site_ids'])
+                    ?  ee('Model')->get('Channel')
+                        ->filter('site_id', 'IN', $this->_meta['site_ids'])
+                        ->all()
+                    : ee('Model')->get('Channel')
+                        ->all();
+
+            if ($channels) {
+                $custom_fields = array();
+                foreach ($channels as $channel) {
+                    $channel_array[] = $channel->channel_id;
+                    $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                }
+                $this->custom_fields = array_chunk($custom_fields, 50);
+            }
+        }
+
+            foreach (array_shift($this->custom_fields) as $field) {
+                if ($field->field_search) {
+                    if (!isset($fields[$field->field_id])) {
+                        $fields[$field->field_id] = $field->field_id;
+                        $legacy_fields[$field->field_id] = $field->legacy_field_data;
+                        if (! $field->legacy_field_data) {
+                            $joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
+                        }
+                    }
+                }
+
+                $this->fields[$field->field_name] = array($field->field_id, $field->field_search);
+            }
+        }
+
+        /** ---------------------------------------
         /**  Fetch the channel_id numbers
         /** ---------------------------------------*/
 
@@ -362,20 +404,27 @@ class Search
         // Which channels we are or are not supposed to search for, when
         // "Any Channel" is chosen
 
-        ee()->db->select('channel_id');
-        if (isset($this->_meta['channel']) and $this->_meta['channel'] != '') {
-            ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
-        }
-        ee()->db->where_in('site_id', $this->_meta['site_ids']);
-        $query = ee()->db->get('channels');
+        // If we get channel_ids on previous step, we don't need to get them again
+        if(empty($channel_array)) {
+            ee()->db->select('channel_id');
+            if (!empty($this->_meta['channel'])) {
+                ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
+            }
 
-        // If channel's are specified and there NO valid channels returned?  There can be no results!
-        if ($query->num_rows() == 0) {
-            return false;
-        }
+            if (!empty($this->_meta['site_ids'])) {
+                ee()->db->where_in('site_id', $this->_meta['site_ids']);
+            }
 
-        foreach ($query->result_array() as $row) {
-            $channel_array[] = $row['channel_id'];
+            $query = ee()->db->get('channels');
+
+            // If channel's are specified and there NO valid channels returned? There can be no results!
+            if ($query->num_rows() == 0) {
+                return false;
+            }
+
+            foreach ($query->result_array() as $row) {
+                $channel_array[] = $row['channel_id'];
+            }
         }
 
         /** ------------------------------------------------------
@@ -453,43 +502,10 @@ class Search
 
         unset($member_array);
 
-        /** ---------------------------------------
-        /**  Fetch the searchable field names
-        /** ---------------------------------------*/
-        $fields = array();
-        $legacy_fields = array();
-        $joins = '';
 
-        // no need to do this unless there are keywords to search
-        if (trim($this->keywords) != '') {
-            $channels = ee('Model')->get('Channel')
-                ->filter('site_id', 'IN', $this->_meta['site_ids'])
-                ->all();
 
-            if ($channels) {
-                if (empty($this->custom_fields)) {
-                    $custom_fields = array();
-                    foreach ($channels as $channel) {
-                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-                    }
-                    $this->custom_fields = array_chunk($custom_fields, 50);
-                }
 
-                foreach (array_shift($this->custom_fields) as $field) {
-                    if ($field->field_search) {
-                        if (! isset($fields[$field->field_id])) {
-                            $fields[$field->field_id] = $field->field_id;
-                            $legacy_fields[$field->field_id] = $field->legacy_field_data;
-                            if (! $field->legacy_field_data) {
-                                $joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
-                            }
-                        }
-                    }
 
-                    $this->fields[$field->field_name] = array($field->field_id, $field->field_search);
-                }
-            }
-        }
 
         /** ---------------------------------------
         /**  Build the main query
