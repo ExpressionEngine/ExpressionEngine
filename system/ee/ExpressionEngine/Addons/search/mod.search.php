@@ -502,30 +502,45 @@ class Search
 
         unset($member_array);
 
-
-
-
-
-
         /** ---------------------------------------
         /**  Build the main query
         /** ---------------------------------------*/
         $sql = "SELECT
 			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
-			FROM exp_channel_titles
-			LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
-			LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
+			FROM exp_channel_titles ";
+
+        if (!empty($channels)) {
+            $sql .= "LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id ";
+        }
+
+        $sql .= "LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
 
         $sql .= $joins;
 
         // is the comment module installed?
         if (ee()->addons_model->module_installed('comment')) {
-            $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
+            // do we need to search on comments?
+            if(isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
+                $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
+            }
         }
 
-        $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-			WHERE exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+
+        // do we need to limit to categories?
+        if (!empty($this->_meta['category'])) {
+            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
+			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
+        }
+
+        /** ----------------------------------------------
+        /**  START THE WHERE clauses
+        /** ----------------------------------------------*/
+
+        $sql .= "WHERE ";
+
+        if (!empty($this->_meta['site_ids']) && empty($channels)) {
+            $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        }
 
         /** ----------------------------------------------
         /**  We only select entries that have not expired
