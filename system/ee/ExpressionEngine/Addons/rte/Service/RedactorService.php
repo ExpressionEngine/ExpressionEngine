@@ -94,33 +94,41 @@ class RedactorService implements RteService {
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
                 ->get('actions');
-            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
+            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
         // -------------------------------------------
         //  File Browser Config
         // -------------------------------------------
-        if (in_array('image', $config['toolbar']['buttons']) || in_array('file', $config['toolbar']['buttons'])) {
-            $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
-            unset($config['upload_dir']);
+        $uploadDir = (isset($config['upload_dir']) && !empty($config['upload_dir'])) ? $config['upload_dir'] : 'all';
+        unset($config['upload_dir']);
 
-            $fileBrowserOptions = ['filepicker'];
-            if (!empty(ee()->config->item('rte_file_browser'))) {
-                array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
-            }
-            $fileBrowserOptions = array_unique($fileBrowserOptions);
-            foreach ($fileBrowserOptions as $fileBrowserName) {
-                $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
-                if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
-                    $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
-                    $fileBrowser = new $fqcn();
-                    if ($fileBrowser instanceof RteFilebrowserInterface) {
-                        $fileBrowser->addJs($uploadDir);
+        $fileBrowserOptions = ['filepicker'];
+        if (!empty(ee()->config->item('rte_file_browser'))) {
+            array_unshift($fileBrowserOptions, ee()->config->item('rte_file_browser'));
+        }
+        $fileBrowserOptions = array_unique($fileBrowserOptions);
+        foreach ($fileBrowserOptions as $fileBrowserName) {
+            $fileBrowserAddon = ee('Addon')->get($fileBrowserName);
+            if ($fileBrowserAddon !== null && $fileBrowserAddon->isInstalled() && $fileBrowserAddon->hasRteFilebrowser()) {
+                $fqcn = $fileBrowserAddon->getRteFilebrowserClass();
+                $fileBrowser = new $fqcn();
+                if ($fileBrowser instanceof RteFilebrowserInterface) {
+                    $fileBrowser->addJs($uploadDir);
 
-                        break;
-                    }
+                    break;
                 }
+            }
+        }
+
+        // EE FilePicker is not available on frontend channel forms
+        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+            $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
+            if ($filemanager_key !== false) {
+                $items = $config['toolbar']['plugins'];
+                unset($items[$filemanager_key]);
+                $config['toolbar']['plugins'] = array_values($items);
             }
         }
         

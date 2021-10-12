@@ -527,6 +527,10 @@ class EE_Config
             'captcha_rand',
             'captcha_require_members',
             'require_captcha',
+            'use_recaptcha',
+            'recaptcha_site_key',
+            'recaptcha_site_secret',
+            'recaptcha_score_threshold',
             'enable_sql_caching',
             'force_query_string',
             'show_profiler',
@@ -827,7 +831,6 @@ class EE_Config
                 $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
             }
         }
-        
 
         // Add the CI pref items to the new values array if needed
         if (count($ci_config) > 0) {
@@ -1291,6 +1294,7 @@ class EE_Config
                 'multiple_sites_enabled' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'is_system_on' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'is_site_on' => array('r', array('y' => 'yes', 'n' => 'no')),
+                'site_license_key' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'site_name' => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
                 'site_index' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'site_url' => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
@@ -1403,10 +1407,14 @@ class EE_Config
             ),
 
             'captcha_cfg' => array(
+                'use_recaptcha' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'captcha_path' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'captcha_url' => array('i', '', 'strip_tags|trim|valid_xss_check'),
                 'captcha_font' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'captcha_rand' => array('r', array('y' => 'yes', 'n' => 'no')),
+                'recaptcha_site_key' => array('i', ''),
+                'recaptcha_site_secret' => array('i', ''),
+                'recaptcha_score_threshold' => array('i', ''),
                 'captcha_require_members' => array('r', array('y' => 'yes', 'n' => 'no'))
             ),
 

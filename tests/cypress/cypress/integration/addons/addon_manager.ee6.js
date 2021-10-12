@@ -28,11 +28,11 @@ context('Add-On Manager', () => {
     it('can install a single add-on', function() {
 
 
-        page.get('uninstalled_addons').first().then(function(el) {
+        page.get('uninstalled_addons').eq(1).then(function(el) {
             const addon_name = el.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
             cy.log(addon_name);
 
-            el.find('.add-on-card__button a').first().click()
+            el.find('.add-on-card__button a').first().click();
             cy.hasNoErrors()
 
             page.hasAlert()

@@ -13,6 +13,10 @@ class Colorpicker_ft extends EE_Fieldtype
 {
     public $info = [];
 
+    public $disable_frontedit = true;
+
+    public $size = 'small';
+
     public $default_settings = [
         'allowed_colors' => 'any',
         // The default color to use on invalid field input

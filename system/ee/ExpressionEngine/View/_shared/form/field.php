@@ -77,7 +77,7 @@ case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'password': ?>
-	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="new-password"<?=$attrs?> class="<?=$class?>">
+	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
@@ -111,6 +111,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
 	    'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
 	    'encode' => isset($field['encode']) ? $field['encode'] : true,
 	    'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
+		'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
 	    'class' => $class,
 	    'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
 	]); ?>

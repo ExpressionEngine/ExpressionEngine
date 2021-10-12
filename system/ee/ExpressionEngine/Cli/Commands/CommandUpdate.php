@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -73,9 +81,7 @@ class CommandUpdate extends Cli
         $this->info(lang('command_update_new_version_available') . " {$this->updateVersion}\n");
 
         if (! $this->defaultToYes) {
-            if (! $this->confirm("command_update_confirm_upgrade")) {
-                $this->complete("command_update_not_run");
-            }
+            $this->confirm('command_update_confirm_upgrade', false, ['required' => true, 'error_message' => 'command_update_not_run']);
         }
 
         $this->runUpgrade();
@@ -180,15 +186,15 @@ class CommandUpdate extends Cli
                                 : 'exp_';
         ee()->db->db_debug = false;
 
-        ee()->load->add_package_path(EE_APPPATH);
+        ee()->load->add_package_path(BASEPATH);
         ee()->load->library('functions');
         ee()->load->library('extensions');
         ee()->load->library('api');
         ee()->load->library('localize');
         ee()->load->helper('language');
-        ee()->lang->loadfile('installer');
+        // ee()->lang->loadfile('installer');
         ee()->load->library('progress');
-        ee()->load->model('installer_template_model', 'template_model');
+        // ee()->load->model('installer_template_model', 'template_model');
 
         if (!isset(ee()->addons)) {
             ee()->load->library('addons');
@@ -329,7 +335,7 @@ class CommandUpdate extends Cli
         ee()->load->library('session');
         ee()->load->library('smartforge');
         ee()->load->library('logger');
-        ee()->load->library('update_notices');
+        // ee()->load->library('update_notices');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         defined('USERNAME_MAX_LENGTH') || define('USERNAME_MAX_LENGTH', 75);
         defined('PASSWORD_MAX_LENGTH') || define('PASSWORD_MAX_LENGTH', 72);

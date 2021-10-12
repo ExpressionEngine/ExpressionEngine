@@ -20,6 +20,10 @@ class Grid_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
+    public $size = 'large';
+
     public $settings_form_field_name = 'grid';
 
     private $errors;
